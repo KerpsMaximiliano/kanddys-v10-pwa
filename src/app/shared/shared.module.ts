@@ -60,13 +60,7 @@ import { SeeFiltersComponent } from './components/see-filters/see-filters.compon
 import { SwiperComponent } from './components/swiper/swiper.component';
 import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
-import { HelperHeaderComponent } from './components/helper-header/helper-header.component';
-import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
-import { GiftMessageComponent } from './components/gift-message/gift-message.component';
 import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
-import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
-import { AnswerSelectorComponent } from './components/answer-selector/answer-selector.component';
-import { ImageInputComponent } from './components/image-input/image-input.component';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 
 const imports = [
@@ -77,7 +71,7 @@ const imports = [
   ReactiveFormsModule,
   NgxPrintModule,
   QRCodeModule,
-  SwiperModule
+  SwiperModule,
 ];
 const declarations = [
   // Pages
@@ -125,14 +119,8 @@ const declarations = [
   SwiperComponent,
   FormFunnelV2Component,
   StickyButtonComponent,
-  HelperHeaderComponent,
-  PageComponentTabsComponent,
-  GiftMessageComponent,
   MultistepFormComponent,
-  ShowItemsComponent,
-  AnswerSelectorComponent,
-  ImageInputComponent,
-  ActivitiesOptionComponent
+  ActivitiesOptionComponent,
 ];
 
 @NgModule({
