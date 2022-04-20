@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CommunityNewUserComponent } from 'src/app/shared/dialogs/community-new-user/community-new-user.component';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -104,25 +103,6 @@ export class LeadwordListComponent implements OnInit {
         this.router.navigate(['ecommerce/order-info/' + this.orderId]); //ss
       }
     }
-  }
-
-  async checkLogin() {
-    this.isLogged = await this.auth.me().then((data) => {
-      console.log(data);
-      if (data == undefined) {
-        this.signin();
-      } else {
-        this.lookForOrder();
-      }
-    });
-  }
-
-  async signin() {
-    this.dialog.open(CommunityNewUserComponent, {
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-    });
   }
 
   lookForOrder() {
