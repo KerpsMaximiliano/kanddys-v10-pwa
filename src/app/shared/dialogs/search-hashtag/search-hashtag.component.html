@@ -1,0 +1,65 @@
+<div class="container">
+    <div class="header-wrapper">
+        <img src="../../../../assets/images/back.png" alt="" class="back" (click)="close()">
+        <div class="input">
+            <div class="search-icon">
+                <img src="../../../../assets/images/search.png" alt="">
+            </div>
+            <input id="searchInput" type="keyword" id="keyword" [(ngModel)]="hashtag"
+                placeholder="#     Search for hashtags" (keydown)="search($event)">
+        </div>
+        <div class="toggle">
+            <div class="toggle-options" (click)="advancedOptions = !advancedOptions">
+                Advanced Search
+            </div>
+            <div class="advanced-options" *ngIf="advancedOptions">
+                <div class="item" [ngClass]="{'selected-item': filters.filterAll}" (click)="toggleFilter({
+                    filterHashtags: false,
+                    filterAll: true,
+                    filterItem: false,
+                    filterProfiles: false
+                })">
+                    All Categories
+                </div>
+                <div class="item" [ngClass]="{'selected-item': filters.filterHashtags}" (click)="toggleFilter({
+                    filterHashtags: true,
+                    filterAll: false,
+                    filterItem: false,
+                    filterProfiles: false
+                })">
+                    Hashtags
+                </div>
+                <div class="item" [ngClass]="{'selected-item': filters.filterItem}" (click)="toggleFilter({
+                    filterHashtags: false,
+                    filterAll: false,
+                    filterItem: true,
+                    filterProfiles: false
+                })">
+                    Items
+                </div>
+                <div class="item" [ngClass]="{'selected-item': filters.filterProfiles}" (click)="toggleFilter({
+                    filterHashtags: false,
+                    filterAll: false,
+                    filterItem: false,
+                    filterProfiles: true
+                })">
+                    Profiles
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="result" *ngIf="advancedOptions">
+        <div class="title">
+            Result
+        </div>
+        <div class="subtitle">
+            Show x Hashtags
+        </div>
+        <ng-container *ngFor="let data of slides">
+            <div class="search-items">
+                <div class="item"><b>#</b></div>
+                <div class="item2">Lorem Ipsum</div>
+            </div>
+        </ng-container>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+<div style="min-height: 100vh;">
+    <div class="header">
+        <a (click)="goBack()">
+            <i class="fas fa-chevron-left" style="color: #27A2FF; position: absolute; left: 5%; cursor: pointer; top: 41.5%;"></i>
+        </a>
+        <ng-container *ngIf="categoryName">
+            <!-- <div 
+                class="price-circle" 
+                *ngIf="iconImage" 
+                [ngStyle]="{'background-image': 'url(' + iconImage + ')'}">
+            </div> -->
+            <span class="category-name">{{categoryName}}</span>
+        </ng-container>
+    </div>
+    <div style="margin-bottom: 30px;">
+        <!--<app-provider-item-slider 
+            [label]="sliderLabel"
+            [smallFont]="true"
+            [categories]="true"
+            [hideSeeAll]="true"
+            [providerItems]="originalItems"
+            (clickedItem)="onClick($event)"
+        ></app-provider-item-slider>-->
+        <div class="header-wrapper">
+            <h6 class="header-text" [ngStyle]="{fontFamily: 'SfProRegular', color: '#7b7b7b', fontWeight:100}" >{{sliderLabel}}</h6>
+          </div>
+        <app-swiper [saleFlowTwo]="true" [selectable]="true" [saleFlowTwoData]="originalItems" (slideActive)="onClick($event)" (toggleEmitter)="toggleSelected('item',$event)"></app-swiper>
+    </div>
+    <div style="background-color: white;">
+        <app-see-filters
+            [type]="3"
+            title='TO SHOP' 
+            [tags]="filters"
+            (loadingSwiper)="startLoading($event)"
+            (eventTags)="closeTagEvent($event)"
+            (deletedTag)="tagDeleted($event)"
+        ></app-see-filters>
+        <app-item-grid [items]="items" (eventEmitter)="onClick($event)"></app-item-grid>
+    </div>
+</div>

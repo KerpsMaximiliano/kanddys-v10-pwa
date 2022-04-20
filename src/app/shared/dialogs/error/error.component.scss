@@ -1,0 +1,59 @@
+.container{
+    font-family: 'NunitoSans';
+    margin: 10px;
+    & .image{
+        display: flex;
+        background-image: url(../../../../assets/images/BeeHive.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 230px;  
+        justify-content: center;  
+        & img{
+            width: 230px;
+            height: 140px;
+            margin-top: 50px;
+        }
+    }
+    & .title{
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+        margin-top: 35px;
+        & .subtitle{
+            margin-top: 20px;
+            font-size: 17px;
+            font-weight: normal;
+        }
+        margin-bottom: 50px;
+    }
+    & .error-box{
+        & img{
+            position: absolute;
+            top: -20px;
+            left: 43%;
+            width: 50px;
+            height: 50px;
+        }
+        position: relative;
+        color: #E24449;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+        border: 2px solid #DCDCDC;
+        border-radius: 7px;
+        padding-top: 35px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 25px;
+        margin-left: 20px;
+        margin-right: 20px;
+        & .error{
+            margin-top: 10px;
+            color: black;
+            font-size: 16px; 
+            text-align: center;
+            font-weight: normal;
+        }
+    }
+}
