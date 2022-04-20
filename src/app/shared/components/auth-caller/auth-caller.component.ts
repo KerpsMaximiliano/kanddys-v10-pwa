@@ -9,7 +9,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AuthHelperComponent } from 'src/app/shared/dialogs/auth-helper/auth-helper.component';
+//import { AuthHelperComponent } from 'src/app/shared/dialogs/auth-helper/auth-helper.component';
 import { WarningStepsComponent } from '../../dialogs/warning-steps/warning-steps.component';
 
 @Component({
@@ -131,7 +131,7 @@ export class AuthCallerComponent implements OnInit {
           lockUI(this.createOrder());
         }
       }else{
-        const dialogref = this.dialog.open(AuthHelperComponent, {
+        /*const dialogref = this.dialog.open(AuthHelperComponent, {
           type: 'flat-action-sheet',
           flags: ['no-header'],
           customClass: 'app-dialog',
@@ -150,7 +150,7 @@ export class AuthCallerComponent implements OnInit {
               }
             }
             sub.unsubscribe();
-          });
+          });*/
       }
     } else {
       this.authInputData = '';
@@ -161,7 +161,7 @@ export class AuthCallerComponent implements OnInit {
   }
 
   openNewAccount() {
-    const dialogref = this.dialog.open(AuthHelperComponent, {
+    /*const dialogref = this.dialog.open(AuthHelperComponent, {
       type: 'flat-action-sheet',
       flags: ['no-header'],
       customClass: 'app-dialog',
@@ -181,7 +181,7 @@ export class AuthCallerComponent implements OnInit {
           }
         }
         sub.unsubscribe();
-      });
+      });*/
   }
 
   openWarningDialog() {
@@ -217,7 +217,7 @@ export class AuthCallerComponent implements OnInit {
       }
     }
     if(this.header.items.some((item) => item.customizerId)) {
-      if(this.header.isComplete.giftABox.customizer) {
+      if(this.header.isComplete.customizer) {
         this.warningSteps.push({
           name: "Personalización",
           url: "redirect-to-customizer",
@@ -230,7 +230,7 @@ export class AuthCallerComponent implements OnInit {
           status: false
         })
       }
-      if(this.header.isComplete.giftABox.qualityQuantity) {
+      if(this.header.isComplete.qualityQuantity) {
         this.warningSteps.push({
           name: "Calidades",
           url: "quantity-and-quality",
@@ -245,7 +245,7 @@ export class AuthCallerComponent implements OnInit {
       }
     }
     if(this.header.saleflow.module.appointment && this.header.saleflow.module.appointment.isActive) {
-      if(this.header.isComplete.fotodavitte.reservation) {
+      if(this.header.isComplete.reservation) {
         this.warningSteps.push({
           name: "Reservación",
           url: `reservation/${this.header.saleflow._id}`,
@@ -260,7 +260,7 @@ export class AuthCallerComponent implements OnInit {
       }
     }
     if(this.header.hasScenarios) {
-      if(this.header.isComplete.fotodavitte.scenarios) {
+      if(this.header.isComplete.scenarios) {
         this.warningSteps.push({
           name: "Escenarios",
           url: "select-pack",
@@ -291,7 +291,6 @@ export class AuthCallerComponent implements OnInit {
     }
     console.log(this.warningSteps.some((value) => value.status === false))
     const isDataMissing = this.warningSteps.some((value) => value.status === false);
-    this.header.isComplete.isDataMissing = isDataMissing;
     return isDataMissing;
   }
 
