@@ -1,0 +1,38 @@
+.page-components-tabs {
+    height: 57.6px;
+    background-color: #C7E3F8;
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    align-items: flex-end;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  
+    .tab {
+      flex-basis: content;
+      margin-left: 16px;
+      color: #4773d8;
+      white-space: nowrap;
+      padding: 5.5px 17.5px;
+      font-size: 16px;
+      font-family: "RobotoMedium";
+      cursor: pointer;
+
+      &:last-child {
+        margin-right: 16px;
+      }
+  
+      &.active {
+        border-radius: 16px 16px 0px 0px;
+        color: #ffffff;
+        background: linear-gradient(130deg, #31a4f9, #1d58db);
+      }
+    }
+  
+    &::-webkit-scrollbar {
+      background: transparent;
+      height: 0px;
+    }
+}

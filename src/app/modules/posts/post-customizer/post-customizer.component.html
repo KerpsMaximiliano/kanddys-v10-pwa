@@ -1,0 +1,456 @@
+<ng-container>
+  <div style="min-height: 100vh">
+    <div
+      class="menu-nav"
+      [ngStyle]="{
+        justifyContent: !editingCustomizer ? 'space-between' : 'flex-end'
+      }"
+    >
+      <a (click)="goBack()" *ngIf="!editingCustomizer">
+        <i class="fas fa-chevron-left" style="color: #27a2ff"></i>
+      </a>
+      <div>
+        <!-- <button type="button" class="btn" (click)="restart()">Restart</button> -->
+        <!-- <div *ngIf="customizerRules?.backgroundImage.active && !customizerRules.backgroundImage.onlyFixed">
+          <label for="file-upload" class="btn" style="margin: 0 10px;">
+              Custom Upload
+          </label>
+          <input id="file-upload" type="file" (change)="uploadBackground($event.target.files)" accept="image/*"/>
+        </div> -->
+        <!-- <a *ngIf="downloadLink" [href]="downloadLink" download>download!</a> -->
+        <!-- <p class="menu-title">Ilustración:</p>
+        <img
+          style="cursor: pointer"
+          src="/assets/images/action-undo.svg"
+          (click)="onDiscard()"
+          alt="discard"
+        /> -->
+        <a
+          class="saveButton"
+          [ngStyle]="{ color: isEditing || canDraw ? 'gray' : '#27A2FF' }"
+          (click)="onSave()"
+          >Continuar</a
+        >
+      </div>
+    </div>
+    <section class="content">
+      <div style="font-family: Nirvana">.</div>
+      <div class="canvas-container">
+        <canvas
+          class="canvas"
+          (swipeup)="selectedOption !== 'lápiz' && openDialog()"
+          #myCanvas
+          (pinch)="pinchMove($event)"
+          (rotate)="onRotateStart($event)"
+        >
+        </canvas>
+        <div class="is-dragging" [ngStyle]="{ opacity: dragok ? 1 : 0 }">
+          <span class="dragging-text">Arrastra para eliminar</span>
+          <div>
+            <i class="far fa-trash-alt"></i>
+          </div>
+        </div>
+        <span *ngIf="isEditing" class="imageTyping"></span>
+        <div class="text-container" *ngIf="isEditing">
+          <textarea
+            placeholder="..."
+            class="text-input"
+            [ngStyle]="{
+              'font-size': typographyData.fontSize + 'px',
+              'font-family': typographyData.fontStyle
+            }"
+            type="text"
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="5"
+            (blur)="onEnterPress()"
+            [(ngModel)]="typographyData.imageText"
+            [maxlength]="currentMaxLength"
+            (input)="checkMaxLength($event)"
+            (keydown)="validateInput($event)"
+            #imageTextRef
+          ></textarea>
+          <!-- oninput="this.value = this.value.toUpperCase()" -->
+        </div>
+      </div>
+      <div
+        class="button-carousel"
+        *ngIf="customizerRules && modifyingElement < 0 && !isEditing"
+      >
+        <!-- <button
+          class="btn"
+          *ngFor="let option of customizeOptions"
+          (click)="changeCustomizer(option)"
+          [ngClass]="{ active: selectedOption === option || option === 'confirmar'}"
+          [disabled]="disableButton && option === 'confirmar'"
+        >
+          {{ option | titlecase }}
+        </button> -->
+        <button
+          class="btn"
+          (click)="changeCustomizer('stickers')"
+          [ngClass]="{ active: selectedOption === 'stickers' }"
+          *ngIf="customizerRules.stickers.active && !stickerMax"
+        >
+          Stickers
+        </button>
+        <button
+          class="btn"
+          (click)="changeCustomizer('tipografía')"
+          [ngClass]="{ active: selectedOption === 'tipografía' }"
+          *ngIf="customizerRules.texts.active && !textMax"
+        >
+          Tipografía
+        </button>
+      </div>
+      <div
+        class="button-carousel"
+        *ngIf="customizerRules && (modifyingElement >= 0 || isEditing)"
+      >
+        <ng-container *ngFor="let option of elementOptions()">
+          <button
+            class="btn"
+            (click)="changeElementOption(option)"
+            [ngClass]="{ active: selectedElementOption === option }"
+            *ngIf="
+              !(
+                customizerRules.stickers.itemsRule[0].fixed.length === 1 &&
+                option === 'iconos'
+              )
+            "
+          >
+            {{ option | titlecase }}
+          </button>
+        </ng-container>
+      </div>
+      <div class="customizer" *ngIf="customizerRules">
+        <!-- ----------------------- EFFECTS ----------------------- -->
+        <div *ngIf="selectedOption === 'efectos'">
+          <div class="button-carousel" style="margin-bottom: 10px">
+            <button
+              class="btn"
+              *ngFor="let option of ratioOptions"
+              (click)="onChangeAspectRatio(option)"
+              [ngClass]="{ active: canvasRatio === option }"
+            >
+              {{ option | titlecase }}
+            </button>
+          </div>
+          <div *ngIf="imageElement">
+            <div
+              class="filter-range"
+              *ngIf="customizerRules.backgroundImage.filters.bw"
+            >
+              <p class="side-label">bw: {{ filters.bw }}</p>
+              <input
+                class="range-filter"
+                type="range"
+                min="0"
+                max="100"
+                (ngModelChange)="draw()"
+                [(ngModel)]="filters.bw"
+              />
+            </div>
+            <div
+              class="filter-range"
+              *ngIf="customizerRules.backgroundImage.filters.sepia"
+            >
+              <p class="side-label">sepia: {{ filters.sepia }}</p>
+              <input
+                class="range-filter"
+                type="range"
+                min="0"
+                max="100"
+                (ngModelChange)="draw()"
+                [(ngModel)]="filters.sepia"
+              />
+            </div>
+            <div
+              class="filter-range"
+              *ngIf="customizerRules.backgroundImage.filters.contrast"
+            >
+              <p class="side-label">contrast: {{ filters.contrast }}</p>
+              <input
+                class="range-filter"
+                type="range"
+                min="0"
+                max="200"
+                (ngModelChange)="draw()"
+                [(ngModel)]="filters.contrast"
+              />
+            </div>
+          </div>
+          <div *ngIf="!imageElement">
+            <!-- <h5>Selecciona una imagen para aplicarle filtros!</h5> -->
+            <div *ngIf="customizerRules.backgroundColor.active">
+              <div class="option-list">
+                <div
+                  class="list-option"
+                  *ngFor="let color of getBackgroundColors()"
+                >
+                  <span
+                    *ngIf="color === 'none'"
+                    style="padding: 6px 10px; border-radius: 50%; display: flex"
+                    [ngClass]="{
+                      'selected-option': selectedBackgroundColor === color
+                    }"
+                    (click)="onChangeBackgroundColor(color)"
+                    >X</span
+                  >
+                  <span
+                    *ngIf="color !== 'none'"
+                    (click)="onChangeBackgroundColor(color)"
+                    class="color-font"
+                    style.backgroundColor="{{ color }}"
+                    [ngClass]="{
+                      'selected-option': selectedBackgroundColor === color
+                    }"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="image-list"
+            *ngIf="customizerRules.backgroundImage.active"
+          >
+            <img
+              class="image-options sqr"
+              [src]="option"
+              alt="image"
+              *ngFor="let option of getBackgroundImages()"
+              (click)="onChangeBackgroundImage(option)"
+              [ngClass]="{
+                'selected-option': selectedBackgroundImage === option
+              }"
+            />
+          </div>
+        </div>
+        <!-- ---------------------- STICKERS ---------------------- -->
+        <div *ngIf="selectedOption === 'stickers'">
+          <!-- <div class="stickers-options">
+            <div class="stickers-radio">
+              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+              <label class="btn-radio" for="btnradio1"><i class="fas fa-quote-left"></i></label>
+            
+              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+              <label class="btn-radio" for="btnradio2"><i class="far fa-image"></i></label>
+            </div>
+            <div class="searchBar">
+              <i class="fas fa-search"></i>
+              <input id="searchInput" type="text" placeholder="birthday, runners..." [(ngModel)]="stickerSearchValue" (keydown)="search($event)">
+            </div>
+          </div> -->
+          <div class="font-range" *ngIf="selectedElementOption === 'tamaño'">
+            <p class="option-label">Tamaño de stickers: {{ stickerSize }}</p>
+            <input
+              class="range-font"
+              type="range"
+              min="100"
+              max="300"
+              (ngModelChange)="modifySize()"
+              [(ngModel)]="stickerSize"
+            />
+          </div>
+          <div
+            class="rotation-range"
+            *ngIf="selectedElementOption === 'angulo'"
+          >
+            <p class="option-label">
+              Angulo del Sticker: {{ elementRotation }}
+            </p>
+            <input
+              class="range-rotation"
+              type="range"
+              min="-180"
+              max="180"
+              (ngModelChange)="rotateElement()"
+              [(ngModel)]="elementRotation"
+            />
+          </div>
+          <div *ngIf="selectedElementOption === 'color'">
+            <p class="option-label">Colores:</p>
+            <div
+              class="option-list"
+              #stickerColor
+              (mousedown)="startDragging($event, false, stickerColor)"
+              (mouseup)="stopDragging($event, false)"
+              (mouseleave)="stopDragging($event, false)"
+              (mousemove)="moveEvent($event, stickerColor)"
+            >
+              <div class="list-option" *ngFor="let color of getStickerColors()">
+                <span
+                  (click)="onChangeStickerColor(color)"
+                  class="color-font"
+                  style.backgroundColor="{{ color }}"
+                  [ngClass]="{ 'selected-option': stickerColor === color }"
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div *ngIf="showStickerOptions()">
+            <div *ngIf="showStickerPosition()">
+              <div class="font-range">
+                <p class="option-label">Tamaño de stickers: {{ stickerSize }}</p>
+                <input
+                  class="range-font"
+                  type="range"
+                  min="100"
+                  max="300"
+                  (ngModelChange)="modifySize()"
+                  [(ngModel)]="stickerSize"
+                />
+              </div>
+              <div class="rotation-range">
+                <p class="option-label">Angulo del Sticker: {{ elementRotation }}</p>
+                <input
+                  class="range-rotation"
+                  type="range"
+                  min="-180"
+                  max="180"
+                  (ngModelChange)="rotateElement()"
+                  [(ngModel)]="elementRotation"
+                />
+              </div>
+            </div>
+            <div>
+              <p class="option-label">Colores:</p>
+              <div class="option-list">
+                <div class="list-option" *ngFor="let color of getStickerColors()">
+                  <span
+                    (click)="onChangeStickerColor(color)"
+                    class="color-font"
+                    style.backgroundColor="{{ color }}"
+                    [ngClass]="{ 'selected-option': stickerColor === color }"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </div>
+        <!-- --------------------- TIPOGRAFÍA --------------------- -->
+        <div *ngIf="selectedOption === 'tipografía'">
+          <div
+            class="font-range"
+            *ngIf="selectedElementOption === 'tamaño' && !isEditing"
+          >
+            <p class="option-label" style="margin-top: 0">
+              Tamaño de letras: {{ typographyData.fontSize }}
+            </p>
+            <input
+              class="range-font"
+              type="range"
+              min="16"
+              max="64"
+              (ngModelChange)="triggerResize()"
+              [(ngModel)]="typographyData.fontSize"
+            />
+          </div>
+          <div
+            class="rotation-range"
+            *ngIf="selectedElementOption === 'angulo' && !isEditing"
+          >
+            <p class="option-label">Angulo del texto: {{ elementRotation }}</p>
+            <input
+              class="range-rotation"
+              type="range"
+              min="-180"
+              max="180"
+              (ngModelChange)="rotateElement()"
+              [(ngModel)]="elementRotation"
+            />
+          </div>
+          <div *ngIf="selectedElementOption === 'tipografia' && !isEditing">
+            <p class="option-label">Tipografía:</p>
+            <div
+              class="option-list"
+              #textFont
+              (mousedown)="startDragging($event, false, textFont)"
+              (mouseup)="stopDragging($event, false)"
+              (mouseleave)="stopDragging($event, false)"
+              (mousemove)="moveEvent($event, textFont)"
+            >
+              <div class="list-option" *ngFor="let style of getFontStyles()">
+                <span
+                  class="style-font"
+                  style.fontFamily="{{ style }}"
+                  (click)="onChangeFontStyle(style)"
+                  [ngClass]="{
+                    'selected-option': typographyData.fontStyle === style
+                  }"
+                  >Aa</span
+                >
+              </div>
+            </div>
+          </div>
+          <div *ngIf="selectedElementOption === 'color' && !isEditing">
+            <p class="option-label">Colores:</p>
+            <div
+              class="option-list"
+              #textColor
+              (mousedown)="startDragging($event, false, textColor)"
+              (mouseup)="stopDragging($event, false)"
+              (mouseleave)="stopDragging($event, false)"
+              (mousemove)="moveEvent($event, textColor)"
+            >
+              <div class="list-option" *ngFor="let color of getFontColors()">
+                <span
+                  (click)="onChangeFontColor(color)"
+                  class="color-font"
+                  style.backgroundColor="{{ color }}"
+                  [ngClass]="{
+                    'selected-option': typographyData.fontColor === color
+                  }"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="willShowInput">
+          <p class="label1">Texto para la servilleta:</p>
+          <input
+            type="text"
+            class="input-for-hidden"
+            placeholder="..."
+            [maxLength]="inputMaxLength"
+            (input)="checkMaxLength($event)"
+            [(ngModel)]="hiddenFontText"
+            (ngModelChange)="onChangeInput()"
+            (blur)="setInputText()"
+            (keydown)="validateInput($event)"
+          />
+        </div>
+        <!-- ------------------------ LAPIZ ------------------------ -->
+        <div *ngIf="selectedOption === 'lápiz' && canDraw">
+          <div class="font-range">
+            <p class="option-label" style="margin-top: 0">
+              Grosor de lapiz: {{ lineWidth }}
+            </p>
+            <input
+              class="range-font"
+              type="range"
+              min="1"
+              max="32"
+              [(ngModel)]="lineWidth"
+            />
+          </div>
+          <div>
+            <p class="option-label">Colores:</p>
+            <div class="option-list">
+              <div class="list-option" *ngFor="let color of getLineColors()">
+                <span
+                  (click)="lineColor = color"
+                  class="color-font"
+                  style.backgroundColor="{{ color }}"
+                  [ngClass]="{ 'selected-option': lineColor === color }"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</ng-container>

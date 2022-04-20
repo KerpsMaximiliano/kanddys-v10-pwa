@@ -5,6 +5,7 @@ import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
 import { CustomItemDetailComponent } from './pages/custom-item-detail/custom-item-detail.component';
+import { ErrorScreenComponent } from './components/error-screen/error-screen.component';
 
 const routes: Routes = [
   {
@@ -21,13 +22,18 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'error-screen',
+    component: ErrorScreenComponent,
+  },
 ];
 
 @NgModule({
   declarations: [
     CategoryItemsComponent,
+    CustomItemDetailComponent,
+    ErrorScreenComponent,
     ProviderStoreComponent,
-    CategoryItemsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

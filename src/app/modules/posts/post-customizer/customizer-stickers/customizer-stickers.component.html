@@ -1,0 +1,17 @@
+<hr class="drag-handler" />
+<div class="stickers-options">
+  <div class="searchBar">
+    <i class="fas fa-search"></i>
+    <input id="searchInput" type="text" placeholder="birthday, runners..." />
+  </div>
+</div>
+<div class="image-list">
+  <div *ngFor="let sticker of stickers; index as i" class="sticker-container">
+    <img
+      class="image-options rnd"
+      (click)="onClick(sticker, i)"
+      [src]="sanitizeImageUrl(sticker)"
+      [alt]="i"
+    />
+  </div>
+</div>

@@ -1,0 +1,60 @@
+// .container {
+//   padding-left: 20px;
+//   padding-top: 20px;
+//   padding-top: 44px;
+//   min-height: 80vh;
+//   & .title {
+//     margin-bottom: 40px;
+//     font-family: "SFProRegular";
+//     font-size: 14px;
+//     color: #7b7b7b;
+//   }
+//   & .input-title {
+//     margin-bottom: 15px;
+//     color: #0b1f38;
+//     font-family: "Roboto";
+//     font-size: 17px;
+//     font-style: italic;
+//   }
+//   & .auth-input {
+//     font-family: "RobotoMedium";
+//     font-size: 24px;
+//     color: #0b1f38;
+//     border: none;
+//     background: transparent;
+//     margin-bottom: 25px;
+//   }
+//   & .auth-input::placeholder {
+//     color: #aeb5bd;
+//   }
+// }
+
+.transition-input {
+  transition-duration: 0.6s;
+}
+
+.input-title {
+  padding: 20px;
+  color: #0b1f38;
+  font-family: "Roboto";
+  font-size: 17px;
+  font-style: italic;
+  text-align: center;
+}
+
+.title {
+  font-family: "SfProRegular";
+  font-size: 14px;
+  color: #7B7B7B;
+
+}
+.link-button {
+  display: flex;
+
+  svg {
+      margin: auto;
+      width: 90px;
+      height: 90px;
+      cursor: pointer;
+  }
+}
