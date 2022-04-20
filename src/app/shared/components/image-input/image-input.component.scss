@@ -1,0 +1,31 @@
+.input-container {
+  height: 200px !important;
+  width: 250px !important;
+}
+
+.d-none {
+    display: none;
+}
+  
+.file {
+  box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  border: 1px solid dodgerblue;
+  color: #d0d0d0;
+  font-family: RobotoMedium;
+  background: #fff;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 21px;
+  height: 200px;
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1;
+
+  &.error {
+    border-color: red;
+    color: red;
+  }
+}

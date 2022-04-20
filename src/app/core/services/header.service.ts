@@ -68,15 +68,10 @@ export class HeaderService {
   merchantInfo: Merchant;
   tags: any;
   isComplete = {
-    isDataMissing: true,
-    fotodavitte: {
-      scenarios: false,
-      reservation: false,
-    },
-    giftABox: {
-      qualityQuantity: false,
-      customizer: false,
-    },
+    qualityQuantity: false,
+    customizer: false,
+    scenarios: false,
+    reservation: false,
     message: false,
     delivery: false,
   }
@@ -172,17 +167,33 @@ export class HeaderService {
     this.location.back();
   }
 
+  isDataComplete(): boolean {
+    if(!this.saleflow) return
+    if(this.saleflow.module.delivery && this.saleflow.module.delivery.isActive) {
+      if(!this.isComplete.delivery) return
+    }
+    if(this.items.some((item) => item.customizerId)) {
+      if(!this.isComplete.qualityQuantity) return
+      if(!this.isComplete.customizer) return
+    }
+    if(this.saleflow.module.appointment && this.saleflow.module.appointment.isActive) {
+      if(!this.isComplete.reservation) return
+    }
+    if(this.hasScenarios) {
+      if(!this.isComplete.scenarios) return
+    }
+    if(this.saleflow.module.post && this.saleflow.module.post.isActive) {
+      if(!this.isComplete.message) return
+    }
+    return true
+  }
+
   resetIsComplete() {
     this.isComplete = {
-      isDataMissing: true,
-      fotodavitte: {
-        scenarios: false,
-        reservation: false,
-      },
-      giftABox: {
-        qualityQuantity: false,
-        customizer: false,
-      },
+      scenarios: false,
+      reservation: false,
+      qualityQuantity: false,
+      customizer: false,
       message: false,
       delivery: false,
     };

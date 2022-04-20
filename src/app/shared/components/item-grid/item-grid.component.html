@@ -1,0 +1,49 @@
+<section class="items-grid-section" *ngIf="mode === 'basic'">
+  <div class="item" *ngFor="let item of items; let i = index">
+    <div class="item-box"
+      [ngStyle]="{ backgroundImage: item.images.length > 0 ? 'url(' + item.images[0] + ')' : 'linear-gradient(#7b7b7b 0%, #3e3e3e 100%)' }"
+      (click)="onClick(i)">
+      <!-- <span class="number-of-sales">85 sales</span> -->
+    </div>
+    <span class="item-name" *ngIf="!item.totalPrice && !item.size && !item.quality">{{item.name}}</span>
+    <span class="item-price">
+      <ng-container *ngIf="item.totalPrice else pricing">
+        <!-- ${{item.totalPrice | number}} DOP / {{item.fixedQuantity}} -->
+      </ng-container>
+      <ng-template #pricing>
+        <ng-container *ngIf="item.pricing else price">
+          ${{item.pricing | number}} DOP
+        </ng-container>
+        <ng-template #price>
+          ${{item.price | number}} DOP
+        </ng-template>
+      </ng-template>
+    </span>
+    <!-- <div class="additional-info" *ngIf="item.size || item.quality">
+      <ng-container>
+        {{item.size}}
+      </ng-container>
+      <ng-container *ngIf="item.size && item.quality">
+            /
+        </ng-container>
+        <ng-container>
+            <ng-container *ngIf="item.quality.length > 12">
+                {{item.quality | slice:0:12}}...
+            </ng-container>
+            <ng-container *ngIf="item.quality.length <= 12">
+                {{item.quality}}
+            </ng-container>
+        </ng-container>
+    </div> -->
+    <!-- <span class="edit-item-div">
+        <img src="./assets/icons/eye-closed.svg" alt="hide">
+        <span class="edit-btn">Edit</span>
+      </span> -->
+  </div>
+</section>
+
+<div class="double-item-grid" *ngIf="mode === 'sliders'">
+  <div class="item-container">
+    <app-provider-item-slider [label]="''" [providerItems]="items" [mode]="'grid'" [itemStyle]="gridStyle"></app-provider-item-slider>
+  </div>
+</div>

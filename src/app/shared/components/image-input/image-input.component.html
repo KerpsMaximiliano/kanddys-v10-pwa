@@ -1,0 +1,14 @@
+<swiper [config]="swiperConfig">
+    <div *ngFor="let input of imageField; index as i" class="input-container">
+        <input
+            [id]="'file'+i"
+            (change)="fileProgress($event.target.files, i)"
+            type="file"
+            class="d-none"
+            [accept]="acceptTypes"
+        />
+        <label [style.background]="sanitize(input)" [for]="'file'+i" class="file" [ngClass]="{'error': error[i]}" >
+            <p *ngIf="!input">Upload / Camera</p>
+        </label>
+    </div>
+</swiper>

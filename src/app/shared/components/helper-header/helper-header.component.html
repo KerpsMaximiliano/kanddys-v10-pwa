@@ -1,0 +1,113 @@
+<div
+  class="container"
+  [style.background-color]="bgcolor"
+  [style.position]="position"
+  [ngClass]="{ shadow: shadow == true }"
+>
+  <ng-container *ngIf="middleText">
+    <!-- [style.left]="middleTextLeft"
+      [style.top]="middleTextTop" -->
+    <div
+      class="assets-hlphdr-middle"
+      [style.color]="middleTextColor"
+      [style.fontFamily]="middleTextFontFamily"
+      [style.color]="middleTextColor"
+      [style.fontSize]="middleTextFontSize"
+      [style.text-transform] = "middleTextTransform"
+    >
+      {{ middleText }}
+    </div>
+  </ng-container>
+  <div class="top-area-hlprhdr">
+    <!--Left area-->
+    <div class="wrapper-hdrhlpr">
+      <a (click)="close()" class="icon-hlprhdr" *ngIf="!basic && back && !empty"
+        ><i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i
+      ></a>
+      <button
+        (click)="close()"
+        class="x-button-hlprhdr"
+        *ngIf="basic && !empty"
+      >
+        X
+      </button>
+      <div class="helper-area-hlprhdr" *ngIf="userID">{{ userID }}</div>
+    </div>
+    <!--Right area-->
+    <div class="wrapper-hdrhlpr">
+      <div class="extra-text-hlprhdr" *ngIf="extraText">{{ extraText }}</div>
+      <div class="assets-hlphdr" *ngIf="assetsText">{{ assetsText }}</div>
+      <div
+        class="infoWallet"
+        *ngIf="wallet === true && walletBalance != undefined"
+      >
+        <p>${{ walletBalance }}</p>
+        <img
+          class="img-hlprhdr"
+          src="/assets/images/wallet-megaphone.svg"
+          alt="wallet"
+        />
+      </div>
+      <img
+        class="img-hlprhdr"
+        *ngIf="add === true"
+        src="/assets/images/plus-circle-o.svg"
+        alt="add"
+      />
+      <img
+        class="img-hlprhdr"
+        *ngIf="notification === true"
+        src="../../../../assets/images/notification-blue.svg"
+        alt="../../../../assets/images/bluewallet.svg"
+      />
+      <div
+        class="dot-trio-hlprhdr"
+        *ngIf="options === true"
+        (click)="displayMenu()"
+      >
+        <div class="dot-hlprhdr"> </div>
+        <div class="dot-hlprhdr"> </div>
+        <div class="dot-hlprhdr"> </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="container-searchbar-hlprhdr"
+  *ngIf="searchAble === true && !searchLabel"
+>
+  <!--searchbar component-->
+  <div class="searchbar-hlprhdr" [style.background-color]="searchBgcolor">
+    <!-- *ngIf="searchAble === true" -->
+    <input
+      type="text"
+      class="search-hlprhdr"
+      id="data-hlprhdr"
+      placeholder="Type to Search within the List.."
+      #TheData
+      (keyUp.enter)="sendData(TheData.value)"
+    />
+  </div>
+</div>
+
+<div
+  class="container-searchbar-hlprhdr"
+  *ngIf="searchAble === true && searchLabel"
+>
+  <!--searchbar component-->
+  <div class="searchbar-hlprhdr-v2" [style.background-color]="searchBgcolor">
+    <!-- *ngIf="searchAble === true" -->
+    <p class="search-label">{{ searchLabel }}</p>
+    <div class="input-wrapper">
+      <input
+        type="text"
+        class="search-hlprhdr-v2"
+        id="data-hlprhdr"
+        placeholder="Type to Search within the List.."
+        #TheData
+        (keyUp.enter)="sendData(TheData.value)"
+      />
+    </div>
+  </div>
+</div>

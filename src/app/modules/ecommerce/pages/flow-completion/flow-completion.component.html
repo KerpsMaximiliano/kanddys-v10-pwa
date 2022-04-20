@@ -1,0 +1,462 @@
+<div class="container">
+  <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="headerText"
+    [back]="step > 4 || step === 2" [basic]="(step === 1 || step === 3 || step === 4) && !orderData"
+    (onClose)="goBack()"></app-helper-header>
+
+  <div class="content m-top" *ngIf="step === 1">
+    <p class="label1">¿Con cuál número de WhatsApp harás esta orden?</p>
+    <input type="tel" class="input" [(ngModel)]="inputData" placeholder="Mi # de WhatsApp es..." autocomplete="off"
+      (keypress)="keyPressNumbers($event)" />
+    <p class="sublabel">Si es tu primera orden recibirás un codigo de verificación.</p>
+    <p class="sublabel">Si haz hecho ordenes anteriormente ingresarás tu clave.</p>
+  </div>
+  <div class="content m-top" *ngIf="step === 2">
+    <p class="label1">Escriba el código que recibió:</p>
+    <input type="text" class="input" [(ngModel)]="code" maxlength="6" placeholder="Código que recibí en WhatsApp fue.."
+      (keypress)="keyPressNumbers($event)" />
+  </div>
+  <div *ngIf="step === 3">
+    <div class="content m-top">
+      <p class="label1">
+        {{
+        flow !== "flow-completion"
+        ? "Cual es tu nombre?"
+        : "¿Cuál es tu nombre y apellido?"
+        }}
+      </p>
+      <input type="text" class="input" [(ngModel)]="name" [placeholder]="
+          flow !== 'flow-completion'
+            ? 'Mi nombre es..'
+            : 'Mi nombre y apellido es..'
+        " />
+    </div>
+    <div class="content" *ngIf="flow !== 'flow-completion'">
+      <p class="label2">Cuál es tu apellido?</p>
+      <input type="text" class="input" [(ngModel)]="lastName" placeholder="Mi apellido es.." />
+    </div>
+    <div class="content">
+      <p style="margin-bottom: 11px" class="label2">
+        {{
+        flow !== "flow-completion"
+        ? "Añade una clave para re-ingresar"
+        : "Adiciona un nuevo password:"
+        }}
+      </p>
+      <input type="password" class="input" [(ngModel)]="password" [placeholder]="
+          flow !== 'flow-completion'
+            ? 'Mi clave para re-ingresar es..'
+            : 'Password..'
+        " />
+    </div>
+  </div>
+  <div *ngIf="step === 4">
+    <div class="questions">
+      <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
+        Eres {{ userData.name }}?
+      </p>
+      <app-answer-selector [options]="options" [showSelectedFeedback]="false" (onSelector)="selectOption($event)"></app-answer-selector>
+
+      <div class="content" *ngIf="showLoginPassword">
+        <p class="label2">
+          {{
+          flow !== "flow-completion"
+          ? "Añade tu clave de re-ingreso"
+          : "Adiciona el password:"
+          }}
+        </p>
+        <input type="password" [(ngModel)]="password" [placeholder]="
+            flow !== 'flow-completion'
+              ? 'Mi clave para re-ingresar es..'
+              : 'El password es...'
+          " class="input" />
+      </div>
+      <div
+        *ngIf="incorrectPasswordAttempt"
+        [ngStyle]="{
+          marginLeft: '46px',
+          marginTop: '5px',
+          display: 'flex',
+          alignItems: 'center'
+        }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="41"
+          height="41"
+          viewBox="0 0 41 41"
+        >
+          <g
+            id="Grupo_68306"
+            data-name="Grupo 68306"
+            transform="translate(-146.5 -176.5)"
+          >
+            <g
+              id="Elipse_4957"
+              data-name="Elipse 4957"
+              transform="translate(146.5 176.5)"
+              fill="none"
+              stroke="#5c8eff"
+              stroke-width="2"
+            >
+              <circle cx="20.5" cy="20.5" r="20.5" stroke="none"></circle>
+              <circle cx="20.5" cy="20.5" r="19.5" fill="none"></circle>
+            </g>
+            <g
+              id="Grupo_68305"
+              data-name="Grupo 68305"
+              transform="translate(156.147 191.574)"
+            >
+              <circle
+                id="Elipse_4959"
+                data-name="Elipse 4959"
+                cx="2.5"
+                cy="2.5"
+                r="2.5"
+                transform="translate(0.353 -0.073)"
+                fill="#5c8eff"
+              ></circle>
+              <circle
+                id="Elipse_4960"
+                data-name="Elipse 4960"
+                cx="2.5"
+                cy="2.5"
+                r="2.5"
+                transform="translate(16.353 -0.073)"
+                fill="#5c8eff"
+              ></circle>
+            </g>
+            <path
+              id="Trazado_28254"
+              data-name="Trazado 28254"
+              d="M-18336.977-11814.928s1.857-3.93,5.7-3.861,5.428,3.861,5.428,3.861"
+              transform="translate(18498.512 12018.061)"
+              fill="none"
+              stroke="#5c8eff"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            ></path>
+          </g>
+        </svg>
+
+        <span
+          [ngStyle]="{
+            fontSize: '17px',
+            marginLeft: '18px',
+            fontStyle: 'italic',
+            fontFamily: 'Roboto',
+            color: '#7b7b7b',
+            maxWidth: '233px'
+          }"
+          >Hmm no es correcta. Quizas sea otra clave?</span
+        >
+      </div>
+    </div>
+  </div>
+  <div *ngIf="step === 5">
+    <div class="questions">
+      <p style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px" class="label1">
+        {{
+        flow !== "flow-completion"
+        ? "Cuentanos un poco más:"
+        : "¿Cómo prefieres hacer el pago de $" +
+        (orderData?.amount | number: "1.0-2") +
+        " DOP / PAQ." +
+        orderData?.itemAmount +
+        " UNDS?"
+        }}
+      </p>
+      <app-answer-selector [options]="
+          flow !== 'flow-completion' ? communityOptions : paymentOptions
+        " [isMultipleOption]="flow !== 'flow-completion'" (onSelector)="selectOption($event)"></app-answer-selector>
+    </div>
+  </div>
+  <div *ngIf="step === 6">
+    <div class="questions-step-6">
+      <p style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px" class="label1-step-6">
+        ¿En qué banco hiciste la transferencia de ${{
+        orderData?.amount | number: "1.0-2"
+        }}
+        pesos dominicanos?
+      </p>
+      <app-answer-selector [options]="bankOptions" (onSelector)="selectOption($event)"></app-answer-selector>
+
+      <!-- <div
+        *ngFor="let bank of banks"
+        style="padding-left: 33px; padding-right: 33px; margin-bottom: 60px"
+      >
+        <p
+          class="label1"
+          style="font-size: 16px; font-family: RobotoBold; color: #0b1f38"
+        >
+          {{ bank.name }}
+        </p>
+        <p
+          class="label2"
+          style="
+            font-size: 17px;
+            font-family: 'RobotoLightItalic';
+            margin-block-end: 5px;
+            margin-block-start: 0;
+          "
+        >
+          {{ bank.account }}
+        </p>
+        <p
+          class="label2"
+          style="
+            font-size: 17px;
+            font-family: 'RobotoLightItalic';
+            margin-block-end: 0px;
+            margin-block-start: 0;
+          "
+        >
+          {{ bank.routingNumber }}
+        </p>
+      </div> -->
+    </div>
+  </div>
+  <div *ngIf="step === 7">
+    <div class="content step-7">
+      <ng-container *ngIf="bankOptions.length === 1">
+        <div class="unique-bank">
+          <h2>{{ bankOptions[0].value }}</h2>
+          <span>{{ bankOptions[0].description[0] }}</span>
+          <span>{{ bankOptions[0].description[1] }}</span>
+          <span>{{ bankOptions[0].description[2] }}</span>
+          <span>{{ bankOptions[0].description[3] }}</span>
+        </div>
+      </ng-container>
+
+      <p style="margin-bottom: 47px" class="label1">
+        Confirmación de la transferencia de
+        {{ orderData?.amount | number: "1.0-2" }} DOP / PAQ.
+        {{ orderData?.itemAmount }} UNDS realizada en el {{ selectedBank }}:
+      </p>
+
+      <p style="margin-bottom: 22px" class="label2">
+        Adicione los últimos 4 digitos de la transferencia que realizó:
+      </p>
+      <input type="text" [(ngModel)]="paymentCode" minlength="4" maxlength="4" class="input payment"
+        placeholder="Los 4 digitos son.." />
+
+      <p style="margin-bottom: 22px" class="label3">
+        Monto transferido:
+      </p>
+      <input type="number" [(ngModel)]="ammount" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" />
+
+      <p class="label3">Adicione la imagen (captura):</p>
+      <app-image-input [allowedTypes]="['png', 'jpg', 'jpeg']" (onFileInput)="onFileInput($event)"></app-image-input>
+    </div>
+  </div>
+  <div class="content m-top" *ngIf="step === 8">
+    <p class="label1">¿Como se llamará tu Club?</p>
+    <input type="text" class="input" [(ngModel)]="newProviderName" placeholder="Type.." />
+  </div>
+  <div class="content m-top" *ngIf="step === 9">
+    <p class="label1">Escriba el código que recibió:</p>
+    <input type="text" class="input" [(ngModel)]="code" maxlength="6" placeholder="Código que recibí en WhatsApp fue.."
+      (keypress)="keyPressNumbers($event)" />
+  </div>
+  <div class="content m-top" *ngIf="step === 10">
+    <p class="label1">Escriba el password nuevo:</p>
+      <p class="label2">
+        {{
+        flow !== "flow-completion"
+        ? "Añade tu clave de re-ingreso"
+        : "Adiciona el password:"
+        }}
+      </p>
+      <input type="password" [(ngModel)]="password" [placeholder]="
+          flow !== 'flow-completion'
+            ? 'Mi clave para re-ingresar es..'
+            : 'El password es...'
+        " class="input" />
+  </div>
+  <div class="footer" [ngStyle]="{
+      justifyContent:
+        flow === 'flow-completion' && step >= 4 && step < 8
+          ? 'space-between'
+          : 'flex-end'
+    }">
+    <div class="redirect" *ngIf="flow === 'flow-completion' && step > 4 && step < 8" (click)="showItems()">
+      Ver items facturados
+    </div>
+    <div class="redirect" *ngIf="flow === 'flow-completion' && step == 4" (click)="generateOTP()">
+      Olvidé mi clave
+    </div>
+    <div class="steps">
+      <img src="assets/images/arrow-down.svg" class="step-icon" alt="questions" />
+      {{ relativeStep }} / {{ stepsLeft }} PASOS
+    </div>
+  </div>
+
+  <!-- <div class="content" *ngIf="type2 === true">
+        <p style="margin-bottom: 11px;" class="label2">Text</p>
+        <input type="text" class="input" placeholder="Placeholder..." >
+    </div> -->
+
+  <!-- <div *ngIf="addPhoto === true">
+    <p style="padding: 0px 20px" class="label1">
+      Confirmación de la Transferencia de $500 pesos dominicanos realizada en el
+      BancoID:
+    </p>
+    <div class="content">
+      <p style="margin-bottom: 11px" class="label2">Text</p>
+      <input type="text" class="input" placeholder="Placeholder..." />
+    </div>
+    <div class="content" >
+      <p class="label2">
+        Adicione los últimos 4 digitos de la transferencia que realizó:
+      </p>
+      <div class="square">
+        <p>Upload / Camera</p>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- <div
+    *ngIf="simpleQuestion === true"
+    class="questions"
+    style="margin-top: 90px"
+  >
+    <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
+      Eres NameID?
+    </p>
+    <app-answer-selector [options]="options"></app-answer-selector>
+  </div> -->
+
+  <!-- <div
+    *ngIf="inputQuestion === true"
+    class="questions"
+    style="margin-top: 90px"
+  >
+    <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
+      Eres NameID?
+    </p>
+    <app-answer-selector [options]="options"></app-answer-selector>
+
+    <div class="content">
+      <p class="label2">Adiciona el password:</p>
+      <input type="text" placeholder="El password es..." class="input" />
+    </div>
+  </div> -->
+
+  <!-- <div
+    *ngIf="paymentQuestion === true"
+    class="questions"
+    style="margin-top: 90px"
+  >
+    <p
+      style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
+      class="label1"
+    >
+      Como prefieres hacer el pago de $500 pesos dominicanos?
+    </p>
+    <app-answer-selector [options]="options2"></app-answer-selector>
+  </div> -->
+
+  <!-- <div *ngIf="bankQuestion === true" class="questions" style="margin-top: 90px">
+    <p
+      style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
+      class="label1"
+    >
+      Como prefieres hacer el pago de $500 pesos dominicanos?
+    </p>
+    <app-answer-selector [options]="options3"></app-answer-selector>
+  </div> -->
+</div>
+
+<app-sticky-button [mode]="
+    (step === 1 && inputData.length < 7) ||
+    (step === 2 && code.length < 4) ||
+    (step === 3 &&
+      (!name || name.trim().length === 0 || password.length < 3)) ||
+    (step === 4 && password.length < 3) ||
+    (step === 5 &&
+      (flow !== 'flow-completion'
+        ? selectedCommunitiesOptions.length < 1
+        : !(selectedPayment >= 0))) ||
+    (step === 6 && !selectedBank) ||
+    (step === 7 && (paymentCode.length !== 4 || !image)) ||
+    (step === 8 && newProviderName.trim().length === 0) ||
+    (step === 9 && code.length < 3) ||
+    (step === 10 && password.length < 3) 
+      ? 'disabled'
+      : 'basic'
+  " [text]="
+    step === 1
+      ? flow !== 'flow-completion'
+        ? 'ASIGNA EL WHATSAPP AL MAPP'
+        : inputData.length < 7
+        ? 'ADICIONA TU CELULAR'
+        : 'VERIFICAR MI CELULAR'
+      : step === 2
+      ? flow !== 'flow-completion'
+        ? 'VERIFICAR'
+        : 'VERIFICAR MI CELULAR'
+      : step === 3
+      ? flow !== 'flow-completion'
+        ? 'ADICIONA EL CONTACTO DEL MAPP'
+        : !name || password.length < 3
+        ? 'ADICIONA TU SEGURIDAD'
+        : 'CONTINUAR'
+      : step === 4
+      ? showLoginPassword
+        ? password.length < 3
+          ? flow !== 'flow-completion'
+            ? 'INGRESA A MI MAPP'
+            : !incorrectPasswordAttempt
+            ? 'ADICIONA LA CLAVE'
+            : 'ADICIONA LA CLAVE CORRECTA'
+          : flow !== 'flow-completion'
+          ? 'INGRESA A MI MAPP'
+          : incorrectPasswordAttempt
+          ? 'ADICIONA LA CLAVE CORRECTA'
+          : 'ACCEDER A LO MÁGICO'
+        : flow !== 'flow-completion'
+        ? 'SELECCIONA PARA IR AL MAPP'
+        : 'HAZ UNA SELECCION'
+      : step === 5
+      ? flow !== 'flow-completion'
+        ? selectedCommunitiesOptions.length > 0
+          ? 'NOMBRA EL CLUB DE TU MAPP'
+          : 'SELECCIONA TODAS LAS POSIBLES'
+        : selectedPayment >= 0
+        ? 'CONTINUAR'
+        : 'SELECCIONA'
+      : step === 6
+      ? selectedBank
+        ? 'CONTINUAR'
+        : 'SELECCIONA DONDE TRANSFERISTE'
+      : step === 7
+      ? paymentCode.length !== 4 || !image
+        ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+        : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+      : step === 8
+      ? !newProviderName.trim()
+        ? 'NOMBRA EL CLUB DE TU MAPP'
+        : 'VE A TU CLUB'
+      : step === 9
+      ? flow !== 'flow-completion' && code.length > 3 
+        ? 'INGRESA EL CODIGO'
+        : 'ENVIAR CODIGO'
+        : step === 10
+        ? flow !== 'flow-completion' && password.length < 3
+          ? 'INGRESE PASSWORD'
+          : 'ACTUALIZAR EL PASSWORD'
+      : ''
+  " (click)="submit()" *ngIf="step != 7"></app-sticky-button>
+
+<a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
+  <app-sticky-button [mode]="
+    (paymentCode.length !== 4 || !image)
+      ? 'disabled'
+      : 'basic'
+  " [text]="
+    paymentCode.length !== 4 || !image
+    ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+    : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+  " (click)="submit()"></app-sticky-button>
+</a>
