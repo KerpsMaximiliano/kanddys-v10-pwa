@@ -19,6 +19,18 @@ const routes: Routes = [
     data: { fullscreen: true },
   },
   { path: '**', redirectTo, pathMatch: 'full' },
+  {
+    path: 'ecommerce',
+    loadChildren: () =>
+      import('./modules/ecommerce/ecommerce.module').then(
+        (m) => m.EcommerceModule
+      ),
+  },
+  {
+    path: 'posts',
+    loadChildren: () =>
+      import('./modules/posts/posts.module').then((m) => m.PostsModule),
+  },
 ];
 
 @NgModule({
@@ -26,8 +38,8 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {
       paramsInheritanceStrategy: 'always',
       onSameUrlNavigation: 'reload',
-      scrollPositionRestoration: 'enabled'
-    })
+      scrollPositionRestoration: 'enabled',
+    }),
   ],
   exports: [RouterModule],
 })

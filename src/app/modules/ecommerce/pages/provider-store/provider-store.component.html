@@ -1,0 +1,68 @@
+<div class="container">
+  <app-helper-header
+    *ngIf="finalizacion === false"
+    [middleText]="headline"
+    bgcolor="#FFFFFF"
+    searchAble="false"
+    middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular"
+    middleTextColor="#7B7B7B"
+    (onClose)="goback()"
+    [options]="false"
+  ></app-helper-header>
+  <app-helper-header
+    *ngIf="finalizacion === true"
+    [middleText]="headline"
+    bgcolor="#FFFFFF"
+    searchAble="false"
+    middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular"
+    middleTextColor="#7B7B7B"
+    (onClose)="goback()"
+    [empty]="true"
+    [basic]="true"
+  ></app-helper-header>
+
+  <ng-container *ngIf="products">
+    <ng-container *ngFor="let item of products; let i = index">
+      <app-item-card-amount-and-price
+        [applyAnimations]="false"
+        [itemData]="item"
+      ></app-item-card-amount-and-price>
+    </ng-container>
+  </ng-container>
+
+  <div
+    class="select-page"
+    #elemt
+    (mousedown)="startDragging($event, false, elemt)"
+    (mouseup)="stopDragging($event, false)"
+    (mouseleave)="stopDragging($event, false)"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <ng-container *ngFor="let option of options; let i = index">
+      <div
+        class="option"
+        [ngStyle]="{
+          color: option.active ? '#FFFFFF' : '#4773D8',
+          background: option.active
+            ? 'linear-gradient(130deg, #31a4f9, #1d58db)'
+            : 'none',
+          padding: option.active == false ? '0' : 'inherit'
+        }"
+        (click)="changeOption(i)"
+        routerLink="{{ option.link }}"
+      >
+        {{ option.option }}
+      </div>
+    </ng-container>
+  </div>
+  <div
+    [ngStyle]="{
+      height: '100vh'
+    }"
+    *ngIf="status === 'done'"
+  >
+    <router-outlet></router-outlet>
+  </div>
+</div>

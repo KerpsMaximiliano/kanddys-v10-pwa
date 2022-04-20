@@ -1,0 +1,13 @@
+<div class="navbar">
+    <a class="cancel" (click)="close()">X</a>
+</div>
+<div style="background-color: #F6F6F6; padding-top: 40px;">
+    <div class="title">Información necesaria para completar la orden:</div>
+    <div style="margin-top: 40px;">
+        <app-leadword-list [list]="listData" [ignore]="true" (getIndex)="onClick($event)"></app-leadword-list>
+    </div>
+    <div class="sticky-share-link">
+        <span>SELECCIONE LOS </span>
+        <img src="/assets/images/bx-right-arrow-circle.svg" alt="info" width="30" height="30">
+    </div>
+</div>
