@@ -1,0 +1,22 @@
+<ng-container *ngIf="itemData">
+    <div class="container">
+        <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
+        middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="itemData.name.toUpperCase()"
+        [back]="true" (onClose)="back()">
+        </app-helper-header>
+        <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
+        <div class="wrapper">
+            <div class="included">
+                <div class="title">
+                    Incluido
+                </div>
+                <ng-container *ngFor="let item of itemData.content">
+                    <div class="item">
+                        {{item}}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <app-sticky-button [mode]="'basic'" [text]="ctaText" (click)="saveProduct()"></app-sticky-button>
+</ng-container>

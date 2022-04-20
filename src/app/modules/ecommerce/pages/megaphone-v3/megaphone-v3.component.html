@@ -1,0 +1,136 @@
+<div style="min-height: 100vh">
+  <app-provider-info
+    [providerId]="merchantName"
+    [providerBio1]="merchantSubheadline"
+    [providerBio2]="merchantHours"
+    [providerImage]="banner"
+    [providerSocials]="saleflowData.social"
+    [flowId]="flowId"
+  ></app-provider-info>
+
+  <!-- <app-page-component-tabs *ngIf="customizersId.length === 0" [tabsOptions]="pagesList"></app-page-component-tabs> -->
+  <div
+    style="margin-top: 50px; margin-bottom: 60px"
+    *ngIf="
+      saleflowData && (inputPackage.length > 0 || customizersId.length === 0)
+    "
+  >
+    <ng-container *ngIf="inputPackage.length >= 0 && items.length === 0">
+      <!--<app-provider-item-slider
+        [label]="merchantLabel"
+        [providerItems]="sliderPackage"
+        (clickedItem)="save()"
+      ></app-provider-item-slider>-->
+      <div class="header-wrapper">
+        <h6 class="header-text" [ngStyle]="{fontFamily: 'SfProRegular', color: '#7b7b7b', fontWeight:100}" >Mas Vendidos</h6>
+      </div>
+      <app-swiper [saleFlowTwo]="true" [selectable]="saleflowData?.canBuyMultipleItems" [saleFlowTwoData]="sliderPackage" (slideActive)="save($event)" (toggleEmitter)="toggleSelected('package',$event)"></app-swiper>
+    </ng-container>
+
+    <ng-container *ngIf="customizersId.length === 0 && items.length > 0">
+      <!--<app-provider-item-slider
+        [label]="merchantLabel"
+        [providerItems]="items"
+        (clickedItem)="currentItemCaffaro($event)"
+      ></app-provider-item-slider>-->
+      <div class="header-wrapper">
+        <h6 class="header-text" [ngStyle]="{fontFamily: 'SfProRegular', color: '#7b7b7b', fontWeight:100}" >Mas Vendidos</h6>
+      </div>
+      <app-swiper [saleFlowTwo]="true" [selectable]="saleflowData?.canBuyMultipleItems" [saleFlowTwoData]="items" (slideActive)="currentItemCaffaro($event)" (toggleEmitter)="toggleSelected('item',$event)"></app-swiper>
+    </ng-container>
+  </div>
+  <div *ngIf="itemsByCategory.length > 0">
+    <div
+      *ngFor="let item of itemsByCategory; let i = index"
+    >
+      <!--<app-provider-item-slider
+        [label]="item.label"
+        [categories]="true"
+        [providerItems]="item.items"
+        [informWhenRender]="true"
+        (rendered)="endLoader()"
+        (clickedItem)="currentItemNapkins(i, $event)"
+      ></app-provider-item-slider>-->
+      <div class="header-wrapper">
+        <h6 class="header-text" [ngStyle]="{fontFamily: 'SfProRegular', color: '#7b7b7b', fontWeight:100}" >{{item.label}}</h6>
+        <h6 class="see-all-more" style="font-weight: 100;" (click)="seeCategories(i)">Ver más</h6>
+      </div>
+      <app-swiper [saleFlowTwo]="true" [selectable]="saleflowData?.canBuyMultipleItems" [saleFlowTwoData]="item.items" (slideActive)="currentItemNapkins(i,$event)" (toggleEmitter)="toggleSelected('item',i,$event)"></app-swiper>
+    </div>
+  </div>
+  <section
+    style="background-color: white; margin-bottom: 73px"
+    *ngIf="customizersId.length === 0"
+  >
+    <ng-container *ngIf="isCategories; else elseTemplate">
+      <div style="padding-top: 10px">
+        <app-see-filters
+          [type]="3"
+          [title]="merchantSubheadline"
+          [tags]="closeTagItems"
+          (loadingSwiper)="startLoading($event)"
+          (eventTags)="filterTags($event)"
+          (deletedTag)="tagDeleted($event)"
+          [hasBookmark]="true"
+        ></app-see-filters>
+      </div>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <div class="subheadline">
+        {{ merchantSubheadline }}
+      </div>
+    </ng-template>
+
+    <div *ngIf="isCaffaro !== true">
+      <ng-container *ngIf="inputPackage.length > 0">
+        <app-item-grid
+          [items]="inputPackage"
+          (eventEmitter)="save($event)"
+        ></app-item-grid>
+      </ng-container>
+      <ng-container *ngIf="inputPackage.length == 0">
+        <div class="no-results">No se han encontrado resultados...</div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="isCaffaro === true">
+      <ng-container>
+        <app-item-grid
+          [items]="items"
+          (eventEmitter)="save($event)"
+        ></app-item-grid>
+      </ng-container>
+    </div>
+  </section>
+</div>
+
+<ng-container *ngIf="saleflowData">
+  <!--<app-sticky-button
+    *ngIf="customizersId.length === 0; else  select"
+    [text]="'Share My Store'"
+    [icon]="imageRoute"
+    [mode]="'fixed'"
+    (click)="transformIcon()"
+    [cdkCopyToClipboard]="copyLink()"
+  ></app-sticky-button>
+
+  <ng-template #select>
+    <app-sticky-button
+    [mode]="'disabled'"
+    [text]="'SELECCIONAR'"
+  ></app-sticky-button>
+  </ng-template>-->
+  <ng-container *ngIf="showCTA; else  noCTA">
+    <app-sticky-button
+    [mode]="'fixed'"
+    [text]="'IR AL CARRITO DE COMPRAS'"
+    (click)="transformIcon()"
+  ></app-sticky-button>
+  </ng-container>
+  <ng-template #noCTA>
+    <app-sticky-button
+    [mode]="'disabled'"
+    [text]="'SELECCIONAR'"
+  ></app-sticky-button>
+  </ng-template>
+</ng-container>

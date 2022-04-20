@@ -1,0 +1,44 @@
+<div>
+  <div class="top-bar">
+    <div class="close-icon" (click)="close()">x</div>
+    <div class="bar-title">Funnel</div>
+    <div style="width: 12px; height: 1px"></div>
+  </div>
+  <form [formGroup]="form">
+    <div
+      *ngFor="let tag of form.get('tags')['controls']; let i = index"
+      class="container-form"
+    >
+      <div class="div__form">
+        <div class="div__contenedor">
+          <p class="div__contenedor-text">{{ inputTags[i].subtitle }}</p>
+          <div class="vertical">
+            <div *ngFor="let option of tag['controls']; let j = index">
+              <label>
+                <input
+                  #inputValue
+                  [formControl]="option"
+                  type="checkbox"
+                  [id]="inputTags[i].options[j].label"
+                  (click)="getValues(i, j, inputValue)"
+                />
+                <label [for]="inputTags[i].options[j].label"></label>
+                <ng-container
+                  *ngIf="
+                    inputTags[i].options[j].type === 'label';
+                    else elseTemplate
+                  "
+                >
+                  <span>{{ inputTags[i].options[j].label }}</span>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <i class="{{ inputTags[i].options[j].label }}"></i>
+                </ng-template>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -14,7 +14,11 @@ import {
   GoogleLoginProvider,
   SocialAuthServiceConfig,
 } from 'angularx-social-login';
-
+import {
+  SwiperModule,
+  SwiperConfigInterface,
+  SWIPER_CONFIG,
+} from 'ngx-swiper-wrapper';
 import { environment } from './../../environments/environment';
 import { DialogModule } from './../libs/dialog/dialog.module';
 import { ButtonComponent } from './components/button/button.component';
@@ -50,6 +54,20 @@ import { HelperHeaderComponent } from './components/helper-header/helper-header.
 import { QrDialog } from './dialogs/qr/qr.dialog';
 import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
+import { ItemGridComponent } from './components/item-grid/item-grid.component';
+import { ProviderInfoComponent } from './components/provider-info/provider-info.component';
+import { SeeFiltersComponent } from './components/see-filters/see-filters.component';
+import { SwiperComponent } from './components/swiper/swiper.component';
+import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.component';
+import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
+import { HelperHeaderComponent } from './components/helper-header/helper-header.component';
+import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
+import { GiftMessageComponent } from './components/gift-message/gift-message.component';
+import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
+import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
+import { AnswerSelectorComponent } from './components/answer-selector/answer-selector.component';
+import { ImageInputComponent } from './components/image-input/image-input.component';
+import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 
 const imports = [
   CommonModule,
@@ -59,6 +77,7 @@ const imports = [
   ReactiveFormsModule,
   NgxPrintModule,
   QRCodeModule,
+  SwiperModule
 ];
 const declarations = [
   // Pages
@@ -100,6 +119,20 @@ const declarations = [
   MakeTriggerComponent,
   QrDialog,
   TriggerDialog,
+  ItemGridComponent,
+  ProviderInfoComponent,
+  SeeFiltersComponent,
+  SwiperComponent,
+  FormFunnelV2Component,
+  StickyButtonComponent,
+  HelperHeaderComponent,
+  PageComponentTabsComponent,
+  GiftMessageComponent,
+  MultistepFormComponent,
+  ShowItemsComponent,
+  AnswerSelectorComponent,
+  ImageInputComponent,
+  ActivitiesOptionComponent
 ];
 
 @NgModule({

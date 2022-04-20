@@ -1,0 +1,27 @@
+.container {
+  display: grid;
+  gap: 50px;
+  grid-template-columns: 1fr 1fr;
+  padding-bottom: 25px;
+
+  .left {
+    font-family: Roboto;
+    font-size: 17px;
+  }
+
+  .right {
+    font-family: Roboto;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 40%;
+  }
+}
+
+.cta {
+  color: #27a2ff;
+  cursor: pointer;
+  font-family: RobotoMedium;
+  font-size: 16px;
+  margin: 0 auto;
+  text-align: center;
+}
