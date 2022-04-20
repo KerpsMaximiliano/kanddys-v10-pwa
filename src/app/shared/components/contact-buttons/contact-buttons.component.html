@@ -1,0 +1,46 @@
+<div class="container-icons" [style.justify-content]="socials.length > 0 ? 'space-between' : 'center'">
+  <div *ngIf="socials.length > 0" class="container-icons" style="flex-basis: 30%; display: flex; justify-content: space-around">
+    <ng-container *ngFor="let social of socials">
+      <div *ngIf="social.name === 'instagram'" class="icons">
+        <a [href]="social.url" target="_blank" class="link-area"><img src="assets/images/instagram.svg" class="red-social" alt="" style="position: absolute; bottom: 9px; left: 8.5px;"/></a>
+      </div>
+      <div class="icons" *ngIf="social.name === 'phone'">
+        <a href="tel:+1{{social.url}}" style="position: relative; height: 35px; width: 35px;" class="link-area"><img src="assets/icons/contacts-white.svg" alt="" style="position: absolute; bottom: 9px; left: 8px;"/></a>
+      </div>
+    </ng-container>
+  </div>
+
+  <img [src]="providerImage" class="provider-image" alt="" [style.object-fit]="objectFit">
+  
+  <div *ngIf="socials.length > 0" class="container-icons" style="flex-basis: 30%; display: flex; justify-content: space-around">
+    <ng-container *ngFor="let social of socials">    
+      <div *ngIf="social.name === 'person'" class="icons">
+        <img src="assets/images/person.svg" class="red-social" alt="" />
+      </div>
+    </ng-container>
+
+    <ng-container *ngFor="let social of socials">    
+      <div *ngIf="social.name === 'location'" class="icons">
+        <a [href]="social.url" target="_blank" class="link-area"><img src="assets/images/location123.svg" class="" alt="" style="position: absolute; bottom: 9px; left: 11px;" /></a>
+      </div>
+    </ng-container>
+    
+    <ng-container *ngFor="let social of socials">    
+      <div *ngIf="social.name === 'web'" class="icons">
+        <img src="assets/images/link.svg" class="red-social" alt="" />
+      </div>
+    </ng-container>
+    
+    <ng-container *ngFor="let social of socials">    
+      <div *ngIf="social.name === 'email'" class="icons">
+        <a href="mailto:{{social.url}}" class="link-area"><img src="assets/images/mail.svg" style="position: absolute; bottom: 9px; left: 8px; width: 18px; height: 18px;" alt="" /></a>
+      </div>
+    </ng-container> 
+    
+    <ng-container *ngFor="let social of socials">    
+      <div class="icons" *ngIf="social.name === 'phone'" (click)="goLink(social.url, 'whatsapp')" >
+        <img src="assets/icons/whatsapp-white.svg" alt="" />
+      </div>
+    </ng-container>
+  </div>
+</div>

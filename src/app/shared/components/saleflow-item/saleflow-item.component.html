@@ -1,0 +1,60 @@
+<div class="itemContainer type{{type}}">
+  <div class="marginCard" *ngIf = "type == 1">
+    <div
+      class="itemImg"
+      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
+      [ngClass]="{
+        'gray-shadow': shaded == true,
+        borderRect: borderRadius == false
+      }"
+      (click)="onClick()"
+    ></div>
+    <div *ngIf="price" class="price {{ priceAlign }}">
+      <span style="font-size: 10px; height: 24px">$</span
+      ><span style="font-size: 25px; margin-right: 8px">{{ price }}</span
+      ><span style="text-align: start; font-size: 12px"
+        >.00 <br />
+        DOP</span
+      ><span *ngIf="quantity">
+        / <span class="quantity">{{ quantity }}</span></span
+      >
+    </div>
+    <div
+      *ngIf="selectable"
+      (click)="toggleSelect($event)"
+      [ngClass]="{ selected: isSelected }"
+      class="checkBox"
+      style="cursor: pointer;"
+    >
+      <i class="fas fa-check-circle icon"></i>
+    </div>
+  </div>
+
+  <div *ngIf="type == 2">
+    <div
+      class="itemImg"
+      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
+      [ngClass]="{
+        'gray-shadow': shaded == true,
+        borderRect: borderRadius == false
+      }"
+      style="cursor: pointer;"
+      (click)="onClick()"
+    ></div>
+    <div class="infoContainer">
+      <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price">
+        ${{price}}
+      </div>
+      <p class="desc" *ngIf="description">{{description}}</p>
+      <div
+        *ngIf="selectable"
+        (click)="toggleSelect($event)" 
+        [ngClass]="{ selected: isSelected }" 
+        class="checkBox" 
+        style="cursor: pointer;"
+      > 
+        <i class="fas fa-check-circle icon"></i>
+      </div>
+    </div>
+  </div>
+</div>

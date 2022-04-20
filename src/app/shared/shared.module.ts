@@ -36,9 +36,23 @@ import { NavHeaderComponent } from './sections/nav-header/nav-header.component';
 import { NavbarComponent } from './sections/navbar/navbar.component';
 import { ScopeMenuComponent } from './sections/scope-menu/scope-menu.component';
 import { FormDialog } from './dialogs/form/form.dialog';
+import { ContactButtonsComponent } from './components/contact-buttons/contact-buttons.component';
+import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.component';
+import { AuthCallerComponent } from './components/auth-caller/auth-caller.component';
+import { SearchHashtagComponent } from './dialogs/search-hashtag/search-hashtag.component';
+import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
+import { CommunityPreviewComponent } from './dialogs/community-preview/community-preview.component';
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
+import { AnswerSelectorComponent } from './components/answer-selector/answer-selector.component';
+import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
+import { LeadwordListComponent } from './components/leadword-list/leadword-list.component';
 import { ResourceListComponent } from './components/resource-list/resource-list.component';
+import { GiftMessageComponent } from './components/gift-message/gift-message.component';
+import { ImageInputComponent } from './components/image-input/image-input.component';
+import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
+import { HelperHeaderComponent } from './components/helper-header/helper-header.component';
 import { QrDialog } from './dialogs/qr/qr.dialog';
+import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ProviderInfoComponent } from './components/provider-info/provider-info.component';
@@ -75,15 +89,29 @@ const declarations = [
   AuthDialog,
   FormDialog,
   ActionsDialog,
+  AuthCallerComponent,
   HeaderComponent,
   NavHeaderComponent,
   CardComponent,
   TitlebarComponent,
+  CommunityPreviewComponent,
   FilterbarComponent,
   SearchbarComponent,
   ResourceListComponent,
   ListComponent,
+  ContactButtonsComponent,
+  SaleflowItemComponent,
+  SearchHashtagComponent,
+  WarningStepsComponent,
   NavbarComponent,
+  LeadwordListComponent,
+  GiftMessageComponent,
+  ItemCardAmountAndPriceComponent,
+  PageComponentTabsComponent,
+  ShowItemsComponent,
+  ImageInputComponent,
+  AnswerSelectorComponent,
+  HelperHeaderComponent,
   ScopeMenuComponent,
   ButtonComponent,
   TabsComponent,
@@ -130,6 +158,6 @@ const declarations = [
         ],
       } as SocialAuthServiceConfig,
     },
-  ]  
+  ],
 })
 export class SharedModule {}

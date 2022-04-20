@@ -5,6 +5,7 @@ import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
 import { CustomItemDetailComponent } from './pages/custom-item-detail/custom-item-detail.component';
+import { ErrorScreenComponent } from './components/error-screen/error-screen.component';
 import { MegaphoneV3Component } from './pages/megaphone-v3/megaphone-v3.component';
 import { OrderInfoComponent } from './pages/order-info/order-info.component';
 import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
@@ -26,6 +27,10 @@ const routes: Routes = [
         component: CustomItemDetailComponent,
       },
     ],
+  },
+  {
+    path: 'error-screen',
+    component: ErrorScreenComponent,
   },
   {
     path: 'megaphone-v3/:id',
@@ -60,6 +65,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CategoryItemsComponent,
+    CustomItemDetailComponent,
+    ErrorScreenComponent,
     ProviderStoreComponent,
     CategoryItemsComponent,
     MegaphoneV3Component,
