@@ -23,6 +23,7 @@ export class ShowItemsComponent implements OnInit {
   @Input() orderFinished: boolean;
   @Input() headerButton: string = 'Ver mas Desayunos';
   @Input() footerButton: string = 'HACER TRANSFERENCIA PARA ORDENAR';
+  @Input() public callback: () => void;
   price: number = 100;
   env: string = environment.assetsUrl;
 
@@ -39,7 +40,9 @@ export class ShowItemsComponent implements OnInit {
   }
 
   orderItems() {
-    this.router.navigate([`ecommerce/provider-store`])
+    //this.router.navigate([`ecommerce/provider-store`])
+    //this.ref.close();
+    this.callback();
     this.ref.close();
   }
 
