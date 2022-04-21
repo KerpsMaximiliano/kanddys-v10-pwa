@@ -72,7 +72,7 @@ export class ItemDetailComponent implements OnInit {
   showItems() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { headerButton: 'Ver mas productos', printValue: this.boundedPrintValue},
+      props: { headerButton: 'Ver mas productos', callback: this.boundedPrintValue},
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
@@ -97,7 +97,15 @@ export class ItemDetailComponent implements OnInit {
   public boundedPrintValue = ()=>{
     this.saleflow.saleflow(this.saleflowId, true).then(data =>{
       console.log(data);
-      
+      for (let i = 0; i < data.saleflow.items.length; i++) {
+        if (data.saleflow.items[i].item._id === this.itemData._id) {
+          if (data.saleflow.items[i].customizer) {
+            this.router.navigate([`ecommerce/provider-store`])
+          }else{
+            this.router.navigate(['/ecommerce/create-giftcard']);
+          }
+        }
+      }
     })
   }
 
