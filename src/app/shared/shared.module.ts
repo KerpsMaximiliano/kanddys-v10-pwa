@@ -63,6 +63,7 @@ import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.c
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
 import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
+import { ErrorMessageComponent } from './components/error-message/error-message.component';
 
 const imports = [
   CommonModule,
@@ -123,6 +124,7 @@ const declarations = [
   StickyButtonComponent,
   MultistepFormComponent,
   ActivitiesOptionComponent,
+  ErrorMessageComponent
 ];
 
 @NgModule({

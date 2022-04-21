@@ -846,7 +846,7 @@ export class PostCustomizerComponent
       console.log('FUENTE', this.elementList[elementIndex].typography.font);
 
       if (fontElement) {
-        let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
+        /*let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
 
         myFont.load().then((font) => {
           (document as any).fonts.add(font);
@@ -855,7 +855,7 @@ export class PostCustomizerComponent
             // alert('PRE-RENDER');
             this.draw();
           }, 200);
-        });
+        });*/
       }
     }
   }
