@@ -3,69 +3,100 @@ import gql from 'graphql-tag';
 export const saleflow = gql`
   query saleflow($id: ObjectID!) {
     saleflow(id: $id) {
+      _id
+      name
+      headline
+      banner
+      subheadline
+      addressExtraInfo
+      banner
+      itemNickname
+      social {
+        name
+        url
+      }
+      module {
+        _id
+        appointment {
+          isActive
+          calendar {
+            _id
+          }
+        }
+        post {
+          isActive
+          post
+        }
+        delivery {
+          isActive
+          deliveryLocation
+          pickUpLocations {
+            city
+            street
+            houseNumber
+            referencePoint
+            nickName
+            note
+          }
+        }
+        paymentMethod {
+          paymentModule {
+            _id
+          }
+        }
+      }
+      merchant {
         _id
         name
-        headline
-        banner
-        subheadline
-        addressExtraInfo
-        banner
-        itemNickname
-        social {
-          name
-          url
-        }
-        module {
-          _id
-          appointment {
-            isActive
-            calendar {
-              _id
-            }
-          }
-          post{
-            isActive
-            post
-          }
-          delivery{
-            isActive
-            deliveryLocation
-            pickUpLocations {
-              city
-              street
-              houseNumber
-              referencePoint
-              nickName
-              note
-            }
-          }
-          paymentMethod{
-            paymentModule{
-              _id
-            }
-          }
-        }
-        merchant {
-          _id
-          name
-        }
-        packages {
-          _id
-        }
-        items {
-          item{
-            _id
-          }
-          customizer {
-            _id
-          }
-          index
-        }
-        workingHours
-        paymentInfo
-        createdAt
-        canBuyMultipleItems
       }
+      packages {
+        _id
+      }
+      items {
+        item {
+          _id
+        }
+        customizer {
+          _id
+        }
+        index
+      }
+      workingHours
+      paymentInfo
+      createdAt
+      canBuyMultipleItems
+    }
+  }
+`;
+
+export const hotSaleflow = gql`
+  query saleflow($id: ObjectID!) {
+    saleflow(id: $id) {
+      _id
+      name
+      banner
+      subheadline
+      social {
+        name
+        url
+      }
+      merchant {
+        _id
+        name
+      }
+      packages {
+        _id
+      }
+      items {
+        item {
+          _id
+        }
+        customizer {
+          _id
+        }
+      }
+      workingHours
+    }
   }
 `;
 
@@ -122,7 +153,7 @@ export const addLocation = gql`
 
 export const listItems = gql`
   query listItems($params: PaginationInput) {
-    listItems(params: $params) { 
+    listItems(params: $params) {
       _id
       name
       pricing
@@ -149,7 +180,7 @@ export const listItems = gql`
           quantity
         }
       }
-      itemExtra{
+      itemExtra {
         _id
       }
     }
@@ -167,12 +198,12 @@ export const listPackages = gql`
         _id
       }
       packageRules {
-        onlyFixedQuantity,
-        fixedQuantity,
-        hasMaxQuantity,
-        maxQuantity,
-        hasMinQuantity,
-        minQuantity,
+        onlyFixedQuantity
+        fixedQuantity
+        hasMaxQuantity
+        maxQuantity
+        hasMinQuantity
+        minQuantity
         offsetPrice
         item {
           _id

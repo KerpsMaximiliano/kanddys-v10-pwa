@@ -39,7 +39,6 @@ import { ScopeMenuComponent } from './sections/scope-menu/scope-menu.component';
 import { FormDialog } from './dialogs/form/form.dialog';
 import { ContactButtonsComponent } from './components/contact-buttons/contact-buttons.component';
 import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.component';
-import { AuthCallerComponent } from './components/auth-caller/auth-caller.component';
 import { SearchHashtagComponent } from './dialogs/search-hashtag/search-hashtag.component';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { CommunityPreviewComponent } from './dialogs/community-preview/community-preview.component';
@@ -86,7 +85,6 @@ const declarations = [
   AuthDialog,
   FormDialog,
   ActionsDialog,
-  AuthCallerComponent,
   HeaderComponent,
   NavHeaderComponent,
   CardComponent,

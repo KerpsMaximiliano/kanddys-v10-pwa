@@ -208,18 +208,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     private item: ItemsService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private appService: AppService,
+    private appService: AppService
   ) {
     const sub = this.appService.events
-    .pipe(filter((e) => e.type === 'deleted-item'))
-    .subscribe((e) => {
-      let productData = this.header.getItemProduct(this.saleflowData._id);
-      for (let i = 0; i < this.items.length; i++) {
-        console.log(this.items[i]);
-        productData
-      }
-      sub.unsubscribe();
-    });
+      .pipe(filter((e) => e.type === 'deleted-item'))
+      .subscribe((e) => {
+        let productData = this.header.getItemProduct(this.saleflowData._id);
+        for (let i = 0; i < this.items.length; i++) {
+          console.log(this.items[i]);
+          productData;
+        }
+        sub.unsubscribe();
+      });
   }
 
   openDialog() {
@@ -304,18 +304,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     let categories = [];
     this.items.forEach((item) => {
       item.category.forEach((category) => {
-        if(!categories.includes(category.name)) categories.push(category.name);
-      })
-    })
+        if (!categories.includes(category.name)) categories.push(category.name);
+      });
+    });
     console.log(categories);
     categories.forEach((name) => {
       this.itemsByCategory.push({
         label: name,
         items: this.items.filter((item) =>
           item.category.some((category) => category.name === name)
-        )
-      })
-    })
+        ),
+      });
+    });
     // if (
     //   this.items.some((item) =>
     //     item.category.some((category) => category.name === 'Tragos')
@@ -355,8 +355,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     let renderedSpinners = 0;
     for (let i = 0; i < this.itemsByCategory.length; i++) {
       renderedSpinners++;
-      if(renderedSpinners === this.itemsByCategory.length){
-        unlockUI()
+      if (renderedSpinners === this.itemsByCategory.length) {
+        unlockUI();
       }
     }
     // if (this.itemsByCategory.length > 0) {
@@ -367,7 +367,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     //     positionClass: 'toast-bottom-center',
     //   });
     // }
-    
   }
 
   // =====================================================
@@ -410,11 +409,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
+      this.saleflowData = (
+        await this.saleflow.saleflow(params.id, true)
+      ).saleflow;
       console.log(this.saleflowData);
       this.header.saleflow = this.saleflowData;
       this.header.storeFlowId(this.saleflowData._id);
-      const orderData = this.header.getOrder(this.saleflowData._id)
+      const orderData = this.header.getOrder(this.saleflowData._id);
       this.banner = this.saleflowData.banner;
       this.merchantName = this.saleflowData.merchant.name;
       this.merchantSubheadline = this.saleflowData.subheadline;
@@ -459,7 +460,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         })
       ).listItemPackage;
       for (let i = 0; i < listPackages.length; i++) {
-        listPackages[i].isSelected = orderData?.itemPackage ===  listPackages[i]._id;
+        listPackages[i].isSelected =
+          orderData?.itemPackage === listPackages[i]._id;
       }
       console.log('lista de paquetes');
       console.log(listPackages);
@@ -473,7 +475,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       console.log(this.inputPackage);
       if (this.inputPackage.length > 0) this.currentItem(0);
       if (this.inputPackage.length == 0) {
-      const selectedItems = orderData?.products?.length > 0 ? orderData.products.map((subOrder) => subOrder.item) : [];
+        const selectedItems =
+          orderData?.products?.length > 0
+            ? orderData.products.map((subOrder) => subOrder.item)
+            : [];
         this.items = (
           await this.saleflow.listItems({
             findBy: {
@@ -482,7 +487,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
               },
             },
             options: {
-              limit: 100,
+              limit: 20,
             },
           })
         ).listItems;
@@ -512,7 +517,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           subtitle: this.inputsItems[0].pricing,
           num: 1,
         });
-        console.log('items',this.items);
+        console.log('items', this.items);
         for (let i = 0; i < this.items.length; i++) {
           if (this.items[i].isSelected) {
             this.showCTA = true;
@@ -527,7 +532,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       });
     });
     if (this.header.customizerData) this.header.customizerData = null;
-    
   }
 
   endLoader() {
@@ -549,64 +553,73 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   // Logic for selecting items
   toggleSelected(type: string, index: number, $event?: number) {
-    if(type === 'item') {
-      if(index != undefined) {
-        if($event != undefined && this.itemsByCategory[index].items[$event]) {
-          this.itemsByCategory[index].items[$event].isSelected = !this.itemsByCategory[index].items[$event].isSelected;
+    if (type === 'item') {
+      if (index != undefined) {
+        if ($event != undefined && this.itemsByCategory[index].items[$event]) {
+          this.itemsByCategory[index].items[$event].isSelected =
+            !this.itemsByCategory[index].items[$event].isSelected;
           let itemParams = {
             param: this.itemsByCategory[index].items[$event].params[0]._id,
-            paramValue: this.itemsByCategory[index].items[$event].params[0].values[0]._id
-          }
+            paramValue:
+              this.itemsByCategory[index].items[$event].params[0].values[0]._id,
+          };
           this.header.storeItems(this.saleflowData._id, {
-              item: this.itemsByCategory[index].items[$event]._id,
-              customizer: this.itemsByCategory[index].items[$event].customizerId,
-              params: [itemParams],
-              saleflow: this.saleflowData._id,
+            item: this.itemsByCategory[index].items[$event]._id,
+            customizer: this.itemsByCategory[index].items[$event].customizerId,
+            params: [itemParams],
+            saleflow: this.saleflowData._id,
           });
-          this.header.storeItemProduct(this.saleflowData._id, this.itemsByCategory[index].items[$event]);
+          this.header.storeItemProduct(
+            this.saleflowData._id,
+            this.itemsByCategory[index].items[$event]
+          );
         } else {
-          this.inputsItems[index].isSelected = !this.inputsItems[index].isSelected;
+          this.inputsItems[index].isSelected =
+            !this.inputsItems[index].isSelected;
           this.header.storeItems(this.saleflowData._id, {
             item: this.inputsItems[index]._id,
             amount: 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItemProduct(this.saleflowData._id, this.inputsItems[index]);
+          this.header.storeItemProduct(
+            this.saleflowData._id,
+            this.inputsItems[index]
+          );
         }
         let itemData = this.header.getItemProduct(this.saleflowData._id);
         console.log(itemData);
         if (itemData.length > 0) {
           this.showCTA = true;
-        }else{
+        } else {
           this.showCTA = false;
         }
       }
-    } else if(type === 'package') {
+    } else if (type === 'package') {
       this.sliderPackage.forEach((packageItem, packageIndex) => {
-        if(packageIndex === index) packageItem.isSelected = !packageItem.isSelected;
+        if (packageIndex === index)
+          packageItem.isSelected = !packageItem.isSelected;
         else packageItem.isSelected = false;
-      })
+      });
       let products = [];
-      for (
-        let i = 0;
-        i < this.packageData[index].items.listItems.length;
-        i++
-      ) {
+      for (let i = 0; i < this.packageData[index].items.listItems.length; i++) {
         products.push({
           item: this.packageData[index].items.listItems[i]._id,
-          amount:
-            this.packageData[index].package.packageRules[i]
-              .fixedQuantity,
+          amount: this.packageData[index].package.packageRules[i].fixedQuantity,
           isScenario:
-            this.packageData[index].items.listItems[i].itemExtra
-              .length > 0,
+            this.packageData[index].items.listItems[i].itemExtra.length > 0,
           limitScenario:
-            this.packageData[index].package.packageRules[i]
-              .maxQuantity,
+            this.packageData[index].package.packageRules[i].maxQuantity,
         });
       }
-      this.header.storePackage(this.saleflowData._id, this.packageData[index].package._id, products);
-      this.header.storeItemProduct(this.saleflowData._id, this.sliderPackage[index]);
+      this.header.storePackage(
+        this.saleflowData._id,
+        this.packageData[index].package._id,
+        products
+      );
+      this.header.storeItemProduct(
+        this.saleflowData._id,
+        this.sliderPackage[index]
+      );
     }
   }
 
@@ -632,7 +645,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   seeCategories(i: number) {
     this.router.navigate([
       `ecommerce/category-items/${this.saleflowData._id}/${
-        this.itemsByCategory[i].items[0].category.find(category => category.name === this.itemsByCategory[i].label)._id
+        this.itemsByCategory[i].items[0].category.find(
+          (category) => category.name === this.itemsByCategory[i].label
+        )._id
       }`,
     ]);
   }
@@ -640,33 +655,27 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   currentItemNapkins(listIndex: number, itemIndex: number) {
     console.log(listIndex);
     console.log(itemIndex);
-      if (this.itemsByCategory[listIndex].items[itemIndex]) {
-        this.options = [];
-        this.priceTotal = 0;
-  
-        this.priceTotal =
-          this.itemsByCategory[listIndex].items[itemIndex].pricing;
-        this.options.push({
-          id: this.itemsByCategory[listIndex].items[itemIndex]._id,
-          title: this.itemsByCategory[listIndex].items[itemIndex].name,
-          subtitle:
-            this.itemsByCategory[listIndex].items[itemIndex].pricing,
-          num: 1,
-          images: this.itemsByCategory[listIndex].items[itemIndex].images,
-          customizerId:
-            this.itemsByCategory[listIndex].items[itemIndex].customizerId,
-        });
-        // this.save();
-        if (
-          this.itemsByCategory[listIndex].items[itemIndex].customizerId
-        ) {
-          this.header.categoryId =
-            this.itemsByCategory[listIndex].items[
-              itemIndex
-            ].category[0]._id;
+    if (this.itemsByCategory[listIndex].items[itemIndex]) {
+      this.options = [];
+      this.priceTotal = 0;
+
+      this.priceTotal =
+        this.itemsByCategory[listIndex].items[itemIndex].pricing;
+      this.options.push({
+        id: this.itemsByCategory[listIndex].items[itemIndex]._id,
+        title: this.itemsByCategory[listIndex].items[itemIndex].name,
+        subtitle: this.itemsByCategory[listIndex].items[itemIndex].pricing,
+        num: 1,
+        images: this.itemsByCategory[listIndex].items[itemIndex].images,
+        customizerId:
+          this.itemsByCategory[listIndex].items[itemIndex].customizerId,
+      });
+      // this.save();
+      if (this.itemsByCategory[listIndex].items[itemIndex].customizerId) {
+        this.header.categoryId =
+          this.itemsByCategory[listIndex].items[itemIndex].category[0]._id;
         console.log('new redirect to flow');
-        const itemData =
-          this.itemsByCategory[listIndex].items[itemIndex];
+        const itemData = this.itemsByCategory[listIndex].items[itemIndex];
         let params: ItemParam;
         let selectedValue: ItemParamValue;
         if (itemData.params.length > 0) {
@@ -696,15 +705,16 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           };
         }
         console.log(itemData);
-        this.header.storeItems(this.saleflowData._id, 
-          {
-            item: itemData._id,
-            saleflow: this.saleflowData._id,
-            params: [{
+        this.header.storeItems(this.saleflowData._id, {
+          item: itemData._id,
+          saleflow: this.saleflowData._id,
+          params: [
+            {
               param: params._id,
-              paramValue: selectedValue._id
-            }],
-            customizer: itemData.customizerId
+              paramValue: selectedValue._id,
+            },
+          ],
+          customizer: itemData.customizerId,
         });
         this.header.storeItemProduct(this.saleflowData._id, itemData);
         this.router.navigate([`/ecommerce/provider-store`]);
@@ -871,7 +881,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
       //this.router.navigate(['/ecommerce/provider-store']);
-      this.router.navigate(['/ecommerce/item-detail/' + this.header.saleflow._id + '/' + this.inputsItems[index]._id]);
+      this.router.navigate([
+        '/ecommerce/item-detail/' +
+          this.header.saleflow._id +
+          '/' +
+          this.inputsItems[index]._id,
+      ]);
     }
   }
 
@@ -1007,7 +1022,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     //this.imageRoute = '/assets/images/check-circle.png';
     if (!this.hasCustomizer) {
       this.router.navigate([`/ecommerce/create-giftcard`]);
-    }else{
+    } else {
       this.router.navigate([`/ecommerce/provider-store`]);
     }
   }

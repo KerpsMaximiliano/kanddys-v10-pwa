@@ -12,7 +12,8 @@ import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-d
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { FlowCompletionComponent } from './pages/flow-completion/flow-completion.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
-import { CustomizerRedirectComponent } from './pages/customizer-redirect/customizer-redirect.component';
+import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
+import { UserInfoComponent } from './pages/user-info/user-info.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,10 @@ const routes: Routes = [
       {
         path: 'redirect-to-customizer',
         component: CustomizerRedirectComponent,
+      },
+      {
+        path: 'user-info',
+        component: UserInfoComponent,
       },
     ],
   },
@@ -80,7 +85,9 @@ const routes: Routes = [
     ShipmentDataFormComponent,
     ItemDetailComponent,
     FlowCompletionComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    CustomizerRedirectComponent,
+    UserInfoComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -114,9 +114,9 @@ export class CategoryItemsComponent implements OnInit {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
           },
-          options: {
-            limit: 100,
-          },
+          // options: {
+          //   limit: 100,
+          // },
         })
       ).listItems;
 
