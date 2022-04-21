@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgxFormsModule } from '@mukuve/ngx-forms';
 import { QRCodeModule } from 'angularx-qrcode';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
@@ -72,6 +73,7 @@ const imports = [
   NgxPrintModule,
   QRCodeModule,
   SwiperModule,
+  TextFieldModule,
 ];
 const declarations = [
   // Pages

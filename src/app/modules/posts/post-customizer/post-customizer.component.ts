@@ -269,20 +269,8 @@ export class PostCustomizerComponent
   };
   fontStyles: string[] = [
     'Arial',
-    'AvenirRegular',
-    'NunitoSans',
-    'RalewaySemiBold',
-    'BadbadScript',
-    'Rubik',
     'RobotoMedium',
-    'GraphikRegular',
-    'Jost',
-    'Luxia',
-    'Monschone',
-    'Palatino',
-    'Palitoon',
     'GeorgiaRegular',
-    'Nirvana',
     'GiddyupStd',
     'Cheltenham',
     'Empire',
@@ -311,10 +299,6 @@ export class PostCustomizerComponent
     {
       fileName: 'VILLAGE.TTF',
       fontName: 'Village',
-    },
-    {
-      fileName: 'NEORF___.TTF',
-      fontName: 'Neorf',
     },
     {
       fileName: 'PomfritDandyNFRegular.ttf',
