@@ -34,6 +34,7 @@ export class ProviderInfoComponent implements OnInit {
 
   constructor(private storeService: MyStoreService) {
     this.mode = storeService.mode;
+    console.log("PPPPP", this)
   }
 
   ngOnInit(): void {
