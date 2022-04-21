@@ -1022,12 +1022,16 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     return this.otherFilters.includes(numb);
   }
 
+  public continueOrder = () => {
+    this.router.navigate(['/ecommerce/create-giftcard']);
+  };
+
   showShoppingCartDialog() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        // callback: this.boundedPrintValue,
+        callback: this.continueOrder,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
