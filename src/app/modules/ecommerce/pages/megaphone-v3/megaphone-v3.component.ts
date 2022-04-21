@@ -487,7 +487,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
               },
             },
             options: {
-              limit: 20,
+              limit: 60,
             },
           })
         ).listItems;
