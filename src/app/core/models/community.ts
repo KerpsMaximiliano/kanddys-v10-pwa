@@ -32,7 +32,7 @@ export class Community extends Model<Community> {
     const { user } = medatata || {};
     const defaultId = user?.defaultCommunity?._id;
     return {
-      image: this.image || '/assets/images/noimage.png',
+      image: this.image || `${environment.assetsUrl}/noimage.png`,
       title: `${this.name}`,
       content: `
         ${this.kindcode}

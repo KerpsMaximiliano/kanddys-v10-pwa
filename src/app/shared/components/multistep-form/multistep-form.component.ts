@@ -9,6 +9,7 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
+import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 
 interface FieldStyles {
@@ -215,6 +216,7 @@ export class MultistepFormComponent implements OnInit {
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
+  env: string = environment.assetsUrl;
 
   constructor() {}
 

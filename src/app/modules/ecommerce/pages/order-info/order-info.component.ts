@@ -11,6 +11,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { formatDate, LocationStrategy } from '@angular/common';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { environment } from 'src/environments/environment';
 //import { CreateTriviaComponent } from '../create-trivia/create-trivia.component';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
@@ -207,7 +208,7 @@ export class OrderInfoComponent implements OnInit {
 
           this.showItem = {
             showArrow: true,
-            imageUrls: ['./../../../../../assets/images/bee-kanddy.png'],
+            imageUrls: [`${environment.assetsUrl}/bee-kanddy.png`],
           };
           for (let i = 0; i < data.order.items[0].item.params.length; i++) {
             if (

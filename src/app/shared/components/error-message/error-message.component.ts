@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-error-message',
@@ -10,6 +11,8 @@ export class ErrorMessageComponent implements OnInit {
   @Input() text1: string = "There's been a mistake.";
   @Input() text2: string;
   @Input() btnText: string = 'Accept';
+
+  env: string = environment.assetsUrl;
 
   constructor() {}
 

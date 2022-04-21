@@ -44,7 +44,7 @@
                 </div>
                 <button *ngIf="!orderFinished" class="delete-button" (click)="deleteItem(i)">
                     ELIMINAR
-                    <img src="/assets/images/closeButton.svg" width="20" height="20" alt="delete" style="margin-left: 5px; margin-top: -6px;">
+                    <img src="{{ env }}/closeButton.svg" width="20" height="20" alt="delete" style="margin-left: 5px; margin-top: -6px;">
                 </button>
             </div>
             <div

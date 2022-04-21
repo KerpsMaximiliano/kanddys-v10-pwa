@@ -18,6 +18,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { TabComponent } from './tab.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'tabs',
@@ -47,6 +48,8 @@ export class TabsComponent implements AfterViewInit, OnDestroy {
   @Output()
   private selected: EventEmitter<TabComponent> = new EventEmitter();
   private routeSub: Subscription;
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private ref: ElementRef,

@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MyStoreService } from 'src/app/core/services/my-store.service';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-contact-buttons',
@@ -11,6 +13,7 @@ export class ContactButtonsComponent implements OnInit {
   @Input() providerImage: string = '';
   @Input() objectFit:string = 'contain';
   mode: string;
+  env: string = environment.assetsUrl;
 
   constructor(private storeService: MyStoreService) {
     this.mode = storeService.mode;

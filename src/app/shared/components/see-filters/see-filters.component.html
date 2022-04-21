@@ -6,7 +6,7 @@
     <span class="title">{{ title }}</span>
     <div (click)="openDialog()" class="filterButton">
       <!--<span *ngIf = "activedTags.length > 0" [ngStyle]="{'font-size':activedTags.length > 9?'8px':'16px'}" >{{activedTags.length}}</span>-->
-      <img src="assets/images/filter.svg" alt="Filter" />
+      <img src="{{ env }}/filter.svg" alt="Filter" />
     </div>
     <div class="more" *ngIf="showOptions">
       <div class="dot"></div>
@@ -20,7 +20,7 @@
     <div class="searchSection">
       <input [ngStyle] = "{'background': searchBar.background, 'font-family': searchBar.fontFamily}" type="text" placeholder="{{searchBar.placeholder}}" [(ngModel)]="searchBar.value" (ngModelChange)="searchBar.searchFunction()">
       <div (click)="openDialog()" class="filterButton">
-        <img src="assets/images/filter.svg" alt="Filter" />
+        <img src="{{ env }}/filter.svg" alt="Filter" />
       </div>
     </div>
   </div>

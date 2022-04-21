@@ -10,6 +10,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WarningStepsComponent } from 'src/app/shared/dialogs/warning-steps/warning-steps.component';
 import { Location } from '@angular/common';
 import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-provider-store',

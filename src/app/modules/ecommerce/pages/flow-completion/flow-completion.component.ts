@@ -20,6 +20,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-flow-completion',
@@ -137,6 +138,7 @@ export class FlowCompletionComponent implements OnInit {
   ammount: number;
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
+  env: string = environment.assetsUrl;
 
   constructor(
     private authService: AuthService,

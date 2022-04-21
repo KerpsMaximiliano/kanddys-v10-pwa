@@ -12,6 +12,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-category-items',

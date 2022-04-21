@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-show-items',
@@ -23,6 +24,7 @@ export class ShowItemsComponent implements OnInit {
   @Input() headerButton: string = 'Ver mas Desayunos';
   @Input() footerButton: string = 'HACER TRANSFERENCIA PARA ORDENAR';
   price: number = 100;
+  env: string = environment.assetsUrl;
 
   ngOnInit(): void {
     console.log(this.products);

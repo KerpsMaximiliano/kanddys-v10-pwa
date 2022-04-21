@@ -11,6 +11,7 @@ import {
   base64ToFile,
   compressImage,
 } from 'src/app/core/helpers/files.helpers';
+import { environment } from 'src/environments/environment';
 
 import { CameraInput } from './../../../core/helpers/camera.helpers';
 import { TriggersService } from './../../../core/services/triggers.service';
@@ -27,6 +28,7 @@ export class MakeTriggerComponent implements AfterViewInit, OnDestroy {
   camera: CameraInput;
   photo: File;
   src: string | ArrayBuffer;
+  env: string = environment.assetsUrl;
 
   constructor(public location: Location, private triggers: TriggersService) {}
 

@@ -193,7 +193,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   filters: Array<any> = ['Mar', 'Mie', 'Jue', 'Vie'];
   priceTotal: number = 0;
   isCategories: boolean;
-  imageRoute: string = '/assets/images/share-outline.png';
+  imageRoute: string = `${environment.assetsUrl}/share-outline.png`;
   renderedSwippers: number = 0;
 
   isCaffaro: boolean;

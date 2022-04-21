@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { CalendarService } from './../../../core/services/calendar.service';
 
@@ -149,6 +150,7 @@ export class SwiperComponent implements OnInit {
   color = ['#865396', '#E89452', '#7F7FDE'];
   month: number = 0;
   isLoop: boolean = false;
+  env: string = environment.assetsUrl;
 
   public SmallConfig: SwiperOptions = {
     a11y: { enabled: true },

@@ -8,6 +8,8 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { Location } from '@angular/common';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',

@@ -18,7 +18,7 @@ export class Partner extends Model<Partner> {
   toCard(): CardData {
     return {
       title: this.merchant.name,
-      image: this.merchant.image || '/assets/images/noimage.png',
+      image: this.merchant.image || `${environment.assetsUrl}/noimage.png`,
       content: `
         <b> Hive profit: </b> ${this.percent || 0}%
         <br/>

@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-leadword-list',
@@ -45,6 +46,7 @@ export class LeadwordListComponent implements OnInit {
   testID: string;
   // @Input() type: string;
   fullLink: string;
+  env: string = environment.assetsUrl;
 
   ngOnInit(): void {
     console.log(this.list);

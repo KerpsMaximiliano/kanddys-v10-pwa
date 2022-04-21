@@ -6,6 +6,7 @@ import { UiService } from 'src/app/core/services/ui.service';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { Action } from './../../../core/types/general.types';
+import { environment } from 'src/environments/environment';
 
 export interface HeaderInfo {
   image?: string;
@@ -32,7 +33,7 @@ export class HeaderComponent {
 
   get image() {
     if (this.auth?.session)
-      return this.app?.header?.image || 'assets/images/user-default.png';
+      return this.app?.header?.image || `${environment.assetsUrl}/user-default.png`;
     return 'assets/icons/icon-128x128.png';
   }
 

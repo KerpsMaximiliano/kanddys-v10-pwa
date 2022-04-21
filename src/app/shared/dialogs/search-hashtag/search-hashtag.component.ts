@@ -4,6 +4,7 @@ import { CodesService } from 'src/app/core/services/codes.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { ErrorComponent } from 'src/app/shared/dialogs/error/error.component';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-search-hashtag',
   templateUrl: './search-hashtag.component.html',
@@ -26,6 +27,7 @@ export class SearchHashtagComponent implements OnInit {
     filterProfiles: false
   };
   advancedOptions = false;
+  env: string = environment.assetsUrl;
   public slides = [
     'First slide',
     'Second slide',
