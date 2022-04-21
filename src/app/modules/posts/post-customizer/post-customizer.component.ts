@@ -853,16 +853,16 @@ export class PostCustomizerComponent
       console.log('FUENTE', this.elementList[elementIndex].typography.font);
 
       if (fontElement) {
-        // let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
+        let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
 
-        // myFont.load().then((font) => {
-        //   (document as any).fonts.add(font);
+        myFont.load().then((font) => {
+          (document as any).fonts.add(font);
 
-        //   setTimeout(() => {
-        //     // alert('PRE-RENDER');
-        //     this.draw();
-        //   }, 200);
-        // });
+          setTimeout(() => {
+            // alert('PRE-RENDER');
+            this.draw();
+          }, 200);
+        });
       }
     }
   }
