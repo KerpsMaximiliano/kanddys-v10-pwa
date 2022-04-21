@@ -50,6 +50,7 @@ export class SocialMediaModel {
 export class SaleFlowItem extends Model<SaleFlowItem> {
   item?: Item;
   customizer?: Customizer;
+  index: number;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {

@@ -12,6 +12,7 @@ import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-d
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { FlowCompletionComponent } from './pages/flow-completion/flow-completion.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { CustomizerRedirectComponent } from './pages/customizer-redirect/customizer-redirect.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,10 @@ const routes: Routes = [
       {
         path: 'quantity-and-quality',
         component: CustomItemDetailComponent,
+      },
+      {
+        path: 'redirect-to-customizer',
+        component: CustomizerRedirectComponent,
       },
     ],
   },
@@ -66,6 +71,7 @@ const routes: Routes = [
   declarations: [
     CategoryItemsComponent,
     CustomItemDetailComponent,
+    CustomizerRedirectComponent,
     ErrorScreenComponent,
     ProviderStoreComponent,
     CategoryItemsComponent,
