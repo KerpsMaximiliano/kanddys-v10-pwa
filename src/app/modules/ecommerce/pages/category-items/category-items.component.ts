@@ -107,9 +107,9 @@ export class CategoryItemsComponent implements OnInit {
               __in: ([] = itemsId),
             },
           },
-          options: {
-            limit: 100,
-          },
+          // options: {
+          //   limit: 100,
+          // },
         })
       ).listItems;
 
