@@ -173,7 +173,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   swiperPackageOrder: any = [];
   packagesRulesItems: any = [];
   selectedTagsIds: any = [];
-  categories: any = [];
+  categories: string[] = [];
   flowId: string;
   merchantId: string;
   merchantName: string = '';
@@ -269,10 +269,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       };
     });
 
-    this.categories = itemCategoriesList;
+    this.categories = headlines[0].itemsCategories.map(
+      (value) => itemCategoriesList.find((element) => element._id === value).name)
     this.filters = filters;
     console.log(this.categories);
-    this.category = this.categories[0].name;
 
     if (this.items.length > 0 && this.itemsByCategory.length === 0) {
       this.organizeItems();
@@ -294,28 +294,41 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.isCategories = false;
     } else {
       this.isCategories = true;
-      this.category = this.categories[0].name;
     }
 
     this.done = true;
   }
 
   organizeItems() {
-    let categories = [];
-    this.items.forEach((item) => {
-      item.category.forEach((category) => {
-        if (!categories.includes(category.name)) categories.push(category.name);
+    if(this.categories) {
+      this.categories.forEach((name) => {
+        this.itemsByCategory.push({
+          label: name,
+          items: this.items.filter((item) =>
+            item.category.some((category) => category.name === name)
+          ),
+        });
       });
-    });
-    console.log(categories);
-    categories.forEach((name) => {
-      this.itemsByCategory.push({
-        label: name,
-        items: this.items.filter((item) =>
-          item.category.some((category) => category.name === name)
-        ),
-      });
-    });
+    }
+
+
+    // let categories = [];
+    // this.items.forEach((item) => {
+    //   item.category.forEach((category) => {
+    //     if (!categories.includes(category.name)) categories.push(category.name);
+    //   });
+    // });
+    // console.log(categories);
+    // categories.forEach((name) => {
+    //   this.itemsByCategory.push({
+    //     label: name,
+    //     items: this.items.filter((item) =>
+    //       item.category.some((category) => category.name === name)
+    //     ),
+    //   });
+    // });
+
+    
     // if (
     //   this.items.some((item) =>
     //     item.category.some((category) => category.name === 'Tragos')
@@ -518,11 +531,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           num: 1,
         });
         console.log('items', this.items);
-        for (let i = 0; i < this.items.length; i++) {
-          if (this.items[i].isSelected) {
-            this.showCTA = true;
-          }
-        }
+        if(!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
       }
 
       if (!this.isCecilia) unlockUI();
@@ -588,7 +597,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         }
         let itemData = this.header.getItemProduct(this.saleflowData._id);
         console.log(itemData);
-        if (itemData.length > 0) {
+        if (itemData.length > 0 && !this.hasCustomizer) {
           this.showCTA = true;
         } else {
           this.showCTA = false;
@@ -785,12 +794,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
-  }
-
-  toggleOption(option, category) {
-    this.category = category;
-    console.log(this.category);
-    this.option = option;
   }
 
   /*openSelectedNapkinsModal() {
