@@ -114,16 +114,16 @@ export class CategoryItemsComponent implements OnInit {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
           },
-          // options: {
-          //   limit: 100,
-          // },
+          options: {
+            limit: 100,
+          },
         })
       ).listItems;
 
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find((item) => item.item === items[i]._id);
         items[i].customizerId = saleflowItem.customizer;
-        this.items[i].index = saleflowItem.index;
+        items[i].index = saleflowItem.index;
         items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
@@ -131,7 +131,7 @@ export class CategoryItemsComponent implements OnInit {
             items[i].pricing;
       }
       if(this.items.every((item) => item.index)) {
-        this.items = this.items.sort((a, b) =>
+        items = items.sort((a, b) =>
           a.index > b.index ? 1 : b.index > a.index ? -1 : 0
         );
       }
