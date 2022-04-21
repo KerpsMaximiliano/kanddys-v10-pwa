@@ -88,9 +88,9 @@ export class CategoryItemsComponent implements OnInit {
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       const orderData = this.header.getOrder(this.saleflowData._id);
       let saleflowItems: {
-        item: string,
-        customizer: string,
-        index: number
+        item: string;
+        customizer: string;
+        index: number;
       }[] = [];
       let items: Item[] = [];
       const merchantId = this.saleflowData.merchant._id;
@@ -100,13 +100,19 @@ export class CategoryItemsComponent implements OnInit {
           saleflowItems.push({
             item: this.saleflowData.items[i].item._id,
             customizer: this.saleflowData.items[i].customizer?._id,
-            index: this.saleflowData.items[i].index
+            index: this.saleflowData.items[i].index,
           });
-        };
-        if(saleflowItems.some((item) => item.customizer)) this.hasCustomizer = true;
+        }
+        if (saleflowItems.some((item) => item.customizer))
+          this.hasCustomizer = true;
       }
 
-      const selectedItems = orderData?.products?.length > 0 ? orderData.products.map((subOrder) => subOrder.item) : [];
+      console.log('CECILIA', this.hasCustomizer);
+
+      const selectedItems =
+        orderData?.products?.length > 0
+          ? orderData.products.map((subOrder) => subOrder.item)
+          : [];
       items = (
         await this.saleflow.listItems({
           findBy: {
@@ -121,7 +127,9 @@ export class CategoryItemsComponent implements OnInit {
       ).listItems;
 
       for (let i = 0; i < items.length; i++) {
-        const saleflowItem = saleflowItems.find((item) => item.item === items[i]._id);
+        const saleflowItem = saleflowItems.find(
+          (item) => item.item === items[i]._id
+        );
         items[i].customizerId = saleflowItem.customizer;
         items[i].index = saleflowItem.index;
         items[i].isSelected = selectedItems.includes(items[i]._id);
@@ -130,7 +138,7 @@ export class CategoryItemsComponent implements OnInit {
             items[i].fixedQuantity * items[i].params[0].values[0].price +
             items[i].pricing;
       }
-      if(this.items.every((item) => item.index)) {
+      if (this.items.every((item) => item.index)) {
         items = items.sort((a, b) =>
           a.index > b.index ? 1 : b.index > a.index ? -1 : 0
         );
@@ -166,8 +174,8 @@ export class CategoryItemsComponent implements OnInit {
     let itemData;
     if (index.index) {
       itemData = this.items[index.index];
-    }else{
-      itemData = this.items[index]
+    } else {
+      itemData = this.items[index];
     }
     let params: ItemParam;
     let selectedValue: ItemParamValue;
@@ -198,8 +206,15 @@ export class CategoryItemsComponent implements OnInit {
       };
     }
 
-    this.router.navigate([`/ecommerce/provider-store`]);
-    //this.router.navigate(['/ecommerce/item-detail/' + this.header.saleflow._id + '/' + itemData._id]);
+    if (this.hasCustomizer) this.router.navigate([`/ecommerce/provider-store`]);
+    else {
+      this.router.navigate([
+        '/ecommerce/item-detail/' +
+          this.header.saleflow._id +
+          '/' +
+          itemData._id,
+      ]);
+    }
   }
 
   closeTagEvent(e) {
@@ -256,22 +271,26 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   toggleSelected(type: string, index: number) {
-    if(type === 'item') {
-      if(index != undefined) {
-        this.originalItems[index].isSelected = !this.originalItems[index].isSelected;
+    if (type === 'item') {
+      if (index != undefined) {
+        this.originalItems[index].isSelected =
+          !this.originalItems[index].isSelected;
         let itemParams = {
           param: this.originalItems[index].params[0]._id,
-          paramValue: this.originalItems[index].params[0].values[0]._id
-        }
+          paramValue: this.originalItems[index].params[0].values[0]._id,
+        };
         this.header.storeItems(this.saleflowData._id, {
-            item: this.originalItems[index]._id,
-            customizer: this.originalItems[index].customizerId,
-            params: [itemParams],
-            saleflow: this.saleflowData._id,
+          item: this.originalItems[index]._id,
+          customizer: this.originalItems[index].customizerId,
+          params: [itemParams],
+          saleflow: this.saleflowData._id,
         });
-        this.header.storeItemProduct(this.saleflowData._id, this.originalItems[index]);
+        this.header.storeItemProduct(
+          this.saleflowData._id,
+          this.originalItems[index]
+        );
       }
-    } else if(type === 'package') {
+    } else if (type === 'package') {
       //
     }
   }
