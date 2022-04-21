@@ -71,6 +71,7 @@ const routes: Routes = [
     path: 'privacy-policy',
     component: PrivacyPolicyComponent,
   },
+  //added create-giftcard again because the merge was deleted??????
   {
     path: 'create-giftcard',
     component: CreateGiftcardComponent,

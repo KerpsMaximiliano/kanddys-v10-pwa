@@ -10,6 +10,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 })
 export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(private header: HeaderService, private router: Router) {}
+  //added create-giftcard again because the merge was deleted??????
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
     if (!this.addedScrollBlocker) {
