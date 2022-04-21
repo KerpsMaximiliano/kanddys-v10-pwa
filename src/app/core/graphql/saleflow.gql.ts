@@ -94,6 +94,7 @@ export const hotSaleflow = gql`
         customizer {
           _id
         }
+        index
       }
       workingHours
     }
