@@ -5,6 +5,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 //import { SelectedNapkinsModalComponent } from '../selected-napkins-modal/selected-napkins-modal.component';
 //import { ShortcutsComponent } from '../../../../shared/dialogs/shortcuts/shortcuts.component';
 //import { QuickFiltersComponent } from '../../../../shared/dialogs/quick-filters/quick-filters.component';
@@ -409,9 +410,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
-      this.saleflowData = (
-        await this.saleflow.saleflow(params.id)
-      ).saleflow;
+      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       console.log(this.saleflowData);
       this.header.saleflow = this.saleflowData;
       this.header.storeFlowId(this.saleflowData._id);
@@ -426,9 +425,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.getMerchant(this.saleflowData.merchant._id);
 
       let saleflowItems: {
-        item: string,
-        customizer: string,
-        index: number
+        item: string;
+        customizer: string;
+        index: number;
       }[] = [];
 
       console.log(this.saleflowData.items.length);
@@ -438,10 +437,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           saleflowItems.push({
             item: this.saleflowData.items[i].item._id,
             customizer: this.saleflowData.items[i].customizer?._id,
-            index: this.saleflowData.items[i].index
+            index: this.saleflowData.items[i].index,
           });
-        };
-        if(saleflowItems.some((item) => item.customizer)) this.hasCustomizer = true;
+        }
+        if (saleflowItems.some((item) => item.customizer))
+          this.hasCustomizer = true;
       }
       if (this.saleflowData.packages.length !== 0) {
         this.merchantLabel = 'Planes mas comprados';
@@ -493,7 +493,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         ).listItems;
         this.inputsItems = this.items;
         for (let i = 0; i < this.items.length; i++) {
-          const saleflowItem = saleflowItems.find((item) => item.item === this.items[i]._id);
+          const saleflowItem = saleflowItems.find(
+            (item) => item.item === this.items[i]._id
+          );
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
@@ -503,8 +505,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
                 this.items[i].params[0].values[0].price +
               this.items[i].pricing;
           this.labelValues.push({ id: i, status: false });
-        };
-        if(this.items.every((item) => item.index)) {
+        }
+        if (this.items.every((item) => item.index)) {
           this.items = this.items.sort((a, b) =>
             a.index > b.index ? 1 : b.index > a.index ? -1 : 0
           );
@@ -1015,6 +1017,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   otherFilterHasElement(numb) {
     return this.otherFilters.includes(numb);
+  }
+
+  showShoppingCartDialog() {
+    this.dialog.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        headerButton: 'Ver mas productos',
+        // callback: this.boundedPrintValue,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   transformIcon() {
