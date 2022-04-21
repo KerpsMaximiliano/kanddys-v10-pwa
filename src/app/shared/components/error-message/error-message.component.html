@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="arch"></div>
+
+  <div class="circle-wrapper">
+    <div class="circle">
+      <div class="sad-wrapper">
+        <img class="sad" src="../../../../assets/images/sadFace.svg" alt="" />
+      </div>
+      <p class="title">{{ title }}</p>
+      <div class="text-wrapper">
+        <p class="text">{{ text1 }}</p>
+        <p class="text" *ngIf="text2">{{ text2 }}</p>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: center">
+      <button class="btn">{{ btnText }}</button>
+    </div>
+  </div>
+</div>
