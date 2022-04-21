@@ -69,7 +69,8 @@ export class Item extends Model<Item> {
   qualityQuantity?: {
     price: number,
     quantity: number,
-  }
+  };
+  index?: number;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {

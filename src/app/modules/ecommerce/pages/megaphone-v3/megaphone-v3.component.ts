@@ -117,7 +117,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   // =============================================================
 
   saleflowData: SaleFlow;
-  customizersId: string[] = [];
+  hasCustomizer: boolean;
   isLogged: boolean = false;
   showFilters = false;
   type = 1;
@@ -160,7 +160,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   options = [];
   loadingSwiper: boolean = false;
   banner: string = '';
-  itemsId: any = [];
   items: Item[] = [];
   itemsByCategory: {
     label: string;
@@ -411,7 +410,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
       this.header.flowId = params.id;
       this.saleflowData = (
-        await this.saleflow.saleflow(params.id, false)
+        await this.saleflow.saleflow(params.id)
       ).saleflow;
       console.log(this.saleflowData);
       this.header.saleflow = this.saleflowData;
@@ -426,14 +425,23 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.getCategories();
       this.getMerchant(this.saleflowData.merchant._id);
 
+      let saleflowItems: {
+        item: string,
+        customizer: string,
+        index: number
+      }[] = [];
+
       console.log(this.saleflowData.items.length);
       if (this.saleflowData.items.length !== 0) {
         this.merchantLabel = 'Alegrías de esta semana';
         for (let i = 0; i < this.saleflowData.items.length; i++) {
-          if (this.saleflowData?.items[i]?.customizer?._id)
-            this.customizersId.push(this.saleflowData.items[i].customizer._id);
-          this.itemsId.push(this.saleflowData.items[i].item._id);
-        }
+          saleflowItems.push({
+            item: this.saleflowData.items[i].item._id,
+            customizer: this.saleflowData.items[i].customizer?._id,
+            index: this.saleflowData.items[i].index
+          });
+        };
+        if(saleflowItems.some((item) => item.customizer)) this.hasCustomizer = true;
       }
       if (this.saleflowData.packages.length !== 0) {
         this.merchantLabel = 'Planes mas comprados';
@@ -475,7 +483,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           await this.saleflow.listItems({
             findBy: {
               _id: {
-                __in: ([] = this.itemsId),
+                __in: ([] = saleflowItems.map((items) => items.item)),
               },
             },
             options: {
@@ -485,7 +493,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         ).listItems;
         this.inputsItems = this.items;
         for (let i = 0; i < this.items.length; i++) {
-          this.items[i].customizerId = this.customizersId[i];
+          const saleflowItem = saleflowItems.find((item) => item.item === this.items[i]._id);
+          this.items[i].customizerId = saleflowItem.customizer;
+          this.items[i].index = saleflowItem.index;
           this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
@@ -493,6 +503,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
                 this.items[i].params[0].values[0].price +
               this.items[i].pricing;
           this.labelValues.push({ id: i, status: false });
+        };
+        if(this.items.every((item) => item.index)) {
+          this.items = this.items.sort((a, b) =>
+            a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+          );
         }
         this.organizeItems();
         this.priceTotal = this.inputsItems[0].pricing;
@@ -1005,7 +1020,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   transformIcon() {
     // copyText(`${environment.uri}/ecommerce/megaphone-v3/${this.flowId}`);
     //this.imageRoute = '/assets/images/check-circle.png';
-    if (this.customizersId.length === 0) {
+    if (!this.hasCustomizer) {
       this.router.navigate([`/ecommerce/create-giftcard`]);
     } else {
       this.router.navigate([`/ecommerce/provider-store`]);

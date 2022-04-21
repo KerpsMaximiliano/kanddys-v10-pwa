@@ -12,7 +12,7 @@
   <div
     style="margin-top: 50px; margin-bottom: 60px"
     *ngIf="
-      saleflowData && (inputPackage.length > 0 || customizersId.length === 0)
+      saleflowData && (inputPackage.length > 0 || !hasCustomizer)
     "
   >
     <ng-container *ngIf="inputPackage.length >= 0 && items.length === 0">
@@ -27,7 +27,7 @@
       <app-swiper [saleFlowTwo]="true" [selectable]="saleflowData?.canBuyMultipleItems" [saleFlowTwoData]="sliderPackage" (slideActive)="save($event)" (toggleEmitter)="toggleSelected('package',$event)"></app-swiper>
     </ng-container>
 
-    <ng-container *ngIf="customizersId.length === 0 && items.length > 0">
+    <ng-container *ngIf="!hasCustomizer && items.length > 0">
       <!--<app-provider-item-slider
         [label]="merchantLabel"
         [providerItems]="items"
@@ -60,7 +60,7 @@
   </div>
   <section
     style="background-color: white; margin-bottom: 73px"
-    *ngIf="customizersId.length === 0"
+    *ngIf="!hasCustomizer"
   >
     <ng-container *ngIf="isCategories; else elseTemplate">
       <div style="padding-top: 10px">

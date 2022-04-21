@@ -59,9 +59,7 @@ export const saleflow = gql`
         customizer {
           _id
         }
-        customizer {
-          _id
-        }
+        index
       }
       workingHours
       paymentInfo

@@ -30,6 +30,7 @@ export class CategoryItemsComponent implements OnInit {
   filters: any[];
   loadingSwiper: boolean;
   selectedTagsIds: any = [];
+  hasCustomizer: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,17 +87,23 @@ export class CategoryItemsComponent implements OnInit {
 
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       const orderData = this.header.getOrder(this.saleflowData._id);
-      let customizersId: string[] = [];
-      let itemsId: string[] = [];
+      let saleflowItems: {
+        item: string,
+        customizer: string,
+        index: number
+      }[] = [];
       let items: Item[] = [];
       const merchantId = this.saleflowData.merchant._id;
 
       if (this.saleflowData.items.length !== 0) {
         for (let i = 0; i < this.saleflowData.items.length; i++) {
-          if (this.saleflowData?.items[i]?.customizer?._id)
-            customizersId.push(this.saleflowData.items[i].customizer._id);
-          itemsId.push(this.saleflowData.items[i].item._id);
-        }
+          saleflowItems.push({
+            item: this.saleflowData.items[i].item._id,
+            customizer: this.saleflowData.items[i].customizer?._id,
+            index: this.saleflowData.items[i].index
+          });
+        };
+        if(saleflowItems.some((item) => item.customizer)) this.hasCustomizer = true;
       }
 
       const selectedItems = orderData?.products?.length > 0 ? orderData.products.map((subOrder) => subOrder.item) : [];
@@ -104,7 +111,7 @@ export class CategoryItemsComponent implements OnInit {
         await this.saleflow.listItems({
           findBy: {
             _id: {
-              __in: ([] = itemsId),
+              __in: ([] = saleflowItems.map((items) => items.item)),
             },
           },
           // options: {
@@ -114,12 +121,19 @@ export class CategoryItemsComponent implements OnInit {
       ).listItems;
 
       for (let i = 0; i < items.length; i++) {
-        items[i].customizerId = customizersId[i];
+        const saleflowItem = saleflowItems.find((item) => item.item === items[i]._id);
+        items[i].customizerId = saleflowItem.customizer;
+        this.items[i].index = saleflowItem.index;
         items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +
             items[i].pricing;
+      }
+      if(this.items.every((item) => item.index)) {
+        this.items = this.items.sort((a, b) =>
+          a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+        );
       }
 
       this.items = items.filter((item) =>
