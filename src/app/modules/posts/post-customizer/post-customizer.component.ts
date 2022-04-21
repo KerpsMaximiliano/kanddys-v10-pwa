@@ -301,6 +301,10 @@ export class PostCustomizerComponent
       fontName: 'Village',
     },
     {
+      fileName: 'AirForce45-Regular.ttf',
+      fontName: 'AirForce45-Regular',
+    },
+    {
       fileName: 'PomfritDandyNFRegular.ttf',
       fontName: 'PomfritDandyNFRegular',
     },
@@ -473,6 +477,7 @@ export class PostCustomizerComponent
         if (this.currentTextsAmount === texts.fixedAmount) {
           this.textMax = true;
         }
+        if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true;
       }
     } else {
       if (this.route.snapshot.url[0].path === 'post-customizer') {
@@ -510,6 +515,7 @@ export class PostCustomizerComponent
             if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
             this.willHideInput = true;
           }
+          if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
           // Text input below canvas
           texts.itemsRule.forEach((text) => {
             if (text.defaultText) {
@@ -802,6 +808,7 @@ export class PostCustomizerComponent
             if(rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
             this.willHideInput = true;
           }
+          if(rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
           // Text input below canvas
           if (this.currentTextsAmount === rules.texts.fixedAmount) {
             this.textMax = true;
@@ -846,16 +853,16 @@ export class PostCustomizerComponent
       console.log('FUENTE', this.elementList[elementIndex].typography.font);
 
       if (fontElement) {
-        let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
+        // let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
 
-        myFont.load().then((font) => {
-          (document as any).fonts.add(font);
+        // myFont.load().then((font) => {
+        //   (document as any).fonts.add(font);
 
-          setTimeout(() => {
-            // alert('PRE-RENDER');
-            this.draw();
-          }, 200);
-        });
+        //   setTimeout(() => {
+        //     // alert('PRE-RENDER');
+        //     this.draw();
+        //   }, 200);
+        // });
       }
     }
   }
