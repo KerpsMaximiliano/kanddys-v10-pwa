@@ -387,17 +387,25 @@
   </div>
 
   <div class="content" *ngIf="address">
-      <p class="top-text">Lugar de entrega:</p>
-      <div class="text-container">
-        En República Dominicana, {{ orders.items[0].deliveryLocation.city }},
+    <p class="top-text">Lugar de entrega:</p>
+    <div class="text-container">
+      En República Dominicana,
+      <ng-container *ngIf="orders.items[0].deliveryLocation.city; else pickUp">
+        {{ orders.items[0].deliveryLocation.city }},
         {{ orders.items[0].deliveryLocation.street }}
-      </div>
+      </ng-container>
+      <ng-template #pickUp>
+        {{ orders.items[0].deliveryLocation.nickName }}
+      </ng-template>
+    </div>
+    <ng-container *ngIf="orders.items[0].deliveryLocation.note">
       <div class="target">
         <p class="top-text">Nota:</p>
         <div class="text-container" style="margin-bottom: 60px;">
           {{ orders.items[0].deliveryLocation.note }}
         </div>
       </div>
+    </ng-container>
   </div>
 
   <div class="content-customizer" *ngIf="personalizacion">
@@ -471,8 +479,7 @@
   </div>
 
   <div *ngIf="mensajeRegalo">
-    <app-gift-message [data]="message" [isPreview]="true"
-      [message]="currentMessage"></app-gift-message>
+    <app-gift-message [data]="message" [isPreview]="true" [message]="currentMessage"></app-gift-message>
   </div>
 
   <div *ngIf="pagoView">
@@ -480,8 +487,7 @@
 
       <p class="top-text">Los últimos 4 digitos de la transferencia:</p>
 
-      <input type="text" minlength="4" maxlength="4" class="input payment"
-        placeholder="Los 4 digitos son.." />
+      <input type="text" minlength="4" maxlength="4" class="input payment" placeholder="Los 4 digitos son.." />
 
       <p class="top-text">Monto transferido:</p>
 
