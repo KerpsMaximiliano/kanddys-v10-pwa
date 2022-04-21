@@ -410,7 +410,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
       this.header.flowId = params.id;
       this.saleflowData = (
-        await this.saleflow.saleflow(params.id, true)
+        await this.saleflow.saleflow(params.id)
       ).saleflow;
       console.log(this.saleflowData);
       this.header.saleflow = this.saleflowData;

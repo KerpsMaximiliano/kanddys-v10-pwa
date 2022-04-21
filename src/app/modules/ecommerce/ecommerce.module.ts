@@ -14,6 +14,7 @@ import { FlowCompletionComponent } from './pages/flow-completion/flow-completion
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
 import { UserInfoComponent } from './pages/user-info/user-info.component';
+import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
 
 const routes: Routes = [
   {
@@ -52,11 +53,11 @@ const routes: Routes = [
   },
   {
     path: 'shipment-data-form',
-    component: ShipmentDataFormComponent
+    component: ShipmentDataFormComponent,
   },
   {
     path: 'item-detail/:saleflow/:id',
-    component: ItemDetailComponent
+    component: ItemDetailComponent,
   },
   {
     path: 'flow-completion',
@@ -69,6 +70,11 @@ const routes: Routes = [
   {
     path: 'privacy-policy',
     component: PrivacyPolicyComponent,
+  },
+  //added create-giftcard again because the merge was deleted??????
+  {
+    path: 'create-giftcard',
+    component: CreateGiftcardComponent,
   },
 ];
 
@@ -87,8 +93,9 @@ const routes: Routes = [
     FlowCompletionComponent,
     PrivacyPolicyComponent,
     CustomizerRedirectComponent,
-    UserInfoComponent
+    UserInfoComponent,
+    CreateGiftcardComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
-export class EcommerceModule { }
+export class EcommerceModule {}
