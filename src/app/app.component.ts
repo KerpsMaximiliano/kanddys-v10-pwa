@@ -11,11 +11,9 @@ import { IpusersService } from './core/services/ipusers.service';
 @Component({
   selector: 'app-root',
   template: `
-    <app-header></app-header>
     <main>
       <router-outlet></router-outlet>
     </main>
-    <app-ball-navbar></app-ball-navbar>
     <!-- <app-scope-menu #scopeMenu></app-scope-menu> -->
   `,
   styleUrls: ['./app.component.scss'],

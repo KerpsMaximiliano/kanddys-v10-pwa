@@ -5,22 +5,28 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './shared/pages/home/home.component';
 
-const redirectTo = '/';
+const redirectTo = '/home';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
-  {
-    path: 'home',
-    component: HomeComponent,
-  },
   { path: 'invitation/community/:identifier', component: InvitationComponent },
   {
     path: 'partner/receipts/:id',
     component: PartnerReceiptsComponent,
     data: { fullscreen: true },
   },
-  { path: '**', redirectTo, pathMatch: 'full' },
+  {
+    path: 'home',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    component: HomeComponent
+    //component: LandingComponent
+  },
   {
     path: 'ecommerce',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
     loadChildren: () =>
       import('./modules/ecommerce/ecommerce.module').then(
         (m) => m.EcommerceModule
@@ -28,9 +34,15 @@ const routes: Routes = [
   },
   {
     path: 'posts',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
     loadChildren: () =>
-      import('./modules/posts/posts.module').then((m) => m.PostsModule),
+      import('./modules/posts/posts.module').then(
+        (m) => m.PostsModule
+      ),
   },
+  { path: '**', redirectTo, pathMatch: 'full' },
 ];
 
 @NgModule({
