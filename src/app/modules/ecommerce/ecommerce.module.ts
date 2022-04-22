@@ -15,6 +15,7 @@ import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.co
 import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
 import { UserInfoComponent } from './pages/user-info/user-info.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
+import { TestComponent } from './pages/test/test.component';
 
 const routes: Routes = [
   {
@@ -76,6 +77,10 @@ const routes: Routes = [
     path: 'create-giftcard',
     component: CreateGiftcardComponent,
   },
+  {
+    path: 'test',
+    component: TestComponent,
+  },
 ];
 
 @NgModule({
@@ -95,6 +100,7 @@ const routes: Routes = [
     CustomizerRedirectComponent,
     UserInfoComponent,
     CreateGiftcardComponent,
+    TestComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

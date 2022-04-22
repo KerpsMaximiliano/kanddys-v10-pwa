@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-activities-option',
@@ -6,6 +6,8 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./activities-option.component.scss'],
 })
 export class ActivitiesOptionComponent implements OnInit {
+  @Output() exampleEvent = new EventEmitter();
+
   @Input() lightTextAtTheTop: string = '';
   @Input() boldTextAtTheBottom: string = '';
   @Input() backgroundColor: string = '#FFF';
@@ -15,5 +17,7 @@ export class ActivitiesOptionComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.exampleEvent.emit('whatever');
+  }
 }
