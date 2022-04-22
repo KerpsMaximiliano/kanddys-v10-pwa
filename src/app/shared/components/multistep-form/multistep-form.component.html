@@ -18,7 +18,10 @@
     <div class="form-step" [id]="'step-' + currentStepIndex">
       <form [formGroup]="dataModel">
         <ng-container
-          *ngFor="let currentField of currentStep['fieldsList']"
+          *ngFor="
+            let currentField of currentStep['fieldsList'];
+            let currentFieldIndex = index
+          "
           [formGroupName]="currentStepIndex + 1"
         >
           <!-- STANDARD INPUTS LIKE TEXT NUMBER EMAIL PASSWORDS ARE RENDERED HERE     -->
@@ -107,6 +110,7 @@
             </div>
           </div>
 
+          <!-- TEXTAREA GOES HERE -->
           <div
             *ngIf="currentField.inputType === 'textarea'"
             [ngStyle]="
@@ -144,6 +148,7 @@
             </ng-container>
           </div>
 
+          <!-- RADIO INPUTS GO HERE -->
           <div
             *ngIf="currentField.inputType === 'radio'"
             class="selector"
@@ -226,6 +231,33 @@
               (change)="loadFile(currentField, $event)"
             />
           </div>
+
+          <ng-container *ngIf="currentStep['embeddedComponents']">
+            <ng-container
+              *ngFor="
+                let currentEmbeddedComponent of currentStep[
+                  'embeddedComponents'
+                ]
+              "
+            >
+              <div
+                *ngIf="
+                  currentEmbeddedComponent.afterIndex === currentFieldIndex
+                "
+                [ngStyle]="
+                  currentEmbeddedComponent.containerStyles
+                    ? currentEmbeddedComponent.containerStyles
+                    : null
+                "
+              >
+                <app-dynamic-component
+                  [component]="currentEmbeddedComponent.component"
+                  [componentInputs]="currentEmbeddedComponent.inputs"
+                  [componentOutputs]="currentEmbeddedComponent.outputs"
+                ></app-dynamic-component>
+              </div>
+            </ng-container>
+          </ng-container>
         </ng-container>
       </form>
 
@@ -234,16 +266,16 @@
         *ngIf="currentStep['optionalLinksTo']"
         class="optional-links"
         [ngStyle]="
-          currentStep.optionalLinksTo.styles.containerStyles
-            ? currentStep.optionalLinksTo.styles.containerStyles
+          currentStep.optionalLinksTo?.styles?.containerStyles
+            ? currentStep.optionalLinksTo?.styles?.containerStyles
             : null
         "
       >
         <span
           class="title"
           [ngStyle]="
-            currentStep.optionalLinksTo.styles.labelStyles
-              ? currentStep.optionalLinksTo.styles.labelStyles
+            currentStep.optionalLinksTo?.styles?.labelStyles
+              ? currentStep.optionalLinksTo?.styles?.labelStyles
               : null
           "
           >Optional</span
@@ -253,8 +285,8 @@
             class="link"
             (click)="link.action(stepFunctionParams)"
             [ngStyle]="
-              currentStep.optionalLinksTo.styles.fieldStyles
-                ? currentStep.optionalLinksTo.styles.fieldStyles
+              currentStep.optionalLinksTo?.styles?.fieldStyles
+                ? currentStep.optionalLinksTo?.styles?.fieldStyles
                 : null
             "
             >{{ link.text }}</span
