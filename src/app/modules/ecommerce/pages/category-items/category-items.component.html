@@ -44,7 +44,7 @@
     </div>
     <app-swiper
       [saleFlowTwo]="true"
-      [selectable]="true"
+      [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="originalItems"
       (slideActive)="onClick($event)"
       (toggleEmitter)="toggleSelected('item', $event)"
