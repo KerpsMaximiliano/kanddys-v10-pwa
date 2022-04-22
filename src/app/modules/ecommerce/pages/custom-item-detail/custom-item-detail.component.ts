@@ -54,7 +54,7 @@ export class CustomItemDetailComponent implements OnInit {
       quantity: this.header.items[0].params[1].values[index].quantity,
     };
     this.header.order.products[0].amount = this.header.items[0].params[1].values[index].quantity;
-    this.header.storeItemProduct(this.header.saleflow._id, this.header.items[0]);
+    this.header.storeItem(this.header.saleflow._id, this.header.items[0]);
     if (this.servilletasList.length > 0) {
       this.header.order.products[0].params[1] = {
         param: (this.header.items[0] as Item).params[1]._id,

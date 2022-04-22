@@ -740,8 +740,8 @@ export class FlowCompletionComponent implements OnInit {
                 .then((data) => {
                   console.log(data);
                   console.log(data.createOrder._id);
+                  this.header.emptyOrderProducts(this.header.saleflow._id);
                   this.header.emptyItems(this.header.saleflow._id);
-                  this.header.emptyItemProducts(this.header.saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -781,8 +781,8 @@ export class FlowCompletionComponent implements OnInit {
           .createOrder(orderRequest)
           .then(async (data) => {
             console.log(data);
+            this.header.emptyOrderProducts(this.header.saleflow._id);
             this.header.emptyItems(this.header.saleflow._id);
-            this.header.emptyItemProducts(this.header.saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;

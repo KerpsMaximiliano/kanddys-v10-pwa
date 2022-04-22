@@ -268,7 +268,7 @@ export class ProviderStoreComponent implements OnInit {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
-        const itemCustomizer = this.header.getItemProduct(this.header.saleflow._id)
+        const itemCustomizer = this.header.getItems(this.header.saleflow._id)
         if(itemCustomizer) this.header.items = itemCustomizer;
         lockUI(this.fillData());
       } else this.router.navigate([`/ecommerce/trivias`]);

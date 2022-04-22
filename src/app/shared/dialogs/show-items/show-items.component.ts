@@ -29,10 +29,8 @@ export class ShowItemsComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.products);
     if (this.products.length === 0) {
-      this.products = this.header.getItemProduct(this.header.saleflow._id);
-    } else if (!this.products[0].description)
-      this.products[0].description =
-        'Un conjunto de cosas simples logran lo extraordinario.';
+      this.products = this.header.getItems(this.header.saleflow._id);
+    }
   }
 
   seeAllItems() {
@@ -52,8 +50,8 @@ export class ShowItemsComponent implements OnInit {
   deleteItem(i: number) {
     console.log('deleted item: ');
     console.log(this.products[i]._id);
-    this.header.removeItem(this.header.saleflow._id, this.products[i]._id);
-    this.header.removeItemProduct(
+    this.header.removeOrderProduct(this.header.saleflow._id, this.products[i]._id);
+    this.header.removeItem(
       this.header.saleflow._id,
       this.products[i]._id
     );

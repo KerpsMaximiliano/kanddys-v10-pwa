@@ -1,37 +1,29 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
+import { Component, OnInit } from '@angular/core';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-//import { SelectedNapkinsModalComponent } from '../selected-napkins-modal/selected-napkins-modal.component';
-//import { ShortcutsComponent } from '../../../../shared/dialogs/shortcuts/shortcuts.component';
-//import { QuickFiltersComponent } from '../../../../shared/dialogs/quick-filters/quick-filters.component';
 import { ActivatedRoute, Data, Router } from '@angular/router';
-//import { MerchantMoreInfoComponent } from 'src/app/shared/dialogs/merchant-more-info/merchant-more-info.component';
 import { AuthService } from 'src/app/core/services/auth.service';
 import {
   Item,
   ItemPackage,
-  ItemParam,
-  ItemParamValue,
 } from 'src/app/core/models/item';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-//import { ToastrService } from 'ngx-toastr';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { resolve } from 'dns';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 
 @Component({
   selector: 'app-megaphone-v3',
   templateUrl: './megaphone-v3.component.html',
   styleUrls: ['./megaphone-v3.component.scss'],
 })
-export class MegaphoneV3Component implements OnInit, OnDestroy {
+export class MegaphoneV3Component implements OnInit {
   pagesList: string[] = ['My Store'];
   itemList = {
     one: {
@@ -158,7 +150,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     'border-radius': '8px',
   };
   category: any;
-  options = [];
   loadingSwiper: boolean = false;
   banner: string = '';
   items: Item[] = [];
@@ -181,7 +172,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantSubheadline: string = '';
   merchantHours: string = '';
   merchantLabel: string = ''; //Asignado en ngOnInit
-  boxToggler: boolean = false;
   labelValues: any = [];
   optionSelected = 1;
   extraFilterSelected = 1;
@@ -189,9 +179,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   phoneNumber: string = 'tel:+19188156444';
   instagram: string;
   id: string;
-  otherFilters = [];
   filters: Array<any> = ['Mar', 'Mie', 'Jue', 'Vie'];
-  priceTotal: number = 0;
   isCategories: boolean;
   imageRoute: string = `${environment.assetsUrl}/share-outline.png`;
   renderedSwippers: number = 0;
@@ -214,7 +202,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const sub = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData = this.header.getItemProduct(this.saleflowData._id);
+        let productData = this.header.getItems(this.saleflowData._id);
         for (let i = 0; i < this.items.length; i++) {
           console.log(this.items[i]);
           productData;
@@ -303,12 +291,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   organizeItems() {
     if(this.categories) {
       this.categories.forEach((name) => {
-        this.itemsByCategory.push({
-          label: name,
-          items: this.items.filter((item) =>
-            item.category.some((category) => category.name === name)
-          ),
-        });
+        if(this.items.some((item) => item.category.some((category) => category.name === name))) {
+          this.itemsByCategory.push({
+            label: name,
+            items: this.items.filter((item) =>
+              item.category.some((category) => category.name === name)
+            ),
+          });
+        }
       });
     }
 
@@ -373,14 +363,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         unlockUI();
       }
     }
-    // if (this.itemsByCategory.length > 0) {
-    //   this.toastr.info(undefined, 'Selecciona el tipo de servilletas', {
-    //     closeButton: true,
-    //     disableTimeOut: 'timeOut',
-    //     extendedTimeOut: 500,
-    //     positionClass: 'toast-bottom-center',
-    //   });
-    // }
   }
 
   // =====================================================
@@ -525,13 +507,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         this.organizeItems();
-        this.priceTotal = this.inputsItems[0].pricing;
-        this.options.push({
-          id: this.inputsItems[0]._id,
-          title: this.inputsItems[0].name,
-          subtitle: this.inputsItems[0].pricing,
-          num: 1,
-        });
         console.log('items', this.items);
         if(!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
       }
@@ -554,10 +529,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    // this.toastr.clear();
-  }
-
   logOut() {
     this.authService.signouttwo();
   }
@@ -567,37 +538,42 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     if (type === 'item') {
       if (index != undefined) {
         if ($event != undefined && this.itemsByCategory[index].items[$event]) {
-          this.itemsByCategory[index].items[$event].isSelected =
-            !this.itemsByCategory[index].items[$event].isSelected;
-          let itemParams = {
-            param: this.itemsByCategory[index].items[$event].params[0]._id,
-            paramValue:
-              this.itemsByCategory[index].items[$event].params[0].values[0]._id,
+          const itemData = this.itemsByCategory[index].items[$event];
+          itemData.isSelected =
+            !itemData.isSelected;
+          let itemParams: ItemSubOrderParamsInput[];
+          if(itemData.params.length > 0) {
+            itemParams = [{
+              param: itemData.params[0]._id,
+              paramValue:
+                itemData.params[0].values[0]._id,
+            }];
           };
-          this.header.storeItems(this.saleflowData._id, {
-            item: this.itemsByCategory[index].items[$event]._id,
-            customizer: this.itemsByCategory[index].items[$event].customizerId,
-            params: [itemParams],
+          this.header.storeOrderProduct(this.saleflowData._id, {
+            item: itemData._id,
+            customizer: itemData.customizerId,
+            params: itemParams,
+            amount: itemData.customizerId ? undefined : 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItemProduct(
+          this.header.storeItem(
             this.saleflowData._id,
-            this.itemsByCategory[index].items[$event]
+            itemData
           );
         } else {
           this.inputsItems[index].isSelected =
             !this.inputsItems[index].isSelected;
-          this.header.storeItems(this.saleflowData._id, {
+          this.header.storeOrderProduct(this.saleflowData._id, {
             item: this.inputsItems[index]._id,
             amount: 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItemProduct(
+          this.header.storeItem(
             this.saleflowData._id,
             this.inputsItems[index]
           );
         }
-        let itemData = this.header.getItemProduct(this.saleflowData._id);
+        let itemData = this.header.getItems(this.saleflowData._id);
         console.log(itemData);
         if (itemData.length > 0 && !this.hasCustomizer) {
           this.showCTA = true;
@@ -622,34 +598,15 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             this.packageData[index].package.packageRules[i].maxQuantity,
         });
       }
-      this.header.storePackage(
+      this.header.storeOrderPackage(
         this.saleflowData._id,
         this.packageData[index].package._id,
         products
       );
-      this.header.storeItemProduct(
+      this.header.storeItem(
         this.saleflowData._id,
         this.sliderPackage[index]
       );
-    }
-  }
-
-  currentItemCaffaro(e) {
-    console.log(this.inputsItems);
-    console.log(e);
-    if (this.inputsItems[e]) {
-      this.options = [];
-      this.priceTotal = 0;
-
-      this.priceTotal = this.inputsItems[e].pricing;
-      this.options.push({
-        id: this.inputsItems[e]._id,
-        title: this.inputsItems[e].name,
-        subtitle: this.inputsItems[e].pricing,
-        num: 1,
-        images: this.inputsItems[e].images,
-      });
-      this.save(e);
     }
   }
 
@@ -663,98 +620,43 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     ]);
   }
 
-  currentItemNapkins(listIndex: number, itemIndex: number) {
-    console.log(listIndex);
-    console.log(itemIndex);
-    if (this.itemsByCategory[listIndex].items[itemIndex]) {
-      this.options = [];
-      this.priceTotal = 0;
-
-      this.priceTotal =
-        this.itemsByCategory[listIndex].items[itemIndex].pricing;
-      this.options.push({
-        id: this.itemsByCategory[listIndex].items[itemIndex]._id,
-        title: this.itemsByCategory[listIndex].items[itemIndex].name,
-        subtitle: this.itemsByCategory[listIndex].items[itemIndex].pricing,
-        num: 1,
-        images: this.itemsByCategory[listIndex].items[itemIndex].images,
-        customizerId:
-          this.itemsByCategory[listIndex].items[itemIndex].customizerId,
-      });
-      // this.save();
-      if (this.itemsByCategory[listIndex].items[itemIndex].customizerId) {
-        this.header.categoryId =
-          this.itemsByCategory[listIndex].items[itemIndex].category[0]._id;
-        console.log('new redirect to flow');
-        const itemData = this.itemsByCategory[listIndex].items[itemIndex];
-        let params: ItemParam;
-        let selectedValue: ItemParamValue;
-        if (itemData.params.length > 0) {
-          params = itemData.params[0];
-          selectedValue = params.values[0];
-        }
-        // const amount = itemData.fixedQuantity ?? 1;
-        // const itemQuantity = itemData.fixedQuantity ?? 1;
-        // const total = itemData.pricing + itemQuantity * selectedValue.price;
-
-        // itemData.total = total;
-        // itemData.amount = amount;
-        this.header.items = [itemData];
-
-        const order = {
-          products: [{}],
+  onItemCategoryClick(listIndex: number, itemIndex: number) {
+    const itemData = this.itemsByCategory[listIndex].items[itemIndex];
+    if (itemData) {
+      this.header.categoryId = itemData.category[0]._id;
+      this.header.items = [itemData];
+      if (itemData.customizerId) {
+        this.header.emptyOrderProducts(this.saleflowData._id);
+        this.header.emptyItems(this.saleflowData._id);
+        let itemParams: ItemSubOrderParamsInput[];
+        if(itemData.params.length > 0) {
+          itemParams = [{
+            param: itemData.params[0]._id,
+            paramValue:
+            itemData.params[0].values[0]._id,
+          }];
         };
-        this.header.order = order;
-        this.header.order.products[0].item = itemData._id;
-        // this.header.order.products[0].amount = amount;
-        this.header.order.products[0].saleflow = this.header.saleflow._id;
-        if (params) {
-          this.header.order.products[0].params = [];
-          this.header.order.products[0].params[0] = {
-            param: params._id,
-            paramValue: selectedValue._id,
-          };
-        }
-        console.log(itemData);
-        this.header.storeItems(this.saleflowData._id, {
+        const product = {
           item: itemData._id,
-          saleflow: this.saleflowData._id,
-          params: [
-            {
-              param: params._id,
-              paramValue: selectedValue._id,
-            },
-          ],
           customizer: itemData.customizerId,
-        });
-        this.header.storeItemProduct(this.saleflowData._id, itemData);
+          params: itemParams,
+          amount: itemData.customizerId ? undefined : 1,
+          saleflow: this.saleflowData._id,
+          name: itemData.name,
+        };
+        this.header.order = {
+          products: [product],
+        };
+        this.header.storeOrderProduct(this.saleflowData._id, product);
+        this.header.storeItem(this.saleflowData._id, itemData);
         this.router.navigate([`/ecommerce/provider-store`]);
-        //this.router.navigate(['/ecommerce/item-detail/' + this.header.saleflow._id + '/' + itemData._id]);
       }
-    }
-  }
-
-  minMax(sum: boolean, index: number) {
-    if (this.inputPackage.length === 0) {
-      if (sum) {
-        if (this.options[0].num) {
-          this.options[0].num++;
-          this.priceTotal += Number(this.options[0].subtitle);
-        }
-      } else if (this.options[0].num && this.options[0].num > 1) {
-        this.options[0].num--;
-        this.priceTotal -= Number(this.options[0].subtitle);
-      }
-    } else {
-      if (sum) {
-        if (this.options[index].num < this.options[index].limitScenario) {
-          this.options[index].num++;
-          this.priceTotal += Number(this.options[index].subtitle);
-        }
-      } else if (this.options[index].num > this.options[index].min) {
-        this.options[index].num--;
-        this.priceTotal -= Number(this.options[index].subtitle);
-      }
+      else this.router.navigate([
+        '/ecommerce/item-detail/' +
+        this.header.saleflow._id +
+        '/' +
+        itemData._id,
+      ]);
     }
   }
 
@@ -766,77 +668,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     },
   ];
 
-  slider = document.querySelector<HTMLElement>('.scroller');
-
-  getCheck(name: string) {
-    if (this.header.items.length > 0) {
-      if (this.header.items[0].name == name) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  startDragging(e, flag, el) {
-    this.mouseDown = true;
-    this.startX = e.pageX - el.offsetLeft;
-    this.scrollLeft = el.scrollLeft;
-  }
-  stopDragging(e, flag) {
-    this.mouseDown = false;
-  }
-  moveEvent(e, el) {
-    e.preventDefault();
-    if (!this.mouseDown) {
-      return;
-    }
-    const x = e.pageX - el.offsetLeft;
-    const scroll = x - this.startX;
-    el.scrollLeft = this.scrollLeft - scroll;
-  }
-
-  /*openSelectedNapkinsModal() {
-    this.dialog.open(SelectedNapkinsModalComponent, {
-      type: 'window',
-      props: { types: this.types },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }*/
-
-  /*OpenShortcutsComponent() {
-    this.dialog.open(ShortcutsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        phone: this.phoneNumber,
-        instagram: this.instagram,
-        merchantId: this.merchantId,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }*/
-
-  /*OpenQuickFlitersComponent() {
-    this.dialog.open(QuickFiltersComponent, {
-      type: 'flat-action-sheet',
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }*/
-
-  OpenCart() {
-    this.router.navigate(['/ecommerce/cart']);
-  }
-
   save(index?: number) {
     if (index) this.header.packId = index;
     this.header.items = [];
 
-    console.log(this.options);
+    // console.log(this.options);
     console.log(this.inputsItems);
 
     let products = [];
@@ -895,31 +731,15 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  /*openModal() {
-    console.log(this.saleflowData);
-    this.dialog.open(MerchantMoreInfoComponent, {
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: {
-        paymentInfo: this.saleflowData.paymentInfo,
-        workingHours: this.saleflowData.workingHours,
-        social: this.saleflowData.social,
-        id: this.flowId,
-      },
-    });
-  }*/
-
   currentItem(e) {
     console.log('evento', e);
     let isScenario;
     let scenariosLength;
 
     if (this.inputPackage.length === 0) {
-      this.currentItemCaffaro(e);
+      this.save(e);
     } else {
-      this.options = [];
-      this.priceTotal = 0;
+      // this.options = [];
 
       for (
         let i = 0;
@@ -934,92 +754,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
 
         console.log(this.swiperPackageOrder[e]);
-
-        // this.priceTotal += this.swiperPackageOrder[e].package.packageRules[i].minQuantity * this.swiperPackageOrder[e].items.listItems[i].pricing;
-
-        this.priceTotal = this.swiperPackageOrder[e].package.price;
-
-        this.options.push({
-          title: this.swiperPackageOrder[e].items.listItems[i].name,
-          subtitle: this.swiperPackageOrder[e].items.listItems[i].pricing,
-          num: this.swiperPackageOrder[e].package.packageRules[i].fixedQuantity,
-          isScenario: isScenario,
-          min: this.swiperPackageOrder[e].package.packageRules[i].minQuantity,
-          limitScenario:
-            this.swiperPackageOrder[e].package.packageRules[i].maxQuantity,
-        });
       }
     }
-  }
-
-  selectType() {
-    this.type++;
-    if (this.type == 2) {
-      this.typeOneStyle['grid-template-columns'] = '1fr 1fr';
-    }
-    if (this.type > 4) {
-      this.type = 1;
-      this.typeOneStyle['grid-template-columns'] = '1fr 1fr';
-    }
-  }
-
-  addNapkin(type) {
-    if (this.types.includes(type)) {
-      this.types = this.types.filter((e) => e != type);
-    } else {
-      this.types.push(type);
-    }
-  }
-
-  hasNapkin(type) {
-    return this.types.includes(type);
-  }
-
-  populateArray(event) {
-    let isArray = Array.isArray(event);
-    if (isArray) {
-      this.types.push(event[0]);
-    } else {
-      for (let i = 0; i < this.types.length; i++) {
-        if (this.types[i] == event) {
-          this.types.splice(i, 1);
-          return;
-        }
-      }
-    }
-  }
-
-  redirect(id: string) {
-    this.router.navigate(['/ecommerce/product-view/' + id]);
-  }
-
-  personalize() {
-    this.header.ids = this.types;
-    this.router.navigate(['/ecommerce/slot-creation']);
-  }
-
-  select(numb) {
-    this.optionSelected = numb;
-  }
-
-  selectExtraFilter(numb) {
-    this.extraFilterSelected = numb;
-  }
-
-  boxToggle() {
-    this.boxToggler = !this.boxToggler;
-  }
-
-  selectOtherFilter(numb) {
-    if (this.otherFilters.includes(numb)) {
-      this.otherFilters = this.otherFilters.filter((e) => e != numb);
-    } else {
-      this.otherFilters.push(numb);
-    }
-  }
-
-  otherFilterHasElement(numb) {
-    return this.otherFilters.includes(numb);
   }
 
   public continueOrder = () => {
@@ -1036,20 +772,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
-
-  transformIcon() {
-    // copyText(`${environment.uri}/ecommerce/megaphone-v3/${this.flowId}`);
-    //this.imageRoute = '/assets/images/check-circle.png';
-    if (!this.hasCustomizer) {
-      this.router.navigate([`/ecommerce/create-giftcard`]);
-    } else {
-      this.router.navigate([`/ecommerce/provider-store`]);
-    }
-  }
-
-  copyLink() {
-    return `${environment.uri}/ecommerce/megaphone-v3/${this.flowId}`;
   }
 
   orderSwiper() {
@@ -1185,16 +907,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         for (let i = 0; i < listItems.length; i++) {
           // scenariosLength = listItems[i].itemExtra.length > 0? listItems[i].itemExtra.length:undefined; //
           isScenario = listItems[i].itemExtra.length > 0;
-          // this.priceTotal += itemPackage.packageRules[i].minQuantity * listItems[i].pricing;
-          this.priceTotal = itemPackage.price;
-          this.options.push({
-            title: listItems[i].name,
-            subtitle: listItems[i].pricing,
-            num: itemPackage.packageRules[i].fixedQuantity,
-            isScenario: isScenario,
-            min: itemPackage.packageRules[i].minQuantity,
-            limitScenario: itemPackage.packageRules[i].maxQuantity,
-          });
         }
       }
       this.packageData[index].items = { listItems };

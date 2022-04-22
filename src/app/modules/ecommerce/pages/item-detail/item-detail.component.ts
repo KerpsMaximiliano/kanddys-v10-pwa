@@ -46,7 +46,7 @@ export class ItemDetailComponent implements OnInit {
         this.items.item(params.id).then(data => {
           this.itemData = data;
           console.log(this.itemData);
-          let productData = this.header.getItemProduct(this.saleflowId);
+          let productData = this.header.getItems(this.saleflowId);
           console.log(data);
           console.log(productData.length);
           
@@ -81,13 +81,13 @@ export class ItemDetailComponent implements OnInit {
   saveProduct(){
     console.log('here');
     
-    this.header.storeItems(this.saleflowId, 
+    this.header.storeOrderProduct(this.saleflowId, 
     {
       item: this.itemData._id,
       amount: 1,
       saleflow: this.saleflowId
     });
-    this.header.storeItemProduct(this.saleflowId, this.itemData);
+    this.header.storeItem(this.saleflowId, this.itemData);
     this.showItems();
     this.ngOnInit();
     //this.router.navigate(['/ecommerce/provider-store']);
