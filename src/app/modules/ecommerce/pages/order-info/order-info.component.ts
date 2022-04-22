@@ -170,7 +170,7 @@ export class OrderInfoComponent implements OnInit {
             if (item.customizer) this.tabsOptions.push('Personalización');
             if (item.post) this.tabsOptions.push('Mensaje');
           });
-          // this.tabsOptions.push('Pago');
+          this.tabsOptions.push('Pago');
           console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
           if (data.order.items[0].customizer) {
@@ -419,14 +419,14 @@ export class OrderInfoComponent implements OnInit {
       this.mensajeRegalo = true;
       this.pagoView = false;
     }
-    //  else if (e === 'Pago') {
-    //   this.reservacion = false;
-    //   this.address = false;
-    //   this.escenarios = false;
-    //   this.facturado = false;
-    //   this.personalizacion = false;
-    //   this.mensajeRegalo = false;
-    //   this.pagoView = true;
-    // }
+    else if (e === 'Pago') {
+      this.reservacion = false;
+      this.address = false;
+      this.escenarios = false;
+      this.facturado = false;
+      this.personalizacion = false;
+      this.mensajeRegalo = false;
+      this.pagoView = true;
+    }
   }
 }

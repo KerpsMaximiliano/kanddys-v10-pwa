@@ -99,6 +99,11 @@ const orderData = `
   ocr {
     _id
     image
+    transactionCode
+    total
+    status
+    platform
+    from
   }
 `
 
