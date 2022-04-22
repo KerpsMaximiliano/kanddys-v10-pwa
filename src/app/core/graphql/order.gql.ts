@@ -96,6 +96,10 @@ const orderData = `
     images
     price
   }
+  ocr {
+    _id
+    image
+  }
 `
 
 export const order = gql`
