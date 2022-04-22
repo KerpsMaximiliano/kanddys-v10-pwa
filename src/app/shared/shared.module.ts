@@ -63,6 +63,7 @@ import { StickyButtonComponent } from './components/sticky-button/sticky-button.
 import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
+import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 
 const imports = [
   CommonModule,
@@ -122,7 +123,8 @@ const declarations = [
   StickyButtonComponent,
   MultistepFormComponent,
   ActivitiesOptionComponent,
-  ErrorMessageComponent
+  ErrorMessageComponent,
+  DynamicComponentComponent,
 ];
 
 @NgModule({
