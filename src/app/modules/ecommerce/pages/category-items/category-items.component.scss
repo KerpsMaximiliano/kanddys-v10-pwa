@@ -1,58 +1,63 @@
 .header {
-    display: flex;
-    background-color: #FFFFFF;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    position: relative;
-    column-gap: 5px;
+  display: flex;
+  background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  column-gap: 5px;
 }
 
 .category-name {
-    font-family: "SfProRegular";
-    color: #707070;
-    font-size: 17px;
+  font-family: "SfProRegular";
+  color: #707070;
+  font-size: 17px;
+}
+
+.top-wrapper {
+  padding-bottom: 30px;
+  box-shadow: 0px -20px 20px -20px inset lightgray;
 }
 
 .header-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-family: "Roboto";
+  padding-left: 34px;
+  padding-right: 31px;
+  height: 75px;
+
+  .header-text {
     font-size: 14px;
-    font-family: "Roboto";
-    padding-left: 34px;
-    padding-right: 31px;
-    height: 75px;
-  
-    .header-text {
-      font-size: 14px;
-      text-transform: uppercase;
-    }
-  
-    .see-all-more {
-      color: #7b7b7b;
-      font-family: 'RobotoMedium';
-      font-size: 16px;
-      cursor: pointer;
-    }
-  }
-  
-  .header-text-bottom {
-    font-family: "SfProRegular";
-    font-size: 14px;
-    font-weight: 200;
     text-transform: uppercase;
-    color: #7b7b7b;
-    margin-top: 0;
-    margin-left: 19px;
-    margin-right: 19px;
-    margin-bottom: 20px;
   }
 
+  .see-all-more {
+    color: #7b7b7b;
+    font-family: "RobotoMedium";
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
+
+.header-text-bottom {
+  font-family: "SfProRegular";
+  font-size: 14px;
+  font-weight: 200;
+  text-transform: uppercase;
+  color: #7b7b7b;
+  margin-top: 0;
+  margin-left: 19px;
+  margin-right: 19px;
+  margin-bottom: 20px;
+}
+
 .price-circle {
-    padding: 14px;
-    width: 35px;
-    height: 35px;
-    background-repeat: no-repeat;
-    background-position: center;
+  padding: 14px;
+  width: 35px;
+  height: 35px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
