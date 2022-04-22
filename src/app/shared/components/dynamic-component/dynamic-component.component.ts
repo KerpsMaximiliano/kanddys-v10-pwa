@@ -46,8 +46,10 @@ export class DynamicComponentComponent implements OnInit {
     );
 
     this.componentOutputs.forEach((output) => {
-      console.log(newComponent.instance);
-      if (newComponent.instance[output.name])
+      if (
+        newComponent.instance[output.name] &&
+        newComponent.instance[output.callback]
+      )
         newComponent.instance[output.name].subscribe(output.callback);
     });
   }
