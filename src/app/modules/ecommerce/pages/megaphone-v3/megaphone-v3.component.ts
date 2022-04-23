@@ -24,131 +24,10 @@ import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
   styleUrls: ['./megaphone-v3.component.scss'],
 })
 export class MegaphoneV3Component implements OnInit {
-  pagesList: string[] = ['My Store'];
-  itemList = {
-    one: {
-      label: 'ALEGRIAS DE ESTA SEmana',
-      itemList: [
-        {
-          name: 'Item Name ID',
-          price: 500,
-        },
-        {
-          name: 'Item Name ID',
-          price: 500,
-        },
-      ],
-    },
-    two: {
-      label: 'ALEGRIAS DE ESTA SEmana',
-      itemListTwo: [
-        {
-          name: 'Item Name ID',
-          price: 595,
-          isCrypto: true,
-          cryptoCurrency: 'ethereum',
-        },
-        {
-          name: 'Item Name ID',
-          price: 595,
-          isCrypto: true,
-          cryptoCurrency: 'ethereum',
-        },
-      ],
-    },
-  };
-
-  smallItemList = [
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-    {
-      name: 'Item Name ID',
-      price: 500,
-    },
-  ];
-
-  // filters = [];
-
-  // =============================================================
-
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   isLogged: boolean = false;
-  showFilters = false;
-  type = 1;
   done: boolean = false;
-  mouseDown = false;
-  startX: any;
-  scrollLeft: any;
-  scroll: boolean = false;
-  option: boolean = false;
-  types = [];
-  data = [
-    {
-      name: 'Bebes',
-      active: true,
-    },
-    {
-      name: 'New Born',
-      active: false,
-    },
-    {
-      name: 'Familias',
-      active: false,
-    },
-    {
-      name: 'Graduaciones',
-      active: false,
-    },
-  ];
-  typeOneStyle = {
-    display: 'grid',
-    'grid-template-columns': '1fr 1fr',
-    'grid-column-gap': '5px',
-    'grid-row-gap': '5px',
-  };
-  styleOption = {
-    'background-color': 'white',
-    'border-radius': '8px',
-  };
   category: any;
   loadingSwiper: boolean = false;
   banner: string = '';
@@ -163,7 +42,6 @@ export class MegaphoneV3Component implements OnInit {
   inputPackage: ItemPackage[] = [];
   sliderPackage: ItemPackage[] = [];
   swiperPackageOrder: any = [];
-  packagesRulesItems: any = [];
   selectedTagsIds: any = [];
   categories: string[] = [];
   flowId: string;
@@ -173,20 +51,12 @@ export class MegaphoneV3Component implements OnInit {
   merchantHours: string = '';
   merchantLabel: string = ''; //Asignado en ngOnInit
   labelValues: any = [];
-  optionSelected = 1;
-  extraFilterSelected = 1;
-  showMore = false;
-  phoneNumber: string = 'tel:+19188156444';
-  instagram: string;
-  id: string;
   filters: Array<any> = ['Mar', 'Mie', 'Jue', 'Vie'];
   isCategories: boolean;
   imageRoute: string = `${environment.assetsUrl}/share-outline.png`;
   renderedSwippers: number = 0;
-
-  isCaffaro: boolean;
-  isCecilia: boolean;
   showCTA: boolean = false;
+  visualMode: boolean = true;
 
   constructor(
     private dialog: DialogService,
@@ -257,7 +127,8 @@ export class MegaphoneV3Component implements OnInit {
         options,
       };
     });
-
+    console.log(headlines);
+    console.log(itemCategoriesList);
     this.categories = headlines[0].itemsCategories.map(
       (value) => itemCategoriesList.find((element) => element._id === value).name)
     this.filters = filters;
@@ -391,17 +262,6 @@ export class MegaphoneV3Component implements OnInit {
     this.route.params.subscribe(async (params) => {
       console.log(params.id);
       this.flowId = params.id;
-      if (this.flowId == '6201d72bdfeceed4d13805bc') {
-        this.isCecilia = true;
-      }
-
-      if (this.flowId === '61b8df151e8962cdd6f30feb') {
-        this.isCaffaro = true;
-      }
-
-      //Quita lo que sea que este llegando de donde sea que venga
-      // unlockUI();
-
       lockUI();
 
       this.header.flowId = params.id;
@@ -511,7 +371,7 @@ export class MegaphoneV3Component implements OnInit {
         if(!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
       }
 
-      if (!this.isCecilia) unlockUI();
+      if (!this.hasCustomizer) unlockUI();
 
       this.authService.me().then((data) => {
         this.isLogged = data != undefined;
