@@ -13,7 +13,7 @@
       !steps[currentStep].customScrollToStepBackwards
         ? scrollToStep(this.currentStep - 1, false)
         : steps[currentStep].customScrollToStepBackwards
-        ? steps[currentStep].customScrollToStepBackwards()
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
         : null
     "
   ></app-helper-header>

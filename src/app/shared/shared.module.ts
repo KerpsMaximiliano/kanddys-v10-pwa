@@ -67,6 +67,7 @@ import { InfoCardComponent } from './components/info-card/info-card.component';
 import { ListComponent } from './components/list/list.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
 
 const imports = [
   CommonModule,
@@ -81,6 +82,7 @@ const imports = [
 ];
 const declarations = [
   // Pages
+  CalendarComponent,
   HomeComponent,
   InvitationComponent,
   ItemListComponent,
