@@ -8,8 +8,12 @@
     middleTextColor="#7b7b7b"
     [shadow]="false"
     (onClose)="
-      currentStep > 0 && shouldScrollBackwards
+      currentStep > 0 &&
+      shouldScrollBackwards &&
+      !steps[currentStep].customScrollToStepBackwards
         ? scrollToStep(this.currentStep - 1, false)
+        : steps[currentStep].customScrollToStepBackwards
+        ? steps[currentStep].customScrollToStepBackwards()
         : null
     "
   ></app-helper-header>
