@@ -33,7 +33,6 @@ query post($id:ObjectID!){
  _id,
  message,
  from
- multimedia
  socialNetworks{
    url
  }
