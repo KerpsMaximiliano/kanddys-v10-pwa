@@ -21,15 +21,7 @@
       <span class="category-name">{{ categoryName }}</span>
     </ng-container>
   </div>
-  <div class="top-wrapper">
-    <!--<app-provider-item-slider 
-            [label]="sliderLabel"
-            [smallFont]="true"
-            [categories]="true"
-            [hideSeeAll]="true"
-            [providerItems]="originalItems"
-            (clickedItem)="onClick($event)"
-        ></app-provider-item-slider>-->
+  <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
       <h6
         class="header-text"
@@ -39,13 +31,13 @@
           fontWeight: 100
         }"
       >
-        {{ sliderLabel }}
+        {{ hasCustomizer ? sliderLabel : 'BEST SELLERS' }}
       </h6>
     </div>
     <app-swiper
       [saleFlowTwo]="true"
       [selectable]="saleflowData?.canBuyMultipleItems"
-      [saleFlowTwoData]="originalItems"
+      [saleFlowTwoData]="bestSellers"
       (slideActive)="onClick($event)"
       (toggleEmitter)="toggleSelected('item', $event)"
     ></app-swiper>

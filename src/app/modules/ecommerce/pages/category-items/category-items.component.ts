@@ -25,10 +25,11 @@ export class CategoryItemsComponent implements OnInit {
   categoryName: string;
   iconImage: string;
   merchantId: string;
-  filters: any[];
+  filters: any[] = [];
   loadingSwiper: boolean;
   selectedTagsIds: any = [];
   hasCustomizer: boolean;
+  bestSellers: Item[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -105,49 +106,46 @@ export class CategoryItemsComponent implements OnInit {
           this.hasCustomizer = true;
       }
 
-      console.log('CECILIA', this.hasCustomizer);
+      console.log('tiene customizer', this.hasCustomizer);
 
       const selectedItems =
         orderData?.products?.length > 0
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-      items = (
-        await this.saleflow.listItems({
-          findBy: {
-            _id: {
-              __in: ([] = saleflowItems.map((items) => items.item)),
-            },
-          },
-          options: {
-            limit: 100,
-          },
-        })
-      ).listItems;
+      items = await this.item.itemsByCategory(this.saleflowData._id, {
+        options: {
+          limit: 100,
+        },
+      }, params.categoryId);
+      console.log(items);
+      const bestSellersIds = await this.item.bestSellersByMerchant(15, this.saleflowData.merchant._id)
+      console.log(bestSellersIds);
 
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
         );
-        items[i].customizerId = saleflowItem.customizer;
-        items[i].index = saleflowItem.index;
+        items[i].customizerId = saleflowItem?.customizer;
+        items[i].index = saleflowItem?.index;
         items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +
             items[i].pricing;
-      }
-      if (this.items.every((item) => item.index)) {
+      };
+      if (items.every((item) => item.index)) {
         items = items.sort((a, b) =>
           a.index > b.index ? 1 : b.index > a.index ? -1 : 0
         );
-      }
+      };
 
-      this.items = items.filter((item) =>
-        item.category.some((category) => category._id === params.categoryId)
-      );
-      this.originalItems = items.filter((item) =>
-        item.category.some((category) => category._id === params.categoryId)
-      );
+      bestSellersIds.forEach((id) => {
+        const item = items.find((item) => item._id === id);
+        if(item) this.bestSellers.push(item);
+      })
+      console.log(this.bestSellers);
+      this.items = [...items];
+      this.originalItems = [...items];
 
       const itemCategoriesList = (
         await this.item.itemCategories(merchantId, {})
