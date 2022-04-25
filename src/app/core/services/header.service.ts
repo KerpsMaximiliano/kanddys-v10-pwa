@@ -215,7 +215,8 @@ export class HeaderService {
     return JSON.parse(localStorage.getItem('saleflow-token'));
   }
 
-  storeItems(saleflow: string, product: ItemSubOrderInput) {
+  // Stores order product data in localStorage
+  storeOrderProduct(saleflow: string, product: ItemSubOrderInput) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) saleflows = {};
     if(!saleflows[saleflow]) saleflows[saleflow] = {};
@@ -226,7 +227,8 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
-  storeItemProduct(saleflow: string, product: Item | ItemPackage) {
+  // Stores item data in localStorage
+  storeItem(saleflow: string, product: Item | ItemPackage) {
     let itemProduct: {[key: string]: (Item | ItemPackage)[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
     if(!itemProduct) itemProduct = {};
     if(!itemProduct[saleflow]) itemProduct[saleflow] = [];
@@ -236,6 +238,7 @@ export class HeaderService {
     localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
   }
 
+  // Adds params to first order product in localStorage
   addParams(saleflow: string, params: ItemSubOrderParamsInput) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
@@ -245,7 +248,8 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
-  storePackage(saleflow: string, itemPackage: string, products: ItemSubOrderInput[]) {
+  // Stores order package data in localStorage
+  storeOrderPackage(saleflow: string, itemPackage: string, products: ItemSubOrderInput[]) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) saleflows = {};
     if(!saleflows[saleflow]) saleflows[saleflow] = {};
@@ -254,6 +258,7 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
+  // Stores amount to first order product in localStorage
   storeAmount(saleflow: string, amount: number) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
@@ -263,6 +268,7 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
+  // Stores reservation to first order product in localStorage
   storeReservation(saleflow: string, reservation: ReservationInput) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) saleflows = {};
@@ -272,6 +278,7 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
+  // Stores post data in localStorage
   storePost(saleflow: string, data: PostInput, option?: number) {
     let post: {[key: string]: { option: number, data: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
     if(!post) post = {};
@@ -282,6 +289,7 @@ export class HeaderService {
     localStorage.setItem('postData-token', JSON.stringify(post));
   }
 
+  // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput, option?: number) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) saleflows = {};
@@ -294,31 +302,36 @@ export class HeaderService {
     }));
   }
 
+  // Returns order data from localStorage
   getOrder(saleflow: string) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
     return saleflows[saleflow];
   }
 
-  getItemProduct(saleflow: string) {
+  // Returns items data from localStorage
+  getItems(saleflow: string) {
     let itemProduct: {[key: string]: Item[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
     if(!itemProduct) return;
     return itemProduct[saleflow];
   }
 
+  // Returns post data and option from provider-store
   getPost(saleflow: string) {
     let post: {[key: string]: { option: number, data: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
     if(!post) return;
     return post[saleflow];
   }
 
+  // Returns delivery option from provider-store
   getDeliveryOption(saleflow: string) {
     let options: {[key: string]: number } = JSON.parse(localStorage.getItem('deliveryOption-token'));
     if(!options) return;
     return options[saleflow];
   }
 
-  removeItem(saleflow: string, id: string) {
+  // Removes order product from localStorage
+  removeOrderProduct(saleflow: string, id: string) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
     if(!saleflows[saleflow]) return;
@@ -329,7 +342,8 @@ export class HeaderService {
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
   }
 
-  removeItemProduct(saleflow: string, id: string) {
+  // Removes item data from localStorage
+  removeItem(saleflow: string, id: string) {
     let itemProduct: {[key: string]: Item[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
     if(!itemProduct) return;
     if(!itemProduct[saleflow]) return;
@@ -339,6 +353,7 @@ export class HeaderService {
     localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
   }
 
+  // Empties post data and option from localStorage
   emptyPost(saleflow: string) {
     let post: {[key: string]: { option?: number, data?: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
     if(!post) return;
@@ -346,6 +361,7 @@ export class HeaderService {
     localStorage.setItem('postData-token', JSON.stringify(post));
   }
 
+  // Empties delivery option from localStorage
   emptyDeliveryOption(saleflow: string) {
     let options: {[key: string]: number } = JSON.parse(localStorage.getItem('deliveryOption-token'));
     if(!options) return;
@@ -354,8 +370,8 @@ export class HeaderService {
     localStorage.setItem('deliveryOption-token', JSON.stringify(options));
   }
 
-
-  emptyItems(saleflow: string) {
+  // Empties order products from localStorage
+  emptyOrderProducts(saleflow: string) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
     if(!saleflows[saleflow]) return;
@@ -364,7 +380,8 @@ export class HeaderService {
     this.emptyDeliveryOption(saleflow);
   }
 
-  emptyItemProducts(saleflow: string) {
+  // Empties item data from localStorage
+  emptyItems(saleflow: string) {
     let itemProduct: {[key: string]: (Item | ItemPackage)[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
     if(!itemProduct) return;
     if(!itemProduct[saleflow]) return;
@@ -372,27 +389,12 @@ export class HeaderService {
     localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
   }
 
-  deleteSaleflow(saleflow: string) {
+  // Deletes saleflow order object from localStorage
+  deleteSaleflowOrder(saleflow: string) {
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) return;
     if(!saleflows[saleflow]) return;
     delete saleflows[saleflow];
     localStorage.setItem('orderData-token', JSON.stringify(saleflows));
-  }
-
-  storeDataFromOrder() {
-    localStorage.setItem('orderData-token', JSON.stringify(this.orders));
-  }
-
-  getDataFromOrder() {
-    console.log(JSON.parse(localStorage.getItem('orderData-token')));
-    return JSON.parse(localStorage.getItem('orderData-token'));
-  }
-
-  updateDataFromOrder(data: any) {
-    console.log(data);
-    localStorage.removeItem('orderData-token');
-    localStorage.setItem('orderData-token', JSON.stringify(data));
-    console.log(localStorage.getItem('orderData-token'));
   }
 }

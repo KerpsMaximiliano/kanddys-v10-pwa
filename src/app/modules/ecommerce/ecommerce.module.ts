@@ -12,6 +12,10 @@ import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-d
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { FlowCompletionComponent } from './pages/flow-completion/flow-completion.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
+import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
+import { UserInfoComponent } from './pages/user-info/user-info.component';
+import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
+import { TestComponent } from './pages/test/test.component';
 
 const routes: Routes = [
   {
@@ -25,6 +29,14 @@ const routes: Routes = [
       {
         path: 'quantity-and-quality',
         component: CustomItemDetailComponent,
+      },
+      {
+        path: 'redirect-to-customizer',
+        component: CustomizerRedirectComponent,
+      },
+      {
+        path: 'user-info',
+        component: UserInfoComponent,
       },
     ],
   },
@@ -42,11 +54,11 @@ const routes: Routes = [
   },
   {
     path: 'shipment-data-form',
-    component: ShipmentDataFormComponent
+    component: ShipmentDataFormComponent,
   },
   {
     path: 'item-detail/:saleflow/:id',
-    component: ItemDetailComponent
+    component: ItemDetailComponent,
   },
   {
     path: 'flow-completion',
@@ -60,12 +72,22 @@ const routes: Routes = [
     path: 'privacy-policy',
     component: PrivacyPolicyComponent,
   },
+  //added create-giftcard again because the merge was deleted??????
+  {
+    path: 'create-giftcard',
+    component: CreateGiftcardComponent,
+  },
+  {
+    path: 'test',
+    component: TestComponent,
+  },
 ];
 
 @NgModule({
   declarations: [
     CategoryItemsComponent,
     CustomItemDetailComponent,
+    CustomizerRedirectComponent,
     ErrorScreenComponent,
     ProviderStoreComponent,
     CategoryItemsComponent,
@@ -74,8 +96,12 @@ const routes: Routes = [
     ShipmentDataFormComponent,
     ItemDetailComponent,
     FlowCompletionComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    CustomizerRedirectComponent,
+    UserInfoComponent,
+    CreateGiftcardComponent,
+    TestComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
-export class EcommerceModule { }
+export class EcommerceModule {}

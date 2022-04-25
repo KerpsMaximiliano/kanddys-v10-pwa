@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-custom-item-detail',
@@ -53,7 +54,7 @@ export class CustomItemDetailComponent implements OnInit {
       quantity: this.header.items[0].params[1].values[index].quantity,
     };
     this.header.order.products[0].amount = this.header.items[0].params[1].values[index].quantity;
-    this.header.storeItemProduct(this.header.saleflow._id, this.header.items[0]);
+    this.header.storeItem(this.header.saleflow._id, this.header.items[0]);
     if (this.servilletasList.length > 0) {
       this.header.order.products[0].params[1] = {
         param: (this.header.items[0] as Item).params[1]._id,

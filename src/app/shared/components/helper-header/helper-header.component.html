@@ -44,21 +44,21 @@
         <p>${{ walletBalance }}</p>
         <img
           class="img-hlprhdr"
-          src="/assets/images/wallet-megaphone.svg"
+          src="{{ env }}/wallet-megaphone.svg"
           alt="wallet"
         />
       </div>
       <img
         class="img-hlprhdr"
         *ngIf="add === true"
-        src="/assets/images/plus-circle-o.svg"
+        src="{{ env }}/plus-circle-o.svg"
         alt="add"
       />
       <img
         class="img-hlprhdr"
         *ngIf="notification === true"
-        src="../../../../assets/images/notification-blue.svg"
-        alt="../../../../assets/images/bluewallet.svg"
+        src="../../../..{{ env }}/notification-blue.svg"
+        alt="../../../..{{ env }}/bluewallet.svg"
       />
       <div
         class="dot-trio-hlprhdr"

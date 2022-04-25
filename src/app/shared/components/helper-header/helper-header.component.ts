@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-helper-header',
@@ -40,6 +41,8 @@ export class HelperHeaderComponent implements OnInit {
 
   //OUTPUTS
   @Output() data = new EventEmitter<string>();
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private headerService: HeaderService // private _DialogRef: DialogRef

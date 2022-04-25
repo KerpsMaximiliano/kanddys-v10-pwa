@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgxFormsModule } from '@mukuve/ngx-forms';
 import { QRCodeModule } from 'angularx-qrcode';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
@@ -38,7 +39,6 @@ import { ScopeMenuComponent } from './sections/scope-menu/scope-menu.component';
 import { FormDialog } from './dialogs/form/form.dialog';
 import { ContactButtonsComponent } from './components/contact-buttons/contact-buttons.component';
 import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.component';
-import { AuthCallerComponent } from './components/auth-caller/auth-caller.component';
 import { SearchHashtagComponent } from './dialogs/search-hashtag/search-hashtag.component';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
 import { CommunityPreviewComponent } from './dialogs/community-preview/community-preview.component';
@@ -60,14 +60,10 @@ import { SeeFiltersComponent } from './components/see-filters/see-filters.compon
 import { SwiperComponent } from './components/swiper/swiper.component';
 import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
-import { HelperHeaderComponent } from './components/helper-header/helper-header.component';
-import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
-import { GiftMessageComponent } from './components/gift-message/gift-message.component';
 import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
-import { ShowItemsComponent } from './dialogs/show-items/show-items.component';
-import { AnswerSelectorComponent } from './components/answer-selector/answer-selector.component';
-import { ImageInputComponent } from './components/image-input/image-input.component';
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
+import { ErrorMessageComponent } from './components/error-message/error-message.component';
+import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 
 const imports = [
   CommonModule,
@@ -77,7 +73,8 @@ const imports = [
   ReactiveFormsModule,
   NgxPrintModule,
   QRCodeModule,
-  SwiperModule
+  SwiperModule,
+  TextFieldModule,
 ];
 const declarations = [
   // Pages
@@ -89,7 +86,6 @@ const declarations = [
   AuthDialog,
   FormDialog,
   ActionsDialog,
-  AuthCallerComponent,
   HeaderComponent,
   NavHeaderComponent,
   CardComponent,
@@ -125,14 +121,10 @@ const declarations = [
   SwiperComponent,
   FormFunnelV2Component,
   StickyButtonComponent,
-  HelperHeaderComponent,
-  PageComponentTabsComponent,
-  GiftMessageComponent,
   MultistepFormComponent,
-  ShowItemsComponent,
-  AnswerSelectorComponent,
-  ImageInputComponent,
-  ActivitiesOptionComponent
+  ActivitiesOptionComponent,
+  ErrorMessageComponent,
+  DynamicComponentComponent,
 ];
 
 @NgModule({

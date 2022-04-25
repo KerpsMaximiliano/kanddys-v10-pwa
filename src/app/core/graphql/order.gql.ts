@@ -97,7 +97,13 @@ const orderData = `
     price
   }
   ocr {
+    _id
     image
+    transactionCode
+    total
+    status
+    platform
+    from
   }
 `
 

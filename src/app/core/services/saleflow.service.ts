@@ -4,6 +4,7 @@ import { ListParams } from '../types/general.types';
 import { AppService } from './../../app.service';
 import {
   saleflow,
+  hotSaleflow,
   listItems,
   saleflows,
   addItemToSaleFlow,
@@ -23,15 +24,25 @@ import { Item, ItemPackage } from '../models/item';
 export class SaleFlowService {
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
-  async saleflow(id: string): Promise<{ saleflow: SaleFlow }> {
+  async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
     try {
-      const response = await this.graphql.query({
-        query: saleflow,
-        variables: { id },
-        fetchPolicy: 'no-cache',
-      });
-      console.log(response);
-      return response;
+      if (!isHot) {
+        const response = await this.graphql.query({
+          query: saleflow,
+          variables: { id },
+          fetchPolicy: 'no-cache',
+        });
+        console.log(response);
+        return response;
+      } else {
+        const response = await this.graphql.query({
+          query: hotSaleflow,
+          variables: { id },
+          fetchPolicy: 'no-cache',
+        });
+        console.log(response);
+        return response;
+      }
     } catch (e) {
       console.log(e);
     }

@@ -3,12 +3,14 @@ import {
   OnInit,
   Input,
   Type,
+  ComponentFactoryResolver,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
+import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 
 interface FieldStyles {
@@ -32,10 +34,17 @@ interface FormField {
   multiple?: boolean;
 }
 
+interface EmbeddedComponentOutput {
+  name: string;
+  callback(params: any): any;
+}
+
 interface EmbeddedComponent {
   component: Type<any>;
   inputs: Record<string, any>;
-  containerStyles: any;
+  outputs?: Array<EmbeddedComponentOutput>;
+  containerStyles?: any;
+  afterIndex: number;
 }
 
 interface FormStep {
@@ -74,7 +83,7 @@ interface OptionalLink {
   styleUrls: ['./multistep-form.component.scss'],
 })
 export class MultistepFormComponent implements OnInit {
-  @ViewChild('embeddedComponentRef', { read: ViewContainerRef, static: true })
+  @ViewChild('embeddedComponent', { read: ViewContainerRef, static: true })
   embeddedComponentRef;
   @Input() steps: Array<FormStep> = [
     {
@@ -140,11 +149,41 @@ export class MultistepFormComponent implements OnInit {
           inputs: {
             lightTextAtTheTop: 'arriba',
             boldTextAtTheBottom: 'abajo',
-            backgroundColor: 'skyblue',
-            textcolor: 'black',
+            backgroundColor: 'orange',
+            textColor: 'black',
           },
+          outputs: [
+            {
+              name: 'exampleEvent',
+              callback: (result) => {
+                console.log('event emiitedaxsadaq', result);
+              },
+            },
+          ],
+          afterIndex: 0,
           containerStyles: {
             marginTop: '10px',
+          },
+        },
+        {
+          component: ActivitiesOptionComponent,
+          inputs: {
+            lightTextAtTheTop: 'arriba',
+            boldTextAtTheBottom: 'abajo',
+            backgroundColor: 'red',
+            textColor: 'white',
+          },
+          outputs: [
+            {
+              name: 'exampleEvent',
+              callback: (result) => {
+                console.log('event 222 emiitedaxsadaq', result);
+              },
+            },
+          ],
+          afterIndex: 1,
+          containerStyles: {
+            marginTop: '80px',
           },
         },
       ],
@@ -215,8 +254,9 @@ export class MultistepFormComponent implements OnInit {
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
+  env: string = environment.assetsUrl;
 
-  constructor() {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
   ngOnInit(): void {
     this.initController();
@@ -262,6 +302,42 @@ export class MultistepFormComponent implements OnInit {
 
     console.log('Modelo de datos', this.dataModel);
   }
+
+  // initEmbeddedComponents() {
+  //   this.steps.forEach((step) => {
+  //     step.embeddedComponents.forEach((embeddedComponent) => {
+  //       const componentFactory =
+  //         this.componentFactoryResolver.resolveComponentFactory(
+  //           embeddedComponent.component
+  //         );
+
+  //       this.embeddedComponentRef.clear();
+
+  //       const newComponent =
+  //         this.embeddedComponentRef.createComponent(componentFactory);
+
+  //       Object.entries(embeddedComponent.inputs).forEach(
+  //         ([key, value]: [string, any]) => {
+  //           newComponent.instance[key] = value;
+  //         }
+  //       );
+  //     });
+  //   });
+
+  //   // const componentFactory =
+  //   //   this.componentFactoryResolver.resolveComponentFactory(this.bodyComponent);
+
+  //   // this.contentPlaceholderRef.clear();
+
+  //   // const newComponent =
+  //   //   this.contentPlaceholderRef.createComponent(componentFactory);
+
+  //   // Object.entries(this.bodyComponentInputs).forEach(
+  //   //   ([key, value]: [string, any]) => {
+  //   //     newComponent.instance[key] = value;
+  //   //   }
+  //   // );
+  // }
 
   openInputTypeFileSelector(id: string) {
     let fileElement = document.querySelector(`#${id}`) as HTMLElement;

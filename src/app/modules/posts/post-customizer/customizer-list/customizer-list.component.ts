@@ -382,7 +382,6 @@ const fonts = [
   "Dorsa",
   "Village",
   "CFCraigRobinson-Regular",
-  "Neorf",
   "PomfritDandyNFRegular",
   "HorsDoeuvresTheGarter",
   "CheltenhamStdBoldCondIt",

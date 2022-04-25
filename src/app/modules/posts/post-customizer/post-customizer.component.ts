@@ -269,20 +269,8 @@ export class PostCustomizerComponent
   };
   fontStyles: string[] = [
     'Arial',
-    'AvenirRegular',
-    'NunitoSans',
-    'RalewaySemiBold',
-    'BadbadScript',
-    'Rubik',
     'RobotoMedium',
-    'GraphikRegular',
-    'Jost',
-    'Luxia',
-    'Monschone',
-    'Palatino',
-    'Palitoon',
     'GeorgiaRegular',
-    'Nirvana',
     'GiddyupStd',
     'Cheltenham',
     'Empire',
@@ -313,8 +301,8 @@ export class PostCustomizerComponent
       fontName: 'Village',
     },
     {
-      fileName: 'NEORF___.TTF',
-      fontName: 'Neorf',
+      fileName: 'AirForce45-Regular.ttf',
+      fontName: 'AirForce45-Regular',
     },
     {
       fileName: 'PomfritDandyNFRegular.ttf',
@@ -489,6 +477,7 @@ export class PostCustomizerComponent
         if (this.currentTextsAmount === texts.fixedAmount) {
           this.textMax = true;
         }
+        if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true;
       }
     } else {
       if (this.route.snapshot.url[0].path === 'post-customizer') {
@@ -526,6 +515,7 @@ export class PostCustomizerComponent
             if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
             this.willHideInput = true;
           }
+          if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
           // Text input below canvas
           texts.itemsRule.forEach((text) => {
             if (text.defaultText) {
@@ -818,6 +808,7 @@ export class PostCustomizerComponent
             if(rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
             this.willHideInput = true;
           }
+          if(rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
           // Text input below canvas
           if (this.currentTextsAmount === rules.texts.fixedAmount) {
             this.textMax = true;

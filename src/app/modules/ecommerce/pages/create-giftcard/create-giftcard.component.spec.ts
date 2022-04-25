@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuthCallerComponent } from './auth-caller.component';
+import { CreateGiftcardComponent } from './create-giftcard.component';
 
-describe('AuthCallerComponent', () => {
-  let component: AuthCallerComponent;
-  let fixture: ComponentFixture<AuthCallerComponent>;
+describe('CreateGiftcardComponent', () => {
+  let component: CreateGiftcardComponent;
+  let fixture: ComponentFixture<CreateGiftcardComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AuthCallerComponent ]
+      declarations: [ CreateGiftcardComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AuthCallerComponent);
+    fixture = TestBed.createComponent(CreateGiftcardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

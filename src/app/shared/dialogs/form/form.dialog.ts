@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Form } from '@mukuve/ngx-forms';
 import { compressImage } from 'src/app/core/helpers/files.helpers';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-form-dialog',
@@ -15,6 +16,7 @@ export class FormDialog {
   @Input() imageKey = 'image';
   @Input() image: string | ArrayBuffer;
   imageFile: File;
+  env: string = environment.assetsUrl;
 
   constructor(public ref: DialogRef) {}
 

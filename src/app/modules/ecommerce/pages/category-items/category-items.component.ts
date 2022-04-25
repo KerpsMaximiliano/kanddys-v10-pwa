@@ -4,14 +4,13 @@ import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
-  ItemParam,
-  ItemParamValue,
 } from 'src/app/core/models/item';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 
 @Component({
   selector: 'app-category-items',
@@ -29,6 +28,7 @@ export class CategoryItemsComponent implements OnInit {
   filters: any[];
   loadingSwiper: boolean;
   selectedTagsIds: any = [];
+  hasCustomizer: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -85,25 +85,37 @@ export class CategoryItemsComponent implements OnInit {
 
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       const orderData = this.header.getOrder(this.saleflowData._id);
-      let customizersId: string[] = [];
-      let itemsId: string[] = [];
+      let saleflowItems: {
+        item: string;
+        customizer: string;
+        index: number;
+      }[] = [];
       let items: Item[] = [];
       const merchantId = this.saleflowData.merchant._id;
 
       if (this.saleflowData.items.length !== 0) {
         for (let i = 0; i < this.saleflowData.items.length; i++) {
-          if (this.saleflowData?.items[i]?.customizer?._id)
-            customizersId.push(this.saleflowData.items[i].customizer._id);
-          itemsId.push(this.saleflowData.items[i].item._id);
+          saleflowItems.push({
+            item: this.saleflowData.items[i].item._id,
+            customizer: this.saleflowData.items[i].customizer?._id,
+            index: this.saleflowData.items[i].index,
+          });
         }
+        if (saleflowItems.some((item) => item.customizer))
+          this.hasCustomizer = true;
       }
 
-      const selectedItems = orderData?.products?.length > 0 ? orderData.products.map((subOrder) => subOrder.item) : [];
+      console.log('CECILIA', this.hasCustomizer);
+
+      const selectedItems =
+        orderData?.products?.length > 0
+          ? orderData.products.map((subOrder) => subOrder.item)
+          : [];
       items = (
         await this.saleflow.listItems({
           findBy: {
             _id: {
-              __in: ([] = itemsId),
+              __in: ([] = saleflowItems.map((items) => items.item)),
             },
           },
           options: {
@@ -113,12 +125,21 @@ export class CategoryItemsComponent implements OnInit {
       ).listItems;
 
       for (let i = 0; i < items.length; i++) {
-        items[i].customizerId = customizersId[i];
+        const saleflowItem = saleflowItems.find(
+          (item) => item.item === items[i]._id
+        );
+        items[i].customizerId = saleflowItem.customizer;
+        items[i].index = saleflowItem.index;
         items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +
             items[i].pricing;
+      }
+      if (this.items.every((item) => item.index)) {
+        items = items.sort((a, b) =>
+          a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+        );
       }
 
       this.items = items.filter((item) =>
@@ -140,51 +161,50 @@ export class CategoryItemsComponent implements OnInit {
       this.getCategories(itemCategoriesList, headlines);
 
       unlockUI();
-      // if(this.categoryName === 'Tragos') this.iconImage = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/images/Trago.png";
-      // if(this.categoryName === 'Baño') this.iconImage = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/images/Banio.png";
-      // if(this.categoryName === 'Comidas') this.iconImage = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/images/Comida.png";
     });
   }
 
   onClick(index: any) {
     console.log(index);
-    let itemData;
-    if (index.index) {
-      itemData = this.items[index.index];
-    }else{
-      itemData = this.items[index]
-    }
-    let params: ItemParam;
-    let selectedValue: ItemParamValue;
-    if (itemData.params.length > 0) {
-      params = itemData.params[0];
-      selectedValue = params.values[0];
-    }
-    // const amount = itemData.fixedQuantity ?? 1;
-    // const itemQuantity = itemData.fixedQuantity ?? 1;
-    // const total = itemData.pricing + itemQuantity * selectedValue.price;
-
-    // itemData.total = total;
-    // itemData.amount = amount;
+    let itemData = this.items[index];
+    // if (index.index) {
+    //   itemData = this.items[index.index];
+    // } else {
+    //   itemData = this.items[index];
+    // }
     this.header.items = [itemData];
-
-    const order = {
-      products: [{}],
-    };
-    this.header.order = order;
-    this.header.order.products[0].item = itemData._id;
-    // this.header.order.products[0].amount = amount;
-    this.header.order.products[0].saleflow = this.header.saleflow._id;
-    if (params) {
-      this.header.order.products[0].params = [];
-      this.header.order.products[0].params[0] = {
-        param: params._id,
-        paramValue: selectedValue._id,
+    if (itemData.customizerId) {
+      this.header.emptyOrderProducts(this.saleflowData._id);
+      this.header.emptyItems(this.saleflowData._id);
+      let itemParams: ItemSubOrderParamsInput[];
+      if(itemData.params.length > 0) {
+        itemParams = [{
+          param: itemData.params[0]._id,
+          paramValue:
+          itemData.params[0].values[0]._id,
+        }];
       };
+      const product = {
+        item: itemData._id,
+        customizer: itemData.customizerId,
+        params: itemParams,
+        amount: itemData.customizerId ? undefined : 1,
+        saleflow: this.saleflowData._id,
+        name: itemData.name,
+      }
+      this.header.order = {
+        products: [product],
+      };
+      this.header.storeOrderProduct(this.saleflowData._id, product);
+      this.header.storeItem(this.saleflowData._id, itemData);
+      this.router.navigate([`/ecommerce/provider-store`]);
     }
-
-    this.router.navigate([`/ecommerce/provider-store`]);
-    //this.router.navigate(['/ecommerce/item-detail/' + this.header.saleflow._id + '/' + itemData._id]);
+    else this.router.navigate([
+      '/ecommerce/item-detail/' +
+      this.header.saleflow._id +
+      '/' +
+      itemData._id,
+    ]);
   }
 
   closeTagEvent(e) {
@@ -241,22 +261,34 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   toggleSelected(type: string, index: number) {
-    if(type === 'item') {
-      if(index != undefined) {
-        this.originalItems[index].isSelected = !this.originalItems[index].isSelected;
-        let itemParams = {
-          param: this.originalItems[index].params[0]._id,
-          paramValue: this.originalItems[index].params[0].values[0]._id
-        }
-        this.header.storeItems(this.saleflowData._id, {
-            item: this.originalItems[index]._id,
-            customizer: this.originalItems[index].customizerId,
-            params: [itemParams],
-            saleflow: this.saleflowData._id,
-        });
-        this.header.storeItemProduct(this.saleflowData._id, this.originalItems[index]);
+    if (type === 'item') {
+      if (index != undefined) {
+        const itemData = this.originalItems[index];
+        itemData.isSelected =
+          !itemData.isSelected;
+        let itemParams: ItemSubOrderParamsInput[];
+        if(itemData.params.length > 0) {
+          itemParams = [{
+            param: itemData.params[0]._id,
+            paramValue:
+            itemData.params[0].values[0]._id,
+          }];
+        };
+        const product = {
+          item: itemData._id,
+          customizer: itemData.customizerId,
+          params: itemParams,
+          amount: itemData.customizerId ? undefined : 1,
+          saleflow: this.saleflowData._id,
+          name: itemData.name,
+        };
+        this.header.storeOrderProduct(this.saleflowData._id, product);
+        this.header.storeItem(
+          this.saleflowData._id,
+          itemData
+        );
       }
-    } else if(type === 'package') {
+    } else if (type === 'package') {
       //
     }
   }

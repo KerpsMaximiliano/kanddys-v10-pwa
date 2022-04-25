@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { environment } from 'src/environments/environment';
 import { FormFunnelV2Component } from '../../dialogs/form-funnel-v2/form-funnel-v2.component';
 //import { FormFunnelComponent } from './../../dialogs/form-funnel/form-funnel.component';
 
@@ -32,6 +33,7 @@ export class SeeFiltersComponent implements OnInit {
   activedTags: any[];
   notificationCount: number = 0;
   @Input() hasBookmark: boolean;
+  env: string = environment.assetsUrl;
 
   constructor(private dialog: DialogService, public header: HeaderService) {}
 

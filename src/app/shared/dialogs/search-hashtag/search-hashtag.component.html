@@ -1,9 +1,9 @@
 <div class="container">
     <div class="header-wrapper">
-        <img src="../../../../assets/images/back.png" alt="" class="back" (click)="close()">
+        <img src="{{ env }}/back.png" alt="" class="back" (click)="close()">
         <div class="input">
             <div class="search-icon">
-                <img src="../../../../assets/images/search.png" alt="">
+                <img src="{{ env }}/search.png" alt="">
             </div>
             <input id="searchInput" type="keyword" id="keyword" [(ngModel)]="hashtag"
                 placeholder="#     Search for hashtags" (keydown)="search($event)">

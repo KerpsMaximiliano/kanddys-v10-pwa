@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-warning-steps',
@@ -17,6 +18,8 @@ export class WarningStepsComponent implements OnInit {
     title: string;
     status: string;
   }[];
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private ref: DialogRef

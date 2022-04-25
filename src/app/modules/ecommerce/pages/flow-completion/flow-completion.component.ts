@@ -20,6 +20,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-flow-completion',
@@ -137,6 +138,7 @@ export class FlowCompletionComponent implements OnInit {
   ammount: number;
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
+  env: string = environment.assetsUrl;
 
   constructor(
     private authService: AuthService,
@@ -185,46 +187,8 @@ export class FlowCompletionComponent implements OnInit {
             this.merchantInfo = this.header.merchantInfo;
             console.log(this.merchantInfo);
             console.log(this.header.merchantInfo);
-            const fullLink =
-              'https://kanddys.com/ecommerce/order-info/' + this.orderId;
-            console.log(this.merchantInfo);
-            if (this.fakeData.items[0].customizer)
-              this.whatsappLink = `https://wa.me/${
-                this.merchantInfo.owner.phone
-              }?text=Hola%20${
-                this.merchantInfo.name
-              },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-                Math.round(
-                  (this.fakeData.subtotals[0].amount * 1.18 + Number.EPSILON) *
-                    100
-                ) / 100
-              }.%20Mi%20nombre%20es:%20${
-                this.userData.name
-              }.%20Mas%20info%20aquí%20${fullLink}`;
-            else
-              this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.fakeData.subtotals[0].amount}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
             console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
           });
-        } else {
-          console.log(this.fakeData.items[0].customizer);
-          console.log('PPPPPPPPPPPPP');
-          const fullLink =
-            'https://kanddys.com/ecommerce/order-info/' + this.orderId;
-          if (this.fakeData.items[0].customizer)
-            this.whatsappLink = `https://wa.me/${
-              this.merchantInfo.owner.phone
-            }?text=Hola%20${
-              this.merchantInfo.name
-            },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-              Math.round(
-                (this.fakeData.subtotals[0].amount * 1.18 + Number.EPSILON) *
-                  100
-              ) / 100
-            }.%20Mi%20nombre%20es:%20${
-              this.userData.name
-            }.%20Mas%20info%20aquí%20${fullLink}`;
-          else
-            this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.fakeData.subtotals[0].amount}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
         }
         this.orderData = {
           id: this.fakeData._id,
@@ -776,8 +740,8 @@ export class FlowCompletionComponent implements OnInit {
                 .then((data) => {
                   console.log(data);
                   console.log(data.createOrder._id);
+                  this.header.emptyOrderProducts(this.header.saleflow._id);
                   this.header.emptyItems(this.header.saleflow._id);
-                  this.header.emptyItemProducts(this.header.saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -817,8 +781,8 @@ export class FlowCompletionComponent implements OnInit {
           .createOrder(orderRequest)
           .then(async (data) => {
             console.log(data);
+            this.header.emptyOrderProducts(this.header.saleflow._id);
             this.header.emptyItems(this.header.saleflow._id);
-            this.header.emptyItemProducts(this.header.saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
@@ -845,6 +809,24 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 7
   async payOrder() {
+    const fullLink =
+      'https://kanddys.com/ecommerce/order-info/' + this.orderId;
+    if (this.fakeData.items[0].customizer)
+      this.whatsappLink = `https://wa.me/${
+        this.merchantInfo.owner.phone
+      }?text=Hola%20${
+        this.merchantInfo.name
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
+        this.ammount ??
+        Math.round(
+          (this.fakeData.subtotals[0].amount * 1.18 + Number.EPSILON) *
+            100
+        ) / 100
+      }.%20Mi%20nombre%20es:%20${
+        this.userData.name
+      }.%20Mas%20info%20aquí%20${fullLink}`;
+    else
+      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.ammount ?? this.fakeData.subtotals[0].amount}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
     try {
       lockUI();
 

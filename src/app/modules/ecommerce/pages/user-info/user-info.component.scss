@@ -1,0 +1,29 @@
+.transition-input {
+    transition-duration: 0.6s;
+  }
+  
+  .input-title {
+    padding: 20px;
+    color: #0b1f38;
+    font-family: "Roboto";
+    font-size: 17px;
+    font-style: italic;
+    text-align: center;
+  }
+  
+  .title {
+    font-family: "SfProRegular";
+    font-size: 14px;
+    color: #7B7B7B;
+  
+  }
+  .link-button {
+    display: flex;
+  
+    svg {
+        margin: auto;
+        width: 90px;
+        height: 90px;
+        cursor: pointer;
+    }
+  }

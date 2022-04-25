@@ -144,19 +144,148 @@ ngx-form {
   height: 0px;
 }
 
-// @font-face {
-//   font-family: "AvenirMedium";
-//   src: url("../src/assets/fonts/AvenirNextCondensedMedium.ttf");
-// }
+@font-face {
+  font-family: "AvenirMedium";
+  src: url("../src/assets/fonts/AvenirNextCondensedMedium.ttf");
+}
+
+@font-face {
+  font-family: "AvenirDemiBold";
+  src: url("../src/assets/fonts/AvenirNextCondensedDemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Empire";
+  src: url("../src/assets/fonts/empire-bt.ttf");
+}
+
+@font-face {
+  font-family: "Dorsa";
+  src: url("../src/assets/fonts/Dorsa-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Rubik";
+  src: url("../src/assets/fonts/Rubik.ttf");
+}
+@font-face {
+  font-family: "RobotoMedium";
+  src: url("../src/assets/fonts/RobotoMedium.ttf");
+}
+
+@font-face {
+  font-family: "RobotoRegular";
+  src: url("../src/assets/fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "RobotoLight";
+  src: url("../src/assets/fonts/Roboto-Light.ttf");
+}
+
+@font-face {
+  font-family: "RobotoItalic";
+  src: url("../src/assets/fonts/Roboto-Italic.ttf");
+}
+
+@font-face{
+  font-family: 'RobotoLightItalic';
+  src: url('../src/assets/fonts/Roboto-LightItalic.ttf');
+}
+
+@font-face {
+  font-family: "RobotoBold";
+  src: url("../src/assets/fonts/Roboto-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Graphik";
+  src: url("../src/assets/fonts/GraphikRegular.otf") format("opentype");
+}
+
+@font-face{
+  font-family: "GiddyupStd";
+  src: url("../src/assets/fonts/GiddyupStd.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "GeorgiaRegular";
+  src: url("../src/assets/fonts/GeorgiaRegular.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "SfProRegular";
+  src: url("../src/assets/fonts/SFProDisplay-Regular.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "SfProSemiBold";
+  src: url("../src/assets/fonts/SFProDisplaySemibold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "SfProLight";
+  src: url("../src/assets/fonts/SFProDisplay-Light.ttf") format("opentype");
+}
+
+@font-face{
+  font-family: 'SfProMedium';
+  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("opentype");
+}
+
+@font-face{
+  font-family: 'ProDisplaySemiBold';
+  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf');
+}
+
+@font-face{
+  font-family: 'ProDisplayRegular';
+  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: "Nirvana";
+  src: url("../src/assets/fonts/NIRVANA.TTF") format("truetype");
+}
+
+@font-face {
+  font-family: "Village";
+  src: url("../src/assets/fonts/VILLAGE.TTF") format("truetype");
+}
+
+@font-face {
+  font-family: "CFCraigRobinson-Regular";
+  src: url("../src/assets/fonts/CFCraigRobinson-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "PomfritDandyNFRegular";
+  src: url("../src/assets/fonts/PomfritDandyNFRegular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "HorsDoeuvresTheGarter";
+  src: url("../src/assets/fonts/HorsDoeuvresTheGarter.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Cheltenham";
+  src: url("../src/assets/fonts/CheltenhamStdBold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "CheltenhamStd-HdtooledBold";
+  src: url("../src/assets/fonts/CheltenhamStd-HdtooledBold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "AirForce45-Regular";
+  src: url("../src/assets/fonts/AirForce45-Regular.ttf") format("truetype");
+}
 
 // @font-face {
 //   font-family: "AvenirBold";
 //   src: url("../src/assets/fonts/AvenirNextCondensedBold.ttf");
-// }
-
-// @font-face {
-//   font-family: "AvenirDemiBold";
-//   src: url("../src/assets/fonts/AvenirNextCondensedDemiBold.ttf");
 // }
 
 // @font-face {
@@ -185,16 +314,6 @@ ngx-form {
 // }
 
 // @font-face {
-//   font-family: "Empire";
-//   src: url("../src/assets/fonts/empire-bt.ttf");
-// }
-
-// @font-face {
-//   font-family: "Dorsa";
-//   src: url("../src/assets/fonts/Dorsa-Regular.ttf");
-// }
-
-// @font-face {
 //   font-family: "NunitoSans";
 //   src: url("../src/assets/fonts/NunitoSans-Regular.ttf");
 // }
@@ -208,84 +327,23 @@ ngx-form {
 //   font-family: "BadbadScript";
 //   src: url("../src/assets/fonts/BadbadScript-BWYoB.otf") format("opentype");
 // }
-
 // @font-face {
-//   font-family: "Rubik";
-//   src: url("../src/assets/fonts/Rubik.ttf");
-// }
-// @font-face {
-//   font-family: "RobotoMedium";
-//   src: url("../src/assets/fonts/RobotoMedium.ttf");
+  //   font-family: "GraphikBold";
+  //   src: url("../src/assets/fonts/GraphikBold.otf") format("opentype");
 // }
 
 // @font-face {
-//   font-family: "RobotoRegular";
-//   src: url("../src/assets/fonts/Roboto-Regular.ttf");
-// }
-
-// @font-face {
-//   font-family: "RobotoLight";
-//   src: url("../src/assets/fonts/Roboto-Light.ttf");
-// }
-
-// @font-face {
-//   font-family: "RobotoItalic";
-//   src: url("../src/assets/fonts/Roboto-Italic.ttf");
-// }
-
-// @font-face{
-//   font-family: 'RobotoLightItalic';
-//   src: url('../src/assets/fonts/Roboto-LightItalic.ttf');
-// }
-
-// @font-face {
-//   font-family: "RobotoBold";
-//   src: url("../src/assets/fonts/Roboto-Bold.ttf");
-// }
-
-// @font-face {
-//   font-family: "GraphikBold";
-//   src: url("../src/assets/fonts/GraphikBold.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "GraphikSemiBold";
+  //   font-family: "GraphikSemiBold";
 //   src: url("../src/assets/fonts/GraphikSemibold.otf") format("opentype");
 // }
 
 // @font-face {
-//   font-family: "GraphikMedium";
+  //   font-family: "GraphikMedium";
 //   src: url("../src/assets/fonts/GraphikMedium.otf") format("opentype");
 // }
-
-// @font-face {
-//   font-family: "GraphikRegular";
-//   src: url("../src/assets/fonts/GraphikRegular.otf") format("opentype");
-// }
-
 // @font-face {
 //   font-family: "GraphikLight";
 //   src: url("../src/assets/fonts/GraphikLight.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: 'BadbadScript';
-//   src: url('../src/assets/fonts/BadbadScript-BWYoB.otf') format("opentype");
-// }
-
-// @font-face{
-//   font-family: 'Rubik';
-//   src: url('../src/assets/fonts/Rubik.ttf');
-// }
-
-// @font-face{
-//   font-family: "GiddyupStd";
-//   src: url("../src/assets/fonts/GiddyupStd.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "GeorgiaRegular";
-//   src: url("../src/assets/fonts/GeorgiaRegular.ttf") format("opentype");
 // }
 
 // @font-face {
@@ -323,119 +381,41 @@ ngx-form {
 //   src: url("../src/assets/fonts/palitoon.otf") format("opentype");
 // }
 
-// @font-face {
-//   font-family: "SfProRegular";
-//   src: url("../src/assets/fonts/SFProDisplay-Regular.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "SfProSemiBold";
-//   src: url("../src/assets/fonts/SFProDisplaySemibold.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "SfProLight";
-//   src: url("../src/assets/fonts/SFProDisplay-Light.ttf") format("opentype");
-// }
-
 // @font-face{
-//   font-family: 'SfProBold';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Black.ttf');
-// }
-
-// @font-face{
-//   font-family: 'SfProMedium';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("opentype");
-// }
-// @font-face{
+  //   font-family: 'SfProBold';
+  //   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Black.ttf');
+  // }
+  
+  // @font-face{
 //   font-family: 'SfProRoundedBold';
 //   src: url('../src/assets/fonts/SF-Pro-Rounded-Bold.otf');
 // }
 
 // .flex-space-between {
-//   display: flex;
-//   justify-content: space-between;
-// }
+  //   display: flex;
+  //   justify-content: space-between;
+  // }
+  
+  // .flex-center {
+    //   display: flex;
+    //   justify-content: center;
+    // }
+    
+    // .flex {
+      //   display: flex;
+      // }
 
-// .flex-center {
-//   display: flex;
-//   justify-content: center;
-// }
+      
+      
 
-// .flex {
-//   display: flex;
-// }
-
-// @font-face{
-//   font-family: 'Graphik';
-//   src: url('../src/assets/fonts/GraphikRegular.otf');
-// }
-
-// @font-face{
-//   font-family: 'ProDisplaySemiBold';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf');
-// }
-
-// @font-face{
-//   font-family: 'ProDisplayRegular';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf');
-// }
-
-// @font-face {
-//   font-family: "SfProRegular";
-//   src: url("../src/assets/fonts/SFProDisplay-Regular.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "SfProSemiBold";
-//   src: url("../src/assets/fonts/SFProDisplaySemibold.ttf") format("opentype");
-// }
-
-
-// @font-face {
-//   font-family: "Nirvana";
-//   src: url("../src/assets/fonts/NIRVANA.TTF") format("truetype");
-// }
-
-// @font-face {
-//   font-family: "Village";
-//   src: url("../src/assets/fonts/VILLAGE.TTF") format("truetype");
-// }
-
-// @font-face {
-//   font-family: "CFCraigRobinson-Regular";
-//   src: url("../src/assets/fonts/CFCraigRobinson-Regular.ttf") format("truetype");
-// }
-
-
-// @font-face {
-//   font-family: "Neorf";
-//   src: url("../src/assets/fonts/NEORF___.TTF") format("truetype");
-// }
-
-// @font-face {
-//   font-family: "PomfritDandyNFRegular";
-//   src: url("../src/assets/fonts/PomfritDandyNFRegular.ttf") format("truetype");
-// }
-
-// @font-face {
-//   font-family: "HorsDoeuvresTheGarter";
-//   src: url("../src/assets/fonts/HorsDoeuvresTheGarter.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Cheltenham";
-//   src: url("../src/assets/fonts/CheltenhamStdBold.otf") format("opentype");
-// }
-
+      // @font-face {
+        //   font-family: "Neorf";
+        //   src: url("../src/assets/fonts/NEORF___.TTF") format("truetype");
+        // }
+        
 // @font-face {
 //   font-family: "CheltenhamStdBoldCondIt";
 //   src: url("../src/assets/fonts/CheltenhamStdBoldCondIt.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "CheltenhamStd-HdtooledBold";
-//   src: url("../src/assets/fonts/CheltenhamStd-HdtooledBold.otf") format("opentype");
 // }
 
 // @font-face {
@@ -455,19 +435,4 @@ ngx-form {
 
 // .flex {
 //   display: flex;
-// }
-
-// @font-face{
-//   font-family: 'Graphik';
-//   src: url('../src/assets/fonts/GraphikRegular.otf');
-// }
-
-// @font-face{
-//   font-family: 'ProDisplaySemiBold';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf');
-// }
-
-// @font-face{
-//   font-family: 'ProDisplayRegular';
-//   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf');
 // }

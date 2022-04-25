@@ -8,6 +8,9 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { Location } from '@angular/common';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',
@@ -22,7 +25,8 @@ export class ItemDetailComponent implements OnInit {
     private router: Router,
     private dialog: DialogService,
     private location: Location,
-    private appService: AppService
+    private appService: AppService,
+    private saleflow: SaleFlowService
   ) { 
     const sub = this.appService.events
     .pipe(filter((e) => e.type === 'deleted-item'))
@@ -42,7 +46,7 @@ export class ItemDetailComponent implements OnInit {
         this.items.item(params.id).then(data => {
           this.itemData = data;
           console.log(this.itemData);
-          let productData = this.header.getItemProduct(this.saleflowId);
+          let productData = this.header.getItems(this.saleflowId);
           console.log(data);
           console.log(productData.length);
           
@@ -68,7 +72,7 @@ export class ItemDetailComponent implements OnInit {
   showItems() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { headerButton: 'Ver mas productos' },
+      props: { headerButton: 'Ver mas productos', callback: this.boundedPrintValue},
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
@@ -77,17 +81,32 @@ export class ItemDetailComponent implements OnInit {
   saveProduct(){
     console.log('here');
     
-    this.header.storeItems(this.saleflowId, 
+    this.header.storeOrderProduct(this.saleflowId, 
     {
       item: this.itemData._id,
       amount: 1,
       saleflow: this.saleflowId
     });
-    this.header.storeItemProduct(this.saleflowId, this.itemData);
+    this.header.storeItem(this.saleflowId, this.itemData);
     this.showItems();
     this.ngOnInit();
     //this.router.navigate(['/ecommerce/provider-store']);
     //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
+  }
+
+  public boundedPrintValue = ()=>{
+    this.saleflow.saleflow(this.saleflowId, true).then(data =>{
+      console.log(data);
+      for (let i = 0; i < data.saleflow.items.length; i++) {
+        if (data.saleflow.items[i].item._id === this.itemData._id) {
+          if (data.saleflow.items[i].customizer) {
+            this.router.navigate([`ecommerce/provider-store`])
+          }else{
+            this.router.navigate(['/ecommerce/create-giftcard']);
+          }
+        }
+      }
+    })
   }
 
   back(){

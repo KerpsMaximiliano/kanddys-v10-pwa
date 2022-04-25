@@ -18,7 +18,7 @@
                     </svg>          
                 </div>
                 <div class="link-button" *ngIf="list[i].status === 'Completado'">
-                    <img src="/assets/images/check-circle.svg" alt="completed">
+                    <img src="{{ env }}/check-circle.svg" alt="completed">
                 </div>
             </div>
             <div class="additional-info" *ngIf="list[i].price || list[i].quantity">

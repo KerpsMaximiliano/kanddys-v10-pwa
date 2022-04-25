@@ -18,7 +18,6 @@ export class CustomizerStickersComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    console.log("Stickers", this.stickers);
   }
 
   sanitizeImageUrl(imageUrl: string): SafeUrl {
