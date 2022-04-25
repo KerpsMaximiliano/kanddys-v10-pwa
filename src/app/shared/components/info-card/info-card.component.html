@@ -1,0 +1,80 @@
+<ng-container style="border-radius: 10px;" *ngIf="type === 'tag'">
+    <div class="card">
+        <div class="toptext">
+            {{toptext}} <svg id="tags" xmlns="http://www.w3.org/2000/svg" width="16.464" height="15.408"
+                viewBox="0 0 16.464 15.408">
+                <path id="Path_28292" data-name="Path 28292"
+                    d="M5.556,3.306V8.151l7.394,7.394L17.8,10.7,10.4,3.306Zm-1.056,0A1.056,1.056,0,0,1,5.556,2.25H10.4a1.056,1.056,0,0,1,.747.309l7.394,7.394a1.056,1.056,0,0,1,0,1.493L13.7,16.291a1.056,1.056,0,0,1-1.493,0L4.81,8.9a1.056,1.056,0,0,1-.31-.746Z"
+                    transform="translate(-2.387 -2.25)" fill="#7b7b7b" fill-rule="evenodd" />
+                <path id="Path_28293" data-name="Path 28293"
+                    d="M10.584,8.863a.528.528,0,1,0-.528-.528A.528.528,0,0,0,10.584,8.863Zm0,1.056A1.584,1.584,0,1,0,9,8.334,1.584,1.584,0,0,0,10.584,9.919Z"
+                    transform="translate(-4.775 -4.637)" fill="#7b7b7b" fill-rule="evenodd" />
+                <path id="Path_28294" data-name="Path 28294"
+                    d="M1.056,9.873a1.056,1.056,0,0,0,.309.747L9.243,18.5l-.046.046a1.056,1.056,0,0,1-1.493,0L.31,11.148A1.056,1.056,0,0,1,0,10.4V5.556A1.056,1.056,0,0,1,1.056,4.5Z"
+                    transform="translate(0 -3.444)" fill="#7b7b7b" />
+            </svg>
+        </div>
+        <div class="bottomtext">
+            {{bottomtext}}
+        </div>
+    </div>
+</ng-container>
+<ng-container style="border-radius: 10px; width: 84px; height: 84px;" *ngIf="type === 'heart'">
+    <div class="card">
+        <div class="toptext">
+            {{toptext}}
+        </div>
+        <div class="bottomtext">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20.122" height="19.228" viewBox="0 0 20.122 19.228">
+                <path id="Path_28358" data-name="Path 28358"
+                    d="M544.125,29.3,536.5,39.084a.844.844,0,0,1-1.332,0L527.549,29.3a4.657,4.657,0,0,1,1.953-7.236c.105-.038.212-.073.321-.1a5.866,5.866,0,0,1,6.014,1.96,5.866,5.866,0,0,1,6.014-1.96c.109.031.216.066.321.1A4.657,4.657,0,0,1,544.125,29.3Z"
+                    transform="translate(-525.776 -20.932)" fill="none" stroke="#7b7b7b" stroke-width="1.5" />
+            </svg>
+        </div>
+    </div>
+</ng-container>
+<ng-container style="border-radius: 10px; width: 84px; height: 84px;" *ngIf="type === 'money'">
+    <div class="card">
+        <div class="toptext">
+            ${{toptext}}
+        </div>
+        <div class="bottomtext">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20.416" height="23.197" viewBox="0 0 20.416 23.197">
+                <g id="Group_68787" data-name="Group 68787" transform="translate(-348.887 -192.803)">
+                    <text id="_29_Upcoming_events_found" data-name="29+ Upcoming events found"
+                        transform="matrix(1, 0, 0, 1, 358.887, 211)" fill="#7b7b7b" font-size="17"
+                        font-family="Roboto-Regular, Roboto">
+                        <tspan x="-9.546" y="0">$</tspan>
+                    </text>
+                    <g id="arrow-down-short" transform="translate(363.878 174.42) rotate(45)">
+                        <path id="Path_28359" data-name="Path 28359"
+                            d="M10.405,17.154a.958.958,0,0,1,1.357,0l5.072,5.074,5.073-5.074a.96.96,0,0,1,1.357,1.357l-5.751,5.751a.958.958,0,0,1-1.357,0l-5.751-5.751a.958.958,0,0,1,0-1.357Z"
+                            transform="translate(0 -0.999)" fill="#7b7b7b" fill-rule="evenodd" />
+                        <path id="Path_28360" data-name="Path 28360"
+                            d="M17.833,10.125a.958.958,0,0,1,.958.958v9.585a.958.958,0,0,1-1.917,0V11.083A.958.958,0,0,1,17.833,10.125Z"
+                            transform="translate(-0.999)" fill="#7b7b7b" fill-rule="evenodd" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+    </div>
+</ng-container>
+<ng-container style="border-radius: 10px; width: 84px; height: 84px;" *ngIf="type === 'eye'">
+    <div class="card">
+        <div class="toptext">
+            {{toptext}}
+        </div>
+        <div class="bottomtext">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24.964" height="17.163" viewBox="0 0 24.964 17.163">
+                <g id="eye" transform="translate(0 -5.625)">
+                    <path id="Path_28309" data-name="Path 28309"
+                        d="M24.964,14.207S20.284,5.625,12.482,5.625,0,14.207,0,14.207s4.681,8.582,12.482,8.582S24.964,14.207,24.964,14.207Zm-23.134,0a20.493,20.493,0,0,0,2.59,3.188,11.627,11.627,0,0,0,8.062,3.833,11.636,11.636,0,0,0,8.064-3.833,20.493,20.493,0,0,0,2.59-3.188,20.491,20.491,0,0,0-2.59-3.188,11.638,11.638,0,0,0-8.064-3.833,11.636,11.636,0,0,0-8.064,3.833,20.491,20.491,0,0,0-2.59,3.188Z"
+                        fill="#7b7b7b" fill-rule="evenodd" />
+                    <path id="Path_28310" data-name="Path 28310"
+                        d="M15.586,11.685a3.9,3.9,0,1,0,3.9,3.9,3.9,3.9,0,0,0-3.9-3.9Zm-5.461,3.9a5.461,5.461,0,1,1,5.461,5.461A5.461,5.461,0,0,1,10.125,15.586Z"
+                        transform="translate(-3.104 -1.379)" fill="#7b7b7b" fill-rule="evenodd" />
+                </g>
+            </svg>
+        </div>
+    </div>
+</ng-container>
