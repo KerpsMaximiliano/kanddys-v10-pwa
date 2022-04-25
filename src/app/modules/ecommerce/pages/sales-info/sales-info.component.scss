@@ -1,0 +1,80 @@
+.container{
+    padding-left: 20px;
+    padding-bottom: 154px;
+    & .title{
+        margin-top: 62px;
+        font-family: 'RobotoBold';
+        font-size: 19px;
+        margin-bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        padding-right: 20px;
+        & .right-arrow{
+            color: #A1A1A1;
+        }
+    }
+    & .info{
+        font-family: 'RobotoRegular';
+        color: #7B7B7B;
+        font-size: 17px;
+    }
+    & .cards{
+        display: flex;
+        padding-right: 20px;
+        flex-wrap: wrap;
+    }
+    & hr{
+        border: 1px #dddddd solid;
+        margin-top: 16px;
+        margin-bottom: 30px;
+    }
+    & .sales-info{
+        background-color: #a1a1a178;
+        border-radius: 16px;
+        padding-top: 40px;
+        padding-left: 30.5px;
+        padding-right: 92px;
+        padding-bottom: 40px;
+        margin-right: 20px;
+        margin-bottom: 80px;
+        & .title{
+            font-family: 'RobotoMedium';
+            font-size: 19px;
+            color: #0B1F38;
+            margin-bottom: 25px;
+            margin-top: 0px;
+        }
+        & .info-text{
+            font-family: 'RobotoLight';
+            font-style: italic;
+            color: #202020;
+            font-size: 17px;
+        }
+        ul {
+            position: relative;
+            list-style: none;
+            font-family: 'RobotoLight';
+            font-style: italic;
+            color: #202020;
+            padding-left: 10px;
+        }
+        ul li{
+            margin-bottom: 23px;
+            font-size: 17px;
+        }
+        ul li:before {
+            content: "-";
+            position: absolute;
+            left: 0;
+            padding: 0px;
+        }
+    }
+    & .extra-options{
+        font-family: 'RobotoRegular';
+        color: #7B7B7B;
+        font-size: 18px;
+        & .text{
+            margin-bottom: 10px;
+        }
+    }
+}

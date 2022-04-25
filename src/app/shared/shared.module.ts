@@ -25,7 +25,6 @@ import { DialogModule } from './../libs/dialog/dialog.module';
 import { ButtonComponent } from './components/button/button.component';
 import { CardComponent } from './components/card/card.component';
 import { FilterbarComponent } from './components/filterbar/filterbar.component';
-import { ListComponent } from './components/list/list.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TitlebarComponent } from './components/titlebar/titlebar.component';
@@ -64,6 +63,8 @@ import { MultistepFormComponent } from './components/multistep-form/multistep-fo
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
+import { InfoCardComponent } from './components/info-card/info-card.component';
+import { ListComponent } from './components/list/list.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 
@@ -98,7 +99,6 @@ const declarations = [
   FilterbarComponent,
   SearchbarComponent,
   ResourceListComponent,
-  ListComponent,
   ContactButtonsComponent,
   SaleflowItemComponent,
   SearchHashtagComponent,
@@ -129,6 +129,8 @@ const declarations = [
   ActivitiesOptionComponent,
   ErrorMessageComponent,
   DynamicComponentComponent,
+  InfoCardComponent,
+  ListComponent
 ];
 
 @NgModule({

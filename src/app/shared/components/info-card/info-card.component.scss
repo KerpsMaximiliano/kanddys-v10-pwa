@@ -1,0 +1,15 @@
+.card{
+    background-color: white;
+    color: #7B7B7B;
+    font-family: 'RobotoRegular';
+    font-size: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+    -webkit-box-shadow: 0px 2px 12px 1px #bfbfbf94; 
+    box-shadow: 0px 2px 12px 1px #bfbfbf94;
+    width: 84px; 
+    height: 84px;
+    justify-content: space-around;
+}

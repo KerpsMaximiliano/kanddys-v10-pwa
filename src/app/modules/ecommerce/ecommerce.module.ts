@@ -16,6 +16,8 @@ import { CustomizerRedirectComponent } from 'src/app/shared/components/customize
 import { UserInfoComponent } from './pages/user-info/user-info.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
 import { TestComponent } from './pages/test/test.component';
+import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
+import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
 
 const routes: Routes = [
   {
@@ -81,6 +83,16 @@ const routes: Routes = [
     path: 'test',
     component: TestComponent,
   },
+  {
+    path: 'admin-options',
+    component: AdminOptionsComponent,
+    children: [
+      {
+        path: 'sales-info',
+        component: SalesInfoComponent,
+      },
+    ],
+  },
 ];
 
 @NgModule({
@@ -101,6 +113,8 @@ const routes: Routes = [
     UserInfoComponent,
     CreateGiftcardComponent,
     TestComponent,
+    AdminOptionsComponent,
+    SalesInfoComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
