@@ -1,0 +1,30 @@
+<div class="container">
+  <app-helper-header
+    [searchAble]="false"
+    bgcolor="#ffffff"
+    [basic]="true"
+    position="fixed"
+    middleTextColor="#7b7b7b"
+    [shadow]="false"
+    (onClose)="close()"
+  ></app-helper-header>
+
+  <div class="content">
+    <div class="custom-fields">
+      <div
+        class="custom-field"
+        *ngFor="let customField of customFields"
+        (click)="sendMessageToCustomizeFields(customField)"
+      >
+        {{ customField }}
+      </div>
+    </div>
+  </div>
+
+  <a [href]="whatsappLink" target="_blank" id="sendToDavielWS"></a>
+
+  <app-sticky-button
+    text="tengo una sugerencia SOBRE ESTO"
+    mode="fixed"
+  ></app-sticky-button>
+</div>

@@ -57,6 +57,7 @@ interface FormStep {
   asyncStepProcessingFunction?(...params): Observable<any>;
   stepProcessingFunction?(...params): any;
   customScrollToStep?(...params): any;
+  customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: BottomLeftAction;
   optionalLinksTo?: OptionalLinks;
   stepResult?: any;
