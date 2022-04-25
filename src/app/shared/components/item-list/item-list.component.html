@@ -1,0 +1,281 @@
+<div [style.marginTop]="marginTop" [style.marginBottom]="marginBottom">
+  <div
+    class="content-wrapper"
+    [ngStyle]="{ background: itemListContent.contentBgColor }"
+  >
+    <div class="item-list">
+      <div class="item-list-img" *ngIf="itemListContent.image" (click) = "itemListContent.eventImage()">
+        <img src="{{ itemListContent.image }}" class="item-img" alt="image" />
+        <div
+          *ngIf="
+            itemListContent.icons_image &&
+            itemListContent.icons_image_bool &&
+            !itemListContent.bar_icons
+          "
+          class="icons"
+        >
+          <ng-container
+            *ngFor="let icon of itemListContent.icons_image; let i = index"
+          >
+            <img
+              [src]="icon.img"
+              alt="no-icon"
+              (click)="icon.function()"
+              [style.marginRight.px]="
+                itemListContent.icons_image.length !== i + 1 ? 11 : 0
+              "
+            />
+          </ng-container>
+        </div>
+      </div>
+
+      <div *ngIf="!itemListContent.image" class="item-list-img" (click) = "itemListContent.eventImage()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          width="110"
+          height="119"
+          viewBox="0 0 110 119"
+        >
+          <defs>
+            <linearGradient
+              id="linear-gradient"
+              x1="0.5"
+              y1="0.041"
+              x2="0.5"
+              y2="0.719"
+              gradientUnits="objectBoundingBox"
+            >
+              <stop offset="0" stop-color="#7b7b7b" />
+              <stop offset="1" stop-color="#3e3e3e" />
+            </linearGradient>
+          </defs>
+          <rect
+            id="_4e83c13f6fbc49d36973f114bb0a1d0d"
+            data-name="4e83c13f6fbc49d36973f114bb0a1d0d"
+            width="110"
+            height="119"
+            rx="10"
+            fill="url(#linear-gradient)"
+          />
+        </svg>
+        <div
+          *ngIf="
+            itemListContent.icons_image &&
+            itemListContent.icons_image_bool &&
+            !itemListContent.bar_icons
+          "
+          class="icons"
+        >
+          <ng-container
+            *ngFor="let icon of itemListContent.icons_image; let i = index"
+          >
+            <img
+              [src]="icon.img"
+              alt="no-icon"
+              (click)="icon.function()"
+              [style.marginRight.px]="
+                itemListContent.icons_image.length !== i + 1 ? 11 : 0
+              "
+            />
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="item-list-info">
+        <div class="container">
+          <div class="container-title">
+            <h1 (click) = "itemListContent.eventTitle()">{{ itemListContent.title }}</h1>
+            <p class="subtitle" *ngIf="itemListContent.subtitle">
+              {{ itemListContent.subtitle }}
+            </p>
+            <p class="price" *ngIf="itemListContent.price">
+              $
+              {{
+                itemListContent.price >= 1000
+                  ? formatPrice(itemListContent.price | number: "1.2-2")
+                  : itemListContent.price
+              }}
+            </p>
+          </div>
+          <div class="container-icon" *ngIf="itemListContent.icon">
+            <div class="item-list-icon">
+              <img
+                src="{{ itemListContent.icon }}"
+                class="item-icon set-right"
+                alt="icon"
+              />
+            </div>
+          </div>
+          <ng-container *ngIf="itemListContent.icons_right">
+            <div class="container-icon">
+              <div class="item-list-icon">
+                <ng-container
+                  *ngFor="
+                    let icon of itemListContent.icons_right;
+                    let i = index
+                  "
+                >
+                  <div
+                    *ngIf="icon.type === 'img'"
+                    [style.marginRight.px]="
+                      itemListContent.icons_right.length !== i + 1 ? 10 : 0
+                    "
+                  >
+                    <img
+                      [src]="icon.icon"
+                      alt="no-image"
+                      width="22"
+                      (click)="icon.function()"
+                    />
+                  </div>
+                  <div
+                    *ngIf="icon.type === 'icon'"
+                    [style.marginRight.px]="
+                      itemListContent.icons_right.length !== i + 1 ? 10 : 0
+                    "
+                  >
+                    <i
+                      class="fas {{ icon.icon }}"
+                      [style.color]="icon.color"
+                      (click)="icon.function()"
+                    ></i>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <p
+          *ngIf="itemListContent.description"
+          class="informacion"
+          [style.marginTop.px]="itemListContent.subtitle ? 15 : 5"
+        >
+          {{ itemListContent.description }}
+        </p>
+
+        <div
+          *ngIf="itemListContent.icons || itemListContent.text_icon"
+          class="icons-text"
+          [ngStyle]="{
+            'justify-content': itemListContent.icons
+              ? 'space-between'
+              : 'flex-end'
+          }"
+        >
+          <div *ngIf="itemListContent.icons" class="socials">
+            <ng-container *ngFor="let icon of itemListContent.icons">
+              <a [href]="icon.link" [style.marginRight.px]="15">
+                <img [src]="icon.img" alt="no-icon" />
+              </a>
+            </ng-container>
+          </div>
+          <div *ngIf="itemListContent.text_icon">
+            <div class="title">{{ itemListContent.text_icon }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="item-list-text"
+      *ngIf="itemListContent.text_left || itemListContent.text_right"
+      [ngStyle]="{
+        'justify-content': itemListContent.text_style
+          ? 'space-between'
+          : 'flex-start'
+      }"
+    >
+      <p *ngIf="itemListContent.text_left">{{ itemListContent.text_left }}</p>
+      <div *ngIf="itemListContent.text_right || itemListContent.icon_bottom || itemListContent.icons_bottom_right">
+        <p *ngIf="itemListContent.text_right">
+          {{ itemListContent.text_right }}
+        </p>
+        <ng-container *ngIf="itemListContent.icons_bottom_right && !itemListContent.text_right && !itemListContent.icon_bottom" >
+          <div class="container-icon">
+            <div class="item-list-icon">
+              <ng-container
+                *ngFor="
+                  let icon of itemListContent.icons_bottom_right;
+                  let i = index
+                "
+              >
+                <div
+                  *ngIf="icon.type === 'img'"
+                  [style.marginRight.px]="
+                    itemListContent.icons_bottom_right.length !== i + 1 ? 10 : 0
+                  "
+                >
+                  <img
+                    [src]="icon.icon"
+                    alt="no-image"
+                    height="16px"
+                    (click)="icon.function()"
+                  />
+                </div>
+                <div
+                  *ngIf="icon.type === 'icon'"
+                  [style.marginRight.px]="
+                    itemListContent.icons_bottom_right.length !== i + 1 ? 10 : 0
+                  "
+                >
+                  <i
+                    class="fas {{ icon.icon }}"
+                    [style.color]="icon.color"
+                    (click)="icon.function()"
+                  ></i>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="itemListContent.icon_bottom">
+          <div
+            *ngIf="itemListContent.icon_bottom.type === 'img'"
+            [style.marginLeft.px]="10"
+          >
+            <img
+              [src]="itemListContent.icon_bottom.icon"
+              alt="no-image"
+              width="25"
+              (click)="itemListContent.icon_bottom.function()"
+            />
+          </div>
+          <div
+            *ngIf="itemListContent.icon_bottom.type === 'icon'"
+            [style.marginLeft.px]="10"
+          >
+            <i
+              class="fas {{ itemListContent.icon_bottom.icon }}"
+              [style.color]="itemListContent.icon_bottom.color"
+              (click)="itemListContent.icon_bottom.function()"
+            ></i>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <!-- <hr class="hr-bottom"> -->
+
+    <div class="item-list-text-full" *ngIf="itemListContent.full_text">
+      <p>{{ itemListContent.full_text }}</p>
+    </div>
+  </div>
+
+  <div class="bar-wrapper">
+    <div
+      class="bar"
+      *ngIf="itemListContent.bar"
+      [ngStyle]="{ background: itemListContent.barColor }"
+    >
+      <span class="bar-text">{{ itemListContent.barText }}</span>
+      <div
+        class="right"
+        *ngIf="itemListContent.bar_icons && !itemListContent.icons_image_bool"
+      >
+        <img class="left-icon" src="{{ itemListContent.barLeftIcon }}" alt="" />
+        <img src="{{ itemListContent.barRightIcon }}" alt="" />
+      </div>
+    </div>
+  </div>
+</div>

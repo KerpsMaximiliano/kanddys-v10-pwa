@@ -116,6 +116,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           return { ok: false };
         }
       },
+      customScrollToStepBackwards: () => {
+        this.router.navigate([
+          'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
+        ]);
+      },
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'SELECCIONA',
       stepButtonValidText: 'CONTINUAR',
@@ -348,6 +353,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.removeScrollBlocker();
+    if (this.addedScrollBlocker) {
+      this.removeScrollBlocker();
+    }
   }
 }

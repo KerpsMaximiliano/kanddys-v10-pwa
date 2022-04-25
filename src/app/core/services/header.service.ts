@@ -19,6 +19,7 @@ import { ItemOrderInput, ItemSubOrderInput, ItemSubOrderParamsInput } from '../m
 import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
+import { MerchantsService } from './merchants.service';
 
 @Injectable({
   providedIn: 'root',
@@ -66,6 +67,7 @@ export class HeaderService {
   };
   isEditing: boolean = false;
   merchantInfo: Merchant;
+  myMerchants: Merchant[];
   tags: any;
   isComplete = {
     qualityQuantity: false,
@@ -88,6 +90,7 @@ export class HeaderService {
     private auth: AuthService,
     public wallet: WalletService,
     private bookmark: BookmarksService,
+    private merchantService: MerchantsService
   ) {
     this.visible = false;
     this.auth.me().then((data) => {
@@ -121,6 +124,10 @@ export class HeaderService {
               console.log(this.savedBookmarks);
             }
           });
+          this.merchantService.myMerchants().then(data=>{
+            console.log(data);
+            this.myMerchants = data;
+          })
           sub.unsubscribe();
         }
       });
