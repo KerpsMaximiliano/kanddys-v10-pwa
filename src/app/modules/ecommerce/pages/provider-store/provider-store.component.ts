@@ -255,6 +255,7 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.header.flowRoute = 'provider-store';
     if (this.header.orderId) {
       this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
       return;

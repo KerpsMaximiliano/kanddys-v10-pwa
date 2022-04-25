@@ -513,7 +513,7 @@ export class FlowCompletionComponent implements OnInit {
       (this.step === 1 || this.step === 3 || this.step === 4) &&
       !this.orderData
     ) {
-      this.router.navigate(['/ecommerce/provider-store']);
+      this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
     }
     this.code = '';
     this.paymentCode = '';
@@ -544,7 +544,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/ecommerce/provider-store']);
+    this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
   }
 
   // Case 1

@@ -79,6 +79,7 @@ export class HeaderService {
   currentDeliveryOption: number;
   hasScenarios: boolean;
   fromOrderSales: string;
+  flowRoute: string;
   public session: Session;
   constructor(
     private dialog: DialogService,

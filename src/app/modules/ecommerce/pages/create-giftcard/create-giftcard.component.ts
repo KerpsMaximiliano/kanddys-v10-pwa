@@ -343,7 +343,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     },
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.header.flowRoute = 'create-giftcard';
+  }
 
   ngOnDestroy(): void {
     this.removeScrollBlocker();
