@@ -111,6 +111,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               ],
             }
           );
+
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+
           this.header.isComplete.message = true;
           this.router.navigate([`ecommerce/shipment-data-form`]);
           return { ok: false };
