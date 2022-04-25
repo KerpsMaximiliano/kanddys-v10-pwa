@@ -64,6 +64,8 @@ import { MultistepFormComponent } from './components/multistep-form/multistep-fo
 import { ActivitiesOptionComponent } from './components/activities-option/activities-option.component';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
+import { ItemListComponent } from './components/item-list/item-list.component';
+import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 
 const imports = [
   CommonModule,
@@ -80,6 +82,8 @@ const declarations = [
   // Pages
   HomeComponent,
   InvitationComponent,
+  ItemListComponent,
+  CustomFieldsComponent,
   PartnerReceiptsComponent,
   // ...
   LongPressDirective,
