@@ -190,24 +190,25 @@ export class FlowCompletionComponent implements OnInit {
             console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
           });
         }
+        const totalPrice = this.fakeData.subtotals.reduce((a, b) => a + b.amount, 0);
         this.orderData = {
           id: this.fakeData._id,
           userId: this.fakeData.user._id,
           user: this.fakeData.user,
-          itemAmount: this.fakeData.items[0].amount,
+          itemAmount: this.fakeData.items.reduce((a,b) => a + b.amount, 0),
           name: this.fakeData.itemPackage?.name
             ? this.fakeData.itemPackage?.name
             : this.fakeData.items[0].item.name,
           amount: this.fakeData.items[0].customizer
-            ? this.fakeData.subtotals[0].amount * 1.18
-            : this.fakeData.subtotals[0].amount,
+            ? totalPrice * 1.18
+            : totalPrice,
           hasCustomizer: this.fakeData.items[0].customizer ? true : false,
         };
         this.products = this.fakeData.items.map((item) => {
           const newItem = item.item;
           if (item.customizer) {
             newItem.customizerId = item.customizer._id;
-            newItem.total = this.fakeData.subtotals[0].amount * 1.18;
+            newItem.total = totalPrice * 1.18;
           }
           return newItem;
         });
@@ -707,6 +708,12 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 3, 4
   createOrder() {
+    this.header.order = this.header.getOrder(this.header.saleflow._id);
+    this.header.order.products.forEach((product) => {
+      delete product.isScenario;
+      delete product.limitScenario;
+      delete product.name;
+    });
     return new Promise(async (resolve, reject) => {
       if (this.header.customizer) {
         const customizerId =
@@ -725,16 +732,11 @@ export class FlowCompletionComponent implements OnInit {
             if (data) {
               this.header.emptyPost(this.header.saleflow._id);
               console.log(data);
-              this.header.order.products[0].post = data.createPost._id;
+              if(this.header.saleflow.canBuyMultipleItems) this.header.order.products.forEach((product) => {
+                product.deliveryLocation = this.header.order.products[0].deliveryLocation;
+                product.post = data.createPost._id;
+              });
               console.log(this.header.order);
-              let order = this.header.order;
-
-              for (let i = 0; i < order.products.length; i++) {
-                delete order.products[i].isScenario;
-                delete order.products[i].limitScenario;
-                delete order.products[i].name;
-              }
-
               this.order
                 .createOrder(this.header.order)
                 .then((data) => {
@@ -765,16 +767,8 @@ export class FlowCompletionComponent implements OnInit {
             this.isLoading = false;
           });
       } else {
-        console.log(this.header.order);
-        let orderRequest = this.header.order;
-        for (let i = 0; i < orderRequest.products.length; i++) {
-          delete orderRequest.products[i].isScenario;
-          delete orderRequest.products[i].limitScenario;
-          delete orderRequest.products[i].name;
-        };
-        console.log(orderRequest);
         await this.order
-          .createOrder(orderRequest)
+          .createOrder(this.header.order)
           .then(async (data) => {
             console.log(data);
             this.header.emptyOrderProducts(this.header.saleflow._id);
@@ -805,6 +799,7 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 7
   async payOrder() {
+    const totalPrice = this.fakeData.subtotals.reduce((a, b) => a + b.amount, 0);
     const fullLink =
       'https://kanddys.com/ecommerce/order-info/' + this.orderId;
     if (this.fakeData.items[0].customizer)
@@ -815,14 +810,14 @@ export class FlowCompletionComponent implements OnInit {
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
         this.ammount ??
         Math.round(
-          (this.fakeData.subtotals[0].amount * 1.18 + Number.EPSILON) *
+          (totalPrice * 1.18 + Number.EPSILON) *
             100
         ) / 100
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
     else
-      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.ammount ?? this.fakeData.subtotals[0].amount}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
+      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.ammount ?? totalPrice}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
     try {
       lockUI();
 

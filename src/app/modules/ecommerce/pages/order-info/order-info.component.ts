@@ -173,14 +173,9 @@ export class OrderInfoComponent implements OnInit {
           this.tabsOptions.push('Pago');
           console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
-          if (data.order.items[0].customizer) {
-            this.price =
-              data.order.subtotals[0].amount +
-              data.order.subtotals[0].amount * 0.18 +
-              '';
-          } else {
-            this.price = data.order.subtotals[0].amount + '';
-          }
+          const totalPrice = data.order.subtotals.reduce((a, b) => a + b.amount, 0);
+          if (data.order.items[0].customizer) this.price = totalPrice * 1.18 + '';
+          else this.price = totalPrice + '';
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
           this.dateId = this.formatID(data.order.dateId);
