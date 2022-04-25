@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 //   email
 //   image
 //   bio
-//   owner { 
+//   owner {
 //     phone
 //     email
 //     name
@@ -61,6 +61,12 @@ export const hotMerchants = gql`
 export const merchant = gql`
   query merchant($id: ObjectID!) {
     merchant(id: $id) { ${body} }
+  }
+`;
+
+export const isMerchant = gql`
+  query isMerchant($user: String!) {
+    isMerchant(user: $user)
   }
 `;
 
@@ -151,7 +157,7 @@ export const item = gql`
       createdAt
       images
       fixedQuantity
-      params{
+      params {
         _id
         name
         values {
@@ -194,14 +200,14 @@ export const employeeContractByMerchant = gql`
 export const tagsByMerchant = gql`
   query tagsByMerchant($input: PaginationInput, $merchantId: ObjectID!) {
     tagsByMerchant(input: $input, merchantId: $merchantId) {
-      results{
-        _id,
-        name,
+      results {
+        _id
+        name
         counter
       }
-      page,
-      limit,
-      totalPages,
+      page
+      limit
+      totalPages
       totalResults
     }
   }

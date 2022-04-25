@@ -19,6 +19,38 @@ const body = `
   updatedAt
 `;
 
+const itemBody = `
+  _id
+  name
+  pricing
+  pricePerUnit
+  description
+  createdAt
+  images
+  fixedQuantity
+  size
+  quality
+  iconImage
+  hasExtraPrice
+  category {
+    _id
+    name
+  }
+  params {
+    _id
+    name
+    values {
+      _id
+      name
+      price
+      quantity
+    }
+  }
+  itemExtra {
+    _id
+  }
+`
+
 export const items = gql`
   query items($merchantId: ObjectID, $params: ListParams) {
     items(merchantId: $merchantId, params: $params) { ${body} }
@@ -38,6 +70,20 @@ export const itemsByMerchant = gql`
       featuredImage
       pricing
     }
+  }
+`;
+
+export const itemsByCategory = gql`
+  query itemsByCategory($saleflowID: ObjectID, $params: PaginationInput, $categoryID: ObjectID!) {
+    itemsByCategory(saleflowID: $saleflowID, params: $params, categoryID: $categoryID) {
+      ${itemBody}
+    }
+  }
+`;
+
+export const bestSellersByMerchant = gql`
+  query bestSellersByMerchant($limit: Int, $merchantID: ObjectID!) {
+    bestSellersByMerchant(limit: $limit, merchantID: $merchantID)
   }
 `;
 

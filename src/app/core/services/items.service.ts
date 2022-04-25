@@ -18,6 +18,8 @@ import {
   listItemPackage,
   listItems,
   itemCategoryHeadlineByMerchant,
+  itemsByCategory,
+  bestSellersByMerchant,
 } from '../graphql/items.gql';
 import { Item, ItemCategory, ItemCategoryHeadline } from '../models/item';
 import { ListParams } from '../types/general.types';
@@ -87,6 +89,32 @@ export class ItemsService {
       });
       return response;
     } catch (e) {}
+  }
+
+  async itemsByCategory(saleflowID: string, params: any, categoryID: string): Promise<Item[]> {
+    try {
+      const response = await this.graphql.query({
+        query: itemsByCategory,
+        variables: { saleflowID, params, categoryID },
+        fetchPolicy: 'no-cache',
+      });
+      return response.itemsByCategory;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async bestSellersByMerchant(limit: number, merchantID: string): Promise<string[]> {
+    try {
+      const response = await this.graphql.query({
+        query: bestSellersByMerchant,
+        variables: { limit, merchantID },
+        fetchPolicy: 'no-cache',
+      });
+      return response.bestSellersByMerchant;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async listItemPackage(params: any) {

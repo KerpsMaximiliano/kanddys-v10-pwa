@@ -768,14 +768,10 @@ export class FlowCompletionComponent implements OnInit {
         console.log(this.header.order);
         let orderRequest = this.header.order;
         for (let i = 0; i < orderRequest.products.length; i++) {
-          if (
-            orderRequest.products[i].isScenario ||
-            orderRequest.products[i].limitScenario
-          ) {
-            delete orderRequest.products[i].isScenario;
-            delete orderRequest.products[i].limitScenario;
-          }
-        }
+          delete orderRequest.products[i].isScenario;
+          delete orderRequest.products[i].limitScenario;
+          delete orderRequest.products[i].name;
+        };
         console.log(orderRequest);
         await this.order
           .createOrder(orderRequest)

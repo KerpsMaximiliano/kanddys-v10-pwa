@@ -65,6 +65,8 @@ import { ErrorMessageComponent } from './components/error-message/error-message.
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
 import { ListComponent } from './components/list/list.component';
+import { ItemListComponent } from './components/item-list/item-list.component';
+import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 
 const imports = [
   CommonModule,
@@ -81,6 +83,8 @@ const declarations = [
   // Pages
   HomeComponent,
   InvitationComponent,
+  ItemListComponent,
+  CustomFieldsComponent,
   PartnerReceiptsComponent,
   // ...
   LongPressDirective,

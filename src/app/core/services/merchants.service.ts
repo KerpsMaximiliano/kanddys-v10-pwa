@@ -5,6 +5,7 @@ import { Item } from '../models/item';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
+  isMerchant as isMerchantQuery,
   myMerchants,
   merchants,
   addMerchant,
@@ -41,6 +42,20 @@ export class MerchantsService {
 
       return new Merchant(result);
     }
+  }
+
+  async isMerchant(id: string): Promise<Merchant> {
+    console.log('ID: ', id);
+
+    const { isMerchant: result } = await this.graphql.query({
+      query: isMerchantQuery,
+      variables: { user: id },
+      fetchPolicy: 'no-cache',
+    });
+
+    console.log('RSULTADO', result);
+
+    return result;
   }
 
   async itemsByMerchant(id: string) {
@@ -156,7 +171,9 @@ export class MerchantsService {
     return result;
   }
 
-  async employeeContractByMerchant(merchantId): Promise<{ employeeContractByMerchant: EmployeeContract[] }> {
+  async employeeContractByMerchant(
+    merchantId
+  ): Promise<{ employeeContractByMerchant: EmployeeContract[] }> {
     console.log(merchantId);
     const result = await this.graphql.mutate({
       mutation: employeeContractByMerchant,
