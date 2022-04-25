@@ -523,6 +523,7 @@ export class SwiperComponent implements OnInit {
     /**console.log(this.types[0].name);
     console.log(this.calendars.months);
     console.log(this.perView); **/
+    console.log(this.saleFlowTwoData);
   }
   goToLink(url: string) {
     window.open(url, '_blank');

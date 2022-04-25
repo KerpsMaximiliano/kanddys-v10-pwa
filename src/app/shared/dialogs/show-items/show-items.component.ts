@@ -50,6 +50,7 @@ export class ShowItemsComponent implements OnInit {
   deleteItem(i: number) {
     console.log('deleted item: ');
     console.log(this.products[i]._id);
+    let deletedID = this.products[i]._id
     this.header.removeOrderProduct(this.header.saleflow._id, this.products[i]._id);
     this.header.removeItem(
       this.header.saleflow._id,
@@ -59,7 +60,7 @@ export class ShowItemsComponent implements OnInit {
       (product) => product._id === this.products[i]._id
     );
     if (index >= 0) this.products.splice(index, 1);
-    this.app.events.emit({ type: 'deleted-item' });
+    this.app.events.emit({ type: 'deleted-item', data: deletedID});
   }
 
   close() {

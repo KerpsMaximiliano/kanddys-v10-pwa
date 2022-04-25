@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -23,7 +23,7 @@ import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
   templateUrl: './megaphone-v3.component.html',
   styleUrls: ['./megaphone-v3.component.scss'],
 })
-export class MegaphoneV3Component implements OnInit {
+export class MegaphoneV3Component implements OnInit, OnDestroy {
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   isLogged: boolean = false;
@@ -69,21 +69,14 @@ export class MegaphoneV3Component implements OnInit {
     private authService: AuthService,
     private appService: AppService
   ) {
-    const sub = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item'))
-      .subscribe((e) => {
-        let productData = this.header.getItems(this.saleflowData._id);
-        for (let i = 0; i < this.items.length; i++) {
-          console.log(this.items[i]);
-          productData;
-        }
-        sub.unsubscribe();
-      });
+
   }
 
   openDialog() {
     //
   }
+
+  deleteEvent: any;
 
   async getMerchant(id: string) {
     try {
@@ -160,9 +153,9 @@ export class MegaphoneV3Component implements OnInit {
   }
 
   organizeItems() {
-    if(this.categories) {
+    if (this.categories) {
       this.categories.forEach((name) => {
-        if(this.items.some((item) => item.category.some((category) => category.name === name))) {
+        if (this.items.some((item) => item.category.some((category) => category.name === name))) {
           this.itemsByCategory.push({
             label: name,
             items: this.items.filter((item) =>
@@ -190,7 +183,7 @@ export class MegaphoneV3Component implements OnInit {
     //   });
     // });
 
-    
+
     // if (
     //   this.items.some((item) =>
     //     item.category.some((category) => category.name === 'Tragos')
@@ -256,6 +249,42 @@ export class MegaphoneV3Component implements OnInit {
     } else {
       this.executeProcessesAfterLoading();
     }
+    this.deleteEvent = this.appService.events
+    .pipe(filter((e) => e.type === 'deleted-item'))
+    .subscribe((e) => {
+      console.log('entre');
+      
+      console.log(e.data);
+      
+      let productData = this.header.getItems(this.saleflowData._id);
+      /*for (let i = 0; i < this.items.length; i++) {
+        console.log(this.items[i]);
+        console.log(productData);
+        productData;
+      }*/
+      console.log(productData);
+      
+      if (productData.length > 0) {
+        for (let i = 0; i < productData.length; i++) {
+          for (let j = 0; j < this.inputsItems.length; j++) {
+            if (productData[i]._id === this.inputsItems[j]._id) {
+              this.inputsItems[j].isSelected = true;
+            }else{
+              this.inputsItems[j].isSelected = false;
+            }
+          }
+        }
+      }else{
+        for (let i = 0; i < this.inputsItems.length; i++) {
+          this.inputsItems[i].isSelected = false;             
+        }
+      }
+      //sub.unsubscribe();
+    });
+  }
+
+  ngOnDestroy(){
+    this.deleteEvent.unsubscribe();
   }
 
   executeProcessesAfterLoading() {
@@ -357,7 +386,7 @@ export class MegaphoneV3Component implements OnInit {
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
               this.items[i].fixedQuantity *
-                this.items[i].params[0].values[0].price +
+              this.items[i].params[0].values[0].price +
               this.items[i].pricing;
           this.labelValues.push({ id: i, status: false });
         }
@@ -368,7 +397,7 @@ export class MegaphoneV3Component implements OnInit {
         }
         this.organizeItems();
         console.log('items', this.items);
-        if(!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
+        if (!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
       }
 
       if (!this.hasCustomizer) unlockUI();
@@ -402,7 +431,7 @@ export class MegaphoneV3Component implements OnInit {
           itemData.isSelected =
             !itemData.isSelected;
           let itemParams: ItemSubOrderParamsInput[];
-          if(itemData.params.length > 0) {
+          if (itemData.params.length > 0) {
             itemParams = [{
               param: itemData.params[0]._id,
               paramValue:
@@ -472,10 +501,9 @@ export class MegaphoneV3Component implements OnInit {
 
   seeCategories(i: number) {
     this.router.navigate([
-      `ecommerce/category-items/${this.saleflowData._id}/${
-        this.itemsByCategory[i].items[0].category.find(
-          (category) => category.name === this.itemsByCategory[i].label
-        )._id
+      `ecommerce/category-items/${this.saleflowData._id}/${this.itemsByCategory[i].items[0].category.find(
+        (category) => category.name === this.itemsByCategory[i].label
+      )._id
       }`,
     ]);
   }
@@ -489,11 +517,11 @@ export class MegaphoneV3Component implements OnInit {
         this.header.emptyOrderProducts(this.saleflowData._id);
         this.header.emptyItems(this.saleflowData._id);
         let itemParams: ItemSubOrderParamsInput[];
-        if(itemData.params.length > 0) {
+        if (itemData.params.length > 0) {
           itemParams = [{
             param: itemData.params[0]._id,
             paramValue:
-            itemData.params[0].values[0]._id,
+              itemData.params[0].values[0]._id,
           }];
         };
         const product = {
@@ -584,9 +612,9 @@ export class MegaphoneV3Component implements OnInit {
       //this.router.navigate(['/ecommerce/provider-store']);
       this.router.navigate([
         '/ecommerce/item-detail/' +
-          this.header.saleflow._id +
-          '/' +
-          this.inputsItems[index]._id,
+        this.header.saleflow._id +
+        '/' +
+        this.inputsItems[index]._id,
       ]);
     }
   }
