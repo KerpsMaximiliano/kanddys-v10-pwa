@@ -66,6 +66,7 @@ import { ErrorMessageComponent } from './components/error-message/error-message.
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
 
 const imports = [
   CommonModule,
@@ -80,6 +81,7 @@ const imports = [
 ];
 const declarations = [
   // Pages
+  CalendarComponent,
   HomeComponent,
   InvitationComponent,
   ItemListComponent,

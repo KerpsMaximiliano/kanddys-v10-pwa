@@ -13,17 +13,17 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   //added create-giftcard again because the merge was deleted??????
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
-    if (!this.addedScrollBlocker) {
+    if (!this.addedScrollBlockerBefore) {
       //quita el scroll hacia steps anteriores
       console.log('Parametros', params);
       setTimeout(() => {
         params.blockScrollBeforeCurrentStep();
-        this.scrollBlocker = params.blockScrollBeforeCurrentStep;
-        this.removeScrollBlocker = params.unblockScrollBeforeCurrentStep;
+        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
       }, 500);
 
       params.changeShouldScrollBackwards();
-      this.addedScrollBlocker = true;
+      this.addedScrollBlockerBefore = true;
     }
 
     console.log(this);
@@ -44,9 +44,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     return { ok: true };
   };
 
-  addedScrollBlocker = false;
-  scrollBlocker: any;
-  removeScrollBlocker: any;
+  addedScrollBlockerBefore = false;
+  scrollBlockerBefore: any;
+  removeScrollBlockerBefore: any;
   formSteps = [
     {
       fieldsList: [
@@ -70,8 +70,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
       },
       stepProcessingFunction: (params) => {
-        this.scrollBlocker = params.blockScrollBeforeCurrentStep;
-        this.removeScrollBlocker = params.unblockScrollBeforeCurrentStep;
+        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
 
         if (params.dataModel.value['1'].writeMessage === 'Si')
           return { ok: true };
@@ -116,7 +116,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           return { ok: false };
         }
       },
-      customScrollToStepBackwards: () => {
+      customScrollToStepBackwards: (params) => {
+        params.unblockScrollPastCurrentStep();
+        params.unblockScrollBeforeCurrentStep();
+
         this.router.navigate([
           'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
         ]);
@@ -351,8 +354,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   ngOnDestroy(): void {
-    if (this.addedScrollBlocker) {
-      this.removeScrollBlocker();
+    if (this.addedScrollBlockerBefore) {
+      this.removeScrollBlockerBefore();
     }
   }
 }
