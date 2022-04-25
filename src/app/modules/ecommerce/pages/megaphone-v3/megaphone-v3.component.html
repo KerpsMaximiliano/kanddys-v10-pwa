@@ -106,7 +106,7 @@
   </div>
   <section
     style="background-color: white; margin-bottom: 73px"
-    *ngIf="!hasCustomizer"
+    *ngIf="itemsByCategory.length === 0"
   >
     <ng-container *ngIf="isCategories; else elseTemplate">
       <div style="padding-top: 10px">
