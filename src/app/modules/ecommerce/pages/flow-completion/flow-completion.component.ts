@@ -726,6 +726,8 @@ export class FlowCompletionComponent implements OnInit {
       }
       if (this.header.saleflow.module.post) {
         let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getFlowId());
+        console.log(postinput);
+        
         this.postsService
           .creationPost(postinput)
           .then((data) => {
@@ -795,6 +797,7 @@ export class FlowCompletionComponent implements OnInit {
   // Case 7
   onFileInput(file: File) {
     this.image = file;
+    console.log(this.image);
   }
 
   // Case 7

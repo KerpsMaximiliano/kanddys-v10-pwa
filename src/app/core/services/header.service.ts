@@ -34,6 +34,7 @@ export class HeaderService {
   walletData: any;
   datePreview: any;
   locationData: DeliveryLocationInput;
+  flowImage: any;
   savedBookmarks: any;
   invokeFirstComponentFunction = new EventEmitter();
   subsVar: Subscription;

@@ -10,6 +10,7 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 
@@ -257,7 +258,7 @@ export class MultistepFormComponent implements OnInit {
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver, private header: HeaderService) {}
 
   ngOnInit(): void {
     this.initController();
@@ -355,6 +356,7 @@ export class MultistepFormComponent implements OnInit {
     const reader = new FileReader();
 
     const file = (event.target as HTMLInputElement).files[0];
+    this.header.flowImage = event.target.files[0];
     reader.readAsDataURL(file);
 
     reader.onload = () => {

@@ -62,7 +62,7 @@
   </div>
   <div *ngIf="aux.multimedia.length > 0">
     <p class="top-text">Foto de la tarjeta:</p>
-    <div class="pay-image"></div>
+    <div class="pay-image" [ngStyle]="{'background-image': 'url(' + aux.multimedia[0] + ')'}"></div>
     <p class="bottom-text">
       Editar Fotografia
     </p>

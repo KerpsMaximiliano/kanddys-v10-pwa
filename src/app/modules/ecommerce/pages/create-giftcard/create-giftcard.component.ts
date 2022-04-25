@@ -315,7 +315,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             },
           ],
           from: params.dataModel.value['4']['sender-edit'],
-          multimedia: [],
+          multimedia: [this.header.flowImage],
           socialNetworks: [
             {
               url: '',
@@ -333,7 +333,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               },
             ],
             from: params.dataModel.value['4']['sender-edit'],
-            multimedia: [],
+            multimedia: [this.header.flowImage],
             socialNetworks: [
               {
                 url: '',
@@ -342,6 +342,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }
         );
         this.header.isComplete.message = true;
+        console.log('AYUDAAAAS');
+        
+        console.log(this.header.flowImage);
         this.router.navigate([`ecommerce/shipment-data-form`]);
         return { ok: true };
       },
