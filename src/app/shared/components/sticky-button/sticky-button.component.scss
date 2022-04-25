@@ -11,7 +11,7 @@
     background-color: #27a2ff;
     color: #ffffff;
     font-family: "RobotoMedium";
-    font-size: 20px;
+    font-size: 24px;
     border: none;
     padding: 20.5px 0;
     max-width: 500px;
@@ -27,7 +27,7 @@
     width: 100%;
     color: #ffffff;
     font-family: "RobotoMedium";
-    font-size: 20px;
+    font-size: 24px;
     border: none;
     padding: 20.5px 0;
     cursor: default;
@@ -41,7 +41,7 @@
     width: 100%;
     color: #ffffff;
     font-family: "RobotoMedium";
-    font-size: 20px;
+    font-size: 24px;
     border: none;
     padding: 20.5px 0;
     cursor: default;
@@ -54,7 +54,7 @@
 .fixed-container {
   width: 100%;
   max-width: 500px;
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 10;
 

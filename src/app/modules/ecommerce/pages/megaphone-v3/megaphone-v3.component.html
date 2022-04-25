@@ -152,7 +152,7 @@
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">
     <app-sticky-button
-      [mode]="'fixed'"
+      [mode]="'basic'"
       [text]="'IR AL CARRITO DE COMPRAS'"
       (click)="showShoppingCartDialog()"
     ></app-sticky-button>
