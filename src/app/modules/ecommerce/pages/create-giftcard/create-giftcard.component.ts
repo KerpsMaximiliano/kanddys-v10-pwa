@@ -54,7 +54,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'writeMessage',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Si', 'No'],
-          label: '¿Te interesa escribirle un mensajito de regalo??',
+          label: '¿Te interesa escribirle un mensajito de regalo?',
           inputType: 'radio',
           styles: {
             containerStyles: {

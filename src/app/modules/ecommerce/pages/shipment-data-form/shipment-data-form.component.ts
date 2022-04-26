@@ -93,7 +93,7 @@ export class ShipmentDataFormComponent implements OnInit {
         },
         {
           name: 'note',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: 'Nota',
           inputType: 'textarea',
           placeholder: 'Ej: Color relevante, algo en común conocido que sirva como referencia...',

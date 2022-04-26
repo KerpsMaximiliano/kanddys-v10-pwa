@@ -55,7 +55,7 @@
       <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
         Eres {{ userData.name }}?
       </p>
-      <app-answer-selector [options]="options" [showSelectedFeedback]="false" (onSelector)="selectOption($event)"></app-answer-selector>
+      <app-answer-selector [options]="options" (onSelector)="selectOption($event)"></app-answer-selector>
 
       <div class="content" *ngIf="showLoginPassword">
         <p class="label2">
@@ -160,11 +160,15 @@
         {{
         flow !== "flow-completion"
         ? "Cuentanos un poco más:"
-        : "¿Cómo prefieres hacer el pago de $" +
-        (orderData?.amount | number: "1.0-2") +
-        " DOP / PAQ." +
-        orderData?.itemAmount +
-        " UNDS?"
+        : orderData.hasCustomizer 
+          ? "¿Cómo prefieres hacer el pago de $" +
+            (orderData?.amount | number: "1.0-2") +
+            " DOP / PAQ." +
+            orderData?.itemAmount +
+            " UNDS?"
+          : "¿Cómo prefieres hacer el pago de $" +
+            (orderData?.amount | number: "1.0-2") +
+            " DOP?"
         }}
       </p>
       <app-answer-selector [options]="
@@ -175,10 +179,10 @@
   <div *ngIf="step === 6">
     <div class="questions-step-6">
       <p style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px" class="label1-step-6">
-        ¿En qué banco hiciste la transferencia de ${{
-        orderData?.amount | number: "1.0-2"
-        }}
-        pesos dominicanos?
+        ¿En qué banco hiciste la transferencia de ${{orderData?.amount | number: "1.0-2"}} DOP
+        <ng-container *ngIf="orderData?.hasCustomizer">
+          / PAQ. {{ orderData.itemAmount }}UNDS 
+        </ng-container>?
       </p>
       <app-answer-selector [options]="bankOptions" (onSelector)="selectOption($event)"></app-answer-selector>
 
@@ -219,20 +223,12 @@
   </div>
   <div *ngIf="step === 7">
     <div class="content step-7">
-      <ng-container *ngIf="bankOptions.length === 1">
-        <div class="unique-bank">
-          <h2>{{ bankOptions[0].value }}</h2>
-          <span>{{ bankOptions[0].description[0] }}</span>
-          <span>{{ bankOptions[0].description[1] }}</span>
-          <span>{{ bankOptions[0].description[2] }}</span>
-          <span>{{ bankOptions[0].description[3] }}</span>
-        </div>
-      </ng-container>
-
       <p style="margin-bottom: 47px" class="label1">
-        Confirmación de la transferencia de
-        {{ orderData?.amount | number: "1.0-2" }} DOP / PAQ.
-        {{ orderData?.itemAmount }} UNDS realizada en el {{ selectedBank }}:
+        Por favor confirme la transferencia de ${{ orderData?.amount | number: "1.0-2" }} DOP
+        <ng-container *ngIf="orderData.hasCustomizer">
+          / PAQ. {{ orderData?.itemAmount }}UNDS 
+        </ng-container>
+        que se realizó:
       </p>
 
       <p style="margin-bottom: 22px" class="label2">
@@ -248,6 +244,12 @@
 
       <p class="label3">Adicione la imagen (captura):</p>
       <app-image-input [allowedTypes]="['png', 'jpg', 'jpeg']" (onFileInput)="onFileInput($event)"></app-image-input>
+      <ng-container *ngIf="selectedBank">
+        <div class="unique-bank">
+          <h2>{{ selectedBank.value }}</h2>
+          <span *ngFor="let desc of selectedBank.description">{{desc}}</span>
+        </div>
+      </ng-container>
     </div>
   </div>
   <div class="content m-top" *ngIf="step === 8">

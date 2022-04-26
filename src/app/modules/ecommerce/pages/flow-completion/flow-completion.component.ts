@@ -22,6 +22,12 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
 
+interface BankDetails {
+  status: boolean;
+  value: string;
+  description: string[];
+}
+
 @Component({
   selector: 'app-flow-completion',
   templateUrl: './flow-completion.component.html',
@@ -98,11 +104,7 @@ export class FlowCompletionComponent implements OnInit {
       value: 'No',
     },
   ];
-  bankOptions: {
-    status: boolean;
-    value: string;
-    description: string[];
-  }[] = [];
+  bankOptions: BankDetails[] = [];
   banks: Bank[] = [];
   windowReference: any;
   step: number = 0;
@@ -116,7 +118,7 @@ export class FlowCompletionComponent implements OnInit {
   password: string = '';
   code: string = '';
   showLoginPassword: boolean;
-  selectedBank: string;
+  selectedBank: BankDetails;
   selectedPayment: number;
   selectedCommunitiesOptions: number[] = [];
   paymentCode: string = '';
@@ -406,7 +408,7 @@ export class FlowCompletionComponent implements OnInit {
 
           if (this.banks.length > 1) this.step = 6;
           else {
-            this.selectedBank = this.bankOptions[0].value;
+            this.selectedBank = this.bankOptions[0];
             this.headerText = 'INFORMACIÓN DEL PAGO';
             this.step = 7;
           }
@@ -466,7 +468,7 @@ export class FlowCompletionComponent implements OnInit {
           : (this.selectedPayment = index);
 
         if (this.selectedPayment === 0) {
-          if(this.bankOptions.length === 1) this.selectedBank = this.bankOptions[0].value;
+          if(this.bankOptions.length === 1) this.selectedBank = this.bankOptions[0];
           this.headerText = 'INFORMACIÓN DEL PAGO';
           this.step = this.bankOptions.length > 1 ? 6 : 7;
           this.relativeStep++;
@@ -474,7 +476,7 @@ export class FlowCompletionComponent implements OnInit {
         break;
       }
       case 6: {
-        this.selectedBank = this.bankOptions[index].value;
+        this.selectedBank = this.bankOptions[index];
         break;
       }
     }
@@ -673,6 +675,7 @@ export class FlowCompletionComponent implements OnInit {
       this.userData = undefined;
       this.isLogged = false;
       this.inputData = '';
+      this.password = '';
       this.incorrectPasswordAttempt = false;
       this.authService.signoutThree();
       this.showLoginPassword = false;
