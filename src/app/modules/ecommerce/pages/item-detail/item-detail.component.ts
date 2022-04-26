@@ -38,7 +38,7 @@ export class ItemDetailComponent implements OnInit {
 
   itemData: Item;
   saleflowId: string;
-  ctaText: string = 'AGREGAR AL CARRITO';
+  ctaText: string = 'ADICIONAR AL CARRITO';
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -59,7 +59,7 @@ export class ItemDetailComponent implements OnInit {
               }
             }
           }else{
-            this.ctaText = 'AGREGAR AL CARRITO'
+            this.ctaText = 'ADICIONAR AL CARRITO'
           }
         })
       }

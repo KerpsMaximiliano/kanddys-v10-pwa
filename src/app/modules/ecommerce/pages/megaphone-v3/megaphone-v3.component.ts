@@ -17,6 +17,7 @@ import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -57,6 +58,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   renderedSwippers: number = 0;
   showCTA: boolean = false;
   visualMode: boolean = true;
+  canOpenCart: boolean;
+  deleteEvent: Subscription;
 
   constructor(
     private dialog: DialogService,
@@ -75,8 +78,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   openDialog() {
     //
   }
-
-  deleteEvent: any;
 
   async getMerchant(id: string) {
     try {
@@ -253,15 +254,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     .pipe(filter((e) => e.type === 'deleted-item'))
     .subscribe((e) => {
       console.log('entre');
-      
       console.log(e.data);
-      
       let productData = this.header.getItems(this.saleflowData._id);
-      /*for (let i = 0; i < this.items.length; i++) {
-        console.log(this.items[i]);
-        console.log(productData);
-        productData;
-      }*/
       console.log(productData);
       
       if (productData.length > 0) {
@@ -280,6 +274,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         }
       }
       //sub.unsubscribe();
+      this.canOpenCart = this.inputsItems.some((item) => item.isSelected);
     });
   }
 
@@ -375,6 +370,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             },
           })
         ).listItems;
+        this.canOpenCart = orderData?.products?.length > 0;
         this.inputsItems = this.items;
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
