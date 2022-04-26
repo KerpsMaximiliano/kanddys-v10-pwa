@@ -320,7 +320,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           ],
           from: params.dataModel.value['4']['sender-edit'],
           // multimedia: [this.header.flowImage],
-          multimedia: [],
+          multimedia: this.header.flowImage,
           socialNetworks: [
             {
               url: '',
@@ -339,7 +339,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             ],
             from: params.dataModel.value['4']['sender-edit'],
             // multimedia: [this.header.flowImage],
-            multimedia: [],
+            multimedia: this.header.flowImage,
             socialNetworks: [
               {
                 url: '',

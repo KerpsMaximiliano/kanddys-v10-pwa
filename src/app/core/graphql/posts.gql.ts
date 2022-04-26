@@ -32,7 +32,8 @@ query post($id:ObjectID!){
   ){
  _id,
  message,
- from
+ from,
+ multimedia,
  socialNetworks{
    url
  }

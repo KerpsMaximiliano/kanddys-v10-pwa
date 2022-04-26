@@ -356,7 +356,8 @@ export class MultistepFormComponent implements OnInit {
     const reader = new FileReader();
 
     const file = (event.target as HTMLInputElement).files[0];
-    this.header.flowImage = event.target.files[0];
+    this.header.flowImage = []
+    this.header.flowImage.push(event.target.files[0]);
     reader.readAsDataURL(file);
 
     reader.onload = () => {
