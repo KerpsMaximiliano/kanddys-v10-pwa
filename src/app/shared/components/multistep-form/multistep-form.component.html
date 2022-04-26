@@ -54,9 +54,14 @@
                 [formControlName]="currentField.name"
                 [type]="currentField.inputType || 'text'"
                 [placeholder]="currentField.placeholder"
-                class="input"
+                [ngClass]="
+                  currentField.styles.customClassName
+                    ? currentField.styles.customClassName
+                    : 'input'
+                "
                 [ngStyle]="
-                  currentField.styles.fieldStyles
+                  currentField.styles.fieldStyles &&
+                  !currentField.styles.customClassName
                     ? currentField.styles.fieldStyles
                     : null
                 "
