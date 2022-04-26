@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   Input,
   Type,
   ComponentFactoryResolver,
@@ -8,7 +9,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
@@ -19,12 +20,15 @@ interface FieldStyles {
   containerStyles?: any;
   labelStyles?: any;
   bottomLabelStyles?: any;
+  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
 interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  changeCallbackFunction?(...params): any;
+  changeFunctionSubscription?: Subscription;
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
@@ -84,7 +88,7 @@ interface OptionalLink {
   templateUrl: './multistep-form.component.html',
   styleUrls: ['./multistep-form.component.scss'],
 })
-export class MultistepFormComponent implements OnInit {
+export class MultistepFormComponent implements OnInit, OnDestroy {
   @ViewChild('embeddedComponent', { read: ViewContainerRef, static: true })
   embeddedComponentRef;
   @Input() steps: Array<FormStep> = [
@@ -252,13 +256,17 @@ export class MultistepFormComponent implements OnInit {
       stepButtonValidText: 'CONTINUAR',
     },
   ];
+  @Input() disableSmoothScroll: boolean = true;
   shouldScrollBackwards: boolean = true;
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private header: HeaderService) {}
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private header: HeaderService
+  ) {}
 
   ngOnInit(): void {
     this.initController();
@@ -296,6 +304,15 @@ export class MultistepFormComponent implements OnInit {
 
         if (!currentStepFormGroup.get(field.name))
           currentStepFormGroup.addControl(field.name, field.fieldControl);
+
+        //Adds an onChange function to every formControl, if you wish to transform Data or
+        //trigger code execution on every input change
+        if (field.changeCallbackFunction) {
+          field.changeFunctionSubscription =
+            field.fieldControl.valueChanges.subscribe((change) => {
+              field.changeCallbackFunction(change, this.stepFunctionParams);
+            });
+        }
         // console.log('CURRENT FORM GROUP', currentStepFormGroup);
       });
     });
@@ -303,6 +320,17 @@ export class MultistepFormComponent implements OnInit {
     this.blockScrollPastCurrentStep();
 
     console.log('Modelo de datos', this.dataModel);
+  }
+
+  //Removes all subscriptions from every formControl
+  ngOnDestroy(): void {
+    this.steps.forEach((step, index) => {
+      step.fieldsList.forEach((field) => {
+        if (field.changeCallbackFunction) {
+          field.changeFunctionSubscription.unsubscribe();
+        }
+      });
+    });
   }
 
   // initEmbeddedComponents() {
@@ -356,8 +384,7 @@ export class MultistepFormComponent implements OnInit {
     const reader = new FileReader();
 
     const file = (event.target as HTMLInputElement).files[0];
-    this.header.flowImage = []
-    this.header.flowImage.push(event.target.files[0]);
+    this.header.flowImage = event.target.files[0];
     reader.readAsDataURL(file);
 
     reader.onload = () => {
@@ -488,16 +515,43 @@ export class MultistepFormComponent implements OnInit {
     }
 
     if (index < this.steps.length) {
-      document.getElementById(`step-${index}`).scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
-      });
+      if (!this.disableSmoothScroll) {
+        document.getElementById(`step-${index}`).scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        });
+      } else {
+        let nextStepHtmlElement: HTMLElement = document.querySelector(
+          `#step-${index}`
+        );
+
+        if (
+          this.currentStep + 1 < this.steps.length &&
+          window.pageYOffset <=
+            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          scrollToNextStep
+        ) {
+          window.scroll(0, nextStepHtmlElement.offsetTop);
+          this.blockScrollBeforeCurrentStep();
+        }
+
+        if (
+          this.currentStep + 1 < this.steps.length &&
+          window.pageYOffset >=
+            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          !scrollToNextStep
+        ) {
+          window.scroll(0, nextStepHtmlElement.offsetTop - window.innerHeight);
+          this.blockScrollPastCurrentStep();
+        }
+      }
+
       this.currentStep = index;
       this.currentStepString = (index + 1).toString();
       if (scrollToNextStep) this.blockScrollPastCurrentStep();
 
-      if (!scrollToNextStep)
+      if (!scrollToNextStep && !this.disableSmoothScroll)
         setTimeout(() => {
           this.blockScrollPastCurrentStep();
         }, 500 * (previousCurrentStep - this.currentStep));
@@ -508,19 +562,7 @@ export class MultistepFormComponent implements OnInit {
     this.shouldScrollBackwards = !this.shouldScrollBackwards;
   };
 
-  stepFunctionParams: any = {
-    dataModel: this.dataModel,
-    currentStep: this.currentStep,
-    shouldScrollBackwards: this.shouldScrollBackwards,
-    changeShouldScrollBackwards: this.changeShouldScrollBackwards,
-    blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
-    unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
-    blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
-    unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
-    scrollToStep: this.scrollToStep,
-  };
-
-  executeStepDataProcessing() {
+  executeStepDataProcessing = () => {
     let stepFunctionParams = {
       dataModel: this.dataModel,
       currentStep: this.currentStep,
@@ -531,6 +573,7 @@ export class MultistepFormComponent implements OnInit {
       blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
       unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
       scrollToStep: this.scrollToStep,
+      executeStepDataProcessing: this.executeStepDataProcessing,
     };
 
     this.stepFunctionParams = stepFunctionParams;
@@ -573,5 +616,18 @@ export class MultistepFormComponent implements OnInit {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
         });
     }
-  }
+  };
+
+  stepFunctionParams: any = {
+    dataModel: this.dataModel,
+    currentStep: this.currentStep,
+    shouldScrollBackwards: this.shouldScrollBackwards,
+    changeShouldScrollBackwards: this.changeShouldScrollBackwards,
+    blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
+    unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
+    blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
+    unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
+    scrollToStep: this.scrollToStep,
+    executeStepDataProcessing: this.executeStepDataProcessing,
+  };
 }
