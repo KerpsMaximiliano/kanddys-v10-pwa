@@ -34,6 +34,7 @@ export class HeaderService {
   walletData: any;
   datePreview: any;
   locationData: DeliveryLocationInput;
+  flowImage: any = [];
   savedBookmarks: any;
   invokeFirstComponentFunction = new EventEmitter();
   subsVar: Subscription;
@@ -81,6 +82,7 @@ export class HeaderService {
   currentDeliveryOption: number;
   hasScenarios: boolean;
   fromOrderSales: string;
+  flowRoute: string;
   public session: Session;
   constructor(
     private dialog: DialogService,

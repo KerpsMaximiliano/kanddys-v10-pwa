@@ -10,6 +10,7 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 
@@ -251,13 +252,17 @@ export class MultistepFormComponent implements OnInit {
       stepButtonValidText: 'CONTINUAR',
     },
   ];
+  @Input() disableSmoothScroll: boolean = true;
   shouldScrollBackwards: boolean = true;
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private header: HeaderService
+  ) {}
 
   ngOnInit(): void {
     this.initController();
@@ -355,6 +360,7 @@ export class MultistepFormComponent implements OnInit {
     const reader = new FileReader();
 
     const file = (event.target as HTMLInputElement).files[0];
+    this.header.flowImage = event.target.files[0];
     reader.readAsDataURL(file);
 
     reader.onload = () => {
@@ -485,16 +491,43 @@ export class MultistepFormComponent implements OnInit {
     }
 
     if (index < this.steps.length) {
-      document.getElementById(`step-${index}`).scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
-      });
+      if (!this.disableSmoothScroll) {
+        document.getElementById(`step-${index}`).scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        });
+      } else {
+        let nextStepHtmlElement: HTMLElement = document.querySelector(
+          `#step-${index}`
+        );
+
+        if (
+          this.currentStep + 1 < this.steps.length &&
+          window.pageYOffset <=
+            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          scrollToNextStep
+        ) {
+          window.scroll(0, nextStepHtmlElement.offsetTop);
+          this.blockScrollBeforeCurrentStep();
+        }
+
+        if (
+          this.currentStep + 1 < this.steps.length &&
+          window.pageYOffset >=
+            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          !scrollToNextStep
+        ) {
+          window.scroll(0, nextStepHtmlElement.offsetTop - window.innerHeight);
+          this.blockScrollPastCurrentStep();
+        }
+      }
+
       this.currentStep = index;
       this.currentStepString = (index + 1).toString();
       if (scrollToNextStep) this.blockScrollPastCurrentStep();
 
-      if (!scrollToNextStep)
+      if (!scrollToNextStep && !this.disableSmoothScroll)
         setTimeout(() => {
           this.blockScrollPastCurrentStep();
         }, 500 * (previousCurrentStep - this.currentStep));

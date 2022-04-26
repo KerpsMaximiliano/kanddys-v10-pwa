@@ -195,6 +195,7 @@ export class ProviderStoreComponent implements OnInit {
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.isComplete.delivery = true;
+              this.header.storeLocation(this.header.getFlowId(), this.header.saleflow.module.delivery.pickUpLocations[0]);
             }
           }
         }
@@ -255,6 +256,7 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.header.flowRoute = 'provider-store';
     if (this.header.orderId) {
       this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
       return;

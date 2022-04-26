@@ -5,6 +5,7 @@
     bgcolor="#ffffff"
     [basic]="false"
     position="fixed"
+    [empty]="!shouldScrollBackwards"
     middleTextColor="#7b7b7b"
     [shadow]="false"
     (onClose)="
@@ -13,7 +14,7 @@
       !steps[currentStep].customScrollToStepBackwards
         ? scrollToStep(this.currentStep - 1, false)
         : steps[currentStep].customScrollToStepBackwards
-        ? steps[currentStep].customScrollToStepBackwards()
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
         : null
     "
   ></app-helper-header>
