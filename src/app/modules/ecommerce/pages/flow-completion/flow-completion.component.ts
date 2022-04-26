@@ -466,9 +466,9 @@ export class FlowCompletionComponent implements OnInit {
           : (this.selectedPayment = index);
 
         if (this.selectedPayment === 0) {
-          this.selectedBank = this.bankOptions[0].value;
+          if(this.bankOptions.length === 1) this.selectedBank = this.bankOptions[0].value;
           this.headerText = 'INFORMACIÓN DEL PAGO';
-          this.step = 7;
+          this.step = this.bankOptions.length > 1 ? 6 : 7;
           this.relativeStep++;
         }
         break;
