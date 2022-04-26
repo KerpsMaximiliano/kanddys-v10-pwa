@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 export class ContactButtonsComponent implements OnInit {
   @Input() socials: Array<any> = [];
   @Input() providerImage: string = '';
-  @Input() objectFit:string = 'contain';
+  @Input() objectFit:string = 'cover';
   mode: string;
   env: string = environment.assetsUrl;
 

@@ -40,10 +40,4 @@ export class ProviderInfoComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.dividedBackground);
   }
-
-  decideObjectFit() {
-    if (this.flowId === '61b8df151e8962cdd6f30feb') return 'cover';
-
-    return 'contain';
-  }
 }
