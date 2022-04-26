@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   Input,
   Type,
   ComponentFactoryResolver,
@@ -8,7 +9,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
@@ -19,12 +20,15 @@ interface FieldStyles {
   containerStyles?: any;
   labelStyles?: any;
   bottomLabelStyles?: any;
+  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
 interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  changeCallbackFunction?(...params): any;
+  changeFunctionSubscription?: Subscription;
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
@@ -84,7 +88,7 @@ interface OptionalLink {
   templateUrl: './multistep-form.component.html',
   styleUrls: ['./multistep-form.component.scss'],
 })
-export class MultistepFormComponent implements OnInit {
+export class MultistepFormComponent implements OnInit, OnDestroy {
   @ViewChild('embeddedComponent', { read: ViewContainerRef, static: true })
   embeddedComponentRef;
   @Input() steps: Array<FormStep> = [
@@ -300,6 +304,15 @@ export class MultistepFormComponent implements OnInit {
 
         if (!currentStepFormGroup.get(field.name))
           currentStepFormGroup.addControl(field.name, field.fieldControl);
+
+        //Adds an onChange function to every formControl, if you wish to transform Data or
+        //trigger code execution on every input change
+        if (field.changeCallbackFunction) {
+          field.changeFunctionSubscription =
+            field.fieldControl.valueChanges.subscribe((change) => {
+              field.changeCallbackFunction(change, this.stepFunctionParams);
+            });
+        }
         // console.log('CURRENT FORM GROUP', currentStepFormGroup);
       });
     });
@@ -307,6 +320,17 @@ export class MultistepFormComponent implements OnInit {
     this.blockScrollPastCurrentStep();
 
     console.log('Modelo de datos', this.dataModel);
+  }
+
+  //Removes all subscriptions from every formControl
+  ngOnDestroy(): void {
+    this.steps.forEach((step, index) => {
+      step.fieldsList.forEach((field) => {
+        if (field.changeCallbackFunction) {
+          field.changeFunctionSubscription.unsubscribe();
+        }
+      });
+    });
   }
 
   // initEmbeddedComponents() {
@@ -538,19 +562,7 @@ export class MultistepFormComponent implements OnInit {
     this.shouldScrollBackwards = !this.shouldScrollBackwards;
   };
 
-  stepFunctionParams: any = {
-    dataModel: this.dataModel,
-    currentStep: this.currentStep,
-    shouldScrollBackwards: this.shouldScrollBackwards,
-    changeShouldScrollBackwards: this.changeShouldScrollBackwards,
-    blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
-    unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
-    blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
-    unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
-    scrollToStep: this.scrollToStep,
-  };
-
-  executeStepDataProcessing() {
+  executeStepDataProcessing = () => {
     let stepFunctionParams = {
       dataModel: this.dataModel,
       currentStep: this.currentStep,
@@ -561,6 +573,7 @@ export class MultistepFormComponent implements OnInit {
       blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
       unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
       scrollToStep: this.scrollToStep,
+      executeStepDataProcessing: this.executeStepDataProcessing,
     };
 
     this.stepFunctionParams = stepFunctionParams;
@@ -603,5 +616,18 @@ export class MultistepFormComponent implements OnInit {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
         });
     }
-  }
+  };
+
+  stepFunctionParams: any = {
+    dataModel: this.dataModel,
+    currentStep: this.currentStep,
+    shouldScrollBackwards: this.shouldScrollBackwards,
+    changeShouldScrollBackwards: this.changeShouldScrollBackwards,
+    blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
+    unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
+    blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
+    unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
+    scrollToStep: this.scrollToStep,
+    executeStepDataProcessing: this.executeStepDataProcessing,
+  };
 }
