@@ -271,6 +271,14 @@ export const itemextra = gql`
   }
 `;
 
+export const itemExtras = gql`
+  query itemExtras($params: PaginationInput) {
+    itemExtras(params: $params) {
+      results
+    }
+  }
+`;
+
 export const itemCategoryHeadlineByMerchant = gql`
   query itemCategoryHeadlineByMerchant ($merchant: ObjectID!) {
     itemCategoryHeadlineByMerchant (merchant: $merchant) {

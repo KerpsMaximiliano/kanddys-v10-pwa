@@ -966,9 +966,14 @@
       </div>
     </swiper>
   </div>
-  <div class="customPagination" [ngStyle]="{marginBottom: saleFlowTwoData.description ? '36px' : '0'}">
-    <div class="price" style="position: absolute; left: 32px; bottom: -5px; color: #7b7b7b; font-family: 'RobotoRegular'; font-size: 17px;">
-      ${{saleFlowTwoData.pricing}}
+  <div class="customPagination">
+    <div class="price" style="position: absolute; left: 32px; bottom: -5px; color: #7b7b7b; font-family: 'Roboto'; font-size: 17px;">
+      <ng-container *ngIf="saleFlowTwoData.pricing; else price">
+        ${{saleFlowTwoData.pricing}}
+      </ng-container>
+      <ng-template #price>
+        ${{saleFlowTwoData.price}}
+      </ng-template>
     </div>
     <ng-container *ngIf="saleFlowTwoData.images.length > 1">
       <ng-container *ngFor="let item of saleFlowTwoData.images; let j = index">

@@ -20,6 +20,7 @@ import {
   itemCategoryHeadlineByMerchant,
   itemsByCategory,
   bestSellersByMerchant,
+  itemExtras
 } from '../graphql/items.gql';
 import { Item, ItemCategory, ItemCategoryHeadline } from '../models/item';
 import { ListParams } from '../types/general.types';
@@ -141,6 +142,20 @@ export class ItemsService {
       console.log(e);
     }
   }
+
+  async itemExtras(params: any) {
+    try {
+      const response = await this.graphql.query({
+        query: itemExtras, //add listItems to gqls,
+        variables: { params },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   async itemCategories(merchantId: string, params: any): Promise<{ itemCategoriesList: ItemCategory[] }> {
     try {

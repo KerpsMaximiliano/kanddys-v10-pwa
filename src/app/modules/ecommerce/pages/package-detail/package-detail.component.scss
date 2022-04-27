@@ -1,0 +1,12 @@
+.container{
+  & .filter-container{
+    -webkit-box-shadow: 0px -23px 18px -6px #cccccc70;
+    box-shadow: 0px -23px 18px -6px #cccccc70;
+    -moz-box-shadow: 0px -23px 18px -6px #cccccc70;
+  }
+    & .scenarios{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        background-color: #ffffff;
+    }
+}
