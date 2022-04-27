@@ -1,9 +1,9 @@
 <div
   class="container-filters"
-  [ngStyle]="{ padding: showOptions ? '0 24px' : '0 11px' }"
+  [ngStyle]="{ padding: showOptions ? '0 24px' : '0 11px', marginBottom: noMarginBottom ? '0px' : '1rem', fontFamily: BigText ? 'RobotoBold' : 'SfProRegular'}"
 >
   <div *ngIf = "!searchBar" class="container-title">
-    <span class="title">{{ title }}</span>
+    <span class="title" [ngStyle]="{ color: BigText ? 'black' : '#7b7b7b', fontFamily: BigText ? 'RobotoBold' : 'SfProRegular', fontSize: BigText ? '22px' : '14px'}">{{ title }}</span>
     <div (click)="openDialog()" class="filterButton">
       <!--<span *ngIf = "activedTags.length > 0" [ngStyle]="{'font-size':activedTags.length > 9?'8px':'16px'}" >{{activedTags.length}}</span>-->
       <img src="{{ env }}/filter.svg" alt="Filter" />

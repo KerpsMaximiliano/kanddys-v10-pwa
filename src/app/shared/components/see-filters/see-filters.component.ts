@@ -30,6 +30,8 @@ export class SeeFiltersComponent implements OnInit {
   @Output() eventTags = new EventEmitter();
   @Output() deletedTag = new EventEmitter();
   @Output() loadingSwiper = new EventEmitter();
+  @Input() noMarginBottom: boolean = false;
+  @Input() BigText: boolean = false;
   activedTags: any[];
   notificationCount: number = 0;
   @Input() hasBookmark: boolean;
@@ -38,6 +40,8 @@ export class SeeFiltersComponent implements OnInit {
   constructor(private dialog: DialogService, public header: HeaderService) {}
 
   ngOnInit(): void {
+    console.log(this.tags);
+    
     this.notificationCount = this.tags.length;
     this.updateActivedTags(this.tags);
   }
@@ -118,6 +122,7 @@ export class SeeFiltersComponent implements OnInit {
   }
 
   updateActivedTags(data) {
+    console.log(data);
     let tempTags = [];
     data.map((tag) => {
       tag.options.map((option) => {

@@ -1,0 +1,64 @@
+<div class="campaign-info-container">
+
+    <!-- MODO CAMPAIGN NORMAL -->
+    <div *ngIf="mode == 'campaign' ">
+        <ng-container *ngIf="campaign">
+            <div *ngFor="let item of campaign; let i = index" class="campaign-container">
+                <ng-container *ngIf="campaign[i].title">
+                    <div class="placer-info">
+                        <label for="Title" class="info-title" id="title">{{campaign[i].title}}</label>
+                    </div>
+                    <input type="url" *ngIf="item.link" placeholder="{{itemURL}}" class="linkCI">
+                </ng-container>
+
+                <ng-container *ngIf="item.texts">
+                    <div class="placer-info" id="texts" *ngFor="let text of item.texts; let j = index">
+                        <p class="info-text">{{item.texts[j]}}</p>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+        
+        <div class="placer">
+            <app-submit-button
+            [text]="'Fundar Mi club'"
+            [color]="'#FFFFFF'"
+            [background]="'#31A4F9'"
+            ></app-submit-button>
+        </div>
+    </div>
+
+    <!-- MODO CON INPUT DE URL -->
+    <div *ngIf="mode == 'url'">
+        <ng-container *ngIf="campaign">
+            <div *ngFor="let item of campaign; let i = index" class="campaign-container">
+                <ng-container *ngIf="campaign[i].title">
+                    <div class="placer-info">
+                        <label for="Title" class="info-title" id="title">{{campaign[i].title}}</label>
+                    </div>
+                    <input type="url" *ngIf="item.link" placeholder="{{itemURL}}" class="linkCI">
+                </ng-container>
+            
+                <ng-container *ngIf="item.texts">
+                    <div class="placer-info" id="texts" *ngFor="let text of item.texts; let j = index">
+                        <p class="info-text">{{item.texts[j]}}</p>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+    
+        <div class="placer">
+            <app-submit-button
+            [text]="'CopyURL'"
+            [color]="'#FFFFFF'"
+            [background]="'#31A4F9'"
+            ></app-submit-button>
+        </div>
+    </div>
+
+
+    <!-- MODO DE SOLO INFORMACION -->
+    <div *ngIf="mode == 'info'">
+        <p class="info-title" id="info-info">{{information}}</p>
+    </div>
+</div>
