@@ -1,0 +1,72 @@
+.campaign-info-container{
+    max-width: 426px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(254, 210, 48, 0.43);
+    border-radius: 16px;
+    margin: 0 auto;
+
+    .campaign-container{
+        margin: 0 0 28px 7.3%;
+
+        .placer-info{
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+
+            .info-title,.info-text{
+                font-size: 16px;
+                color: #0B1F38;
+                margin-right: 12.7%;
+            }
+
+            .info-title{
+                font-family: 'RobotoMedium';
+            }
+
+            .info-text{
+                font-family: 'RobotoRegular';
+            }
+        }
+
+        .linkCI{
+            width: 90%;
+            height: 72px;
+            border-radius: 36px;
+            border: 1px solid #31A4F9;
+            text-indent: 7.8%;
+            margin-top: 20px;
+            margin-bottom: 4px;
+            font-family: 'RobotoMedium';
+            font-size: 20px;
+
+            &::placeholder{
+                font-family: 'RobotoMedium';
+                font-size: 20px;
+                color: #0B1F38;
+                opacity: 0.43;
+            }
+        }
+    }
+
+    .placer{
+        display: flex;
+        justify-content: center;
+        padding-top: 12px;
+        padding-bottom: 42px;
+    }
+}
+
+#title{
+    margin-top: 28px;
+    margin-bottom: 10px;
+}
+
+#info-info{
+    margin: 28px 56px 35px 28px !important;
+    font-family: 'RobotoMedium';
+    font-size: 16px;
+    color: #0B1F38;
+}

@@ -152,27 +152,22 @@ export class OrderInfoComponent implements OnInit {
             socials: data.order.items[0].saleflow.social,
           };
 
-          data.order.items.forEach((item) => {
-            if (item.itemExtra.length > 0) {
-              this.tabsOptions.push('Escenarios');
-              this.itemsExtra = item.itemExtra;
-            }
-            if (item.deliveryLocation && item.reservation) {
-              this.tabsOptions.push('Reservación');
-              this.titleTab = 'Horario de la sesión';
-              this.tabsOptions.push('Entrega');
-              this.titleTab = 'Entrega';
-            } else if (item.reservation) {
-              this.tabsOptions.push('Reservación');
-              this.titleTab = 'Horario de la sesión';
-            } else if (item.deliveryLocation) {
-              this.tabsOptions.push('Entrega');
-              this.titleTab = 'Entrega';
-            }
-            if (item.customizer) this.tabsOptions.push('Personalización');
-            if (item.post) this.tabsOptions.push('Mensaje');
-          });
+          if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
+          if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
+          const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
+          if(hasItemExtra) {
+            this.tabsOptions.push('Escenarios');
+            this.itemsExtra = hasItemExtra.itemExtra;
+          }
+          if (data.order.items[0].reservation) {
+            this.tabsOptions.push('Reservación');
+            this.titleTab = 'Horario de la sesión';
+          }
           this.tabsOptions.push('Pago');
+          if (data.order.items[0].deliveryLocation) {
+            this.tabsOptions.push('Entrega');
+            this.titleTab = 'Entrega';
+          }
           console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
           const totalPrice = data.order.subtotals.reduce((a, b) => a + b.amount, 0);

@@ -183,6 +183,10 @@ export const listItems = gql`
       }
       itemExtra {
         _id
+        images
+        name
+        isActive
+        createdAt
       }
     }
   }

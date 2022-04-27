@@ -13,7 +13,6 @@ import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
 import { HeaderService } from 'src/app/core/services/header.service';
-
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
@@ -134,25 +133,6 @@ export class ShipmentDataFormComponent implements OnInit {
             },
           },
         },
-
-        // {
-        //   name: 'email',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Email',
-        //   inputType: 'email',
-        //   placeholder: 'Email',
-        //   fieldStyles: {
-        //     color: 'green',
-        //     marginTop: '10px',
-        //   },
-        // },
-        // {
-        //   name: 'imageExample2',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Sube una imagen',
-        //   inputType: 'file',
-        //   placeholder: 'sube una imagen',
-        // },
       ],
       embeddedComponents: [
         {

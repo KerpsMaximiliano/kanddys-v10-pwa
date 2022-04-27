@@ -646,6 +646,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.router.navigate(['/ecommerce/create-giftcard']);
   };
 
+  goToPackageDetail(index){
+    console.log(this.sliderPackage[index]);
+    this.router.navigate(['/ecommerce/package-detail/' + this.sliderPackage[index]._id]);
+  }
+
   showShoppingCartDialog() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
