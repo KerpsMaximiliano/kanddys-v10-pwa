@@ -10,13 +10,14 @@
 
 .category-name {
   font-family: "SfProRegular";
-  color: #707070;
+  color: #7B7B7B;
   font-size: 17px;
 }
 
 .top-wrapper {
   padding-bottom: 30px;
   box-shadow: 0px -20px 20px -20px inset lightgray;
+  background-color: #F6F6F6;
 }
 
 .header-wrapper {
@@ -60,4 +61,11 @@
   height: 35px;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  background-color: #ffffff;
+  row-gap: 70px;
 }

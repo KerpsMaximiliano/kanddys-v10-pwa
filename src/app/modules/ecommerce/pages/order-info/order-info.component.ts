@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { CalendarService } from 'src/app/core/services/calendar.service';
-import * as moment from 'moment';
 import { Item } from 'src/app/core/types/item.types';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -14,6 +13,9 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 //import { CreateTriviaComponent } from '../create-trivia/create-trivia.component';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import * as moment from 'moment';
+import 'moment/locale/es'  // without this line it didn't work
+moment.locale('es')
 
 @Component({
   selector: 'app-order-info',
@@ -51,7 +53,7 @@ export class OrderInfoComponent implements OnInit {
   phone: string;
   id: string;
   linkId: string;
-  price: string = '';
+  price: number = 0;
   status: string;
   paramValue: string;
   paramType: string;
@@ -150,32 +152,26 @@ export class OrderInfoComponent implements OnInit {
             socials: data.order.items[0].saleflow.social,
           };
 
-          data.order.items.forEach((item) => {
-            if (item.itemExtra.length > 0) {
-              this.tabsOptions.push('Escenarios');
-              this.itemsExtra = item.itemExtra;
-            }
-            if (item.deliveryLocation && item.reservation) {
-              this.tabsOptions.push('Reservación');
-              this.titleTab = 'Horario de la sesión';
-              this.tabsOptions.push('Entrega');
-              this.titleTab = 'Entrega';
-            } else if (item.reservation) {
-              this.tabsOptions.push('Reservación');
-              this.titleTab = 'Horario de la sesión';
-            } else if (item.deliveryLocation) {
-              this.tabsOptions.push('Entrega');
-              this.titleTab = 'Entrega';
-            }
-            if (item.customizer) this.tabsOptions.push('Personalización');
-            if (item.post) this.tabsOptions.push('Mensaje');
-          });
+          if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
+          if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
+          const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
+          if(hasItemExtra) {
+            this.tabsOptions.push('Escenarios');
+            this.itemsExtra = hasItemExtra.itemExtra;
+          }
+          if (data.order.items[0].reservation) {
+            this.tabsOptions.push('Reservación');
+            this.titleTab = 'Horario de la sesión';
+          }
           this.tabsOptions.push('Pago');
+          if (data.order.items[0].deliveryLocation) {
+            this.tabsOptions.push('Entrega');
+            this.titleTab = 'Entrega';
+          }
           console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
           const totalPrice = data.order.subtotals.reduce((a, b) => a + b.amount, 0);
-          if (data.order.items[0].customizer) this.price = totalPrice * 1.18 + '';
-          else this.price = totalPrice + '';
+          this.price = data.order.items[0].customizer ? totalPrice * 1.18 : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
           this.dateId = this.formatID(data.order.dateId);
@@ -190,9 +186,10 @@ export class OrderInfoComponent implements OnInit {
           this.name = data.order.user.name;
           this.merchantName = data.order.items[0].saleflow.headline;
           this.orderId = data.order._id;
-          this.date = `${moment(data.order.createdAt).format(
-            'YYYY-MM-DD'
-          )} a las ${moment(data.order.createdAt).format('hh:mm A')}`;
+          // this.date = `${moment(data.order.createdAt).format(
+          //   'YYYY-MM-DD'
+          // )} a las ${moment(data.order.createdAt).format('hh:mm A')}`;
+          this.date = `${moment(data.order.createdAt).format('LL')} a las ${moment(data.order.createdAt).format('LT')}`;
           console.log(this.id);
           if (data.order.itemPackage) this.pago = data.order.itemPackage.price;
           this.createdAt = data.order.createdAt;

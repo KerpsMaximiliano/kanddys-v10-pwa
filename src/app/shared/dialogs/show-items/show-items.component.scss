@@ -14,6 +14,7 @@
     background-color: #fff;
     display: flex;
     align-items: center;
+    margin-bottom: 30px;
     
     & .fa-times{
         z-index: 2;
@@ -29,7 +30,6 @@
 
 .card-item {
   padding: 20px;
-  padding-top: 50px;
   padding-bottom: 35px;
 }
 

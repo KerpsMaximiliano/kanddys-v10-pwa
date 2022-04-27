@@ -54,7 +54,17 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'writeMessage',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Si', 'No'],
-          label: '¿Te interesa escribirle un mensajito de regalo??',
+          changeCallbackFunction: (change, params) => {
+            if (change === 'Si') {
+              this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
+                emitEvent: false,
+              });
+
+              this.formSteps[0].stepProcessingFunction(params);
+              params.scrollToStep(1);
+            }
+          },
+          label: '¿Te interesa escribirle un mensajito de regalo?',
           inputType: 'radio',
           styles: {
             containerStyles: {
@@ -182,6 +192,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      customScrollToStepBackwards: (params) => {
+        this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
+          emitEvent: false,
+        });
+
+        params.scrollToStep(0, false);
+      },
       bottomLeftAction: {
         text: 'Sin mensaje de regalo',
         execute: () => {
@@ -271,6 +288,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           label: '¿Para quién es?',
           placeholder: 'Type...',
           styles: {
+            // customClassName: 'loquesea',
             containerStyles: {
               marginTop: '80px',
             },
@@ -349,7 +367,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         );
         this.header.isComplete.message = true;
         console.log('AYUDAAAAS');
-        
+
         console.log(this.header.flowImage);
         this.router.navigate([`ecommerce/shipment-data-form`]);
         return { ok: true };

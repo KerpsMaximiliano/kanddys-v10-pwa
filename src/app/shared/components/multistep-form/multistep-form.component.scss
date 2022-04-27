@@ -1,3 +1,5 @@
+@import "forms";
+
 .form-wrapper {
   height: c;
   overflow-y: scroll;
@@ -5,7 +7,7 @@
 
 .form-step {
   background-color: #f6f6f6;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -28,37 +30,12 @@
   .optional-links .link {
     margin-top: 18px;
     color: #27a2ff;
+    font-size: 16px;
     font-family: RobotoMedium;
   }
 
   .optional-links .link:hover {
     cursor: pointer;
-  }
-
-  .selector {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .selector input[type="radio"] {
-    opacity: 0;
-    position: fixed;
-    width: 0;
-  }
-
-  .selector-option {
-    padding: 10px;
-    width: 100%;
-    padding-left: 20px;
-    color: #7b7b7b;
-    font-family: RobotoMedium;
-    font-size: 19px;
-    border-radius: 10px;
-  }
-
-  .selector-option.active {
-    background-color: #82f18d;
   }
 
   .footer {
@@ -96,36 +73,6 @@
   }
 }
 
-.input-label {
-  font-family: "Roboto";
-  font-size: 24px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 33px;
-}
-
-.input {
-  border-radius: 10px;
-  padding: 0px 20px;
-  width: 100%;
-  height: 73px;
-  font-family: RobotoMedium;
-  font-size: 20px;
-  border: none;
-  color: #0b1f38;
-  box-shadow: 0px 8px 41px -32px inset;
-
-  &:focus {
-    border: 1px solid #31a4f9;
-  }
-
-  &::placeholder {
-    font-family: RobotoMedium;
-    font-size: 20px;
-    color: rgb(161, 161, 161, 0.6);
-  }
-}
-
 .add-another {
   background: #fff;
   padding-left: 30px;
@@ -140,67 +87,4 @@
   color: #a9a9a9;
   font-size: 16px;
   cursor: pointer;
-}
-
-.textarea {
-  box-shadow: 0px 8px 41px -32px inset;
-  color: #0b1f38;
-  width: 100%;
-  font-family: RobotoMedium;
-  //max-height: 154px;
-  padding: 23px;
-  resize: none;
-  font-size: 20px;
-
-  &::placeholder {
-    font-family: RobotoMedium;
-    font-size: 20px;
-    color: rgb(161, 161, 161, 0.6);
-  }
-}
-
-.file {
-  border: 1px solid dodgerblue;
-  color: #999999;
-  background: #fff;
-  border-radius: 3px;
-  text-align: center;
-  font-size: 21px;
-  height: 200px;
-  min-width: 250px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-}
-
-.showImageBottomLabel {
-  font-family: RobotoMedium;
-  font-size: 16px;
-  color: #27a2ff;
-  font-weight: 500;
-  margin-top: 18.2px;
-}
-
-.showImageBottomLabel:hover {
-  cursor: pointer;
-}
-
-.input::-webkit-outer-spin-button,
-.input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-.input {
-  -moz-appearance: textfield;
-}
-
-.bottom-separator {
-  margin-bottom: 73px;
-  background-color: skyblue;
-  width: 100%;
-  height: 0px;
 }

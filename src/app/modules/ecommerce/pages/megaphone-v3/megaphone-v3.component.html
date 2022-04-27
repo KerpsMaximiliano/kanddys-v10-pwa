@@ -14,7 +14,7 @@
   <!-- <app-page-component-tabs *ngIf="customizersId.length === 0" [tabsOptions]="pagesList"></app-page-component-tabs> -->
   <div
     style="margin-bottom: 60px"
-    *ngIf="saleflowData && (inputPackage.length > 0 || !hasCustomizer)"
+    *ngIf="saleflowData && inputPackage.length > 0 && items.length === 0"
   >
     <ng-container *ngIf="inputPackage.length >= 0 && items.length === 0">
       <div class="header-wrapper">
@@ -101,7 +101,6 @@
       </div>
       <app-swiper
         [saleFlowTwo]="true"
-        [selectable]="saleflowData?.canBuyMultipleItems"
         [saleFlowTwoData]="item.items"
         (slideActive)="onItemCategoryClick(i, $event)"
         (toggleEmitter)="toggleSelected('item', i, $event)"
@@ -153,8 +152,8 @@
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">
     <app-sticky-button
-      [mode]="'basic'"
-      [text]="'IR AL CARRITO DE COMPRAS'"
+      [mode]="canOpenCart ? 'basic' : 'disabled'"
+      [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
       (click)="showShoppingCartDialog()"
     ></app-sticky-button>
   </ng-container>

@@ -7,34 +7,63 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 //import { MultistepFormComponent } from 'src/app/shared/components/multistep-form/multistep-form.component';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { environment } from 'src/environments/environment';
 
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
   labelStyles?: any;
-}
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  containerStyles: any;
+  bottomLabelStyles?: any;
+  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
 interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  changeCallbackFunction?(...params): any;
+  changeFunctionSubscription?: Subscription;
+  selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   inputType?: string;
+  showImageBottomLabel?: string;
   multiple?: boolean;
+}
+
+interface EmbeddedComponentOutput {
+  name: string;
+  callback(params: any): any;
+}
+
+interface EmbeddedComponent {
+  component: Type<any>;
+  inputs: Record<string, any>;
+  outputs?: Array<EmbeddedComponentOutput>;
+  containerStyles?: any;
+  afterIndex: number;
+}
+
+interface FormStep {
+  fieldsList: Array<FormField>;
+  headerText: string;
+  embeddedComponents?: Array<EmbeddedComponent>;
+  accessCondition?(...params): boolean;
+  stepButtonValidText: string;
+  stepButtonInvalidText: string;
+  asyncStepProcessingFunction?(...params): Observable<any>;
+  stepProcessingFunction?(...params): any;
+  customScrollToStep?(...params): any;
+  customScrollToStepBackwards?(...params): any;
+  bottomLeftAction?: BottomLeftAction;
+  optionalLinksTo?: OptionalLinks;
+  stepResult?: any;
 }
 
 interface BottomLeftAction {
@@ -42,31 +71,23 @@ interface BottomLeftAction {
   execute(params): any;
 }
 
-interface FormStep {
-  fieldsList: Array<FormField>;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  headerText: string;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?(...params): Observable<any>;
-  stepProcessingFunction?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  stepResult?: any;
+interface OptionalLinks {
+  styles?: FieldStyles;
+  links: Array<OptionalLink>;
+}
+
+interface OptionalLink {
+  text: string;
+  action(params): any;
 }
 
 @Component({
   selector: 'app-shipment-data-form',
   templateUrl: './shipment-data-form.component.html',
-  styleUrls: ['./shipment-data-form.component.scss']
+  styleUrls: ['./shipment-data-form.component.scss'],
 })
-
 export class ShipmentDataFormComponent implements OnInit {
-
-  constructor(
-    private header: HeaderService, 
-    private router: Router,
-    ) { }
+  constructor(private header: HeaderService, private router: Router) {}
 
   steps: Array<FormStep> = [
     {
@@ -84,19 +105,20 @@ export class ShipmentDataFormComponent implements OnInit {
             fieldStyles: {
               backgroundColor: 'white',
               height: '180px',
-              borderRadius: '10px'
+              borderRadius: '10px',
             },
             labelStyles: {
-              fontWeight: "600"
-            }
+              fontWeight: '600',
+            },
           },
         },
         {
           name: 'note',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: 'Nota',
           inputType: 'textarea',
-          placeholder: 'Ej: Color relevante, algo en común conocido que sirva como referencia...',
+          placeholder:
+            'Ej: Color relevante, algo en común conocido que sirva como referencia...',
           styles: {
             containerStyles: {
               marginTop: '74px',
@@ -104,11 +126,11 @@ export class ShipmentDataFormComponent implements OnInit {
             fieldStyles: {
               backgroundColor: 'white',
               height: '180px',
-              borderRadius: '10px'
+              borderRadius: '10px',
             },
-            labelStyles:{
-              fontWeight: "100"
-            }
+            labelStyles: {
+              fontWeight: '100',
+            },
           },
         },
         // {
@@ -130,17 +152,27 @@ export class ShipmentDataFormComponent implements OnInit {
         //   placeholder: 'sube una imagen',
         // },
       ],
+      customScrollToStepBackwards: (params) => {
+        params.unblockScrollPastCurrentStep();
+        params.unblockScrollBeforeCurrentStep();
+
+        this.router.navigate(['ecommerce/create-giftcard']);
+      },
       stepProcessingFunction: (params) => {
         const deliveryData = {
           street: params.dataModel.value['1'].street,
           note: params.dataModel.value['1'].note,
-          city: 'Santo Domingo'
+          city: 'Santo Domingo',
         };
-        if(this.header.order?.products && this.header.order?.products?.length > 0) this.header.order.products[0].deliveryLocation = deliveryData;
+        if (
+          this.header.order?.products &&
+          this.header.order?.products?.length > 0
+        )
+          this.header.order.products[0].deliveryLocation = deliveryData;
         this.header.storeLocation(this.header.getFlowId(), deliveryData);
         this.header.isComplete.delivery = true;
         this.router.navigate([`ecommerce/flow-completion`]);
-        return {ok: true};
+        return { ok: true };
       },
       bottomLeftAction: {
         text: 'Sin envio, lo pasaré a recoger',
@@ -149,12 +181,10 @@ export class ShipmentDataFormComponent implements OnInit {
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
-      stepButtonInvalidText: 'ADICIONA DIRECCION DEL ENVIO',
+      stepButtonInvalidText: 'ADICIONA DIRECCIÓN DEL ENVIO',
       stepButtonValidText: 'CONTINUAR',
-    }
+    },
   ];
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

@@ -11,6 +11,11 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { Subscription } from 'rxjs';
+import { AppService } from 'src/app/app.service';
+import { filter } from 'rxjs/operators';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 @Component({
   selector: 'app-category-items',
@@ -18,7 +23,6 @@ import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
   styleUrls: ['./category-items.component.scss'],
 })
 export class CategoryItemsComponent implements OnInit {
-  sliderLabel: string = 'DISEÑOS DE SERVILLETAS MAS COMPRADOS';
   items: Item[] = [];
   originalItems: Item[] = [];
   saleflowData: SaleFlow;
@@ -30,13 +34,17 @@ export class CategoryItemsComponent implements OnInit {
   selectedTagsIds: any = [];
   hasCustomizer: boolean;
   bestSellers: Item[] = [];
+  deleteEvent: Subscription;
+  canOpenCart: boolean;
 
   constructor(
+    private dialog: DialogService,
     private route: ActivatedRoute,
     private router: Router,
     private saleflow: SaleFlowService,
     private item: ItemsService,
-    private header: HeaderService
+    private header: HeaderService,
+    private appService: AppService,
   ) {}
 
   async getCategories(
@@ -79,6 +87,24 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.deleteEvent = this.appService.events
+    .pipe(filter((e) => e.type === 'deleted-item'))
+    .subscribe((e) => {
+      let productData = this.header.getItems(this.saleflowData._id);
+      if (productData.length > 0) {
+        for (let i = 0; i < productData.length; i++) {
+          for (let j = 0; j < this.items.length; j++) {
+            if (productData[i]._id === this.items[j]._id) this.items[j].isSelected = true;
+            else this.items[j].isSelected = false;
+          }
+        }
+      } else {
+        for (let i = 0; i < this.items.length; i++) {
+          this.items[i].isSelected = false;             
+        }
+      }
+      this.canOpenCart = this.items.some((item) => item.isSelected);
+    });
     this.header.resetIsComplete();
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
@@ -147,6 +173,7 @@ export class CategoryItemsComponent implements OnInit {
       this.items = [...items];
       this.originalItems = [...items];
 
+      this.canOpenCart = orderData?.products?.length > 0;
       const itemCategoriesList = (
         await this.item.itemCategories(merchantId, {})
       ).itemCategoriesList;
@@ -259,36 +286,49 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   toggleSelected(type: string, index: number) {
-    if (type === 'item') {
-      if (index != undefined) {
-        const itemData = this.originalItems[index];
-        itemData.isSelected =
-          !itemData.isSelected;
-        let itemParams: ItemSubOrderParamsInput[];
-        if(itemData.params.length > 0) {
-          itemParams = [{
-            param: itemData.params[0]._id,
-            paramValue:
-            itemData.params[0].values[0]._id,
-          }];
-        };
-        const product = {
-          item: itemData._id,
-          customizer: itemData.customizerId,
-          params: itemParams,
-          amount: itemData.customizerId ? undefined : 1,
-          saleflow: this.saleflowData._id,
-          name: itemData.name,
-        };
-        this.header.storeOrderProduct(this.saleflowData._id, product);
-        this.header.storeItem(
-          this.saleflowData._id,
-          itemData
-        );
-      }
-    } else if (type === 'package') {
-      //
+    if (index != undefined) {
+      const itemData = type === 'slider' ? this.originalItems[index] : this.items[index];
+      itemData.isSelected =
+        !itemData.isSelected;
+      let itemParams: ItemSubOrderParamsInput[];
+      if(itemData.params.length > 0) {
+        itemParams = [{
+          param: itemData.params[0]._id,
+          paramValue:
+          itemData.params[0].values[0]._id,
+        }];
+      };
+      const product = {
+        item: itemData._id,
+        customizer: itemData.customizerId,
+        params: itemParams,
+        amount: itemData.customizerId ? undefined : 1,
+        saleflow: this.saleflowData._id,
+        name: itemData.name,
+      };
+      this.header.storeOrderProduct(this.saleflowData._id, product);
+      this.header.storeItem(
+        this.saleflowData._id,
+        itemData
+      );
     }
+    this.canOpenCart = this.items.some((item) => item.isSelected);
+  }
+
+  public continueOrder = () => {
+    this.router.navigate(['/ecommerce/create-giftcard']);
+  };
+
+  showShoppingCartDialog() {
+    this.dialog.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        headerButton: 'Ver mas productos',
+        callback: this.continueOrder,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   goBack() {

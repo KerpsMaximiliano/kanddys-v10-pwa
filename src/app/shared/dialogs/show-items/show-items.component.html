@@ -47,28 +47,15 @@
                     <img src="{{ env }}/closeButton.svg" width="20" height="20" alt="delete" style="margin-left: 5px; margin-top: -6px;">
                 </button>
             </div>
-            <div
-                style="display: flex; gap: 10px; margin-bottom: 50px; margin-top: 10px; padding-left: 20px; align-items: center;">
-                <p class="total">
-                    <ng-container *ngIf="item.customizerId else pricing">
-                        <ng-container *ngIf="item.total">
-                            ${{item.total | number: '1.0-2'}}
-                        </ng-container>
-                    </ng-container>
-                    <ng-template #pricing>
-                        <ng-container *ngIf="item.pricing">
-                            ${{item.pricing | number: '1.0-2'}}
-                        </ng-container>
-                        <ng-container *ngIf="item.price">
-                            ${{item.price | number: '1.0-2'}}
-                        </ng-container>
-                    </ng-template>
-                </p>
-                <div class="dop" style="font-family: 'SfProRegular'; font-size: 14px; color: #7B7B7B; margin-top: 10px;">
-                    DOP
-                </div>
-            </div>
         </ng-container>
+        <div style="display: flex; gap: 10px; margin-bottom: 50px; margin-top: 10px; padding-left: 20px; align-items: center;">
+            <p class="total">
+                ${{price | number: '1.0-2'}}
+            </p>
+            <div class="dop" style="font-family: 'SfProRegular'; font-size: 19px; color: #7B7B7B; margin-top: 10px;">
+                DOP
+            </div>
+        </div>
     </ng-container>
     <ng-template #noProducts>
         <p class="title empty">Adiciona productos al carrito para visualizarlos aquí</p>

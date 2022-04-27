@@ -56,6 +56,7 @@ import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { ItemGridComponent } from './components/item-grid/item-grid.component';
 import { ProviderInfoComponent } from './components/provider-info/provider-info.component';
 import { SeeFiltersComponent } from './components/see-filters/see-filters.component';
+import { CloseTagComponent } from './components/close-tag/close-tag.component';
 import { SwiperComponent } from './components/swiper/swiper.component';
 import { FormFunnelV2Component } from './dialogs/form-funnel-v2/form-funnel-v2.component';
 import { StickyButtonComponent } from './components/sticky-button/sticky-button.component';
@@ -124,6 +125,7 @@ const declarations = [
   ItemGridComponent,
   ProviderInfoComponent,
   SeeFiltersComponent,
+  CloseTagComponent,
   SwiperComponent,
   FormFunnelV2Component,
   StickyButtonComponent,

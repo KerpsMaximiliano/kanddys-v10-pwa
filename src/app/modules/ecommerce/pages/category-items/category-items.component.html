@@ -1,4 +1,4 @@
-<div style="min-height: 100vh">
+<div style="min-height: 100vh; background-color: #ffffff;">
   <div class="header">
     <a (click)="goBack()">
       <i
@@ -31,7 +31,7 @@
           fontWeight: 100
         }"
       >
-        {{ hasCustomizer ? sliderLabel : 'BEST SELLERS' }}
+        BEST SELLERS
       </h6>
     </div>
     <app-swiper
@@ -51,16 +51,36 @@
       (eventTags)="closeTagEvent($event)"
       (deletedTag)="tagDeleted($event)"
     ></app-see-filters>
-    <app-item-grid
-      [items]="items"
-      (eventEmitter)="onClick($event)"
-    ></app-item-grid>
+    <ng-container *ngIf="hasCustomizer else selectableItems">
+      <app-item-grid
+        [items]="items"
+        (eventEmitter)="onClick($event)"
+      ></app-item-grid>
+    </ng-container>
+    <ng-template #selectableItems>
+      <div class="itemGrid">
+        <ng-container *ngFor="let item of items; index as i">
+          <app-saleflow-item
+            type="2"
+            [itemExtra]="item"
+            [price]="item.pricing"
+            [description]="item.description"
+            [imgURL]="item.images ? item.images[0] : ''"
+            [isSelected]="item.isSelected"
+            [selectable]="true"
+            (itemClicked)="onClick(i)"
+            (changeSelection)="toggleSelected('item', i)"
+            [priceAlign]="'start'"
+          >
+          </app-saleflow-item>
+        </ng-container>
+      </div>
+    </ng-template>
   </div>
-
-  <a [routerLink]="'/ecommerce/create-giftcard'" *ngIf="!hasCustomizer">
-    <app-sticky-button
-      [mode]="'fixed'"
-      [text]="'SELECCIONA'"
-    ></app-sticky-button>
-  </a>
 </div>
+<app-sticky-button
+  *ngIf="!hasCustomizer"
+  [mode]="canOpenCart ? 'fixed' : 'disabled'"
+  [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
+  (click)="showShoppingCartDialog()"
+></app-sticky-button>

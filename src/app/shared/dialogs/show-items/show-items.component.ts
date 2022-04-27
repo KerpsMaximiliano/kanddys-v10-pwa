@@ -23,14 +23,17 @@ export class ShowItemsComponent implements OnInit {
   @Input() headerButton: string = 'Ver mas Desayunos';
   @Input() footerButton: string = 'Continuar con la orden';
   @Input() public callback: () => void;
-  price: number = 100;
+  price: number = 0;
   env: string = environment.assetsUrl;
 
   ngOnInit(): void {
-    console.log(this.products);
     if (this.products.length === 0) {
-      this.products = this.header.getItems(this.header.saleflow._id);
+      this.products = this.header.getItems(this.header.saleflow?._id ?? this.header.getFlowId());
     }
+    this.price = this.products.reduce((prev, curr) => {
+      const itemPrice = curr.total ?? curr.pricing ?? curr.price;
+      return prev + itemPrice;
+    }, 0);
   }
 
   seeAllItems() {

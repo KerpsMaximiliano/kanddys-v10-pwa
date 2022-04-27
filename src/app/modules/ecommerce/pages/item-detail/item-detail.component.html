@@ -6,7 +6,7 @@
         </app-helper-header>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
         <div class="wrapper">
-            <div class="included">
+            <div class="included" *ngIf="itemData?.content?.length > 0">
                 <div class="title">
                     Incluido
                 </div>
