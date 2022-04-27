@@ -69,6 +69,7 @@ import { ListComponent } from './components/list/list.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
+import { CampaignInfoComponent } from './components/campaign-info/campaign-info.component';
 
 const imports = [
   CommonModule,
@@ -134,7 +135,8 @@ const declarations = [
   ErrorMessageComponent,
   DynamicComponentComponent,
   InfoCardComponent,
-  ListComponent
+  ListComponent,
+  CampaignInfoComponent
 ];
 
 @NgModule({

@@ -12,7 +12,7 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
-
+import { CampaignInfoComponent } from 'src/app/shared/components/campaign-info/campaign-info.component';
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
@@ -133,6 +133,7 @@ export class ShipmentDataFormComponent implements OnInit {
             },
           },
         },
+        
         // {
         //   name: 'email',
         //   fieldControl: new FormControl(''),
@@ -151,6 +152,26 @@ export class ShipmentDataFormComponent implements OnInit {
         //   inputType: 'file',
         //   placeholder: 'sube una imagen',
         // },
+      ],
+      embeddedComponents: [
+        {
+          component: CampaignInfoComponent,
+          inputs: {
+            Ctext: '',
+            mode: 'info',
+            campaign: [
+              {
+                title: '',
+                texts:['Los envios son exclusivamente en Santo Domingo, Republica Dominicana.']
+              },
+            ]
+          },
+          afterIndex: 1,
+          containerStyles: {
+            marginTop: '37px',
+            marginBottom: '105px'
+          },
+        },
       ],
       customScrollToStepBackwards: (params) => {
         params.unblockScrollPastCurrentStep();
