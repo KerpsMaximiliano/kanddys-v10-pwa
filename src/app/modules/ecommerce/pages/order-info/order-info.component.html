@@ -284,7 +284,7 @@
     middleText="información de la orden" middleTextColor="#7B7B7B" middleTextFontFamily="SfProRegular"
     middleTextFontSize="17px" [bgcolor]="'transparent'" [searchAble]="false" (onClose)="back()"></app-helper-header>
   <div class="provider-info-wrapper">
-    <app-provider-info [providerId]="providerData.headline" [providerBio1]="'Vendió a ' + name.toUpperCase()"
+    <app-provider-info [providerId]="providerData.headline" [providerBio1]="'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()"
       [providerImage]="providerData.image" [providerSocials]="providerData.socials" [background]="'#FFFFFF'"
       [leftInfo]="dateId" [rightInfo]="date"></app-provider-info>
   </div>
@@ -389,10 +389,10 @@
   <div class="content" *ngIf="address">
     <p class="top-text">Lugar de entrega:</p>
     <div class="text-container">
-      En República Dominicana,
       <ng-container *ngIf="orders.items[0].deliveryLocation.city; else pickUp">
+        {{ orders.items[0].deliveryLocation.street }},
         {{ orders.items[0].deliveryLocation.city }},
-        {{ orders.items[0].deliveryLocation.street }}
+        República Dominicana
       </ng-container>
       <ng-template #pickUp>
         {{ orders.items[0].deliveryLocation.nickName }}
@@ -491,7 +491,7 @@
 
       <p class="top-text">Monto transferido:</p>
 
-      <input type="text" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" [(ngModel)]="orders.subtotals[0].amount" disabled/>
+      <input type="text" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" [value]="'$'+price.toLocaleString()+' DOP'" disabled/>
 
       <p class="top-text">Imagen (captura):</p>
       <div class="pay-image" [ngStyle]="{'background-image': 'url(' + orders.ocr.image + ')'}"></div>
