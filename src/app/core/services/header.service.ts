@@ -259,6 +259,8 @@ export class HeaderService {
 
   // Stores order package data in localStorage
   storeOrderPackage(saleflow: string, itemPackage: string, products: ItemSubOrderInput[]) {
+    console.log(saleflow, itemPackage, products);
+    
     let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
     if(!saleflows) saleflows = {};
     if(!saleflows[saleflow]) saleflows[saleflow] = {};

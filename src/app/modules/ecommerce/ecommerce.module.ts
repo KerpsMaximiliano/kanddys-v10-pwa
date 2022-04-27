@@ -18,6 +18,7 @@ import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard
 import { TestComponent } from './pages/test/test.component';
 import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
 import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
+import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 
 const routes: Routes = [
   {
@@ -93,6 +94,14 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'package-detail/:id',
+    component: PackageDetailComponent,
+  },
+  {
+    path: 'reservations',
+    component: TestComponent,
+  },
 ];
 
 @NgModule({
@@ -115,6 +124,7 @@ const routes: Routes = [
     TestComponent,
     AdminOptionsComponent,
     SalesInfoComponent,
+    PackageDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
