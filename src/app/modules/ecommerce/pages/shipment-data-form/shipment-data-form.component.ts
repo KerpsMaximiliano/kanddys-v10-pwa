@@ -143,7 +143,6 @@ export class ShipmentDataFormComponent implements OnInit {
           afterIndex: 1,
           containerStyles: {
             marginTop: '37px',
-            marginBottom: '106px',
           },
         },
       ],
