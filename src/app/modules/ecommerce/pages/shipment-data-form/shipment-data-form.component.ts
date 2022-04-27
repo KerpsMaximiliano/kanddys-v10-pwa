@@ -11,6 +11,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
 import { HeaderService } from 'src/app/core/services/header.service';
 
 interface FieldStyles {
@@ -133,6 +134,7 @@ export class ShipmentDataFormComponent implements OnInit {
             },
           },
         },
+
         // {
         //   name: 'email',
         //   fieldControl: new FormControl(''),
@@ -151,6 +153,19 @@ export class ShipmentDataFormComponent implements OnInit {
         //   inputType: 'file',
         //   placeholder: 'sube una imagen',
         // },
+      ],
+      embeddedComponents: [
+        {
+          component: InformationBoxComponent,
+          inputs: {
+            text: 'Los envios son exclusivamente en Santo Domingo, República Dominicana.',
+          },
+          afterIndex: 1,
+          containerStyles: {
+            marginTop: '37px',
+            marginBottom: '106px',
+          },
+        },
       ],
       customScrollToStepBackwards: (params) => {
         params.unblockScrollPastCurrentStep();

@@ -1,0 +1,16 @@
+.information-box {
+  width: 100%;
+  min-height: 129px;
+  border-radius: 10px;
+  padding: 28px;
+  text-align: left;
+  background-color: rgba($color: #fed230, $alpha: 0.43);
+  color: #0b1f38;
+  font-size: 16px;
+  font-family: RobotoMedium;
+
+  p {
+    width: 78.64%;
+    line-height: 22px;
+  }
+}
