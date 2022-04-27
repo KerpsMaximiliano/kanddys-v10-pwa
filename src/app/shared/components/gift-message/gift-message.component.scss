@@ -28,7 +28,8 @@
   padding: 16px;
   padding-top: 22px;
   padding-bottom: 22px;
-  min-height: 264px;
+  max-height: 264px;
+  overflow: scroll;
   box-shadow: 9px 8px 41px -40px inset;
   -webkit-box-shadow: 9px 8px 41px -40px inset;
   -moz-box-shadow: 9px 8px 41px -40px inset;
