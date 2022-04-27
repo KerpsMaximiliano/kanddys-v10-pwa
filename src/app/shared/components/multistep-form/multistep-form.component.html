@@ -21,12 +21,14 @@
     "
   ></app-helper-header>
 
-  <ng-container *ngFor="let currentStep of steps; let currentStepIndex = index">
+  <ng-container
+    *ngFor="let currentStepObject of steps; let currentStepIndex = index"
+  >
     <div class="form-step" [id]="'step-' + currentStepIndex">
       <form [formGroup]="dataModel">
         <ng-container
           *ngFor="
-            let currentField of currentStep['fieldsList'];
+            let currentField of currentStepObject['fieldsList'];
             let currentFieldIndex = index
           "
           [formGroupName]="currentStepIndex + 1"
@@ -46,7 +48,15 @@
           >
             <!-- SINGLE INPUTS GO HERE -->
             <ng-container *ngIf="!currentField.multiple">
-              <label [for]="currentField.name" class="input-label">
+              <label
+                [for]="currentField.name"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+              >
                 {{ currentField.label }}
               </label>
 
@@ -201,7 +211,14 @@
           </div>
 
           <!-- FILE INPUTS GO HERE -->
-          <div *ngIf="currentField.inputType === 'file'">
+          <div
+            *ngIf="currentField.inputType === 'file'"
+            [ngStyle]="
+              currentField.styles.containerStyles
+                ? currentField.styles.containerStyles
+                : null
+            "
+          >
             <span
               class="input-label"
               [ngStyle]="
@@ -244,10 +261,10 @@
             />
           </div>
 
-          <ng-container *ngIf="currentStep['embeddedComponents']">
+          <ng-container *ngIf="currentStepObject['embeddedComponents']">
             <ng-container
               *ngFor="
-                let currentEmbeddedComponent of currentStep[
+                let currentEmbeddedComponent of currentStepObject[
                   'embeddedComponents'
                 ]
               "
@@ -275,30 +292,32 @@
 
       <!-- LINKS OPCIONALES -->
       <div
-        *ngIf="currentStep['optionalLinksTo']"
+        *ngIf="currentStepObject['optionalLinksTo']"
         class="optional-links"
         [ngStyle]="
-          currentStep.optionalLinksTo?.styles?.containerStyles
-            ? currentStep.optionalLinksTo?.styles?.containerStyles
+          currentStepObject.optionalLinksTo?.styles?.containerStyles
+            ? currentStepObject.optionalLinksTo?.styles?.containerStyles
             : null
         "
       >
         <span
           class="title"
           [ngStyle]="
-            currentStep.optionalLinksTo?.styles?.labelStyles
-              ? currentStep.optionalLinksTo?.styles?.labelStyles
+            currentStepObject.optionalLinksTo?.styles?.labelStyles
+              ? currentStepObject.optionalLinksTo?.styles?.labelStyles
               : null
           "
           >Optional:</span
         >
-        <ng-container *ngFor="let link of currentStep['optionalLinksTo'].links">
+        <ng-container
+          *ngFor="let link of currentStepObject['optionalLinksTo'].links"
+        >
           <span
             class="link"
             (click)="link.action(stepFunctionParams)"
             [ngStyle]="
-              currentStep.optionalLinksTo?.styles?.fieldStyles
-                ? currentStep.optionalLinksTo?.styles?.fieldStyles
+              currentStepObject.optionalLinksTo?.styles?.fieldStyles
+                ? currentStepObject.optionalLinksTo?.styles?.fieldStyles
                 : null
             "
             >{{ link.text }}</span
@@ -309,11 +328,13 @@
       <!-- FOOTER PARA EL CONTADOR DE PREGUNTAS Y LINKS HACIA OTRAS PÁGINAS -->
       <div class="footer">
         <span
-          *ngIf="currentStep['bottomLeftAction']"
+          *ngIf="currentStepObject['bottomLeftAction']"
           class="bottom-left-action"
-          (click)="currentStep['bottomLeftAction'].execute()"
+          (click)="
+            currentStepObject['bottomLeftAction'].execute(stepFunctionParams)
+          "
         >
-          {{ currentStep["bottomLeftAction"].text }}
+          {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
         <div class="steps">
@@ -331,6 +352,7 @@
 
     <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
     <app-sticky-button
+      *ngIf="currentStep === currentStepIndex"
       [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStepIndex].stepButtonValidText

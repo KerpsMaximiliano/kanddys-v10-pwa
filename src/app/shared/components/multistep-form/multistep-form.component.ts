@@ -4,7 +4,6 @@ import {
   OnDestroy,
   Input,
   Type,
-  ComponentFactoryResolver,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
@@ -264,7 +263,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
 
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private header: HeaderService
   ) {}
 
@@ -431,7 +429,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           : null,
       height: '200px',
       minWidth: '250px',
-      ...currentField.styles.containerStyles,
+      ...currentField.styles.fieldStyles,
     };
 
     return styles;
