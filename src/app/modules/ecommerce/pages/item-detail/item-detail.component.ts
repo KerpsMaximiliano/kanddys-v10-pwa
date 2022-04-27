@@ -45,22 +45,12 @@ export class ItemDetailComponent implements OnInit {
       if (params.id) {
         this.items.item(params.id).then(data => {
           this.itemData = data;
-          console.log(this.itemData);
-          let productData = this.header.getItems(this.saleflowId);
-          console.log(data);
-          console.log(productData.length);
+          const productData = this.header.getItems(this.saleflowId);
           
-          if (productData.length > 0) {
-            for (let i = 0; i < productData.length; i++) {
-              console.log(productData[i]._id, this.itemData._id);
-              
-              if (productData[i]._id === this.itemData._id) {
-                this.ctaText = 'QUITAR DEL CARRITO'
-              }
-            }
-          }else{
-            this.ctaText = 'ADICIONAR AL CARRITO'
-          }
+          if(productData.length > 0) {
+            if(productData.some((item) => item._id === data._id)) this.ctaText = 'QUITAR DEL CARRITO';
+            else this.ctaText = 'ADICIONAR AL CARRITO';
+          } else this.ctaText = 'ADICIONAR AL CARRITO';
         })
       }
       if (params.saleflow) {

@@ -1,0 +1,93 @@
+<div
+  #elemt
+  class="TagsContent"
+  (mousedown)="startDragging($event, false, elemt)"
+  (mouseup)="stopDragging($event, false)"
+  (mouseleave)="stopDragging($event, false)"
+  (mousemove)="moveEvent($event, elemt)"
+>
+  <div
+    class="closeTagContainer type{{ type }}"
+    *ngFor="let item of tags; index as i"
+  >
+    <div
+      *ngIf="type == 1"
+      class="closeButton type{{ type }}"
+      (click)="closeTag(i)"
+    >
+      X
+    </div>
+    <div
+      *ngIf="type == 3"
+      class="closeButton type{{ type }}"
+      (click)="closeTag(i)"
+    >
+      X
+    </div>
+
+    <svg
+      *ngIf="type == 2"
+      (click)="closeTag(i)"
+      class="closeButton type2"
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+    >
+      <g
+        id="Group_66220"
+        data-name="Group 66220"
+        transform="translate(-176 -209)"
+      >
+        <circle
+          id="Ellipse_4814"
+          data-name="Ellipse 4814"
+          cx="7"
+          cy="7"
+          r="7"
+          transform="translate(178 211)"
+          fill="#fff"
+        />
+        <g id="x-circle-fill" transform="translate(176 209)">
+          <path
+            id="Path_26508"
+            data-name="Path 26508"
+            d="M18,9A9,9,0,1,1,9,0a9,9,0,0,1,9,9ZM13.335,5.46a.563.563,0,0,0-.8-.8L9,8.2,5.46,4.665a.563.563,0,0,0-.8.8L8.2,9l-3.54,3.54a.563.563,0,0,0,.8.8L9,9.8l3.54,3.54a.563.563,0,1,0,.8-.8L9.8,9l3.54-3.54Z"
+            fill="#979797"
+            fill-rule="evenodd"
+          />
+        </g>
+      </g>
+    </svg>
+
+    <div *ngIf="!hasBookmark" class="tag type{{ type }}">
+      <ng-container *ngIf="item.type === 'label'; else elseTemplate">
+        {{ item.label }}
+      </ng-container>
+      <ng-template #elseTemplate>
+        <i class="{{ item.label }}"></i>
+      </ng-template>
+    </div>
+
+    <div *ngIf="hasBookmark" class="tag type{{ type }}-v2">
+      <div>
+        <i
+          class="fal fa-bookmark"
+          style="
+            height: 16.5px;
+            width: 13px;
+            color: #ffffff;
+            left: -45px;
+            top: -8px;
+          "
+        ></i>
+      </div>
+      <ng-container *ngIf="item.type === 'label'; else elseTemplate">
+        <div style="margin-left: 7.5px">{{ item.label }}</div>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <i class="{{ item.label }}"></i>
+      </ng-template>
+    </div>
+  </div>
+</div>

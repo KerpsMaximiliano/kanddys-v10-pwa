@@ -6,6 +6,8 @@
     [basic]="false"
     position="fixed"
     [empty]="!shouldScrollBackwards"
+    [middleTextFontFamily]="'SfProRegular'"
+    [middleTextFontSize]="'17px'"
     middleTextColor="#7b7b7b"
     [shadow]="false"
     (onClose)="
@@ -288,7 +290,7 @@
               ? currentStep.optionalLinksTo?.styles?.labelStyles
               : null
           "
-          >Optional</span
+          >Optional:</span
         >
         <ng-container *ngFor="let link of currentStep['optionalLinksTo'].links">
           <span

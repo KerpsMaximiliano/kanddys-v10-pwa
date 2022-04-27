@@ -1,0 +1,217 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.closeTagContainer {
+  position: relative;
+  width: fit-content;
+
+  &.type1 {
+    padding-bottom: 8px;
+  }
+
+  * {
+    position: absolute;
+  }
+
+  .closeButton {
+    border-radius: 50%;
+    z-index: 2;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.type1 {
+      color: #393939;
+      width: 16px;
+      height: 16px;
+      background-color: #ffffff;
+      border: 1px solid #97d55a;
+      font-family: "Roboto";
+    }
+
+    &.type2 {
+      color: #ffffff;
+      top: -5px;
+      left: -5px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: #979797;
+      z-index: 2;
+    }
+    &.type3 {
+      border-radius: 50%;
+      z-index: 2;
+      text-align: center;
+      font-size: 16px !important;
+      display: flex;
+      width: 16px;
+      padding: 9px;
+      position: absolute;
+      color: #7b7b7b;
+      font-family: RobotoRegular;
+      background-color: white;
+      height: 16px;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid grey;
+      right: -1px;
+      top: -1px;
+    }
+  }
+  .tag {
+    width: fit-content;
+    margin: auto;
+    position: relative;
+
+    &.type1 {
+      color: #393939;
+      text-align: center;
+      font-family: "Roboto";
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #97d55a;
+      top: 8px;
+    }
+
+    &.type2 {
+      font-size: 16px;
+      color: #ffffff;
+      min-width: 165px;
+      font-family: RobotoMedium;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 36px;
+      padding: 0 34px;
+      border-radius: 8px;
+      background-color: #4773d8;
+      top: 2.5px;
+    }
+
+    &.type3-v2 {
+      font-size: 16px;
+      color: #ffffff;
+      min-width: 115px;
+      font-family: RobotoMedium;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 35px;
+      padding: 10 10px;
+      border-radius: 18px;
+      background-color: #7b7b7b;
+      top: 2.5px;
+      .wrapper {
+        display: grid;
+        // grid-template-columns: 1fr 1.5fr;
+      }
+    }
+
+    &.type3 {
+      font-size: 16px;
+      color: #ffffff;
+      min-width: 95px;
+      font-family: RobotoMedium;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 35px;
+      padding: 0 10px;
+      border-radius: 18px;
+      background-color: #7b7b7b;
+      top: 2.5px;
+    }
+  }
+}
+
+.TagsContent {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  justify-content: left;
+  overflow: scroll;
+  overflow-y: hidden;
+  padding-top: 8px;
+  padding-left: 5px;
+  padding-bottom: 3px;
+}
+
+@media (max-width: 427px) {
+  .TagsContent {
+    gap: 8px;
+  }
+
+  .closeTagContainer {
+    &.type1 {
+      padding-bottom: 7px;
+    }
+    .closeButton {
+      font-size: 12px;
+      &.type1 {
+        width: 14px;
+        height: 14px;
+      }
+      &.type2 {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    .tag {
+      &.type1 {
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 4.5px;
+        top: 7px;
+      }
+      &.type2 {
+        font-size: 14px;
+        min-width: 144px;
+        padding: 7.5 30;
+      }
+    }
+  }
+}
+@media (max-width: 374px) {
+  .TagsContent {
+    gap: 7px;
+  }
+
+  .closeTagContainer {
+    &.type1 {
+      padding-bottom: 7px;
+    }
+
+    .closeButton {
+      font-size: 10px;
+      &.type1 {
+        width: 12px;
+        height: 12px;
+      }
+      &.type2 {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .tag {
+      &.type1 {
+        padding: 7px;
+        font-size: 12px;
+        border-radius: 4px;
+        top: 6px;
+      }
+      &.type2 {
+        font-size: 12px;
+        min-width: 124px;
+        padding: 6.5 25;
+      }
+    }
+  }
+}

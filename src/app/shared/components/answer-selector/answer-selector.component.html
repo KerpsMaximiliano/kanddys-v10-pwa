@@ -5,7 +5,7 @@
                 <p class="option" [class]="( i === activeOption && showSelectedFeedback ) ? 'option-selected' : 'option'" (click)="editable && option.status && clickSelector(i)"> 
                     {{ option.value }}
                 </p>
-                <div class="description-container">
+                <div class="description-container" *ngIf="option?.description">
                     <p class="description-label" *ngFor="let description of option.description">
                         {{ description }}
                     </p>

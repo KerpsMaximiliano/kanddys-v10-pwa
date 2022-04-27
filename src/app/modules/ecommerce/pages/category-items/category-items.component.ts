@@ -23,7 +23,6 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
   styleUrls: ['./category-items.component.scss'],
 })
 export class CategoryItemsComponent implements OnInit {
-  sliderLabel: string = 'DISEÑOS DE SERVILLETAS MAS COMPRADOS';
   items: Item[] = [];
   originalItems: Item[] = [];
   saleflowData: SaleFlow;
