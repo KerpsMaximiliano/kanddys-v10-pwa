@@ -161,7 +161,7 @@ export class FlowCompletionComponent implements OnInit {
   ) {}
 
   getOrderData(id: string) {
-    this.order.order(id).then((data) => {
+    return this.order.order(id).then((data) => {
       console.log(data);
       if (
         data.order.orderStatus === 'cancelled' ||
@@ -227,7 +227,7 @@ export class FlowCompletionComponent implements OnInit {
         console.log('NO HAY DATA');
         this.router.navigate(['/ecommerce/error-screen']);
       }
-    });
+    }).catch((error) => console.log(error));
   }
 
   async getMerchant(id: string) {
@@ -502,9 +502,10 @@ export class FlowCompletionComponent implements OnInit {
         this.createOrder().then(() => {
           this.relativeStep++;
           this.stepsLeft = 4;
-
-          this.step = 5;
-          this.getOrderData(this.header.orderId);
+          return this.getOrderData(this.header.orderId)
+            .then(() => {
+              this.step = 5;
+            })
         })
       );
     }

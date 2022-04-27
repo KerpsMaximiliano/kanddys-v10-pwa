@@ -160,7 +160,7 @@
         {{
         flow !== "flow-completion"
         ? "Cuentanos un poco más:"
-        : orderData.hasCustomizer 
+        : orderData?.hasCustomizer 
           ? "¿Cómo prefieres hacer el pago de $" +
             (orderData?.amount | number: "1.0-2") +
             " DOP / PAQ." +
