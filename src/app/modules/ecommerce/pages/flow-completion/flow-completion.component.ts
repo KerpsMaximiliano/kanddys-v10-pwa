@@ -276,6 +276,8 @@ export class FlowCompletionComponent implements OnInit {
           this.orderId = params.id;
           this.getOrderData(params.id);
         } else if (!this.header.isDataComplete()) {
+          console.log('enttrando');
+
           this.header.resetIsComplete();
           this.router.navigate([`ecommerce/landing-vouchers`]);
         }

@@ -14,40 +14,48 @@
       {{ headerButton }}
     </div>
   </div>
-  <ng-container *ngIf="products?.length > 0; else noProducts">
-    <ng-container *ngFor="let item of products; let i = index">
-      <div class="card-item">
-        <div class="card-content">
-          <div
-            class="image"
-            *ngIf="item.images[0]; else noImage"
-            [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"
-          ></div>
-          <ng-template #noImage>
-            <div class="image placeholder"></div>
-          </ng-template>
-          <div class="content">
-            <div id="content">
-              <div class="title">
-                {{ item.name }}
-              </div>
-              <div class="spread">
-                <span class="card-price">
-                  <ng-container *ngIf="item.customizerId; else pricing">
-                    <ng-container *ngIf="item.total">
-                      ${{ item.total | number: "1.0-2" }}
-                    </ng-container>
-                  </ng-container>
-                  <ng-template #pricing>
-                    <ng-container *ngIf="item.pricing">
-                      ${{ item.pricing | number: "1.0-2" }}
-                    </ng-container>
-                    <ng-container *ngIf="item.price">
-                      ${{ item.price | number: "1.0-2" }}
-                    </ng-container>
-                  </ng-template>
-                </span>
-              </div>
+    <ng-container *ngIf="products?.length > 0; else noProducts">
+        <ng-container *ngFor="let item of products; let i = index">
+            <div class="card-item">
+                <div class="card-content">
+                    <div class="image" *ngIf="item.images[0] else noImage"
+                        [ngStyle]="{'background-image': 'url(' + item.images[0] + ')'}"></div>
+                    <ng-template #noImage>
+                        <div class="image placeholder"></div>
+                    </ng-template>
+                    <div class="content">
+                        <div id="content">
+                            <div class="title">
+                                {{item.name}}
+                            </div>
+                            <div class="spread">
+                                <span class="card-price">
+                                    <ng-container *ngIf="item.customizerId else pricing">
+                                        <ng-container *ngIf="item.total">
+                                            ${{item.total | number: '1.0-2'}}
+                                        </ng-container>
+                                    </ng-container>
+                                    <ng-template #pricing>
+                                        <ng-container *ngIf="item.pricing">
+                                            ${{item.pricing | number: '1.0-2'}}
+                                        </ng-container>
+                                        <ng-container *ngIf="item.price">
+                                            ${{item.price | number: '1.0-2'}}
+                                        </ng-container>
+                                    </ng-template>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="description">
+                            <!--{{item.description}}-->
+                            ksjdbfkjhfsdkhkdsfhfskjd
+                        </div>
+                    </div>
+                </div>
+                <button *ngIf="!orderFinished" class="delete-button" (click)="deleteItem(i)">
+                    ELIMINAR
+                    <img src="{{ env }}/closeButton.svg" width="20" height="20" alt="delete" style="margin-left: 5px; margin-top: -6px;">
+                </button>
             </div>
             <div class="description">
               {{ item.description }}
