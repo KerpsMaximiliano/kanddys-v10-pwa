@@ -1,10 +1,19 @@
-<div class="container">
-    <div class="header" [ngStyle]="{justifyContent: headerButton ? 'space-between' : 'flex-start'}">
-        <i class="fas fa-times" (click)="close()" style="color: #27a2ff; cursor: pointer;"></i>
-        <div class="header-button" *ngIf="headerButton" (click)="seeAllItems()">
-            {{headerButton}}
-        </div>
+<div class="container showItems">
+  <div
+    class="header"
+    [ngStyle]="{
+      justifyContent: headerButton ? 'space-between' : 'flex-start'
+    }"
+  >
+    <i
+      class="fas fa-times"
+      (click)="close()"
+      style="color: #27a2ff; cursor: pointer"
+    ></i>
+    <div class="header-button" *ngIf="headerButton" (click)="seeAllItems()">
+      {{ headerButton }}
     </div>
+  </div>
     <ng-container *ngIf="products?.length > 0; else noProducts">
         <ng-container *ngFor="let item of products; let i = index">
             <div class="card-item">
@@ -48,23 +57,60 @@
                     <img src="{{ env }}/closeButton.svg" width="20" height="20" alt="delete" style="margin-left: 5px; margin-top: -6px;">
                 </button>
             </div>
-        </ng-container>
-        <div style="display: flex; gap: 10px; margin-bottom: 50px; margin-top: 10px; padding-left: 20px; align-items: center;">
-            <p class="total">
-                ${{price | number: '1.0-2'}}
-            </p>
-            <div class="dop" style="font-family: 'SfProRegular'; font-size: 19px; color: #7B7B7B; margin-top: 10px;">
-                DOP
+            <div class="description">
+              {{ item.description }}
             </div>
+          </div>
         </div>
+        <button
+          *ngIf="!orderFinished"
+          class="delete-button"
+          (click)="deleteItem(i)"
+        >
+          ELIMINAR
+          <img
+            src="{{ env }}/closeButton.svg"
+            width="20"
+            height="20"
+            alt="delete"
+            style="margin-left: 5px; margin-top: -6px"
+          />
+        </button>
+      </div>
     </ng-container>
-    <ng-template #noProducts>
-        <p class="title empty">Adiciona productos al carrito para visualizarlos aquí</p>
-    </ng-template>
-    <app-sticky-button
-        [text]="footerButton"
-        [mode]="products.length > 0 ? 'basic' : 'disabled'"
-        (click)="orderItems()"
-        *ngIf="footerButton && !orderFinished && products?.length > 0"
+    <div
+      style="
+        display: flex;
+        gap: 10px;
+        margin-bottom: 50px;
+        margin-top: 10px;
+        padding-left: 20px;
+        align-items: center;
+      "
+    >
+      <p class="total">${{ price | number: "1.0-2" }}</p>
+      <div
+        class="dop"
+        style="
+          font-family: 'SfProRegular';
+          font-size: 19px;
+          color: #7b7b7b;
+          margin-top: 10px;
+        "
+      >
+        DOP
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #noProducts>
+    <p class="title empty">
+      Adiciona productos al carrito para visualizarlos aquí
+    </p>
+  </ng-template>
+  <app-sticky-button
+    [text]="footerButton"
+    [mode]="products.length > 0 ? 'basic' : 'disabled'"
+    (click)="orderItems()"
+    *ngIf="footerButton && !orderFinished && products?.length > 0"
   ></app-sticky-button>
 </div>

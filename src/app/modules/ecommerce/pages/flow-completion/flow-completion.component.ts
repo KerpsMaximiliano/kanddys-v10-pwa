@@ -246,7 +246,7 @@ export class FlowCompletionComponent implements OnInit {
 
     if (this.router.url.includes('flow-completion')) {
       this.flow = 'flow-completion';
-      this.headerText = 'Información necesaria';
+      this.headerText = 'INFORMACIÓN NECESARIA';
       let products: string[] = [];
       let packages: string[] = [];
       if (this.header.order?.itemPackage) {

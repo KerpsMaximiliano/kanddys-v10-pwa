@@ -28,7 +28,9 @@ export class ShowItemsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.products.length === 0) {
-      this.products = this.header.getItems(this.header.saleflow?._id ?? this.header.getFlowId());
+      this.products = this.header.getItems(
+        this.header.saleflow?._id ?? this.header.getFlowId()
+      );
     }
     this.price = this.products.reduce((prev, curr) => {
       const itemPrice = curr.total ?? curr.pricing ?? curr.price;
@@ -53,17 +55,22 @@ export class ShowItemsComponent implements OnInit {
   deleteItem(i: number) {
     console.log('deleted item: ');
     console.log(this.products[i]._id);
-    let deletedID = this.products[i]._id
-    this.header.removeOrderProduct(this.header.saleflow._id, this.products[i]._id);
-    this.header.removeItem(
+    let deletedID = this.products[i]._id;
+    this.header.removeOrderProduct(
       this.header.saleflow._id,
       this.products[i]._id
     );
+    this.header.removeItem(this.header.saleflow._id, this.products[i]._id);
     const index = this.products.findIndex(
       (product) => product._id === this.products[i]._id
     );
     if (index >= 0) this.products.splice(index, 1);
-    this.app.events.emit({ type: 'deleted-item', data: deletedID});
+    this.app.events.emit({ type: 'deleted-item', data: deletedID });
+
+    this.price = this.products.reduce((prev, curr) => {
+      const itemPrice = curr.total ?? curr.pricing ?? curr.price;
+      return prev + itemPrice;
+    }, 0);
   }
 
   close() {

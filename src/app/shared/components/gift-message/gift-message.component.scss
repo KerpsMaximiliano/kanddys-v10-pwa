@@ -17,7 +17,7 @@
 .bottom-text {
   font-family: "RobotoMedium";
   font-size: 16px;
-  color: #27A2FF;
+  color: #27a2ff;
   margin-top: 30px;
   margin-bottom: 30px;
 }
@@ -30,9 +30,9 @@
   padding-bottom: 22px;
   max-height: 264px;
   overflow: scroll;
-  box-shadow: 9px 8px 41px -40px inset;
-  -webkit-box-shadow: 9px 8px 41px -40px inset;
-  -moz-box-shadow: 9px 8px 41px -40px inset;
+  box-shadow: 0px 8px 41px -32px inset;
+  -webkit-box-shadow: 0px 8px 41px -32px inset;
+  -moz-box-shadow: 0px 8px 41px -32px inset;
   font-family: "RobotoMedium";
   font-size: 20px;
   color: #0b1f38;
@@ -59,16 +59,15 @@
   background-size: cover;
 }
 
-
 .little-text-container {
   border-radius: 10px;
   background-color: white;
   padding: 16px;
   padding-top: 24px;
   padding-bottom: 24px;
-  box-shadow: 9px 8px 41px -40px inset;
-  -webkit-box-shadow: 9px 8px 41px -40px inset;
-  -moz-box-shadow: 9px 8px 41px -40px inset;
+  box-shadow: 0px 8px 41px -32px inset;
+  -webkit-box-shadow: 0px 8px 41px -32px inset;
+  -moz-box-shadow: 0px 8px 41px -32px inset;
   font-family: "RobotoMedium";
   font-size: 20px;
   color: #0b1f38;
