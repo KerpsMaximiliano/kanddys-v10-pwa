@@ -19,6 +19,7 @@ import { TestComponent } from './pages/test/test.component';
 import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
 import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
+import { ReservationComponent } from './pages/reservation/reservation.component';
 
 const routes: Routes = [
   {
@@ -100,7 +101,7 @@ const routes: Routes = [
   },
   {
     path: 'reservations',
-    component: TestComponent,
+    component: ReservationComponent,
   },
 ];
 
@@ -125,6 +126,7 @@ const routes: Routes = [
     AdminOptionsComponent,
     SalesInfoComponent,
     PackageDetailComponent,
+    ReservationComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

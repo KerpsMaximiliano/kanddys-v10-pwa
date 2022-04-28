@@ -177,23 +177,31 @@ export class HeaderService {
   }
 
   isDataComplete(): boolean {
+    console.log('0');
     if(!this.saleflow) return
     if(this.saleflow.module.delivery && this.saleflow.module.delivery.isActive) {
-      if(!this.isComplete.delivery) return
+      console.log('1');
+      if(!this.isComplete.delivery)  return
     }
     if(this.items.some((item) => item.customizerId)) {
+      console.log('2');
       if(!this.isComplete.qualityQuantity) return
+      console.log('3');
       if(!this.isComplete.customizer) return
     }
     if(this.saleflow.module.appointment && this.saleflow.module.appointment.isActive) {
+      console.log('4');
       if(!this.isComplete.reservation) return
     }
     if(this.hasScenarios) {
+      console.log('5');
       if(!this.isComplete.scenarios) return
     }
     if(this.saleflow.module.post && this.saleflow.module.post.isActive) {
+      console.log('6');
       if(!this.isComplete.message) return
     }
+    console.log('7');
     return true
   }
 
