@@ -12,8 +12,8 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ItemV2 } from 'src/app/core/types/item-v2.types';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { CommunityNewUserComponent } from 'src/app/shared/dialogs/community-new-user/community-new-user.component';
-import { ReservationCreatorComponent } from 'src/app/shared/dialogs/reservation-creator/reservation-creator.component';
+//import { CommunityNewUserComponent } from 'src/app/shared/dialogs/community-new-user/community-new-user.component';
+//import { ReservationCreatorComponent } from 'src/app/shared/dialogs/reservation-creator/reservation-creator.component';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -87,24 +87,35 @@ export class ReservationComponent implements OnInit {
   dateComponentFrom: string;
   timeComponentFrom: string;
   weekDay: string;
+  orderData: any;
   //calendar: 6149f790eb8b911a707523ce
   ngOnInit(): void {
     this.header.disableNav();
     this.header.hide();
-    this.saleflowData = this.header.getFlowId();
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
-    console.log(this.header.order);
-    if (this.header.order.products[0].reservation) {
-      this.dateFrom = moment(this.header.order.products[0].reservation.date.from).locale('es-es').format('DD');
-      this.dateComponentFrom = moment(this.header.order.products[0].reservation.date.from).locale('es-es').format('MMMM');
-      this.timeComponentFrom = moment(this.header.order.products[0].reservation.date.from).locale('es-es').format('HH:mm');
+    this.id = this.header.getFlowId();
+    this.orderData = this.header.getOrder(this.id);
+    console.log(this.orderData);
+    console.log(this.orderData);
+    this.saleflow.saleflow(this.id).then((data) => {
+      console.log(data);
+      this.saleflowData = data.saleflow;
+      console.log(data.saleflow.module.appointment.calendar._id);
+      this.calendarId = data.saleflow.module.appointment.calendar._id;
+      this.calendar.getToday();
+      this.checkCalendar();
+    });
+    if (this.orderData.products[0].reservation) {
+      this.dateFrom = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('DD');
+      this.dateComponentFrom = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('MMMM');
+      this.timeComponentFrom = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('HH:mm');
       this.dateComponentFrom = this.dateComponentFrom.charAt(0).toUpperCase() + this.dateComponentFrom.slice(1);
-      this.weekDay = moment(this.header.order.products[0].reservation.date.from).locale('es-es').format('dddd');
+      this.weekDay = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('dddd');
       this.weekDay = this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
       console.log(this.dateFrom, this.dateComponentFrom, this.timeComponentFrom, this.weekDay);
     }
-    this.route.params.subscribe((params) => {
+    /*this.route.params.subscribe((params) => {
       this.id = params.id;
       console.log(this.id);
       this.saleflow.saleflow(this.id).then((data) => {
@@ -113,7 +124,7 @@ export class ReservationComponent implements OnInit {
         this.calendar.getToday();
         this.checkCalendar();
       });
-    });
+    });*/
     /*this.item.item(this.id).then(data=>{
       console.log(data);
       this.calendarId = data.calendar._id;
@@ -339,14 +350,14 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      console.log(this.header.order);
-      if (this.header.saleflow.module.post == null) {
-        this.header.order.products[0].reservation = reservation;
+      console.log(this.orderData);
+      if (this.saleflowData.module.post == null) {
+        this.orderData.products[0].reservation = reservation;
       } else if (
         this.header.saleflow.module.delivery.deliveryLocation &&
         this.header.saleflow.module.delivery.isActive
       ) {
-        this.header.order.products[0].reservation = reservation;
+        this.orderData.products[0].reservation = reservation;
       }
     } else {
       this.today = false;
@@ -400,22 +411,22 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      console.log(this.header.order);
-      if (this.header.saleflow.module.post == null) {
-        this.header.order.products[0].reservation = reservation;
+      console.log(this.orderData);
+      if (this.saleflowData.module.post == null) {
+        this.orderData.products[0].reservation = reservation;
       } else if (
         this.header.saleflow.module.delivery.deliveryLocation &&
         this.header.saleflow.module.delivery.isActive
       ) {
-        this.header.order.products[0].reservation = reservation;
+        this.orderData.products[0].reservation = reservation;
       }
-      console.log(this.header.order);
+      console.log(this.orderData);
     }
-    console.log(this.header.order);
+    console.log(this.orderData);
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
-    console.log(this.header.order);
-    let dateInfo = (this.header.order.products[0].reservation.date.from as string).split('-');
+    console.log(this.orderData);
+    let dateInfo = (this.orderData.products[0].reservation.date.from as string).split('-');
     console.log(dateInfo);
     let day = dateInfo[2].split('T')[0];
     let hour =
@@ -433,13 +444,13 @@ export class ReservationComponent implements OnInit {
     this.datePreview = {
       day: day,
       month: month,
-      hour: this.formatHour3(this.header.order.products[0].reservation.date.from as string),
+      hour: this.formatHour3(this.orderData.products[0].reservation.date.from as string),
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayName,
-      until: this.formatHour3(this.header.order.products[0].reservation.date.until as string),
+      until: this.formatHour3(this.orderData.products[0].reservation.date.until as string),
     };
     console.log('datepreview1', this.datePreview);
     // Logic for default date
@@ -447,7 +458,7 @@ export class ReservationComponent implements OnInit {
       if(!this.dateFrom) this.dateFrom = this.datePreview.day;
     // End logic for default date
     this.header.datePreview = this.datePreview;
-    this.header.storeReservation(this.header.saleflow._id, reservation);
+    this.header.storeReservation(this.saleflowData._id, reservation);
     this.header.isComplete.reservation = true;
     //this.header.locationData = " Foto Davitte, SD, Este.";
 
@@ -455,21 +466,21 @@ export class ReservationComponent implements OnInit {
   }
 
   submit() {
-    this.dialog.open(CommunityNewUserComponent, {
+    /*this.dialog.open(CommunityNewUserComponent, {
       type: 'window',
       flags: ['no-header'],
       customClass: 'app-dialog',
       props: { orderCreator: true },
-    });
+    });*/
   }
 
   openDialog(reservation) {
-    this.dialog.open(ReservationCreatorComponent, {
+    /*this.dialog.open(ReservationCreatorComponent, {
       type: 'window',
       customClass: 'app-dialog',
       flags: ['no-header'],
       props: { data: reservation, today: this.today },
-    });
+    });*/
   }
 
   zorroChange(string) {
@@ -820,64 +831,37 @@ export class ReservationComponent implements OnInit {
     window.location.href = `https://wa.me/19188156444?text=Mi%20sesión%20empezará%20el%20${dayName}%20${dayNumber}%20de%20${month}%20a%20las%20${formattedHour}%20(${uri}/appointments/slot/${id})`;
   }
 
-  openAuth() {
-    this.dialog.open(CommunityNewUserComponent, {
-      //type:'window',
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-    });
-  }
-
   toggleOptions() {
     this.options = !this.options;
   }
   share() {
-    let local;
+    /*let local;
     if (this.header.locationData.googleMapsURL) {
       local = this.header.locationData.googleMapsURL;
     } else if (this.header.locationData.note) {
       local = this.header.locationData.note;
     }
     this.whatsappLink = `https://wa.me/18095636780?text=Orden%20de%20${this.header.getDataFromOrder()[0].item[0].name}%20en%20${local}`;
-    window.location.href = this.whatsappLink;
+    window.location.href = this.whatsappLink;*/
   }
 
   save() {
-    if (this.header.saleflow.module.post) {
-      console.log(this.header.saleflow.module.post.isActive);
-      if (
-        this.header.saleflow.module.post.isActive &&
-        this.header.saleflow.module.post.post
-      ) {
-        // this.router.navigate(['/ecommerce/provider-store/gift-message']);
-        this.router.navigate(['/ecommerce/provider-store/user-info']);
-      }
-    } else {
-      let editmode = this.route.snapshot.paramMap.get('editmode');
-      console.log(editmode);
-      if (editmode === 'true') {
-        this.router.navigate(['/ecommerce/slot-pay']);
-      }else{
-        this.router.navigate(['/ecommerce/provider-store/pick-location']);
-      }
-      /*if (this.header.user) {
-        console.log(this.header.orders);
-        this.order
-          .createOrder({
-            products: this.header.orders,
-          })
-          .then((data) => {
-            console.log(data);
-            this.router.navigate([
-              'ecommerce/slot-pay/' + data.createOrder._id,
-            ]);
-          });
-
-      } else {
-        this.openAuth();
-      }*/
+    console.log(this.orderData);
+    this.saleflowData = this.header.saleflow;
+    this.orderData.products[0].deliveryLocation = {
+      city: null,
+      houseNumber: null,
+      nickName: "Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo",
+      note: null,
+      referencePoint: null,
+      street: null
     }
+    this.header.storeOrderPackage(this.saleflowData._id,this.orderData.itemPackage,this.orderData.products);
+    console.log(this.header.getOrder(this.saleflowData._id));
+    this.header.isComplete.reservation = true;
+    this.header.isComplete.delivery = true;
+    console.log(this.saleflowData);
+    this.router.navigate([`ecommerce/flow-completion`]);
   }
 
   saveNoPost() {
@@ -892,6 +876,6 @@ export class ReservationComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/ecommerce/pick-location-v2/']);
+    this.router.navigate(['/ecommerce/package-detail/' + this.orderData.itemPackage]);
   }
 }
