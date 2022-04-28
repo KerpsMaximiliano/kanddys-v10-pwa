@@ -11,8 +11,8 @@ import { Observable, of, Subscription } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { CampaignInfoComponent } from 'src/app/shared/components/campaign-info/campaign-info.component';
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
@@ -133,49 +133,24 @@ export class ShipmentDataFormComponent implements OnInit {
             },
           },
         },
-        
-        // {
-        //   name: 'email',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Email',
-        //   inputType: 'email',
-        //   placeholder: 'Email',
-        //   fieldStyles: {
-        //     color: 'green',
-        //     marginTop: '10px',
-        //   },
-        // },
-        // {
-        //   name: 'imageExample2',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Sube una imagen',
-        //   inputType: 'file',
-        //   placeholder: 'sube una imagen',
-        // },
       ],
       embeddedComponents: [
         {
-          component: CampaignInfoComponent,
+          component: InformationBoxComponent,
           inputs: {
-            Ctext: '',
-            mode: 'info',
-            campaign: [
-              {
-                title: '',
-                texts:['Los envios son exclusivamente en Santo Domingo, Republica Dominicana.']
-              },
-            ]
+            text: 'Los envios son exclusivamente en Santo Domingo, República Dominicana.',
           },
           afterIndex: 1,
           containerStyles: {
             marginTop: '37px',
-            marginBottom: '105px'
           },
         },
       ],
       customScrollToStepBackwards: (params) => {
-        params.unblockScrollPastCurrentStep();
-        params.unblockScrollBeforeCurrentStep();
+        if (params.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
         this.router.navigate(['ecommerce/create-giftcard']);
       },

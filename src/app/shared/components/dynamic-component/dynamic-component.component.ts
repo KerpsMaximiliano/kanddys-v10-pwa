@@ -45,12 +45,13 @@ export class DynamicComponentComponent implements OnInit {
       }
     );
 
-    this.componentOutputs.forEach((output) => {
-      if (
-        newComponent.instance[output.name] &&
-        newComponent.instance[output.callback]
-      )
-        newComponent.instance[output.name].subscribe(output.callback);
-    });
+    if (this.componentOutputs)
+      this.componentOutputs.forEach((output) => {
+        if (
+          newComponent.instance[output.name] &&
+          newComponent.instance[output.callback]
+        )
+          newComponent.instance[output.name].subscribe(output.callback);
+      });
   }
 }

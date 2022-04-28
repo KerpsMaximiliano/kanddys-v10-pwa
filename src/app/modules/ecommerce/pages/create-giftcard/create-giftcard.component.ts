@@ -2,6 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+
+const lightLabelStyles = {
+  fontFamily: 'Roboto',
+  fontSize: '19px',
+  fontWeight: 300,
+  marginBottom: '18px',
+};
 
 @Component({
   selector: 'app-create-giftcard',
@@ -9,13 +18,62 @@ import { HeaderService } from 'src/app/core/services/header.service';
   styleUrls: ['./create-giftcard.component.scss'],
 })
 export class CreateGiftcardComponent implements OnInit, OnDestroy {
-  constructor(private header: HeaderService, private router: Router) {}
+  constructor(
+    private header: HeaderService,
+    private router: Router,
+    private dialog: DialogService
+  ) {}
   //added create-giftcard again because the merge was deleted??????
 
+  storeEmptyMessageAndGoToShipmentDataForm(params) {
+    this.header.post = {
+      message: '',
+      targets: [
+        {
+          name: '',
+          emailOrPhone: '',
+        },
+      ],
+      from: '',
+      multimedia: [],
+      socialNetworks: [
+        {
+          url: '',
+        },
+      ],
+    };
+    this.header.storePost(
+      this.header.saleflow?._id ?? this.header.getFlowId(),
+      {
+        message: '',
+        targets: [
+          {
+            name: '',
+            emailOrPhone: '',
+          },
+        ],
+        from: '',
+        multimedia: [],
+        socialNetworks: [
+          {
+            url: '',
+          },
+        ],
+      }
+    );
+
+    if (this.scrollableForm) {
+      params.unblockScrollPastCurrentStep();
+      params.unblockScrollBeforeCurrentStep();
+    }
+
+    this.header.isComplete.message = true;
+    this.router.navigate([`ecommerce/shipment-data-form`]);
+  }
+
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
-    if (!this.addedScrollBlockerBefore) {
+    if (!this.addedScrollBlockerBefore && this.scrollableForm) {
       //quita el scroll hacia steps anteriores
-      console.log('Parametros', params);
       setTimeout(() => {
         params.blockScrollBeforeCurrentStep();
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
@@ -44,9 +102,26 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     return { ok: true };
   };
 
+  public continueOrder = () => {
+    this.router.navigate(['/ecommerce/create-giftcard']);
+  };
+
+  showShoppingCartDialog() {
+    this.dialog.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        headerButton: 'Ver mas productos',
+        callback: this.continueOrder,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
   removeScrollBlockerBefore: any;
+  scrollableForm = false;
   formSteps = [
     {
       fieldsList: [
@@ -55,12 +130,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            if (change === 'Si') {
-              this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
-                emitEvent: false,
-              });
+            this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
+              emitEvent: false,
+            });
 
-              this.formSteps[0].stepProcessingFunction(params);
+            this.formSteps[0].stepProcessingFunction(params);
+            if (change === 'Si') {
               params.scrollToStep(1);
             }
           },
@@ -76,7 +151,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       bottomLeftAction: {
         text: 'Ver items facturados',
         execute: () => {
-          console.log('Whatever goes here');
+          this.showShoppingCartDialog();
         },
       },
       stepProcessingFunction: (params) => {
@@ -86,53 +161,15 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         if (params.dataModel.value['1'].writeMessage === 'Si')
           return { ok: true };
         else if (params.dataModel.value['1'].writeMessage === 'No') {
-          this.header.post = {
-            message: '',
-            targets: [
-              {
-                name: '',
-                emailOrPhone: '',
-              },
-            ],
-            from: '',
-            multimedia: [],
-            socialNetworks: [
-              {
-                url: '',
-              },
-            ],
-          };
-          this.header.storePost(
-            this.header.saleflow?._id ?? this.header.getFlowId(),
-            {
-              message: '',
-              targets: [
-                {
-                  name: '',
-                  emailOrPhone: '',
-                },
-              ],
-              from: '',
-              multimedia: [],
-              socialNetworks: [
-                {
-                  url: '',
-                },
-              ],
-            }
-          );
-
-          params.unblockScrollPastCurrentStep();
-          params.unblockScrollBeforeCurrentStep();
-
-          this.header.isComplete.message = true;
-          this.router.navigate([`ecommerce/shipment-data-form`]);
+          this.storeEmptyMessageAndGoToShipmentDataForm(params);
           return { ok: false };
         }
       },
       customScrollToStepBackwards: (params) => {
-        params.unblockScrollPastCurrentStep();
-        params.unblockScrollBeforeCurrentStep();
+        if (this.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
         this.router.navigate([
           'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
@@ -178,6 +215,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '80px',
             },
+            labelStyles: lightLabelStyles,
           },
         },
         {
@@ -189,6 +227,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '80px',
             },
+            labelStyles: lightLabelStyles,
           },
         },
       ],
@@ -201,8 +240,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       },
       bottomLeftAction: {
         text: 'Sin mensaje de regalo',
-        execute: () => {
-          console.log('Whatever goes here');
+        execute: (params) => {
+          this.storeEmptyMessageAndGoToShipmentDataForm(params);
         },
       },
       optionalLinksTo: {
@@ -213,12 +252,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           {
             text: 'Que la parte de atrás sea una fotografia',
             action: (params) => {
-              params.unblockScrollPastCurrentStep();
+              if (this.scrollableForm) params.unblockScrollPastCurrentStep();
               params.scrollToStep(2);
 
-              setTimeout(() => {
-                params.blockScrollPastCurrentStep();
-              }, 500);
+              if (this.scrollableForm)
+                setTimeout(() => {
+                  params.blockScrollPastCurrentStep();
+                }, 500);
             },
           },
         ],
@@ -240,7 +280,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           inputType: 'file',
           placeholder: 'sube una imagen',
           styles: {
-            containerStyles: {
+            fieldStyles: {
               marginTop: '47px',
               width: '60%',
             },
@@ -292,6 +332,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '80px',
             },
+            labelStyles: lightLabelStyles,
           },
         },
         {
@@ -303,6 +344,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '80px',
             },
+            labelStyles: lightLabelStyles,
           },
         },
         {
@@ -313,9 +355,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           showImageBottomLabel: 'Editar fotografía',
           placeholder: 'sube una imagen',
           styles: {
-            containerStyles: {
+            fieldStyles: {
               marginTop: '28.7px',
               width: '60%',
+            },
+            containerStyles: {
+              marginBottom: '109px',
             },
             labelStyles: {
               margin: '0px',
@@ -327,6 +372,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      bottomLeftAction: {
+        text: 'Sin mensaje de regalo',
+        execute: (params) => {
+          this.storeEmptyMessageAndGoToShipmentDataForm(params);
+        },
+      },
       stepProcessingFunction: (params) => {
         this.header.post = {
           message: params.dataModel.value['4']['message-edit'],
@@ -383,7 +434,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.addedScrollBlockerBefore) {
+    if (this.addedScrollBlockerBefore && this.scrollableForm) {
       this.removeScrollBlockerBefore();
     }
   }
