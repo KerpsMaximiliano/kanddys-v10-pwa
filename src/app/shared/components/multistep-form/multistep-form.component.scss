@@ -1,8 +1,8 @@
 @import "forms";
 
 .form-wrapper {
-  height: c;
   overflow-y: scroll;
+  transition: transform 1s ease-in-out;
 }
 
 .form-step {

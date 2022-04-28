@@ -147,8 +147,10 @@ export class ShipmentDataFormComponent implements OnInit {
         },
       ],
       customScrollToStepBackwards: (params) => {
-        params.unblockScrollPastCurrentStep();
-        params.unblockScrollBeforeCurrentStep();
+        if (params.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
         this.router.navigate(['ecommerce/create-giftcard']);
       },
