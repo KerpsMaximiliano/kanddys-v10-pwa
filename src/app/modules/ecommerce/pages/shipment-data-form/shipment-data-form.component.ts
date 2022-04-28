@@ -185,7 +185,7 @@ export class ShipmentDataFormComponent implements OnInit {
             this.header.order?.products?.length > 0
           )
             this.header.order.products[0].deliveryLocation = deliveryData;
-          this.header.storeLocation(this.header.getFlowId(), deliveryData);
+          this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
           this.header.isComplete.delivery = true;
           this.router.navigate([`ecommerce/flow-completion`]);
         },
