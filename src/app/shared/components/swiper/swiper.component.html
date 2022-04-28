@@ -952,6 +952,8 @@
           [selectable]="selectable"
           [price]="item.pricing"
           [showPrice]="showPrice"
+          [description]="item.description"
+          [showDescription]="showDescription"
           (itemClicked)="getActive2(i)"
           (changeSelection)="selectable && toggleSelected(i)"
         >

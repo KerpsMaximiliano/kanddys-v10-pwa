@@ -54,9 +54,10 @@
       [saleFlowTwo]="true"
       [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="bestSellers"
-      [showPrice]="bestSellers[0].customizerId ? false : true"
-      (slideActive)="onClick($event)"
-      (toggleEmitter)="toggleSelected('item', $event)"
+      [showPrice]="hasCustomizer ? false : true"
+      [showDescription]="hasCustomizer ? false : true"
+      (slideActive)="onClick($event, 'slider')"
+      (toggleEmitter)="toggleSelected('slider', $event)"
     ></app-swiper>
   </div>
   <div style="background-color: white">
@@ -86,6 +87,7 @@
             [isSelected]="item.isSelected"
             [selectable]="true"
             [showPrice]="item.customizerId ? false : true"
+            [showDescription]="hasCustomizer ? false : true"
             (itemClicked)="onClick(i)"
             (changeSelection)="toggleSelected('item', i)"
             [priceAlign]="'start'"

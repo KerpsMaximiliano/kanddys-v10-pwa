@@ -22,7 +22,8 @@ export class SaleflowItemComponent implements OnInit {
   @Input() itemExtra: any;
   @Input() type: number = 1
   @Input() description: string
-  @Input() showPrice: any;
+  @Input() showPrice: boolean;
+  @Input() showDescription: boolean;
   // new
   @Input() imgURL: string;
   @Input() limitScenarios: number;

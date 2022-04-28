@@ -491,7 +491,7 @@
 
       <p class="top-text">Monto transferido:</p>
 
-      <input type="text" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" [value]="'$'+price.toLocaleString()+' DOP'" disabled/>
+      <input type="text" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" [value]="'$'+price.toLocaleString('en-US')+' DOP'" disabled/>
 
       <p class="top-text">Imagen (captura):</p>
       <div class="pay-image" [ngStyle]="{'background-image': 'url(' + orders.ocr.image + ')'}"></div>

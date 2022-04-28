@@ -145,6 +145,7 @@ export class SwiperComponent implements OnInit {
   @Input() fullScreenSwiper: boolean = false;
   @Input() selectable: boolean;
   @Input() showPrice: boolean = false;
+  @Input() showDescription: boolean = false;
   @Output() slideActive = new EventEmitter();
   @Output() toggleEmitter = new EventEmitter();
 

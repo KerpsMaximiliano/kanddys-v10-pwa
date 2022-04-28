@@ -226,7 +226,7 @@ export class CategoryItemsComponent implements OnInit {
     }
     else this.router.navigate([
       '/ecommerce/item-detail/' +
-      this.header.saleflow._id +
+      this.saleflowData._id +
       '/' +
       itemData._id,
     ]);

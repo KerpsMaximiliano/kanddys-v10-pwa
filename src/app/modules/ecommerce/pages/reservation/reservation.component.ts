@@ -94,7 +94,7 @@ export class ReservationComponent implements OnInit {
     this.header.hide();
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
-    this.id = this.header.getSaleflow();
+    this.id = this.header.getSaleflow()._id;
     this.orderData = this.header.getOrder(this.id);
     console.log(this.orderData);
     console.log(this.orderData);
