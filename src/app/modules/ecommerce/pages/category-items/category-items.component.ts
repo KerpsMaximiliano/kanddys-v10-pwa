@@ -189,9 +189,9 @@ export class CategoryItemsComponent implements OnInit {
     });
   }
 
-  onClick(index: any) {
+  onClick(index: any, type?: string) {
     console.log(index);
-    let itemData = this.items[index];
+    let itemData = type === 'slider' ? this.bestSellers[index] : this.items[index];
     // if (index.index) {
     //   itemData = this.items[index.index];
     // } else {
@@ -287,7 +287,7 @@ export class CategoryItemsComponent implements OnInit {
 
   toggleSelected(type: string, index: number) {
     if (index != undefined) {
-      const itemData = type === 'slider' ? this.originalItems[index] : this.items[index];
+      const itemData = type === 'slider' ? this.bestSellers[index] : this.items[index];
       itemData.isSelected =
         !itemData.isSelected;
       let itemParams: ItemSubOrderParamsInput[];

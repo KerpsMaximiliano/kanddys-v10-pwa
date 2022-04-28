@@ -116,7 +116,7 @@
   </div>
   <section
     style="background-color: white; margin-bottom: 73px"
-    *ngIf="itemsByCategory.length === 0"
+    *ngIf="itemsByCategory.length === 0 && inputPackage.length === 0"
   >
     <ng-container *ngIf="isCategories; else elseTemplate">
       <div style="padding-top: 10px">
@@ -136,20 +136,13 @@
         {{ merchantSubheadline }}
       </div>
     </ng-template>
-
-    <ng-container *ngIf="inputPackage.length > 0 && items.length === 0">
-      <app-item-grid
-        [items]="inputPackage"
-        (eventEmitter)="save($event)"
-      ></app-item-grid>
-    </ng-container>
-    <ng-container *ngIf="inputPackage.length === 0 && items.length > 0">
+    <ng-container *ngIf="items.length > 0">
       <app-item-grid
         [items]="items"
         (eventEmitter)="save($event)"
       ></app-item-grid>
     </ng-container>
-    <ng-container *ngIf="inputPackage.length === 0 && items.length === 0">
+    <ng-container *ngIf="items.length === 0">
       <div class="no-results">No se han encontrado resultados...</div>
     </ng-container>
   </section>

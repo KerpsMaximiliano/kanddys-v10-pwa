@@ -101,7 +101,7 @@
 
 <app-sticky-button
   *ngIf="!hasCustomizer"
-  [mode]="canOpenCart ? 'fixed' : 'disabled'"
+  [mode]="canOpenCart ? 'basic' : 'disabled'"
   [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
   (click)="showShoppingCartDialog()"
 ></app-sticky-button>

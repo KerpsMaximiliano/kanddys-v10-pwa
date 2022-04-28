@@ -133,7 +133,7 @@ export class ProviderStoreComponent implements OnInit {
 
   async fillData() {
     this.status = 'loading';
-    this.headline = this.header.saleflow.merchant.name;
+    this.headline = this.header.saleflow?.merchant?.name;
     if (this.header.items.length > 0 && this.header.items[0].customizerId) {
       this.options.push({
         option: 'Calidades',
@@ -153,7 +153,7 @@ export class ProviderStoreComponent implements OnInit {
         active: false,
       });
     }
-    if (this.header.saleflow.module.appointment) {
+    if (this.header.saleflow?.module.appointment) {
       if (this.header.saleflow.module.appointment.isActive) {
         this.options.push({
           option: 'Reservación',
@@ -162,7 +162,7 @@ export class ProviderStoreComponent implements OnInit {
         });
       }
     }
-    if (this.header.saleflow.module.post) {
+    if (this.header.saleflow?.module.post) {
       if (this.header.saleflow.module.post.isActive) {
         this.options.push({
           option: 'Mensaje',
@@ -171,7 +171,7 @@ export class ProviderStoreComponent implements OnInit {
         });
       }
     }
-    if (this.header.saleflow.module.delivery) {
+    if (this.header.saleflow?.module.delivery) {
       if (this.header.saleflow.module.delivery.isActive) {
         if (this.header.saleflow.module.delivery.deliveryLocation) {
           this.options.push({
@@ -195,7 +195,7 @@ export class ProviderStoreComponent implements OnInit {
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.isComplete.delivery = true;
-              this.header.storeLocation(this.header.getFlowId(), this.header.saleflow.module.delivery.pickUpLocations[0]);
+              this.header.storeLocation(this.header.getSaleflow()._id, this.header.saleflow.module.delivery.pickUpLocations[0]);
             }
           }
         }
@@ -207,7 +207,7 @@ export class ProviderStoreComponent implements OnInit {
       active: false,
     });
 
-    if(this.header.saleflow._id === '61b8df151e8962cdd6f30feb') {
+    if(this.header.saleflow?._id === '61b8df151e8962cdd6f30feb') {
       this.aux = this.options.find(el => el.option = 'Reservación');
       this.options.splice(this.options.findIndex(el => el.option = 'Reservación'), 1);
       this.aux2 = this.options.pop();
@@ -262,19 +262,24 @@ export class ProviderStoreComponent implements OnInit {
       return;
     };
     if(!this.header.saleflow) {
-      const saleflowId = this.header.getFlowId();
-      if(saleflowId) {
-        this.header.saleflow = (await this.saleflow.saleflow(saleflowId)).saleflow;
-        this.header.order = this.header.getOrder(this.header.saleflow._id);
+      const saleflow = this.header.getSaleflow();
+      if(saleflow) {
+        this.header.saleflow = saleflow;
+        this.header.order = this.header.getOrder(saleflow._id);
         if(!this.header.order) {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
-        const itemCustomizer = this.header.getItems(this.header.saleflow._id)
-        if(itemCustomizer) this.header.items = itemCustomizer;
+        const items = this.header.getItems(saleflow._id);
+        if(items && items.length > 0) this.header.items = items;
+        else this.router.navigate([`/ecommerce/trivias`]);
         lockUI(this.fillData());
       } else this.router.navigate([`/ecommerce/trivias`]);
-    } else if(this.header.order) lockUI(this.fillData());
+    } else {
+      this.header.order = this.header.getOrder(this.header.saleflow._id);
+      if(!this.header.order) this.router.navigate([`/ecommerce/trivias`]);
+      else lockUI(this.fillData());
+    }
   }
 
   changeOption(index: any) {

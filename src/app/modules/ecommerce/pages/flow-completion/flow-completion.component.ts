@@ -161,7 +161,7 @@ export class FlowCompletionComponent implements OnInit {
   ) {}
 
   getOrderData(id: string) {
-    this.order.order(id).then((data) => {
+    return this.order.order(id).then((data) => {
       console.log(data);
       if (
         data.order.orderStatus === 'cancelled' ||
@@ -227,7 +227,7 @@ export class FlowCompletionComponent implements OnInit {
         console.log('NO HAY DATA');
         this.router.navigate(['/ecommerce/error-screen']);
       }
-    });
+    }).catch((error) => console.log(error));
   }
 
   async getMerchant(id: string) {
@@ -504,9 +504,10 @@ export class FlowCompletionComponent implements OnInit {
         this.createOrder().then(() => {
           this.relativeStep++;
           this.stepsLeft = 4;
-
-          this.step = 5;
-          this.getOrderData(this.header.orderId);
+          return this.getOrderData(this.header.orderId)
+            .then(() => {
+              this.step = 5;
+            })
         })
       );
     }
@@ -730,7 +731,7 @@ export class FlowCompletionComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (this.header.saleflow.module.post) {
-        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getFlowId());
+        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getSaleflow()._id);
         console.log(postinput);
         
         this.postsService
@@ -749,8 +750,7 @@ export class FlowCompletionComponent implements OnInit {
                 .then((data) => {
                   console.log(data);
                   console.log(data.createOrder._id);
-                  this.header.emptyOrderProducts(this.header.saleflow._id);
-                  this.header.emptyItems(this.header.saleflow._id);
+                  this.header.deleteSaleflowOrder(this.header.saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -778,8 +778,7 @@ export class FlowCompletionComponent implements OnInit {
           .createOrder(this.header.order)
           .then(async (data) => {
             console.log(data);
-            this.header.emptyOrderProducts(this.header.saleflow._id);
-            this.header.emptyItems(this.header.saleflow._id);
+            this.header.deleteSaleflowOrder(this.header.saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;

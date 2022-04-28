@@ -41,7 +41,7 @@ export class PackageDetailComponent implements OnInit {
   orderProducts: ItemSubOrderInput[] = [];
 
   ngOnInit(): void {
-    this.saleflow.saleflow(this.header.getFlowId()).then(data => {
+    this.saleflow.saleflow(this.header.getSaleflow()._id).then(data =>{
       this.saleflowId = data.saleflow._id;
       this.items.itemCategories(data.saleflow.merchant._id, {}).then(data => {
         console.log(data);
