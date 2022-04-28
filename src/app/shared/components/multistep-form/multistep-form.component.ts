@@ -262,10 +262,25 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
+  stepFunctionParams: any;
 
   constructor(private header: HeaderService) {}
 
   ngOnInit(): void {
+    this.stepFunctionParams = {
+      dataModel: this.dataModel,
+      currentStep: this.currentStep,
+      shouldScrollBackwards: this.shouldScrollBackwards,
+      changeShouldScrollBackwards: this.changeShouldScrollBackwards,
+      blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
+      unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
+      blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
+      unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
+      scrollToStep: this.scrollToStep,
+      executeStepDataProcessing: this.executeStepDataProcessing,
+      scrollableForm: this.scrollableForm,
+    };
+
     this.initController();
   }
 
@@ -612,19 +627,5 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
             this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
         });
     }
-  };
-
-  stepFunctionParams: any = {
-    dataModel: this.dataModel,
-    currentStep: this.currentStep,
-    shouldScrollBackwards: this.shouldScrollBackwards,
-    changeShouldScrollBackwards: this.changeShouldScrollBackwards,
-    blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
-    unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
-    blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
-    unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
-    scrollToStep: this.scrollToStep,
-    executeStepDataProcessing: this.executeStepDataProcessing,
-    scrollableForm: this.scrollableForm,
   };
 }

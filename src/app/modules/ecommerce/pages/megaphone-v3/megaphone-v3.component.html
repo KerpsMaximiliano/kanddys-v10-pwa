@@ -31,17 +31,20 @@
       </div>
       <div>
         <ng-container *ngIf="visualMode; else swiperMode">
-          <div class="package-list" *ngFor="let item of sliderPackage; let i = index">
-              <app-saleflow-item
-                [imgURL]="item.images"
-                [price]="item.price"
-                [description]="item.description"
-                [isSelected]="item.selected"
-                [priceAlign]="'start'"
-                [type]="2"
-                (click)="goToPackageDetail(i)" 
-              >
-              </app-saleflow-item>
+          <div
+            class="package-list"
+            *ngFor="let item of sliderPackage; let i = index"
+          >
+            <app-saleflow-item
+              [imgURL]="item.images"
+              [price]="item.price"
+              [description]="item.description"
+              [isSelected]="item.selected"
+              [priceAlign]="'start'"
+              [type]="2"
+              (click)="goToPackageDetail(i)"
+            >
+            </app-saleflow-item>
           </div>
         </ng-container>
         <ng-template #swiperMode>
@@ -78,8 +81,11 @@
       ></app-swiper>
     </ng-container>
   </div>
-  <div *ngIf="itemsByCategory.length > 0" style="margin-bottom: 30px;">
-    <div *ngFor="let item of itemsByCategory; let i = index">
+  <div *ngIf="itemsByCategory.length > 0" style="margin-bottom: 30px">
+    <div
+      *ngFor="let item of itemsByCategory; let i = index"
+      [ngStyle]="{ marginBottom: '110px' }"
+    >
       <div class="header-wrapper">
         <h6
           class="header-text"
@@ -138,7 +144,6 @@
     <ng-container *ngIf="items.length === 0">
       <div class="no-results">No se han encontrado resultados...</div>
     </ng-container>
-
   </section>
 </div>
 
@@ -146,7 +151,13 @@
   <ng-container *ngIf="!hasCustomizer; else noCTA">
     <app-sticky-button
       [mode]="canOpenCart ? 'basic' : 'disabled'"
-      [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
+      [text]="
+        canOpenCart
+          ? 'VER CARRITO DE COMPRAS'
+          : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
+          ? 'SELECCIONA TU PAQUETE'
+          : 'SELECCIONAR'
+      "
       (click)="showShoppingCartDialog()"
     ></app-sticky-button>
   </ng-container>

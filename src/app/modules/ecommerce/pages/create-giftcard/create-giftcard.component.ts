@@ -74,6 +74,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
     if (!this.addedScrollBlockerBefore && this.scrollableForm) {
       //quita el scroll hacia steps anteriores
+      params.unblockScrollBeforeCurrentStep();
+
       setTimeout(() => {
         params.blockScrollBeforeCurrentStep();
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
@@ -81,10 +83,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       }, 500);
 
       params.changeShouldScrollBackwards();
+
       this.addedScrollBlockerBefore = true;
     }
-
-    console.log(this);
 
     this.formSteps[3].fieldsList[0].fieldControl.setValue(
       this.formSteps[1].fieldsList[0].fieldControl.value
@@ -157,6 +158,15 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       stepProcessingFunction: (params) => {
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
         this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
+
+        if (params.scrollableForm) {
+          setTimeout(() => {
+            params.blockScrollBeforeCurrentStep();
+            this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+            this.removeScrollBlockerBefore =
+              params.unblockScrollBeforeCurrentStep;
+          }, 500);
+        }
 
         if (params.dataModel.value['1'].writeMessage === 'Si')
           return { ok: true };
@@ -252,13 +262,23 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           {
             text: 'Que la parte de atrás sea una fotografia',
             action: (params) => {
-              if (this.scrollableForm) params.unblockScrollPastCurrentStep();
-              params.scrollToStep(2);
+              if (this.scrollableForm) {
+                params.unblockScrollBeforeCurrentStep();
+                params.unblockScrollPastCurrentStep();
+              }
 
-              if (this.scrollableForm)
+              if (params.dataModel.get('2').status === 'VALID')
+                params.scrollToStep(2);
+
+              if (params.scrollableForm) {
                 setTimeout(() => {
-                  params.blockScrollPastCurrentStep();
+                  params.blockScrollBeforeCurrentStep();
+                  this.scrollBlockerBefore =
+                    params.blockScrollBeforeCurrentStep;
+                  this.removeScrollBlockerBefore =
+                    params.unblockScrollBeforeCurrentStep;
                 }, 500);
+              }
             },
           },
         ],
@@ -281,7 +301,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           placeholder: 'sube una imagen',
           styles: {
             fieldStyles: {
-              marginTop: '47px',
+              marginTop: '60px',
               width: '60%',
             },
             labelStyles: {
@@ -293,7 +313,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       stepProcessingFunction: this.savePreviousStepsDataBeforeEnteringPreview,
       headerText: 'FOTOGRAFIA EN EL MENSAJE',
       stepButtonInvalidText: 'ADICIONA LA FOTO',
-      stepButtonValidText: 'CONTINUAR',
+      stepButtonValidText: 'ADICIONA LA FOTO',
     },
     {
       fieldsList: [
@@ -417,15 +437,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }
         );
         this.header.isComplete.message = true;
-        console.log('AYUDAAAAS');
 
-        console.log(this.header.flowImage);
         this.router.navigate([`ecommerce/shipment-data-form`]);
         return { ok: true };
       },
       headerText: 'INFORMACIÓN DEL MENSAJE DE REGALO',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
-      stepButtonValidText: 'CONTINUAR',
+      stepButtonValidText: 'CONTINUAR A LA ENTREGA',
     },
   ];
 

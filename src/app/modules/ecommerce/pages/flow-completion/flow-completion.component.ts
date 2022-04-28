@@ -246,7 +246,7 @@ export class FlowCompletionComponent implements OnInit {
 
     if (this.router.url.includes('flow-completion')) {
       this.flow = 'flow-completion';
-      this.headerText = 'Información necesaria';
+      this.headerText = 'INFORMACIÓN NECESARIA';
       let products: string[] = [];
       let packages: string[] = [];
       if (this.header.order?.itemPackage) {
@@ -276,6 +276,8 @@ export class FlowCompletionComponent implements OnInit {
           this.orderId = params.id;
           this.getOrderData(params.id);
         } else if (!this.header.isDataComplete()) {
+          console.log('enttrando');
+
           this.header.resetIsComplete();
           this.router.navigate([`ecommerce/landing-vouchers`]);
         }

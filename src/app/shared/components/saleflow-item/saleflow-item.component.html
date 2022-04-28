@@ -43,7 +43,9 @@
     ></div>
     <div class="infoContainer">
       <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price">
-        ${{price}}
+        <ng-container *ngIf="showPrice">
+          ${{price}}
+        </ng-container>
       </div>
       <p class="desc" *ngIf="description">{{description}}</p>
       <div

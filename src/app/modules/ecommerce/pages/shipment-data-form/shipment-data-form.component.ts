@@ -100,7 +100,7 @@ export class ShipmentDataFormComponent implements OnInit {
           placeholder: 'Escriba la calle, número, (nombre del edificio)',
           styles: {
             containerStyles: {
-              marginTop: '50px',
+              marginTop: '60px',
             },
             fieldStyles: {
               backgroundColor: 'white',
@@ -172,8 +172,22 @@ export class ShipmentDataFormComponent implements OnInit {
       },
       bottomLeftAction: {
         text: 'Sin envio, lo pasaré a recoger',
-        execute: () => {
-          console.log('Whatever goes here');
+        execute: (params) => {
+          console.log(params.dataModel.value['1']);
+
+          const deliveryData = {
+            street: params.dataModel.value['1'].street,
+            note: params.dataModel.value['1'].note,
+            city: '',
+          };
+          if (
+            this.header.order?.products &&
+            this.header.order?.products?.length > 0
+          )
+            this.header.order.products[0].deliveryLocation = deliveryData;
+          this.header.storeLocation(this.header.getFlowId(), deliveryData);
+          this.header.isComplete.delivery = true;
+          this.router.navigate([`ecommerce/flow-completion`]);
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',

@@ -1,53 +1,91 @@
 <div class="container">
-  <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
-    middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="headerText"
-    [back]="step > 4 || step === 2" [basic]="(step === 1 || step === 3 || step === 4) && !orderData"
-    (onClose)="goBack()"></app-helper-header>
+  <app-helper-header
+    bgcolor="#FFFFFF"
+    [searchAble]="false"
+    middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular"
+    middleTextColor="#7B7B7B"
+    [middleText]="headerText.toUpperCase()"
+    [back]="step > 4 || step === 2"
+    [basic]="(step === 1 || step === 3 || step === 4) && !orderData"
+    (onClose)="goBack()"
+  ></app-helper-header>
 
   <div class="content m-top" *ngIf="step === 1">
     <p class="label1">¿Con cuál número de WhatsApp harás esta orden?</p>
-    <input type="tel" class="input" [(ngModel)]="inputData" placeholder="Mi # de WhatsApp es..." autocomplete="off"
-      (keypress)="keyPressNumbers($event)" />
-    <p class="sublabel">Si es tu primera orden recibirás un codigo de verificación.</p>
-    <p class="sublabel">Si haz hecho ordenes anteriormente ingresarás tu clave.</p>
+    <input
+      type="tel"
+      class="input"
+      [(ngModel)]="inputData"
+      placeholder="Mi # de WhatsApp es..."
+      autocomplete="off"
+      (keypress)="keyPressNumbers($event)"
+    />
+    <p class="sublabel">
+      Si es tu primera orden recibirás un codigo de verificación.
+    </p>
+    <p class="sublabel">
+      Si haz hecho ordenes anteriormente ingresarás tu clave.
+    </p>
   </div>
   <div class="content m-top" *ngIf="step === 2">
     <p class="label1">Escriba el código que recibió:</p>
-    <input type="text" class="input" [(ngModel)]="code" maxlength="6" placeholder="Código que recibí en WhatsApp fue.."
-      (keypress)="keyPressNumbers($event)" />
+    <input
+      type="text"
+      class="input"
+      [(ngModel)]="code"
+      maxlength="6"
+      placeholder="Código que recibí en WhatsApp fue.."
+      (keypress)="keyPressNumbers($event)"
+    />
   </div>
   <div *ngIf="step === 3">
     <div class="content m-top">
       <p class="label1">
         {{
-        flow !== "flow-completion"
-        ? "Cual es tu nombre?"
-        : "¿Cuál es tu nombre y apellido?"
+          flow !== "flow-completion"
+            ? "Cual es tu nombre?"
+            : "¿Cuál es tu nombre y apellido?"
         }}
       </p>
-      <input type="text" class="input" [(ngModel)]="name" [placeholder]="
+      <input
+        type="text"
+        class="input"
+        [(ngModel)]="name"
+        [placeholder]="
           flow !== 'flow-completion'
             ? 'Mi nombre es..'
             : 'Mi nombre y apellido es..'
-        " />
+        "
+      />
     </div>
     <div class="content" *ngIf="flow !== 'flow-completion'">
       <p class="label2">Cuál es tu apellido?</p>
-      <input type="text" class="input" [(ngModel)]="lastName" placeholder="Mi apellido es.." />
+      <input
+        type="text"
+        class="input"
+        [(ngModel)]="lastName"
+        placeholder="Mi apellido es.."
+      />
     </div>
     <div class="content">
       <p style="margin-bottom: 11px" class="label2">
         {{
-        flow !== "flow-completion"
-        ? "Añade una clave para re-ingresar"
-        : "Adiciona un nuevo password:"
+          flow !== "flow-completion"
+            ? "Añade una clave para re-ingresar"
+            : "Adiciona un nuevo password:"
         }}
       </p>
-      <input type="password" class="input" [(ngModel)]="password" [placeholder]="
+      <input
+        type="password"
+        class="input"
+        [(ngModel)]="password"
+        [placeholder]="
           flow !== 'flow-completion'
             ? 'Mi clave para re-ingresar es..'
             : 'Password..'
-        " />
+        "
+      />
     </div>
   </div>
   <div *ngIf="step === 4">
@@ -55,21 +93,29 @@
       <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
         Eres {{ userData.name }}?
       </p>
-      <app-answer-selector [options]="options" (onSelector)="selectOption($event)"></app-answer-selector>
+      <app-answer-selector
+        [options]="options"
+        (onSelector)="selectOption($event)"
+      ></app-answer-selector>
 
       <div class="content" *ngIf="showLoginPassword">
         <p class="label2">
           {{
-          flow !== "flow-completion"
-          ? "Añade tu clave de re-ingreso"
-          : "Adiciona el password:"
+            flow !== "flow-completion"
+              ? "Añade tu clave de re-ingreso"
+              : "Adiciona el password:"
           }}
         </p>
-        <input type="password" [(ngModel)]="password" [placeholder]="
+        <input
+          type="password"
+          [(ngModel)]="password"
+          [placeholder]="
             flow !== 'flow-completion'
               ? 'Mi clave para re-ingresar es..'
               : 'El password es...'
-          " class="input" />
+          "
+          class="input"
+        />
       </div>
       <div
         *ngIf="incorrectPasswordAttempt"
@@ -156,7 +202,10 @@
   </div>
   <div *ngIf="step === 5">
     <div class="questions">
-      <p style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px" class="label1">
+      <p
+        style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
+        class="label1"
+      >
         {{
         flow !== "flow-completion"
         ? "Cuentanos un poco más:"
@@ -171,20 +220,33 @@
             " DOP?"
         }}
       </p>
-      <app-answer-selector [options]="
+      <app-answer-selector
+        [options]="
           flow !== 'flow-completion' ? communityOptions : paymentOptions
-        " [isMultipleOption]="flow !== 'flow-completion'" (onSelector)="selectOption($event)"></app-answer-selector>
+        "
+        [isMultipleOption]="flow !== 'flow-completion'"
+        (onSelector)="selectOption($event)"
+      ></app-answer-selector>
     </div>
   </div>
   <div *ngIf="step === 6">
     <div class="questions-step-6">
-      <p style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px" class="label1-step-6">
-        ¿En qué banco hiciste la transferencia de ${{orderData?.amount | number: "1.0-2"}} DOP
+      <p
+        style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
+        class="label1-step-6"
+      >
+        ¿En qué banco hiciste la transferencia de ${{
+          orderData?.amount | number: "1.0-2"
+        }}
+        DOP
         <ng-container *ngIf="orderData?.hasCustomizer">
-          / PAQ. {{ orderData.itemAmount }}UNDS 
-        </ng-container>?
+          / PAQ. {{ orderData.itemAmount }}UNDS </ng-container
+        >?
       </p>
-      <app-answer-selector [options]="bankOptions" (onSelector)="selectOption($event)"></app-answer-selector>
+      <app-answer-selector
+        [options]="bankOptions"
+        (onSelector)="selectOption($event)"
+      ></app-answer-selector>
 
       <!-- <div
         *ngFor="let bank of banks"
@@ -224,9 +286,12 @@
   <div *ngIf="step === 7">
     <div class="content step-7">
       <p style="margin-bottom: 47px" class="label1">
-        Por favor confirme la transferencia de ${{ orderData?.amount | number: "1.0-2" }} DOP
+        Por favor confirme la transferencia de ${{
+          orderData?.amount | number: "1.0-2"
+        }}
+        DOP
         <ng-container *ngIf="orderData.hasCustomizer">
-          / PAQ. {{ orderData?.itemAmount }}UNDS 
+          / PAQ. {{ orderData?.itemAmount }}UNDS
         </ng-container>
         que se realizó:
       </p>
@@ -234,62 +299,103 @@
       <p style="margin-bottom: 22px" class="label2">
         Adicione los últimos 4 digitos de la transferencia que realizó:
       </p>
-      <input type="text" [(ngModel)]="paymentCode" minlength="4" maxlength="4" class="input payment"
-        placeholder="Los 4 digitos son.." />
+      <input
+        type="text"
+        [(ngModel)]="paymentCode"
+        minlength="4"
+        maxlength="4"
+        class="input payment"
+        placeholder="Los 4 digitos son.."
+      />
 
-      <p style="margin-bottom: 22px" class="label3">
-        Monto transferido:
-      </p>
-      <input type="number" [(ngModel)]="ammount" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" />
+      <p style="margin-bottom: 22px" class="label3">Monto transferido:</p>
+      <input
+        type="number"
+        [(ngModel)]="ammount"
+        min="1"
+        class="input payment"
+        placeholder="Pagué.."
+        pattern="\d*"
+      />
 
       <p class="label3">Adicione la imagen (captura):</p>
-      <app-image-input [allowedTypes]="['png', 'jpg', 'jpeg']" (onFileInput)="onFileInput($event)"></app-image-input>
+      <app-image-input
+        [allowedTypes]="['png', 'jpg', 'jpeg']"
+        (onFileInput)="onFileInput($event)"
+      ></app-image-input>
       <ng-container *ngIf="selectedBank">
         <div class="unique-bank">
           <h2>{{ selectedBank.value }}</h2>
-          <span *ngFor="let desc of selectedBank.description">{{desc}}</span>
+          <span *ngFor="let desc of selectedBank.description">{{ desc }}</span>
         </div>
       </ng-container>
     </div>
   </div>
   <div class="content m-top" *ngIf="step === 8">
     <p class="label1">¿Como se llamará tu Club?</p>
-    <input type="text" class="input" [(ngModel)]="newProviderName" placeholder="Type.." />
+    <input
+      type="text"
+      class="input"
+      [(ngModel)]="newProviderName"
+      placeholder="Type.."
+    />
   </div>
   <div class="content m-top" *ngIf="step === 9">
     <p class="label1">Escriba el código que recibió:</p>
-    <input type="text" class="input" [(ngModel)]="code" maxlength="6" placeholder="Código que recibí en WhatsApp fue.."
-      (keypress)="keyPressNumbers($event)" />
+    <input
+      type="text"
+      class="input"
+      [(ngModel)]="code"
+      maxlength="6"
+      placeholder="Código que recibí en WhatsApp fue.."
+      (keypress)="keyPressNumbers($event)"
+    />
   </div>
   <div class="content m-top" *ngIf="step === 10">
     <p class="label1">Escriba el password nuevo:</p>
-      <p class="label2">
-        {{
+    <p class="label2">
+      {{
         flow !== "flow-completion"
-        ? "Añade tu clave de re-ingreso"
-        : "Adiciona el password:"
-        }}
-      </p>
-      <input type="password" [(ngModel)]="password" [placeholder]="
-          flow !== 'flow-completion'
-            ? 'Mi clave para re-ingresar es..'
-            : 'El password es...'
-        " class="input" />
+          ? "Añade tu clave de re-ingreso"
+          : "Adiciona el password:"
+      }}
+    </p>
+    <input
+      type="password"
+      [(ngModel)]="password"
+      [placeholder]="
+        flow !== 'flow-completion'
+          ? 'Mi clave para re-ingresar es..'
+          : 'El password es...'
+      "
+      class="input"
+    />
   </div>
-  <div class="footer" [ngStyle]="{
+  <div
+    class="footer"
+    [ngStyle]="{
       justifyContent:
         flow === 'flow-completion' && step >= 4 && step < 8
           ? 'space-between'
           : 'flex-end'
-    }">
-    <div class="redirect" *ngIf="flow === 'flow-completion' && step > 4 && step < 8" (click)="showItems()">
+    }"
+  >
+    <div
+      class="redirect"
+      *ngIf="flow === 'flow-completion' && step > 4 && step < 8"
+      (click)="showItems()"
+    >
       Ver items facturados
     </div>
-    <div class="redirect" *ngIf="flow === 'flow-completion' && step == 4" (click)="generateOTP()">
+    <div
+      class="redirect"
+      *ngIf="flow === 'flow-completion' && step == 4"
+      (click)="generateOTP()"
+    >
       Olvidé mi clave
     </div>
     <div class="steps">
-      <img src="{{env}}/arrow-down.svg" class="step-icon" alt="questions" />
+      <img src="{{ env }}/arrow-down.svg" class="step-icon" alt="questions" />
       {{ relativeStep }} / {{ stepsLeft }} PASOS
     </div>
   </div>
@@ -370,7 +476,8 @@
   </div> -->
 </div>
 
-<app-sticky-button [mode]="
+<app-sticky-button
+  [mode]="
     (step === 1 && inputData.length < 7) ||
     (step === 2 && code.length < 4) ||
     (step === 3 &&
@@ -384,10 +491,11 @@
     (step === 7 && (paymentCode.length !== 4 || !image)) ||
     (step === 8 && newProviderName.trim().length === 0) ||
     (step === 9 && code.length < 3) ||
-    (step === 10 && password.length < 3) 
+    (step === 10 && password.length < 3)
       ? 'disabled'
       : 'basic'
-  " [text]="
+  "
+  [text]="
     step === 1
       ? flow !== 'flow-completion'
         ? 'ASIGNA EL WHATSAPP AL MAPP'
@@ -441,24 +549,27 @@
         ? 'NOMBRA EL CLUB DE TU MAPP'
         : 'VE A TU CLUB'
       : step === 9
-      ? flow !== 'flow-completion' && code.length > 3 
+      ? flow !== 'flow-completion' && code.length > 3
         ? 'INGRESA EL CODIGO'
         : 'ENVIAR CODIGO'
-        : step === 10
-        ? flow !== 'flow-completion' && password.length < 3
-          ? 'INGRESE PASSWORD'
-          : 'ACTUALIZAR EL PASSWORD'
+      : step === 10
+      ? flow !== 'flow-completion' && password.length < 3
+        ? 'INGRESE PASSWORD'
+        : 'ACTUALIZAR EL PASSWORD'
       : ''
-  " (click)="submit()" *ngIf="step != 7"></app-sticky-button>
+  "
+  (click)="submit()"
+  *ngIf="step != 7"
+></app-sticky-button>
 
 <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
-  <app-sticky-button [mode]="
-    (paymentCode.length !== 4 || !image)
-      ? 'disabled'
-      : 'basic'
-  " [text]="
-    paymentCode.length !== 4 || !image
-    ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-    : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
-  " (click)="submit()"></app-sticky-button>
+  <app-sticky-button
+    [mode]="paymentCode.length !== 4 || !image ? 'disabled' : 'basic'"
+    [text]="
+      paymentCode.length !== 4 || !image
+        ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+        : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+    "
+    (click)="submit()"
+  ></app-sticky-button>
 </a>

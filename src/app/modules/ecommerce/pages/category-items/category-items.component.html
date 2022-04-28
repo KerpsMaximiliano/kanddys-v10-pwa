@@ -1,4 +1,4 @@
-<div style="min-height: 100vh; background-color: #ffffff;">
+<div style="min-height: 100vh; background-color: #ffffff">
   <div class="header">
     <a (click)="goBack()">
       <i
@@ -20,6 +20,22 @@
             </div> -->
       <span class="category-name">{{ categoryName }}</span>
     </ng-container>
+    <a >
+      <div
+      class="dot-trio-hlprhdr"
+      style="
+      color: #27a2ff;
+      position: absolute;
+      right: 5%;
+      cursor: pointer;
+      top: 34.5%;
+    "
+    >
+      <div class="dot-hlprhdr"> </div>
+      <div class="dot-hlprhdr"> </div>
+      <div class="dot-hlprhdr"> </div>
+    </div>
+    </a>
   </div>
   <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
@@ -51,7 +67,7 @@
       (eventTags)="closeTagEvent($event)"
       (deletedTag)="tagDeleted($event)"
     ></app-see-filters>
-    <ng-container *ngIf="hasCustomizer else selectableItems">
+    <ng-container *ngIf="hasCustomizer; else selectableItems">
       <app-item-grid
         [items]="items"
         (eventEmitter)="onClick($event)"
@@ -68,6 +84,7 @@
             [imgURL]="item.images ? item.images[0] : ''"
             [isSelected]="item.isSelected"
             [selectable]="true"
+            [showPrice]="item.customizerId ? false : true"
             (itemClicked)="onClick(i)"
             (changeSelection)="toggleSelected('item', i)"
             [priceAlign]="'start'"
@@ -78,6 +95,9 @@
     </ng-template>
   </div>
 </div>
+
+<div class="bottom-separator" *ngIf="!hasCustomizer"></div>
+
 <app-sticky-button
   *ngIf="!hasCustomizer"
   [mode]="canOpenCart ? 'basic' : 'disabled'"
