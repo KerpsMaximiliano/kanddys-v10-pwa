@@ -108,6 +108,7 @@
       <app-swiper
         [saleFlowTwo]="true"
         [saleFlowTwoData]="item.items"
+        [showPrice]="false"
         (slideActive)="onItemCategoryClick(i, $event)"
         (toggleEmitter)="toggleSelected('item', i, $event)"
       ></app-swiper>

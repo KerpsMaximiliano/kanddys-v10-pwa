@@ -951,7 +951,7 @@
           [isSelected]="item.isSelected"
           [selectable]="selectable"
           [price]="item.pricing"
-          [showPrice]="item.customizerId ? false : true"
+          [showPrice]="showPrice"
           (itemClicked)="getActive2(i)"
           (changeSelection)="selectable && toggleSelected(i)"
         >

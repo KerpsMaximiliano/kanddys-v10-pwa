@@ -54,6 +54,7 @@
       [saleFlowTwo]="true"
       [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="bestSellers"
+      [showPrice]="bestSellers[0].customizerId ? false : true"
       (slideActive)="onClick($event)"
       (toggleEmitter)="toggleSelected('item', $event)"
     ></app-swiper>
