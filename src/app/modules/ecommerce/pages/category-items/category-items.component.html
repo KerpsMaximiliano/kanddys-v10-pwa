@@ -38,8 +38,8 @@
       [saleFlowTwo]="true"
       [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="bestSellers"
-      (slideActive)="onClick($event)"
-      (toggleEmitter)="toggleSelected('item', $event)"
+      (slideActive)="onClick($event, 'slider')"
+      (toggleEmitter)="toggleSelected('slider', $event)"
     ></app-swiper>
   </div>
   <div style="background-color: white">
@@ -80,7 +80,7 @@
 </div>
 <app-sticky-button
   *ngIf="!hasCustomizer"
-  [mode]="canOpenCart ? 'fixed' : 'disabled'"
+  [mode]="canOpenCart ? 'basic' : 'disabled'"
   [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
   (click)="showShoppingCartDialog()"
 ></app-sticky-button>

@@ -2,10 +2,10 @@
   <div *ngIf="socials.length > 0" class="container-icons" style="flex-basis: 30%; display: flex; justify-content: space-around">
     <ng-container *ngFor="let social of socials">
       <div *ngIf="social.name === 'instagram'" class="icons">
-        <a [href]="social.url" target="_blank" class="link-area"><img src="{{ env }}/instagram.svg" class="red-social" alt="" style="position: absolute; bottom: 9px; left: 8.5px;"/></a>
+        <a [href]="social.url" target="_blank" class="link-area"><img src="{{ env }}/instagram.svg" class="red-social" alt=""/></a>
       </div>
       <div class="icons" *ngIf="social.name === 'phone'">
-        <a href="tel:+1{{social.url}}" style="position: relative; height: 35px; width: 35px;" class="link-area"><img src="{{ env }}/contacts-white.svg" alt="" style="position: absolute; bottom: 9px; left: 8px;"/></a>
+        <a href="tel:+1{{social.url}}" class="link-area"><img src="{{ env }}/contacts-white.svg" alt=""/></a>
       </div>
     </ng-container>
   </div>
@@ -21,7 +21,7 @@
 
     <ng-container *ngFor="let social of socials">    
       <div *ngIf="social.name === 'location'" class="icons">
-        <a [href]="social.url" target="_blank" class="link-area"><img src="{{ env }}/location123.svg" class="" alt="" style="position: absolute; bottom: 9px; left: 11px;" /></a>
+        <a [href]="social.url" target="_blank" class="link-area"><img src="{{ env }}/location123.svg" class="" alt=""/></a>
       </div>
     </ng-container>
     
