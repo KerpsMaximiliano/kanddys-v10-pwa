@@ -1,4 +1,4 @@
-<div style="min-height: 100vh; background-color: #ffffff;">
+<div style="min-height: 100vh; background-color: #ffffff">
   <div class="header">
     <a (click)="goBack()">
       <i
@@ -67,7 +67,7 @@
       (eventTags)="closeTagEvent($event)"
       (deletedTag)="tagDeleted($event)"
     ></app-see-filters>
-    <ng-container *ngIf="hasCustomizer else selectableItems">
+    <ng-container *ngIf="hasCustomizer; else selectableItems">
       <app-item-grid
         [items]="items"
         (eventEmitter)="onClick($event)"
@@ -95,6 +95,9 @@
     </ng-template>
   </div>
 </div>
+
+<div class="bottom-separator" *ngIf="!hasCustomizer"></div>
+
 <app-sticky-button
   *ngIf="!hasCustomizer"
   [mode]="canOpenCart ? 'fixed' : 'disabled'"
