@@ -20,6 +20,22 @@
             </div> -->
       <span class="category-name">{{ categoryName }}</span>
     </ng-container>
+    <a >
+      <div
+      class="dot-trio-hlprhdr"
+      style="
+      color: #27a2ff;
+      position: absolute;
+      right: 5%;
+      cursor: pointer;
+      top: 34.5%;
+    "
+    >
+      <div class="dot-hlprhdr"> </div>
+      <div class="dot-hlprhdr"> </div>
+      <div class="dot-hlprhdr"> </div>
+    </div>
+    </a>
   </div>
   <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
@@ -68,6 +84,7 @@
             [imgURL]="item.images ? item.images[0] : ''"
             [isSelected]="item.isSelected"
             [selectable]="true"
+            [showPrice]="item.customizerId ? false : true"
             (itemClicked)="onClick(i)"
             (changeSelection)="toggleSelected('item', i)"
             [priceAlign]="'start'"

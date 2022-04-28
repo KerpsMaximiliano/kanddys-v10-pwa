@@ -92,7 +92,7 @@ export class PackageDetailComponent implements OnInit {
           {
             item: data.listItems[i]._id,
             itemExtra: [],
-            saleflow: this.saleflowId,
+            //saleflow: this.saleflowId,
             amount: this.packageData.packageRules[i].fixedQuantity
           }
         )
@@ -160,6 +160,7 @@ export class PackageDetailComponent implements OnInit {
 
   submit() {
     console.log('submit');
+    this.orderProducts[0].saleflow = this.saleflowId;
     this.header.storeOrderPackage(this.saleflowId, this.packageData._id, this.orderProducts);
     console.log(this.header.getOrder(this.saleflowId));
     this.header.hasScenarios = true;

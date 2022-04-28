@@ -22,7 +22,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() itemExtra: any;
   @Input() type: number = 1
   @Input() description: string
-
+  @Input() showPrice: any;
   // new
   @Input() imgURL: string;
   @Input() limitScenarios: number;
@@ -57,6 +57,8 @@ export class SaleflowItemComponent implements OnInit {
     // if(this.selecteds.find(selected => selected == this.itemExtra) != undefined){
     //   this.isSelected = true;
     // }
+    console.log(this.showPrice);
+    
   }
 
   navigateDetails(): void {

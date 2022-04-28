@@ -69,3 +69,20 @@
   background-color: #ffffff;
   row-gap: 70px;
 }
+
+.dot-trio-hlprhdr {
+  width: 6px;
+  height: 21px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  cursor: pointer;
+
+  .dot-hlprhdr {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #27a2fc;
+    margin-bottom: 3px;
+  }
+}

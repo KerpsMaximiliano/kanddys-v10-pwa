@@ -2,7 +2,7 @@
     <div class="container">
         <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
         middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="itemData.name.toUpperCase()"
-        [back]="true" (onClose)="back()">
+        [back]="true" [options]="true" (onClose)="back()">
         </app-helper-header>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
         <div class="wrapper">
