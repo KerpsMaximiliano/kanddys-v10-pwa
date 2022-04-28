@@ -21,6 +21,16 @@ import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
 import { MerchantsService } from './merchants.service';
 
+class SaleflowData {
+  order: ItemOrderInput;
+  itemData: any[];
+  post: {
+    option: number,
+    data: PostInput
+  };
+  deliveryOption: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -216,196 +226,167 @@ export class HeaderService {
     return this.savedBookmarks;
   }
 
-  storeFlowId(id?: string) {
-    localStorage.setItem('saleflow-token', JSON.stringify(id));
+  storeSaleflow(saleflow: SaleFlow) {
+    localStorage.setItem('saleflow-data', JSON.stringify(saleflow));
   }
 
-  getFlowId(): string {
-    return JSON.parse(localStorage.getItem('saleflow-token'));
+  getSaleflow(): SaleFlow {
+    return JSON.parse(localStorage.getItem('saleflow-data'));
   }
 
   // Stores order product data in localStorage
   storeOrderProduct(saleflow: string, product: ItemSubOrderInput) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) saleflows = {};
-    if(!saleflows[saleflow]) saleflows[saleflow] = {};
-    if(!saleflows[saleflow].products) saleflows[saleflow].products = [];
-    const index = saleflows[saleflow].products.findIndex(subOrder => subOrder.item === product.item);
-    if(index >= 0) saleflows[saleflow].products.splice(index, 1);
-    else saleflows[saleflow].products.push(product)
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) order = {};
+    if(!order.products) order.products = [];
+    const index = order.products.findIndex(subOrder => subOrder.item === product.item);
+    if(index >= 0) order.products.splice(index, 1);
+    else order.products.push(product)
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores item data in localStorage
   storeItem(saleflow: string, product: Item | ItemPackage) {
-    let itemProduct: {[key: string]: (Item | ItemPackage)[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
-    if(!itemProduct) itemProduct = {};
-    if(!itemProduct[saleflow]) itemProduct[saleflow] = [];
-    const index = itemProduct[saleflow].findIndex(item => item._id === product._id);
-    if(index >= 0) itemProduct[saleflow].splice(index, 1);
-    else itemProduct[saleflow].push(product);
-    localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
+    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!itemData) itemData = [];
+    const index = itemData.findIndex(item => item._id === product._id);
+    if(index >= 0) itemData.splice(index, 1);
+    else itemData.push(product);
+    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
   }
 
   // Adds params to first order product in localStorage
   addParams(saleflow: string, params: ItemSubOrderParamsInput) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    if(!saleflows[saleflow]) return;
-    if(!saleflows[saleflow].products || saleflows[saleflow].products.length === 0) return;
-    saleflows[saleflow].products[0].params[1] = params;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) return;
+    if(!order.products || order.products.length === 0) return;
+    order.products[0].params[1] = params;
+    console.log(rest.itemData);
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores order package data in localStorage
   storeOrderPackage(saleflow: string, itemPackage: string, products: ItemSubOrderInput[]) {
-    console.log(saleflow, itemPackage, products);
-    
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) saleflows = {};
-    if(!saleflows[saleflow]) saleflows[saleflow] = {};
-    saleflows[saleflow].itemPackage = itemPackage;
-    saleflows[saleflow].products = products;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) order = {};
+    order.itemPackage = itemPackage;
+    order.products = products;
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores amount to first order product in localStorage
   storeAmount(saleflow: string, amount: number) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    if(!saleflows[saleflow]) return;
-    if(!saleflows[saleflow].products || saleflows[saleflow].products.length === 0) return;
-    saleflows[saleflow].products[0].amount = amount;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) return;
+    if(!order.products || order.products.length === 0) return;
+    order.products[0].amount = amount;
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores reservation to first order product in localStorage
   storeReservation(saleflow: string, reservation: ReservationInput) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) saleflows = {};
-    if(!saleflows[saleflow]) saleflows[saleflow] = {};
-    if(!saleflows[saleflow].products || saleflows[saleflow].products.length === 0) return;
-    saleflows[saleflow].products[0].reservation = reservation;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) order = {};
+    if(!order.products || order.products.length === 0) return;
+    order.products[0].reservation = reservation;
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores post data in localStorage
   storePost(saleflow: string, data: PostInput, option?: number) {
-    let post: {[key: string]: { option: number, data: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
-    if(!post) post = {};
-    post[saleflow] = {
-      option,
+    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    post = {
       data,
+      option,
     };
-    localStorage.setItem('postData-token', JSON.stringify(post));
+    localStorage.setItem(saleflow, JSON.stringify({post, ...rest}));
   }
 
   // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput, option?: number) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) saleflows = {};
-    if(!saleflows[saleflow]) saleflows[saleflow] = {};
-    if(!saleflows[saleflow].products || saleflows[saleflow].products.length === 0) return;
-    saleflows[saleflow].products[0].deliveryLocation = deliveryLocation;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
-    if(option) localStorage.setItem('deliveryOption-token', JSON.stringify({
-      [saleflow]: option
-    }));
+    let { order, deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) order = {};
+    if(!order.products || order.products.length === 0) return;
+    order.products[0].deliveryLocation = deliveryLocation;
+    deliveryOption = option;
+    console.log(rest.itemData);
+    localStorage.setItem(saleflow, JSON.stringify({order, deliveryOption, ...rest}));
   }
 
   // Returns order data from localStorage
   getOrder(saleflow: string) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    return saleflows[saleflow];
+    let { order }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    return order;
   }
 
   // Returns items data from localStorage
   getItems(saleflow: string) {
-    let itemProduct: {[key: string]: Item[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
-    if(!itemProduct) return;
-    return itemProduct[saleflow];
+    let { itemData }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    return itemData;
   }
 
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
-    let post: {[key: string]: { option: number, data: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
-    if(!post) return;
-    return post[saleflow];
+    let { post }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    return post;
   }
 
   // Returns delivery option from provider-store
   getDeliveryOption(saleflow: string) {
-    let options: {[key: string]: number } = JSON.parse(localStorage.getItem('deliveryOption-token'));
-    if(!options) return;
-    return options[saleflow];
+    let { deliveryOption }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    return deliveryOption;
   }
 
   // Removes order product from localStorage
   removeOrderProduct(saleflow: string, id: string) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    if(!saleflows[saleflow]) return;
-    if(!saleflows[saleflow].products) return;
-    const index = saleflows[saleflow].products.findIndex(subOrder => subOrder.item === id);
-    if(index >= 0) saleflows[saleflow].products.splice(index, 1);
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!order) return;
+    if(!order.products) return;
+    const index = order.products.findIndex(subOrder => subOrder.item === id);
+    if(index >= 0) order.products.splice(index, 1);
     else return;
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Removes item data from localStorage
   removeItem(saleflow: string, id: string) {
-    let itemProduct: {[key: string]: Item[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
-    if(!itemProduct) return;
-    if(!itemProduct[saleflow]) return;
-    const index = itemProduct[saleflow].findIndex(product => product._id === id);
-    if(index >= 0) itemProduct[saleflow].splice(index, 1);
+    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(!itemData) return;
+    const index = itemData.findIndex(product => product._id === id);
+    if(index >= 0) itemData.splice(index, 1);
     else return;
-    localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
+    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
   }
 
   // Empties post data and option from localStorage
   emptyPost(saleflow: string) {
-    let post: {[key: string]: { option?: number, data?: PostInput} } = JSON.parse(localStorage.getItem('postData-token'));
-    if(!post) return;
-    post[saleflow] = {};
-    localStorage.setItem('postData-token', JSON.stringify(post));
+    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    localStorage.setItem(saleflow, JSON.stringify({...rest}));
   }
 
   // Empties delivery option from localStorage
   emptyDeliveryOption(saleflow: string) {
-    let options: {[key: string]: number } = JSON.parse(localStorage.getItem('deliveryOption-token'));
-    if(!options) return;
-    if(options[saleflow] == null) return;
-    delete options[saleflow];
-    localStorage.setItem('deliveryOption-token', JSON.stringify(options));
+    let { deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    localStorage.setItem(saleflow, JSON.stringify({...rest}));
   }
 
   // Empties order products from localStorage
   emptyOrderProducts(saleflow: string) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    if(!saleflows[saleflow]) return;
-    saleflows[saleflow] = {};
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    order = {};
+    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
     this.emptyDeliveryOption(saleflow);
   }
 
   // Empties item data from localStorage
   emptyItems(saleflow: string) {
-    let itemProduct: {[key: string]: (Item | ItemPackage)[] } = JSON.parse(localStorage.getItem('itemProductData-token'));
-    if(!itemProduct) return;
-    if(!itemProduct[saleflow]) return;
-    itemProduct[saleflow] = [];
-    localStorage.setItem('itemProductData-token', JSON.stringify(itemProduct));
+    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    itemData = [];
+    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
   }
 
   // Deletes saleflow order object from localStorage
   deleteSaleflowOrder(saleflow: string) {
-    let saleflows: {[key: string]: ItemOrderInput } = JSON.parse(localStorage.getItem('orderData-token'));
-    if(!saleflows) return;
-    if(!saleflows[saleflow]) return;
-    delete saleflows[saleflow];
-    localStorage.setItem('orderData-token', JSON.stringify(saleflows));
+    localStorage.removeItem(saleflow);
   }
 }

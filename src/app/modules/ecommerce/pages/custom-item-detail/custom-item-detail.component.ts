@@ -54,6 +54,7 @@ export class CustomItemDetailComponent implements OnInit {
       quantity: this.header.items[0].params[1].values[index].quantity,
     };
     this.header.order.products[0].amount = this.header.items[0].params[1].values[index].quantity;
+    this.header.emptyItems(this.header.saleflow._id);
     this.header.storeItem(this.header.saleflow._id, this.header.items[0]);
     if (this.servilletasList.length > 0) {
       this.header.order.products[0].params[1] = {
@@ -62,6 +63,7 @@ export class CustomItemDetailComponent implements OnInit {
       };
     }
     this.header.addParams(this.header.saleflow._id, this.header.order.products[0].params[1]);
+    this.header.storeAmount(this.header.saleflow._id, this.header.order.products[0].amount);
     this.header.isComplete.qualityQuantity = true;
     if(!this.header.isComplete.customizer)
       this.router.navigate([`ecommerce/provider-store/redirect-to-customizer`]);

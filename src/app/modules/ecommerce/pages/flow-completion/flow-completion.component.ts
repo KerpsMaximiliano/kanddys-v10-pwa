@@ -729,7 +729,7 @@ export class FlowCompletionComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (this.header.saleflow.module.post) {
-        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getFlowId());
+        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getSaleflow()._id);
         console.log(postinput);
         
         this.postsService
@@ -748,8 +748,7 @@ export class FlowCompletionComponent implements OnInit {
                 .then((data) => {
                   console.log(data);
                   console.log(data.createOrder._id);
-                  this.header.emptyOrderProducts(this.header.saleflow._id);
-                  this.header.emptyItems(this.header.saleflow._id);
+                  this.header.deleteSaleflowOrder(this.header.saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -777,8 +776,7 @@ export class FlowCompletionComponent implements OnInit {
           .createOrder(this.header.order)
           .then(async (data) => {
             console.log(data);
-            this.header.emptyOrderProducts(this.header.saleflow._id);
-            this.header.emptyItems(this.header.saleflow._id);
+            this.header.deleteSaleflowOrder(this.header.saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
