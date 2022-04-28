@@ -100,7 +100,7 @@ export class ShipmentDataFormComponent implements OnInit {
           placeholder: 'Escriba la calle, número, (nombre del edificio)',
           styles: {
             containerStyles: {
-              marginTop: '50px',
+              marginTop: '60px',
             },
             fieldStyles: {
               backgroundColor: 'white',

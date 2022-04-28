@@ -354,7 +354,12 @@
       </div>
     </div>
 
-    <div class="bottom-separator"></div>
+    <div
+      class="bottom-separator"
+      *ngIf="
+        scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
+      "
+    ></div>
 
     <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
     <app-sticky-button
