@@ -255,6 +255,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       stepButtonValidText: 'CONTINUAR',
     },
   ];
+  @Input() scrollableForm: boolean = false;
   @Input() disableSmoothScroll: boolean = true;
   shouldScrollBackwards: boolean = true;
   currentStep: number = 0;
@@ -262,9 +263,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
 
-  constructor(
-    private header: HeaderService
-  ) {}
+  constructor(private header: HeaderService) {}
 
   ngOnInit(): void {
     this.initController();
@@ -290,7 +289,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         if (this.currentStep > index && statusValue === 'INVALID') {
           this.currentStep = index;
           this.scrollToStep(this.currentStep);
-          this.blockScrollPastCurrentStep();
+          if (this.scrollableForm) this.blockScrollPastCurrentStep();
         }
       });
 
@@ -315,7 +314,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.blockScrollPastCurrentStep();
+    if (this.scrollableForm) this.blockScrollPastCurrentStep();
 
     console.log('Modelo de datos', this.dataModel);
   }
@@ -453,8 +452,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    * @method
    */
   blockScrollPastCurrentStep = () => {
-    // document.removeEventListener('scroll');
-
     document.addEventListener('scroll', this.blockScrollAfter);
   };
 
@@ -484,8 +481,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    * @method
    */
   blockScrollBeforeCurrentStep = () => {
-    // document.removeEventListener('scroll');
-
     document.addEventListener('scroll', this.blockScrollBefore);
   };
 
@@ -508,18 +503,18 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     let previousCurrentStep;
 
     if (!scrollToNextStep) {
-      this.unblockScrollPastCurrentStep();
+      if (this.scrollableForm) this.unblockScrollPastCurrentStep();
       previousCurrentStep = this.currentStep;
     }
 
     if (index < this.steps.length) {
-      if (!this.disableSmoothScroll) {
+      if (!this.disableSmoothScroll && this.scrollableForm) {
         document.getElementById(`step-${index}`).scrollIntoView({
           behavior: 'smooth',
           block: 'start',
           inline: 'nearest',
         });
-      } else {
+      } else if (this.disableSmoothScroll && this.scrollableForm) {
         let nextStepHtmlElement: HTMLElement = document.querySelector(
           `#step-${index}`
         );
@@ -531,7 +526,8 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           scrollToNextStep
         ) {
           window.scroll(0, nextStepHtmlElement.offsetTop);
-          this.blockScrollBeforeCurrentStep();
+
+          if (this.scrollableForm) this.blockScrollBeforeCurrentStep();
         }
 
         if (
@@ -547,9 +543,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
 
       this.currentStep = index;
       this.currentStepString = (index + 1).toString();
-      if (scrollToNextStep) this.blockScrollPastCurrentStep();
+      if (scrollToNextStep && this.scrollableForm)
+        this.blockScrollPastCurrentStep();
 
-      if (!scrollToNextStep && !this.disableSmoothScroll)
+      if (!scrollToNextStep && !this.disableSmoothScroll && this.scrollableForm)
         setTimeout(() => {
           this.blockScrollPastCurrentStep();
         }, 500 * (previousCurrentStep - this.currentStep));
@@ -572,6 +569,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
       scrollToStep: this.scrollToStep,
       executeStepDataProcessing: this.executeStepDataProcessing,
+      scrollableForm: this.scrollableForm,
     };
 
     this.stepFunctionParams = stepFunctionParams;
@@ -627,5 +625,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
     scrollToStep: this.scrollToStep,
     executeStepDataProcessing: this.executeStepDataProcessing,
+    scrollableForm: this.scrollableForm,
   };
 }

@@ -62,17 +62,18 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       }
     );
 
-    params.unblockScrollPastCurrentStep();
-    params.unblockScrollBeforeCurrentStep();
+    if (this.scrollableForm) {
+      params.unblockScrollPastCurrentStep();
+      params.unblockScrollBeforeCurrentStep();
+    }
 
     this.header.isComplete.message = true;
     this.router.navigate([`ecommerce/shipment-data-form`]);
   }
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
-    if (!this.addedScrollBlockerBefore) {
+    if (!this.addedScrollBlockerBefore && this.scrollableForm) {
       //quita el scroll hacia steps anteriores
-      console.log('Parametros', params);
       setTimeout(() => {
         params.blockScrollBeforeCurrentStep();
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
@@ -120,6 +121,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
   removeScrollBlockerBefore: any;
+  scrollableForm = false;
   formSteps = [
     {
       fieldsList: [
@@ -164,8 +166,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         }
       },
       customScrollToStepBackwards: (params) => {
-        params.unblockScrollPastCurrentStep();
-        params.unblockScrollBeforeCurrentStep();
+        if (this.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
         this.router.navigate([
           'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
@@ -248,12 +252,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           {
             text: 'Que la parte de atrás sea una fotografia',
             action: (params) => {
-              params.unblockScrollPastCurrentStep();
+              if (this.scrollableForm) params.unblockScrollPastCurrentStep();
               params.scrollToStep(2);
 
-              setTimeout(() => {
-                params.blockScrollPastCurrentStep();
-              }, 500);
+              if (this.scrollableForm)
+                setTimeout(() => {
+                  params.blockScrollPastCurrentStep();
+                }, 500);
             },
           },
         ],
@@ -429,7 +434,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.addedScrollBlockerBefore) {
+    if (this.addedScrollBlockerBefore && this.scrollableForm) {
       this.removeScrollBlockerBefore();
     }
   }
