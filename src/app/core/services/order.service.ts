@@ -7,6 +7,7 @@ import {
   payOrder,
   ordersByUser,
   addTagsInOrder,
+  toggleUserNotifications,
   updateTagsInOrder,
 } from '../graphql/order.gql';
 import { ItemOrder } from '../models/order';
@@ -67,6 +68,22 @@ export class OrderService {
         fetchPolicy: 'no-cache',
       });
       return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async toggleUserNotifications(
+    active: boolean,
+    orderId: string
+  ): Promise<ItemOrder> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: toggleUserNotifications,
+        variables: { active, orderId },
+      });
+
+      return result;
     } catch (e) {
       console.log(e);
     }

@@ -359,9 +359,9 @@
   padding-top: 22px;
   padding-bottom: 22px;
   min-height: 164px;
-  box-shadow: 9px 8px 41px -40px inset;
-  -webkit-box-shadow: 9px 8px 41px -40px inset;
-  -moz-box-shadow: 9px 8px 41px -40px inset;
+  box-shadow: 0px 8px 41px -32px inset;
+  -webkit-box-shadow: 0px 8px 41px -32px inset;
+  -moz-box-shadow: 0px 8px 41px -32px inset;
   font-family: "RobotoMedium";
   font-size: 20px;
   color: #0b1f38;
@@ -401,25 +401,25 @@
 }
 
 .pay-image {
-    box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
-    -webkit-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
-    -moz-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
-    border: 1px solid dodgerblue;
-    color: #d0d0d0;
-    font-family: RobotoMedium;
-    background: #fff;
-    border-radius: 15px;
-    text-align: center;
-    font-size: 21px;
-    height: 200px;
-    width: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 1;
-    background-size: cover;
-    background-repeat: no-repeat;
+  box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  -webkit-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  -moz-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  border: 1px solid dodgerblue;
+  color: #d0d0d0;
+  font-family: RobotoMedium;
+  background: #fff;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 21px;
+  height: 200px;
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .pagoView {
@@ -625,7 +625,7 @@
 .container-v2 {
   min-height: 100vh;
   width: 100%;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
   .content {
     padding: 0 21px;
     .list-items {
@@ -859,7 +859,7 @@
   margin-top: 20px;
   font-family: "RobotoRegular";
   font-size: 16px;
-  color: #6D6D6D;
+  color: #6d6d6d;
   display: flex;
   cursor: pointer;
 

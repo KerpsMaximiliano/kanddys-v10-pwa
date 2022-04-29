@@ -5,6 +5,7 @@ const orderData = `
   dateId
   createdAt
   tags
+  userNotifications
   subtotals {
     amount
   }
@@ -105,7 +106,16 @@ const orderData = `
     platform
     from
   }
-`
+`;
+
+export const toggleUserNotifications = gql`
+  mutation toggleUserNotifications($active: Boolean!, $orderId: ObjectID!) {
+    toggleUserNotifications(active: $active, orderId: $orderId) {
+      _id
+      userNotifications
+    }
+  }
+`;
 
 export const order = gql`
   query order($orderId: ObjectID!) {
@@ -145,18 +155,26 @@ export const payOrder = gql`
 `;
 
 export const addTagsInOrder = gql`
-  mutation addTagsInOrder($merchantId: ObjectID!, $tags: [String!]!, $orderId: ObjectID!) {
+  mutation addTagsInOrder(
+    $merchantId: ObjectID!
+    $tags: [String!]!
+    $orderId: ObjectID!
+  ) {
     addTagsInOrder(merchantId: $merchantId, tags: $tags, orderId: $orderId) {
-      _id,
+      _id
       tags
     }
   }
 `;
 
 export const updateTagsInOrder = gql`
-  mutation updateTagsInOrder($merchantId: ObjectID!, $tags: [String!]!, $orderId: ObjectID!) {
+  mutation updateTagsInOrder(
+    $merchantId: ObjectID!
+    $tags: [String!]!
+    $orderId: ObjectID!
+  ) {
     updateTagsInOrder(merchantId: $merchantId, tags: $tags, orderId: $orderId) {
-      _id,
+      _id
       tags
     }
   }
