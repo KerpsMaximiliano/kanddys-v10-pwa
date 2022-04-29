@@ -14,10 +14,10 @@ import {
   updateSaleflow,
   createSaleflow,
 } from './../graphql/saleflow.gql';
-import { itemCategories } from './../graphql/items.gql';
+import { itemCategoriesList } from './../graphql/items.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
-import { SaleFlow } from '../models/saleflow';
+import { PaginationInput, SaleFlow } from '../models/saleflow';
 import { Item, ItemPackage } from '../models/item';
 
 @Injectable({ providedIn: 'root' })
@@ -62,7 +62,7 @@ export class SaleFlowService {
     }
   }
 
-  async listPackages(params: any): Promise<{ listItemPackage: ItemPackage[] }> {
+  async listPackages(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
     try {
       const response = await this.graphql.query({
         query: listPackages,

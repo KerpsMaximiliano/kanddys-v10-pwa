@@ -4,7 +4,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   item,
   items,
-  itemCategories,
+  itemCategoriesList,
   createItem,
   itemsByMerchant,
   addItem,
@@ -23,6 +23,7 @@ import {
   itemExtras
 } from '../graphql/items.gql';
 import { Item, ItemCategory, ItemCategoryHeadline } from '../models/item';
+import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
@@ -157,10 +158,10 @@ export class ItemsService {
   }
 
 
-  async itemCategories(merchantId: string, params: any): Promise<{ itemCategoriesList: ItemCategory[] }> {
+  async itemCategories(merchantId: string, params: PaginationInput): Promise<{ itemCategoriesList: ItemCategory[] }> {
     try {
       const response = await this.graphql.query({
-        query: itemCategories,
+        query: itemCategoriesList,
         variables: { merchantId, params },
         fetchPolicy: 'no-cache',
       });

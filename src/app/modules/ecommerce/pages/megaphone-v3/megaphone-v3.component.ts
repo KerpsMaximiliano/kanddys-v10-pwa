@@ -90,7 +90,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   async getCategories() {
     const itemCategoriesList = (
-      await this.item.itemCategories(this.merchantId, {})
+      await this.item.itemCategories(this.merchantId, {
+        options: {
+          limit: 15
+        }
+      })
     ).itemCategoriesList;
     const headlines = await this.item.itemCategoryHeadlineByMerchant(
       this.merchantId
@@ -123,8 +127,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     });
     console.log(headlines);
     console.log(itemCategoriesList);
-    this.categories = headlines[0].itemsCategories.map(
-      (value) => itemCategoriesList.find((element) => element._id === value).name)
+    this.categories = headlines[0].itemsCategories
+      .map((value) => itemCategoriesList.find((element) => element._id === value)?.name)
+      .filter((value) => value);
     this.filters = filters;
     console.log(this.categories);
 

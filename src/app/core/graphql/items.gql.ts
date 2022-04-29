@@ -192,6 +192,7 @@ export const itemPackage = gql`
       name
       images
       price
+      description
       packageRules{
         item{
           _id
@@ -232,8 +233,8 @@ export const updateItem = gql`
   }
 `;
 
-export const itemCategories = gql`
-  query itemCategoriesList ($merchantId: ObjectID, $params: ListParams) {
+export const itemCategoriesList = gql`
+  query itemCategoriesList ($merchantId: ObjectID, $params: PaginationInput) {
     itemCategoriesList (merchantId: $merchantId,params: $params) {
       _id
       name
