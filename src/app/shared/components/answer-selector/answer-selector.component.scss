@@ -1,6 +1,6 @@
 .container {
-    // margin: 1rem;
-    margin: 29px 52px;
+  // margin: 1rem;
+  margin: 29px 52px;
 }
 
 // .container-options {
@@ -8,41 +8,43 @@
 // }
 
 ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .container-text-option {
-    // cursor: pointer;
-    padding: 1rem 0rem;
+  // cursor: pointer;
+  padding: 1rem 0rem;
 }
 
 .option {
-    cursor: pointer;
-    color: #7B7B7B;
-    font-family: 'RobotoMedium';
-    font-size: 19px;
-    margin: 0;
-    transition: 0.3s ease;
+  cursor: pointer;
+  color: #7b7b7b;
+  font-family: "RobotoMedium";
+  font-size: 19px;
+  margin: 0;
+  transition: 0.3s ease;
 }
 
 .option-selected {
-    background-color: #82f18d;
-    border-radius: 5px;
-    margin-right: 1rem;
-    padding: 0.5rem;
-    transition: 0.3s ease;
+  background-color: #82f18d;
+  border-radius: 5px;
+  margin-right: 1rem;
+  padding: 0.5rem;
+  transition: 0.3s ease;
 }
 
 .description-container {
-    margin-top: 15px;
-    .description-label {
-        font-family: RobotoLight;
-        font-style: italic;
-        font-size: 17px;
-        color: #202020;
-        padding-left: 45px;
-        margin: 0;
-    }
+  margin-top: 15px;
+  cursor: pointer;
+  
+  .description-label {
+    font-family: RobotoLight;
+    font-style: italic;
+    font-size: 17px;
+    color: #202020;
+    padding-left: 45px;
+    margin: 0;
+  }
 }
