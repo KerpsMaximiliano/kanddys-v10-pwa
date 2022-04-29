@@ -144,6 +144,8 @@ export class SwiperComponent implements OnInit {
   @Input() saleFlowTwoData: any;
   @Input() fullScreenSwiper: boolean = false;
   @Input() selectable: boolean;
+  @Input() showPrice: boolean = false;
+  @Input() showDescription: boolean = false;
   @Output() slideActive = new EventEmitter();
   @Output() toggleEmitter = new EventEmitter();
 
@@ -524,6 +526,8 @@ export class SwiperComponent implements OnInit {
     console.log(this.calendars.months);
     console.log(this.perView); **/
     console.log(this.saleFlowTwoData);
+    console.log(this.showPrice);
+    
   }
   goToLink(url: string) {
     window.open(url, '_blank');

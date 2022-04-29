@@ -82,7 +82,10 @@
     </ng-container>
   </div>
   <div *ngIf="itemsByCategory.length > 0" style="margin-bottom: 30px">
-    <div *ngFor="let item of itemsByCategory; let i = index">
+    <div
+      *ngFor="let item of itemsByCategory; let i = index"
+      [ngStyle]="{ marginBottom: '110px' }"
+    >
       <div class="header-wrapper">
         <h6
           class="header-text"
@@ -105,6 +108,7 @@
       <app-swiper
         [saleFlowTwo]="true"
         [saleFlowTwoData]="item.items"
+        [showPrice]="false"
         (slideActive)="onItemCategoryClick(i, $event)"
         (toggleEmitter)="toggleSelected('item', i, $event)"
       ></app-swiper>
@@ -112,7 +116,7 @@
   </div>
   <section
     style="background-color: white; margin-bottom: 73px"
-    *ngIf="itemsByCategory.length === 0"
+    *ngIf="itemsByCategory.length === 0 && inputPackage.length === 0"
   >
     <ng-container *ngIf="isCategories; else elseTemplate">
       <div style="padding-top: 10px">
@@ -132,20 +136,13 @@
         {{ merchantSubheadline }}
       </div>
     </ng-template>
-
-    <ng-container *ngIf="inputPackage.length > 0 && items.length === 0">
-      <app-item-grid
-        [items]="inputPackage"
-        (eventEmitter)="save($event)"
-      ></app-item-grid>
-    </ng-container>
-    <ng-container *ngIf="inputPackage.length === 0 && items.length > 0">
+    <ng-container *ngIf="items.length > 0">
       <app-item-grid
         [items]="items"
         (eventEmitter)="save($event)"
       ></app-item-grid>
     </ng-container>
-    <ng-container *ngIf="inputPackage.length === 0 && items.length === 0">
+    <ng-container *ngIf="items.length === 0">
       <div class="no-results">No se han encontrado resultados...</div>
     </ng-container>
   </section>

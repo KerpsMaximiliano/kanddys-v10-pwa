@@ -42,12 +42,10 @@
       (click)="onClick()"
     ></div>
     <div class="infoContainer">
-      <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price">
-        <ng-container *ngIf="showPrice">
-          ${{price}}
-        </ng-container>
+      <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
+        ${{price}}
       </div>
-      <p class="desc" *ngIf="description">{{description}}</p>
+      <p class="desc" *ngIf="description && showDescription">{{description}}</p>
       <div
         *ngIf="selectable"
         (click)="toggleSelect($event)" 

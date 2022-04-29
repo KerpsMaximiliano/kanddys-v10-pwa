@@ -165,15 +165,29 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.order?.products?.length > 0
         )
           this.header.order.products[0].deliveryLocation = deliveryData;
-        this.header.storeLocation(this.header.getFlowId(), deliveryData);
+        this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
         this.header.isComplete.delivery = true;
         this.router.navigate([`ecommerce/flow-completion`]);
         return { ok: true };
       },
       bottomLeftAction: {
         text: 'Sin envio, lo pasaré a recoger',
-        execute: () => {
-          console.log('Whatever goes here');
+        execute: (params) => {
+          console.log(params.dataModel.value['1']);
+
+          const deliveryData = {
+            street: params.dataModel.value['1'].street,
+            note: params.dataModel.value['1'].note,
+            city: '',
+          };
+          if (
+            this.header.order?.products &&
+            this.header.order?.products?.length > 0
+          )
+            this.header.order.products[0].deliveryLocation = deliveryData;
+          this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
+          this.header.isComplete.delivery = true;
+          this.router.navigate([`ecommerce/flow-completion`]);
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
@@ -182,5 +196,29 @@ export class ShipmentDataFormComponent implements OnInit {
     },
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(!this.header.saleflow) {
+      const saleflow = this.header.getSaleflow();
+      if(saleflow) {
+        this.header.saleflow = saleflow;
+        this.header.order = this.header.getOrder(saleflow._id);
+        if(!this.header.order) {
+          this.router.navigate([`/ecommerce/trivias`]);
+          return;
+        }
+        const items = this.header.getItems(saleflow._id);
+        if(items && items.length > 0) this.header.items = items;
+        else this.router.navigate([`/ecommerce/trivias`]);
+      } else this.router.navigate([`/ecommerce/trivias`]);
+    } else {
+      this.header.order = this.header.getOrder(this.header.saleflow._id);
+      if(!this.header.order) {
+        this.router.navigate([`/ecommerce/trivias`]);
+        return;
+      }
+      const items = this.header.getItems(this.header.saleflow._id);
+      if(items && items.length > 0) this.header.items = items;
+      else this.router.navigate([`/ecommerce/trivias`]);
+    }
+  }
 }

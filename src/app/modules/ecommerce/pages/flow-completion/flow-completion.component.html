@@ -207,17 +207,17 @@
         class="label1"
       >
         {{
-          flow !== "flow-completion"
-            ? "Cuentanos un poco más:"
-            : orderData.hasCustomizer
-            ? "¿Cómo prefieres hacer el pago de $" +
-              (orderData?.amount | number: "1.0-2") +
-              " DOP / PAQ." +
-              orderData?.itemAmount +
-              " UNDS?"
-            : "¿Cómo prefieres hacer el pago de $" +
-              (orderData?.amount | number: "1.0-2") +
-              " DOP?"
+        flow !== "flow-completion"
+        ? "Cuentanos un poco más:"
+        : orderData?.hasCustomizer 
+          ? "¿Cómo prefieres hacer el pago de $" +
+            (orderData?.amount | number: "1.0-2") +
+            " DOP / PAQ." +
+            orderData?.itemAmount +
+            " UNDS?"
+          : "¿Cómo prefieres hacer el pago de $" +
+            (orderData?.amount | number: "1.0-2") +
+            " DOP?"
         }}
       </p>
       <app-answer-selector

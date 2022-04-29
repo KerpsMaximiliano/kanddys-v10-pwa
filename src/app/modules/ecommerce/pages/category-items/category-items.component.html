@@ -54,8 +54,10 @@
       [saleFlowTwo]="true"
       [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="bestSellers"
-      (slideActive)="onClick($event)"
-      (toggleEmitter)="toggleSelected('item', $event)"
+      [showPrice]="hasCustomizer ? false : true"
+      [showDescription]="hasCustomizer ? false : true"
+      (slideActive)="onClick($event, 'slider')"
+      (toggleEmitter)="toggleSelected('slider', $event)"
     ></app-swiper>
   </div>
   <div style="background-color: white">
@@ -85,6 +87,7 @@
             [isSelected]="item.isSelected"
             [selectable]="true"
             [showPrice]="item.customizerId ? false : true"
+            [showDescription]="hasCustomizer ? false : true"
             (itemClicked)="onClick(i)"
             (changeSelection)="toggleSelected('item', i)"
             [priceAlign]="'start'"
@@ -100,7 +103,7 @@
 
 <app-sticky-button
   *ngIf="!hasCustomizer"
-  [mode]="canOpenCart ? 'fixed' : 'disabled'"
+  [mode]="canOpenCart ? 'basic' : 'disabled'"
   [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
   (click)="showShoppingCartDialog()"
 ></app-sticky-button>

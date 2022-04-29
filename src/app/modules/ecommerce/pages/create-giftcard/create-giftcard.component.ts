@@ -43,7 +43,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       ],
     };
     this.header.storePost(
-      this.header.saleflow?._id ?? this.header.getFlowId(),
+      this.header.saleflow?._id ?? this.header.getSaleflow()._id,
       {
         message: '',
         targets: [
@@ -417,7 +417,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           ],
         };
         this.header.storePost(
-          this.header.saleflow?._id ?? this.header.getFlowId(),
+          this.header.saleflow?._id ?? this.header.getSaleflow()._id,
           {
             message: params.dataModel.value['4']['message-edit'],
             targets: [
@@ -449,6 +449,29 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.header.flowRoute = 'create-giftcard';
+    if(!this.header.saleflow) {
+      const saleflow = this.header.getSaleflow();
+      if(saleflow) {
+        this.header.saleflow = saleflow;
+        this.header.order = this.header.getOrder(saleflow._id);
+        if(!this.header.order) {
+          this.router.navigate([`/ecommerce/trivias`]);
+          return;
+        }
+        const items = this.header.getItems(saleflow._id);
+        if(items && items.length > 0) this.header.items = items;
+        else this.router.navigate([`/ecommerce/trivias`]);
+      } else this.router.navigate([`/ecommerce/trivias`]);
+    } else {
+      this.header.order = this.header.getOrder(this.header.saleflow._id);
+      if(!this.header.order) {
+        this.router.navigate([`/ecommerce/trivias`]);
+        return;
+      }
+      const items = this.header.getItems(this.header.saleflow._id);
+      if(items && items.length > 0) this.header.items = items;
+      else this.router.navigate([`/ecommerce/trivias`]);
+    }
   }
 
   ngOnDestroy(): void {
