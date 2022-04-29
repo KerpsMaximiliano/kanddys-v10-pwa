@@ -7,6 +7,7 @@ import { Item } from 'src/app/core/types/item.types';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { formatDate, LocationStrategy } from '@angular/common';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -14,8 +15,8 @@ import { environment } from 'src/environments/environment';
 //import { CreateTriviaComponent } from '../create-trivia/create-trivia.component';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import * as moment from 'moment';
-import 'moment/locale/es'  // without this line it didn't work
-moment.locale('es')
+import 'moment/locale/es'; // without this line it didn't work
+moment.locale('es');
 
 @Component({
   selector: 'app-order-info',
@@ -141,6 +142,7 @@ export class OrderInfoComponent implements OnInit {
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
           this.orders = data.order;
+          this.notifications = data.order.userNotifications;
           this.items = data.order.items;
           this.showHeader = this.headerService.fromOrderSales ? true : false;
 
@@ -153,9 +155,12 @@ export class OrderInfoComponent implements OnInit {
           };
 
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
-          if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
-          const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
-          if(hasItemExtra) {
+          if (data.order.items[0].customizer)
+            this.tabsOptions.push('Personalización');
+          const hasItemExtra = data.order.items.find(
+            (item) => item.itemExtra.length > 0
+          );
+          if (hasItemExtra) {
             this.tabsOptions.push('Escenarios');
             this.itemsExtra = hasItemExtra.itemExtra;
           }
@@ -170,8 +175,13 @@ export class OrderInfoComponent implements OnInit {
           }
           console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
-          const totalPrice = data.order.subtotals.reduce((a, b) => a + b.amount, 0);
-          this.price = data.order.items[0].customizer ? totalPrice * 1.18 : totalPrice;
+          const totalPrice = data.order.subtotals.reduce(
+            (a, b) => a + b.amount,
+            0
+          );
+          this.price = data.order.items[0].customizer
+            ? totalPrice * 1.18
+            : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
           this.dateId = this.formatID(data.order.dateId);
@@ -189,7 +199,9 @@ export class OrderInfoComponent implements OnInit {
           // this.date = `${moment(data.order.createdAt).format(
           //   'YYYY-MM-DD'
           // )} a las ${moment(data.order.createdAt).format('hh:mm A')}`;
-          this.date = `${moment(data.order.createdAt).format('LL')} a las ${moment(data.order.createdAt).format('LT')}`;
+          this.date = `${moment(data.order.createdAt).format(
+            'LL'
+          )} a las ${moment(data.order.createdAt).format('LT')}`;
           console.log(this.id);
           if (data.order.itemPackage) this.pago = data.order.itemPackage.price;
           this.createdAt = data.order.createdAt;
@@ -355,14 +367,19 @@ export class OrderInfoComponent implements OnInit {
   }
 
   toggleNotifications() {
+    this.order
+      .toggleUserNotifications(!this.notifications, this.linkId)
+      .then((result) => {
+        console.log('Cambiaste las preferencias de notificaciones');
+        console.log(result);
+      });
+
     this.notifications = !this.notifications;
   }
 
   wichName(e) {
     console.log(e);
-    if (
-      e === 'Reservación'
-    ) {
+    if (e === 'Reservación') {
       this.reservacion = true;
       this.address = false;
       this.escenarios = false;
@@ -410,8 +427,7 @@ export class OrderInfoComponent implements OnInit {
       this.personalizacion = false;
       this.mensajeRegalo = true;
       this.pagoView = false;
-    }
-    else if (e === 'Pago') {
+    } else if (e === 'Pago') {
       this.reservacion = false;
       this.address = false;
       this.escenarios = false;
