@@ -595,8 +595,10 @@ export class ReservationComponent implements OnInit {
   }
 
   getId(id, slide) {
+    console.log(this.todayHours);
     console.log(slide);
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
+    console.log(slide);
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -862,6 +864,10 @@ export class ReservationComponent implements OnInit {
     this.header.isComplete.delivery = true;
     console.log(this.saleflowData);
     this.router.navigate([`ecommerce/flow-completion`]);
+  }
+
+  deleteSelection(){
+
   }
 
   saveNoPost() {
