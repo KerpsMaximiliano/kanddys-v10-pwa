@@ -3,7 +3,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-page-component-tabs',
   templateUrl: './page-component-tabs.component.html',
-  styleUrls: ['./page-component-tabs.component.scss']
+  styleUrls: ['./page-component-tabs.component.scss'],
 })
 export class PageComponentTabsComponent implements OnInit {
   @Input() tabsOptions: string[];
@@ -13,14 +13,14 @@ export class PageComponentTabsComponent implements OnInit {
   startX: any;
   scrollLeft: any;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   changeTab(index: number, name: string) {
+    console.log(index, name, 'Cambió de tab');
     this.activeTag = index;
-    this.changeValue.emit(name)
+    this.changeValue.emit(name);
   }
 
   startDragging(e, flag, el) {

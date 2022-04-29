@@ -207,17 +207,17 @@
         class="label1"
       >
         {{
-        flow !== "flow-completion"
-        ? "Cuentanos un poco más:"
-        : orderData?.hasCustomizer 
-          ? "¿Cómo prefieres hacer el pago de $" +
-            (orderData?.amount | number: "1.0-2") +
-            " DOP / PAQ." +
-            orderData?.itemAmount +
-            " UNDS?"
-          : "¿Cómo prefieres hacer el pago de $" +
-            (orderData?.amount | number: "1.0-2") +
-            " DOP?"
+          flow !== "flow-completion"
+            ? "Cuentanos un poco más:"
+            : orderData?.hasCustomizer
+            ? "¿Cómo prefieres hacer el pago de $" +
+              (orderData?.amount | number: "1.0-2") +
+              " DOP / PAQ." +
+              orderData?.itemAmount +
+              " UNDS?"
+            : "¿Cómo prefieres hacer el pago de $" +
+              (orderData?.amount | number: "1.0-2") +
+              " DOP?"
         }}
       </p>
       <app-answer-selector
@@ -311,11 +311,13 @@
       <p style="margin-bottom: 22px" class="label3">Monto transferido:</p>
       <input
         type="number"
-        [(ngModel)]="ammount"
         min="1"
         class="input payment"
         placeholder="Pagué.."
-        pattern="\d*"
+        [formControl]="ammount"
+        (keydown)="validateNumbers($event)"
+        pattern="[0-9]*"
+        inputmode="numeric"
       />
 
       <p class="label3">Adicione la imagen (captura):</p>
