@@ -39,7 +39,11 @@ export class PackageDetailComponent implements OnInit {
   ngOnInit(): void {
     this.header.saleflow = this.header.getSaleflow();
     this.saleflowId = this.header.saleflow._id;
-    this.items.itemCategories(this.header.saleflow.merchant._id, {}).then(data => {
+    this.items.itemCategories(this.header.saleflow.merchant._id, {
+      options: {
+        limit: 15
+      }
+    }).then(data => {
       console.log(data);
       //this.filters = data.itemCategoriesList;
       for (let i = 0; i < data.itemCategoriesList.length; i++) {

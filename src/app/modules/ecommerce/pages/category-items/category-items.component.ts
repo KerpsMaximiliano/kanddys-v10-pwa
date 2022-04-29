@@ -175,7 +175,11 @@ export class CategoryItemsComponent implements OnInit {
 
       this.canOpenCart = orderData?.products?.length > 0;
       const itemCategoriesList = (
-        await this.item.itemCategories(merchantId, {})
+        await this.item.itemCategories(merchantId, {
+          options: {
+            limit: 15
+          }
+        })
       ).itemCategoriesList;
       this.categoryName = itemCategoriesList.find(
         (category) => category._id === params.categoryId
