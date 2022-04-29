@@ -10,6 +10,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { formatDate, LocationStrategy } from '@angular/common';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { environment } from 'src/environments/environment';
 //import { CreateTriviaComponent } from '../create-trivia/create-trivia.component';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -38,7 +39,8 @@ export class OrderInfoComponent implements OnInit {
     private merchantService: MerchantsService,
     private customizerValueService: CustomizerValueService,
     private dialog: DialogService,
-    private location: LocationStrategy
+    private location: LocationStrategy,
+    private auth: AuthService,
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -106,6 +108,7 @@ export class OrderInfoComponent implements OnInit {
   dateOfOrder: string;
   existPackage: boolean = false;
   notifications: boolean = true;
+  showNotificationButton: boolean;
 
   days: string[] = [
     '',
@@ -152,7 +155,7 @@ export class OrderInfoComponent implements OnInit {
 
             socials: data.order.items[0].saleflow.social,
           };
-
+          this.auth.me().then((user) => this.showNotificationButton = user._id === data.order.user._id);
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');

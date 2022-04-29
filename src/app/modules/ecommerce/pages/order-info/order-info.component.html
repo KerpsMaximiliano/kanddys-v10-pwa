@@ -282,11 +282,13 @@
 <div class="container-v2" *ngIf="dateId">
   <app-helper-header *ngIf="showHeader" [basic]="false" [back]="true" middleTextTransform="uppercase"
     middleText="información de la orden" middleTextColor="#7B7B7B" middleTextFontFamily="SfProRegular"
-    middleTextFontSize="17px" [bgcolor]="'transparent'" [searchAble]="false" (onClose)="back()"></app-helper-header>
+    middleTextFontSize="17px" [bgcolor]="'transparent'" [searchAble]="false" (onClose)="back()">
+  </app-helper-header>
   <div class="provider-info-wrapper">
     <app-provider-info [providerId]="providerData.headline" [providerBio1]="'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()"
       [providerImage]="providerData.image" [providerSocials]="providerData.socials" [background]="'#FFFFFF'"
-      [leftInfo]="dateId" [rightInfo]="date"></app-provider-info>
+      [leftInfo]="dateId" [rightInfo]="date">
+    </app-provider-info>
   </div>
 
   <app-page-component-tabs [tabsOptions]="tabsOptions" (changeValue)="wichName($event)"></app-page-component-tabs>
@@ -335,12 +337,11 @@
       </div>
     </div>
     <div class="status" *ngIf="status" style="margin-bottom: 20px;">STATUS DEL PAGO: {{ status }}</div>
-    <div>
+    <div *ngIf="showNotificationButton">
       <label class="input-container">
         <div class="notif-check" (click)="toggleNotifications()"
           [ngStyle]="{backgroundColor: notifications ? '#4773d8' : '#ffffff'}"></div>
         <div>Si, quiero ser notificado (a) cuando mi pago cambie de estado.</div>
-        <!-- <input type="checkbox" (change)="toggleNotifications($event.target.checked)"> -->
       </label>
     </div>
     <!-- <p class="date">{{ createdAt | date: "short" }}</p> -->
