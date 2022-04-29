@@ -1,21 +1,44 @@
-<div class="container" [ngStyle]="{margin: useMargins ? '29px 52px;' : '0px'}">
-    <ul class="container-options">
-        <li *ngFor="let option of options; index as i">
-            <div class="container-text-option" *ngIf="!isMultipleOption">
-                <p class="option" [class]="( i === activeOption && showSelectedFeedback ) ? 'option-selected' : 'option'" (click)="editable && option.status && clickSelector(i)"> 
-                    {{ option.value }}
-                </p>
-                <div class="description-container" *ngIf="option?.description">
-                    <p class="description-label" *ngFor="let description of option.description">
-                        {{ description }}
-                    </p>
-                </div>
-            </div>
-            <div class="container-text-option" *ngIf="isMultipleOption">
-                <p class="option" 
-                    [ngClass]="option.click && showSelectedFeedback ? 'option-selected' : 'option'"
-                > {{ option.value }}</p>
-            </div>
-        </li>
-    </ul>
+<div
+  class="container"
+  [ngStyle]="{ margin: useMargins ? '29px 52px;' : '0px' }"
+>
+  <ul class="container-options">
+    <li *ngFor="let option of options; index as i">
+      <div class="container-text-option" *ngIf="!isMultipleOption">
+        <p
+          class="option"
+          [class]="
+            i === activeOption && showSelectedFeedback
+              ? 'option-selected'
+              : 'option'
+          "
+          (click)="editable && option.status && clickSelector(i)"
+        >
+          {{ option.value }}
+        </p>
+        <div
+          class="description-container"
+          *ngIf="option?.description"
+          (click)="editable && option.status && clickSelector(i)"
+        >
+          <p
+            class="description-label"
+            *ngFor="let description of option.description"
+          >
+            {{ description }}
+          </p>
+        </div>
+      </div>
+      <div class="container-text-option" *ngIf="isMultipleOption">
+        <p
+          class="option"
+          [ngClass]="
+            option.click && showSelectedFeedback ? 'option-selected' : 'option'
+          "
+        >
+          {{ option.value }}
+        </p>
+      </div>
+    </li>
+  </ul>
 </div>
