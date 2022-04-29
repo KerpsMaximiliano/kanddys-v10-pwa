@@ -866,7 +866,7 @@ export class ReservationComponent implements OnInit {
   }
 
   deleteSelection(){
-
+    this.datePreview = null;
   }
 
   saveNoPost() {

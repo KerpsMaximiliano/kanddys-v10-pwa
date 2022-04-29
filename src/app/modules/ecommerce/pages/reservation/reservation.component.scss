@@ -477,7 +477,7 @@
 
   .date-info {
     color: #ffffff;
-    background-color: #4773d8;
+    background-image: linear-gradient( to right, rgb(49, 164, 249), rgb(29, 88, 219) );
     font-family: "RobotoMedium";
     font-size: 16px;
     margin-top: 35px;
@@ -488,6 +488,20 @@
     border-radius: 10px;
     min-width: 300px;
     max-width: 385px;
+    position: relative;
+    & .delete-button{
+      position: absolute;
+      top: -7px;
+      right: -5px;
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      color: #0380FF;
+      text-align: center;
+      padding-bottom: 0px;
+      border-radius: 50%;
+      border: solid 1px;
+    }
   }
 }
 
