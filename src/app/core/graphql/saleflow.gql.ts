@@ -202,6 +202,7 @@ export const listPackages = gql`
       categories {
         _id
       }
+      description
       packageRules {
         onlyFixedQuantity
         fixedQuantity

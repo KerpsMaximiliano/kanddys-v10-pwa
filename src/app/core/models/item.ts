@@ -91,6 +91,7 @@ export class ItemPackage extends Model<ItemPackage> {
   merchant?: Merchant;
   price?: number;
   categories?: ItemCategory[];
+  description?: string;
 
   isSelected?: boolean;
 }
