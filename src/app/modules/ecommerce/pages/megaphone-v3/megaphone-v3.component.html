@@ -17,7 +17,7 @@
     *ngIf="saleflowData && inputPackage.length > 0 && items.length === 0"
   >
     <ng-container *ngIf="inputPackage.length >= 0 && items.length === 0">
-      <div class="header-wrapper">
+      <div class="header-wrapper" [ngStyle]="{ height: '90px' }">
         <h6
           class="header-text"
           [ngStyle]="{
@@ -26,7 +26,7 @@
             fontWeight: 100
           }"
         >
-          Mas Vendidos
+          Paquetes
         </h6>
       </div>
       <div>

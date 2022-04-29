@@ -143,6 +143,7 @@ export class SwiperComponent implements OnInit {
   /*leadItems data ==>*/ @Input() leadItems: string[] = [];
   @Input() saleFlowTwoData: any;
   @Input() fullScreenSwiper: boolean = false;
+  @Input() shadowBellowImage: boolean = false;
   @Input() selectable: boolean;
   @Input() showPrice: boolean = false;
   @Input() showDescription: boolean = false;
