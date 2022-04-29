@@ -21,6 +21,15 @@ import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
 import { MerchantsService } from './merchants.service';
 
+class OrderProgress {
+  qualityQuantity: boolean;
+  customizer: boolean;
+  scenarios: boolean;
+  reservation: boolean;
+  message: boolean;
+  delivery: boolean;
+}
+
 class SaleflowData {
   order: ItemOrderInput;
   itemData: any[];
@@ -29,6 +38,7 @@ class SaleflowData {
     data: PostInput
   };
   deliveryOption: number;
+  orderProgress: OrderProgress;
 }
 
 @Injectable({
@@ -80,7 +90,7 @@ export class HeaderService {
   merchantInfo: Merchant;
   myMerchants: Merchant[];
   tags: any;
-  isComplete = {
+  isComplete: OrderProgress = {
     qualityQuantity: false,
     customizer: false,
     scenarios: false,
@@ -187,31 +197,31 @@ export class HeaderService {
   }
 
   isDataComplete(): boolean {
-    console.log('0');
+    console.log('Saleflow check');
     if(!this.saleflow) return
     if(this.saleflow.module.delivery && this.saleflow.module.delivery.isActive) {
-      console.log('1');
+      console.log('Delivery check');
       if(!this.isComplete.delivery)  return
     }
     if(this.items.some((item) => item.customizerId)) {
-      console.log('2');
+      console.log('qualityQuantity check');
       if(!this.isComplete.qualityQuantity) return
-      console.log('3');
+      console.log('Customizer');
       if(!this.isComplete.customizer) return
     }
     if(this.saleflow.module.appointment && this.saleflow.module.appointment.isActive) {
-      console.log('4');
+      console.log('Reservation check');
       if(!this.isComplete.reservation) return
     }
     if(this.hasScenarios) {
-      console.log('5');
+      console.log('Scenarios check');
       if(!this.isComplete.scenarios) return
     }
     if(this.saleflow.module.post && this.saleflow.module.post.isActive) {
-      console.log('6');
+      console.log('Post check');
       if(!this.isComplete.message) return
     }
-    console.log('7');
+    console.log('Data complete!');
     return true
   }
 
@@ -321,6 +331,12 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({order, deliveryOption, ...rest}));
   }
 
+  storeOrderProgress(saleflow: string) {
+    let { orderProgress, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    orderProgress = this.isComplete;
+    localStorage.setItem(saleflow, JSON.stringify({orderProgress, ...rest}));
+  }
+
   // Returns order data from localStorage
   getOrder(saleflow: string) {
     let { order }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
@@ -343,6 +359,14 @@ export class HeaderService {
   getDeliveryOption(saleflow: string) {
     let { deliveryOption }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
     return deliveryOption;
+  }
+
+  getOrderProgress(saleflow: string) {
+    let { orderProgress }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    if(orderProgress) {
+      this.hasScenarios = orderProgress.scenarios;
+      this.isComplete = orderProgress;
+    }
   }
 
   // Removes order product from localStorage

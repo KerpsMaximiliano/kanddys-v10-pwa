@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { TitleCasePipe } from '@angular/common';
+import { Location, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -157,7 +157,8 @@ export class FlowCompletionComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
     private dialog: DialogService,
-    private saleflow: SaleFlowService
+    private saleflow: SaleFlowService,
+    private location: Location,
   ) {}
 
   getOrderData(id: string) {
@@ -502,7 +503,8 @@ export class FlowCompletionComponent implements OnInit {
       this.relativeStep++;
     } else {
       lockUI(
-        this.createOrder().then(() => {
+        this.createOrder().then((data) => {
+          this.location.replaceState(`ecommerce/flow-completion/${data}`)
           this.relativeStep++;
           this.stepsLeft = 4;
           return this.getOrderData(this.header.orderId)
@@ -732,7 +734,7 @@ export class FlowCompletionComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (this.header.saleflow.module.post) {
-        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getSaleflow()._id);
+        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getSaleflow()._id)?.data;
         console.log(postinput);
         
         this.postsService
@@ -923,7 +925,12 @@ export class FlowCompletionComponent implements OnInit {
     }
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { orderFinished: this.orderData?.id ? true : false, products: showProducts },
+      props: { 
+        orderFinished: this.orderData?.id ? true : false, 
+        products: showProducts,
+        headerButton: 'Ver mas productos',
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
