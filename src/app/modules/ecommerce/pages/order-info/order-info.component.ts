@@ -7,7 +7,6 @@ import { Item } from 'src/app/core/types/item.types';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { OrderService } from 'src/app/core/services/order.service';
 import { formatDate, LocationStrategy } from '@angular/common';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
