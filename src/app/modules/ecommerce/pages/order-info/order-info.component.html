@@ -295,37 +295,53 @@
 
   <div class="content" *ngIf="facturado" style="margin-bottom: 100px; min-height: 90vh">
     <div class="list-items">
-      <ng-container *ngFor="let item of items; let i = index">
-        <div class="list-item">
-          <ng-container *ngIf="item.item.images.length > 0; else elseTemplate">
-            <img [src]="item.item.images[0]" alt="no-image" class="image-item" />
-          </ng-container>
-          <ng-template #elseTemplate>
-            <div class="list-square"></div>
-          </ng-template>
-
-          <div class="list-item-content">
-            <div class="item">
-              <p class="title">{{ item.item.name }}</p>
-              <p class="price" *ngIf="!existPackage">
-                <ng-container *ngIf="item.customizer?._id; else pricing">
-                  ${{ price | number: "1.0-2" }}
-                </ng-container>
-                <ng-template #pricing> ${{ item.item.pricing }} </ng-template>
-              </p>
-              <div class="bottom">
-                <p class="b-text">
-                  <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
-                  Cantidad: {{ item.amount }}
+      <ng-container *ngIf="!existPackage">
+        <ng-container *ngFor="let item of items; let i = index">
+          <div class="list-item">
+            <ng-container *ngIf="item.item.images.length > 0; else elseTemplate">
+              <img [src]="item.item.images[0]" alt="no-image" class="image-item" />
+            </ng-container>
+            <ng-template #elseTemplate>
+              <div class="list-square"></div>
+            </ng-template>
+  
+            <div class="list-item-content">
+              <div class="item">
+                <p class="title">{{ item.item.name }}</p>
+                <p class="price" *ngIf="!existPackage">
+                  <ng-container *ngIf="item.customizer?._id; else pricing">
+                    ${{ price | number: "1.0-2" }}
+                  </ng-container>
+                  <ng-template #pricing> ${{ item.item.pricing }} </ng-template>
                 </p>
-                <p class="b-text">
-                  <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
-                </p>
+                <div class="bottom">
+                  <p class="b-text">
+                    <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
+                    Cantidad: {{ item.amount }}
+                  </p>
+                  <p class="b-text">
+                    <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="items.length !== i + 1" class="line"></div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="existPackage">
+        <div class="list-items">
+          <div class="list-item">
+            <img [src]="orders.itemPackage.images[0]" alt="no-image" class="image-item" />
+            <div class="list-item-content">
+              <div class="item">
+                <p class="title">{{ orders.itemPackage.name }}</p>
+                <div class="bottom">
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div *ngIf="items.length !== i + 1" class="line"></div>
       </ng-container>
     </div>
 

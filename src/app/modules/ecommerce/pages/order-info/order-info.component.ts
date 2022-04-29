@@ -157,13 +157,10 @@ export class OrderInfoComponent implements OnInit {
           };
           this.auth.me().then((user) => this.showNotificationButton = user._id === data.order.user._id);
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
-          if (data.order.items[0].customizer)
-            this.tabsOptions.push('Personalización');
-          const hasItemExtra = data.order.items.find(
-            (item) => item.itemExtra.length > 0
-          );
-          if (hasItemExtra) {
-            this.tabsOptions.push('Escenarios');
+          if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
+          const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
+          if(hasItemExtra) {
+            this.tabsOptions.push('Sets');
             this.itemsExtra = hasItemExtra.itemExtra;
           }
           if (data.order.items[0].reservation) {
@@ -397,7 +394,7 @@ export class OrderInfoComponent implements OnInit {
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
-    } else if (e === 'Escenarios') {
+    } else if (e === 'Sets') {
       this.reservacion = false;
       this.address = false;
       this.escenarios = true;

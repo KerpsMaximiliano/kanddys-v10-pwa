@@ -163,6 +163,9 @@ export class PackageDetailComponent implements OnInit {
     this.orderProducts[0].saleflow = this.saleflowId;
     this.header.storeOrderPackage(this.saleflowId, this.packageData._id, this.orderProducts);
     console.log(this.header.getOrder(this.saleflowId));
+    this.header.storeItem(this.saleflowId, this.packageData);
+    console.log(this.header.getItems(this.saleflowId));
+    
     this.header.hasScenarios = true;
     this.header.isComplete.scenarios = true;
     this.router.navigate(['/ecommerce/reservations']);

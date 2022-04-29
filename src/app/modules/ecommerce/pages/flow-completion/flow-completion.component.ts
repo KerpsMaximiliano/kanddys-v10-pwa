@@ -205,6 +205,7 @@ export class FlowCompletionComponent implements OnInit {
             ? totalPrice * 1.18
             : totalPrice,
           hasCustomizer: this.fakeData.items[0].customizer ? true : false,
+          isPackage: this.fakeData.itemPackage ? true : false,
         };
         this.products = this.fakeData.items.map((item) => {
           const newItem = item.item;
@@ -910,9 +911,19 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   showItems() {
+    let showProducts = []
+    if (this.orderData.isPackage) {
+      console.log('si');
+      console.log(this.fakeData);
+      showProducts.push(this.fakeData.itemPackage);
+    }else{
+      console.log('no');
+      console.log(this.fakeData);
+      showProducts = this.products;
+    }
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { orderFinished: this.orderData?.id ? true : false, products: this.products },
+      props: { orderFinished: this.orderData?.id ? true : false, products: showProducts },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
