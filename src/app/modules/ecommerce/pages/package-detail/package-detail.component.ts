@@ -90,25 +90,25 @@ export class PackageDetailComponent implements OnInit {
             itemExtra: [],
             //saleflow: this.saleflowId,
             amount: this.packageData.packageRules[i].fixedQuantity
+          })
+        }
+        let alreadySelected = this.header.getOrder(this.saleflowId);
+        console.log(alreadySelected?.itemPackage);
+        if (alreadySelected.itemPackage === this.packageData._id) {
+          if (alreadySelected.products[0].itemExtra.length > 0) {
+            this.orderProducts[0].itemExtra = alreadySelected.products[0].itemExtra;
+            let index;
+            this.selectedsQty = alreadySelected.products[0].itemExtra.length;
+            for (let i = 0; i < alreadySelected.products[0].itemExtra.length; i++) {
+              index = this.scenarios.findIndex(object => {
+                return object._id === alreadySelected.products[0].itemExtra[i]
+              });
+              this.scenarios[index].isActive = true;
+            }
+          } else {
+            this.header.emptyOrderProducts(this.saleflowId);
+            this.header.emptyItems(this.saleflowId);
           }
-        )
-      }
-      let alreadySelected = this.header.getOrder(this.saleflowId);
-      console.log(alreadySelected?.itemPackage);
-      if (alreadySelected.itemPackage === this.packageData._id) {
-        if (alreadySelected.products[0].itemExtra.length > 0) {
-          this.orderProducts[0].itemExtra = alreadySelected.products[0].itemExtra;
-          let index;
-          this.selectedsQty = alreadySelected.products[0].itemExtra.length;
-          for (let i = 0; i < alreadySelected.products[0].itemExtra.length; i++) {
-            index = this.scenarios.findIndex(object => {
-              return object._id === alreadySelected.products[0].itemExtra[i]
-            });
-            this.scenarios[index].isActive = true;
-          }
-        } else {
-          this.header.emptyOrderProducts(this.saleflowId);
-          this.header.emptyItems(this.saleflowId);
         }
       });
   }
