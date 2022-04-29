@@ -8,85 +8,93 @@ import { DeliveryLocation, DeliveryLocationInput, SaleFlow } from './saleflow';
 import { IpUser, User } from './user';
 
 export class OrderSubtotal {
-    currency: string;
-    amount: number;
+  currency: string;
+  amount: number;
 }
 
 export class OCR extends Model<OCR> {
-    transactionCode: string;
-    from: string;
-    merchant: Merchant
-    user: User
-    ipuser: IpUser;
-    status: string;
-    image: string;
-    total: number;
-    subtotal: number;
-    platform: string;
+  transactionCode: string;
+  from: string;
+  merchant: Merchant;
+  user: User;
+  ipuser: IpUser;
+  status: string;
+  image: string;
+  total: number;
+  subtotal: number;
+  platform: string;
 }
 
 export class ItemSubOrderParams {
-    param: string;
-    paramValue: string;
+  param: string;
+  paramValue: string;
 }
 
 export class ItemSubOrderParamsInput {
-    param: string;
-    paramValue: string;
+  param: string;
+  paramValue: string;
 }
 
 export class ItemSubOrder extends Model<ItemSubOrder> {
-    status: string;
-    amount: number;
-    creator: User;
-    deliveryLocation: DeliveryLocation;
-    item: Item;
-    itemSelected: string[];
-    merchant: Merchant;
-    params: ItemSubOrderParams[];
-    reservation: Reservation;
-    saleflow: SaleFlow;
-    post: Post;
-    customizer: CustomizerValue;
-    itemExtra: ItemExtra[];
+  status: string;
+  amount: number;
+  creator: User;
+  deliveryLocation: DeliveryLocation;
+  item: Item;
+  itemSelected: string[];
+  merchant: Merchant;
+  params: ItemSubOrderParams[];
+  reservation: Reservation;
+  saleflow: SaleFlow;
+  post: Post;
+  customizer: CustomizerValue;
+  itemExtra: ItemExtra[];
 }
 
 export class ItemSubOrderInput {
-    item?: string;
-    itemSelected?: string[];
-    amount?: number;
-    customizer?: string;
-    params?: ItemSubOrderParamsInput[];
-    reservation?: ReservationInput;
-    saleflow?: string;
-    deliveryLocation?: DeliveryLocationInput;
-    post?: string;
-    itemExtra?: string[];
+  item?: string;
+  itemSelected?: string[];
+  amount?: number;
+  customizer?: string;
+  params?: ItemSubOrderParamsInput[];
+  reservation?: ReservationInput;
+  saleflow?: string;
+  deliveryLocation?: DeliveryLocationInput;
+  post?: string;
+  itemExtra?: string[];
 
-    isScenario?: boolean;
-    limitScenario?: number;
-    name?: string;
+  isScenario?: boolean;
+  limitScenario?: number;
+  name?: string;
 }
 
 export class ItemOrder extends Model<ItemOrder> {
-    orderStatus: 'cancelled' | 'started' | 'verifying' | 'in progress' | 'to confirm' | 'completed' | 'error';
-    orderType: 'regular' | 'itemPackage';
-    isComplete: boolean;
-    subtotals: OrderSubtotal[];
-    ocr: OCR;
-    dateId: string;
-    items: ItemSubOrder[];
-    user: User;
-    employeeContract: EmployeeContract;
-    statusDelivery: boolean;
-    itemPackage: ItemPackage;
-    merchants: Merchant[];
-    tags: string[];
+  orderStatus:
+    | 'cancelled'
+    | 'started'
+    | 'verifying'
+    | 'in progress'
+    | 'to confirm'
+    | 'completed'
+    | 'error';
+  orderType: 'regular' | 'itemPackage';
+  isComplete: boolean;
+  subtotals: OrderSubtotal[];
+  ocr: OCR;
+  dateId: string;
+  items: ItemSubOrder[];
+  user: User;
+  employeeContract: EmployeeContract;
+  statusDelivery: boolean;
+  userNotifications: boolean;
+  itemPackage: ItemPackage;
+  merchants: Merchant[];
+  tags: string[];
 }
 
 export class ItemOrderInput {
-    ocr?: string;
-    products?: ItemSubOrderInput[];
-    itemPackage?: string;
-    tags?: string[];
+  ocr?: string;
+  products?: ItemSubOrderInput[];
+  itemPackage?: string;
+  tags?: string[];
 }
