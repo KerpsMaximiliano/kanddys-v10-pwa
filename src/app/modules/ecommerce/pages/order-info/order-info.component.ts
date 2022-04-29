@@ -156,7 +156,7 @@ export class OrderInfoComponent implements OnInit {
           if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
           const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
           if(hasItemExtra) {
-            this.tabsOptions.push('Escenarios');
+            this.tabsOptions.push('Sets');
             this.itemsExtra = hasItemExtra.itemExtra;
           }
           if (data.order.items[0].reservation) {
@@ -378,7 +378,7 @@ export class OrderInfoComponent implements OnInit {
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
-    } else if (e === 'Escenarios') {
+    } else if (e === 'Sets') {
       this.reservacion = false;
       this.address = false;
       this.escenarios = true;
