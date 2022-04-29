@@ -113,6 +113,7 @@ export class PackageDetailComponent implements OnInit {
         }
       } else {
         this.header.emptyOrderProducts(this.saleflowId);
+        this.header.emptyItems(this.saleflowId);
       }
     })
   }
