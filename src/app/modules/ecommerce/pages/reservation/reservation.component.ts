@@ -92,6 +92,7 @@ export class ReservationComponent implements OnInit {
   ngOnInit(): void {
     this.header.disableNav();
     this.header.hide();
+    this.header.flowRoute = 'reservations';
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
     this.id = this.header.getSaleflow()._id;

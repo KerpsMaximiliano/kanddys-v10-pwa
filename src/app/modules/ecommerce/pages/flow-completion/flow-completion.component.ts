@@ -548,11 +548,7 @@ export class FlowCompletionComponent implements OnInit {
 
     this.relativeStep--;
   }
-
-  back() {
-    this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
-  }
-
+  
   // Case 1
   async checkUser() {
     try {
