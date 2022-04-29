@@ -643,10 +643,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  public continueOrder = () => {
-    this.router.navigate(['/ecommerce/create-giftcard']);
-  };
-
   goToPackageDetail(index){
     console.log(this.sliderPackage[index]);
     this.router.navigate(['/ecommerce/package-detail/' + this.sliderPackage[index]._id]);
@@ -657,7 +653,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        callback: this.continueOrder,
+        footerCallback: () => this.router.navigate(['/ecommerce/create-giftcard']),
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

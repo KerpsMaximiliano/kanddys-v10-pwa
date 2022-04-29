@@ -9,7 +9,6 @@
   font-size: 17px;
   color: #7b7b7b;
   margin: auto;
-
   &.type2{
     background-color: transparent ;
     .infocontainer{
@@ -61,6 +60,9 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    box-shadow: 0px 9px 13px -10px #999;
+    -webkit-box-shadow: 0px 9px 13px -10px #999;
+    -moz-box-shadow: 0px 9px 13px -10px #999;
     &.borderRect {
       border-radius: 0;
     }
@@ -74,6 +76,7 @@
     margin-bottom: 0;
     &.left {
       text-align: left;
+      padding: 0 0px !important;
     }
     &.right {
       display: flex;
@@ -115,11 +118,11 @@
     }
 
     &.selected {
-      background-color: #27a2ff;
+      background-color: transparent !important;
+      background-image: linear-gradient(to right, #31a4f9, #1d58db) !important;
       color: #ffffff;
       border: none;
-      border: 1px solid #27a2ff;
-
+      
       &:before {
         content: "Seleccionado";
       }
