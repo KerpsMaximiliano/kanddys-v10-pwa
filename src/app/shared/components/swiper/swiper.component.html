@@ -821,11 +821,7 @@
       <div class="swiper-slide">
         <div class="slide-content">
           <div class="slots">
-            <img
-              src="{{ env }/green-cart.png"
-              alt=""
-              class="icon"
-            />
+            <img src="{{ env }/green-cart.png" alt="" class="icon" />
             Sell
           </div>
         </div>
@@ -833,11 +829,7 @@
       <div class="swiper-slide">
         <div class="slide-content">
           <div class="icons">
-            <img
-              src="{{ env }/slot-money.png"
-              alt=""
-              class="icon"
-            />
+            <img src="{{ env }/slot-money.png" alt="" class="icon" />
           </div>
           <div class="text">Get Paid.</div>
         </div>
@@ -845,11 +837,7 @@
       <div class="swiper-slide">
         <div class="slide-content">
           <div class="icons">
-            <img
-              src="{{ env }/slot-scissors.png"
-              alt=""
-              class="icon"
-            />
+            <img src="{{ env }/slot-scissors.png" alt="" class="icon" />
           </div>
           <div class="text">Cut Expe.</div>
         </div>
@@ -857,11 +845,7 @@
       <div class="swiper-slide">
         <div class="slide-content">
           <div class="icons">
-            <img
-              src="{{ env }/slot-megaphone.png"
-              alt=""
-              class="icon"
-            />
+            <img src="{{ env }/slot-megaphone.png" alt="" class="icon" />
           </div>
           <div class="text">Megaph.</div>
         </div>
@@ -869,11 +853,7 @@
       <div class="swiper-slide">
         <div class="slide-content">
           <div class="icons">
-            <img
-              src="{{ env }/slot-megaphone.png"
-              alt=""
-              class="icon"
-            />
+            <img src="{{ env }/slot-megaphone.png" alt="" class="icon" />
           </div>
           <div class="text">Megaph.</div>
         </div>
@@ -965,29 +945,49 @@
 
 <div class="fullScreenSwiper" *ngIf="fullScreenSwiper">
   <div class="shadowWrapper">
-    <swiper [config]="saleFlowTwoSwiperConfig" (slideChange)="currentSlide3($event)">
-      <div *ngFor="let item of saleFlowTwoData.images; let i = index" class="item" [ngStyle]="{ 'background-image': 'url(' + item + ')' }">
-      </div>
+    <swiper
+      [config]="saleFlowTwoSwiperConfig"
+      (slideChange)="currentSlide3($event)"
+    >
+      <div
+        (click)="openImageModal(item)"
+        *ngFor="let item of saleFlowTwoData.images; let i = index"
+        class="item"
+        [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+      ></div>
     </swiper>
   </div>
   <div class="customPagination">
-    <div class="price" style="position: absolute; left: 32px; bottom: -5px; color: #7b7b7b; font-family: 'Roboto'; font-size: 17px;">
+    <div
+      class="price"
+      style="
+        position: absolute;
+        left: 32px;
+        bottom: -5px;
+        color: #7b7b7b;
+        font-family: 'Roboto';
+        font-size: 17px;
+      "
+    >
       <ng-container *ngIf="saleFlowTwoData.pricing; else price">
-        ${{saleFlowTwoData.pricing}}
+        ${{ saleFlowTwoData.pricing }}
       </ng-container>
-      <ng-template #price>
-        ${{saleFlowTwoData.price}}
-      </ng-template>
+      <ng-template #price> ${{ saleFlowTwoData.price }} </ng-template>
     </div>
     <ng-container *ngIf="saleFlowTwoData.images.length > 1">
       <ng-container *ngFor="let item of saleFlowTwoData.images; let j = index">
-        <div class="pageBall"  [ngStyle]="realIndex1 === j ? {'background-color': '#7b7b7b'} : {'background-color': '#a9a9a9'}">
-  
-        </div>
+        <div
+          class="pageBall"
+          [ngStyle]="
+            realIndex1 === j
+              ? { 'background-color': '#7b7b7b' }
+              : { 'background-color': '#a9a9a9' }
+          "
+        ></div>
       </ng-container>
     </ng-container>
   </div>
   <div class="text">
-    {{saleFlowTwoData.description}}
+    {{ saleFlowTwoData.description }}
   </div>
 </div>
