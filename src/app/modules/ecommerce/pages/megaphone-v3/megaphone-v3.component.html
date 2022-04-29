@@ -86,7 +86,10 @@
       *ngFor="let item of itemsByCategory; let i = index"
       [ngStyle]="{ marginBottom: '110px' }"
     >
-      <div class="header-wrapper">
+      <div
+        class="header-wrapper"
+        [ngStyle]="{ marginTop: i == 0 ? '32.5px' : '0px' }"
+      >
         <h6
           class="header-text"
           [ngStyle]="{
