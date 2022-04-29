@@ -68,6 +68,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     }
 
     this.header.isComplete.message = true;
+    this.header.storeOrderProgress(this.header.saleflow._id);
     this.router.navigate([`ecommerce/shipment-data-form`]);
   }
 
@@ -112,7 +113,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        callback: this.continueOrder,
+        footerCallback: () => this.router.navigate(['/ecommerce/create-giftcard']),
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -437,7 +439,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }
         );
         this.header.isComplete.message = true;
-
+        this.header.storeOrderProgress(this.header.saleflow._id);
         this.router.navigate([`ecommerce/shipment-data-form`]);
         return { ok: true };
       },
@@ -458,6 +460,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
+        this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if(items && items.length > 0) this.header.items = items;
         else this.router.navigate([`/ecommerce/trivias`]);

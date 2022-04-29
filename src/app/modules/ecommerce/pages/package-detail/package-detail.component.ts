@@ -41,22 +41,22 @@ export class PackageDetailComponent implements OnInit {
   orderProducts: ItemSubOrderInput[] = [];
 
   ngOnInit(): void {
-    this.saleflow.saleflow(this.header.getSaleflow()._id).then(data =>{
-      this.saleflowId = data.saleflow._id;
-      this.items.itemCategories(data.saleflow.merchant._id, {}).then(data => {
-        console.log(data);
-        //this.filters = data.itemCategoriesList;
-        for (let i = 0; i < data.itemCategoriesList.length; i++) {
-          this.filters[0].options.push({
-            id: data.itemCategoriesList[i]._id,
-            label: data.itemCategoriesList[i].name,
-            type: 'label',
-            selected: false,
-          });
-        }
-      })
+    this.header.saleflow = this.header.getSaleflow();
+    this.saleflowId = this.header.saleflow._id;
+    this.items.itemCategories(this.header.saleflow.merchant._id, {}).then(data => {
+      console.log(data);
+      //this.filters = data.itemCategoriesList;
+      for (let i = 0; i < data.itemCategoriesList.length; i++) {
+        this.filters[0].options.push({
+          id: data.itemCategoriesList[i]._id,
+          label: data.itemCategoriesList[i].name,
+          type: 'label',
+          selected: false,
+        });
+      }
     })
     this.route.params.subscribe((params) => {
+      this.header.flowRoute = `package-detail/${params.id}`;
       this.items.itemPacakge(params.id).then(data => {
         this.packageData = data.itemPackage;
         this.listItems();
@@ -98,7 +98,7 @@ export class PackageDetailComponent implements OnInit {
         )
       }
       let alreadySelected = this.header.getOrder(this.saleflowId);
-      console.log(alreadySelected.itemPackage);
+      console.log(alreadySelected?.itemPackage);
       if (alreadySelected.itemPackage === this.packageData._id) {
         if (alreadySelected.products[0].itemExtra.length > 0) {
           this.orderProducts[0].itemExtra = alreadySelected.products[0].itemExtra;
@@ -168,6 +168,7 @@ export class PackageDetailComponent implements OnInit {
     
     this.header.hasScenarios = true;
     this.header.isComplete.scenarios = true;
+    this.header.storeOrderProgress(this.header.saleflow?._id);
     this.router.navigate(['/ecommerce/reservations']);
   }
 }

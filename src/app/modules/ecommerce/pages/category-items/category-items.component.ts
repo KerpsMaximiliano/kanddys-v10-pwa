@@ -315,16 +315,13 @@ export class CategoryItemsComponent implements OnInit {
     this.canOpenCart = this.items.some((item) => item.isSelected);
   }
 
-  public continueOrder = () => {
-    this.router.navigate(['/ecommerce/create-giftcard']);
-  };
-
   showShoppingCartDialog() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        callback: this.continueOrder,
+        footerCallback: () => this.router.navigate(['/ecommerce/create-giftcard']),
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

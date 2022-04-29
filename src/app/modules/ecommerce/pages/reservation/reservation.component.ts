@@ -17,6 +17,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-reservation',
@@ -82,7 +83,7 @@ export class ReservationComponent implements OnInit {
   timeToggle: boolean = false;
   dates = new Date();
   offset = this.dates.getTimezoneOffset() / 60;
-  saleflowData: any;
+  saleflowData: SaleFlow;
   dateFrom: string;
   dateComponentFrom: string;
   timeComponentFrom: string;
@@ -94,18 +95,15 @@ export class ReservationComponent implements OnInit {
     this.header.hide();
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
-    this.id = this.header.getSaleflow()._id;
-    this.orderData = this.header.getOrder(this.id);
+    this.saleflowData = this.header.getSaleflow();
+    if(!this.header.saleflow) this.header.saleflow = this.saleflowData;
+    this.orderData = this.header.getOrder(this.saleflowData._id);
+    this.header.getOrderProgress(this.saleflowData._id);
     console.log(this.orderData);
-    console.log(this.orderData);
-    this.saleflow.saleflow(this.id).then((data) => {
-      console.log(data);
-      this.saleflowData = data.saleflow;
-      console.log(data.saleflow.module.appointment.calendar._id);
-      this.calendarId = data.saleflow.module.appointment.calendar._id;
-      this.calendar.getToday();
-      this.checkCalendar();
-    });
+    console.log(this.saleflowData.module.appointment.calendar._id);
+    this.calendarId = this.saleflowData.module.appointment.calendar._id;
+    this.calendar.getToday();
+    this.checkCalendar();
     if (this.orderData.products[0].reservation) {
       this.dateFrom = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('DD');
       this.dateComponentFrom = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('MMMM');
@@ -116,16 +114,16 @@ export class ReservationComponent implements OnInit {
       console.log(this.dateFrom, this.dateComponentFrom, this.timeComponentFrom, this.weekDay);
     }
     /*this.route.params.subscribe((params) => {
-      this.id = params.id;
-      console.log(this.id);
-      this.saleflow.saleflow(this.id).then((data) => {
+      this.saleflowData._id = params.id;
+      console.log(this.saleflowData._id);
+      this.saleflow.saleflow(this.saleflowData._id).then((data) => {
         console.log(data.saleflow.module.appointment.calendar._id);
         this.calendarId = data.saleflow.module.appointment.calendar._id;
         this.calendar.getToday();
         this.checkCalendar();
       });
     });*/
-    /*this.item.item(this.id).then(data=>{
+    /*this.item.item(this.saleflowData._id).then(data=>{
       console.log(data);
       this.calendarId = data.calendar._id;
       console.log(this.calendarId);
@@ -354,8 +352,8 @@ export class ReservationComponent implements OnInit {
       if (this.saleflowData.module.post == null) {
         this.orderData.products[0].reservation = reservation;
       } else if (
-        this.header.saleflow.module.delivery.deliveryLocation &&
-        this.header.saleflow.module.delivery.isActive
+        this.saleflowData.module.delivery.deliveryLocation &&
+        this.saleflowData.module.delivery.isActive
       ) {
         this.orderData.products[0].reservation = reservation;
       }
@@ -415,8 +413,8 @@ export class ReservationComponent implements OnInit {
       if (this.saleflowData.module.post == null) {
         this.orderData.products[0].reservation = reservation;
       } else if (
-        this.header.saleflow.module.delivery.deliveryLocation &&
-        this.header.saleflow.module.delivery.isActive
+        this.saleflowData.module.delivery.deliveryLocation &&
+        this.saleflowData.module.delivery.isActive
       ) {
         this.orderData.products[0].reservation = reservation;
       }
@@ -460,6 +458,7 @@ export class ReservationComponent implements OnInit {
     this.header.datePreview = this.datePreview;
     this.header.storeReservation(this.saleflowData._id, reservation);
     this.header.isComplete.reservation = true;
+    this.header.storeOrderProgress(this.saleflowData._id);
     //this.header.locationData = " Foto Davitte, SD, Este.";
 
     //this.openDialog(reservation);
@@ -571,7 +570,7 @@ export class ReservationComponent implements OnInit {
 
   copyLink() {
     const uri = 'https://kanddys.com';
-    copyText(`${uri}/appointments/calendar-reservation-v4/${this.id}`);
+    copyText(`${uri}/appointments/calendar-reservation-v4/${this.saleflowData._id}`);
     notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
   }
 
@@ -847,7 +846,6 @@ export class ReservationComponent implements OnInit {
 
   save() {
     console.log(this.orderData);
-    this.saleflowData = this.header.saleflow;
     this.orderData.products[0].deliveryLocation = {
       city: null,
       houseNumber: null,
@@ -860,6 +858,7 @@ export class ReservationComponent implements OnInit {
     console.log(this.header.getOrder(this.saleflowData._id));
     this.header.isComplete.reservation = true;
     this.header.isComplete.delivery = true;
+    this.header.storeOrderProgress(this.header.saleflow._id);
     console.log(this.saleflowData);
     this.router.navigate([`ecommerce/flow-completion`]);
   }

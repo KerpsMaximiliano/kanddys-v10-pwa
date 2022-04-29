@@ -20,9 +20,10 @@ export class ShowItemsComponent implements OnInit {
 
   @Input() products: any[] = [];
   @Input() orderFinished: boolean;
-  @Input() headerButton: string = 'Ver mas Desayunos';
+  @Input() headerButton: string;
   @Input() footerButton: string = 'Continuar con la orden';
-  @Input() public callback: () => void;
+  @Input() public headerCallback: () => void;
+  @Input() public footerCallback: () => void;
   price: number = 0;
   env: string = environment.assetsUrl;
 
@@ -41,16 +42,14 @@ export class ShowItemsComponent implements OnInit {
   }
 
   seeAllItems() {
-    this.router.navigate([
-      `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
-    ]);
+    this.headerCallback();
     this.ref.close();
   }
 
   orderItems() {
     //this.router.navigate([`ecommerce/provider-store`])
     //this.ref.close();
-    this.callback();
+    this.footerCallback();
     this.ref.close();
   }
 
