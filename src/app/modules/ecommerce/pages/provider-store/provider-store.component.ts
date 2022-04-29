@@ -195,6 +195,7 @@ export class ProviderStoreComponent implements OnInit {
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.isComplete.delivery = true;
+              this.header.storeOrderProgress(this.header.saleflow._id);
               this.header.storeLocation(this.header.getSaleflow()._id, this.header.saleflow.module.delivery.pickUpLocations[0]);
             }
           }
@@ -270,6 +271,7 @@ export class ProviderStoreComponent implements OnInit {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
+        this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if(items && items.length > 0) this.header.items = items;
         else this.router.navigate([`/ecommerce/trivias`]);
