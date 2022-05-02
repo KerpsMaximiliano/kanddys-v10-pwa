@@ -1,7 +1,12 @@
 <div class="external-wrapper" (click)="close()">
   <div
     class="inner-wrapper"
-    (click)="null"
-    [ngStyle]="{ 'background-image': 'url(' + imageSourceURL + ')' }"
+    (click)="(null)"
+    [ngStyle]="{
+      'background-image': 'url(' + imageSourceURL + ')',
+      'background-position': 'center',
+      'background-size': 'contain',
+      'background-repeat': 'no-repeat'
+    }"
   ></div>
 </div>
