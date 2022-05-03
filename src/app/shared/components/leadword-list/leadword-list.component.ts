@@ -7,6 +7,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { environment } from 'src/environments/environment';
+import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-leadword-list',
@@ -33,7 +34,7 @@ export class LeadwordListComponent implements OnInit {
       });
   }
 
-  @Input() list: any;
+  @Input() list: any[];
   @Input() numberMail: boolean = false;
   @Input() ignore: boolean;
   @Input() authData: boolean = false;
@@ -119,6 +120,17 @@ export class LeadwordListComponent implements OnInit {
         console.log(this.merchantID);
         console.log(this.orderId);
       });
+    });
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
   }
 }

@@ -3,11 +3,24 @@
         <div class="flex-container" *ngIf="list[i].contact || !numberMail">
             <div class="main">
                 <ng-container *ngIf="!authData">
-                    <div *ngIf="list[i].image" class="image" [ngStyle]="{'background-image': 'url(' + list[i].image + ')'}">
+                    <div *ngIf="list[i].image" (click)="openImageModal(list[i].image)" class="image" [ngStyle]="{'background-image': 'url(' + list[i].image + ')'}">
                     </div>
                 </ng-container>
-                <div class="title" [ngStyle]="{ color: list[i].status === 'No completado' ? '#4773D8' : '#272727'}">
-                    {{list[i].title}}
+                <div class="content">
+                    <div class="title" [ngStyle]="{ color: list[i].status === 'No completado' ? '#4773D8' : '#272727'}">
+                        {{list[i].title}}
+                    </div>
+                    <div class="additional-info" *ngIf="list[i].price || list[i].quantity">
+                        <ng-container>
+                            ${{list[i].price | number: '1.0-2'}} DOP
+                        </ng-container>
+                        <ng-container *ngIf="list[i].price && list[i].quantity">
+                            /
+                        </ng-container>
+                        <ng-container *ngIf="list[i].quantity">
+                            PAQ. {{list[i].quantity}} UNDS
+                        </ng-container>
+                    </div>
                 </div>
                 <div class="link-button" (click)="goLink(i, list[i].type)" style="cursor: pointer;"  *ngIf="!list[i].status || list[i].status === 'No completado'">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30.002" height="30.002" viewBox="0 0 30.002 30.002">
@@ -20,17 +33,6 @@
                 <div class="link-button" *ngIf="list[i].status === 'Completado'">
                     <img src="{{ env }}/check-circle.svg" alt="completed">
                 </div>
-            </div>
-            <div class="additional-info" *ngIf="list[i].price || list[i].quantity">
-                <ng-container>
-                    ${{list[i].price | number: '1.0-2'}} DOP
-                </ng-container>
-                <ng-container *ngIf="list[i].price && list[i].quantity">
-                    /
-                </ng-container>
-                <ng-container *ngIf="list[i].quantity">
-                    PAQ. {{list[i].quantity}} UNDS
-                </ng-container>
             </div>
             <div class="additional-info" *ngIf="list[i].status === 'No completado' || list[i].status === 'Completado'">
                 {{list[i].status}}

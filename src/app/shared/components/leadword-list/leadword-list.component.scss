@@ -10,7 +10,12 @@
             align-items: center;
             column-gap: 10px;
 
+            .content {
+                width: 70%;
+            }
+
             .image{
+                cursor: pointer;
                 width: 47px;
                 height: 50px;
                 background-color: black;
@@ -23,7 +28,6 @@
                 font-weight: bold;
                 font-size: 20px;
                 color: #272727;
-                width: 70%;
 
                 @media (max-width: 374px){
                     font-size: 16px;
