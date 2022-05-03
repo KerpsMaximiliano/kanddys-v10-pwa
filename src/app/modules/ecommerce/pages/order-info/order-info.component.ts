@@ -40,7 +40,7 @@ export class OrderInfoComponent implements OnInit {
     private customizerValueService: CustomizerValueService,
     private dialog: DialogService,
     private location: LocationStrategy,
-    private auth: AuthService,
+    private auth: AuthService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -155,11 +155,19 @@ export class OrderInfoComponent implements OnInit {
 
             socials: data.order.items[0].saleflow.social,
           };
-          this.auth.me().then((user) => this.showNotificationButton = user._id === data.order.user._id);
+          this.auth
+            .me()
+            .then(
+              (user) =>
+                (this.showNotificationButton = user._id === data.order.user._id)
+            );
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
-          if (data.order.items[0].customizer) this.tabsOptions.push('Personalización');
-          const hasItemExtra = data.order.items.find((item) => item.itemExtra.length > 0);
-          if(hasItemExtra) {
+          if (data.order.items[0].customizer)
+            this.tabsOptions.push('Personalización');
+          const hasItemExtra = data.order.items.find(
+            (item) => item.itemExtra.length > 0
+          );
+          if (hasItemExtra) {
             this.tabsOptions.push('Sets');
             this.itemsExtra = hasItemExtra.itemExtra;
           }
@@ -169,6 +177,7 @@ export class OrderInfoComponent implements OnInit {
           }
           this.tabsOptions.push('Pago');
           if (data.order.items[0].deliveryLocation) {
+            console.log('Order data', data.order.items);
             this.tabsOptions.push('Entrega');
             this.titleTab = 'Entrega';
           }

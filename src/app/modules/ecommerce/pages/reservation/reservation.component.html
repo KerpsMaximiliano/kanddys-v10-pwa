@@ -305,6 +305,11 @@
       {{ datePreview.month }} , entre {{ datePreview.hour }} -
       {{ formatHour4(num(datePreview.hour).toString() + ":" + "45") }}
       {{ datePreview.hour.slice(-2) }}
+      <div class="delete-button" (click)="deleteSelection()">
+        <div class="text" style="font-size: 12.5px; cursor: pointer;">
+          x
+        </div>
+      </div>
     </div>
 
     <div class="date-info" *ngIf="!datePreview" style="text-align: center">

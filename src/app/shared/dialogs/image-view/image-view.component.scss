@@ -1,0 +1,17 @@
+.external-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner-wrapper {
+  position: absolute;
+  z-index: 9999;
+  margin: auto;
+  width: 90%;
+  border-radius: 10px;
+  min-height: 512px;
+}

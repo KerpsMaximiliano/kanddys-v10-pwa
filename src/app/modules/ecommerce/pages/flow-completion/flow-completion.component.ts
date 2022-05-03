@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { TitleCasePipe } from '@angular/common';
+import { Location, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -14,6 +14,7 @@ import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemOrder } from 'src/app/core/models/order';
+import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
 import { CommunitiesService } from 'src/app/core/services/communities.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -137,7 +138,7 @@ export class FlowCompletionComponent implements OnInit {
   flow: 'flow-completion' | 'create-community' | 'create-merchant';
   headerText: string;
   newProviderName: string = '';
-  ammount: number;
+  ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
   env: string = environment.assetsUrl;
@@ -157,78 +158,85 @@ export class FlowCompletionComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
     private dialog: DialogService,
-    private saleflow: SaleFlowService
+    private saleflow: SaleFlowService,
+    private location: Location
   ) {}
 
   getOrderData(id: string) {
-    return this.order.order(id).then((data) => {
-      console.log(data);
-      if (
-        data.order.orderStatus === 'cancelled' ||
-        data.order.orderStatus === 'to confirm' ||
-        data.order.orderStatus === 'completed'
-      )
-        this.router.navigate([`ecommerce/order-info/${id}`]);
-      console.log('Entrando en .then');
-      if (data.order.items[0].reservation?._id !== null) {
-        this.reservationOrProduct = 'reservacion';
-      } else {
-        this.reservationOrProduct = 'producto';
-      }
-      console.log(this.reservationOrProduct);
-      if (data) {
+    return this.order
+      .order(id)
+      .then((data) => {
         console.log(data);
-        console.log('SI HAY DATA');
-        this.header.saleflow = data.order.items[0].saleflow;
-        this.fakeData = data.order;
-        if (!this.merchantInfo) {
-          console.log('ALSKDJLSKDLAKSJDHSLKD SHKLDHDLKAS HLSKJD HLSAKJd');
-          console.log(this.fakeData.merchants[0]._id);
-          this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
-            console.log('?????????????????????????????????');
-            this.merchantInfo = this.header.merchantInfo;
-            console.log(this.merchantInfo);
-            console.log(this.header.merchantInfo);
-            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
-          });
+        if (
+          data.order.orderStatus === 'cancelled' ||
+          data.order.orderStatus === 'to confirm' ||
+          data.order.orderStatus === 'completed'
+        )
+          this.router.navigate([`ecommerce/order-info/${id}`]);
+        console.log('Entrando en .then');
+        if (data.order.items[0].reservation?._id !== null) {
+          this.reservationOrProduct = 'reservacion';
+        } else {
+          this.reservationOrProduct = 'producto';
         }
-        const totalPrice = this.fakeData.subtotals.reduce((a, b) => a + b.amount, 0);
-        this.orderData = {
-          id: this.fakeData._id,
-          userId: this.fakeData.user._id,
-          user: this.fakeData.user,
-          itemAmount: this.fakeData.items.reduce((a,b) => a + b.amount, 0),
-          name: this.fakeData.itemPackage?.name
-            ? this.fakeData.itemPackage?.name
-            : this.fakeData.items[0].item.name,
-          amount: this.fakeData.items[0].customizer
-            ? totalPrice * 1.18
-            : totalPrice,
-          hasCustomizer: this.fakeData.items[0].customizer ? true : false,
-          isPackage: this.fakeData.itemPackage ? true : false,
-        };
-        this.products = this.fakeData.items.map((item) => {
-          const newItem = item.item;
-          if (item.customizer) {
-            newItem.customizerId = item.customizer._id;
-            newItem.total = totalPrice * 1.18;
+        console.log(this.reservationOrProduct);
+        if (data) {
+          console.log(data);
+          console.log('SI HAY DATA');
+          this.header.saleflow = data.order.items[0].saleflow;
+          this.fakeData = data.order;
+          if (!this.merchantInfo) {
+            console.log('ALSKDJLSKDLAKSJDHSLKD SHKLDHDLKAS HLSKJD HLSAKJd');
+            console.log(this.fakeData.merchants[0]._id);
+            this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
+              console.log('?????????????????????????????????');
+              this.merchantInfo = this.header.merchantInfo;
+              console.log(this.merchantInfo);
+              console.log(this.header.merchantInfo);
+              console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
+            });
           }
-          return newItem;
-        });
+          const totalPrice = this.fakeData.subtotals.reduce(
+            (a, b) => a + b.amount,
+            0
+          );
+          this.orderData = {
+            id: this.fakeData._id,
+            userId: this.fakeData.user._id,
+            user: this.fakeData.user,
+            itemAmount: this.fakeData.items.reduce((a, b) => a + b.amount, 0),
+            name: this.fakeData.itemPackage?.name
+              ? this.fakeData.itemPackage?.name
+              : this.fakeData.items[0].item.name,
+            amount: this.fakeData.items[0].customizer
+              ? totalPrice * 1.18
+              : totalPrice,
+            hasCustomizer: this.fakeData.items[0].customizer ? true : false,
+            isPackage: this.fakeData.itemPackage ? true : false,
+          };
+          this.products = this.fakeData.items.map((item) => {
+            const newItem = item.item;
+            if (item.customizer) {
+              newItem.customizerId = item.customizer._id;
+              newItem.total = totalPrice * 1.18;
+            }
+            return newItem;
+          });
 
-        console.log(this.orderData);
-        if (!this.orderData) {
-          this.router.navigate(['/error-screen/?type=item']);
+          console.log(this.orderData);
+          if (!this.orderData) {
+            this.router.navigate(['/error-screen/?type=item']);
+          }
+          this.getExchangeData(
+            data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
+          );
+        } else {
+          console.log(data);
+          console.log('NO HAY DATA');
+          this.router.navigate(['/ecommerce/error-screen']);
         }
-        this.getExchangeData(
-          data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
-        );
-      } else {
-        console.log(data);
-        console.log('NO HAY DATA');
-        this.router.navigate(['/ecommerce/error-screen']);
-      }
-    }).catch((error) => console.log(error));
+      })
+      .catch((error) => console.log(error));
   }
 
   async getMerchant(id: string) {
@@ -244,6 +252,10 @@ export class FlowCompletionComponent implements OnInit {
 
   async ngOnInit() {
     console.log(this.header.order);
+
+    // this.ammount.valueChanges.subscribe((change) => {
+    //   // this.validateNumbers(change);
+    // });
 
     if (this.router.url.includes('flow-completion')) {
       this.flow = 'flow-completion';
@@ -298,7 +310,7 @@ export class FlowCompletionComponent implements OnInit {
         this.isLogged = true;
         this.inputData = this.userData.phone;
         this.step = 4;
-        
+
         if (this.flow === 'flow-completion') this.stepsLeft = 4;
       } else {
         this.step = 1;
@@ -431,26 +443,28 @@ export class FlowCompletionComponent implements OnInit {
         break;
       case 9:
         this.gotToUpdatePassword();
-        break;      
+        break;
       case 10:
         this.updatePassword();
-        break;     
+        break;
     }
   }
 
-  gotToUpdatePassword(){
+  gotToUpdatePassword() {
     console.log(this.inputData, this.code);
-    this.authService.verify(this.code, localStorage.getItem('id')).then((data: any) => {
-      console.log(data);
-      if (data != undefined) {
-        this.step = 10;
-      }
-    })
+    this.authService
+      .verify(this.code, localStorage.getItem('id'))
+      .then((data: any) => {
+        console.log(data);
+        if (data != undefined) {
+          this.step = 10;
+        }
+      });
   }
 
-  updatePassword(){
+  updatePassword() {
     console.log(this.inputData, this.code, this.password);
-    this.authService.updateMe({ password: this.password }).then(data => {
+    this.authService.updateMe({ password: this.password }).then((data) => {
       console.log(data);
       console.log(localStorage.getItem('session-token'));
       this.inputData = '';
@@ -471,7 +485,8 @@ export class FlowCompletionComponent implements OnInit {
           : (this.selectedPayment = index);
 
         if (this.selectedPayment === 0) {
-          if(this.bankOptions.length === 1) this.selectedBank = this.bankOptions[0];
+          if (this.bankOptions.length === 1)
+            this.selectedBank = this.bankOptions[0];
           this.headerText = 'INFORMACIÓN DEL PAGO';
           this.step = this.bankOptions.length > 1 ? 6 : 7;
           this.relativeStep++;
@@ -502,16 +517,32 @@ export class FlowCompletionComponent implements OnInit {
       this.relativeStep++;
     } else {
       lockUI(
-        this.createOrder().then(() => {
+        this.createOrder().then((data) => {
+          this.location.replaceState(`ecommerce/flow-completion/${data}`);
           this.relativeStep++;
           this.stepsLeft = 4;
-          return this.getOrderData(this.header.orderId)
-            .then(() => {
-              this.step = 5;
-            })
+          return this.getOrderData(this.header.orderId).then(() => {
+            this.step = 5;
+          });
         })
       );
     }
+  }
+
+  validateNumbers(event) {
+    event.preventDefault();
+    console.log(event);
+    let transformedOutput = this.ammount.value;
+
+      if ('0123456789'.includes(event.key) && event.key !== "Backspace") {
+        transformedOutput += event.key;
+      }
+
+      if (event.key === "Backspace" && transformedOutput.length > 0) {
+        transformedOutput.slice(0,-1);
+      }
+
+    this.ammount.setValue(transformedOutput);
   }
 
   goBack() {
@@ -537,20 +568,16 @@ export class FlowCompletionComponent implements OnInit {
 
     if (this.step === 8) this.step = 5;
 
-    if (this.step === 9 || this.step === 10){
+    if (this.step === 9 || this.step === 10) {
       if (this.isLogged) {
         this.step = 4;
-      }else{
+      } else {
         this.step = 1;
       }
       return;
-    } 
+    }
 
     this.relativeStep--;
-  }
-
-  back() {
-    this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
   }
 
   // Case 1
@@ -569,7 +596,7 @@ export class FlowCompletionComponent implements OnInit {
           if (data.name) {
             console.log('and has name');
             this.step = 4;
-            if (this.orderId && (input !== this.orderData?.user.phone)) {
+            if (this.orderId && input !== this.orderData?.user.phone) {
               this.router.navigate(['ecommerce/error-screen']);
             }
           } else {
@@ -732,19 +759,25 @@ export class FlowCompletionComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (this.header.saleflow.module.post) {
-        let postinput = this.header.post ?? this.header.getPost(this.header.saleflow?._id ?? this.header.getSaleflow()._id);
+        let postinput =
+          this.header.post ??
+          this.header.getPost(
+            this.header.saleflow?._id ?? this.header.getSaleflow()._id
+          )?.data;
         console.log(postinput);
-        
+
         this.postsService
           .creationPost(postinput)
           .then((data) => {
             if (data) {
               this.header.emptyPost(this.header.saleflow._id);
               console.log(data);
-              if(this.header.saleflow.canBuyMultipleItems) this.header.order.products.forEach((product) => {
-                product.deliveryLocation = this.header.order.products[0].deliveryLocation;
-                product.post = data.createPost._id;
-              });
+              if (this.header.saleflow.canBuyMultipleItems)
+                this.header.order.products.forEach((product) => {
+                  product.deliveryLocation =
+                    this.header.order.products[0].deliveryLocation;
+                  product.post = data.createPost._id;
+                });
               console.log(this.header.order);
               this.order
                 .createOrder(this.header.order)
@@ -807,25 +840,33 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 7
   async payOrder() {
-    const totalPrice = this.fakeData.subtotals.reduce((a, b) => a + b.amount, 0);
-    const fullLink =
-      'https://kanddys.com/ecommerce/order-info/' + this.orderId;
+    const totalPrice = this.fakeData.subtotals.reduce(
+      (a, b) => a + b.amount,
+      0
+    );
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
+    const ammount = new Intl.NumberFormat('es-MX').format(this.ammount.value.toLocaleString('es-MX'));
     if (this.fakeData.items[0].customizer)
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        this.ammount ??
-        Math.round(
-          (totalPrice * 1.18 + Number.EPSILON) *
-            100
-        ) / 100
+        (ammount && ammount != '0') ? ammount :
+        (Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100)
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
     else
-      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.ammount ?? totalPrice}.%20Mi%20nombre%20es:%20${this.userData.name}.%20Mas%20info%20aquí%20${fullLink}`;
+      this.whatsappLink = `https://wa.me/${
+        this.merchantInfo.owner.phone
+      }?text=Hola%20${
+        this.merchantInfo.name
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
+        (ammount && ammount != '0') ? ammount : totalPrice.toLocaleString('es-MX')
+      }.%20Mi%20nombre%20es:%20${
+        this.userData.name
+      }.%20Mas%20info%20aquí%20${fullLink}`;
     try {
       lockUI();
 
@@ -835,7 +876,7 @@ export class FlowCompletionComponent implements OnInit {
         {
           image: this.image,
           platform: 'bank-transfer',
-          transactionCode: this.paymentCode
+          transactionCode: this.paymentCode,
         },
         this.orderData.userId,
         'bank-transfer',
@@ -911,36 +952,44 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   showItems() {
-    let showProducts = []
+    let showProducts = [];
     if (this.orderData.isPackage) {
       console.log('si');
       console.log(this.fakeData);
       showProducts.push(this.fakeData.itemPackage);
-    }else{
+    } else {
       console.log('no');
       console.log(this.fakeData);
       showProducts = this.products;
     }
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { orderFinished: this.orderData?.id ? true : false, products: showProducts },
+      props: {
+        orderFinished: this.orderData?.id ? true : false,
+        products: showProducts,
+        headerButton: 'Ver mas productos',
+        headerCallback: () =>
+          this.router.navigate([
+            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+          ]),
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
   }
 
-  generateOTP(){
+  generateOTP() {
     console.log(this.inputData);
     let input;
     if (this.isLogged) {
-      input = this.inputData
+      input = this.inputData;
     } else {
       input = '1' + this.inputData;
     }
     console.log(input);
-    this.authService.generateOTP(input).then(data =>{
+    this.authService.generateOTP(input).then((data) => {
       console.log(data);
       this.step = 9;
-    })
+    });
   }
 }

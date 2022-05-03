@@ -70,6 +70,7 @@ import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
+import { ImageViewComponent } from './dialogs/image-view/image-view.component';
 
 const imports = [
   CommonModule,
@@ -137,6 +138,7 @@ const declarations = [
   InfoCardComponent,
   ListComponent,
   InformationBoxComponent,
+  ImageViewComponent,
 ];
 
 @NgModule({

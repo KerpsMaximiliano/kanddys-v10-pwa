@@ -4,6 +4,8 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 import { CalendarService } from './../../../core/services/calendar.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-swiper',
@@ -15,6 +17,7 @@ export class SwiperComponent implements OnInit {
   constructor(
     private router: Router,
     public calendars: CalendarService,
+    private dialog: DialogService,
     public headerservice: HeaderService
   ) {}
 
@@ -528,8 +531,19 @@ export class SwiperComponent implements OnInit {
     console.log(this.perView); **/
     console.log(this.saleFlowTwoData);
     console.log(this.showPrice);
-    
   }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   goToLink(url: string) {
     window.open(url, '_blank');
   }
@@ -598,7 +612,7 @@ export class SwiperComponent implements OnInit {
     this.slideActive.emit(event);
   }
 
-  currentSlide3(event){
+  currentSlide3(event) {
     this.realIndex1 = event.realIndex;
     console.log(this.realIndex1);
   }

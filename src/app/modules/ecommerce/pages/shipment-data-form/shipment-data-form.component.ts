@@ -167,6 +167,7 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.order.products[0].deliveryLocation = deliveryData;
         this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
         this.header.isComplete.delivery = true;
+        this.header.storeOrderProgress(this.header.saleflow._id);
         this.router.navigate([`ecommerce/flow-completion`]);
         return { ok: true };
       },
@@ -185,8 +186,9 @@ export class ShipmentDataFormComponent implements OnInit {
             this.header.order?.products?.length > 0
           )
             this.header.order.products[0].deliveryLocation = deliveryData;
-          this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
+          this.header.storeLocation(this.header.saleflow._id, deliveryData);
           this.header.isComplete.delivery = true;
+          this.header.storeOrderProgress(this.header.saleflow._id);
           this.router.navigate([`ecommerce/flow-completion`]);
         },
       },
@@ -206,6 +208,7 @@ export class ShipmentDataFormComponent implements OnInit {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
+        this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if(items && items.length > 0) this.header.items = items;
         else this.router.navigate([`/ecommerce/trivias`]);

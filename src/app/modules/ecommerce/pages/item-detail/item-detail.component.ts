@@ -14,10 +14,9 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',
-  styleUrls: ['./item-detail.component.scss']
+  styleUrls: ['./item-detail.component.scss'],
 })
 export class ItemDetailComponent implements OnInit {
-
   constructor(
     public items: ItemsService,
     private route: ActivatedRoute,
@@ -27,13 +26,13 @@ export class ItemDetailComponent implements OnInit {
     private location: Location,
     private appService: AppService,
     private saleflow: SaleFlowService
-  ) { 
+  ) {
     const sub = this.appService.events
-    .pipe(filter((e) => e.type === 'deleted-item'))
-    .subscribe((e) => {
-      this.ngOnInit();
-      sub.unsubscribe();
-    });
+      .pipe(filter((e) => e.type === 'deleted-item'))
+      .subscribe((e) => {
+        this.ngOnInit();
+        sub.unsubscribe();
+      });
   }
 
   itemData: Item;
@@ -43,39 +42,56 @@ export class ItemDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       if (params.id) {
-        this.items.item(params.id).then(data => {
+        this.items.item(params.id).then((data) => {
           this.itemData = data;
           const productData = this.header.getItems(this.saleflowId);
-          
-          if(productData.length > 0) {
-            if(productData.some((item) => item._id === data._id)) this.ctaText = 'QUITAR DEL CARRITO';
+
+          if (productData.length > 0) {
+            if (productData.some((item) => item._id === data._id))
+              this.ctaText = 'QUITAR DEL CARRITO';
             else this.ctaText = 'ADICIONAR AL CARRITO';
           } else this.ctaText = 'ADICIONAR AL CARRITO';
-        })
+        });
       }
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
-    })
+    });
   }
 
   showItems() {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { headerButton: 'Ver mas productos', callback: this.boundedPrintValue},
+      props: { 
+        headerButton: 'Ver mas productos',
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`]),
+        footerCallback: () => {
+          this.saleflow.saleflow(this.saleflowId, true).then(data =>{
+            console.log(data);
+            for (let i = 0; i < data.saleflow.items.length; i++) {
+              if (data.saleflow.items[i].item._id === this.itemData._id) {
+                if (data.saleflow.items[i].customizer) {
+                  this.router.navigate([`ecommerce/provider-store`])
+                }else{
+                  this.router.navigate(['/ecommerce/create-giftcard']);
+                }
+              }
+            }
+          })
+        },
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
   }
 
-  saveProduct(){
+  saveProduct() {
     console.log('here');
-    
-    this.header.storeOrderProduct(this.saleflowId, 
-    {
+
+    this.header.storeOrderProduct(this.saleflowId, {
       item: this.itemData._id,
       amount: 1,
-      saleflow: this.saleflowId
+      saleflow: this.saleflowId,
     });
     this.header.storeItem(this.saleflowId, this.itemData);
     this.showItems();
@@ -84,24 +100,8 @@ export class ItemDetailComponent implements OnInit {
     //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
   }
 
-  public boundedPrintValue = ()=>{
-    this.saleflow.saleflow(this.saleflowId, true).then(data =>{
-      console.log(data);
-      for (let i = 0; i < data.saleflow.items.length; i++) {
-        if (data.saleflow.items[i].item._id === this.itemData._id) {
-          if (data.saleflow.items[i].customizer) {
-            this.router.navigate([`ecommerce/provider-store`])
-          }else{
-            this.router.navigate(['/ecommerce/create-giftcard']);
-          }
-        }
-      }
-    })
-  }
-
   back(){
     this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
     //this.location.back();
   }
-
 }

@@ -64,7 +64,7 @@
     width: 90vw !important;
     max-width: 400px !important;
     min-width: unset !important;
-    background-color: #F6F6F6;
+    background-color: #f6f6f6;
     & .dialog-frame-content {
       padding: 15px;
     }
@@ -76,8 +76,8 @@
     border-radius: 0px !important;
     width: 100vw !important;
     min-height: 100% !important;
-    margin-left: calc((100vw - 500px)/2);
-    margin-right: calc((100vw - 500px)/2);
+    margin-left: calc((100vw - 500px) / 2);
+    margin-right: calc((100vw - 500px) / 2);
     min-width: unset !important;
     overflow: scroll;
     & .dialog-frame-content {
@@ -102,7 +102,7 @@
     width: 100%;
     min-width: 100%;
     @include elevate(2);
-    
+
     border-radius: 0 0 0 0 !important;
   }
 }
@@ -118,6 +118,25 @@
     .dialog-frame-content {
       @include size(100%, unset);
       flex: 1 1;
+      padding: 0px !important;
+    }
+  }
+}
+
+:host[type="fullscreen-translucent"] {
+  .dialog-frame {
+    border-radius: 0px !important;
+    width: 100vw !important;
+    min-height: 100% !important;
+    margin-left: calc((100vw - 500px) / 2);
+    margin-right: calc((100vw - 500px) / 2);
+    min-width: unset !important;
+    overflow: scroll;
+    background-color: #2228;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+
+    & .dialog-frame-content {
       padding: 0px !important;
     }
   }

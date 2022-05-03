@@ -81,3 +81,17 @@ export class SaleFlow extends Model<SaleFlow> {
   packageNickname?: string;
   canBuyMultipleItems?: boolean;
 }
+
+export class PaginationOptionsInput {
+  sortBy?: string;
+  limit?: number;
+  page?: number;
+  select?: string;
+  populate?: string[];
+}
+
+export class PaginationInput {
+  options?: PaginationOptionsInput;
+  findBy?: any;
+  filter?: any;
+}
