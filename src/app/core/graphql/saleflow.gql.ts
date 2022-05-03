@@ -178,6 +178,7 @@ export const listItems = gql`
           _id
           name
           price
+          image
           quantity
         }
       }

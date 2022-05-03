@@ -39,6 +39,7 @@ export class CustomItemDetailComponent implements OnInit {
           title: item.name,
           price: price + (price*0.18),
           quantity: item.quantity,
+          image: item.image
         }
       })
     }
