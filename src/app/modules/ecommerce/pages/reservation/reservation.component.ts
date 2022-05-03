@@ -36,6 +36,7 @@ export class ReservationComponent implements OnInit {
   datePreview: any;
   options: boolean = false;
   whatsappLink: string;
+  merchantName: string;
 
   constructor(
     public order: OrderService,
@@ -101,6 +102,7 @@ export class ReservationComponent implements OnInit {
     this.orderData = this.header.getOrder(this.saleflowData._id);
     this.header.getOrderProgress(this.saleflowData._id);
     console.log(this.orderData);
+    console.log(this.saleflowData);
     console.log(this.saleflowData.module.appointment.calendar._id);
     this.calendarId = this.saleflowData.module.appointment.calendar._id;
     this.calendar.getToday();
@@ -187,7 +189,9 @@ export class ReservationComponent implements OnInit {
   checkCalendar() {
     this.calendar.getCalendar(this.calendarId).then((data) => {
       console.log(data);
-      this.merchant = data.getCalendar.merchant._id;
+      //this.merchant = data.getCalendar.merchant._id;
+      this.merchant = this.saleflowData.merchant._id;
+      this.merchantName = this.saleflowData.merchant.name;
       this.getAmAndPm();
       // Logic for default date
         if(!this.sliders) {

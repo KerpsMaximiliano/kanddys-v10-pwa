@@ -1,0 +1,16 @@
+.container{
+    height: 36px;
+    width: 100%;
+    background-color: #1EB1EC;
+    color: white;
+    text-align: center;
+    font-family: 'RobotoBold';
+    font-size: 14px;
+    & .text{
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+}

@@ -71,6 +71,7 @@ import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.com
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { InformationBoxComponent } from './components/information-box/information-box.component';
 import { ImageViewComponent } from './dialogs/image-view/image-view.component';
+import { HeaderButtonComponent } from './components/header-button/header-button.component';
 
 const imports = [
   CommonModule,
@@ -139,6 +140,7 @@ const declarations = [
   ListComponent,
   InformationBoxComponent,
   ImageViewComponent,
+  HeaderButtonComponent
 ];
 
 @NgModule({

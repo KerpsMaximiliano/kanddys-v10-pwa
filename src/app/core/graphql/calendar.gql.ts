@@ -15,9 +15,7 @@ export const getCalendar = gql`
         toHour
       }
       timeChunkSize
-      merchant{
-        _id
-      }
+
       active
       reservations {
         reservation
