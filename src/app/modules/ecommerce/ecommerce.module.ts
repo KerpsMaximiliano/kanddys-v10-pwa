@@ -21,6 +21,7 @@ import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-dashboard.component';
+import { MyItemsComponent } from './pages/my-items/my-items.component';
 
 const routes: Routes = [
   {
@@ -108,6 +109,10 @@ const routes: Routes = [
     path: 'merchant-dashboard',
     component: MerchantDashboardComponent,
   },
+  {
+    path: 'my-items',
+    component: MyItemsComponent,
+  },
 ];
 
 @NgModule({
@@ -132,7 +137,8 @@ const routes: Routes = [
     SalesInfoComponent,
     PackageDetailComponent,
     ReservationComponent,
-    MerchantDashboardComponent
+    MerchantDashboardComponent,
+    MyItemsComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
