@@ -21,12 +21,24 @@
       autocomplete="off"
       (keypress)="keyPressNumbers($event)"
     />
-    <p class="sublabel">
-      Si es tu primera orden recibirás un codigo de verificación.
-    </p>
-    <p class="sublabel">
-      Si haz hecho ordenes anteriormente ingresarás tu clave.
-    </p>
+    <ng-container *ngIf="inputData.length < 7">
+      <p class="sublabel">
+        Si es tu primera orden recibirás un codigo de verificación.
+      </p>
+      <p class="sublabel">
+        Si haz hecho ordenes anteriormente ingresarás tu clave.
+      </p>
+    </ng-container>
+    <ng-container *ngIf="inputData.length >= 7">
+      <p class="sublabel" style="font-family:'RobotoLight'; font-size: 19px; color: #000000; margin-left: 0px; margin-top: 80px;">
+        Como prefieres verificarte para salvar la orden?
+      </p>
+      <app-answer-selector
+      [options]="logInOptions"
+      [useMargins]="false"
+      (onSelector)="selectLoginOption($event)"
+    ></app-answer-selector>
+    </ng-container>
   </div>
   <div class="content m-top" *ngIf="step === 2">
     <p class="label1">Escriba el código que recibió:</p>
@@ -480,7 +492,7 @@
 
 <app-sticky-button
   [mode]="
-    (step === 1 && inputData.length < 7) ||
+    (step === 1 && inputData.length < 500) ||
     (step === 2 && code.length < 4) ||
     (step === 3 &&
       (!name || name.trim().length === 0 || password.length < 3)) ||
@@ -501,7 +513,7 @@
     step === 1
       ? flow !== 'flow-completion'
         ? 'ASIGNA EL WHATSAPP AL MAPP'
-        : inputData.length < 7
+        : inputData.length < 500
         ? 'ADICIONA TU CELULAR'
         : 'VERIFICAR MI CELULAR'
       : step === 2

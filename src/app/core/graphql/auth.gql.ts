@@ -7,11 +7,7 @@ const user = `
   name
   birthdate
   image
-  defaultCommunity {
-    _id
-    name
-    kindcode
-  }
+
   validatedAt
   deliveryLocations{
     _id

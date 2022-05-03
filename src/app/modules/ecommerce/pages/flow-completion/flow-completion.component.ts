@@ -105,6 +105,16 @@ export class FlowCompletionComponent implements OnInit {
       value: 'No',
     },
   ];
+  logInOptions = [
+    {
+      status: true,
+      value: 'Simple. Mándame un link a mi WhatsApp',
+    },
+    {
+      status: true,
+      value: 'Como en 1997 donde recibirás un código y asignarás una clave',
+    },
+  ];
   bankOptions: BankDetails[] = [];
   banks: Bank[] = [];
   windowReference: any;
@@ -497,6 +507,15 @@ export class FlowCompletionComponent implements OnInit {
         this.selectedBank = this.bankOptions[index];
         break;
       }
+    }
+  }
+
+  selectLoginOption(index: number){
+    console.log(index);
+    if (index == 0) {
+      console.log('ws link');
+    }else{
+      this.checkUser()
     }
   }
 
