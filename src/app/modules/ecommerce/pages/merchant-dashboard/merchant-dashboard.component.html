@@ -1,0 +1,162 @@
+<div class="container">
+    <app-header-button [text]="'Ver la Informacion Gneral >'"></app-header-button>
+    <div class="merchant-header">
+        <div class="bow">
+        </div>
+        <div class="ball-box">
+            <img src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/assets/cart-white.png" alt="cart" class="cart">
+        </div>
+    </div>
+    <div class="merchant-info">
+        <div class="title">
+            Mi Tienda
+        </div>
+        <div class="bio">
+            Sirve para vender online y a través de Clubs. 
+        </div>
+    </div>
+    <ng-container *ngIf="!isLogged">
+        <div class="info-wrapper">
+            <div class="info">
+                <div class="info-title">
+                    METODOS PARA VENDER ONLINE
+                </div>
+                <div class="info-text">
+                    Compartes el link de tu tienda online para facilitarte las ventas desde WhatsApp y otros Apps como Instagram.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Tienda Online</div>
+                </div>
+                <div class="card-info">
+                    Donde el comprador y tu reciben las notificaciones por WhatsApp (op. email).
+                </div>
+            </div>
+            <div class="info">
+                <div class="info-title">
+                    METODOS PARA INCREMENTAR LAS VENTAS
+                </div>
+                <div class="info-text">
+                    Pagas la colaboración después de la venta. Comunidades evidencian su influencia enlazando la compra que te generaron.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Según los items vendidos</div>
+                </div>
+                <div class="card-info">
+                    Las Comunidades incluyen tus Items en la tienda online que promocionan para recaudar fondos.
+                </div>
+                <br/>
+                <br/>
+                <div class="card-info">
+                    Recibes la orden por WhatsApp. El comprador paga directo y por transferencia en tu cuenta bancaria.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Con los recibos de ventas</div>
+                </div>
+                <div class="card-info">
+                    Las Comunidades te promocionan en sus comunicaciones y recolectan las facturas que le generaste a su audiencia.
+                </div>
+                <br/>
+                <br/>
+                <div class="card-info">
+                    Se genera un listado que les sirve para recaudar fondos.
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="isLogged">
+        <div class="info-wrapper">
+            <div class="info">
+                <div class="info-title" style="display: flex; justify-content: space-between;">
+                    METODOS PARA VENDER ONLINE
+                    <div class="i-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="5.623" height="20.462" viewBox="0 0 5.623 20.462">
+                            <g id="info" transform="translate(-14.627 -7.875)">
+                              <path id="Path_28438" data-name="Path 28438" d="M20.093,14.823l-5.152.646-.184.855,1.012.187c.661.158.792.4.648,1.055l-1.66,7.8c-.436,2.018.236,2.968,1.818,2.968a4.66,4.66,0,0,0,3.3-1.345l.2-.936a2.492,2.492,0,0,1-1.544.553c-.619,0-.844-.434-.684-1.2Z" fill="#7b7b7b"/>
+                              <path id="Path_28439" data-name="Path 28439" d="M20.25,10.125A2.25,2.25,0,1,1,18,7.875,2.25,2.25,0,0,1,20.25,10.125Z" fill="#7b7b7b"/>
+                            </g>
+                          </svg>   
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="5.623" height="20.462" viewBox="0 0 5.623 20.462">
+                        <g id="info" transform="translate(-14.627 -7.875)">
+                          <path id="Path_28438" data-name="Path 28438" d="M20.093,14.823l-5.152.646-.184.855,1.012.187c.661.158.792.4.648,1.055l-1.66,7.8c-.436,2.018.236,2.968,1.818,2.968a4.66,4.66,0,0,0,3.3-1.345l.2-.936a2.492,2.492,0,0,1-1.544.553c-.619,0-.844-.434-.684-1.2Z" fill="#7b7b7b"/>
+                          <path id="Path_28439" data-name="Path 28439" d="M20.25,10.125A2.25,2.25,0,1,1,18,7.875,2.25,2.25,0,0,1,20.25,10.125Z" fill="#7b7b7b"/>
+                        </g>
+                      </svg>                      
+                </div>
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Tienda Online</div>
+                </div>
+                <div class="card-option">
+                    Incluir mas items a la tienda
+                </div>
+                <div class="card-option">
+                    Ver la tienda como los compradores
+                </div>
+                <div class="card-button">
+                    <div class="text">
+                        Activa tu Tienda para empezar a vender
+                    </div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="info-title" style="display: flex; justify-content: space-between;">
+                    METODOS PARA INCREMENTAR LAS VENTAS
+                    <div class="i-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="5.623" height="20.462" viewBox="0 0 5.623 20.462">
+                            <g id="info" transform="translate(-14.627 -7.875)">
+                              <path id="Path_28438" data-name="Path 28438" d="M20.093,14.823l-5.152.646-.184.855,1.012.187c.661.158.792.4.648,1.055l-1.66,7.8c-.436,2.018.236,2.968,1.818,2.968a4.66,4.66,0,0,0,3.3-1.345l.2-.936a2.492,2.492,0,0,1-1.544.553c-.619,0-.844-.434-.684-1.2Z" fill="#7b7b7b"/>
+                              <path id="Path_28439" data-name="Path 28439" d="M20.25,10.125A2.25,2.25,0,1,1,18,7.875,2.25,2.25,0,0,1,20.25,10.125Z" fill="#7b7b7b"/>
+                            </g>
+                          </svg>   
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Según los items vendidos</div>
+                </div>
+                <div class="card-info">
+                    Las Comunidades incluyen tus Items en la tienda online que promocionan para recaudar fondos.
+                </div>
+                <br/>
+                <br/>
+                <div class="card-info">
+                    Recibes la orden por WhatsApp. El comprador paga directo y por transferencia en tu cuenta bancaria.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="image"></div>
+                    <div class="title">Con los recibos de ventas</div>
+                </div>
+                <div class="card-info">
+                    Las Comunidades te promocionan en sus comunicaciones y recolectan las facturas que le generaste a su audiencia.
+                </div>
+                <br/>
+                <br/>
+                <div class="card-info">
+                    Se genera un listado que les sirve para recaudar fondos.
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
+<app-sticky-button
+[mode]="'disabled'"
+[text]="'TOCA DONDE PREFIERAS'"
+></app-sticky-button>

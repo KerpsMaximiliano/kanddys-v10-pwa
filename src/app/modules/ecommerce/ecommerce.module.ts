@@ -20,8 +20,15 @@ import { AdminOptionsComponent } from './pages/admin-options/admin-options.compo
 import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
+import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-dashboard.component';
+import { MyItemsComponent } from './pages/my-items/my-items.component';
+import { LandingComponent } from './pages/landing/landing.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: LandingComponent,
+  },
   {
     path: 'category-items/:id/:categoryId',
     component: CategoryItemsComponent,
@@ -103,6 +110,14 @@ const routes: Routes = [
     path: 'reservations',
     component: ReservationComponent,
   },
+  {
+    path: 'merchant-dashboard',
+    component: MerchantDashboardComponent,
+  },
+  {
+    path: 'my-items',
+    component: MyItemsComponent,
+  },
 ];
 
 @NgModule({
@@ -126,7 +141,10 @@ const routes: Routes = [
     AdminOptionsComponent,
     SalesInfoComponent,
     PackageDetailComponent,
-    ReservationComponent
+    ReservationComponent,
+    MerchantDashboardComponent,
+    MyItemsComponent,
+    LandingComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
