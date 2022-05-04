@@ -22,8 +22,13 @@ import { PackageDetailComponent } from './pages/package-detail/package-detail.co
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-dashboard.component';
 import { MyItemsComponent } from './pages/my-items/my-items.component';
+import { LandingComponent } from './pages/landing/landing.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: LandingComponent,
+  },
   {
     path: 'category-items/:id/:categoryId',
     component: CategoryItemsComponent,
@@ -138,7 +143,8 @@ const routes: Routes = [
     PackageDetailComponent,
     ReservationComponent,
     MerchantDashboardComponent,
-    MyItemsComponent
+    MyItemsComponent,
+    LandingComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
