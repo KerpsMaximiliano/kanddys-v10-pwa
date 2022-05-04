@@ -1,0 +1,167 @@
+$headerColor: #2f6ed8;
+$buttonBackgroundColor: #1eb1ec;
+
+.wrapper {
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #f1f1f1;
+}
+
+.introduction {
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/circle-background-gradient.svg);
+  height: 383px;
+  width: 100%;
+  background-position-y: -112px;
+  background-position-x: -49.5px;
+  margin-bottom: 100px;
+}
+
+h2,
+h6 {
+  color: $headerColor;
+  font-family: "NeueMontreal";
+  margin: 0px;
+}
+
+.communities-and-users {
+  padding: 0px 50px;
+}
+
+.stores {
+  padding: 0px 50px;
+  padding-top: 85px;
+
+  .right-wrapper {
+    margin-left: -108px;
+    padding-top: 46px;
+
+    h2 {
+      font-size: 38px;
+    }
+
+    li {
+      margin-top: 50px;
+    }
+  }
+
+  .left-image {
+    max-width: 256px;
+    height: 246px;
+  }
+}
+
+.communities-and-users,
+.stores {
+  display: flex;
+  flex-direction: column;
+
+  li {
+    font-size: 18px;
+  }
+
+  .top-flex {
+    display: flex;
+    .left-wrapper {
+      width: 75%;
+      margin: 0px;
+
+      li {
+        margin-top: 42px;
+      }
+
+      h2 {
+        font-weight: bold;
+        font-size: 38px;
+      }
+
+      h6 {
+        margin-top: 21px;
+        font-size: 18px;
+      }
+    }
+    .right-image {
+      margin-top: 100px;
+      max-width: 303px;
+      min-height: 220px;
+      margin-right: -218px;
+    }
+  }
+}
+
+.the-why {
+  .avatar-img {
+    border-radius: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 111px;
+    height: 111px;
+    margin-top: -133.5px;
+  }
+
+  padding: 78px 51px 44px 51px;
+  background-color: #fff;
+  box-shadow: 0px 0px 20px lightgray;
+  width: 73.6%;
+  border-radius: 30px;
+  margin: auto;
+  margin-top: 144px;
+  margin-bottom: 50px;
+
+  h2 {
+    font-size: 39px;
+    font-weight: bold;
+    margin: 0px;
+    margin-bottom: 30px;
+  }
+
+  p,
+  .at,
+  b {
+    font-family: "NeueMontreal";
+    font-size: 20px;
+  }
+
+  p {
+    margin: 0px;
+    color: #38373b;
+  }
+
+  .at {
+    font-family: "NeueMontreal";
+    font-size: 20px;
+    color: #27a2ff;
+    margin-bottom: 30px;
+  }
+}
+
+.benefits {
+  margin-top: 40px;
+  margin-bottom: 51px;
+  font-size: 18px;
+  color: $buttonBackgroundColor;
+  font-weight: bold;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.button {
+  margin: auto;
+  background-color: $buttonBackgroundColor;
+  color: #fff;
+  width: 73.59%;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "NeueMontreal";
+  font-weight: 400;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
