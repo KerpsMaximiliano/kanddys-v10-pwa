@@ -2338,6 +2338,7 @@ export class PostCustomizerComponent
     // };
     // this.header.isComplete.giftABox.customizer = true;
     this.header.customizer = customizerValues;
+
     this.header.customizerData = {
       ...this.header.customizerData,
       willModify: false,
@@ -2349,6 +2350,9 @@ export class PostCustomizerComponent
       textsAmount: this.currentTextsAmount,
       id: this.customizerRuleID,
     };
+    localStorage.setItem('customizer', JSON.stringify(this.header.customizer));
+    localStorage.setItem('customizerData', JSON.stringify(this.header.customizerData));
+
     this.header.isComplete.customizer = true;
   }
 

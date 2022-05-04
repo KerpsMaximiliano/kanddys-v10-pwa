@@ -19,9 +19,11 @@ import {
   checkUser,
   userData,
   generateOTP,
+  generateMagicLink,
+  analizeMagicLink,
   signinSocial,
   simplifySignup,
-  getTempCodeData
+  getTempCodeData,
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
@@ -40,7 +42,7 @@ export class AuthService {
     private readonly graphql: GraphQLWrapper,
     private readonly social: SocialAuthService,
     private readonly app: AppService,
-    private readonly router: Router,
+    private readonly router: Router
   ) {
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
@@ -61,7 +63,7 @@ export class AuthService {
   public async signin(
     emailOrPhone: string,
     password: string,
-    remember : boolean
+    remember: boolean
   ): Promise<Session> {
     try {
       const variables = { emailOrPhone, password, remember };
@@ -89,12 +91,18 @@ export class AuthService {
     return this.session;
   }
 
-  public async signinSocial(input: any, authLogin:boolean = true): Promise<Session> {
+  public async signinSocial(
+    input: any,
+    authLogin: boolean = true
+  ): Promise<Session> {
     console.log(input);
     try {
-      input.createIfNotExist = true
+      input.createIfNotExist = true;
       const variables = { input };
-      const result = await this.graphql.mutate({ mutation: signinSocial, variables });
+      const result = await this.graphql.mutate({
+        mutation: signinSocial,
+        variables,
+      });
       console.log(result);
       this.session = new Session(result?.signinSocial, true);
     } catch (e) {
@@ -106,28 +114,35 @@ export class AuthService {
     return this.session;
   }
 
-  public async simplifySignup(emailOrPhone: string, notificationMethod: string){
+  public async simplifySignup(
+    emailOrPhone: string,
+    notificationMethod: string
+  ) {
     console.log(emailOrPhone, notificationMethod);
-    
+
     const result = await this.graphql.mutate({
       mutation: simplifySignup,
-      variables: { emailOrPhone,notificationMethod },
+      variables: { emailOrPhone, notificationMethod },
     });
     return result;
   }
 
-  public async getTempCodeData(token: string){
+  public async getTempCodeData(token: string) {
     const result = await this.graphql.query({
       query: getTempCodeData,
-      variables: {token: token}
+      variables: { token: token },
     });
     return result;
   }
 
-  public async signup(input: any,notificationMethod?:string, code?:string ): Promise<User> {
+  public async signup(
+    input: any,
+    notificationMethod?: string,
+    code?: string
+  ): Promise<User> {
     const result = await this.graphql.mutate({
       mutation: signup,
-      variables: { input,notificationMethod,code },
+      variables: { input, notificationMethod, code },
       context: {
         useMultipart: true,
       },
@@ -250,7 +265,6 @@ export class AuthService {
     } catch (e) {}
   }
 
-
   public async updateMe(input: any) {
     const response = await this.graphql.mutate({
       mutation: updateme,
@@ -265,11 +279,11 @@ export class AuthService {
     return user;
   }
 
-  public async checkUser(emailOrPhone: String,notificationMethod?:String) {
+  public async checkUser(emailOrPhone: String, notificationMethod?: String) {
     try {
       const response = await this.graphql.query({
         query: checkUser,
-        variables: { emailOrPhone,notificationMethod },
+        variables: { emailOrPhone, notificationMethod },
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
@@ -283,7 +297,31 @@ export class AuthService {
         variables: { emailOrPhone },
         fetchPolicy: 'no-cache',
       });
-      return response
+      return response;
+    } catch (e) {}
+  }
+
+  public async generateMagicLink(emailOrPhone: String) {
+    try {
+      const response = await this.graphql.mutate({
+        mutation: generateMagicLink,
+        variables: { emailOrPhone },
+      });
+
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  public async analizeMagicLink(token: String) {
+    try {
+      const response = await this.graphql.query({
+        query: analizeMagicLink,
+        variables: { token },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
     } catch (e) {}
   }
 }

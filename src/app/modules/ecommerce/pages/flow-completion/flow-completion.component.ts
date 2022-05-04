@@ -263,73 +263,96 @@ export class FlowCompletionComponent implements OnInit {
   async ngOnInit() {
     console.log(this.header.order);
 
-    // this.ammount.valueChanges.subscribe((change) => {
-    //   // this.validateNumbers(change);
-    // });
+    this.route.queryParams.subscribe(async (params) => {
+      const { token } = params;
 
-    if (this.router.url.includes('flow-completion')) {
-      this.flow = 'flow-completion';
-      this.headerText = 'INFORMACIÓN NECESARIA';
-      let products: string[] = [];
-      let packages: string[] = [];
-      if (this.header.order?.itemPackage) {
-        packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
-            findBy: {
-              _id: {
-                __in: ([] = packages),
+      if (token) {
+        try {
+          const { analizeMagicLink } = await this.authService.analizeMagicLink(
+            token
+          );
+
+          localStorage.setItem('session-token', analizeMagicLink.token);
+
+          this.step = 3;
+          this.relativeStep += 2;
+
+          // this.submit();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      if (this.router.url.includes('flow-completion')) {
+        this.flow = 'flow-completion';
+        this.headerText = 'INFORMACIÓN NECESARIA';
+        let products: string[] = [];
+        let packages: string[] = [];
+        if (this.header.order?.itemPackage) {
+          packages.push(this.header.order.itemPackage);
+          const listPackages = (
+            await this.saleflow.listPackages({
+              findBy: {
+                _id: {
+                  __in: ([] = packages),
+                },
               },
-            },
-          })
-        ).listItemPackage;
-        console.log(listPackages);
-        this.products = listPackages;
-      } else if (this.header.order?.products) {
-        for (let i = 0; i < this.header.order.products.length; i++) {
-          products.push(this.header.order.products[i].item);
+            })
+          ).listItemPackage;
+          console.log(listPackages);
+          this.products = listPackages;
+        } else if (this.header.order?.products) {
+          for (let i = 0; i < this.header.order.products.length; i++) {
+            products.push(this.header.order.products[i].item);
+          }
+          console.log(this.products);
+          this.findItemData(products);
         }
-        console.log(this.products);
-        this.findItemData(products);
-      }
-      if (this.header.merchantInfo)
-        this.merchantInfo = this.header.merchantInfo;
-      this.route.params.subscribe((params) => {
-        if (params.id) {
-          this.orderId = params.id;
-          this.getOrderData(params.id);
-        } else if (!this.header.isDataComplete()) {
-          console.log('enttrando');
 
-          this.header.resetIsComplete();
-          this.router.navigate([`ecommerce/landing-vouchers`]);
-        }
-      });
-    } else {
-      this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
-    }
-    if (this.router.url.includes('create-community')) {
-      this.flow = 'create-community';
-    }
-    if (this.router.url.includes('create-merchant')) {
-      this.flow = 'create-merchant';
-    }
-    this.authService.me().then((data) => {
-      if (data) {
-        this.userData = data;
-        this.isLogged = true;
-        this.inputData = this.userData.phone;
-        this.step = 4;
+        if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
+          this.merchantInfo =
+            this.header.merchantInfo ||
+            JSON.parse(localStorage.getItem('merchantInfo'));
+        this.route.params.subscribe((params) => {
+          if (params.id) {
+            this.orderId = params.id;
+            this.getOrderData(params.id);
+          } else if (!this.header.isDataComplete()) {
+            console.log('enttrando');
 
-        if (this.flow === 'flow-completion') this.stepsLeft = 4;
+            this.header.resetIsComplete();
+            // this.router.navigate([`ecommerce/landing-vouchers`]);
+          }
+        });
       } else {
-        this.step = 1;
-        if (this.flow === 'flow-completion') this.stepsLeft = 6;
+        this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
       }
-    });
+      if (this.router.url.includes('create-community')) {
+        this.flow = 'create-community';
+      }
+      if (this.router.url.includes('create-merchant')) {
+        this.flow = 'create-merchant';
+      }
 
-    console.log(this.flow);
-    console.log(this.products);
+      if (!token) {
+        this.authService.me().then((data) => {
+          if (data) {
+            this.userData = data;
+            this.isLogged = true;
+            this.inputData = this.userData.phone;
+            this.step = 4;
+
+            if (this.flow === 'flow-completion') this.stepsLeft = 4;
+          } else {
+            this.step = 1;
+            if (this.flow === 'flow-completion') this.stepsLeft = 6;
+          }
+        });
+      }
+
+      console.log(this.flow);
+      console.log(this.products);
+    });
   }
 
   findItemData(products) {
@@ -510,7 +533,22 @@ export class FlowCompletionComponent implements OnInit {
     }
   }
 
-  async sendCodeToEmailOrWhatsapp() {}
+  async sendCodeToEmailOrWhatsapp() {
+    const validEmail = new RegExp(
+      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+    );
+    const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
+
+    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
+      const executedSuccessfully = await this.authService.generateMagicLink(
+        this.inputData
+      );
+
+      if (executedSuccessfully) {
+        console.log('Email o whatsapp enviado correctamente');
+      }
+    }
+  }
 
   async selectLoginOption(index: number) {
     if (index == 0) {
@@ -699,8 +737,11 @@ export class FlowCompletionComponent implements OnInit {
       };
       const data = await this.authService.updateMe(input);
       this.userData = data;
-      this.orderData.user = this.userData;
-      this.orderData.userId = this.orderData.user._id;
+
+      if (this.orderData) {
+        this.orderData.user = this.userData;
+        this.orderData.userId = this.orderData.user._id;
+      }
       this.isLogged = true;
       this.createOrSkipOrder();
       console.log(data);
@@ -762,23 +803,32 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 3, 4
   createOrder() {
-    this.header.order = this.header.getOrder(this.header.saleflow._id);
+    const saleflow =
+      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+
+    this.header.order = this.header.getOrder(saleflow._id);
     this.header.order.products.forEach((product) => {
       delete product.isScenario;
       delete product.limitScenario;
       delete product.name;
     });
     return new Promise(async (resolve, reject) => {
-      if (this.header.customizer) {
+      const customizer =
+        this.header.customizer ||
+        JSON.parse(localStorage.getItem('customizer'));
+
+      console.log(customizer, 'CUSTOMIZER');
+
+      if (customizer) {
         const customizerId =
-          await this.customizerValueService.createCustomizerValue(
-            this.header.customizer
-          );
+          await this.customizerValueService.createCustomizerValue(customizer);
+
+        console.log(customizerId, 'CID');
         this.header.order.products[0].customizer = customizerId;
         this.header.customizer = null;
         this.header.customizerData = null;
       }
-      if (this.header.saleflow.module.post) {
+      if (saleflow.module.post) {
         let postinput =
           this.header.post ??
           this.header.getPost(
