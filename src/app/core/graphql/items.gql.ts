@@ -43,6 +43,7 @@ const itemBody = `
       _id
       name
       price
+      image
       quantity
     }
   }

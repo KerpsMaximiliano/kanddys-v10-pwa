@@ -207,9 +207,10 @@
                   </div>
                   <div *ngIf="checkControlValue(itemsRuleControl, 'svgRule.fixedColors')" formArrayName="colors" style="margin-left: 10px;">
                     <label>colors</label>
-                    <button type="button" (click)="onAddArrayItem('svgRule.colors', itemsRuleControl)">add new sticker color</button>
-                    <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i">
-                      <input type="color" [formControlName]="i">
+                    <button type="button" (click)="onAddArrayItemColor('svgRule.colors', itemsRuleControl)">add new sticker color</button>
+                    <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
+                      <input type="color" formControlName="fixedValue">
+                      <input type="text" formControlName="name">
                       <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                     </div>
                   </div>
@@ -275,9 +276,10 @@
                       </div>
                       <div *ngIf="checkControlValue(itemsRuleControl, 'svgRule.fixedColors')" formArrayName="colors" style="margin-left: 10px;">
                         <label>colors</label>
-                        <button type="button" (click)="onAddArrayItem('svgRule.colors', itemsRuleControl)">add new sticker color</button>
-                        <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i">
-                          <input type="color" [formControlName]="i">
+                        <button type="button" (click)="onAddArrayItemColor('svgRule.colors', itemsRuleControl)">add new sticker color</button>
+                        <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
+                          <input type="color" formControlName="fixedValue">
+                          <input type="text" formControlName="name">
                           <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                         </div>
                       </div>
@@ -360,11 +362,12 @@
               </div>
               <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedColor')" formArrayName="fixedColors" style="margin-left: 10px;">
                 <label>fixedColor</label>
-                <button type="button" (click)="onAddArrayItem('fixedColors', itemsRuleControl)">
+                <button type="button" (click)="onAddArrayItemColor('fixedColors', itemsRuleControl)">
                   Add new color
                 </button>
-                <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i">
-                  <input type="color" [formControlName]="i">
+                <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
+                  <input type="color" formControlName="fixedValue">
+                  <input type="text" formControlName="name">
                   <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                 </div>
               </div>
@@ -427,11 +430,12 @@
                   </div>
                   <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedColor')" formArrayName="fixedColors" style="margin-left: 10px;">
                     <label>fixedColor</label>
-                    <button type="button" (click)="onAddArrayItem('fixedColors', itemsRuleControl)">
+                    <button type="button" (click)="onAddArrayItemColor('fixedColors', itemsRuleControl)">
                       Add new color
                     </button>
-                    <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i">
-                      <input type="color" [formControlName]="i">
+                    <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
+                      <input type="color" formControlName="fixedValue">
+                      <input type="text" formControlName="name">
                       <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                     </div>
                   </div>
@@ -485,8 +489,16 @@
     <button *ngIf="customizerID" (click)="modifyCustomizer()">actualizar</button>
   </form>
   <div>
-    <label>Autofill Values (stickers urls, colors. Texts colors, fonts)</label>
-    <input type="checkbox" [(ngModel)]="autofillValues">
+    <label>Autofill Colors (stickers Texts)</label>
+    <input type="checkbox" [(ngModel)]="autofillColors">
+  </div>
+  <div>
+    <label>Autofill Stickers</label>
+    <input type="checkbox" [(ngModel)]="autofillStickers">
+  </div>
+  <div>
+    <label>Autofill Fonts</label>
+    <input type="checkbox" [(ngModel)]="autofillFonts">
   </div>
 </div>
 <hr>

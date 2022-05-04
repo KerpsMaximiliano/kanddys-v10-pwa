@@ -25,7 +25,9 @@ export class CustomizerListComponent implements OnInit {
   customizerList: string[] = [];
   customizerForm: FormGroup;
   userMerchant: string;
-  autofillValues: boolean = false;
+  autofillColors: boolean = false;
+  autofillFonts: boolean = false;
+  autofillStickers: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
@@ -51,7 +53,7 @@ export class CustomizerListComponent implements OnInit {
             const itemRule = ((this.customizerForm.get('texts.itemsRule') as FormArray).at(i) as FormGroup);
             if(value.texts.itemsRule[i].onlyFixedColor)
               for(let j = 0; j < value.texts.itemsRule[i].fixedColors.length; j++) {
-                this.onAddArrayItem('fixedColors', itemRule)
+                this.onAddArrayItemColor('fixedColors', itemRule)
               }
             if(value.texts.itemsRule[i].onlyFixedFonts)
               for(let j = 0; j < value.texts.itemsRule[i].fixedFonts.length; j++) {
@@ -70,7 +72,7 @@ export class CustomizerListComponent implements OnInit {
               (this.customizerForm.get('stickers.itemsRule') as FormArray).at(i).get('urls').patchValue(value.stickers.itemsRule[i].fixed);
               if(value.stickers.itemsRule[i].svgRule.fixedColors || value.stickers.itemsRule[i].svgRule.active) {
                 for(let j = 0; j < value.stickers.itemsRule[i].svgRule.colors.length; j++) {
-                  this.onAddArrayItem('svgRule.colors', itemRule);
+                  this.onAddArrayItemColor('svgRule.colors', itemRule);
                 }
               }
             }
@@ -237,6 +239,15 @@ export class CustomizerListComponent implements OnInit {
     (<FormArray>this.customizerForm.get(controlName)).push(control);
   }
 
+  onAddArrayItemColor(controlName: string, form?: FormGroup) {
+    const control = new FormGroup({
+      'name': new FormControl(null, Validators.required),
+      'fixedValue': new FormControl(null, Validators.required),
+    });
+    (<FormArray>form.get(controlName)).push(control);
+    return;
+  }
+
   onRemoveArrayItem(controlName: string, i: number, form?: FormGroup, ) {
     if(form) {
       (<FormArray>form.get(controlName)).removeAt(i);
@@ -291,8 +302,7 @@ export class CustomizerListComponent implements OnInit {
   validateCustomizer(): CustomizerInput {
     let customizerData: CustomizerInput = this.customizerForm.value;
     console.log(customizerData)
-    console.log(this.autofillValues)
-    if(this.autofillValues) {
+    if(this.autofillColors) {
       console.log('some values will be autofilled')
     }
     customizerData.merchant = this.userMerchant; // local
@@ -302,14 +312,14 @@ export class CustomizerListComponent implements OnInit {
         customizerData.stickers.itemsRule[i].fixPosition.z = i;
       }
     }
-    if(this.autofillValues && customizerData.stickers.active) {
+    if(this.autofillColors && customizerData.stickers.active) {
       for(let i = 0; i < customizerData.stickers.itemsRule.length; i++) {
         let currentColors = customizerData.stickers.itemsRule[i].svgRule.colors;
-        let stickerColors = this.hasDuplicate(currentColors[0], colors1);
+        let stickerColors = this.hasDuplicateColor(currentColors[0], colorList);
         customizerData.stickers.itemsRule[i].svgRule.colors = stickerColors;
-        let currentSVG = customizerData.stickers.itemsRule[0].urls;
-        let svgs = this.hasDuplicate(currentSVG[0], stickers);
-        customizerData.stickers.itemsRule[i].urls = svgs;
+        // let currentSVG = customizerData.stickers.itemsRule[0].urls;
+        // let svgs = this.hasDuplicate(currentSVG[0], stickers);
+        // customizerData.stickers.itemsRule[i].urls = svgs;
       }
     }
     // else customizerData.stickers.fixedAmount = 0;
@@ -319,14 +329,23 @@ export class CustomizerListComponent implements OnInit {
         customizerData.texts.itemsRule[i].fixPosition.z = i;
       }
     }
-    if(this.autofillValues && customizerData.texts.active) {
+    if(this.autofillColors && customizerData.texts.active) {
       for(let i = 0; i < customizerData.texts.itemsRule.length; i++) {
         let textColors = customizerData.texts.itemsRule[i].fixedColors;
-        let colorsText = this.hasDuplicate(textColors[0], colors2);
+        let colorsText = this.hasDuplicateColor(textColors[0], colorList);
         customizerData.texts.itemsRule[i].fixedColors = colorsText;
+      }
+    }
+    if(this.autofillFonts && customizerData.texts.active) {
+      for(let i = 0; i < customizerData.texts.itemsRule.length; i++) {
         let font = customizerData.texts.itemsRule[i].fixedFonts
         let textFonts = this.hasDuplicate(font[0], fonts);
         customizerData.texts.itemsRule[i].fixedFonts = textFonts;
+      }
+    } else if(customizerData.texts.active) {
+      for(let i = 0; i < customizerData.texts.itemsRule.length; i++) {
+        let font = customizerData.texts.itemsRule[i].fixedFonts
+        customizerData.texts.itemsRule[i].fixedFonts = [font[0]];
       }
     }
     // else customizerData.texts.fixedAmount = 0;
@@ -344,6 +363,18 @@ export class CustomizerListComponent implements OnInit {
     newArray.unshift(string)
     return newArray
   }
+
+  hasDuplicateColor(first: {name: string, fixedValue: string}, items: {name: string, fixedValue: string}[]) {
+    const array = [...items];
+    let newArray: {name: string, fixedValue: string}[];
+    const index = array.findIndex((item) => item.name === first.name);
+    if(index  > -1) {
+      array.splice(index, 1);
+    }
+    newArray = array;
+    newArray.unshift(first);
+    return newArray
+  }
 }
 
 const colors1= [
@@ -354,6 +385,135 @@ const colors2 = [
   '#c72c74', '#eeeeee', '#606060','#e4c012','#2262a9', 
   '#799b27','#393939', '#82cac7', '#194520', '#fb7a7a', 
   '#ff3b3b', '#149f9a', '#ba7364', '#003289', '#9a815c'
+]
+
+const colorList = [
+  {
+    fixedValue: "#57634C",
+    name: "17-B"
+  },
+  {
+    fixedValue: "#7B7B79",
+    name: "19-Q"
+  },
+  {
+    fixedValue: "#4A768F",
+    name: "25-B"
+  },
+  {
+    fixedValue: "#8C4549",
+    name: "23-AP"
+  },
+  {
+    fixedValue: "#305B7D",
+    name: "16-A"
+  },
+  {
+    fixedValue: "#A14549",
+    name: "38-K"
+  },
+  {
+    fixedValue: "#3C7C83",
+    name: "24-K"
+  },
+  {
+    fixedValue: "#6F6D89",
+    name: "40-B"
+  },
+
+  {
+    fixedValue: "#3F5167",
+    name: "47-KD"
+  },
+
+  {
+    fixedValue: "#48474F",
+    name: "45-K"
+  },
+  {
+    fixedValue: "#A25C7E",
+    name: "41-B"
+  },
+  {
+    fixedValue: "#979994",
+    name: "30-K"
+  },
+  {
+    fixedValue: "#5A4E5C",
+    name: "52-K"
+  },
+  {
+    fixedValue: "#707071",
+    name: "10-NA"
+  },
+  {
+    fixedValue: "#A49170",
+    name: "18-Q"
+  },
+  {
+    fixedValue: "#A5536F",
+    name: "42-K"
+  },
+  {
+    fixedValue: "#3A494A",
+    name: "33-AP"
+  },
+  {
+    fixedValue: "#5A4E5C",
+    name: "28-K"
+  },
+  {
+    fixedValue: "#385C44",
+    name: "28-K"
+  },
+  {
+    fixedValue: "#2E4F3E",
+    name: "29-K"
+  },
+  {
+    fixedValue: "#997D44",
+    name: "18-A"
+  },
+  {
+    fixedValue: "#3F4044",
+    name: "20-B"
+  },
+  {
+    fixedValue: "#686a68",
+    name: "44-K"
+  },
+  {
+    fixedValue: "#A17942",
+    name: "34-AP"
+  },
+  {
+    fixedValue: "#3C7374",
+    name: "50-B"
+  },
+  // {
+  //   fixedValue: "#",
+  //   name: "18-AR"
+  // },
+  {
+    fixedValue: "#34746C",
+    name: "50-AP"
+  },
+  {
+    fixedValue: "#55555F",
+    name: "32-K"
+  },
+  {
+    fixedValue: "#45577E",
+    name: "25-K"
+  },
+  {
+    fixedValue: "#974448",
+    name: "21-K"
+  },
+  {
+    fixedValue: "#9F8689",
+    name: "35-AP"
+  },
 ]
 
 const stickers = [
@@ -375,19 +535,19 @@ const stickers = [
 ]
 
 const fonts = [
-  "GiddyupStd",
-  "Nirvana",
-  "GeorgiaRegular",
-  "Cheltenham",
   "Dorsa",
-  "Village",
-  "CFCraigRobinson-Regular",
-  "PomfritDandyNFRegular",
-  "HorsDoeuvresTheGarter",
-  "CheltenhamStdBoldCondIt",
-  "CheltenhamStd-HdtooledBold",
-  
-  // "Onyx",
+  "Onyx",
+  "Commercial-Script",
+  "Cheltenham",
+  // "GiddyupStd",
+  // "Nirvana",
+  // "GeorgiaRegular",
+  // "Village",
+  // "CFCraigRobinson-Regular",
+  // "PomfritDandyNFRegular",
+  // "HorsDoeuvresTheGarter",
+  // "CheltenhamStdBoldCondIt",
+  // "CheltenhamStd-HdtooledBold",
   // "UnicodeOnyx",
   // "CheltenhamStdBoldCond",
   // "CheltenhamBoldItalic",

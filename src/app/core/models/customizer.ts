@@ -2,12 +2,17 @@ import { Model } from '../objects/model';
 import { Position } from './customizer-value';
 
 // Customizer
+export interface CustomizerFixedValue {
+  name: string;
+  fixedValue: string;
+}
+
 interface textItemsRule {
   defaultText: string;
   onlyFixedFonts: boolean;
   fixedFonts?: string[];
   onlyFixedColor: boolean;
-  fixedColors?: string[];
+  fixedColors?: CustomizerFixedValue[];
   fixPositionOnly: boolean;
   fixPosition?: Position;
   fixSizeOnly: boolean;
@@ -26,7 +31,7 @@ interface stickerItemsRule {
   svgRule: {
     active?: boolean;
     fixedColors: boolean;
-    colors: string[];
+    colors: CustomizerFixedValue[];
   }
 }
 
@@ -71,7 +76,7 @@ export class Customizer extends Model<Customizer> {
   lines: {
     active: boolean;
     onlyFixedColor: boolean;
-    fixedColors?: string[];
+    fixedColors?: CustomizerFixedValue[];
   };
 }
 
@@ -81,7 +86,7 @@ interface textItemsRuleInput {
   onlyFixedFonts: boolean;
   fixedFonts?: string[];
   onlyFixedColor: boolean;
-  fixedColors?: string[];
+  fixedColors?: CustomizerFixedValue[];
   fixPositionOnly: boolean;
   fixPosition?: Position;
   fixSizeOnly: boolean;
@@ -104,7 +109,7 @@ interface stickerItemsRuleInput {
   fixPosition?: Position;
   svgRule: {
     fixedColors: boolean;
-    colors: string[];
+    colors: CustomizerFixedValue[];
   }
 }
 

@@ -51,7 +51,10 @@ interface CanvasElement {
   sticker?: {
     image?: HTMLImageElement;
     decoded?: string;
-    color?: string;
+    color?: {
+      name: string;
+      fixedValue: string;
+    };
     number: number;
     url?: string;
   };
@@ -60,7 +63,10 @@ interface CanvasElement {
     text: string;
     size: string;
     font: string;
-    color: string;
+    color: {
+      name: string;
+      fixedValue: string;
+    };
     fixSizeOnly: boolean;
     number: number;
     hidden?: boolean;
@@ -78,83 +84,14 @@ interface TextData {
   imageText: string;
   fontSize: string;
   fontStyle: string;
-  fontColor: string;
+  fontColor: { name: string, fixedValue: string };
 }
 
-const allColors: string[] = [
-  '#D5D5D5',
-  '#DEDEDB',
-  '#D3D0CE',
-  '#DFD098',
-  '#EBDA0E',
-  '#EEC721',
-  '#D13A28',
-  '#BE3D27',
-  '#A3392A',
-  '#B03C26',
-  '#B54C23',
-  '#8D2229',
-  '#B5262A',
-  '#308A82',
-  '#4CA596',
-  '#2F9410',
-  '#318526',
-  '#1F662A',
-  '#5BBB2F',
-  '#96C35E',
-  '#75921E',
-  '#294A30',
-  '#3C8223',
-  '#45838B',
-  '#9584A1',
-  '#50AABF',
-  '#4878AE',
-  '#7E85C2',
-  '#4059AC',
-  '#1D5CA2',
-  '#474EA5',
-  '#4A89C6',
-  '#46449B',
-  '#535C99',
-  '#513689',
-  '#D080A9',
-  '#B55B8C',
-  '#E56394',
-  '#E0B1C2',
-  '#DFA7CB',
-  '#DF8EB2',
-  '#D22A86',
-  '#7F72AE',
-  '#69549F',
-  '#BE4595',
-  '#614A92',
-  '#553A8C',
-  '#BF679C',
-  '#C26495',
-  '#DEBE10',
-  '#DAC60E',
-  '#E1D80C',
-  '#DDC50C',
-  '#E4BA25',
-  '#DEC717',
-  '#D7BD18',
-  '#D9CE34',
-  '#652228',
-  '#621C26',
-  '#4C232C',
-  '#382022',
-  '#959595',
-  '#A7A3AA',
-  '#AEAEAE',
-  '#959193',
-  '#ACA9A6',
-  '#827E83',
-  '#565855',
-  '#323135',
-  '#24262C',
-  '#1E2426',
-  '#121115',
-  '#3B1F22',
+const allColors: { name: string, fixedValue: string }[] = [
+  { 
+    name: 'Default',
+    fixedValue: '#D5D5D5'
+  }
 ];
 
 @Component({
@@ -218,7 +155,7 @@ export class PostCustomizerComponent
     sepia: 0,
     contrast: 100,
   };
-  backgroundColors: string[] = ['none', ...allColors];
+  backgroundColors: { name: string, fixedValue: string }[] = [...allColors];
   // EFECTOS
 
   // STICKERS
@@ -245,7 +182,7 @@ export class PostCustomizerComponent
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253683952.svg',
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253684463.svg',
   ];
-  stickerColors: string[] = allColors;
+  stickerColors: { name: string, fixedValue: string }[] = allColors;
   currentStickersAmount: number = 0;
   stickerMax: boolean = false;
   stickerColor: string = '';
@@ -256,7 +193,7 @@ export class PostCustomizerComponent
   canDraw: boolean = false;
   lineWidth: number = 2;
   lineColor: string = '#D5D5D5';
-  lineColors: string[] = allColors;
+  lineColors: { name: string, fixedValue: string }[] = allColors;
   // LÁPIZ
 
   // TIPOGRAFIA
@@ -265,7 +202,10 @@ export class PostCustomizerComponent
     imageText: '',
     fontSize: '24',
     fontStyle: 'Arial',
-    fontColor: '#D5D5D5',
+    fontColor: {
+      fixedValue: '#D5D5D5',
+      name: 'Default'
+    },
   };
   fontStyles: string[] = [
     'Arial',
@@ -332,8 +272,12 @@ export class PostCustomizerComponent
       fileName: 'empire-bt.ttf',
       fontName: 'Empire',
     },
+    {
+      fileName: 'Commercial-Script.ttf',
+      fontName: 'Commercial-Script',
+    },
   ];
-  fontColors: string[] = allColors;
+  fontColors: { name: string, fixedValue: string }[] = allColors;
   currentTextsAmount: number = 0;
   currentMaxLength: number;
   textMax: boolean = false;
@@ -524,7 +468,7 @@ export class PostCustomizerComponent
                 fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
                 fontColor: text.onlyFixedColor
                   ? text.fixedColors[0]
-                  : '#ffffff',
+                  : { fixedValue: '#ffffff', name: 'Default'},
                 fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
               };
               this.typographyData = textData;
@@ -756,7 +700,7 @@ export class PostCustomizerComponent
               const re = new RegExp('#' + currentColor[0], 'g');
               const replacedColor = decodedValue.replace(
                 re,
-                this.elementList[i].sticker.color
+                this.elementList[i].sticker.color.fixedValue
               );
               this.elementList[i].sticker.decoded = replacedColor;
               const canvasImage = new Image();
@@ -1069,7 +1013,7 @@ export class PostCustomizerComponent
     let options: string[] = [];
     if (this.modifyingElement >= 0) {
       if (this.elementList[this.modifyingElement].sticker) {
-        options = ['iconos'];
+        if(this.customizerRules.stickers.itemsRule[0].fixed.length > 1) options = ['iconos'];
         if (this.showStickerPosition()) options.push(...['tamaño', 'angulo']);
         options.push('color');
       }
@@ -1081,7 +1025,7 @@ export class PostCustomizerComponent
         options = ['editar'];
         if (!this.isFixedSize()) options.push('tamaño');
         if (!this.isFixedPosition()) options.push('angulo');
-        // options.push('tipografia');
+        if(this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1) options.push('tipografia');
         options.push('color');
       }
     }
@@ -1158,7 +1102,7 @@ export class PostCustomizerComponent
     return !this.elementList[this.modifyingElement].fixPositionOnly;
   }
 
-  getStickerColors(): string[] {
+  getStickerColors(): { name: string, fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.stickers.fixedAmountItems) {
         const element = this.elementList[this.modifyingElement].sticker.number;
@@ -1244,11 +1188,10 @@ export class PostCustomizerComponent
   }
 
   // Changes sticker color, only should work on unicolor stickers
-  onChangeStickerColor(color: string) {
+  onChangeStickerColor(color: { name: string, fixedValue: string }) {
     const newSticker = this.elementList[this.modifyingElement].sticker;
-
-    const re = new RegExp(newSticker.color, 'g');
-    const replacedColor = newSticker.decoded.replace(re, color);
+    const re = new RegExp(newSticker.color.fixedValue, 'g');
+    const replacedColor = newSticker.decoded.replace(re, color.fixedValue);
     const encodedSVG = this.encodeSVG(replacedColor);
     const img = new Image();
     img.onload = async () => {
@@ -1312,7 +1255,7 @@ export class PostCustomizerComponent
     url: string,
     element: CanvasElement,
     srcUrl: string,
-    color?: string
+    color?: { name: string, fixedValue: string }
   ) {
     element.sticker.url = srcUrl;
     let canvasSticker = new Image();
@@ -1336,7 +1279,7 @@ export class PostCustomizerComponent
     // Temporal
     if (color) {
       const re = new RegExp('#' + currentColor[0], 'g');
-      const replacedColor = decodedValue.replace(re, color);
+      const replacedColor = decodedValue.replace(re, color.fixedValue);
       canvasSticker.src =
         'data:image/svg+xml;charset=UTF-8,' + this.encodeSVG(replacedColor);
       canvasSticker.onload = () => {
@@ -1350,7 +1293,7 @@ export class PostCustomizerComponent
         this.draw();
       };
       element.sticker.decoded = decodedValue;
-      element.sticker.color = '#' + currentColor[0];
+      element.sticker.color = { fixedValue: '#' + currentColor[0], name: color.name };
     }
     // Temporal
     const stickerRules =
@@ -1378,7 +1321,7 @@ export class PostCustomizerComponent
   // Sends a sticker for modification or adds a new one
   addSticker(url: string, id: number) {
     let srcUrl: string;
-    let specifiedColor: string;
+    let specifiedColor: { name: string, fixedValue: string };
     if (this.customizerRules.stickers.fixedAmountItems) {
       if (this.modifyingSticker >= 0) {
         if (
@@ -1560,7 +1503,7 @@ export class PostCustomizerComponent
       const stickerElements = this.elementList.filter(element => element.sticker)
       if (specifiedColor) {
         const re = new RegExp('#' + currentColor[0], 'g');
-        const replacedColor = decodedValue.replace(re, specifiedColor);
+        const replacedColor = decodedValue.replace(re, specifiedColor.fixedValue);
         const canvasImage = new Image();
         stickerElements[current].sticker.image = canvasImage;
         stickerElements[current].sticker.color = specifiedColor;
@@ -1573,7 +1516,7 @@ export class PostCustomizerComponent
       } else {
         stickerElements[current].sticker.decoded = decodedValue;
         stickerElements[current].sticker.color =
-          '#' + currentColor[0];
+          { fixedValue: '#' + currentColor[0], name: specifiedColor.name};
       }
     };
   }
@@ -1707,7 +1650,7 @@ export class PostCustomizerComponent
     }
   }
 
-  getFontColors(): string[] {
+  getFontColors(): { name: string, fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.texts.fixedAmountItems) {
         const element =
@@ -1739,7 +1682,7 @@ export class PostCustomizerComponent
   }
 
   // Changes font color. If not editing text, draws the new color
-  onChangeFontColor(color: string) {
+  onChangeFontColor(color: { name: string, fixedValue: string }) {
     this.typographyData.fontColor = color;
     if (this.isEditing) return;
     const element = this.elementList[this.modifyingElement];
@@ -1767,17 +1710,19 @@ export class PostCustomizerComponent
   onChangeFontStyle(style: string) {
     this.typographyData.fontStyle = style;
     if (this.isEditing) return;
-    const element = this.elementList[this.modifyingElement];
-    element.typography.font = this.typographyData.fontStyle;
-    // this.draw();
-    this.modifyingText = element.typography.number;
-    this.exitEditing({
-      imageText: element.typography.text,
-      fontColor: element.typography.color,
-      fontSize: element.typography.size,
-      fontStyle: style,
-    });
-    this.drawOutline(element.position, true);
+    this.elementList.forEach((element) => {
+      if(element.typography) {
+        element.typography.font = this.typographyData.fontStyle;
+        this.modifyingText = element.typography.number;
+        const text = {
+          imageText: element.typography.text,
+          fontColor: element.typography.color,
+          fontSize: element.typography.size,
+          fontStyle: style,
+        }
+        this.exitEditing(text);
+      }
+    })
   }
 
   // Changes FontSize out of editing. Needs to recalculate width and height WIP
@@ -1790,7 +1735,7 @@ export class PostCustomizerComponent
     let line = '';
     let y = -(t.position.height / 2);
     this.context.font = `${t.typography.size}px ${t.typography.font}`;
-    this.context.fillStyle = t.typography.color;
+    this.context.fillStyle = t.typography.color.fixedValue;
     for (let lb = 0; lb < lineBreaks.length; lb++) {
       const words = lineBreaks[lb].split(' ');
 
@@ -1805,12 +1750,12 @@ export class PostCustomizerComponent
             t.position.y + t.position.height / 2
           );
           this.context.rotate(t.position.rotation);
-          if (t.typography.color === this.selectedBackgroundColor) {
-            if (t.typography.color !== '#000000')
+          if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
+            if (t.typography.color.fixedValue !== '#000000')
               this.context.fillStyle = 'black';
             else this.context.fillStyle = 'white';
             this.context.fillText(line, 1 - lineWidth / 2, y + 1);
-            this.context.fillStyle = t.typography.color;
+            this.context.fillStyle = t.typography.color.fixedValue;
           }
           this.context.fillText(line, -(lineWidth / 2), y);
           this.context.rotate(-t.position.rotation);
@@ -1830,11 +1775,11 @@ export class PostCustomizerComponent
         t.position.y + t.position.height / 2
       );
       this.context.rotate(t.position.rotation);
-      if (t.typography.color === this.selectedBackgroundColor) {
-        if (t.typography.color !== '#000000') this.context.fillStyle = 'black';
+      if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
+        if (t.typography.color.fixedValue !== '#000000') this.context.fillStyle = 'black';
         else this.context.fillStyle = 'white';
         this.context.fillText(line, 1 - lineWidth / 2, y + 1);
-        this.context.fillStyle = t.typography.color;
+        this.context.fillStyle = t.typography.color.fixedValue;
       }
       this.context.fillText(line, -(lineWidth / 2), y);
       this.context.rotate(-t.position.rotation);
@@ -1932,9 +1877,9 @@ export class PostCustomizerComponent
   // Text input below canvas
 
   // Modifies a text element that was already in the canvas
-  modifyText(width: number, height: number, textData: TextData) {
+  modifyText(width: number, height: number, textData: TextData, index: number) {
     const { imageText, fontSize, fontStyle, fontColor } = textData;
-    const text = this.elementList[this.modifyingElement];
+    const text = this.elementList.find((element) => element.typography?.number === index);
     const textElement = {
       typography: {
         text: imageText,
@@ -1953,12 +1898,12 @@ export class PostCustomizerComponent
       textElement.position['x'] =
         text.position.x + text.position.width / 2 - width / 2;
     }
-    this.elementList[this.modifyingElement].typography = {
+    text.typography = {
       ...text.typography,
       ...textElement.typography,
     };
-    this.elementList[this.modifyingElement].originalSize = width;
-    this.elementList[this.modifyingElement].position = {
+    text.originalSize = width;
+    text.position = {
       ...text.position,
       ...textElement.position,
     };
@@ -2044,7 +1989,7 @@ export class PostCustomizerComponent
         fontSize,
         fontColor,
         fontStyle,
-      });
+      }, this.modifyingText);
       return;
     }
 
@@ -2134,7 +2079,7 @@ export class PostCustomizerComponent
   // ------------------------------------ LINES --------------------------------------
 
   // Returns line colors, either fixed or default
-  getLineColors(): string[] {
+  getLineColors(): { name: string, fixedValue: string }[] {
     if (this.customizerRules.lines.onlyFixedColor)
       return this.customizerRules.lines.fixedColors;
     else return this.lineColors;

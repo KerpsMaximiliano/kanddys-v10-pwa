@@ -14,6 +14,14 @@ const routes: Routes = [
     path: 'post-customizer/:itemId/:customizerId',
     component: PostCustomizerComponent,
   },
+  {
+    path: 'customizer-list',
+    component: CustomizerListComponent,
+  },
+  {
+    path: 'customizer-list/:id',
+    component: CustomizerListComponent,
+  },
 ];
 
 @NgModule({

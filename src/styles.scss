@@ -210,27 +210,32 @@ ngx-form {
 
 @font-face {
   font-family: "GeorgiaRegular";
-  src: url("../src/assets/fonts/GeorgiaRegular.ttf") format("opentype");
+  src: url("../src/assets/fonts/GeorgiaRegular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Commercial-Script";
+  src: url("../src/assets/fonts/Commercial-Script.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "SfProRegular";
-  src: url("../src/assets/fonts/SFProDisplay-Regular.ttf") format("opentype");
+  src: url("../src/assets/fonts/SFProDisplay-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "SfProSemiBold";
-  src: url("../src/assets/fonts/SFProDisplaySemibold.ttf") format("opentype");
+  src: url("../src/assets/fonts/SFProDisplaySemibold.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "SfProLight";
-  src: url("../src/assets/fonts/SFProDisplay-Light.ttf") format("opentype");
+  src: url("../src/assets/fonts/SFProDisplay-Light.ttf") format("truetype");
 }
 
 @font-face{
   font-family: 'SfProMedium';
-  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("opentype");
+  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("truetype");
 }
 
 @font-face{
