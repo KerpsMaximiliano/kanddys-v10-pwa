@@ -1,62 +1,74 @@
-<div class="container">
+<div class="wrapper">
+  <div class="introduction"></div>
+
   <div class="communities-and-users">
     <div class="top-flex">
-      <div class="text-div">
-        <div class="left-wrapper">
-          <h2>Personas & comunidades</h2>
-          <h6>Recaudan fondos con solo compartir un Link</h6>
+      <div class="left-wrapper">
+        <h2>Personas & Comunidades</h2>
+        <h6>Recaudan fondos con solo compartir un Link</h6>
 
-          <ul>
-            <li>Seleccionas cómo recaudar del Mercado de Colaboraciones</li>
-          </ul>
+        <ul>
+          <li>Seleccionas cómo recaudar del Mercado de Colaboraciones</li>
+        </ul>
 
-          <div class="benefits">
-            <div class="icon"></div>
-            <span>Beneficios</span>
-            <div class="icon"></div>
-          </div>
+        <div class="benefits">
+          <span>+Beneficios</span>
+          <img
+            [src]="imageFolder + '/greather-than.svg'"
+            [ngStyle]="{ marginLeft: '12px' }"
+          />
         </div>
-        <div class="right-image"></div>
       </div>
+      <img class="right-image" [src]="imageFolder + '/kanddys-people.svg'" />
     </div>
     <div class="button">
-      <div class="icon"></div>
+      <img
+        [src]="imageFolder + '/money-bag.svg'"
+        alt="collaborations"
+        class="icon"
+        [ngStyle]="{ marginRight: '5.6px' }"
+      />
       <span>Mercado de colaboraciones</span>
     </div>
   </div>
   <div class="stores">
     <div class="top-flex">
-      <div class="text-div">
-        <div class="left-image"></div>
+      <img class="left-image" [src]="imageFolder + '/kanddys-shop.svg'" />
 
-        <div class="right-wrapper">
-          <h2>Tiendas</h2>
-          <h6>Venden online.</h6>
+      <div class="right-wrapper">
+        <h2>Tiendas</h2>
+        <h6>Venden online.</h6>
 
-          <ul>
-            <li>Los Clubs promocionan y venden para ti</li>
-          </ul>
+        <ul>
+          <li>Los Clubs promocionan y venden para ti</li>
+        </ul>
 
-          <div class="benefits">
-            <div class="icon"></div>
-            <span>Beneficios</span>
-            <div class="icon"></div>
-          </div>
+        <div class="benefits">
+          <span>+Beneficios</span>
+          <img
+            [src]="imageFolder + '/greather-than.svg'"
+            [ngStyle]="{ marginLeft: '12px' }"
+          />
         </div>
       </div>
-      <div class="button">
-        <span>Colaboraciones para vender más</span>
-      </div>
+    </div>
+    <div class="button">
+      <span>Colaboraciones para vender más</span>
     </div>
   </div>
   <div class="the-why">
-    <div class="avatar-img"></div>
+    <div
+      class="avatar-img"
+      [ngStyle]="{
+        backgroundImage: 'url(' + avatarImage + ')'
+      }"
+    ></div>
     <h2>Why?</h2>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi, magni esse
       asperiores fugit dolore alias at nisi atque quasi
     </p>
-    <span>@alberguesos</span>
+    <div class="at">@alberguesos</div>
     <b>Daviel, CEO</b>
   </div>
 </div>
