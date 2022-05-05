@@ -148,6 +148,7 @@ export class FlowCompletionComponent implements OnInit {
   flow: 'flow-completion' | 'create-community' | 'create-merchant';
   headerText: string;
   newProviderName: string = '';
+  comesFromMagicLink: boolean = false;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
@@ -247,64 +248,105 @@ export class FlowCompletionComponent implements OnInit {
   products: any[] = [];
 
   async ngOnInit() {
-    // this.ammount.valueChanges.subscribe((change) => {
-    //   // this.validateNumbers(change);
-    // });
+    this.route.queryParams.subscribe(async (params) => {
+      const { token } = params;
 
-    if (this.router.url.includes('flow-completion')) {
-      this.flow = 'flow-completion';
-      this.headerText = 'INFORMACIÓN NECESARIA';
-      let products: string[] = [];
-      let packages: string[] = [];
-      if (this.header.order?.itemPackage) {
-        packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
-            findBy: {
-              _id: {
-                __in: ([] = packages),
-              },
-            },
-          })
-        ).listItemPackage;
-        this.products = listPackages;
-      } else if (this.header.order?.products) {
-        for (let i = 0; i < this.header.order.products.length; i++) {
-          products.push(this.header.order.products[i].item);
+      if (token) {
+        try {
+          const { analizeMagicLink: session } =
+            await this.authService.analizeMagicLink(token);
+          this.comesFromMagicLink = true;
+
+          localStorage.setItem('session-token', session.token);
+
+          let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
+
+          localStorage.removeItem('phoneNumberOrEmail');
+
+          const data = await this.authService.checkUser(
+            phoneNumberOrEmail,
+            'whatsapp'
+          );
+
+          if (data) this.userData = data;
+
+          if (session.new) {
+            this.step = 3;
+            this.relativeStep += 2;
+          } else {
+            this.relativeStep = 4;
+            this.createOrSkipOrder();
+          }
+
+          // this.submit();
+        } catch (error) {
+          console.log(error);
         }
-        this.findItemData(products);
       }
-      if (this.header.merchantInfo)
-        this.merchantInfo = this.header.merchantInfo;
-      this.route.params.subscribe((params) => {
-        if (params.id) {
-          this.orderId = params.id;
-          this.getOrderData(params.id);
-        } else if (!this.header.isDataComplete()) {
-          this.header.resetIsComplete();
-          this.router.navigate([`ecommerce/landing-vouchers`]);
-        }
-      });
-    } else {
-      this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
-    }
-    if (this.router.url.includes('create-community')) {
-      this.flow = 'create-community';
-    }
-    if (this.router.url.includes('create-merchant')) {
-      this.flow = 'create-merchant';
-    }
-    this.authService.me().then((data) => {
-      if (data) {
-        this.userData = data;
-        this.isLogged = true;
-        this.inputData = this.userData.phone;
-        this.step = 4;
 
-        if (this.flow === 'flow-completion') this.stepsLeft = 4;
+      if (this.router.url.includes('flow-completion')) {
+        this.flow = 'flow-completion';
+        this.headerText = 'INFORMACIÓN NECESARIA';
+        let products: string[] = [];
+        let packages: string[] = [];
+        if (this.header.order?.itemPackage) {
+          packages.push(this.header.order.itemPackage);
+          const listPackages = (
+            await this.saleflow.listPackages({
+              findBy: {
+                _id: {
+                  __in: ([] = packages),
+                },
+              },
+            })
+          ).listItemPackage;
+          this.products = listPackages;
+        } else if (this.header.order?.products) {
+          for (let i = 0; i < this.header.order.products.length; i++) {
+            products.push(this.header.order.products[i].item);
+          }
+          this.findItemData(products);
+        }
+
+        if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
+          this.merchantInfo =
+            this.header.merchantInfo ||
+            JSON.parse(localStorage.getItem('merchantInfo'));
+        this.route.params.subscribe((params) => {
+          if (params.id) {
+            this.orderId = params.id;
+            this.getOrderData(params.id);
+          } else if (!this.header.isDataComplete()) {
+            console.log('enttrando');
+
+            this.header.resetIsComplete();
+            // this.router.navigate([`ecommerce/landing-vouchers`]);
+          }
+        });
       } else {
-        this.step = 1;
-        if (this.flow === 'flow-completion') this.stepsLeft = 6;
+        this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
+      }
+      if (this.router.url.includes('create-community')) {
+        this.flow = 'create-community';
+      }
+      if (this.router.url.includes('create-merchant')) {
+        this.flow = 'create-merchant';
+      }
+
+      if (!token) {
+        this.authService.me().then((data) => {
+          if (data) {
+            this.userData = data;
+            this.isLogged = true;
+            this.inputData = this.userData.phone;
+            this.step = 4;
+
+            if (this.flow === 'flow-completion') this.stepsLeft = 4;
+          } else {
+            this.step = 1;
+            if (this.flow === 'flow-completion') this.stepsLeft = 6;
+          }
+        });
       }
     });
   }
@@ -476,11 +518,30 @@ export class FlowCompletionComponent implements OnInit {
     }
   }
 
-  selectLoginOption(index: number){
+  async sendCodeToEmailOrWhatsapp() {
+    const validEmail = new RegExp(
+      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+    );
+    const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
+
+    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
+      const executedSuccessfully = await this.authService.generateMagicLink(
+        this.inputData
+      );
+
+      if (executedSuccessfully) {
+        console.log('Email o whatsapp enviado correctamente');
+      }
+    }
+  }
+
+  async selectLoginOption(index: number) {
     if (index == 0) {
-      // Magic link goes here
-    }else{
-      this.checkUser()
+      localStorage.setItem('phoneNumberOrEmail', this.inputData);
+
+      this.sendCodeToEmailOrWhatsapp();
+    } else {
+      this.checkUser();
     }
   }
 
@@ -636,10 +697,14 @@ export class FlowCompletionComponent implements OnInit {
   // Case 3
   async updateUser() {
     try {
-      const input = {
-        name: this.name,
-        password: this.password,
-      };
+      const input = !this.comesFromMagicLink
+        ? {
+            name: this.name,
+            password: this.password,
+          }
+        : {
+            name: this.name,
+          };
       const data = await this.authService.updateMe(input);
       this.userData = data;
       this.isLogged = true;
@@ -713,23 +778,50 @@ export class FlowCompletionComponent implements OnInit {
 
   // Case 3, 4
   createOrder() {
-    this.header.order = this.header.getOrder(this.header.saleflow._id);
+    const saleflow =
+      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+
+    this.header.order = this.header.getOrder(saleflow._id);
     this.header.order.products.forEach((product) => {
       delete product.isScenario;
       delete product.limitScenario;
       delete product.name;
     });
     return new Promise(async (resolve, reject) => {
-      if (this.header.customizer) {
+      let customizer = this.header.customizer;
+
+      if (!this.header.customizer) {
+        const saleflowData = JSON.parse(localStorage.getItem('saleflow-data'));
+        const customizerPreview = JSON.parse(
+          localStorage.getItem('customizerFile')
+        );
+
+        let saleflow = JSON.parse(localStorage.getItem(saleflowData._id));
+
+        if ('customizer' in saleflow) {
+          customizer = saleflow.customizer;
+
+          const res: Response = await fetch(customizerPreview.base64);
+          const blob: Blob = await res.blob();
+
+          customizer.preview = new File([blob], customizerPreview.fileName, {
+            type: customizerPreview.type,
+          });
+        }
+      }
+
+      console.log(customizer, 'CUSTOMIZER');
+
+      if (customizer) {
         const customizerId =
-          await this.customizerValueService.createCustomizerValue(
-            this.header.customizer
-          );
+          await this.customizerValueService.createCustomizerValue(customizer);
+
+        console.log(customizerId, 'CID');
         this.header.order.products[0].customizer = customizerId;
         this.header.customizer = null;
         this.header.customizerData = null;
       }
-      if (this.header.saleflow.module.post) {
+      if (saleflow.module.post) {
         let postinput =
           this.header.post ??
           this.header.getPost(
@@ -739,8 +831,8 @@ export class FlowCompletionComponent implements OnInit {
           .creationPost(postinput)
           .then((data) => {
             if (data) {
-              this.header.emptyPost(this.header.saleflow._id);
-              if (this.header.saleflow.canBuyMultipleItems)
+              this.header.emptyPost(saleflow._id);
+              if (saleflow.canBuyMultipleItems)
                 this.header.order.products.forEach((product) => {
                   product.deliveryLocation =
                     this.header.order.products[0].deliveryLocation;
@@ -749,7 +841,7 @@ export class FlowCompletionComponent implements OnInit {
               this.order
                 .createOrder(this.header.order)
                 .then((data) => {
-                  this.header.deleteSaleflowOrder(this.header.saleflow._id);
+                  this.header.deleteSaleflowOrder(saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -776,7 +868,7 @@ export class FlowCompletionComponent implements OnInit {
         await this.order
           .createOrder(this.header.order)
           .then(async (data) => {
-            this.header.deleteSaleflowOrder(this.header.saleflow._id);
+            this.header.deleteSaleflowOrder(saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
@@ -808,15 +900,18 @@ export class FlowCompletionComponent implements OnInit {
       0
     );
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
-    const ammount = new Intl.NumberFormat('es-MX').format(this.ammount.value.toLocaleString('es-MX'));
+    const ammount = new Intl.NumberFormat('es-MX').format(
+      this.ammount.value.toLocaleString('es-MX')
+    );
     if (this.fakeData.items[0].customizer)
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        (ammount && ammount != '0') ? ammount :
-        (Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100)
+        ammount && ammount != '0'
+          ? ammount
+          : Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
@@ -826,7 +921,7 @@ export class FlowCompletionComponent implements OnInit {
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        (ammount && ammount != '0') ? ammount : totalPrice.toLocaleString('es-MX')
+        ammount && ammount != '0' ? ammount : totalPrice.toLocaleString('es-MX')
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;

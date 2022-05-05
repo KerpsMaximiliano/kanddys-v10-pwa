@@ -49,6 +49,30 @@ export const refresh = gql`
   }
 `;
 
+export const generateMagicLink = gql`
+  mutation generateMagicLink($emailOrPhone: String!) {
+    generateMagicLink(emailOrPhone: $emailOrPhone)
+  }
+`;
+
+export const analizeMagicLink = gql`
+  query analizeMagicLink($token: String!) {
+    analizeMagicLink(token: $token) {
+      _id
+      user {
+        email
+        phone
+      }
+      createdAt
+      updatedAt
+      token
+      new
+      remember
+      expiredAt
+    }
+  }
+`;
+
 export const signin = gql`
   mutation signin($emailOrPhone: String!, $password: String!) {
     session: signin(emailOrPhone: $emailOrPhone, password: $password) { ${sessionBody} }
@@ -98,10 +122,10 @@ export const generateOTP = gql`
 `;
 
 export const signinSocial = gql`
-  mutation signinSocial($input: SignInTokenInput!){
-    signinSocial: signinSocial(input: $input){
+  mutation signinSocial($input: SignInTokenInput!) {
+    signinSocial: signinSocial(input: $input) {
       _id
-      user{
+      user {
         _id
         email
         phone
@@ -114,7 +138,7 @@ export const signinSocial = gql`
           kindcode
         }
         validatedAt
-        deliveryLocations{
+        deliveryLocations {
           _id
           googleMapsURL
           city
@@ -130,17 +154,20 @@ export const signinSocial = gql`
       updatedAt
     }
   }
-`
+`;
 export const simplifySignup = gql`
-  mutation simplifySignup($emailOrPhone: String!, $notificationMethod: String){
-    simplifySignup(emailOrPhone: $emailOrPhone, notificationMethod: $notificationMethod)
+  mutation simplifySignup($emailOrPhone: String!, $notificationMethod: String) {
+    simplifySignup(
+      emailOrPhone: $emailOrPhone
+      notificationMethod: $notificationMethod
+    )
   }
-`
+`;
 
 export const getTempCodeData = gql`
-  query getTempCodeData($token: String!){
-    getTempCodeData(token: $token){
+  query getTempCodeData($token: String!) {
+    getTempCodeData(token: $token) {
       metadata
     }
   }
-`
+`;

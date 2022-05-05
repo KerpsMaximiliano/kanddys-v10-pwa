@@ -15,7 +15,11 @@ import { CustomizerValueInput } from '../models/customizer-value';
 import { Merchant } from '../models/merchant';
 import { DeliveryLocationInput, SaleFlow } from '../models/saleflow';
 import { ProviderStoreComponent } from 'src/app/modules/ecommerce/pages/provider-store/provider-store.component';
-import { ItemOrderInput, ItemSubOrderInput, ItemSubOrderParamsInput } from '../models/order';
+import {
+  ItemOrderInput,
+  ItemSubOrderInput,
+  ItemSubOrderParamsInput,
+} from '../models/order';
 import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
@@ -34,11 +38,13 @@ class SaleflowData {
   order: ItemOrderInput;
   itemData: any[];
   post: {
-    option: number,
-    data: PostInput
+    option: number;
+    data: PostInput;
   };
   deliveryOption: number;
   orderProgress: OrderProgress;
+  customizer: CustomizerValueInput;
+  customizerPreviewBase64: string;
 }
 
 @Injectable({
@@ -78,13 +84,13 @@ export class HeaderService {
   customizerData: {
     willModify: boolean;
     route?: string;
-    elementList: any,
-    backgroundUrl: string,
-    backgroundImage: File,
-    backgroundColor: string,
-    stickersAmount: number,
-    textsAmount: number,
-    id: string,
+    elementList: any;
+    backgroundUrl: string;
+    backgroundImage: File;
+    backgroundColor: string;
+    stickersAmount: number;
+    textsAmount: number;
+    id: string;
   };
   isEditing: boolean = false;
   merchantInfo: Merchant;
@@ -97,7 +103,7 @@ export class HeaderService {
     reservation: false,
     message: false,
     delivery: false,
-  }
+  };
   currentMessageOption: number;
   currentDeliveryOption: number;
   hasScenarios: boolean;
@@ -139,13 +145,13 @@ export class HeaderService {
               this.savedBookmarks = data.bookmarkByUser;
             }
           });
-          this.merchantService.myMerchants().then(data=>{
+          this.merchantService.myMerchants().then((data) => {
             this.myMerchants = data;
-          })
+          });
           sub.unsubscribe();
         }
       });
-      const sub1 = this.app.events
+    const sub1 = this.app.events
       .pipe(filter((e) => e.type === 'singleAuth'))
       .subscribe((e) => {
         if (e.data) {
@@ -155,7 +161,7 @@ export class HeaderService {
             this.walletData = data.globalWallet;
           });
           this.bookmark.bookmarkByUser().then((data) => {
-            if (data.bookmarkByUser) {              
+            if (data.bookmarkByUser) {
               this.savedBookmarks = data.bookmarkByUser;
             }
           });
@@ -257,7 +263,7 @@ export class HeaderService {
     const index = itemData.findIndex(item => item._id === product._id);
     if(index >= 0) itemData.splice(index, 1);
     else itemData.push(product);
-    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ itemData, ...rest }));
   }
 
   // Adds params to first order product in localStorage
@@ -275,7 +281,7 @@ export class HeaderService {
     if(!order) order = {};
     order.itemPackage = itemPackage;
     order.products = products;
-    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
   // Stores amount to first order product in localStorage
@@ -284,7 +290,7 @@ export class HeaderService {
     if(!order) return;
     if(!order.products || order.products.length === 0) return;
     order.products[0].amount = amount;
-    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
   // Stores reservation to first order product in localStorage
@@ -293,7 +299,7 @@ export class HeaderService {
     if(!order) order = {};
     if(!order.products || order.products.length === 0) return;
     order.products[0].reservation = reservation;
-    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
   // Stores post data in localStorage
@@ -303,7 +309,7 @@ export class HeaderService {
       data,
       option,
     };
-    localStorage.setItem(saleflow, JSON.stringify({post, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ post, ...rest }));
   }
 
   // Stores location to first order product in localStorage
@@ -317,14 +323,39 @@ export class HeaderService {
   }
 
   storeOrderProgress(saleflow: string) {
-    let { orderProgress, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    let { orderProgress, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
     orderProgress = this.isComplete;
-    localStorage.setItem(saleflow, JSON.stringify({orderProgress, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
+  }
+
+  storeCustomizer(saleflow: string, customizer: CustomizerValueInput) {
+    let saleflowData: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    saleflowData.customizer = customizer;
+
+    localStorage.setItem(saleflow, JSON.stringify(saleflowData));
+  }
+
+  storeCustomizerPreviewBase64(
+    customizerPreviewBase64: string,
+    filename: string,
+    type: string
+  ) {
+    localStorage.setItem(
+      'customizerFile',
+      JSON.stringify({
+        base64: customizerPreviewBase64,
+        filename,
+        type,
+      })
+    );
   }
 
   // Returns order data from localStorage
   getOrder(saleflow: string) {
-    let { order }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    let { order }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
     return order;
   }
 
@@ -363,7 +394,7 @@ export class HeaderService {
     const index = order.products.findIndex(subOrder => subOrder.item === id);
     if(index >= 0) order.products.splice(index, 1);
     else return;
-    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
   // Removes item data from localStorage
@@ -373,11 +404,15 @@ export class HeaderService {
     const index = itemData.findIndex(product => product._id === id);
     if(index >= 0) itemData.splice(index, 1);
     else return;
-    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ itemData, ...rest }));
   }
 
   // Empties post data and option from localStorage
   emptyPost(saleflow: string) {
+    let { post, ...rest }: SaleflowData = JSON.parse(
+      localStorage.getItem(saleflow)
+    );
+    localStorage.setItem(saleflow, JSON.stringify({ ...rest }));
     let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify({...rest}));
   }
@@ -392,15 +427,16 @@ export class HeaderService {
   emptyOrderProducts(saleflow: string) {
     let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     order = {};
-    localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
     this.emptyDeliveryOption(saleflow);
   }
 
   // Empties item data from localStorage
   emptyItems(saleflow: string) {
-    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    let { itemData, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
     itemData = [];
-    localStorage.setItem(saleflow, JSON.stringify({itemData, ...rest}));
+    localStorage.setItem(saleflow, JSON.stringify({ itemData, ...rest }));
   }
 
   // Deletes saleflow order object from localStorage

@@ -7,10 +7,7 @@ import { environment } from 'src/environments/environment';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
-import {
-  Item,
-  ItemPackage,
-} from 'src/app/core/models/item';
+import { Item, ItemPackage } from 'src/app/core/models/item';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AppService } from 'src/app/app.service';
@@ -71,9 +68,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private appService: AppService
-  ) {
-
-  }
+  ) {}
 
   openDialog() {
     //
@@ -83,6 +78,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     try {
       const merchant = await this.merchant.merchant(id);
       this.header.merchantInfo = merchant;
+      localStorage.setItem('merchantInfo', JSON.stringify(merchant));
     } catch (error) {
       console.log(error);
     }
@@ -92,8 +88,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const itemCategoriesList = (
       await this.item.itemCategories(this.merchantId, {
         options: {
-          limit: 15
-        }
+          limit: 15,
+        },
       })
     ).itemCategoriesList;
     const headlines = await this.item.itemCategoryHeadlineByMerchant(
@@ -126,7 +122,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       };
     });
     this.categories = headlines[0].itemsCategories
-      .map((value) => itemCategoriesList.find((element) => element._id === value)?.name)
+      .map(
+        (value) =>
+          itemCategoriesList.find((element) => element._id === value)?.name
+      )
       .filter((value) => value);
     this.filters = filters;
 
@@ -157,7 +156,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   organizeItems() {
     if (this.categories) {
       this.categories.forEach((name) => {
-        if (this.items.some((item) => item.category.some((category) => category.name === name))) {
+        if (
+          this.items.some((item) =>
+            item.category.some((category) => category.name === name)
+          )
+        ) {
           this.itemsByCategory.push({
             label: name,
             items: this.items.filter((item) =>
@@ -167,7 +170,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         }
       });
     }
-
 
     // let categories = [];
     // this.items.forEach((item) => {
@@ -184,7 +186,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     //     ),
     //   });
     // });
-
 
     // if (
     //   this.items.some((item) =>
@@ -253,18 +254,17 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
               this.inputsItems[j].isSelected = false;
             }
           }
+        } else {
+          for (let i = 0; i < this.inputsItems.length; i++) {
+            this.inputsItems[i].isSelected = false;
+          }
         }
-      }else{
-        for (let i = 0; i < this.inputsItems.length; i++) {
-          this.inputsItems[i].isSelected = false;             
-        }
-      }
-      //sub.unsubscribe();
-      this.canOpenCart = this.inputsItems.some((item) => item.isSelected);
-    });
+        //sub.unsubscribe();
+        this.canOpenCart = this.inputsItems.some((item) => item.isSelected);
+      });
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.deleteEvent.unsubscribe();
   }
 
@@ -278,7 +278,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.header.saleflow = this.saleflowData;
       this.header.storeSaleflow(this.saleflowData);
       const orderData = this.header.getOrder(this.saleflowData._id);
-      if(!orderData || !orderData.products || orderData.products.length === 0) this.header.emptyItems(this.saleflowData._id);
+      if (!orderData || !orderData.products || orderData.products.length === 0)
+        this.header.emptyItems(this.saleflowData._id);
       this.banner = this.saleflowData.banner;
       this.merchantName = this.saleflowData.merchant.name;
       this.merchantSubheadline = this.saleflowData.subheadline;
@@ -361,7 +362,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
               this.items[i].fixedQuantity *
-              this.items[i].params[0].values[0].price +
+                this.items[i].params[0].values[0].price +
               this.items[i].pricing;
           this.labelValues.push({ id: i, status: false });
         }
@@ -401,16 +402,16 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       if (index != undefined) {
         if ($event != undefined && this.itemsByCategory[index].items[$event]) {
           const itemData = this.itemsByCategory[index].items[$event];
-          itemData.isSelected =
-            !itemData.isSelected;
+          itemData.isSelected = !itemData.isSelected;
           let itemParams: ItemSubOrderParamsInput[];
           if (itemData.params.length > 0) {
-            itemParams = [{
-              param: itemData.params[0]._id,
-              paramValue:
-                itemData.params[0].values[0]._id,
-            }];
-          };
+            itemParams = [
+              {
+                param: itemData.params[0]._id,
+                paramValue: itemData.params[0].values[0]._id,
+              },
+            ];
+          }
           this.header.storeOrderProduct(this.saleflowData._id, {
             item: itemData._id,
             customizer: itemData.customizerId,
@@ -418,10 +419,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             amount: itemData.customizerId ? undefined : 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItem(
-            this.saleflowData._id,
-            itemData
-          );
+          this.header.storeItem(this.saleflowData._id, itemData);
         } else {
           this.inputsItems[index].isSelected =
             !this.inputsItems[index].isSelected;
@@ -430,10 +428,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             amount: 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItem(
-            this.saleflowData._id,
-            this.inputsItems[index]
-          );
+          this.header.storeItem(this.saleflowData._id, this.inputsItems[index]);
         }
         let itemData = this.header.getItems(this.saleflowData._id);
         if (itemData.length > 0 && !this.hasCustomizer) {
@@ -464,18 +459,16 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.packageData[index].package._id,
         products
       );
-      this.header.storeItem(
-        this.saleflowData._id,
-        this.sliderPackage[index]
-      );
+      this.header.storeItem(this.saleflowData._id, this.sliderPackage[index]);
     }
   }
 
   seeCategories(i: number) {
     this.router.navigate([
-      `ecommerce/category-items/${this.saleflowData._id}/${this.itemsByCategory[i].items[0].category.find(
-        (category) => category.name === this.itemsByCategory[i].label
-      )._id
+      `ecommerce/category-items/${this.saleflowData._id}/${
+        this.itemsByCategory[i].items[0].category.find(
+          (category) => category.name === this.itemsByCategory[i].label
+        )._id
       }`,
     ]);
   }
@@ -490,12 +483,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.header.emptyItems(this.saleflowData._id);
         let itemParams: ItemSubOrderParamsInput[];
         if (itemData.params.length > 0) {
-          itemParams = [{
-            param: itemData.params[0]._id,
-            paramValue:
-              itemData.params[0].values[0]._id,
-          }];
-        };
+          itemParams = [
+            {
+              param: itemData.params[0]._id,
+              paramValue: itemData.params[0].values[0]._id,
+            },
+          ];
+        }
         const product = {
           item: itemData._id,
           customizer: itemData.customizerId,
@@ -510,13 +504,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.header.storeOrderProduct(this.saleflowData._id, product);
         this.header.storeItem(this.saleflowData._id, itemData);
         this.router.navigate([`/ecommerce/provider-store`]);
-      }
-      else this.router.navigate([
-        '/ecommerce/item-detail/' +
-        this.header.saleflow._id +
-        '/' +
-        itemData._id,
-      ]);
+      } else
+        this.router.navigate([
+          '/ecommerce/item-detail/' +
+            this.header.saleflow._id +
+            '/' +
+            itemData._id,
+        ]);
     }
   }
 
@@ -579,9 +573,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       //this.router.navigate(['/ecommerce/provider-store']);
       this.router.navigate([
         '/ecommerce/item-detail/' +
-        this.header.saleflow._id +
-        '/' +
-        this.inputsItems[index]._id,
+          this.header.saleflow._id +
+          '/' +
+          this.inputsItems[index]._id,
       ]);
     }
   }
@@ -619,8 +613,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        footerCallback: () => this.router.navigate(['/ecommerce/create-giftcard']),
-        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
+        footerCallback: () =>
+          this.router.navigate(['/ecommerce/create-giftcard']),
+        headerCallback: () =>
+          this.router.navigate([
+            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+          ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

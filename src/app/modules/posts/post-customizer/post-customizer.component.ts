@@ -83,14 +83,14 @@ interface TextData {
   imageText: string;
   fontSize: string;
   fontStyle: string;
-  fontColor: { name: string, fixedValue: string };
+  fontColor: { name: string; fixedValue: string };
 }
 
-const allColors: { name: string, fixedValue: string }[] = [
-  { 
+const allColors: { name: string; fixedValue: string }[] = [
+  {
     name: 'Default',
-    fixedValue: '#D5D5D5'
-  }
+    fixedValue: '#D5D5D5',
+  },
 ];
 
 @Component({
@@ -154,7 +154,7 @@ export class PostCustomizerComponent
     sepia: 0,
     contrast: 100,
   };
-  backgroundColors: { name: string, fixedValue: string }[] = [...allColors];
+  backgroundColors: { name: string; fixedValue: string }[] = [...allColors];
   // EFECTOS
 
   // STICKERS
@@ -181,7 +181,7 @@ export class PostCustomizerComponent
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253683952.svg',
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253684463.svg',
   ];
-  stickerColors: { name: string, fixedValue: string }[] = allColors;
+  stickerColors: { name: string; fixedValue: string }[] = allColors;
   currentStickersAmount: number = 0;
   stickerMax: boolean = false;
   stickerColor: string = '';
@@ -192,7 +192,7 @@ export class PostCustomizerComponent
   canDraw: boolean = false;
   lineWidth: number = 2;
   lineColor: string = '#D5D5D5';
-  lineColors: { name: string, fixedValue: string }[] = allColors;
+  lineColors: { name: string; fixedValue: string }[] = allColors;
   // LÁPIZ
 
   // TIPOGRAFIA
@@ -203,7 +203,7 @@ export class PostCustomizerComponent
     fontStyle: 'Arial',
     fontColor: {
       fixedValue: '#D5D5D5',
-      name: 'Default'
+      name: 'Default',
     },
   };
   fontStyles: string[] = [
@@ -276,7 +276,7 @@ export class PostCustomizerComponent
       fontName: 'Commercial-Script',
     },
   ];
-  fontColors: { name: string, fixedValue: string }[] = allColors;
+  fontColors: { name: string; fixedValue: string }[] = allColors;
   currentTextsAmount: number = 0;
   currentMaxLength: number;
   textMax: boolean = false;
@@ -413,14 +413,16 @@ export class PostCustomizerComponent
           texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
           texts.itemsRule[0].fixedFonts[0] === 'Elegant'
         ) {
-          if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
+          if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+            this.isLongText = true;
           this.willHideInput = true;
         }
         // Text input below canvas
         if (this.currentTextsAmount === texts.fixedAmount) {
           this.textMax = true;
         }
-        if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true;
+        if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+          this.isLongText = true;
       }
     } else {
       if (this.route.snapshot.url[0].path === 'post-customizer') {
@@ -455,10 +457,12 @@ export class PostCustomizerComponent
             texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
             texts.itemsRule[0].fixedFonts[0] === 'Elegant'
           ) {
-            if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
+            if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+              this.isLongText = true;
             this.willHideInput = true;
           }
-          if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
+          if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+            this.isLongText = true;
           // Text input below canvas
           texts.itemsRule.forEach((text) => {
             if (text.defaultText) {
@@ -467,7 +471,7 @@ export class PostCustomizerComponent
                 fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
                 fontColor: text.onlyFixedColor
                   ? text.fixedColors[0]
-                  : { fixedValue: '#ffffff', name: 'Default'},
+                  : { fixedValue: '#ffffff', name: 'Default' },
                 fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
               };
               this.typographyData = textData;
@@ -748,10 +752,12 @@ export class PostCustomizerComponent
             rules.texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
             rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant'
           ) {
-            if(rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
+            if (rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+              this.isLongText = true;
             this.willHideInput = true;
           }
-          if(rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
+          if (rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+            this.isLongText = true;
           // Text input below canvas
           if (this.currentTextsAmount === rules.texts.fixedAmount) {
             this.textMax = true;
@@ -980,7 +986,8 @@ export class PostCustomizerComponent
     let options: string[] = [];
     if (this.modifyingElement >= 0) {
       if (this.elementList[this.modifyingElement].sticker) {
-        if(this.customizerRules.stickers.itemsRule[0].fixed.length > 1) options = ['iconos'];
+        if (this.customizerRules.stickers.itemsRule[0].fixed.length > 1)
+          options = ['iconos'];
         if (this.showStickerPosition()) options.push(...['tamaño', 'angulo']);
         options.push('color');
       }
@@ -992,7 +999,8 @@ export class PostCustomizerComponent
         options = ['editar'];
         if (!this.isFixedSize()) options.push('tamaño');
         if (!this.isFixedPosition()) options.push('angulo');
-        if(this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1) options.push('tipografia');
+        if (this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1)
+          options.push('tipografia');
         options.push('color');
       }
     }
@@ -1069,7 +1077,7 @@ export class PostCustomizerComponent
     return !this.elementList[this.modifyingElement].fixPositionOnly;
   }
 
-  getStickerColors(): { name: string, fixedValue: string }[] {
+  getStickerColors(): { name: string; fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.stickers.fixedAmountItems) {
         const element = this.elementList[this.modifyingElement].sticker.number;
@@ -1155,7 +1163,7 @@ export class PostCustomizerComponent
   }
 
   // Changes sticker color, only should work on unicolor stickers
-  onChangeStickerColor(color: { name: string, fixedValue: string }) {
+  onChangeStickerColor(color: { name: string; fixedValue: string }) {
     const newSticker = this.elementList[this.modifyingElement].sticker;
     const re = new RegExp(newSticker.color.fixedValue, 'g');
     const replacedColor = newSticker.decoded.replace(re, color.fixedValue);
@@ -1222,7 +1230,7 @@ export class PostCustomizerComponent
     url: string,
     element: CanvasElement,
     srcUrl: string,
-    color?: { name: string, fixedValue: string }
+    color?: { name: string; fixedValue: string }
   ) {
     element.sticker.url = srcUrl;
     let canvasSticker = new Image();
@@ -1260,7 +1268,10 @@ export class PostCustomizerComponent
         this.draw();
       };
       element.sticker.decoded = decodedValue;
-      element.sticker.color = { fixedValue: '#' + currentColor[0], name: color.name };
+      element.sticker.color = {
+        fixedValue: '#' + currentColor[0],
+        name: color.name,
+      };
     }
     // Temporal
     const stickerRules =
@@ -1288,7 +1299,7 @@ export class PostCustomizerComponent
   // Sends a sticker for modification or adds a new one
   addSticker(url: string, id: number) {
     let srcUrl: string;
-    let specifiedColor: { name: string, fixedValue: string };
+    let specifiedColor: { name: string; fixedValue: string };
     if (this.customizerRules.stickers.fixedAmountItems) {
       if (this.modifyingSticker >= 0) {
         if (
@@ -1467,10 +1478,15 @@ export class PostCustomizerComponent
           height: +dimensions.height,
         });
       }
-      const stickerElements = this.elementList.filter(element => element.sticker)
+      const stickerElements = this.elementList.filter(
+        (element) => element.sticker
+      );
       if (specifiedColor) {
         const re = new RegExp('#' + currentColor[0], 'g');
-        const replacedColor = decodedValue.replace(re, specifiedColor.fixedValue);
+        const replacedColor = decodedValue.replace(
+          re,
+          specifiedColor.fixedValue
+        );
         const canvasImage = new Image();
         stickerElements[current].sticker.image = canvasImage;
         stickerElements[current].sticker.color = specifiedColor;
@@ -1482,8 +1498,10 @@ export class PostCustomizerComponent
         };
       } else {
         stickerElements[current].sticker.decoded = decodedValue;
-        stickerElements[current].sticker.color =
-          { fixedValue: '#' + currentColor[0], name: specifiedColor.name};
+        stickerElements[current].sticker.color = {
+          fixedValue: '#' + currentColor[0],
+          name: specifiedColor.name,
+        };
       }
     };
   }
@@ -1617,7 +1635,7 @@ export class PostCustomizerComponent
     }
   }
 
-  getFontColors(): { name: string, fixedValue: string }[] {
+  getFontColors(): { name: string; fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.texts.fixedAmountItems) {
         const element =
@@ -1649,7 +1667,7 @@ export class PostCustomizerComponent
   }
 
   // Changes font color. If not editing text, draws the new color
-  onChangeFontColor(color: { name: string, fixedValue: string }) {
+  onChangeFontColor(color: { name: string; fixedValue: string }) {
     this.typographyData.fontColor = color;
     if (this.isEditing) return;
     const element = this.elementList[this.modifyingElement];
@@ -1678,7 +1696,7 @@ export class PostCustomizerComponent
     this.typographyData.fontStyle = style;
     if (this.isEditing) return;
     this.elementList.forEach((element) => {
-      if(element.typography) {
+      if (element.typography) {
         element.typography.font = this.typographyData.fontStyle;
         this.modifyingText = element.typography.number;
         const text = {
@@ -1686,10 +1704,10 @@ export class PostCustomizerComponent
           fontColor: element.typography.color,
           fontSize: element.typography.size,
           fontStyle: style,
-        }
+        };
         this.exitEditing(text);
       }
-    })
+    });
   }
 
   // Changes FontSize out of editing. Needs to recalculate width and height WIP
@@ -1743,7 +1761,8 @@ export class PostCustomizerComponent
       );
       this.context.rotate(t.position.rotation);
       if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
-        if (t.typography.color.fixedValue !== '#000000') this.context.fillStyle = 'black';
+        if (t.typography.color.fixedValue !== '#000000')
+          this.context.fillStyle = 'black';
         else this.context.fillStyle = 'white';
         this.context.fillText(line, 1 - lineWidth / 2, y + 1);
         this.context.fillStyle = t.typography.color.fixedValue;
@@ -1792,53 +1811,67 @@ export class PostCustomizerComponent
 
     return Math.max(...greatestWidth);
   }
-  
+
   validateInput($event: KeyboardEvent) {
-    if(this.isLongText && (/[a-zA-Z0-9]/.test($event.key) || $event.code === 'Space')) return $event;
-    else if(/[a-zA-Z0-9]/.test($event.key)) return $event;
+    if (
+      this.isLongText &&
+      (/[a-zA-Z0-9]/.test($event.key) || $event.code === 'Space')
+    )
+      return $event;
+    else if (/[a-zA-Z0-9]/.test($event.key)) return $event;
     else return $event.preventDefault();
   }
 
   // Text input below canvas
   setInputText() {
-    const textElements = this.elementList.filter(element => element.typography)
+    const textElements = this.elementList.filter(
+      (element) => element.typography
+    );
     this.hiddenFontText = textElements
       .sort((a, b) =>
         a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
       )
-      .reduce(
-        (prev, curr) => prev + curr.typography.text,
-        ''
-      );
+      .reduce((prev, curr) => prev + curr.typography.text, '');
   }
 
   // Changes text from input below canvas
   onChangeInput() {
-    if(!this.hiddenFontText) return;
+    if (!this.hiddenFontText) return;
     const textElements = this.elementList
-    .filter(element => element.typography)
-    .sort((a, b) =>
-      a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
-    );
-    if(textElements.length > 1) {
+      .filter((element) => element.typography)
+      .sort((a, b) =>
+        a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+      );
+    if (textElements.length > 1) {
       const letters = this.hiddenFontText.split('');
       letters.forEach((letter, index) => {
         this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
         let width = this.context.measureText(letter).width;
         textElements[index].typography.text = letter.toUpperCase();
         textElements[index].position.width = width;
-        textElements[index].position.x = Math.floor(this.canvasWidth * (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) - width / 2);
+        textElements[index].position.x = Math.floor(
+          this.canvasWidth *
+            (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+            width / 2
+        );
         this.draw();
         this.drawOutline(textElements[index].position, true);
-      })
+      });
     } else {
       let width = this.context.measureText(this.hiddenFontText).width;
       this.context.font = `${textElements[0].typography.size}px ${textElements[0].typography.font}`;
-      textElements[0].typography.text = this.inputMaxLength < 4 ? this.hiddenFontText.toUpperCase() : this.hiddenFontText;
+      textElements[0].typography.text =
+        this.inputMaxLength < 4
+          ? this.hiddenFontText.toUpperCase()
+          : this.hiddenFontText;
       textElements[0].position.width = width;
-      textElements[0].position.x = Math.floor(this.canvasWidth * (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) - width / 2);
+      textElements[0].position.x = Math.floor(
+        this.canvasWidth *
+          (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) -
+          width / 2
+      );
       this.draw();
-      if(!this.willHideInput) this.drawOutline(textElements[0].position, true);
+      if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
     }
   }
   // Text input below canvas
@@ -1846,7 +1879,9 @@ export class PostCustomizerComponent
   // Modifies a text element that was already in the canvas
   modifyText(width: number, height: number, textData: TextData, index: number) {
     const { imageText, fontSize, fontStyle, fontColor } = textData;
-    const text = this.elementList.find((element) => element.typography?.number === index);
+    const text = this.elementList.find(
+      (element) => element.typography?.number === index
+    );
     const textElement = {
       typography: {
         text: imageText,
@@ -1877,7 +1912,7 @@ export class PostCustomizerComponent
 
     this.typographyData.imageText = '';
     // Text input below canvas
-    if(this.willShowInput) this.setInputText();
+    if (this.willShowInput) this.setInputText();
     this.draw();
   }
 
@@ -1951,12 +1986,17 @@ export class PostCustomizerComponent
     }
 
     if (this.modifyingText >= 0) {
-      this.modifyText(width, height, {
-        imageText,
-        fontSize,
-        fontColor,
-        fontStyle,
-      }, this.modifyingText);
+      this.modifyText(
+        width,
+        height,
+        {
+          imageText,
+          fontSize,
+          fontColor,
+          fontStyle,
+        },
+        this.modifyingText
+      );
       return;
     }
 
@@ -2046,7 +2086,7 @@ export class PostCustomizerComponent
   // ------------------------------------ LINES --------------------------------------
 
   // Returns line colors, either fixed or default
-  getLineColors(): { name: string, fixedValue: string }[] {
+  getLineColors(): { name: string; fixedValue: string }[] {
     if (this.customizerRules.lines.onlyFixedColor)
       return this.customizerRules.lines.fixedColors;
     else return this.lineColors;
@@ -2143,6 +2183,9 @@ export class PostCustomizerComponent
   async urltoFile(dataUrl: string, fileName: string): Promise<File> {
     const res: Response = await fetch(dataUrl);
     const blob: Blob = await res.blob();
+
+    this.header.storeCustomizerPreviewBase64(dataUrl, fileName, 'image/png');
+
     return new File([blob], fileName, { type: 'image/png' });
   }
 
@@ -2236,6 +2279,7 @@ export class PostCustomizerComponent
       }
       this.draw();
       const url = this.canvasRef.nativeElement.toDataURL('image/png');
+
       const file = await this.urltoFile(
         url,
         (this.customizerRuleID ?? this.customizerValueID) + '.png'
@@ -2305,6 +2349,7 @@ export class PostCustomizerComponent
     // };
     // this.header.isComplete.giftABox.customizer = true;
     this.header.customizer = customizerValues;
+
     this.header.customizerData = {
       ...this.header.customizerData,
       willModify: false,
@@ -2316,6 +2361,9 @@ export class PostCustomizerComponent
       textsAmount: this.currentTextsAmount,
       id: this.customizerRuleID,
     };
+
+    this.header.storeCustomizer(this.header.saleflow._id, customizerValues);
+
     this.header.isComplete.customizer = true;
   }
 

@@ -278,11 +278,17 @@
                   (click)="onChangeStickerColor(color)"
                   class="color-font"
                   style.backgroundColor="{{ color.fixedValue }}"
-                  [ngClass]="{ 'selected-option': stickerColor === color.fixedValue }"
+                  [ngClass]="{
+                    'selected-option': stickerColor === color.fixedValue
+                  }"
                 ></span>
-                <span style="white-space: nowrap;">{{color.name}}</span>
+                <span style="white-space: nowrap">{{ color.name }}</span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App con la
+              Realidad
+            </h6>
           </div>
 
           <!-- <div *ngIf="showStickerOptions()">
@@ -396,12 +402,17 @@
                   class="color-font"
                   style.backgroundColor="{{ color.fixedValue }}"
                   [ngClass]="{
-                    'selected-option': typographyData.fontColor === color.fixedValue
+                    'selected-option':
+                      typographyData.fontColor === color.fixedValue
                   }"
                 ></span>
-                <span style="white-space: nowrap;">{{ color.name }}</span>
+                <span style="white-space: nowrap">{{ color.name }}</span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App con la
+              Realidad
+            </h6>
           </div>
         </div>
         <div *ngIf="willShowInput">
@@ -444,6 +455,10 @@
                 ></span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App respecto a
+              la Realidad
+            </h6>
           </div>
         </div>
       </div>

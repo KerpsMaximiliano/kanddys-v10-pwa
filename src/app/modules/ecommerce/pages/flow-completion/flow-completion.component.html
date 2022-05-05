@@ -5,7 +5,7 @@
     middleTextFontSize="17px"
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
-    [middleText]="headerText.toUpperCase()"
+    [middleText]="headerText"
     [back]="step > 4 || step === 2"
     [basic]="(step === 1 || step === 3 || step === 4) && !orderData"
     (onClose)="goBack()"
@@ -43,7 +43,16 @@
       </p>
     </ng-container>
     <ng-container *ngIf="inputData.length >= 7">
-      <p class="sublabel" style="font-family:'RobotoLight'; font-size: 19px; color: #000000; margin-left: 0px; margin-top: 80px;">
+      <p
+        class="sublabel"
+        style="
+          font-family: 'RobotoLight';
+          font-size: 19px;
+          color: #000000;
+          margin-left: 0px;
+          margin-top: 80px;
+        "
+      >
         Como prefieres verificarte para salvar la orden?
       </p>
       <app-answer-selector
@@ -93,7 +102,7 @@
         placeholder="Mi apellido es.."
       />
     </div>
-    <div class="content">
+    <div class="content" *ngIf="!comesFromMagicLink">
       <p style="margin-bottom: 11px" class="label2">
         {{
           flow !== "flow-completion"
@@ -508,7 +517,9 @@
     (step === 1 && inputData.length < 7) ||
     (step === 2 && code.length < 4) ||
     (step === 3 &&
-      (!name || name.trim().length === 0 || password.length < 3)) ||
+      (!name ||
+        name.trim().length === 0 ||
+        (password.length < 3 && !comesFromMagicLink))) ||
     (step === 4 && password.length < 3) ||
     (step === 5 &&
       (flow !== 'flow-completion'
@@ -536,7 +547,7 @@
       : step === 3
       ? flow !== 'flow-completion'
         ? 'ADICIONA EL CONTACTO DEL MAPP'
-        : !name || password.length < 3
+        : !name || (password.length < 3 && !comesFromMagicLink)
         ? 'ADICIONA TU SEGURIDAD'
         : 'CONTINUAR'
       : step === 4
