@@ -122,9 +122,7 @@ export class HeaderService {
         this.user = undefined;
         this.walletData = undefined;
         this.savedBookmarks = undefined;
-        if (localStorage.getItem('session-token')) {
-          this.session.revoke();
-        }
+        this.session.revoke();
       }
     });
     const sub = this.app.events

@@ -238,19 +238,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.header.disableNav();
     this.header.hide();
     this.header.packId = 0;
-    let sub: any;
-    if (localStorage.getItem('session-token')) {
-      if (!this.header.user)
-        sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth'))
-          .subscribe((e) => {
-            this.executeProcessesAfterLoading();
-            sub.unsubscribe();
-          });
-      else this.executeProcessesAfterLoading();
-    } else {
-      this.executeProcessesAfterLoading();
-    }
+    this.executeProcessesAfterLoading();
     this.deleteEvent = this.appService.events
     .pipe(filter((e) => e.type === 'deleted-item'))
     .subscribe((e) => {
