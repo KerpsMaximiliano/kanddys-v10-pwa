@@ -130,23 +130,18 @@ export class HeaderService {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe((e) => {
-        console.log('aa');
         if (e.data) {
           this.isLogged = true;
           this.user = e.data.user;
-          console.log(this.user);
           this.wallet.globalWallet().then((data) => {
             this.walletData = data.globalWallet;
-            console.log(this.walletData);
           });
           this.bookmark.bookmarkByUser().then((data) => {
             if (data.bookmarkByUser) {
               this.savedBookmarks = data.bookmarkByUser;
-              console.log(this.savedBookmarks);
             }
           });
           this.merchantService.myMerchants().then(data=>{
-            console.log(data);
             this.myMerchants = data;
           })
           sub.unsubscribe();
@@ -155,19 +150,15 @@ export class HeaderService {
       const sub1 = this.app.events
       .pipe(filter((e) => e.type === 'singleAuth'))
       .subscribe((e) => {
-        console.log('aa');
         if (e.data) {
           this.isLogged = true;
           this.user = e.data.user;
-          console.log(this.user);
           this.wallet.globalWallet().then((data) => {
             this.walletData = data.globalWallet;
-            console.log(this.walletData);
           });
           this.bookmark.bookmarkByUser().then((data) => {
             if (data.bookmarkByUser) {              
               this.savedBookmarks = data.bookmarkByUser;
-              console.log(this.savedBookmarks);
             }
           });
           sub1.unsubscribe();
@@ -197,31 +188,31 @@ export class HeaderService {
   }
 
   isDataComplete(): boolean {
-    console.log('Saleflow check');
+    // console.log('Saleflow check');
     if(!this.saleflow) return
     if(this.saleflow.module.delivery && this.saleflow.module.delivery.isActive) {
-      console.log('Delivery check');
+      // console.log('Delivery check');
       if(!this.isComplete.delivery)  return
     }
     if(this.items.some((item) => item.customizerId)) {
-      console.log('qualityQuantity check');
+      // console.log('qualityQuantity check');
       if(!this.isComplete.qualityQuantity) return
-      console.log('Customizer');
+      // console.log('Customizer');
       if(!this.isComplete.customizer) return
     }
     if(this.saleflow.module.appointment && this.saleflow.module.appointment.isActive) {
-      console.log('Reservation check');
+      // console.log('Reservation check');
       if(!this.isComplete.reservation) return
     }
     if(this.hasScenarios) {
-      console.log('Scenarios check');
+      // console.log('Scenarios check');
       if(!this.isComplete.scenarios) return
     }
     if(this.saleflow.module.post && this.saleflow.module.post.isActive) {
-      console.log('Post check');
+      // console.log('Post check');
       if(!this.isComplete.message) return
     }
-    console.log('Data complete!');
+    // console.log('Data complete!');
     return true
   }
 
@@ -237,9 +228,7 @@ export class HeaderService {
   }
   async saveBookmarks() {
     await this.bookmark.bookmarkByUser().then((data) => {
-      console.log(data);
       this.savedBookmarks = data.bookmarkByUser;
-      console.log(this.savedBookmarks);
     });
     return this.savedBookmarks;
   }
@@ -254,7 +243,7 @@ export class HeaderService {
 
   // Stores order product data in localStorage
   storeOrderProduct(saleflow: string, product: ItemSubOrderInput) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) order = {};
     if(!order.products) order.products = [];
     const index = order.products.findIndex(subOrder => subOrder.item === product.item);
@@ -265,7 +254,7 @@ export class HeaderService {
 
   // Stores item data in localStorage
   storeItem(saleflow: string, product: Item | ItemPackage) {
-    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!itemData) itemData = [];
     const index = itemData.findIndex(item => item._id === product._id);
     if(index >= 0) itemData.splice(index, 1);
@@ -275,17 +264,16 @@ export class HeaderService {
 
   // Adds params to first order product in localStorage
   addParams(saleflow: string, params: ItemSubOrderParamsInput) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) return;
     if(!order.products || order.products.length === 0) return;
     order.products[0].params[1] = params;
-    console.log(rest.itemData);
     localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
   }
 
   // Stores order package data in localStorage
   storeOrderPackage(saleflow: string, itemPackage: string, products: ItemSubOrderInput[]) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) order = {};
     order.itemPackage = itemPackage;
     order.products = products;
@@ -294,7 +282,7 @@ export class HeaderService {
 
   // Stores amount to first order product in localStorage
   storeAmount(saleflow: string, amount: number) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) return;
     if(!order.products || order.products.length === 0) return;
     order.products[0].amount = amount;
@@ -303,7 +291,7 @@ export class HeaderService {
 
   // Stores reservation to first order product in localStorage
   storeReservation(saleflow: string, reservation: ReservationInput) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) order = {};
     if(!order.products || order.products.length === 0) return;
     order.products[0].reservation = reservation;
@@ -312,7 +300,7 @@ export class HeaderService {
 
   // Stores post data in localStorage
   storePost(saleflow: string, data: PostInput, option?: number) {
-    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     post = {
       data,
       option,
@@ -322,12 +310,11 @@ export class HeaderService {
 
   // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput, option?: number) {
-    let { order, deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) order = {};
     if(!order.products || order.products.length === 0) return;
     order.products[0].deliveryLocation = deliveryLocation;
     deliveryOption = option;
-    console.log(rest.itemData);
     localStorage.setItem(saleflow, JSON.stringify({order, deliveryOption, ...rest}));
   }
 
@@ -345,24 +332,24 @@ export class HeaderService {
 
   // Returns items data from localStorage
   getItems(saleflow: string) {
-    let { itemData }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { itemData }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     return itemData;
   }
 
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
-    let { post }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { post }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     return post;
   }
 
   // Returns delivery option from provider-store
   getDeliveryOption(saleflow: string) {
-    let { deliveryOption }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { deliveryOption }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     return deliveryOption;
   }
 
   getOrderProgress(saleflow: string) {
-    let { orderProgress }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { orderProgress }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(orderProgress) {
       this.hasScenarios = orderProgress.scenarios;
       orderProgress.customizer = null;
@@ -372,7 +359,7 @@ export class HeaderService {
 
   // Removes order product from localStorage
   removeOrderProduct(saleflow: string, id: string) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!order) return;
     if(!order.products) return;
     const index = order.products.findIndex(subOrder => subOrder.item === id);
@@ -383,7 +370,7 @@ export class HeaderService {
 
   // Removes item data from localStorage
   removeItem(saleflow: string, id: string) {
-    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { itemData, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     if(!itemData) return;
     const index = itemData.findIndex(product => product._id === id);
     if(index >= 0) itemData.splice(index, 1);
@@ -393,19 +380,19 @@ export class HeaderService {
 
   // Empties post data and option from localStorage
   emptyPost(saleflow: string) {
-    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { post, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify({...rest}));
   }
 
   // Empties delivery option from localStorage
   emptyDeliveryOption(saleflow: string) {
-    let { deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { deliveryOption, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify({...rest}));
   }
 
   // Empties order products from localStorage
   emptyOrderProducts(saleflow: string) {
-    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow));
+    let { order, ...rest }: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     order = {};
     localStorage.setItem(saleflow, JSON.stringify({order, ...rest}));
     this.emptyDeliveryOption(saleflow);

@@ -3,6 +3,7 @@
 </div>-->
 <div style="min-height: 100vh">
   <app-provider-info
+    *ngIf="saleflowData"
     [providerId]="merchantName"
     [providerBio1]="merchantSubheadline"
     [providerBio2]="merchantHours"

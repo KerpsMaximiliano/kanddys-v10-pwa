@@ -122,13 +122,6 @@ export const addItemToSaleFlow = gql`
   }
 `;
 
-export const createPost = gql`
-  mutation createPost($input: PostInput!) {
-    createPost(input: $input) {
-      _id
-    }
-  }
-`;
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {

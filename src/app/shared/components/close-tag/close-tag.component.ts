@@ -18,14 +18,10 @@ export class CloseTagComponent implements OnInit {
 
   closeTag(tag) {
     this.loadingSwiper.emit(true);
-    console.log('emited');
     const deletedname = this.tags.splice(tag, 1);
     const deletedID = this.tagsID.splice(tag, 1);
-    console.log('spliced');
-
     const deletedTag = { name: deletedname, id: deletedID };
     this.closeEvent.emit(deletedTag);
-    console.log('esto es lo ultimo de closetag');
   }
 
   startDragging(e, flag, el) {
@@ -43,7 +39,6 @@ export class CloseTagComponent implements OnInit {
     if (!this.mouseDown) {
       return;
     }
-    console.log(e);
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
@@ -52,6 +47,5 @@ export class CloseTagComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log(this.type);
   }
 }

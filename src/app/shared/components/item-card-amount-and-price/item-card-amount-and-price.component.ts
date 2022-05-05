@@ -86,7 +86,6 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.itemData);
     this.price = this.itemData.pricing;
     this.router.events.pipe(distinctUntilChanged()).subscribe(value => {
       this.currentUrl = this.router.url.toString();

@@ -63,7 +63,6 @@ export class CustomizerValueService {
   async createCustomizerValue(
     input: CustomizerValueInput
   ): Promise<string> {
-    console.log(input);
     try {
       let value = await this.graphql.mutate({
         mutation: createCustomizerValue,
@@ -71,7 +70,6 @@ export class CustomizerValueService {
         fetchPolicy: 'no-cache',
         context: { useMultipart: true },
       });
-      console.log(value.createCustomizerValue._id)
       return value.createCustomizerValue._id;
     } catch (e) {
       console.log(e);
@@ -89,7 +87,6 @@ export class CustomizerValueService {
         fetchPolicy: 'no-cache',
         context: { useMultipart: true },
       });
-      console.log(value);
       return value.updateCustomizerValue_id;
     } catch (e) {
       console.log(e);

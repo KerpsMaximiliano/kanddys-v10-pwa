@@ -8,7 +8,6 @@ import {
   listItems,
   saleflows,
   addItemToSaleFlow,
-  createPost,
   addLocation,
   listPackages,
   updateSaleflow,
@@ -32,7 +31,6 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        console.log(response);
         return response;
       } else {
         const response = await this.graphql.query({
@@ -40,7 +38,6 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        console.log(response);
         return response;
       }
     } catch (e) {
@@ -55,7 +52,6 @@ export class SaleFlowService {
         variables: { params },
         fetchPolicy: 'no-cache',
       });
-      console.log(response);
       return response;
     } catch (e) {
       console.log(e);
@@ -88,27 +84,13 @@ export class SaleFlowService {
     }
   }
 
-  async createPost(input: any) {
-    console.log(input);
-    const result = await this.graphql.mutate({
-      mutation: createPost,
-      variables: { input },
-    });
-
-    if (!result || result?.errors) return undefined;
-    console.log(result);
-    return result;
-  }
-
   async addLocation(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: addLocation,
       variables: { input },
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 

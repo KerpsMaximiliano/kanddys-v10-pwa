@@ -28,17 +28,13 @@ export class ShowItemsComponent implements OnInit {
   env: string = environment.assetsUrl;
 
   ngOnInit(): void {
-    console.log(this.header.getSaleflow()._id);
     if (this.products.length === 0) {
-      console.log('entre');
       this.products = this.header.getItems(this.header.saleflow?._id ?? this.header.getSaleflow()._id);
     }
     this.price = this.products.reduce((prev, curr) => {
       const itemPrice = curr.total ?? curr.pricing ?? curr.price;
       return prev + itemPrice;
     }, 0);
-    console.log(this.products);
-    
   }
 
   seeAllItems() {
@@ -54,8 +50,6 @@ export class ShowItemsComponent implements OnInit {
   }
 
   deleteItem(i: number) {
-    console.log('deleted item: ');
-    console.log(this.products[i]._id);
     let deletedID = this.products[i]._id;
     this.header.removeOrderProduct(
       this.header.saleflow._id,

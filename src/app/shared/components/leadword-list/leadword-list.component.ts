@@ -50,7 +50,6 @@ export class LeadwordListComponent implements OnInit {
   env: string = environment.assetsUrl;
 
   ngOnInit(): void {
-    console.log(this.list);
     //this.checkLogin();
   }
 
@@ -65,7 +64,6 @@ export class LeadwordListComponent implements OnInit {
       }
     } else {
       if (this.list[i].link) {
-        console.log(this.list[i].link);
         this.router.navigate([this.list[i].link]);
         this.fullLink = 'app.kanddys.com/ecommerce/order-info/' + this.orderId;
         if (type == 'whatsapp') {
@@ -75,7 +73,6 @@ export class LeadwordListComponent implements OnInit {
           } else {
             whatsappLink = `https://wa.me/${this.list[i].contact}?text=Orden%20de%20${this.list[i].packageName},%20aquí:%20${this.fullLink}`;
           }
-          console.log(whatsappLink);
           window.open(whatsappLink, '_blank');
         }
       } else {
@@ -89,7 +86,6 @@ export class LeadwordListComponent implements OnInit {
           } else {
             whatsappLink = `https://wa.me/${this.list[i].contact}?text=Orden%20de%20${this.list[i].packageName},%20aquí:%20${this.fullLink}`;
           }
-          console.log(whatsappLink);
           window.open(whatsappLink, '_blank');
           //window.location.href = whatsappLink;
           //la de whatsapp
@@ -97,7 +93,6 @@ export class LeadwordListComponent implements OnInit {
           this.fullLink =
             'app.kanddys.com/ecommerce/order-info/' + this.orderId;
           const emailAddress = `mailto:${this.list[i].contact}?Subject=Orden%20de%20${this.list[i].packageName}&body=Link%20aquí:%20${this.fullLink}`;
-          console.log(emailAddress);
           window.open(emailAddress, '_blank');
           // window.location.href = emailAddress;
           //la de email
@@ -110,15 +105,11 @@ export class LeadwordListComponent implements OnInit {
 
   lookForOrder() {
     this.route.params.subscribe((params) => {
-      //console.log(params.id);
       this.order.order(params.id).then((data) => {
-        console.log(data);
         this.orderData = data.order;
         this.merchantID = this.orderData.merchants[0]._id;
         this.testID = params.id;
         this.orderId = data.order._id;
-        console.log(this.merchantID);
-        console.log(this.orderId);
       });
     });
   }

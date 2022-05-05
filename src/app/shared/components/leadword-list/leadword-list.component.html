@@ -1,5 +1,5 @@
 <div class="container">
-<ng-container *ngFor="listed of list; let i = index">
+<ng-container *ngFor="let listed of list; let i = index">
         <div class="flex-container" *ngIf="list[i].contact || !numberMail">
             <div class="main">
                 <ng-container *ngIf="!authData">

@@ -269,7 +269,6 @@ export class SwiperComponent implements OnInit {
     on: {
       realIndexChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
   };
@@ -283,7 +282,6 @@ export class SwiperComponent implements OnInit {
     on: {
       realIndexChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
   };
@@ -297,7 +295,6 @@ export class SwiperComponent implements OnInit {
     on: {
       realIndexChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
   };
@@ -311,7 +308,6 @@ export class SwiperComponent implements OnInit {
     on: {
       realIndexChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
   };
@@ -339,7 +335,6 @@ export class SwiperComponent implements OnInit {
     on: {
       slideChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
   };
@@ -350,7 +345,6 @@ export class SwiperComponent implements OnInit {
     on: {
       slideChange: function onChange() {
         window.navigator.vibrate(200);
-        console.log('asdas');
       },
     },
     scrollbar: true,
@@ -411,15 +405,11 @@ export class SwiperComponent implements OnInit {
   };
 
   redirect(index) {
-    console.log(this.swiperData);
-
     if (this.code) {
       this.router.navigate([this.url + this.swiperData[index].keyword]);
     } else if (this.sendAgain) {
       //this.router.navigate([this.url], {queryParams: {}});
-      console.log(this.url, this.swiperData[index]);
       if (this.swiperData[index].destiny.owner.phone) {
-        console.log(this.swiperData[index].destiny.owner.phone);
         this.router.navigate([this.url], {
           queryParams: { user: this.swiperData[index].destiny.owner.phone },
         });
@@ -475,21 +465,16 @@ export class SwiperComponent implements OnInit {
 
   vibrate(event?, duration?: number) {
     window.navigator.vibrate(duration ? duration : 100);
-    console.log(event);
   }
 
   currentSlide(event, changeDay?: boolean, changeHour?: boolean) {
     if (changeDay) {
       this.calendars.dayIndex = event.realIndex;
       this.realIndex = event.realIndex;
-      console.log(event);
-      console.log(this.realIndex);
       this.calendars.showHours = false;
       this.calendars.hourIndex = 0;
       this.calendars.filterHours();
       if (this.calendars.dayIndex > 0) {
-        console.log('ss');
-
         this.isLoop = true;
       } else {
         this.isLoop = false;
@@ -502,7 +487,6 @@ export class SwiperComponent implements OnInit {
       this.calendars.showDays = false;
       this.calendars.monthIndex = event.realIndex;
       this.realMonthIndex = event.realIndex;
-      console.log(this.realMonthIndex);
       this.calendars.hourIndex = 0;
       this.calendars.dayIndex = 0;
       this.calendars.filterDays();
@@ -513,24 +497,16 @@ export class SwiperComponent implements OnInit {
   }
 
   setActive(index) {
-    console.log(index);
     for (let i = 0; i < this.types.length; i++) {
       this.types[i].active = false;
     }
     this.types[index].active = !this.types[index].active;
-    console.log(this.types);
   }
 
   setActive1(event) {
-    console.log(event);
   }
 
   ngOnInit(): void {
-    /**console.log(this.types[0].name);
-    console.log(this.calendars.months);
-    console.log(this.perView); **/
-    console.log(this.saleFlowTwoData);
-    console.log(this.showPrice);
   }
 
   openImageModal(imageSourceURL: string) {
@@ -549,7 +525,6 @@ export class SwiperComponent implements OnInit {
   }
 
   onChange() {
-    console.log('sss');
   }
 
   zorroChange(string) {
@@ -599,7 +574,6 @@ export class SwiperComponent implements OnInit {
   }
 
   getActive2(event) {
-    console.log(event);
     this.slideActive.emit(event);
   }
 
@@ -608,13 +582,11 @@ export class SwiperComponent implements OnInit {
   }
 
   currentSlide2(event) {
-    console.log('event', event);
     this.slideActive.emit(event);
   }
 
   currentSlide3(event) {
     this.realIndex1 = event.realIndex;
-    console.log(this.realIndex1);
   }
 
   goToGift(itemId: string) {

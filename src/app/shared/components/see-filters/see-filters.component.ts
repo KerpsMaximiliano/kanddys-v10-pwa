@@ -40,8 +40,6 @@ export class SeeFiltersComponent implements OnInit {
   constructor(private dialog: DialogService, public header: HeaderService) {}
 
   ngOnInit(): void {
-    console.log(this.tags);
-    
     this.notificationCount = this.tags.length;
     this.updateActivedTags(this.tags);
   }
@@ -49,7 +47,6 @@ export class SeeFiltersComponent implements OnInit {
   closeTagEvent($event) {
     this.notificationCount--;
     this.eventTags.emit($event);
-    console.log('Closing tag');
   }
 
   deletedTagFunction(e) {
@@ -81,8 +78,6 @@ export class SeeFiltersComponent implements OnInit {
     const sub = dialogref.events
       .pipe(filter((e) => e.type === 'result'))
       .subscribe((e) => {
-        console.log('esta es una prueba');
-        console.log(this.header.tags);
         let results = this.makeTags(this.header.tags);
         this.updateActivedTags(results);
         this.eventTags.emit(results);
@@ -117,12 +112,10 @@ export class SeeFiltersComponent implements OnInit {
         tempTag[i].options[j].selected = optionData.selected;
       }
     }
-    console.log(tempTag);
     return tempTag;
   }
 
   updateActivedTags(data) {
-    console.log(data);
     let tempTags = [];
     data.map((tag) => {
       tag.options.map((option) => {

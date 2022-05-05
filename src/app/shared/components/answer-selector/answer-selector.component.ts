@@ -49,7 +49,6 @@ export class AnswerSelectorComponent {
   }
 
   clickSelector(index: number) {
-    console.log(this.options);
     if (this.isMultipleOption) {
       this.activateMultipleOption(index);
       this.onSelector.emit(index);

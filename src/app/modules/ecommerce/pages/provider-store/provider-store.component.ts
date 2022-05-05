@@ -29,9 +29,6 @@ export class ProviderStoreComponent implements OnInit {
     private readonly app: AppService
   ) {
     router.events.subscribe((val) => {
-      // see also
-      // console.log(val instanceof NavigationEnd);
-      // console.log(this.router.url);
       if (val instanceof NavigationEnd) {
         for (let i = 0; i < this.options.length; i++) {
           this.options[i].active = false;
@@ -61,8 +58,6 @@ export class ProviderStoreComponent implements OnInit {
           }
         }
         if (this.router.url.includes('reservation')) {
-          console.log('entré');
-
           for (var i = 0; i < this.options.length; i++) {
             if (this.options[i].option == 'Reservación') {
               this.options[i].active = true;
@@ -107,9 +102,7 @@ export class ProviderStoreComponent implements OnInit {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'order-done'))
       .subscribe((e) => {
-        console.log(e.data);
         if (e.data) {
-          console.log('entré');
           this.deleteRoutes();
           sub.unsubscribe();
         }
@@ -243,14 +236,12 @@ export class ProviderStoreComponent implements OnInit {
             },
           })
         ).listItemPackage;
-        console.log(listPackages);
         this.products = listPackages;
         this.status = 'done';
       } else {
         for (let i = 0; i < this.header.order.products.length; i++) {
           products.push(this.header.order.products[i].item);
         }
-        console.log(this.products);
         this.findItemData(products);
       }
     }
@@ -292,7 +283,6 @@ export class ProviderStoreComponent implements OnInit {
         this.options[i].active = false;
       }
     }
-    console.log(this.options);
   }
 
   findItemData(products) {
@@ -307,7 +297,6 @@ export class ProviderStoreComponent implements OnInit {
       .then((data) => {
         this.products = data.listItems;
         this.status = 'done';
-        console.log(this.products);
       });
   }
 
@@ -334,7 +323,6 @@ export class ProviderStoreComponent implements OnInit {
     if (!this.mouseDown) {
       return;
     }
-    console.log(e);
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
@@ -348,7 +336,6 @@ export class ProviderStoreComponent implements OnInit {
       active: false,
     });
     this.router.navigate(['/ecommerce/provider-store/payment-methods']);
-    console.log(this.options);
     this.finalizacion = true;
   }
 

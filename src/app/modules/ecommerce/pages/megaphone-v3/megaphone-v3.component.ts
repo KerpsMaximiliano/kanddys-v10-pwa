@@ -125,13 +125,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         options,
       };
     });
-    console.log(headlines);
-    console.log(itemCategoriesList);
     this.categories = headlines[0].itemsCategories
       .map((value) => itemCategoriesList.find((element) => element._id === value)?.name)
       .filter((value) => value);
     this.filters = filters;
-    console.log(this.categories);
 
     if (this.items.length > 0 && this.itemsByCategory.length === 0) {
       this.organizeItems();
@@ -148,7 +145,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       }
     }
 
-    console.log(this.categories.length);
     if (this.categories.length == 0) {
       this.isCategories = false;
     } else {
@@ -258,10 +254,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.deleteEvent = this.appService.events
     .pipe(filter((e) => e.type === 'deleted-item'))
     .subscribe((e) => {
-      console.log('entre');
-      console.log(e.data);
       let productData = this.header.getItems(this.saleflowData._id);
-      console.log(productData);
       
       if (productData.length > 0) {
         for (let i = 0; i < productData.length; i++) {
@@ -289,13 +282,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   executeProcessesAfterLoading() {
     this.route.params.subscribe(async (params) => {
-      console.log(params.id);
       this.flowId = params.id;
       lockUI();
 
       this.header.flowId = params.id;
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
-      console.log(this.saleflowData);
       this.header.saleflow = this.saleflowData;
       this.header.storeSaleflow(this.saleflowData);
       const orderData = this.header.getOrder(this.saleflowData._id);
@@ -315,7 +306,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         index: number;
       }[] = [];
 
-      console.log(this.saleflowData.items.length);
       if (this.saleflowData.items.length !== 0) {
         this.merchantLabel = 'Alegrías de esta semana';
         for (let i = 0; i < this.saleflowData.items.length; i++) {
@@ -348,16 +338,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         listPackages[i].isSelected =
           orderData?.itemPackage === listPackages[i]._id;
       }
-      console.log('lista de paquetes');
-      console.log(listPackages);
       this.inputPackage = listPackages;
       this.sliderPackage = listPackages;
-      console.log('Assigned packages before item fetching');
       await this.itemOfPackage(listPackages);
       this.inputPackage = this.packageData.map((e) => e.package);
-      console.log('Packages Item fetching done!');
       this.swiperPackageOrder = this.packageData;
-      console.log(this.inputPackage);
       if (this.inputPackage.length > 0) this.currentItem(0);
       if (this.inputPackage.length == 0) {
         const selectedItems =
@@ -398,7 +383,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         this.organizeItems();
-        console.log('items', this.items);
         if (!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
       }
 
@@ -415,7 +399,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.renderedSwippers++;
 
     if (this.renderedSwippers === this.itemsByCategory.length) {
-      console.log('finished rendering');
       unlockUI();
     }
   }
@@ -465,7 +448,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         let itemData = this.header.getItems(this.saleflowData._id);
-        console.log(itemData);
         if (itemData.length > 0 && !this.hasCustomizer) {
           this.showCTA = true;
         } else {
@@ -562,9 +544,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     if (index) this.header.packId = index;
     this.header.items = [];
 
-    // console.log(this.options);
-    console.log(this.inputsItems);
-
     let products = [];
     let order;
 
@@ -591,7 +570,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         itemPackage: this.packageData[this.header.packId].package._id,
         products: products,
       };
-      console.log(order);
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
       this.router.navigate(['/ecommerce/provider-store']);
@@ -608,7 +586,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         products: products,
       };
 
-      console.log(order);
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
       //this.router.navigate(['/ecommerce/provider-store']);
@@ -622,7 +599,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   currentItem(e) {
-    console.log('evento', e);
     let isScenario;
     let scenariosLength;
 
@@ -642,14 +618,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             : undefined;
         isScenario =
           this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
-
-        console.log(this.swiperPackageOrder[e]);
       }
     }
   }
 
   goToPackageDetail(index){
-    console.log(this.sliderPackage[index]);
     this.router.navigate(['/ecommerce/package-detail/' + this.sliderPackage[index]._id]);
   }
 
@@ -709,9 +682,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.selectedTagsIds.includes(this.validateCategories(el.category))
       );
     }
-
-    console.log(this.inputsItems);
-    console.log(this.items);
     this.loadingSwiper = false;
     this.orderSwiper();
     this.currentItem(0);
@@ -752,8 +722,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
 
     setTimeout(() => (this.loadingSwiper = false), 1);
-    console.log(this.inputsItems);
-    console.log(this.items);
     this.orderSwiper();
     this.currentItem(0);
   }
@@ -776,9 +744,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         package: itemPackage,
       });
 
-      console.log(itemPackage.packageRules.length);
-      // console.log(itemPackage.packageRules.minQuantity);
-
       const listItems = (
         await this.saleflow.listItems({
           findBy: {
@@ -788,9 +753,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           },
         })
       ).listItems;
-
-      console.log('datos de los items de list item package');
-      console.log(listItems);
 
       let isScenario;
       let scenariosLength;
@@ -802,7 +764,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         }
       }
       this.packageData[index].items = { listItems };
-      console.log(this.packageData[index].items);
       index++;
     }
   }

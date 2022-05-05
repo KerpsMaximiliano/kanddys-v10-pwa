@@ -40,8 +40,6 @@ export class CalendarComponent implements OnInit {
     /*
     this.calendar.setInitalState();
     this.calendar.getToday(); */
-    console.log(this.monthNameSelected, this.dateNumber, this.time, this.weekDay);
-    console.log(this.calendar.months);
     if (this.monthNameSelected) {
       for (let i = 0; i < this.calendar.months.length; i++) {
         if (this.calendar.months[i].name === this.monthNameSelected) {
@@ -75,11 +73,9 @@ export class CalendarComponent implements OnInit {
     this.calendar.showDays = false;
     this.calendar.monthIndex = id;
     this.realMonthIndex = id;
-    console.log(this.realMonthIndex);
     this.calendar.hourIndex = 0;
     this.calendar.dayIndex = 0;
     this.filteredDays = [];
-    console.log(this.calendar.months[this.calendar.monthIndex]);
     let filtered = [];
     for (let i = 0; i < this.days.length; i++) {
       var filterResult = this.calendar.months[
@@ -87,17 +83,14 @@ export class CalendarComponent implements OnInit {
       ].dates.filter((x) => {
         return x.dayName === this.days[i];
       });
-      console.log(filterResult);
       this.filteredDays.push(filterResult);
     }
-    console.log(this.filteredDays);
     let dayNumbers = [];
     for (let i = 0; i < this.filteredDays.length; i++) {
       for (let j = 0; j < this.filteredDays[i].length; j++) {
         dayNumbers.push(this.filteredDays[i][j].dayNumber);
       }
     }
-    console.log(dayNumbers);
     this.lowestDay = Math.min(...dayNumbers);
     for (let i = 0; i < this.filteredDays.length; i++) {
       for (let j = 0; j < this.filteredDays[i].length; j++) {
@@ -106,9 +99,6 @@ export class CalendarComponent implements OnInit {
         }
       }
     }
-    console.log(this.lowestDay);
-    console.log(this.lowestIndexes);
-    console.log(this.filteredDays);
     if (this.monthNameSelected) {
       for (let i = 0; i < this.filteredDays.length; i++) {
         for (let j = 0; j < this.filteredDays[i].length; j++) {
@@ -123,10 +113,8 @@ export class CalendarComponent implements OnInit {
   }
 
   clicked(i: number, j: number) {
-    console.log(i, j);
     this.indexI = i;
     this.indexJ = j;
-    console.log(this.filteredDays[i][j]);
 
     if(this.filteredDays[i][j].weekDayNumber !== 0) {
 

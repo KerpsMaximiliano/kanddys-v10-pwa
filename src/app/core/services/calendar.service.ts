@@ -289,7 +289,6 @@ export class CalendarService {
             for (let i = hour; i < this.lastTodayHours; i++) {
                 this.todayHours.push(i.toString() + ':' + '00');
             }
-            console.log(this.todayHours);
             for (let j = 0; j < this.reservations.length; j++) {
                 let reservationMonthFrom1 = parseInt(this.reservations[j].date.from.split('-')[1]) - 1;
                 let reservationDayFrom1 = parseInt(this.reservations[j].date.from.split('-')[2]);
@@ -384,9 +383,7 @@ export class CalendarService {
         fetchPolicy: 'no-cache',
       });
       this.getCalendarResult = response.getCalendar;
-      console.log(this.getCalendarResult);
       this.reservations = response.getCalendar.reservations;
-      console.log(this.reservations);
       this.reservationLimit = response.getCalendar.reservationLimits;
       this.limitFromDay = this.getLimit(this.getCalendarResult.limits.fromDay);
       this.limitToDay = this.getLimit(this.getCalendarResult.limits.toDay);

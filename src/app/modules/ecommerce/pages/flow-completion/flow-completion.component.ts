@@ -176,34 +176,23 @@ export class FlowCompletionComponent implements OnInit {
     return this.order
       .order(id)
       .then((data) => {
-        console.log(data);
         if (
           data.order.orderStatus === 'cancelled' ||
           data.order.orderStatus === 'to confirm' ||
           data.order.orderStatus === 'completed'
         )
           this.router.navigate([`ecommerce/order-info/${id}`]);
-        console.log('Entrando en .then');
         if (data.order.items[0].reservation?._id !== null) {
           this.reservationOrProduct = 'reservacion';
         } else {
           this.reservationOrProduct = 'producto';
         }
-        console.log(this.reservationOrProduct);
         if (data) {
-          console.log(data);
-          console.log('SI HAY DATA');
           this.header.saleflow = data.order.items[0].saleflow;
           this.fakeData = data.order;
           if (!this.merchantInfo) {
-            console.log('ALSKDJLSKDLAKSJDHSLKD SHKLDHDLKAS HLSKJD HLSAKJd');
-            console.log(this.fakeData.merchants[0]._id);
             this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
-              console.log('?????????????????????????????????');
               this.merchantInfo = this.header.merchantInfo;
-              console.log(this.merchantInfo);
-              console.log(this.header.merchantInfo);
-              console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAA');
             });
           }
           const totalPrice = this.fakeData.subtotals.reduce(
@@ -233,7 +222,6 @@ export class FlowCompletionComponent implements OnInit {
             return newItem;
           });
 
-          console.log(this.orderData);
           if (!this.orderData) {
             this.router.navigate(['/error-screen/?type=item']);
           }
@@ -241,8 +229,6 @@ export class FlowCompletionComponent implements OnInit {
             data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
           );
         } else {
-          console.log(data);
-          console.log('NO HAY DATA');
           this.router.navigate(['/ecommerce/error-screen']);
         }
       })
@@ -261,8 +247,6 @@ export class FlowCompletionComponent implements OnInit {
   products: any[] = [];
 
   async ngOnInit() {
-    console.log(this.header.order);
-
     // this.ammount.valueChanges.subscribe((change) => {
     //   // this.validateNumbers(change);
     // });
@@ -283,13 +267,11 @@ export class FlowCompletionComponent implements OnInit {
             },
           })
         ).listItemPackage;
-        console.log(listPackages);
         this.products = listPackages;
       } else if (this.header.order?.products) {
         for (let i = 0; i < this.header.order.products.length; i++) {
           products.push(this.header.order.products[i].item);
         }
-        console.log(this.products);
         this.findItemData(products);
       }
       if (this.header.merchantInfo)
@@ -299,8 +281,6 @@ export class FlowCompletionComponent implements OnInit {
           this.orderId = params.id;
           this.getOrderData(params.id);
         } else if (!this.header.isDataComplete()) {
-          console.log('enttrando');
-
           this.header.resetIsComplete();
           this.router.navigate([`ecommerce/landing-vouchers`]);
         }
@@ -327,9 +307,6 @@ export class FlowCompletionComponent implements OnInit {
         if (this.flow === 'flow-completion') this.stepsLeft = 6;
       }
     });
-
-    console.log(this.flow);
-    console.log(this.products);
   }
 
   findItemData(products) {
@@ -343,7 +320,6 @@ export class FlowCompletionComponent implements OnInit {
       })
       .then((data) => {
         this.products = data.listItems;
-        console.log(this.products);
       });
   }
 
@@ -358,7 +334,6 @@ export class FlowCompletionComponent implements OnInit {
         )
       );
     }
-    console.log(data.ExchangeData.bank);
     Promise.all(wallets).then((values) => {
       let descriptions = data.ExchangeData.bank.map((value) => {
         return {
@@ -374,8 +349,6 @@ export class FlowCompletionComponent implements OnInit {
           bankdata: descriptions,
         };
       });
-      console.log(payments);
-      console.log(values);
       this.bankOptions = payments.map((value, index) => {
         this.banks[index].name = this.titlecasePipe.transform(
           value.paymenteceiver.name
@@ -445,7 +418,6 @@ export class FlowCompletionComponent implements OnInit {
         this.relativeStep++;
         break;
       case 7:
-        console.log(this.whatsappLink);
         this.payOrder();
         break;
       case 8:
@@ -461,11 +433,9 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   gotToUpdatePassword() {
-    console.log(this.inputData, this.code);
     this.authService
       .verify(this.code, localStorage.getItem('id'))
       .then((data: any) => {
-        console.log(data);
         if (data != undefined) {
           this.step = 10;
         }
@@ -473,10 +443,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   updatePassword() {
-    console.log(this.inputData, this.code, this.password);
     this.authService.updateMe({ password: this.password }).then((data) => {
-      console.log(data);
-      console.log(localStorage.getItem('session-token'));
       this.inputData = '';
       this.password = '';
       this.step = 1;
@@ -484,7 +451,6 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   selectOption(index: number) {
-    console.log(index);
     switch (this.step) {
       case 4:
         this.userSelect(index);
@@ -511,9 +477,8 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   selectLoginOption(index: number){
-    console.log(index);
     if (index == 0) {
-      console.log('ws link');
+      // Magic link goes here
     }else{
       this.checkUser()
     }
@@ -601,39 +566,28 @@ export class FlowCompletionComponent implements OnInit {
   async checkUser() {
     try {
       const input = '1' + this.inputData;
-      console.log(input);
       const data = await this.authService.checkUser(input, 'whatsapp');
       if (data) {
         this.userData = data;
-        console.log(data);
         localStorage.setItem('id', data._id);
         if (data.validatedAt) {
-          console.log('user is validated');
-
           if (data.name) {
-            console.log('and has name');
             this.step = 4;
           } else {
             const data = await this.authService.generateOTP(input);
             if (data) {
               this.step = 2;
               this.relativeStep++;
-              console.log('code sent');
             }
-            // console.log('but doesnt have name and password');
-            // this.step = 3;
           }
         } else {
-          console.log('user is not validated, sending code...');
           const data = await this.authService.generateOTP('1' + this.inputData);
           if (data) {
             this.step = 2;
             this.relativeStep++;
-            console.log('code sent');
           }
         }
       } else {
-        console.log('user doesnt exist, creating account');
         this.signUp();
       }
     } catch (error) {
@@ -648,7 +602,6 @@ export class FlowCompletionComponent implements OnInit {
         { phone: '1' + this.inputData },
         'whatsapp'
       );
-      console.log(data);
       if (data) {
         localStorage.setItem('id', data._id);
         this.step = 2;
@@ -664,14 +617,10 @@ export class FlowCompletionComponent implements OnInit {
   // Case 2
   async sendCode() {
     try {
-      console.log(this.code);
-      console.log(localStorage.getItem('id'));
       const data = await this.authService.verify(
         this.code,
         localStorage.getItem('id')
       );
-      console.log(data);
-
       if (data != undefined) {
         this.step = 3;
         this.relativeStep++;
@@ -742,7 +691,6 @@ export class FlowCompletionComponent implements OnInit {
       );
       if (data) {
         this.userData = data.user;
-        console.log('user has signed in');
         this.isLogged = true;
         this.password = '';
         this.showLoginPassword = false;
@@ -787,26 +735,20 @@ export class FlowCompletionComponent implements OnInit {
           this.header.getPost(
             this.header.saleflow?._id ?? this.header.getSaleflow()._id
           )?.data;
-        console.log(postinput);
-
         this.postsService
           .creationPost(postinput)
           .then((data) => {
             if (data) {
               this.header.emptyPost(this.header.saleflow._id);
-              console.log(data);
               if (this.header.saleflow.canBuyMultipleItems)
                 this.header.order.products.forEach((product) => {
                   product.deliveryLocation =
                     this.header.order.products[0].deliveryLocation;
                   product.post = data.createPost._id;
                 });
-              console.log(this.header.order);
               this.order
                 .createOrder(this.header.order)
                 .then((data) => {
-                  console.log(data);
-                  console.log(data.createOrder._id);
                   this.header.deleteSaleflowOrder(this.header.saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
@@ -834,7 +776,6 @@ export class FlowCompletionComponent implements OnInit {
         await this.order
           .createOrder(this.header.order)
           .then(async (data) => {
-            console.log(data);
             this.header.deleteSaleflowOrder(this.header.saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
@@ -858,7 +799,6 @@ export class FlowCompletionComponent implements OnInit {
   // Case 7
   onFileInput(file: File) {
     this.image = file;
-    console.log(this.image);
   }
 
   // Case 7
@@ -905,7 +845,6 @@ export class FlowCompletionComponent implements OnInit {
         'bank-transfer',
         this.orderData.id
       );
-      console.log(data);
       this.orderFinished();
     } catch (error) {
       console.log(error);
@@ -928,7 +867,6 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   orderFinished() {
-    console.log(this.fakeData);
     unlockUI();
     this.redirect();
   }
@@ -941,7 +879,6 @@ export class FlowCompletionComponent implements OnInit {
       event.key == '+' ||
       !isNaN(parseInt(event.key))
     ) {
-      console.log('Bien');
     } else {
       event.preventDefault();
     }
@@ -958,7 +895,6 @@ export class FlowCompletionComponent implements OnInit {
           creator: this.userData._id,
         });
         unlockUI();
-        console.log(data);
       }
       if (this.flow === 'create-merchant') {
         const data = await this.merchant.createMerchant({
@@ -966,7 +902,6 @@ export class FlowCompletionComponent implements OnInit {
           name: this.newProviderName,
         });
         unlockUI();
-        console.log(data);
       }
     } catch (error) {
       console.log(error);
@@ -977,12 +912,8 @@ export class FlowCompletionComponent implements OnInit {
   showItems() {
     let showProducts = [];
     if (this.orderData.isPackage) {
-      console.log('si');
-      console.log(this.fakeData);
       showProducts.push(this.fakeData.itemPackage);
     } else {
-      console.log('no');
-      console.log(this.fakeData);
       showProducts = this.products;
     }
     this.dialog.open(ShowItemsComponent, {
@@ -997,16 +928,13 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   generateOTP() {
-    console.log(this.inputData);
     let input;
     if (this.isLogged) {
       input = this.inputData;
     } else {
       input = '1' + this.inputData;
     }
-    console.log(input);
     this.authService.generateOTP(input).then((data) => {
-      console.log(data);
       this.step = 9;
     });
   }
