@@ -241,17 +241,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.header.packId = 0;
     this.executeProcessesAfterLoading();
     this.deleteEvent = this.appService.events
-    .pipe(filter((e) => e.type === 'deleted-item'))
-    .subscribe((e) => {
-      let productData = this.header.getItems(this.saleflowData._id);
-      
-      if (productData.length > 0) {
-        for (let i = 0; i < productData.length; i++) {
-          for (let j = 0; j < this.inputsItems.length; j++) {
-            if (productData[i]._id === this.inputsItems[j]._id) {
-              this.inputsItems[j].isSelected = true;
-            }else{
-              this.inputsItems[j].isSelected = false;
+      .pipe(filter((e) => e.type === 'deleted-item'))
+      .subscribe((e) => {
+        let productData = this.header.getItems(this.saleflowData._id);
+
+        if (productData.length > 0) {
+          for (let i = 0; i < productData.length; i++) {
+            for (let j = 0; j < this.inputsItems.length; j++) {
+              if (productData[i]._id === this.inputsItems[j]._id) {
+                this.inputsItems[j].isSelected = true;
+              } else {
+                this.inputsItems[j].isSelected = false;
+              }
             }
           }
         } else {
@@ -372,7 +373,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         this.organizeItems();
-        if (!this.hasCustomizer && this.items.some((item) => item.isSelected)) this.showCTA = true;
+        if (!this.hasCustomizer && this.items.some((item) => item.isSelected))
+          this.showCTA = true;
       }
 
       if (!this.hasCustomizer) unlockUI();
@@ -604,8 +606,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  goToPackageDetail(index){
-    this.router.navigate(['/ecommerce/package-detail/' + this.sliderPackage[index]._id]);
+  goToPackageDetail(index) {
+    this.router.navigate([
+      '/ecommerce/package-detail/' + this.sliderPackage[index]._id,
+    ]);
   }
 
   showShoppingCartDialog() {
