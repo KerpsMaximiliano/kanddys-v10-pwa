@@ -89,7 +89,7 @@
         placeholder="Mi apellido es.."
       />
     </div>
-    <div class="content">
+    <div class="content" *ngIf="!comesFromMagicLink">
       <p style="margin-bottom: 11px" class="label2">
         {{
           flow !== "flow-completion"
@@ -504,7 +504,9 @@
     (step === 1 && inputData.length < 500) ||
     (step === 2 && code.length < 4) ||
     (step === 3 &&
-      (!name || name.trim().length === 0 || password.length < 3)) ||
+      (!name ||
+        name.trim().length === 0 ||
+        (password.length < 3 && !comesFromMagicLink))) ||
     (step === 4 && password.length < 3) ||
     (step === 5 &&
       (flow !== 'flow-completion'
@@ -532,7 +534,7 @@
       : step === 3
       ? flow !== 'flow-completion'
         ? 'ADICIONA EL CONTACTO DEL MAPP'
-        : !name || password.length < 3
+        : !name || (password.length < 3 && !comesFromMagicLink)
         ? 'ADICIONA TU SEGURIDAD'
         : 'CONTINUAR'
       : step === 4

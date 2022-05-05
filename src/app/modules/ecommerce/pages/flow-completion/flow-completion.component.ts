@@ -148,6 +148,7 @@ export class FlowCompletionComponent implements OnInit {
   flow: 'flow-completion' | 'create-community' | 'create-merchant';
   headerText: string;
   newProviderName: string = '';
+  comesFromMagicLink: boolean = false;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
@@ -268,14 +269,34 @@ export class FlowCompletionComponent implements OnInit {
 
       if (token) {
         try {
-          const { analizeMagicLink } = await this.authService.analizeMagicLink(
-            token
+          const { analizeMagicLink: session } =
+            await this.authService.analizeMagicLink(token);
+          this.comesFromMagicLink = true;
+
+          console.log('SESSION', session);
+
+          localStorage.setItem('session-token', session.token);
+
+          let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
+
+          localStorage.removeItem('phoneNumberOrEmail');
+
+          const data = await this.authService.checkUser(
+            phoneNumberOrEmail,
+            'whatsapp'
           );
 
-          localStorage.setItem('session-token', analizeMagicLink.token);
+          if (data) this.userData = data;
 
-          this.step = 3;
-          this.relativeStep += 2;
+          console.log(this.userData, 'USER DATA');
+
+          if (session.new) {
+            this.step = 3;
+            this.relativeStep += 2;
+          } else {
+            this.relativeStep = 4;
+            this.createOrSkipOrder();
+          }
 
           // this.submit();
         } catch (error) {
@@ -552,6 +573,8 @@ export class FlowCompletionComponent implements OnInit {
 
   async selectLoginOption(index: number) {
     if (index == 0) {
+      localStorage.setItem('phoneNumberOrEmail', this.inputData);
+
       this.sendCodeToEmailOrWhatsapp();
     } else {
       this.checkUser();
@@ -642,7 +665,7 @@ export class FlowCompletionComponent implements OnInit {
   async checkUser() {
     try {
       const input = '1' + this.inputData;
-      console.log(input);
+
       const data = await this.authService.checkUser(input, 'whatsapp');
       if (data) {
         this.userData = data;
@@ -731,10 +754,14 @@ export class FlowCompletionComponent implements OnInit {
   // Case 3
   async updateUser() {
     try {
-      const input = {
-        name: this.name,
-        password: this.password,
-      };
+      const input = !this.comesFromMagicLink
+        ? {
+            name: this.name,
+            password: this.password,
+          }
+        : {
+            name: this.name,
+          };
       const data = await this.authService.updateMe(input);
       this.userData = data;
 
@@ -813,9 +840,27 @@ export class FlowCompletionComponent implements OnInit {
       delete product.name;
     });
     return new Promise(async (resolve, reject) => {
-      const customizer =
-        this.header.customizer ||
-        JSON.parse(localStorage.getItem('customizer'));
+      let customizer = this.header.customizer;
+
+      if (!this.header.customizer) {
+        const saleflowData = JSON.parse(localStorage.getItem('saleflow-data'));
+        const customizerPreview = JSON.parse(
+          localStorage.getItem('customizerFile')
+        );
+
+        let saleflow = JSON.parse(localStorage.getItem(saleflowData._id));
+
+        if ('customizer' in saleflow) {
+          customizer = saleflow.customizer;
+
+          const res: Response = await fetch(customizerPreview.base64);
+          const blob: Blob = await res.blob();
+
+          customizer.preview = new File([blob], customizerPreview.fileName, {
+            type: customizerPreview.type,
+          });
+        }
+      }
 
       console.log(customizer, 'CUSTOMIZER');
 
@@ -840,21 +885,20 @@ export class FlowCompletionComponent implements OnInit {
           .creationPost(postinput)
           .then((data) => {
             if (data) {
-              this.header.emptyPost(this.header.saleflow._id);
+              this.header.emptyPost(saleflow._id);
               console.log(data);
-              if (this.header.saleflow.canBuyMultipleItems)
+              if (saleflow.canBuyMultipleItems)
                 this.header.order.products.forEach((product) => {
                   product.deliveryLocation =
                     this.header.order.products[0].deliveryLocation;
                   product.post = data.createPost._id;
                 });
-              console.log(this.header.order);
               this.order
                 .createOrder(this.header.order)
                 .then((data) => {
                   console.log(data);
                   console.log(data.createOrder._id);
-                  this.header.deleteSaleflowOrder(this.header.saleflow._id);
+                  this.header.deleteSaleflowOrder(saleflow._id);
                   this.header.resetIsComplete();
                   this.isLoading = false;
                   this.header.orderId = data.createOrder._id;
@@ -882,7 +926,7 @@ export class FlowCompletionComponent implements OnInit {
           .createOrder(this.header.order)
           .then(async (data) => {
             console.log(data);
-            this.header.deleteSaleflowOrder(this.header.saleflow._id);
+            this.header.deleteSaleflowOrder(saleflow._id);
             this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;

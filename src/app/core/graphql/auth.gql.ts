@@ -66,6 +66,7 @@ export const analizeMagicLink = gql`
       createdAt
       updatedAt
       token
+      new
       remember
       expiredAt
     }
