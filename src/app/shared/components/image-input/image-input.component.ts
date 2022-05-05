@@ -32,7 +32,7 @@ export class ImageInputComponent implements OnInit {
 
   sanitize(image: string | ArrayBuffer) {
     return this._DomSanitizer.bypassSecurityTrustStyle(
-      `url(${image}) no-repeat center center / cover #fff`
+      `url(${image}) no-repeat center center / contain #fff`
     );
   }
 

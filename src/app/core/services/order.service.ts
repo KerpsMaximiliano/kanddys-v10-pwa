@@ -10,7 +10,7 @@ import {
   toggleUserNotifications,
   updateTagsInOrder,
 } from '../graphql/order.gql';
-import { ItemOrder } from '../models/order';
+import { ItemOrder, ItemOrderInput, OCRInput } from '../models/order';
 @Injectable({
   providedIn: 'root',
 })
@@ -19,22 +19,22 @@ export class OrderService {
 
   orders: any = [];
 
-  async createOrder(input: any) {
-    console.log(input);
+  async createOrder(input: ItemOrderInput): Promise<{createOrder: { _id: string }}> {
     const result = await this.graphql.mutate({
       mutation: createOrder,
       variables: { input },
     });
 
     if (!result || result?.errors) return undefined;
-
-    console.log(result);
     return result;
   }
 
-  async payOrder(ocr: any, userId: string, payMode: string, orderId: string) {
-    console.log(ocr, userId, payMode, orderId);
-
+  async payOrder(
+    ocr: OCRInput, 
+    userId: string, 
+    payMode: string, 
+    orderId: string
+  ): Promise<{payOrder: {_id: string}}> {
     const result = await this.graphql.mutate({
       mutation: payOrder,
       variables: { ocr, userId, payMode, orderId },
@@ -43,7 +43,6 @@ export class OrderService {
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
     return result;
   }
 

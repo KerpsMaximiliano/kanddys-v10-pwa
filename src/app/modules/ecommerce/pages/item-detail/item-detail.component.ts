@@ -30,7 +30,7 @@ export class ItemDetailComponent implements OnInit {
     const sub = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        this.ngOnInit();
+        this.itemInCart();
         sub.unsubscribe();
       });
   }
@@ -38,25 +38,37 @@ export class ItemDetailComponent implements OnInit {
   itemData: Item;
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
+  bgColor: string = "#27a2ff";
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       if (params.id) {
         this.items.item(params.id).then((data) => {
           this.itemData = data;
-          const productData = this.header.getItems(this.saleflowId);
-
-          if (productData.length > 0) {
-            if (productData.some((item) => item._id === data._id))
-              this.ctaText = 'QUITAR DEL CARRITO';
-            else this.ctaText = 'ADICIONAR AL CARRITO';
-          } else this.ctaText = 'ADICIONAR AL CARRITO';
+          this.itemInCart();
         });
       }
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
     });
+  }
+
+  itemInCart() {
+    const productData = this.header.getItems(this.saleflowId);
+    if (productData.length > 0) {
+      if (productData.some((item) => item._id === this.itemData._id)) {
+        this.ctaText = 'QUITAR DEL CARRITO';
+        this.bgColor = "#FC2727";
+      }
+      else {
+        this.ctaText = 'ADICIONAR AL CARRITO';
+        this.bgColor = "#27a2ff";
+      }
+    } else {
+      this.ctaText = 'ADICIONAR AL CARRITO';
+      this.bgColor = "#27a2ff";
+    }
   }
 
   showItems() {
@@ -67,7 +79,6 @@ export class ItemDetailComponent implements OnInit {
         headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`]),
         footerCallback: () => {
           this.saleflow.saleflow(this.saleflowId, true).then(data =>{
-            console.log(data);
             for (let i = 0; i < data.saleflow.items.length; i++) {
               if (data.saleflow.items[i].item._id === this.itemData._id) {
                 if (data.saleflow.items[i].customizer) {
@@ -86,8 +97,6 @@ export class ItemDetailComponent implements OnInit {
   }
 
   saveProduct() {
-    console.log('here');
-
     this.header.storeOrderProduct(this.saleflowId, {
       item: this.itemData._id,
       amount: 1,
@@ -95,7 +104,7 @@ export class ItemDetailComponent implements OnInit {
     });
     this.header.storeItem(this.saleflowId, this.itemData);
     this.showItems();
-    this.ngOnInit();
+    this.itemInCart();
     //this.router.navigate(['/ecommerce/provider-store']);
     //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
   }

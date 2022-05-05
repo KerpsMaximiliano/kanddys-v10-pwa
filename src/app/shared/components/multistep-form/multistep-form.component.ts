@@ -294,8 +294,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
 
       this.dataModel.addControl(currentStepKey, new FormGroup({}));
 
-      console.log(this.dataModel);
-
       let currentStepFormGroup = this.dataModel.get(
         currentStepKey
       ) as FormGroup;
@@ -309,10 +307,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       });
 
       step.fieldsList.forEach((field) => {
-        console.log(field.name, field.fieldControl);
-
-        if (!currentStepFormGroup.get(field.name))
-          console.log(field.name + ' ya existe');
 
         if (!currentStepFormGroup.get(field.name))
           currentStepFormGroup.addControl(field.name, field.fieldControl);
@@ -331,7 +325,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
 
     if (this.scrollableForm) this.blockScrollPastCurrentStep();
 
-    console.log('Modelo de datos', this.dataModel);
   }
 
   //Removes all subscriptions from every formControl
@@ -514,7 +507,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    *
    */
   scrollToStep = (index = this.currentStep + 1, scrollToNextStep = true) => {
-    console.log('MOVING TO STEP ' + index);
     let previousCurrentStep;
 
     if (!scrollToNextStep) {

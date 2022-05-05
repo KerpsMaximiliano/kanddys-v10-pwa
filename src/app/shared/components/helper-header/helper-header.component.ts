@@ -50,7 +50,6 @@ export class HelperHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.headerService.walletData != undefined) {
-      console.log(this.headerService.walletData);
       this.walletBalance = this.headerService.walletData.balance;
       //this.wallet = true;
     }
@@ -58,7 +57,6 @@ export class HelperHeaderComponent implements OnInit {
 
   sendData(value: string) {
     this.data.emit(value);
-    console.log(value);
   }
 
   close(): void {

@@ -129,18 +129,13 @@ export class OrderInfoComponent implements OnInit {
   date: any;
 
   ngOnInit(): void {
-    console.log('la orden es');
-    console.log(this.headerService.order);
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
     //lockUI()
     this.route.params.subscribe((params) => {
-      console.log(params);
       this.linkId = params.id;
       this.headerService.orderId = params.id;
       this.order.order(params.id).then((data) => {
-        console.log('el callback de la orden');
-        console.log(data);
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
           this.orders = data.order;
@@ -177,18 +172,16 @@ export class OrderInfoComponent implements OnInit {
           }
           this.tabsOptions.push('Pago');
           if (data.order.items[0].deliveryLocation) {
-            console.log('Order data', data.order.items);
             this.tabsOptions.push('Entrega');
             this.titleTab = 'Entrega';
           }
-          console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
           const totalPrice = data.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
           );
           this.price = data.order.items[0].customizer
-            ? totalPrice * 1.18
+            ? (Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100)
             : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
@@ -210,13 +203,10 @@ export class OrderInfoComponent implements OnInit {
           this.date = `${moment(data.order.createdAt).format(
             'LL'
           )} a las ${moment(data.order.createdAt).format('LT')}`;
-          console.log(this.id);
           if (data.order.itemPackage) this.pago = data.order.itemPackage.price;
           this.createdAt = data.order.createdAt;
-          console.log(this.price);
 
           // this.dateOfOrder = this.headerService.walletData.createdAt;
-          // console.log(this.dateOfOrder);
 
           this.showItem = {
             showArrow: true,
@@ -244,26 +234,18 @@ export class OrderInfoComponent implements OnInit {
             this.reservation
               .getReservation(data.order.items[0].reservation._id)
               .then((data) => {
-                console.log(data);
-                console.log(data.getReservation.date.from.split('-'));
-                console.log('el día de la semana de la reservación es');
-                console.log(moment(data.getReservation.date.from).isoWeekday());
                 let dateInfo = data.getReservation.date.from.split('-');
-                console.log(dateInfo);
                 let day = dateInfo[2].split('T')[0];
                 let hour =
                   (
                     parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset
                   ).toString() + '00';
-                console.log(day);
-                console.log(hour);
                 let month;
                 for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
                   if (
                     parseInt(dateInfo[1]) - 1 ==
                     this.calendar.allFullMonths[i].id
                   ) {
-                    console.log('entré');
                     month = this.calendar.allFullMonths[i].name;
                   }
                 }
@@ -276,7 +258,6 @@ export class OrderInfoComponent implements OnInit {
                   dateInfo[0] +
                   ' a las ' +
                   this.formatHour(data.getReservation.date.from)),
-                  console.log(month);
                 this.reservationItem = {
                   showArrow: true,
                   title: 'Fecha',
@@ -288,17 +269,13 @@ export class OrderInfoComponent implements OnInit {
                     data.getReservation.date.from
                   )}`,
                 };
-                console.log('el reservation item es');
-                console.log(this.reservationItem);
                 this.allDone = true;
               });
           }
           if (data.order.items[0].post) {
             this.posts.getPost(data.order.items[0].post._id).then((data) => {
               this.message = data.post;
-              console.log(this.message);
               this.currentMessage = this.message.message;
-              console.log(this.currentMessage);
               if (this.message.from === '' && this.message.message === '') {
                 for (let i = 0; i < this.tabsOptions.length; i++) {
                   if (this.tabsOptions[i] === 'Mensaje') {
@@ -309,13 +286,10 @@ export class OrderInfoComponent implements OnInit {
             });
           }
           if (data.order.items[0].customizer) {
-            console.log('dasdsad');
-
             this.customizerValueService
               .getCustomizerValuePreview(data.order.items[0].customizer._id)
               .then((value) => {
                 this.customizer = value;
-                console.log(this.customizer);
               });
           }
           if (params.notification) {
@@ -342,7 +316,6 @@ export class OrderInfoComponent implements OnInit {
   }
 
   formatID(dateId: string) {
-    console.log(dateId);
     const splits = dateId.split('/');
     const year = splits[2].substring(0, 4);
     const number = splits[2].substring(4);
@@ -377,16 +350,15 @@ export class OrderInfoComponent implements OnInit {
   toggleNotifications() {
     this.order
       .toggleUserNotifications(!this.notifications, this.linkId)
-      .then((result) => {
-        console.log('Cambiaste las preferencias de notificaciones');
-        console.log(result);
-      });
+      // .then((result) => {
+      //   console.log('Cambiaste las preferencias de notificaciones');
+      //   console.log(result);
+      // });
 
     this.notifications = !this.notifications;
   }
 
   wichName(e) {
-    console.log(e);
     if (e === 'Reservación') {
       this.reservacion = true;
       this.address = false;

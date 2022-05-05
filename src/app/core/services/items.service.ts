@@ -31,7 +31,6 @@ export class ItemsService {
   constructor(private graphql: GraphQLWrapper) {}
 
   async item(id: string): Promise<Item> {
-    console.log(id);
     const { item: result } = await this.graphql.query({
       query: item,
       variables: { id },
@@ -41,7 +40,6 @@ export class ItemsService {
   }
 
   async itemextra(id: string) {
-    console.log(id);
     const response = await this.graphql.query({
       query: itemextra,
       variables: { id },
@@ -51,7 +49,6 @@ export class ItemsService {
   }
 
   async itemPacakge(id: string) {
-    console.log(id);
     const response = await this.graphql.query({
       query: itemPackage,
       variables: { id },
@@ -70,7 +67,6 @@ export class ItemsService {
   }
 
   async itemsByMerchant(id: string) {
-    console.log(id);
     try {
       const response = await this.graphql.query({
         query: itemsByMerchant,
@@ -165,7 +161,6 @@ export class ItemsService {
         variables: { merchantId, params },
         fetchPolicy: 'no-cache',
       });
-      console.log(merchantId, params);
       return response;
     } catch (e) {
       console.log(e);
@@ -174,7 +169,6 @@ export class ItemsService {
   
   // Agregar categoria
   async createItemCategory(input: any) {
-    console.log('input', input);
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
       variables: { input },

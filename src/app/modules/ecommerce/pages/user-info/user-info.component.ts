@@ -139,7 +139,6 @@ export class UserInfoComponent implements OnInit {
         })
       }
     }
-    console.log(this.warningSteps.some((value) => value.status === false))
     const isDataMissing = this.warningSteps.some((value) => value.status === false);
     return isDataMissing;
   }

@@ -9,6 +9,7 @@ import {
   createCommentInPost,
   commentsByPost,
 } from '../graphql/posts.gql';
+import { PostInput } from '../models/post';
 
 @Injectable({
   providedIn: 'root',
@@ -16,14 +17,13 @@ import {
 export class PostsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async creationPost(input: any): Promise<any> {
+  async creationPost(input: PostInput): Promise<{createPost: { _id: string }}> {
     let value = await this.graphql.mutate({
       mutation: creationPost,
       variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
-
     return value;
   }
 

@@ -44,7 +44,6 @@ export class PackageDetailComponent implements OnInit {
         limit: 15
       }
     }).then(data => {
-      console.log(data);
       //this.filters = data.itemCategoriesList;
       for (let i = 0; i < data.itemCategoriesList.length; i++) {
         this.filters[0].options.push({
@@ -97,7 +96,6 @@ export class PackageDetailComponent implements OnInit {
           })
         }
         let alreadySelected = this.header.getOrder(this.saleflowId);
-        console.log(alreadySelected?.itemPackage);
         if (alreadySelected.itemPackage === this.packageData._id) {
           if (alreadySelected.products[0].itemExtra.length > 0) {
             this.orderProducts[0].itemExtra = alreadySelected.products[0].itemExtra;
@@ -118,25 +116,19 @@ export class PackageDetailComponent implements OnInit {
   }
 
   handleSelection(event) {
-    console.log(this.scenarios);
-    
     this.scenarios.map(data => {
       if (data._id === event.item._id) {
         if (this.selectedsQty < this.limitScenarios && !data.isActive) {
           data.isActive = event.isSelected;
           this.selectedsQty++;
           this.orderProducts[0].itemExtra.push(data._id);
-          console.log(this.orderProducts);
         } else if (this.selectedsQty == this.limitScenarios && data.isActive) {
           data.isActive = event.isSelected;
-          console.log(this.selectedsQty);
           this.selectedsQty--;
-          console.log(this.selectedsQty);
           this.orderProducts[0].itemExtra.splice(
             this.orderProducts[0].itemExtra.indexOf(data._id),
             1
           );
-          console.log(this.orderProducts);
         } else if (this.selectedsQty == this.limitScenarios && !data.isActive) {
           let index = this.scenarios.findIndex((object) => {
             return object._id === this.orderProducts[0].itemExtra[0];
@@ -147,9 +139,7 @@ export class PackageDetailComponent implements OnInit {
           this.orderProducts[0].itemExtra.push(data._id);
         } else if (this.selectedsQty < this.limitScenarios && data.isActive) {
           data.isActive = event.isSelected;
-          console.log(this.selectedsQty);
           this.selectedsQty--;
-          console.log(this.selectedsQty);
           this.orderProducts[0].itemExtra.splice(
             this.orderProducts[0].itemExtra.indexOf(data._id),
             1
@@ -164,17 +154,13 @@ export class PackageDetailComponent implements OnInit {
   }
 
   submit() {
-    console.log('submit');
     this.orderProducts[0].saleflow = this.saleflowId;
     this.header.storeOrderPackage(
       this.saleflowId,
       this.packageData._id,
       this.orderProducts
     );
-    console.log(this.header.getOrder(this.saleflowId));
     this.header.storeItem(this.saleflowId, this.packageData);
-    console.log(this.header.getItems(this.saleflowId));
-
     this.header.hasScenarios = true;
     this.header.isComplete.scenarios = true;
     this.header.storeOrderProgress(this.header.saleflow?._id);

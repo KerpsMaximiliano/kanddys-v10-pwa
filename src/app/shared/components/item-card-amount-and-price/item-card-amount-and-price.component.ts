@@ -86,7 +86,6 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.itemData);
     this.price = this.itemData.pricing;
     this.router.events.pipe(distinctUntilChanged()).subscribe(value => {
       this.currentUrl = this.router.url.toString();
@@ -102,6 +101,7 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
       // this.itemData.total = this.itemData.pricing + this.header.order.products[0].amount * this.itemData.params[0].values[0].price;
       const total = this.itemData.qualityQuantity.price + (this.header.order.products[0].amount * this.itemData.params[0].values[0].price)
       this.itemData.total = total + (total*0.18);
+      this.header.emptyItems(this.header.saleflow._id);
       this.header.storeItem(this.header.saleflow._id, this.itemData);
     } else if (bool) {
       if (this.header.order.products[0].amount > 0) {

@@ -98,3 +98,11 @@ export class ItemOrderInput {
   itemPackage?: string;
   tags?: string[];
 }
+
+export class OCRInput {
+  total?: number;
+  subtotal?: number;
+  transactionCode?: string;
+  image?: File;
+  platform?: string;
+}

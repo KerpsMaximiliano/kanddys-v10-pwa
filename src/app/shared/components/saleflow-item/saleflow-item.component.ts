@@ -58,8 +58,6 @@ export class SaleflowItemComponent implements OnInit {
     // if(this.selecteds.find(selected => selected == this.itemExtra) != undefined){
     //   this.isSelected = true;
     // }
-    console.log(this.showPrice);
-    
   }
 
   navigateDetails(): void {

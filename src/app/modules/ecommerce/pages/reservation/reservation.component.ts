@@ -101,9 +101,6 @@ export class ReservationComponent implements OnInit {
     if(!this.header.saleflow) this.header.saleflow = this.saleflowData;
     this.orderData = this.header.getOrder(this.saleflowData._id);
     this.header.getOrderProgress(this.saleflowData._id);
-    console.log(this.orderData);
-    console.log(this.saleflowData);
-    console.log(this.saleflowData.module.appointment.calendar._id);
     this.calendarId = this.saleflowData.module.appointment.calendar._id;
     this.calendar.getToday();
     this.checkCalendar();
@@ -114,7 +111,6 @@ export class ReservationComponent implements OnInit {
       this.dateComponentFrom = this.dateComponentFrom.charAt(0).toUpperCase() + this.dateComponentFrom.slice(1);
       this.weekDay = moment(this.orderData.products[0].reservation.date.from).locale('es-es').format('dddd');
       this.weekDay = this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
-      console.log(this.dateFrom, this.dateComponentFrom, this.timeComponentFrom, this.weekDay);
     }
     /*this.route.params.subscribe((params) => {
       this.saleflowData._id = params.id;
@@ -188,7 +184,6 @@ export class ReservationComponent implements OnInit {
 
   checkCalendar() {
     this.calendar.getCalendar(this.calendarId).then((data) => {
-      console.log(data);
       //this.merchant = data.getCalendar.merchant._id;
       this.merchant = this.saleflowData.merchant._id;
       this.merchantName = this.saleflowData.merchant.name;
@@ -200,7 +195,6 @@ export class ReservationComponent implements OnInit {
               if(this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
                 const slide = this.todayHours[i];
                 if(this.filterHours(this.num(slide) + this.offset)) {
-                  console.log('filterhours es true');
                   this.getId(i, slide);
                   break;
                 }
@@ -243,7 +237,6 @@ export class ReservationComponent implements OnInit {
       this.calendar.canBeToday
     ) {
       for (let i = 0; i < this.todayHours.length; i++) {
-        console.log(this.todayHours[i]);
         if (parseInt(this.todayHours[i]) < 12) {
           this.amHours.push(
             parseInt(this.todayHours[i]).toString() + ':' + '00'
@@ -256,7 +249,6 @@ export class ReservationComponent implements OnInit {
       }
     } else {
       for (let i = 0; i < this.hours.length; i++) {
-        console.log(this.hours[i]);
         if (parseInt(this.hours[i]) - offset < 12) {
           this.amHours.push(
             (parseInt(this.hours[i]) - offset).toString() + ':' + '00'
@@ -277,13 +269,6 @@ export class ReservationComponent implements OnInit {
     if (this.amHours.length > 0 && this.pmHours.length > 0) {
       this.timeToggle = false;
     }
-    console.log(
-      this.todayHours,
-      this.hours,
-      this.amHours,
-      this.pmHours,
-      this.timeToggle
-    );
     this.done = true;
     // Logic for default date
       if(this.firstActiveHour) {
@@ -353,7 +338,6 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      console.log(this.orderData);
       if (this.saleflowData.module.post == null) {
         this.orderData.products[0].reservation = reservation;
       } else if (
@@ -414,7 +398,6 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      console.log(this.orderData);
       if (this.saleflowData.module.post == null) {
         this.orderData.products[0].reservation = reservation;
       } else if (
@@ -423,24 +406,17 @@ export class ReservationComponent implements OnInit {
       ) {
         this.orderData.products[0].reservation = reservation;
       }
-      console.log(this.orderData);
     }
-    console.log(this.orderData);
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
-    console.log(this.orderData);
     let dateInfo = (this.orderData.products[0].reservation.date.from as string).split('-');
-    console.log(dateInfo);
     let day = dateInfo[2].split('T')[0];
     let hour =
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
-    console.log(day);
-    console.log(hour);
     let month;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
-        console.log('entré');
         month = this.calendar.allFullMonths[i].name;
       }
     }
@@ -455,7 +431,6 @@ export class ReservationComponent implements OnInit {
         ].dayName,
       until: this.formatHour3(this.orderData.products[0].reservation.date.until as string),
     };
-    console.log('datepreview1', this.datePreview);
     // Logic for default date
       if(!this.dateComponentFrom) this.dateComponentFrom = this.datePreview.month;
       if(!this.dateFrom) this.dateFrom = this.datePreview.day;
@@ -590,7 +565,6 @@ export class ReservationComponent implements OnInit {
   formatHour3(hour: string) {
     let date = moment(hour);
     let timeComponent = date.format('h:mm a');
-    console.log('hora', hour)
     return timeComponent;
   }
 
@@ -599,10 +573,7 @@ export class ReservationComponent implements OnInit {
   }
 
   getId(id, slide) {
-    console.log(this.todayHours);
-    console.log(slide);
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
-    console.log(slide);
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -669,11 +640,9 @@ export class ReservationComponent implements OnInit {
         ].dayNumber
       )
     ) {
-      console.log('aa');
 
       return false;
     } else if (this.getReservations(hour)) {
-      console.log('aaa');
       return false;
     } else {
       return true;
@@ -681,8 +650,6 @@ export class ReservationComponent implements OnInit {
   }
 
   test(e) {
-    console.log('fecha')
-    console.log(e);
 
     /*
     this.calendar.dayIndex = dia;
@@ -698,8 +665,6 @@ export class ReservationComponent implements OnInit {
   }
 
   test2(e) {
-    console.log('mes')
-    console.log(e);
 
     //this.getMonthId(0);
 
@@ -715,14 +680,8 @@ export class ReservationComponent implements OnInit {
     this.todayHours = this.calendar.todayHours;
     this.hours = this.calendar.hours;
     if (this.timeComponentFrom) {
-      console.log('componentfrom');
-      console.log(this.timeComponentFrom);
-      console.log('todayHours');
-      console.log(this.todayHours);
       if (this.timeComponentFrom[0] === '0') {
-        console.log(this.timeComponentFrom);
         this.timeComponentFrom = this.timeComponentFrom.slice(1);
-        console.log(this.timeComponentFrom);
       }
       for (let i = 0; i < this.todayHours.length; i++) {
         if (this.timeComponentFrom === this.todayHours[i]) {
@@ -830,8 +789,6 @@ export class ReservationComponent implements OnInit {
         this.zorroChange2(this.calendar.hours[this.calendar.hourIndex])
       );
     }
-    console.log(formattedHour);
-    console.log('ss');
     const uri = 'https://kanddys.com';
     // const uri = 'http://localhost:4200';
     window.location.href = `https://wa.me/19188156444?text=Mi%20sesión%20empezará%20el%20${dayName}%20${dayNumber}%20de%20${month}%20a%20las%20${formattedHour}%20(${uri}/appointments/slot/${id})`;
@@ -852,7 +809,6 @@ export class ReservationComponent implements OnInit {
   }
 
   save() {
-    console.log(this.orderData);
     this.orderData.products[0].deliveryLocation = {
       city: null,
       houseNumber: null,
@@ -862,11 +818,9 @@ export class ReservationComponent implements OnInit {
       street: null
     }
     this.header.storeOrderPackage(this.saleflowData._id,this.orderData.itemPackage,this.orderData.products);
-    console.log(this.header.getOrder(this.saleflowData._id));
     this.header.isComplete.reservation = true;
     this.header.isComplete.delivery = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    console.log(this.saleflowData);
     this.router.navigate([`ecommerce/flow-completion`]);
   }
 

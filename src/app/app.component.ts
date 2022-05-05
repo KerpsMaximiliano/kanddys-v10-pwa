@@ -51,7 +51,6 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   getIp() {
-    console.log(localStorage.getItem('session-token'));
     var request = new XMLHttpRequest();
     request.open('GET', 'https://api.ipdata.co/?api-key=b193221ea697d98a5232c0a38625a79259f1b27f062a09b23e6ecc82');
     request.setRequestHeader('Accept', 'application/json');
