@@ -188,7 +188,7 @@ export class OrderInfoComponent implements OnInit {
             0
           );
           this.price = data.order.items[0].customizer
-            ? totalPrice * 1.18
+            ? (Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100)
             : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;

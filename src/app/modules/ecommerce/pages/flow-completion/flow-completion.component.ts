@@ -548,18 +548,16 @@ export class FlowCompletionComponent implements OnInit {
     }
   }
 
-  validateNumbers(event) {
+  validateNumbers(event: KeyboardEvent) {
     event.preventDefault();
-    console.log(event);
-    let transformedOutput = this.ammount.value;
+    let transformedOutput: string = this.ammount.value;
+    if ('0123456789'.includes(event.key) && event.key !== "Backspace") {
+      transformedOutput += event.key;
+    }
 
-      if ('0123456789'.includes(event.key) && event.key !== "Backspace") {
-        transformedOutput += event.key;
-      }
-
-      if (event.key === "Backspace" && transformedOutput.length > 0) {
-        transformedOutput.slice(0,-1);
-      }
+    if (event.key === "Backspace" && transformedOutput.length > 0) {
+      transformedOutput = transformedOutput.slice(0,-1);
+    }
 
     this.ammount.setValue(transformedOutput);
   }
@@ -615,9 +613,6 @@ export class FlowCompletionComponent implements OnInit {
           if (data.name) {
             console.log('and has name');
             this.step = 4;
-            if (this.orderId && input !== this.orderData?.user.phone) {
-              this.router.navigate(['ecommerce/error-screen']);
-            }
           } else {
             const data = await this.authService.generateOTP(input);
             if (data) {
@@ -698,11 +693,12 @@ export class FlowCompletionComponent implements OnInit {
       };
       const data = await this.authService.updateMe(input);
       this.userData = data;
-      this.orderData.user = this.userData;
-      this.orderData.userId = this.orderData.user._id;
       this.isLogged = true;
+      if (this.orderId) {
+        this.router.navigate(['ecommerce/error-screen']);
+        return;
+      }
       this.createOrSkipOrder();
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -712,6 +708,10 @@ export class FlowCompletionComponent implements OnInit {
   async userSelect(index: number) {
     if (index === 0) {
       if (this.isLogged) {
+        if (this.orderId && this.userData.phone !== this.orderData?.user.phone) {
+          this.router.navigate(['ecommerce/error-screen']);
+          return;
+        }
         if (this.flow === 'flow-completion') this.createOrSkipOrder();
         if (this.flow === 'create-community') this.step = 5;
         if (this.flow === 'create-merchant') this.step = 5;
@@ -747,6 +747,10 @@ export class FlowCompletionComponent implements OnInit {
         this.password = '';
         this.showLoginPassword = false;
         this.incorrectPasswordAttempt = false;
+        if (this.orderId && data.user.phone !== this.orderData?.user.phone) {
+          this.router.navigate(['ecommerce/error-screen']);
+          return;
+        }
         if (this.flow === 'flow-completion') this.createOrSkipOrder();
         if (this.flow === 'create-community') this.step = 5;
         if (this.flow === 'create-merchant') this.step = 5;
@@ -986,11 +990,6 @@ export class FlowCompletionComponent implements OnInit {
       props: {
         orderFinished: this.orderData?.id ? true : false,
         products: showProducts,
-        headerButton: 'Ver mas productos',
-        headerCallback: () =>
-          this.router.navigate([
-            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
-          ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

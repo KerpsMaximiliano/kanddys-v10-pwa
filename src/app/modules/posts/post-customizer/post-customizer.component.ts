@@ -932,9 +932,9 @@ export class PostCustomizerComponent
     this.canvasRef.nativeElement.ontouchend = (e) => {
       this.mouseUp();
     };
-    this.canvasRef.nativeElement.ondblclick = (e) => {
-      this.dbClicked(e);
-    };
+    // this.canvasRef.nativeElement.ondblclick = (e) => {
+    //   this.dbClicked(e);
+    // };
 
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
@@ -1041,7 +1041,7 @@ export class PostCustomizerComponent
   changeElementOption(option: string) {
     if (this.selectedOption === 'stickers') {
       this.modifyingSticker =
-        this.elementList[this.modifyingElement].sticker.number;
+        this.elementList[this.modifyingElement]?.sticker?.number;
       // this.modifyingElement = -1;
       if (option === 'iconos') {
         this.openDialog();
@@ -2529,6 +2529,7 @@ export class PostCustomizerComponent
           this.changeCustomizer('stickers', true);
         }
         if (r.typography) {
+          this.changeCustomizer('tipografía', true);
           this.modifyingElement = i;
           this.onEditText(r);
         }
@@ -2581,17 +2582,17 @@ export class PostCustomizerComponent
         m.y <= r.position.y + r.position.height
       ) {
         // DoubleClick Logic
-        if (this.touchtime == 0) {
-          this.touchtime = new Date().getTime();
-        } else {
-          if (new Date().getTime() - this.touchtime < 150) {
-            this.dbClicked(e);
-            this.touchtime = 0;
-            return;
-          } else {
-            this.touchtime = new Date().getTime();
-          }
-        }
+        // if (this.touchtime == 0) {
+        //   this.touchtime = new Date().getTime();
+        // } else {
+        //   if (new Date().getTime() - this.touchtime < 150) {
+        //     this.dbClicked(e);
+        //     this.touchtime = 0;
+        //     return;
+        //   } else {
+        //     this.touchtime = new Date().getTime();
+        //   }
+        // }
         // DoubleClick Logic
         this.draw();
         if (r.sticker) {

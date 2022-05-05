@@ -12,7 +12,12 @@
   ></app-helper-header>
 
   <div class="content m-top" *ngIf="step === 1">
-    <p class="label1">¿Con cuál número de WhatsApp harás esta orden?</p>
+    <p class="label1">
+    ¿Con cuál número de WhatsApp
+    <ng-container *ngIf="orderData else noOrder">completarás</ng-container>
+    <ng-template #noOrder>harás</ng-template>
+    esta orden?
+    </p>
     <input
       type="tel"
       class="input"
@@ -21,7 +26,15 @@
       autocomplete="off"
       (keypress)="keyPressNumbers($event)"
     />
-    <ng-container *ngIf="inputData.length < 7">
+    <ng-container>
+      <p class="sublabel">
+        Si es tu primera orden recibirás un codigo de verificación.
+      </p>
+      <p class="sublabel">
+        Si haz hecho ordenes anteriormente ingresarás tu clave.
+      </p>
+    </ng-container>
+    <!-- <ng-container *ngIf="inputData.length < 7">
       <p class="sublabel">
         Si es tu primera orden recibirás un codigo de verificación.
       </p>
@@ -38,7 +51,7 @@
       [useMargins]="false"
       (onSelector)="selectLoginOption($event)"
     ></app-answer-selector>
-    </ng-container>
+    </ng-container> -->
   </div>
   <div class="content m-top" *ngIf="step === 2">
     <p class="label1">Escriba el código que recibió:</p>
@@ -492,7 +505,7 @@
 
 <app-sticky-button
   [mode]="
-    (step === 1 && inputData.length < 500) ||
+    (step === 1 && inputData.length < 7) ||
     (step === 2 && code.length < 4) ||
     (step === 3 &&
       (!name || name.trim().length === 0 || password.length < 3)) ||
@@ -513,7 +526,7 @@
     step === 1
       ? flow !== 'flow-completion'
         ? 'ASIGNA EL WHATSAPP AL MAPP'
-        : inputData.length < 500
+        : inputData.length < 7
         ? 'ADICIONA TU CELULAR'
         : 'VERIFICAR MI CELULAR'
       : step === 2
