@@ -1696,7 +1696,7 @@ export class PostCustomizerComponent
     this.typographyData.fontStyle = style;
     if (this.isEditing) return;
     this.elementList.forEach((element) => {
-      if (element.typography) {
+      if (element.typography && !element.typography.hidden) {
         element.typography.font = this.typographyData.fontStyle;
         this.modifyingText = element.typography.number;
         const text = {
@@ -1859,17 +1859,24 @@ export class PostCustomizerComponent
             );
           }
           if(this.hiddenFontText.length === 2) {
+            if(index === 0) {
+              textElements[0].position.x = Math.floor(
+                this.canvasWidth *
+                  ((this.customizerRules.texts.itemsRule[0].fixPosition.x + 3) / 100) -
+                  width / 2
+              );
+            }
             if(index === 1) {
               index = 2;
+              textElements[2].position.x = Math.floor(
+                this.canvasWidth *
+                  ((this.customizerRules.texts.itemsRule[2].fixPosition.x - 3) / 100) -
+                  width / 2
+              );
             }
             if(index != 1) {
               textElements[index].typography.text = letter.toUpperCase();
               textElements[index].position.width = width;
-              textElements[index].position.x = Math.floor(
-                this.canvasWidth *
-                  (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
-                  width / 2
-              );
             }
             textElements[1].typography.hidden = true;
           } else {
@@ -1983,12 +1990,28 @@ export class PostCustomizerComponent
       },
       originalSize: width,
     };
+    const textElements = this.elementList
+      .filter((element) => element.typography)
+      .sort((a, b) =>
+        a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+      );
+    let threeLetters = textElements.length === 3;
     if (text.fixPositionOnly) {
       const textRules = this.customizerRules.texts.itemsRule[text.typography.number];
       textElement.position['x'] =
         this.canvasWidth * (textRules.fixPosition.x / 100) - width / 2;
       textElement.position['y'] = 
         this.canvasHeight * (textRules.fixPosition.y / 100) - height / 2;
+      if(threeLetters && this.hiddenFontText.length === 2) {
+        if(index === 0) {
+          textElement.position['x'] =
+            this.canvasWidth * ((textRules.fixPosition.x + 3) / 100) - width / 2;
+        }
+        if(index === 2) {
+          textElement.position['x'] =
+            this.canvasWidth * ((textRules.fixPosition.x - 3) / 100) - width / 2;
+        }
+      }
     }
     text.typography = {
       ...text.typography,
