@@ -120,7 +120,7 @@ const routes: Routes = [
     component: MyItemsComponent,
   },
   {
-    path: 'order-sales',
+    path: 'order-sales/:id',
     component: OrderSalesComponent
   }
 ];

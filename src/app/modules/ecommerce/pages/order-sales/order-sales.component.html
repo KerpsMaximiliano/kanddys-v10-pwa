@@ -11,7 +11,9 @@
         </ng-container> EN PROCESO-->
     </div>
 
+    <ng-container *ngIf="!inSearch">
     <div class="tag-container">
+
         <div class="tag-search">
             <div style="display: flex; align-items: end;">
                 <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="22.83px" width="22.83px" style="margin-right: 7px"/>
@@ -19,15 +21,15 @@
             </div>
             <img alt="" [src]="imageFolder + '/search.svg'" height="22.83px" width="22.83px" style="cursor: pointer; margin-right: 3px" (click)="searchToggling()"/>
         </div>
+
         <div class="tags-swiper">
             <app-swiper
              [tagsSquare]="true"
             ></app-swiper>
-            <!-- <div class="tags" *ngFor="let item of testTags; let i = index">
-                {{testTags[i]}}
-            </div> -->
         </div>
+
     </div>
+    </ng-container>
 
     <div *ngIf = "isLogged == true">
 
