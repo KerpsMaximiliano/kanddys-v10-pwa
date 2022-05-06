@@ -275,6 +275,10 @@ export class PostCustomizerComponent
       fileName: 'Commercial-Script.ttf',
       fontName: 'Commercial-Script',
     },
+    {
+      fileName: 'ONYX.TTF',
+      fontName: 'Onyx',
+    },
   ];
   fontColors: { name: string; fixedValue: string }[] = allColors;
   currentTextsAmount: number = 0;
