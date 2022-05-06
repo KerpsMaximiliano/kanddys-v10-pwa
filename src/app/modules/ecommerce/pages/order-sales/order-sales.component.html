@@ -1,0 +1,59 @@
+<div class="container">
+
+    <div class="topbar">
+        <!-- <ng-container *ngIf="!inSearch"> EN PROCESO-->
+        <label for="Volver a los datos de mi tienda" class="left-side">Volver A Los Datos De Mi Tienda</label>
+        <div style="display: flex; align-items: center;"><hr class="line"> <label for="Editar Mi Tienda" class="right-side">Editar Mi Tienda</label></div>
+        <!-- </ng-container> EN PROCESO-->
+        
+        <!-- <ng-container *ngIf="inSearch">
+            <label for="Salir de la busqueda" class="search-label">Salir De La Busquedas</label>
+        </ng-container> EN PROCESO-->
+    </div>
+
+    <!-- <ng-container *ngIf="!inSearch"> -->
+    <div class="tag-container">
+
+        <div class="tag-search">
+            <div style="display: flex; align-items: end;">
+                <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="22.83px" width="22.83px" style="margin-right: 7px"/>
+                <label for="Tagged" class="tagged">Tagged </label>
+            </div>
+            <img alt="" [src]="imageFolder + '/search.svg'" height="22.83px" width="22.83px" style="cursor: pointer; margin-right: 3px" (click)="searchToggling()"/>
+        </div>
+
+        <div class="tags-swiper">
+            <app-swiper
+             [tagsSquare]="true"
+            ></app-swiper>
+        </div>
+
+    </div>
+    <!-- </ng-container> -->
+
+    <div *ngIf = "isLogged == true">
+
+        <div class="orderSection">
+
+            <div class="total-option">
+                <label for="Total" class="total-sales">$4,775 Vendido</label>
+                <div class="dot-trio">
+                    <div class="dot"> </div>
+                    <div class="dot"> </div>
+                    <div class="dot"> </div>
+                </div>
+            </div>
+
+            <ng-container  *ngFor = "let order of orders; index as i">
+
+                <div class="order" *ngIf = "order.visible == true || search.value == ''">
+                    <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
+                </div>
+
+            </ng-container>
+
+        </div>
+
+    </div>
+    
+</div>

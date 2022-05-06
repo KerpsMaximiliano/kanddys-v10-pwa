@@ -139,11 +139,11 @@ export class SwiperComponent implements OnInit {
   @Input() clubsList: boolean = false;
   @Input() leadwords: boolean = false;
   @Input() leadItem: boolean = false;
+  @Input() tagsSquare: boolean = false;
   @Input() itemLibrary: boolean = false;
   @Input() itemLibraryData: any;
   @Input() singleItemCard: boolean = false;
   @Input() itemCardData: any;
-  /*leadItems data ==>*/ @Input() leadItems: string[] = [];
   @Input() saleFlowTwoData: any;
   @Input() fullScreenSwiper: boolean = false;
   @Input() shadowBellowImage: boolean = false;
@@ -398,10 +398,11 @@ export class SwiperComponent implements OnInit {
   };
 
   public leadConfig: SwiperOptions = {
-    slidesPerView: 2,
+    slidesPerView: 5,
+    spaceBetween: 11,
     direction: 'horizontal',
-    scrollbar: true,
-    grabCursor: true,
+    scrollbar: false,
+    grabCursor: false,
   };
 
   redirect(index) {
@@ -592,4 +593,7 @@ export class SwiperComponent implements OnInit {
   goToGift(itemId: string) {
     this.router.navigate(['ecommerce/gift-detail/' + itemId]);
   }
+
+  //Para probar
+  leadItems: Array<any> = [' ', ' ', ' ', ' ', ' ', ' ', ' ']
 }

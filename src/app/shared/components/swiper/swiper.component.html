@@ -880,27 +880,20 @@
   </div>
 </div>
 
-<!--Category-leadwords slider-->
-<div class="medium-slider" *ngIf="leadItem">
-  <div class="slider">
+<!--Tags-square slider-->
+<div class="medium-slider" *ngIf="tagsSquare">
+  <div class="slider" style="height: 110px;">
     <swiper class="swiper-container" [config]="leadConfig">
-      <div class="swiper-slide">
-        <div class="slide-content">
           <ng-container *ngFor="let item of leadItems; let i = index">
-            <app-leadword-item
-              [caption]="
-                'Short description is gonna be here above the image and then we put 3 fro more…'
-              "
-              [title]="'NameID'"
-              [subtitle]="'SomethingID'"
-            ></app-leadword-item>
+            <app-tags-square
+              [number]="154"
+              [tagText]="'Tag ID'"
+            ></app-tags-square>
           </ng-container>
-        </div>
-      </div>
     </swiper>
   </div>
 </div>
-<!--Category-leadwords end-->
+<!--Tags-square end-->
 
 <div class="product-carousel" *ngIf="productCarousel && swiperData">
   <swiper id="swiperData.id" [config]="productCarouselConfig">
