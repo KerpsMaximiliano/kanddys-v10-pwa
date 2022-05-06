@@ -813,8 +813,6 @@ export class FlowCompletionComponent implements OnInit {
         }
       }
 
-      console.log(customizer, 'CUSTOMIZER');
-
       if (customizer) {
         const customizerId =
           await this.customizerValueService.createCustomizerValue(customizer);
