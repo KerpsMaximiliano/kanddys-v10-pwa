@@ -1825,7 +1825,7 @@ export class PostCustomizerComponent
   // Text input below canvas
   setInputText() {
     const textElements = this.elementList.filter(
-      (element) => element.typography
+      (element) => element.typography?.hidden === false
     );
     this.hiddenFontText = textElements
       .sort((a, b) =>
@@ -1844,18 +1844,65 @@ export class PostCustomizerComponent
       );
     if (textElements.length > 1) {
       const letters = this.hiddenFontText.split('');
+      let threeLetters = textElements.length === 3;
+      let lastLetter: string;
+      let lastWidth: number;
       letters.forEach((letter, index) => {
         this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
         let width = this.context.measureText(letter).width;
-        textElements[index].typography.text = letter.toUpperCase();
-        textElements[index].position.width = width;
-        textElements[index].position.x = Math.floor(
-          this.canvasWidth *
-            (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
-            width / 2
-        );
+        if(threeLetters) {
+          if(this.hiddenFontText.length === 3) {
+            textElements[index].typography.text = letter.toUpperCase();
+            textElements[index].position.width = width;
+            textElements[index].position.x = Math.floor(
+              this.canvasWidth *
+                (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+                width / 2
+            );
+          }
+          if(this.hiddenFontText.length === 2) {
+            if(index === 1) {
+              index = 2;
+            }
+            if(index != 1) {
+              textElements[index].typography.text = letter.toUpperCase();
+              textElements[index].position.width = width;
+              textElements[index].position.x = Math.floor(
+                this.canvasWidth *
+                  (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+                  width / 2
+              );
+            }
+            textElements[1].typography.hidden = true;
+          } else {
+            textElements[1].typography.hidden = false;
+          }
+          if(this.hiddenFontText.length === 1) {
+            console.log(letter);
+            textElements[1].typography.text = letter.toUpperCase();
+            textElements[1].position.width = width;
+            textElements[1].position.x = Math.floor(
+              this.canvasWidth *
+                (this.customizerRules.texts.itemsRule[1].fixPosition.x / 100) -
+                width / 2
+            );
+            this.drawOutline(textElements[1].position, true);
+            textElements[0].typography.hidden = true;
+            textElements[2].typography.hidden = true;
+          } else {
+            textElements[0].typography.hidden = false;
+            textElements[2].typography.hidden = false;
+          }
+        } else {
+          textElements[index].typography.text = letter.toUpperCase();
+          textElements[index].position.width = width;
+          textElements[index].position.x = Math.floor(
+            this.canvasWidth *
+              (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+              width / 2
+          );
+        }
         this.draw();
-        this.drawOutline(textElements[index].position, true);
       });
     } else {
       let width = this.context.measureText(this.hiddenFontText).width;
@@ -1875,6 +1922,47 @@ export class PostCustomizerComponent
     }
   }
   // Text input below canvas
+
+  // Old text input below canvas
+  // onChangeInput() {
+  //   if (!this.hiddenFontText) return;
+  //   const textElements = this.elementList
+  //     .filter((element) => element.typography)
+  //     .sort((a, b) =>
+  //       a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+  //     );
+  //   if (textElements.length > 1) {
+  //     const letters = this.hiddenFontText.split('');
+  //     letters.forEach((letter, index) => {
+  //       this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
+  //       let width = this.context.measureText(letter).width;
+  //       textElements[index].typography.text = letter.toUpperCase();
+  //       textElements[index].position.width = width;
+  //       textElements[index].position.x = Math.floor(
+  //         this.canvasWidth *
+  //           (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+  //           width / 2
+  //       );
+  //       this.draw();
+  //       this.drawOutline(textElements[index].position, true);
+  //     });
+  //   } else {
+  //     let width = this.context.measureText(this.hiddenFontText).width;
+  //     this.context.font = `${textElements[0].typography.size}px ${textElements[0].typography.font}`;
+  //     textElements[0].typography.text =
+  //       this.inputMaxLength < 4
+  //         ? this.hiddenFontText.toUpperCase()
+  //         : this.hiddenFontText;
+  //     textElements[0].position.width = width;
+  //     textElements[0].position.x = Math.floor(
+  //       this.canvasWidth *
+  //         (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) -
+  //         width / 2
+  //     );
+  //     this.draw();
+  //     if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
+  //   }
+  // }
 
   // Modifies a text element that was already in the canvas
   modifyText(width: number, height: number, textData: TextData, index: number) {

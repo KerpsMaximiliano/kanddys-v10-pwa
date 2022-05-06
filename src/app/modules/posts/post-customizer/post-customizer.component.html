@@ -71,22 +71,12 @@
             (keydown)="validateInput($event)"
             #imageTextRef
           ></textarea>
-          <!-- oninput="this.value = this.value.toUpperCase()" -->
         </div>
       </div>
       <div
         class="button-carousel"
         *ngIf="customizerRules && modifyingElement < 0 && !isEditing"
       >
-        <!-- <button
-          class="btn"
-          *ngFor="let option of customizeOptions"
-          (click)="changeCustomizer(option)"
-          [ngClass]="{ active: selectedOption === option || option === 'confirmar'}"
-          [disabled]="disableButton && option === 'confirmar'"
-        >
-          {{ option | titlecase }}
-        </button> -->
         <button
           class="btn"
           (click)="changeCustomizer('stickers')"
@@ -176,7 +166,6 @@
             </div>
           </div>
           <div *ngIf="!imageElement">
-            <!-- <h5>Selecciona una imagen para aplicarle filtros!</h5> -->
             <div *ngIf="customizerRules.backgroundColor.active">
               <div class="option-list">
                 <div
@@ -223,19 +212,6 @@
         </div>
         <!-- ---------------------- STICKERS ---------------------- -->
         <div *ngIf="selectedOption === 'stickers'">
-          <!-- <div class="stickers-options">
-            <div class="stickers-radio">
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-              <label class="btn-radio" for="btnradio1"><i class="fas fa-quote-left"></i></label>
-            
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-              <label class="btn-radio" for="btnradio2"><i class="far fa-image"></i></label>
-            </div>
-            <div class="searchBar">
-              <i class="fas fa-search"></i>
-              <input id="searchInput" type="text" placeholder="birthday, runners..." [(ngModel)]="stickerSearchValue" (keydown)="search($event)">
-            </div>
-          </div> -->
           <div class="font-range" *ngIf="selectedElementOption === 'tamaño'">
             <p class="option-label">Tamaño de stickers: {{ stickerSize }}</p>
             <input
@@ -425,10 +401,11 @@
             (input)="checkMaxLength($event)"
             [(ngModel)]="hiddenFontText"
             (ngModelChange)="onChangeInput()"
-            (blur)="setInputText()"
+
             (keydown)="validateInput($event)"
           />
         </div>
+        <!-- (blur)="setInputText()" -->
         <!-- ------------------------ LAPIZ ------------------------ -->
         <div *ngIf="selectedOption === 'lápiz' && canDraw">
           <div class="font-range">
