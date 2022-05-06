@@ -23,6 +23,7 @@ import { ReservationComponent } from './pages/reservation/reservation.component'
 import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-dashboard.component';
 import { MyItemsComponent } from './pages/my-items/my-items.component';
 import { LandingComponent } from './pages/landing/landing.component';
+import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
 
 const routes: Routes = [
   {
@@ -118,6 +119,10 @@ const routes: Routes = [
     path: 'my-items',
     component: MyItemsComponent,
   },
+  {
+    path: 'order-sales',
+    component: OrderSalesComponent
+  }
 ];
 
 @NgModule({
@@ -145,6 +150,7 @@ const routes: Routes = [
     MerchantDashboardComponent,
     MyItemsComponent,
     LandingComponent,
+    OrderSalesComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
