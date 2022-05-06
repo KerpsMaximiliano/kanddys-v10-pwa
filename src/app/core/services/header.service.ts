@@ -379,6 +379,16 @@ export class HeaderService {
     );
   }
 
+  storeMultistepFormImages(multistepFormImage: any) {
+    let images: any = localStorage.getItem('multistepformimages');
+
+    if (!images) images = [];
+
+    images.push(multistepFormImage);
+
+    localStorage.setItem('multistepformimages', JSON.stringify(images));
+  }
+
   // Returns order data from localStorage
   getOrder(saleflow: string) {
     let { order }: SaleflowData =

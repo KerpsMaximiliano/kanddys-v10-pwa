@@ -577,12 +577,12 @@ export class FlowCompletionComponent implements OnInit {
   validateNumbers(event: KeyboardEvent) {
     event.preventDefault();
     let transformedOutput: string = this.ammount.value;
-    if ('0123456789'.includes(event.key) && event.key !== "Backspace") {
+    if ('0123456789'.includes(event.key) && event.key !== 'Backspace') {
       transformedOutput += event.key;
     }
 
-    if (event.key === "Backspace" && transformedOutput.length > 0) {
-      transformedOutput = transformedOutput.slice(0,-1);
+    if (event.key === 'Backspace' && transformedOutput.length > 0) {
+      transformedOutput = transformedOutput.slice(0, -1);
     }
 
     this.ammount.setValue(transformedOutput);
@@ -722,7 +722,10 @@ export class FlowCompletionComponent implements OnInit {
   async userSelect(index: number) {
     if (index === 0) {
       if (this.isLogged) {
-        if (this.orderId && this.userData.phone !== this.orderData?.user.phone) {
+        if (
+          this.orderId &&
+          this.userData.phone !== this.orderData?.user.phone
+        ) {
           this.router.navigate(['ecommerce/error-screen']);
           return;
         }
@@ -822,42 +825,30 @@ export class FlowCompletionComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (saleflow.module.post) {
-        let postinput =
-          this.header.post ??
-          this.header.getPost(
-            this.header.saleflow?._id ?? this.header.getSaleflow()._id
-          )?.data;
-        this.postsService
-          .creationPost(postinput)
+        if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
+        if (saleflow.canBuyMultipleItems)
+          this.header.order.products.forEach((product) => {
+            const createdPostId = localStorage.getItem('createdPostId');
+
+            product.deliveryLocation =
+              this.header.order.products[0].deliveryLocation;
+            product.post = createdPostId;
+          });
+        this.order
+          .createOrder(this.header.order)
           .then((data) => {
-            if (data) {
-              this.header.emptyPost(saleflow._id);
-              if (saleflow.canBuyMultipleItems)
-                this.header.order.products.forEach((product) => {
-                  product.deliveryLocation =
-                    this.header.order.products[0].deliveryLocation;
-                  product.post = data.createPost._id;
-                });
-              this.order
-                .createOrder(this.header.order)
-                .then((data) => {
-                  this.header.deleteSaleflowOrder(saleflow._id);
-                  this.header.resetIsComplete();
-                  this.isLoading = false;
-                  this.header.orderId = data.createOrder._id;
-                  this.orderId = data.createOrder._id;
-                  this.header.currentMessageOption = undefined;
-                  this.header.post = undefined;
-                  this.header.locationData = undefined;
-                  // this.app.events.emit({ type: 'order-done', data: true });
-                  resolve(data.createOrder._id);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  reject('Error creando la orden');
-                  this.isLoading = false;
-                });
+            if (!this.comesFromMagicLink) {
+              this.header.deleteSaleflowOrder(saleflow._id);
+              this.header.resetIsComplete();
             }
+            this.isLoading = false;
+            this.header.orderId = data.createOrder._id;
+            this.orderId = data.createOrder._id;
+            this.header.currentMessageOption = undefined;
+            this.header.post = undefined;
+            this.header.locationData = undefined;
+            // this.app.events.emit({ type: 'order-done', data: true });
+            resolve(data.createOrder._id);
           })
           .catch((err) => {
             console.log(err);
