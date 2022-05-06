@@ -401,11 +401,10 @@
             (input)="checkMaxLength($event)"
             [(ngModel)]="hiddenFontText"
             (ngModelChange)="onChangeInput()"
-
+            (blur)="setInputText()"
             (keydown)="validateInput($event)"
           />
         </div>
-        <!-- (blur)="setInputText()" -->
         <!-- ------------------------ LAPIZ ------------------------ -->
         <div *ngIf="selectedOption === 'lápiz' && canDraw">
           <div class="font-range">

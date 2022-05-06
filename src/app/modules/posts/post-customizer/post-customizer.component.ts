@@ -1825,7 +1825,7 @@ export class PostCustomizerComponent
   // Text input below canvas
   setInputText() {
     const textElements = this.elementList.filter(
-      (element) => element.typography?.hidden === false
+      (element) => element.typography && !element.typography.hidden
     );
     this.hiddenFontText = textElements
       .sort((a, b) =>
@@ -1845,8 +1845,6 @@ export class PostCustomizerComponent
     if (textElements.length > 1) {
       const letters = this.hiddenFontText.split('');
       let threeLetters = textElements.length === 3;
-      let lastLetter: string;
-      let lastWidth: number;
       letters.forEach((letter, index) => {
         this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
         let width = this.context.measureText(letter).width;
@@ -1878,7 +1876,8 @@ export class PostCustomizerComponent
             textElements[1].typography.hidden = false;
           }
           if(this.hiddenFontText.length === 1) {
-            console.log(letter);
+            this.context.font = `${textElements[1].typography.size}px ${textElements[1].typography.font}`;
+            let width = this.context.measureText(letter).width;
             textElements[1].typography.text = letter.toUpperCase();
             textElements[1].position.width = width;
             textElements[1].position.x = Math.floor(
@@ -1979,14 +1978,17 @@ export class PostCustomizerComponent
         hidden: false,
       },
       position: {
-        width: width,
-        height: height,
+        width,
+        height
       },
       originalSize: width,
     };
     if (text.fixPositionOnly) {
+      const textRules = this.customizerRules.texts.itemsRule[text.typography.number];
       textElement.position['x'] =
-        text.position.x + text.position.width / 2 - width / 2;
+        this.canvasWidth * (textRules.fixPosition.x / 100) - width / 2;
+      textElement.position['y'] = 
+        this.canvasHeight * (textRules.fixPosition.y / 100) - height / 2;
     }
     text.typography = {
       ...text.typography,
@@ -2004,29 +2006,7 @@ export class PostCustomizerComponent
     this.draw();
   }
 
-  // Exits exit mode and sends the text for modification or creates a new element
-  exitEditing(textData: TextData) {
-    let { imageText, fontSize, fontStyle, fontColor } = textData;
-    if (this.isEditing) {
-      this.isEditing = false;
-      this.selectedElementOption = '';
-    }
-    // this.customizeOptions[this.customizeOptions.indexOf('confirmar')] =
-    //   'tipografía';
-
-    if (!imageText.trim()) {
-      this.typographyData.imageText = '';
-      if (this.modifyingElement >= 0)
-        this.elementList[this.modifyingElement].typography.hidden = false;
-      this.draw();
-      return;
-    }
-    imageText.trim();
-    this.elementRotation = 0;
-
-    this.context.font = `${fontSize}px ${fontStyle}`;
-    if (imageText.length < 4) imageText = imageText.toUpperCase();
-
+  getTextDimensions(fontSize: string, imageText: string) {
     const getWidth = (textString: string[]) => {
       let greatestWidth: number[] = [];
 
@@ -2072,6 +2052,45 @@ export class PostCustomizerComponent
       width = getWidth(text);
       height = Math.floor(y * parseInt(fontSize));
     }
+    return {height, width}
+  }
+
+  // Exits exit mode and sends the text for modification or creates a new element
+  exitEditing(textData: TextData) {
+    let { imageText, fontSize, fontStyle, fontColor } = textData;
+    if (this.isEditing) {
+      this.isEditing = false;
+      this.selectedElementOption = '';
+    }
+    if (!imageText.trim()) {
+      this.typographyData.imageText = '';
+      if (this.modifyingElement >= 0)
+        this.elementList[this.modifyingElement].typography.hidden = false;
+      this.draw();
+      return;
+    }
+    imageText.trim();
+    this.elementRotation = 0;
+    /// Reduce font size when font is Cheltenham
+    if (this.modifyingText >= 0) {
+      const textElements = this.elementList
+        .filter((element) => element.typography)
+        .sort((a, b) =>
+          a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+        );
+      let threeLetters = textElements.length === 3;
+      const textRules = this.customizerRules.texts.itemsRule[this.modifyingText];
+      if(threeLetters && fontStyle === 'Cheltenham') {
+        fontSize = (textRules.fixSize - 45)+'';
+      } else {
+        fontSize = textRules.fixSize+'';
+      }
+    }
+    /// Reduce font size when font is Cheltenham
+    this.context.font = `${fontSize}px ${fontStyle}`;
+    if (imageText.length < 4) imageText = imageText.toUpperCase();
+
+    let { height, width } = this.getTextDimensions(fontSize, imageText);
 
     if (this.modifyingText >= 0) {
       this.modifyText(
