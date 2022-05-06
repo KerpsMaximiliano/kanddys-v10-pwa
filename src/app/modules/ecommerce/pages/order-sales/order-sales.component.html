@@ -1,9 +1,14 @@
 <div class="container">
 
-    <!-- <app-helper-header [middleTextTransform] = "'uppercase'" [middleText] = "'facturas'" [middleTextColor] = "'#7B7B7B'" [middleTextFontFamily] = "'SfProRegular'" [middleTextFontSize] = "'17px'" [bgcolor] = "'transparent'" [searchAble] = "false"></app-helper-header> -->
     <div class="topbar">
+        <!-- <ng-container *ngIf="!inSearch"> EN PROCESO-->
         <label for="Volver a los datos de mi tienda" class="left-side">Volver A Los Datos De Mi Tienda</label>
         <div style="display: flex; align-items: center;"><hr class="line"> <label for="Editar Mi Tienda" class="right-side">Editar Mi Tienda</label></div>
+        <!-- </ng-container> EN PROCESO-->
+        
+        <!-- <ng-container *ngIf="inSearch">
+            <label for="Salir de la busqueda" class="search-label">Salir De La Busquedas</label>
+        </ng-container> EN PROCESO-->
     </div>
 
     <div class="tag-container">
@@ -12,7 +17,7 @@
                 <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="22.83px" width="22.83px" style="margin-right: 7px"/>
                 <label for="Tagged" class="tagged">Tagged </label>
             </div>
-            <img alt="" [src]="imageFolder + '/search.svg'" height="22.83px" width="22.83px" style="cursor: pointer; margin-right: 3px">
+            <img alt="" [src]="imageFolder + '/search.svg'" height="22.83px" width="22.83px" style="cursor: pointer; margin-right: 3px" (click)="searchToggling()"/>
         </div>
         <div class="tags-swiper">
             <app-swiper
@@ -37,9 +42,9 @@
                 </div>
             </div>
 
-            <ng-container  *ngFor = "let order of ordurs; index as i">
+            <ng-container  *ngFor = "let order of orders; index as i">
 
-                <div class="order" > <!--*ngIf = "order.visible == true || search.value == ''"-->
+                <div class="order" *ngIf = "order.visible == true || search.value == ''">
                     <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
                 </div>
 

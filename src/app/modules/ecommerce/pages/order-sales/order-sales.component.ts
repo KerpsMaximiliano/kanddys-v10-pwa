@@ -23,114 +23,10 @@ export class OrderSalesComponent implements OnInit {
     imageFolder: string;
     fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
 
-    ordurs: Array<any> = [{
-        title: 'NombreID',
-        eventTitle: 'event title',
-        subtitle: 'compradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'adiciona un tag',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'CompradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'Hace 2 dias',
-        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'compradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'adiciona un tag',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'CompradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-    ];
   testTags: string[] = [' ', ' ', ' ', ' ', ' '];
+  inSearch: boolean = false;
   isLogged: boolean = true
-  merchantID: string
+  merchantID: string ;
   tags = [{subtitle: 'FILTERED BY TAGS', options: [],}];
   search: searchInput = {
     value: '', placeholder: 'Search..', background: '#FFFFFF',
@@ -196,17 +92,17 @@ export class OrderSalesComponent implements OnInit {
       console.log(data)}
     )
     this.authService.me().then((data) => {
-      console.log(data);
+      //console.log(data);
       this.isLogged = data != undefined;
-      console.log(this.isLogged)
+      //console.log(this.isLogged)
       if(this.isLogged){
         if(this.merchantID){
           this.getMerchants().then(e =>{
             this.getTagsOptions();
-            console.log('MerchantsLand')
+            // console.log('MerchantsLand')
           });
         }
-        else this.getOrdersByUser();
+        else console.log('Aqui iria a usuarios, pero no') //this.getOrdersByUser();
       }
       else{
         console.log('cosas viejas, openAuth')
@@ -274,34 +170,33 @@ export class OrderSalesComponent implements OnInit {
   }
 
 
-  async getOrdersByUser() {
-    /* const data = await this.orderService.ordersByUser({
+  /* async getOrdersByUser() {
+    const data = await this.orderService.ordersByUser({
       options: {
-        limit: 100,
-        sortBy: 'createdAt:desc',
+        limit: 100
       },
-    });
+    }); console.log('ORDENES OBTENIDAS')
     data.ordersByUser.forEach(order => {
       let auxTags: Array<any> = [];
 
       order.tags.forEach(tag => {
         auxTags.push({name: tag })
-      });
+      });console.log('TAGS AUXILIARES PUSHED')
 
       this.orders.push({
         id: order._id,
         image: order.items[0].item.images[0],
         buyer: order.user.name,
         price: order.subtotals[0].amount,
-        tags: auxTags
+        // tags: auxTags
       });
-    }); */
-    console.log('Aqui hace consulta a las ordenes de los users');
-  }
+    });
+    // console.log('Aqui hace consulta a las ordenes de los users');
+  } */
 
   async getMerchants() {
     this.merchantService.myMerchants({}).then(async (data) => {
-      console.log(data)
+      //console.log(data)
       if (data.length > 0) {
         this.route.params.subscribe(async (params) => {
           this.merchantID = params.id
@@ -313,6 +208,7 @@ export class OrderSalesComponent implements OnInit {
         if(merchant!=undefined)
         {
           this.orders = []
+          console.log(this.orders)
           await this.getOrdersByMerchant(this.merchantID)
         }
         else{
@@ -340,8 +236,7 @@ export class OrderSalesComponent implements OnInit {
     await this.merchantService
      .ordersByMerchant(id, {
        options: {
-         limit: 100,
-         sortBy: 'createdAt:desc',
+         limit: 100
        },
      }).then(data =>{
        console.log(data)
@@ -461,4 +356,116 @@ export class OrderSalesComponent implements OnInit {
     return `#${year}${month}${day}${number}`;
   }
 
+  searchToggling(){
+    this.inSearch = !this.inSearch;
+    console.log(this.inSearch)
+  }
+
 }
+
+
+/*ordurs: Array<any> = [{
+        title: 'NombreID',
+        eventTitle: 'event title',
+        subtitle: 'compradorID',
+        price: null,
+        description: this.fields,
+        image: '',
+        eventImage: undefined,
+        icon: '',
+        text_style: true,
+        text_left: 'hace 2 dias',
+        text_right: 'adiciona un tag',
+        full_text: '',
+        icons: [],
+        text_icon: '',
+        icons_image: [],
+        icon_bottom: {},
+        icons_right: [],
+        icons_bottom_right: [],
+        bar: false,
+        barColor: 'transparent',
+        barText: '',
+        barLeftIcon: '',
+        barRightIcon: '',
+        contentBgColor: '',
+      },
+      {
+        title: 'NombreID',
+        eventTitle: undefined,
+        subtitle: 'CompradorID',
+        price: null,
+        description: this.fields,
+        image: '',
+        eventImage: undefined,
+        icon: '',
+        text_style: true,
+        text_left: 'Hace 2 dias',
+        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
+        full_text: '',
+        icons: [],
+        text_icon: '',
+        icons_image: [],
+        icon_bottom: {},
+        icons_right: [],
+        icons_bottom_right: [],
+        bar: false,
+        barColor: 'transparent',
+        barText: '',
+        barLeftIcon: '',
+        barRightIcon: '',
+        contentBgColor: '',
+      },
+      {
+        title: 'NombreID',
+        eventTitle: undefined,
+        subtitle: 'compradorID',
+        price: null,
+        description: this.fields,
+        image: '',
+        eventImage: undefined,
+        icon: '',
+        text_style: true,
+        text_left: 'hace 2 dias',
+        text_right: 'adiciona un tag',
+        full_text: '',
+        icons: [],
+        text_icon: '',
+        icons_image: [],
+        icon_bottom: {},
+        icons_right: [],
+        icons_bottom_right: [],
+        bar: false,
+        barColor: 'transparent',
+        barText: '',
+        barLeftIcon: '',
+        barRightIcon: '',
+        contentBgColor: '',
+      },
+      {
+        title: 'NombreID',
+        eventTitle: undefined,
+        subtitle: 'CompradorID',
+        price: null,
+        description: this.fields,
+        image: '',
+        eventImage: undefined,
+        icon: '',
+        text_style: true,
+        text_left: 'hace 2 dias',
+        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
+        full_text: '',
+        icons: [],
+        text_icon: '',
+        icons_image: [],
+        icon_bottom: {},
+        icons_right: [],
+        icons_bottom_right: [],
+        bar: false,
+        barColor: 'transparent',
+        barText: '',
+        barLeftIcon: '',
+        barRightIcon: '',
+        contentBgColor: '',
+      },
+    ];*/

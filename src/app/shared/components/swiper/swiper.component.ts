@@ -405,6 +405,7 @@ export class SwiperComponent implements OnInit {
 
   public leadConfig: SwiperOptions = {
     slidesPerView: 5,
+    spaceBetween: 11,
     direction: 'horizontal',
     scrollbar: false,
     grabCursor: false,
