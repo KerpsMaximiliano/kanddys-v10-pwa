@@ -526,7 +526,7 @@ export class FlowCompletionComponent implements OnInit {
 
     if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
       const executedSuccessfully = await this.authService.generateMagicLink(
-        this.inputData
+        '1' + this.inputData
       );
 
       if (executedSuccessfully) {
