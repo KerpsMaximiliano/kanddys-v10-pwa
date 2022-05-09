@@ -110,7 +110,7 @@
       </div>
       <div class="customizer" *ngIf="customizerRules">
         <!-- ----------------------- EFFECTS ----------------------- -->
-        <div *ngIf="selectedOption === 'efectos'">
+        <!-- <div *ngIf="selectedOption === 'efectos'">
           <div class="button-carousel" style="margin-bottom: 10px">
             <button
               class="btn"
@@ -208,6 +208,34 @@
                 'selected-option': selectedBackgroundImage === option
               }"
             />
+          </div>
+        </div> -->
+        <div *ngIf="!selectedOption && backgroundColorActive">
+          <div class="option-list">
+            <div
+              class="list-option"
+              *ngFor="let color of getBackgroundColors()"
+            >
+              <!-- <span
+                *ngIf="color === 'none'"
+                style="padding: 6px 10px; border-radius: 50%; display: flex"
+                [ngClass]="{
+                  'selected-option': selectedBackgroundColor.fixedValue === color.fixedValue
+                }"
+                (click)="onChangeBackgroundColor(color)"
+                >X</span
+              > -->
+              <span
+                *ngIf="color !== 'none'"
+                (click)="onChangeBackgroundColor(color)"
+                class="color-font"
+                style.backgroundColor="{{ color.fixedValue }}"
+                [ngClass]="{
+                  'selected-option': selectedBackgroundColor.fixedValue === color.fixedValue
+                }"
+              ></span>
+              <span style="white-space: nowrap">{{ color.name }}</span>
+            </div>
           </div>
         </div>
         <!-- ---------------------- STICKERS ---------------------- -->

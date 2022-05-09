@@ -87,7 +87,7 @@ export class HeaderService {
     elementList: any;
     backgroundUrl: string;
     backgroundImage: File;
-    backgroundColor: string;
+    backgroundColor: { name?: string; fixedValue?: string };
     stickersAmount: number;
     textsAmount: number;
     id: string;
@@ -109,6 +109,8 @@ export class HeaderService {
   hasScenarios: boolean;
   fromOrderSales: string;
   flowRoute: string;
+  paramHasColor: boolean;
+  paramHasImage: boolean;
   public session: Session;
   constructor(
     private dialog: DialogService,

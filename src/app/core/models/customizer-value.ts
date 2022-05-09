@@ -51,7 +51,7 @@ export class LinesInput {
 }
 
 export class BackgroundColorInput {
-  color?: string;
+  color?: CustomizerFixedValue;
 }
 
 export class BackgroundImageInput {
@@ -65,7 +65,7 @@ export class BackgroundImageInput {
 }
 
 export class BackgroundColor {
-  color?: string;
+  color?: CustomizerFixedValue;
 };
 
 export class BackgroundImage {

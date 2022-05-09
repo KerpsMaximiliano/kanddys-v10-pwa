@@ -9,7 +9,10 @@ export const customizerValue = `
   createdAt
   updatedAt
   backgroundColor {
-    color
+    color {
+      name
+      fixedValue
+    }
   }
   backgroundImage {
     image
@@ -79,12 +82,6 @@ export const getCustomizerValuePreview = gql`
   query getCustomizerValue($id: ObjectID!) {
     getCustomizerValue(id: $id) { 
       _id
-      canvas {
-        size {
-          height
-          width
-        }
-      }
       preview
     }
   }
