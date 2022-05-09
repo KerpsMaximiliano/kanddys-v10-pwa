@@ -25,6 +25,7 @@ import { MyItemsComponent } from './pages/my-items/my-items.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
+import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 
 const routes: Routes = [
   {
@@ -128,6 +129,10 @@ const routes: Routes = [
       path: 'tag-detail',
       component: TagDetailComponent
   },
+  {
+      path: 'tags-edit',
+      component: TagsEditComponent
+  },
 ];
 
 @NgModule({
@@ -157,6 +162,7 @@ const routes: Routes = [
     LandingComponent,
     OrderSalesComponent,
     TagDetailComponent,
+    TagsEditComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
