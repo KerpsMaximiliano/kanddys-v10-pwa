@@ -8,7 +8,7 @@
         [middleTextFontFamily]="'SfProRegular'"
         [options]="true"
         [searchAble]="false"
-        ></app-helper-header>
+        >5</app-helper-header>
 
     
         <div class="ws-container">
@@ -35,7 +35,7 @@
 
             <div class="total-option">
                 <label for="Total" class="total-sales">$4,775 Vendido</label>
-                <div class="dot-trio">
+                <div class="dot-trio" (click)="openDialog()">
                     <div class="dot"> </div>
                     <div class="dot"> </div>
                     <div class="dot"> </div>

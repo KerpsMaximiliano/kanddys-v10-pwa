@@ -6,6 +6,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
 import * as moment from 'moment';
 
 @Component({
@@ -291,6 +292,14 @@ export class TagDetailComponent implements OnInit {
 
   letsChange() {
       this.transparent = !this.transparent;
+  }
+
+  openDialog(){
+    this.dialog.open(CustomFieldsComponent, {
+      type: 'action-sheet',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
 }

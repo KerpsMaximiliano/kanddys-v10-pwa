@@ -11,6 +11,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { searchInput } from 'src/app/shared/components/see-filters/see-filters.component';
+import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
 import { CodeSearchByKeyword } from 'src/app/core/graphql/codes.gql';
 
 @Component({
@@ -20,8 +21,8 @@ import { CodeSearchByKeyword } from 'src/app/core/graphql/codes.gql';
 })
 export class OrderSalesComponent implements OnInit {
 
-    imageFolder: string;
-    fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
+  imageFolder: string;
+  fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
 
   testTags: string[] = [' ', ' ', ' ', ' ', ' '];
   inSearch: boolean = false;
@@ -36,6 +37,111 @@ export class OrderSalesComponent implements OnInit {
   startX: any;
   scrollLeft: any;
 
+  ordurs: Array<any> = [{
+    title: 'NombreID',
+    eventTitle: 'event title',
+    subtitle: 'compradorID',
+    price: null,
+    description: this.fields,
+    image: '',
+    eventImage: undefined,
+    icon: '',
+    text_style: true,
+    text_left: 'hace 2 dias',
+    text_right: 'adiciona un tag',
+    full_text: '',
+    icons: [],
+    text_icon: '',
+    icons_image: [],
+    icon_bottom: {},
+    icons_right: [],
+    icons_bottom_right: [],
+    bar: false,
+    barColor: 'transparent',
+    barText: '',
+    barLeftIcon: '',
+    barRightIcon: '',
+    contentBgColor: '',
+  },
+  {
+    title: 'NombreID',
+    eventTitle: undefined,
+    subtitle: 'CompradorID',
+    price: null,
+    description: this.fields,
+    image: '',
+    eventImage: undefined,
+    icon: '',
+    text_style: true,
+    text_left: 'Hace 2 dias',
+    text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
+    full_text: '',
+    icons: [],
+    text_icon: '',
+    icons_image: [],
+    icon_bottom: {},
+    icons_right: [],
+    icons_bottom_right: [],
+    bar: false,
+    barColor: 'transparent',
+    barText: '',
+    barLeftIcon: '',
+    barRightIcon: '',
+    contentBgColor: '',
+  },
+  {
+    title: 'NombreID',
+    eventTitle: undefined,
+    subtitle: 'compradorID',
+    price: null,
+    description: this.fields,
+    image: '',
+    eventImage: undefined,
+    icon: '',
+    text_style: true,
+    text_left: 'hace 2 dias',
+    text_right: 'adiciona un tag',
+    full_text: '',
+    icons: [],
+    text_icon: '',
+    icons_image: [],
+    icon_bottom: {},
+    icons_right: [],
+    icons_bottom_right: [],
+    bar: false,
+    barColor: 'transparent',
+    barText: '',
+    barLeftIcon: '',
+    barRightIcon: '',
+    contentBgColor: '',
+  },
+  {
+    title: 'NombreID',
+    eventTitle: undefined,
+    subtitle: 'CompradorID',
+    price: null,
+    description: this.fields,
+    image: '',
+    eventImage: undefined,
+    icon: '',
+    text_style: true,
+    text_left: 'hace 2 dias',
+    text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
+    full_text: '',
+    icons: [],
+    text_icon: '',
+    icons_image: [],
+    icon_bottom: {},
+    icons_right: [],
+    icons_bottom_right: [],
+    bar: false,
+    barColor: 'transparent',
+    barText: '',
+    barLeftIcon: '',
+    barRightIcon: '',
+    contentBgColor: '',
+  },
+];
   
 
   options: Array<any> = [
@@ -361,111 +467,16 @@ export class OrderSalesComponent implements OnInit {
     console.log(this.inSearch)
   }
 
+  openDialog(){
+    this.dialog.open(CustomFieldsComponent, {
+      type: 'action-sheet',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
 }
 
+/* en addTagsInMerchant esta la mutation para adicionar tags a un merchant, addTagsInOrder lo utilizamos para agregar tags a una orden*/
 
-/*ordurs: Array<any> = [{
-        title: 'NombreID',
-        eventTitle: 'event title',
-        subtitle: 'compradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'adiciona un tag',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'CompradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'Hace 2 dias',
-        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'compradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'adiciona un tag',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-      {
-        title: 'NombreID',
-        eventTitle: undefined,
-        subtitle: 'CompradorID',
-        price: null,
-        description: this.fields,
-        image: '',
-        eventImage: undefined,
-        icon: '',
-        text_style: true,
-        text_left: 'hace 2 dias',
-        text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-        full_text: '',
-        icons: [],
-        text_icon: '',
-        icons_image: [],
-        icon_bottom: {},
-        icons_right: [],
-        icons_bottom_right: [],
-        bar: false,
-        barColor: 'transparent',
-        barText: '',
-        barLeftIcon: '',
-        barRightIcon: '',
-        contentBgColor: '',
-      },
-    ];*/
+
