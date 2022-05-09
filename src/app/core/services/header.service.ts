@@ -422,7 +422,6 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (orderProgress) {
       this.hasScenarios = orderProgress.scenarios;
-      orderProgress.customizer = null;
       this.isComplete = orderProgress;
     }
   }

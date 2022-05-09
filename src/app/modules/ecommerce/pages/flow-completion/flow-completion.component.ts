@@ -219,6 +219,11 @@ export class FlowCompletionComponent implements OnInit {
             if (item.customizer) {
               newItem.customizerId = item.customizer._id;
               newItem.total = totalPrice * 1.18;
+              this.customizerValueService
+                .getCustomizerValuePreview(item.customizer._id)
+                .then((value) => {
+                  newItem.images[0] = value.preview;
+                });
             }
             return newItem;
           });

@@ -18,7 +18,6 @@ export class PageComponentTabsComponent implements OnInit {
   ngOnInit(): void {}
 
   changeTab(index: number, name: string) {
-    console.log(index, name, 'Cambió de tab');
     this.activeTag = index;
     this.changeValue.emit(name);
   }

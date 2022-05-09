@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
+import { ItemSubOrder } from 'src/app/core/models/order';
 moment.locale('es');
 
 @Component({
@@ -67,7 +68,7 @@ export class OrderInfoComponent implements OnInit {
   delivery: string;
   message: any;
   createdAt: string;
-  items: Array<any>;
+  items: Array<ItemSubOrder>;
   itemsExtra = [];
   customizer: {
     _id: string;
@@ -286,10 +287,13 @@ export class OrderInfoComponent implements OnInit {
             });
           }
           if (data.order.items[0].customizer) {
+            this.dateId = '';
             this.customizerValueService
               .getCustomizerValuePreview(data.order.items[0].customizer._id)
               .then((value) => {
                 this.customizer = value;
+                this.items[0].item.images[0] = value.preview;
+                this.dateId = this.formatID(data.order.dateId);
               });
           }
           if (params.notification) {

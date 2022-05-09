@@ -2437,9 +2437,11 @@ export class PostCustomizerComponent
         lines,
         preview: file,
       };
-      // console.log(customizerValues);
-      // unlockUI();
-      // return;
+      const items = this.header.getItems(this.header.getSaleflow()._id);
+      this.header.emptyItems(this.header.getSaleflow()._id);
+      this.header.items[0].images[0] = url;
+      items[0].images[0] = url;
+      this.header.storeItem(this.header.getSaleflow()._id, items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
@@ -2496,7 +2498,7 @@ export class PostCustomizerComponent
       id: this.customizerRuleID,
     };
 
-    this.header.storeCustomizer(this.header.saleflow._id, customizerValues);
+    this.header.storeCustomizer(this.header.saleflow?._id ?? this.header.getSaleflow()._id, customizerValues);
 
     this.header.isComplete.customizer = true;
   }
