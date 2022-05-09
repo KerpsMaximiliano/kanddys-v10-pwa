@@ -1,0 +1,27 @@
+<div class="magic-link-dialog">
+  <app-helper-header
+    [searchAble]="false"
+    bgcolor="#ffffff"
+    [basic]="true"
+    position="fixed"
+    [shadow]="true"
+    middleTextColor="#7b7b7b"
+    (onClose)="close()"
+  ></app-helper-header>
+
+  <div class="top-separator"></div>
+
+  <div class="content">
+    <button (click)="storeRouteState()">Confírmanos por WhatsApp</button>
+    <p>
+      Después de tu confirmación recibirás el Magic-Link que al tocarlo se
+      activará el producto en tu tienda.
+    </p>
+    <a
+      id="send-email"
+      href="mailto: lbarbozanav@gmail.com?subject=Solicitud de autenticación&body=Keyword-Authme loquesea"
+      >Toca aquí si prefieres confirmar por email</a
+    >
+    <a [href]="whatsappLink" target="_blank" id="sendWS"></a>
+  </div>
+</div>

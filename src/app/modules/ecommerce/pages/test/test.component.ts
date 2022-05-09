@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CustomFieldsComponent } from 'src/app/shared/dialogs/custom-fields/custom-fields.component';
+import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -13,7 +14,13 @@ export class TestComponent implements OnInit {
   ngOnInit(): void {}
 
   openDialog() {
-    this.dialog.open(CustomFieldsComponent, {
+    // this.dialog.open(CustomFieldsComponent, {
+    //   type: 'flat-action-sheet',
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
+
+    this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
       customClass: 'app-dialog',
       flags: ['no-header'],
