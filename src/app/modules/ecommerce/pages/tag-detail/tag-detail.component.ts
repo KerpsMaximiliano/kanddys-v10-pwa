@@ -296,7 +296,7 @@ export class TagDetailComponent implements OnInit {
 
   openDialog(){
     this.dialog.open(CustomFieldsComponent, {
-      type: 'action-sheet',
+      type: 'flat-action-sheet',
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
