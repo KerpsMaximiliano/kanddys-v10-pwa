@@ -42,6 +42,10 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
               redirectURL.url = '/ecommerce/test';
               redirectURL.queryParams = { token };
               break;
+            case '/ecommerce/shipment-data-form':
+              redirectURL.url = '/ecommerce/flow-completion';
+              redirectURL.queryParams = { token };
+              break;
             default:
               redirectURL.url = '/home';
               this.errored = true;

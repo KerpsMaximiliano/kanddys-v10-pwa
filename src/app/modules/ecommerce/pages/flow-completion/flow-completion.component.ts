@@ -149,6 +149,7 @@ export class FlowCompletionComponent implements OnInit {
   headerText: string;
   newProviderName: string = '';
   comesFromMagicLink: boolean = false;
+  saleflowData: any;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
@@ -253,29 +254,44 @@ export class FlowCompletionComponent implements OnInit {
 
       if (token) {
         try {
-          const { analizeMagicLink: session } =
-            await this.authService.analizeMagicLink(token);
-          this.comesFromMagicLink = true;
+          // const { analizeMagicLink: session } =
+          //   await this.authService.analizeMagicLink(token);
+          // this.comesFromMagicLink = true;
 
-          localStorage.setItem('session-token', session.token);
+          // localStorage.setItem('session-token', session.token);
 
-          let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
+          // let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
 
-          localStorage.removeItem('phoneNumberOrEmail');
+          // localStorage.removeItem('phoneNumberOrEmail');
 
-          const data = await this.authService.checkUser(
-            phoneNumberOrEmail,
-            'whatsapp'
-          );
+          // const data = await this.authService.checkUser(
+          //   phoneNumberOrEmail,
+          //   'whatsapp'
+          // );
 
-          if (data) this.userData = data;
+          // if (data) this.userData = data;
 
-          if (session.new) {
-            this.step = 3;
-            this.relativeStep += 2;
+          // if (session.new) {
+          //   this.step = 3;
+          //   this.relativeStep += 2;
+          // } else {
+          //   this.relativeStep = 4;
+          //   this.createOrSkipOrder();
+          // }
+
+          const currentSession = await this.authService.me();
+
+          if (currentSession) {
+            if (currentSession.name) {
+              this.relativeStep = 4;
+              this.createOrSkipOrder();
+              this.userData = currentSession;
+            } else {
+              this.step = 3;
+              this.relativeStep += 2;
+            }
           } else {
-            this.relativeStep = 4;
-            this.createOrSkipOrder();
+            this.router.navigate(['/']);
           }
 
           // this.submit();
@@ -440,20 +456,26 @@ export class FlowCompletionComponent implements OnInit {
         this.signIn();
         break;
       case 5:
-        if (this.flow !== 'flow-completion') {
-          // this.totalQuestions = 1;
-          this.step = 8;
-        } else {
-          // this.totalQuestions = 2;
+        //AUTH CLÁSICO
+        // if (this.flow !== 'flow-completion') {
+        //   // this.totalQuestions = 1;
+        //   this.step = 8;
+        // } else {
+        //   // this.totalQuestions = 2;
 
-          if (this.banks.length > 1) this.step = 6;
-          else {
-            this.selectedBank = this.bankOptions[0];
-            this.headerText = 'INFORMACIÓN DEL PAGO';
-            this.step = 7;
-          }
-        }
-        this.relativeStep++;
+        //   if (this.banks.length > 1) this.step = 6;
+        //   else {
+        //     this.selectedBank = this.bankOptions[0];
+        //     this.headerText = 'INFORMACIÓN DEL PAGO';
+        //     this.step = 7;
+        //   }
+        // }
+        // this.relativeStep++;
+
+        // this.totalQuestions = 2;
+        this.selectedBank = this.bankOptions[0];
+        this.headerText = 'INFORMACIÓN DEL PAGO';
+        this.step = 7;
         break;
       case 6:
         this.step = 7;
@@ -506,7 +528,7 @@ export class FlowCompletionComponent implements OnInit {
           if (this.bankOptions.length === 1)
             this.selectedBank = this.bankOptions[0];
           this.headerText = 'INFORMACIÓN DEL PAGO';
-          this.step = this.bankOptions.length > 1 ? 6 : 7;
+          this.step = 7;
           this.relativeStep++;
         }
         break;
@@ -783,6 +805,7 @@ export class FlowCompletionComponent implements OnInit {
   createOrder() {
     const saleflow =
       this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+    this.saleflowData = saleflow;
 
     this.header.order = this.header.getOrder(saleflow._id);
     this.header.order.products.forEach((product) => {

@@ -1,6 +1,10 @@
 <div
   class="container"
-  [ngStyle]="{ margin: useMargins ? '29px 52px;' : '0px' }"
+  [ngStyle]="
+    containerStyles
+      ? containerStyles
+      : { margin: useMargins ? '29px 52px;' : '0px' }
+  "
 >
   <ul class="container-options">
     <li *ngFor="let option of options; index as i">
@@ -12,6 +16,7 @@
               ? 'option-selected'
               : 'option'
           "
+          [ngStyle]="itemStyles ? itemStyles : null"
           (click)="editable && option.status && clickSelector(i)"
         >
           {{ option.value }}
@@ -19,7 +24,7 @@
         <!-- THE LINES BELLOW MAKE AN OPCTION CLICKABLE THROUGH ITS DESCRIPTION   -->
         <div
           class="description-container"
-          *ngIf="option?.description"
+          *ngIf="option?.description && showDescription"
           (click)="editable && option.status && clickSelector(i)"
         >
           <p

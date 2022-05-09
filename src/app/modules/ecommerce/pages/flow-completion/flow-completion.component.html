@@ -11,7 +11,7 @@
     (onClose)="goBack()"
   ></app-helper-header>
 
-  <div class="content m-top" *ngIf="step === 1">
+  <!-- <div class="content m-top" *ngIf="step === 1">
     <p class="label1">
       ¿Con cuál número de WhatsApp
       <ng-container *ngIf="orderData; else noOrder">completarás</ng-container>
@@ -64,7 +64,7 @@
       placeholder="Código que recibí en WhatsApp fue.."
       (keypress)="keyPressNumbers($event)"
     />
-  </div>
+  </div> -->
   <div *ngIf="step === 3">
     <div class="content m-top">
       <p class="label1">
@@ -114,7 +114,7 @@
       />
     </div>
   </div>
-  <div *ngIf="step === 4">
+  <!-- <div *ngIf="step === 4">
     <div class="questions">
       <p style="padding-left: 33px; margin-bottom: 0px" class="label1">
         Eres {{ userData.name }}?
@@ -225,7 +225,7 @@
         >
       </div>
     </div>
-  </div>
+  </div> -->
   <div *ngIf="step === 5">
     <div class="questions">
       <p
@@ -255,7 +255,7 @@
       ></app-answer-selector>
     </div>
   </div>
-  <div *ngIf="step === 6">
+  <!-- <div *ngIf="step === 6">
     <div class="questions-step-6">
       <p
         style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
@@ -306,9 +306,9 @@
         >
           {{ bank.routingNumber }}
         </p>
-      </div> -->
+      </div>
     </div>
-  </div>
+  </div> -->
   <div *ngIf="step === 7">
     <div class="content step-7">
       <p style="margin-bottom: 47px" class="label1">
@@ -351,15 +351,44 @@
         [allowedTypes]="['png', 'jpg', 'jpeg']"
         (onFileInput)="onFileInput($event)"
       ></app-image-input>
-      <ng-container *ngIf="selectedBank">
+      <!-- <ng-container *ngIf="selectedBank">
         <div class="unique-bank">
           <h2>{{ selectedBank.value }}</h2>
           <span *ngFor="let desc of selectedBank.description">{{ desc }}</span>
         </div>
-      </ng-container>
+      </ng-container> -->
+
+      <p class="label3" [ngStyle]="{ marginBottom: '26px' }">
+        En cuál cuenta hizo la transferencia?
+      </p>
+
+      <app-answer-selector
+        [options]="bankOptions"
+        (onSelector)="selectOption($event)"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '72px',
+          borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+        }"
+      ></app-answer-selector>
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          paddingTop: '29.5px',
+          color: '#7B7B7B',
+          fontFamily: 'Roboto',
+          fontStyle: 'italic',
+          fontSize: '17px'
+        }"
+      >
+        En la siguiente pantalla le mandarás el record de tu orden y la
+        confirmación del pago que hiciste a {{ saleflowData.merchant.name }}
+      </div>
     </div>
   </div>
-  <div class="content m-top" *ngIf="step === 8">
+  <!-- <div class="content m-top" *ngIf="step === 8">
     <p class="label1">¿Como se llamará tu Club?</p>
     <input
       type="text"
@@ -398,7 +427,7 @@
       "
       class="input"
     />
-  </div>
+  </div> -->
   <div
     class="footer"
     [ngStyle]="{
@@ -502,104 +531,104 @@
     </p>
     <app-answer-selector [options]="options3"></app-answer-selector>
   </div> -->
-</div>
 
-<app-sticky-button
-  [mode]="
-    (step === 1 && inputData.length < 500) ||
-    (step === 2 && code.length < 4) ||
-    (step === 3 &&
-      (!name ||
-        name.trim().length === 0 ||
-        (password.length < 3 && !comesFromMagicLink))) ||
-    (step === 4 && password.length < 3) ||
-    (step === 5 &&
-      (flow !== 'flow-completion'
-        ? selectedCommunitiesOptions.length < 1
-        : !(selectedPayment >= 0))) ||
-    (step === 6 && !selectedBank) ||
-    (step === 7 && (paymentCode.length !== 4 || !image)) ||
-    (step === 8 && newProviderName.trim().length === 0) ||
-    (step === 9 && code.length < 3) ||
-    (step === 10 && password.length < 3)
-      ? 'disabled'
-      : 'basic'
-  "
-  [text]="
-    step === 1
-      ? flow !== 'flow-completion'
-        ? 'ASIGNA EL WHATSAPP AL MAPP'
-        : inputData.length < 500
-        ? 'ADICIONA TU CELULAR'
-        : 'VERIFICAR MI CELULAR'
-      : step === 2
-      ? flow !== 'flow-completion'
-        ? 'VERIFICAR'
-        : 'VERIFICAR MI CELULAR'
-      : step === 3
-      ? flow !== 'flow-completion'
-        ? 'ADICIONA EL CONTACTO DEL MAPP'
-        : !name || (password.length < 3 && !comesFromMagicLink)
-        ? 'ADICIONA TU SEGURIDAD'
-        : 'CONTINUAR'
-      : step === 4
-      ? showLoginPassword
-        ? password.length < 3
-          ? flow !== 'flow-completion'
-            ? 'INGRESA A MI MAPP'
-            : !incorrectPasswordAttempt
-            ? 'ADICIONA LA CLAVE'
-            : 'ADICIONA LA CLAVE CORRECTA'
-          : flow !== 'flow-completion'
-          ? 'INGRESA A MI MAPP'
-          : incorrectPasswordAttempt
-          ? 'ADICIONA LA CLAVE CORRECTA'
-          : 'ACCEDER A LO MÁGICO'
-        : flow !== 'flow-completion'
-        ? 'SELECCIONA PARA IR AL MAPP'
-        : 'HAZ UNA SELECCION'
-      : step === 5
-      ? flow !== 'flow-completion'
-        ? selectedCommunitiesOptions.length > 0
-          ? 'NOMBRA EL CLUB DE TU MAPP'
-          : 'SELECCIONA TODAS LAS POSIBLES'
-        : selectedPayment >= 0
-        ? 'CONTINUAR'
-        : 'SELECCIONA'
-      : step === 6
-      ? selectedBank
-        ? 'CONTINUAR'
-        : 'SELECCIONA DONDE TRANSFERISTE'
-      : step === 7
-      ? paymentCode.length !== 4 || !image
-        ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-        : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
-      : step === 8
-      ? !newProviderName.trim()
-        ? 'NOMBRA EL CLUB DE TU MAPP'
-        : 'VE A TU CLUB'
-      : step === 9
-      ? flow !== 'flow-completion' && code.length > 3
-        ? 'INGRESA EL CODIGO'
-        : 'ENVIAR CODIGO'
-      : step === 10
-      ? flow !== 'flow-completion' && password.length < 3
-        ? 'INGRESE PASSWORD'
-        : 'ACTUALIZAR EL PASSWORD'
-      : ''
-  "
-  (click)="submit()"
-  *ngIf="step != 7"
-></app-sticky-button>
-
-<a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
   <app-sticky-button
-    [mode]="paymentCode.length !== 4 || !image ? 'disabled' : 'basic'"
+    [mode]="
+      (step === 1 && inputData.length < 500) ||
+      (step === 2 && code.length < 4) ||
+      (step === 3 &&
+        (!name ||
+          name.trim().length === 0 ||
+          (password.length < 3 && !comesFromMagicLink))) ||
+      (step === 4 && password.length < 3) ||
+      (step === 5 &&
+        (flow !== 'flow-completion'
+          ? selectedCommunitiesOptions.length < 1
+          : !(selectedPayment >= 0))) ||
+      (step === 6 && !selectedBank) ||
+      (step === 7 && (paymentCode.length !== 4 || !image)) ||
+      (step === 8 && newProviderName.trim().length === 0) ||
+      (step === 9 && code.length < 3) ||
+      (step === 10 && password.length < 3)
+        ? 'disabled'
+        : 'basic'
+    "
     [text]="
-      paymentCode.length !== 4 || !image
-        ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-        : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+      step === 1
+        ? flow !== 'flow-completion'
+          ? 'ASIGNA EL WHATSAPP AL MAPP'
+          : inputData.length < 500
+          ? 'ADICIONA TU CELULAR'
+          : 'VERIFICAR MI CELULAR'
+        : step === 2
+        ? flow !== 'flow-completion'
+          ? 'VERIFICAR'
+          : 'VERIFICAR MI CELULAR'
+        : step === 3
+        ? flow !== 'flow-completion'
+          ? 'ADICIONA EL CONTACTO DEL MAPP'
+          : !name || (password.length < 3 && !comesFromMagicLink)
+          ? 'ADICIONA TU SEGURIDAD'
+          : 'CONTINUAR'
+        : step === 4
+        ? showLoginPassword
+          ? password.length < 3
+            ? flow !== 'flow-completion'
+              ? 'INGRESA A MI MAPP'
+              : !incorrectPasswordAttempt
+              ? 'ADICIONA LA CLAVE'
+              : 'ADICIONA LA CLAVE CORRECTA'
+            : flow !== 'flow-completion'
+            ? 'INGRESA A MI MAPP'
+            : incorrectPasswordAttempt
+            ? 'ADICIONA LA CLAVE CORRECTA'
+            : 'ACCEDER A LO MÁGICO'
+          : flow !== 'flow-completion'
+          ? 'SELECCIONA PARA IR AL MAPP'
+          : 'HAZ UNA SELECCION'
+        : step === 5
+        ? flow !== 'flow-completion'
+          ? selectedCommunitiesOptions.length > 0
+            ? 'NOMBRA EL CLUB DE TU MAPP'
+            : 'SELECCIONA TODAS LAS POSIBLES'
+          : selectedPayment >= 0
+          ? 'CONTINUAR'
+          : 'SELECCIONA'
+        : step === 6
+        ? selectedBank
+          ? 'CONTINUAR'
+          : 'SELECCIONA DONDE TRANSFERISTE'
+        : step === 7
+        ? paymentCode.length !== 4 || !image
+          ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+          : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+        : step === 8
+        ? !newProviderName.trim()
+          ? 'NOMBRA EL CLUB DE TU MAPP'
+          : 'VE A TU CLUB'
+        : step === 9
+        ? flow !== 'flow-completion' && code.length > 3
+          ? 'INGRESA EL CODIGO'
+          : 'ENVIAR CODIGO'
+        : step === 10
+        ? flow !== 'flow-completion' && password.length < 3
+          ? 'INGRESE PASSWORD'
+          : 'ACTUALIZAR EL PASSWORD'
+        : ''
     "
     (click)="submit()"
+    *ngIf="step != 7"
   ></app-sticky-button>
-</a>
+
+  <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
+    <app-sticky-button
+      [mode]="paymentCode.length !== 4 || !image ? 'disabled' : 'basic'"
+      [text]="
+        paymentCode.length !== 4 || !image
+          ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+          : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+      "
+      (click)="submit()"
+    ></app-sticky-button>
+  </a>
+</div>

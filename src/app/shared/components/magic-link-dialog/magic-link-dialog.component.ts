@@ -15,7 +15,7 @@ export class MagicLinkDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   storeRouteState() {
-    this.whatsappLink = `https://wa.me/584126916838?text=Keyword-Authme%20`;
+    this.whatsappLink = `https://wa.me/19295263397?text=Keyword-Authme%20`;
     const currentRoute = this.router.url;
 
     localStorage.setItem('currentRoute', JSON.stringify(currentRoute));
