@@ -1,5 +1,7 @@
 <div class="container">
 
+    <div class="bruteforce">
+        <img [src]="imageFolder + '/Etiquetas_vacias.svg'" width="23px" height="21px" class="bruteimg"/>
         <app-helper-header
         [bgcolor]="'#FFFFFF'"
         [middleText]="tagID"
@@ -9,7 +11,7 @@
         [options]="true"
         [searchAble]="false"
         ></app-helper-header>
-
+    </div>
     
         <div class="ws-container">
 
@@ -35,7 +37,7 @@
 
             <div class="total-option">
                 <label for="Total" class="total-sales">$4,775 Vendido</label>
-                <div class="dot-trio">
+                <div class="dot-trio" (click)="openDialog()">
                     <div class="dot"> </div>
                     <div class="dot"> </div>
                     <div class="dot"> </div>
