@@ -73,6 +73,7 @@
         padding: '0px 33px',
         marginTop: '69px'
       }"
+      *ngIf="isANewUser"
     >
       <p class="label1">
         {{
@@ -123,16 +124,24 @@
     <div
       [ngStyle]="{
         backgroundColor: 'rgba(254, 210, 48, 0.43)',
-        color: 'black'
+        color: 'black',
+        borderRadius: '20px',
+        margin: '0px 32px'
       }"
     >
-      <div *ngFor="let bank of bankOptions">
+      <div
+        *ngFor="let bank of bankOptions"
+        [ngStyle]="{
+          padding: '24px 38px'
+        }"
+      >
         <h6
           [ngStyle]="{
             cursor: 'pointer',
             color: 'black',
             fontWeight: 'bold',
-            fontFamily: 'RobotoMedium'
+            fontFamily: 'RobotoMedium',
+            margin: '0px'
           }"
         >
           {{ bank.value }}
@@ -512,19 +521,19 @@
           : 'flex-end'
     }"
   >
-    <div
+    <!-- <div
       class="redirect"
       *ngIf="flow === 'flow-completion' && step > 4 && step < 8"
     >
       Ver items facturados
-    </div>
-    <div
+    </div> -->
+    <!-- <div
       class="redirect"
       *ngIf="flow === 'flow-completion' && step == 4"
       (click)="generateOTP()"
     >
       Olvidé mi clave
-    </div>
+    </div> -->
     <!-- <div class="steps">
       <img src="{{ env }}/arrow-down.svg" class="step-icon" alt="questions" />
       {{ relativeStep }} / {{ stepsLeft }} PASOS
@@ -606,6 +615,8 @@
     <app-answer-selector [options]="options3"></app-answer-selector>
   </div> -->
 
+  <div class="bottom-separator"></div>
+
   <app-sticky-button
     [mode]="
       (step === 1 && inputData.length < 500) ||
@@ -613,19 +624,20 @@
       (step === 3 &&
         (!name ||
           name.trim().length === 0 ||
-          (password.length < 3 && !comesFromMagicLink))) ||
+          (password.length < 3 && !comesFromMagicLink)) &&
+        isANewUser) ||
       (step === 4 && password.length < 3) ||
       (step === 5 &&
         (flow !== 'flow-completion'
           ? selectedCommunitiesOptions.length < 1
           : !(selectedPayment >= 0))) ||
       (step === 6 && !selectedBank) ||
-      (step === 7 && (paymentCode.length !== 4 || !image)) ||
+      (step === 7 && (paymentCode.length !== 4 || !image || !selectedBank)) ||
       (step === 8 && newProviderName.trim().length === 0) ||
       (step === 9 && code.length < 3) ||
       (step === 10 && password.length < 3)
-        ? 'disabled'
-        : 'basic'
+        ? 'disabled-fixed'
+        : 'fixed'
     "
     [text]="
       step === 1
@@ -641,8 +653,9 @@
         : step === 3
         ? flow !== 'flow-completion'
           ? 'ADICIONA EL CONTACTO DEL MAPP'
-          : !name || (password.length < 3 && !comesFromMagicLink)
-          ? 'ADICIONA TU SEGURIDAD'
+          : (!name || (password.length < 3 && !comesFromMagicLink)) &&
+            isANewUser
+          ? 'ESCRIBE TU NOMBRE Y APELLIDO'
           : 'CONTINUAR'
         : step === 4
         ? showLoginPassword
@@ -673,7 +686,7 @@
           ? 'CONTINUAR'
           : 'SELECCIONA DONDE TRANSFERISTE'
         : step === 7
-        ? paymentCode.length !== 4 || !image
+        ? paymentCode.length !== 4 || !image || !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
           : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
         : step === 8
@@ -696,7 +709,7 @@
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
     <app-sticky-button
-      [mode]="paymentCode.length !== 4 || !image ? 'disabled' : 'basic'"
+      [mode]="paymentCode.length !== 4 || !image ? 'disabled-fixed' : 'fixed'"
       [text]="
         paymentCode.length !== 4 || !image
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'

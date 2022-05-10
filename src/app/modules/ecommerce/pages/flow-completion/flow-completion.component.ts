@@ -118,9 +118,7 @@ export class FlowCompletionComponent implements OnInit {
   banks: Bank[] = [];
   windowReference: any;
   step: number = 0;
-  relativeStep: number = 1;
   actual: string = '';
-  stepsLeft: number;
   firstData: any = '';
   inputData: string = '';
   name: string = '';
@@ -153,6 +151,7 @@ export class FlowCompletionComponent implements OnInit {
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
+  isANewUser: boolean = false;
   env: string = environment.assetsUrl;
 
   constructor(
@@ -249,6 +248,11 @@ export class FlowCompletionComponent implements OnInit {
 
   async ngOnInit() {
     this.route.queryParams.subscribe(async (params) => {
+      const saleflow =
+        this.header.saleflow ||
+        JSON.parse(localStorage.getItem('saleflow-data'));
+      this.saleflowData = saleflow;
+
       const { token } = params;
       this.comesFromMagicLink = true;
 
@@ -273,23 +277,29 @@ export class FlowCompletionComponent implements OnInit {
 
           // if (session.new) {
           //   this.step = 3;
-          //   this.relativeStep += 2;
           // } else {
-          //   this.relativeStep = 4;
           //   this.createOrSkipOrder();
           // }
 
           const currentSession = await this.authService.me();
+          this.userData = currentSession;
 
           if (currentSession) {
-            if (!currentSession.name) {
-              this.relativeStep = 4;
-              this.createOrSkipOrder();
-              this.userData = currentSession;
-            } else {
-              this.step = 3;
-              this.relativeStep += 2;
-            }
+            await this.getExchangeData(
+              saleflow.module.paymentMethod.paymentModule._id
+            );
+            this.isANewUser = currentSession.name === '';
+            this.step = 3;
+
+            // if (!currentSession.name) {
+            //   this.createOrSkipOrder();
+            //   this.userData = currentSession;
+            // } else {
+            //   await this.getExchangeData(
+            //     saleflow.module.paymentMethod.paymentModule._id
+            //   );
+            //   this.step = 3;
+            // }
           } else {
             this.router.navigate(['/']);
           }
@@ -356,11 +366,8 @@ export class FlowCompletionComponent implements OnInit {
             this.isLogged = true;
             this.inputData = this.userData.phone;
             this.step = 4;
-
-            if (this.flow === 'flow-completion') this.stepsLeft = 4;
           } else {
             this.step = 1;
-            if (this.flow === 'flow-completion') this.stepsLeft = 6;
           }
         });
       }
@@ -422,8 +429,6 @@ export class FlowCompletionComponent implements OnInit {
           ],
         };
       });
-
-      if (this.bankOptions.length < 2) this.stepsLeft--;
     });
   }
 
@@ -470,7 +475,6 @@ export class FlowCompletionComponent implements OnInit {
         //     this.step = 7;
         //   }
         // }
-        // this.relativeStep++;
 
         // this.totalQuestions = 2;
         this.selectedBank = this.bankOptions[0];
@@ -479,7 +483,6 @@ export class FlowCompletionComponent implements OnInit {
         break;
       case 6:
         this.step = 7;
-        this.relativeStep++;
         break;
       case 7:
         this.payOrder();
@@ -541,7 +544,6 @@ export class FlowCompletionComponent implements OnInit {
             this.selectedBank = this.bankOptions[0];
           this.headerText = 'INFORMACIÓN DEL PAGO';
           this.step = 7;
-          this.relativeStep++;
         }
         break;
       }
@@ -593,13 +595,10 @@ export class FlowCompletionComponent implements OnInit {
   createOrSkipOrder() {
     if (this.orderId) {
       this.step = 5;
-      this.relativeStep++;
     } else {
       lockUI(
         this.createOrder().then((data) => {
           this.location.replaceState(`ecommerce/flow-completion/${data}`);
-          this.relativeStep++;
-          this.stepsLeft = 4;
           return this.getOrderData(this.header.orderId).then(() => {
             this.step = 5;
           });
@@ -634,27 +633,13 @@ export class FlowCompletionComponent implements OnInit {
     this.imageField = undefined;
     if (this.step === 5) this.selectedPayment = undefined;
     if (this.step === 6) this.selectedBank = undefined;
-    if (
-      (this.step > 4 &&
-        this.step < 8 &&
-        !(this.step === 7 && this.banks.length === 1)) ||
-      this.step === 2
-    )
-      this.step--;
-    if (this.step === 7 && this.banks.length === 1) this.step = 5;
 
-    if (this.step === 8) this.step = 5;
-
-    if (this.step === 9 || this.step === 10) {
-      if (this.isLogged) {
-        this.step = 4;
-      } else {
-        this.step = 1;
-      }
-      return;
+    if (this.step === 5) {
+      this.step = 3;
+      this.isANewUser = false;
     }
 
-    this.relativeStep--;
+    if (this.step === 7) this.step = 5;
   }
 
   // Case 1
@@ -672,14 +657,12 @@ export class FlowCompletionComponent implements OnInit {
             const data = await this.authService.generateOTP(input);
             if (data) {
               this.step = 2;
-              this.relativeStep++;
             }
           }
         } else {
           const data = await this.authService.generateOTP('1' + this.inputData);
           if (data) {
             this.step = 2;
-            this.relativeStep++;
           }
         }
       } else {
@@ -700,7 +683,6 @@ export class FlowCompletionComponent implements OnInit {
       if (data) {
         localStorage.setItem('id', data._id);
         this.step = 2;
-        this.relativeStep++;
       } else {
         console.log('error');
       }
@@ -718,7 +700,6 @@ export class FlowCompletionComponent implements OnInit {
       );
       if (data != undefined) {
         this.step = 3;
-        this.relativeStep++;
       } else {
         this.code = '';
       }
@@ -739,13 +720,17 @@ export class FlowCompletionComponent implements OnInit {
         : {
             name: this.name,
           };
-      const data = await this.authService.updateMe(input);
-      this.userData = data;
-      this.isLogged = true;
-      if (this.orderId) {
-        this.router.navigate(['ecommerce/error-screen']);
-        return;
+
+      if (this.isANewUser) {
+        const data = await this.authService.updateMe(input);
+        this.userData = data;
       }
+
+      this.isLogged = true;
+      // if (this.orderId) {
+      //   this.router.navigate(['ecommerce/error-screen']);
+      //   return;
+      // }
       this.createOrSkipOrder();
     } catch (error) {
       console.log(error);
@@ -768,10 +753,8 @@ export class FlowCompletionComponent implements OnInit {
         if (this.flow === 'create-merchant') this.step = 5;
       } else {
         this.showLoginPassword = true;
-        this.stepsLeft = this.banks.length > 1 ? 4 : 3;
       }
     } else {
-      this.stepsLeft = this.banks.length > 1 ? 6 : 5;
       this.step = 1;
       this.userData = undefined;
       this.isLogged = false;
