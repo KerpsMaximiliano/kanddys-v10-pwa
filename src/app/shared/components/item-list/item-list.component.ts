@@ -28,6 +28,7 @@ export interface ItemList {
   icons_image_bool?: boolean;
   bar_icons?: boolean;
   contentBgColor?: string;
+  phone?: string;
 }
 
 @Component({
@@ -61,6 +62,7 @@ export class ItemListComponent implements OnInit {
     barLeftIcon: '',
     barRightIcon: '',
     contentBgColor: '',
+    phone: '',
   };
 
   @Input('marginTop') marginTop = '62px';

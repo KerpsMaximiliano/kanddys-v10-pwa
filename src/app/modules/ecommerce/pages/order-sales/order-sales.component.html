@@ -16,12 +16,12 @@
     <ng-container *ngIf="inSearch">
 
         <div class="search-area">
-            <input type="text" class="search-bar" placeholder="Buscar.."/>
+            <input type="text" class="search-bar" placeholder="Buscar.." (keyup)="searchNumber($event)" />
         </div>
 
-        <ng-container  *ngFor = "let order of ordurs; index as i">
+        <ng-container  *ngFor = "let order of orders; index as i">
 
-            <div class="order"> <!--*ngIf = "order.visible == true || search.value == ''"-->
+            <div class="order" *ngIf="order.phone == auxNumbers"> <!--*ngIf = "order.visible == true || search.value == ''"-->
                 <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
             </div>
 
