@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -107,6 +107,7 @@ export class FlowCompletionComponent implements OnInit {
   newProviderName: string = '';
   dialogProps: Record<string, any>;
   comesFromMagicLink: boolean = false;
+  comesFromWhatsappOrEmailRedirection: boolean = false;
   saleflowData: any;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   incorrectPasswordAttempt: boolean = false;
@@ -221,6 +222,8 @@ export class FlowCompletionComponent implements OnInit {
       this.comesFromMagicLink = true;
 
       if (token) {
+        this.comesFromWhatsappOrEmailRedirection = true;
+
         try {
           // const { analizeMagicLink: session } =
           //   await this.authService.analizeMagicLink(token);
@@ -275,7 +278,7 @@ export class FlowCompletionComponent implements OnInit {
       }
 
       if (this.router.url.includes('flow-completion')) {
-        this.headerText = 'INFORMACIÓN NECESARIA';
+        this.headerText = 'INFORMACIÓN DEL PAGO';
         let products: string[] = [];
         let packages: string[] = [];
         if (this.header.order?.itemPackage) {
@@ -534,13 +537,13 @@ export class FlowCompletionComponent implements OnInit {
 
   createOrSkipOrder() {
     if (this.orderId) {
-      this.step = 5;
+      this.step = 7;
     } else {
       lockUI(
         this.createOrder().then((data) => {
           this.location.replaceState(`ecommerce/flow-completion/${data}`);
           return this.getOrderData(this.header.orderId).then(() => {
-            this.step = 5;
+            this.step = 7;
           });
         })
       );
@@ -568,18 +571,16 @@ export class FlowCompletionComponent implements OnInit {
     ) {
       this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
     }
-    this.code = '';
-    this.paymentCode = '';
-    this.imageField = undefined;
-    if (this.step === 5) this.selectedPayment = undefined;
-    if (this.step === 6) this.selectedBank = undefined;
+    // this.code = '';
+    // this.paymentCode = '';
+    // this.imageField = undefined;
+    // if (this.step === 5) this.selectedPayment = undefined;
+    // if (this.step === 6) this.selectedBank = undefined;
 
-    if (this.step === 5) {
+    if (this.step === 7) {
       this.step = 3;
       this.isANewUser = false;
     }
-
-    if (this.step === 7) this.step = 5;
   }
 
   // Case 1
@@ -789,10 +790,6 @@ export class FlowCompletionComponent implements OnInit {
         this.order
           .createOrder(this.header.order)
           .then((data) => {
-            if (!this.comesFromMagicLink) {
-              this.header.deleteSaleflowOrder(saleflow._id);
-              this.header.resetIsComplete();
-            }
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
             this.orderId = data.createOrder._id;
@@ -933,4 +930,20 @@ export class FlowCompletionComponent implements OnInit {
       this.step = 9;
     });
   }
+
+  // ngOnDestroy(): void {
+  //   const saleflow =
+  //     this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+
+  //   console.log(
+  //     this.comesFromWhatsappOrEmailRedirection,
+  //     this.orderId,
+  //     saleflow._id
+  //   );
+
+  //   if (this.comesFromWhatsappOrEmailRedirection && this.orderId) {
+  //     this.header.deleteSaleflowOrder(saleflow._id);
+  //     this.header.resetIsComplete();
+  //   }
+  // }
 }
