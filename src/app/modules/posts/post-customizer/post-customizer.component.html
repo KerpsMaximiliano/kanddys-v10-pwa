@@ -216,17 +216,8 @@
               class="list-option"
               *ngFor="let color of getBackgroundColors()"
             >
-              <!-- <span
-                *ngIf="color === 'none'"
-                style="padding: 6px 10px; border-radius: 50%; display: flex"
-                [ngClass]="{
-                  'selected-option': selectedBackgroundColor.fixedValue === color.fixedValue
-                }"
-                (click)="onChangeBackgroundColor(color)"
-                >X</span
-              > -->
+            <ng-container *ngIf="color.name !== 'Blanco'">
               <span
-                *ngIf="color !== 'none'"
                 (click)="onChangeBackgroundColor(color)"
                 class="color-font"
                 style.backgroundColor="{{ color.fixedValue }}"
@@ -235,6 +226,7 @@
                 }"
               ></span>
               <span style="white-space: nowrap">{{ color.name }}</span>
+            </ng-container>
             </div>
           </div>
         </div>

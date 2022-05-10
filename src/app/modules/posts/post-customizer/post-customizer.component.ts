@@ -430,21 +430,17 @@ export class PostCustomizerComponent
           this.isLongText = true;
       }
     } else if (this.route.snapshot.url[0].path === 'post-customizer') {
-      if (backgroundColor.active && backgroundColor.onlyFixed && this.header.paramHasColor) {
-        this.backgroundColorActive = true;
-        this.selectedBackgroundColor = backgroundColor.fixed[0];
-        this.drawBackgroundColor();
+      if (backgroundColor.active && backgroundColor.onlyFixed) {
+        if(this.header.paramHasColor) {
+          this.backgroundColorActive = true;
+          this.selectedBackgroundColor = backgroundColor.fixed[0];
+          this.drawBackgroundColor();
+        } else {
+          this.selectedBackgroundColor = backgroundColor.fixed.find((value) => value.name === 'Blanco');
+        }
       }
       if (backgroundImage.active && backgroundImage.onlyFixed && this.header.paramHasImage) {
-        // backgroundImage.active = true;
-        // backgroundImage.onlyFixed = true;
-        // backgroundImage.fixed[0] = "https://i.guim.co.uk/img/media/26392d05302e02f7bf4eb143bb84c8097d09144b/446_167_3683_2210/master/3683.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=49ed3252c0b2ffb49cf8b508892e452d"
-        this.selectedBackgroundImage = backgroundImage.fixed[0];
-        this.imageElement = new Image();
-        this.imageElement.src = backgroundImage.fixed[0];
-        this.imageElement.onload = () => {
-          this.draw();
-        };
+        this.onChangeBackgroundImage(backgroundImage.fixed[0])
       }
       if (stickers.fixedAmountItems) {
         const urlList: string[] = stickers.itemsRule.map((sticker) => {

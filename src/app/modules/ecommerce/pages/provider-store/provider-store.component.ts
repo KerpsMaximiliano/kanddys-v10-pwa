@@ -133,11 +133,11 @@ export class ProviderStoreComponent implements OnInit {
         link: 'quantity-and-quality',
         active: false,
       });
-      this.options.push({
-        option: 'Personalización',
-        link: 'redirect-to-customizer',
-        active: false,
-      });
+      // this.options.push({
+      //   option: 'Personalización',
+      //   link: 'redirect-to-customizer',
+      //   active: false,
+      // });
     }
     if (this.header.order.itemPackage) {
       this.options.push({

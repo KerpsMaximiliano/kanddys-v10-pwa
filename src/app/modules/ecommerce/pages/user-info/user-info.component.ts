@@ -82,13 +82,13 @@ export class UserInfoComponent implements OnInit {
       if (this.header.isComplete.customizer) {
         this.warningSteps.push({
           name: 'Personalización',
-          url: 'redirect-to-customizer',
+          url: 'quantity-and-quality',
           status: true,
         });
       } else {
         this.warningSteps.push({
           name: 'Personalización',
-          url: 'redirect-to-customizer',
+          url: 'quantity-and-quality',
           status: false,
         });
       }

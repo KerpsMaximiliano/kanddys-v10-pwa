@@ -541,6 +541,10 @@ const bgColors = [
     fixedValue: "#676881",
     name: 'Azul Marino'
   },
+  {
+    fixedValue: "#FFFFFF",
+    name: 'Blanco'
+  },
 ]
 
 const stickers = [
