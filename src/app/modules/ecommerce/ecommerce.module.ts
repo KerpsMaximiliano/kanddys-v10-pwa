@@ -25,6 +25,8 @@ import { MyItemsComponent } from './pages/my-items/my-items.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
+import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
+import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 
 const routes: Routes = [
   {
@@ -126,7 +128,15 @@ const routes: Routes = [
   },
   {
     path: 'redirections',
-    component: RedirectionsComponent,
+    component: RedirectionsComponent
+  },
+  {
+      path: 'tag-detail',
+      component: TagDetailComponent
+  },
+  {
+      path: 'tags-edit',
+      component: TagsEditComponent
   },
 ];
 
@@ -157,6 +167,8 @@ const routes: Routes = [
     LandingComponent,
     OrderSalesComponent,
     RedirectionsComponent,
+    TagDetailComponent,
+    TagsEditComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -40,7 +40,7 @@ export class Customizer extends Model<Customizer> {
   backgroundColor: {
     active: boolean;
     onlyFixed: boolean;
-    fixed?: string[];
+    fixed?: CustomizerFixedValue[];
   };
   backgroundImage: {
     active: boolean;
@@ -117,7 +117,7 @@ export class CustomizerInput {
   backgroundColor: {
     active: boolean;
     onlyFixed: boolean;
-    fixed?: string[];
+    fixed?: CustomizerFixedValue[];
   };
   backgroundImage: {
     active: boolean;

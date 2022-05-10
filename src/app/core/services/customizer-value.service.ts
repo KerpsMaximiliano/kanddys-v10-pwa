@@ -34,7 +34,7 @@ export class CustomizerValueService {
     }
   }
 
-  async getCustomizerValuePreview(id: string): Promise<{ _id: string, preview: string, canvas: { size: { width: number, height: number } } }> {
+  async getCustomizerValuePreview(id: string): Promise<{ _id: string, preview: string }> {
     try {
       const result = await this.graphql.query({
         query: getCustomizerValuePreview,

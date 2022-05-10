@@ -47,8 +47,6 @@ export class CustomItemDetailComponent implements OnInit {
 
   onClick(index: number) {
     const total = (this.header.items[0] as Item).params[1].values[index].price + (this.header.items[0].params[1].values[index].quantity * this.header.items[0].params[0].values[0].price)
-
-    // this.header.items[0].total = total;
     this.header.items[0].total = total+(total*0.18);
     this.header.items[0].qualityQuantity = {
       price: this.header.items[0].params[1].values[index].price,
@@ -62,16 +60,28 @@ export class CustomItemDetailComponent implements OnInit {
         param: (this.header.items[0] as Item).params[1]._id,
         paramValue: (this.header.items[0] as Item).params[1].values[index]._id,
       };
+      if((this.header.items[0] as Item).params[1].values[index].name.includes('Color')) {
+        if((this.header.items[0] as Item).params[1].values[index].name === 'Linen Like Color' && (this.header.items[0] as Item).category[0].name === 'Baño') {
+          this.header.paramHasImage = true;
+          this.header.paramHasColor = false;
+        }
+        else {
+          this.header.paramHasImage = false
+          this.header.paramHasColor = true;
+        }
+      }
+      else {
+        this.header.paramHasImage = false
+        this.header.paramHasColor = false;
+      }
     }
     this.header.addParams(this.header.saleflow._id, this.header.order.products[0].params[1]);
     this.header.storeAmount(this.header.saleflow._id, this.header.order.products[0].amount);
     this.header.isComplete.qualityQuantity = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    if(!this.header.isComplete.customizer)
-      this.router.navigate([`ecommerce/provider-store/redirect-to-customizer`]);
-    else if(!this.header.isComplete.message && this.header.saleflow.module.post && this.header.saleflow.module.post.isActive)
-      this.router.navigate([`ecommerce/provider-store/gift-message`]);
-    else this.router.navigate([`ecommerce/provider-store/user-info`]);
+    if (this.header.customizerData) this.header.customizerData = null;
+    this.header.isComplete.customizer = false;
+    this.router.navigate([`ecommerce/provider-store/redirect-to-customizer`]);
   }
 
 }

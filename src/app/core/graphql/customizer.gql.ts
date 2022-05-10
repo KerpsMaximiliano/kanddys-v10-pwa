@@ -15,7 +15,10 @@ export const customizer =`
   backgroundColor {
     active
     onlyFixed
-    fixed
+    fixed {
+      name
+      fixedValue
+    }
   }
   backgroundImage {
     active

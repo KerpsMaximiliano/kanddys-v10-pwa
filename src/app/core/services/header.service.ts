@@ -87,7 +87,7 @@ export class HeaderService {
     elementList: any;
     backgroundUrl: string;
     backgroundImage: File;
-    backgroundColor: string;
+    backgroundColor: { name?: string; fixedValue?: string };
     stickersAmount: number;
     textsAmount: number;
     id: string;
@@ -109,6 +109,8 @@ export class HeaderService {
   hasScenarios: boolean;
   fromOrderSales: string;
   flowRoute: string;
+  paramHasColor: boolean;
+  paramHasImage: boolean;
   public session: Session;
   constructor(
     private dialog: DialogService,
@@ -422,7 +424,6 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (orderProgress) {
       this.hasScenarios = orderProgress.scenarios;
-      orderProgress.customizer = null;
       this.isComplete = orderProgress;
     }
   }

@@ -296,7 +296,8 @@ export class PostCustomizerComponent
   imageUrl: string;
   selectedBackgroundImage: string;
   imageElement: HTMLImageElement;
-  selectedBackgroundColor: string = '#ffffff';
+  backgroundColorActive: boolean;
+  selectedBackgroundColor: { name?: string; fixedValue?: string };
   // IMAGE
 
   // EDITING
@@ -365,7 +366,7 @@ export class PostCustomizerComponent
 
   getCustomizerRules(customizer: Customizer) {
     this.customizerRules = customizer;
-    const { canvas, stickers, texts, lines } = customizer;
+    const { canvas, backgroundColor, backgroundImage, stickers, texts, lines } = customizer;
     if (canvas.onlyFixed) {
       // this.canvasHeight = canvas.fixedSize.height;
       // this.canvasRatio = canvas.fixedSize.ratio;
@@ -428,61 +429,75 @@ export class PostCustomizerComponent
         if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
           this.isLongText = true;
       }
-    } else {
-      if (this.route.snapshot.url[0].path === 'post-customizer') {
-        if (stickers.fixedAmountItems) {
-          const urlList: string[] = stickers.itemsRule.map((sticker) => {
-            let url;
-            if (sticker.onlyFixed) url = sticker.fixed[0];
-            else url = this.stickerList[0];
-            return url;
-          });
-          const promises = urlList.map((url) => this.fetchSVG(url));
-          Promise.all(promises).then((result) => {
-            result.forEach((svg) => {
-              if (svg) {
-                this.addSticker(svg, 0);
-              }
-            });
-          });
-        }
-        if (texts.fixedAmountItems) {
-          // Text input below canvas
-          this.willShowInput = true;
-          this.inputMaxLength = texts.itemsRule.reduce(
-            (prev, curr) => prev + curr.fixedLength,
-            0
-          );
-          this.hiddenFontText = texts.itemsRule.reduce(
-            (prev, curr) => prev + curr.defaultText,
-            ''
-          );
-          if (
-            texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
-            texts.itemsRule[0].fixedFonts[0] === 'Elegant'
-          ) {
-            if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
-              this.isLongText = true;
-            this.willHideInput = true;
-          }
-          if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
-            this.isLongText = true;
-          // Text input below canvas
-          texts.itemsRule.forEach((text) => {
-            if (text.defaultText) {
-              let textData: TextData = {
-                imageText: text.defaultText,
-                fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
-                fontColor: text.onlyFixedColor
-                  ? text.fixedColors[0]
-                  : { fixedValue: '#ffffff', name: 'Default' },
-                fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
-              };
-              this.typographyData = textData;
-              this.exitEditing(textData);
+    } else if (this.route.snapshot.url[0].path === 'post-customizer') {
+      if (backgroundColor.active && backgroundColor.onlyFixed && this.header.paramHasColor) {
+        this.backgroundColorActive = true;
+        this.selectedBackgroundColor = backgroundColor.fixed[0];
+        this.drawBackgroundColor();
+      }
+      if (backgroundImage.active && backgroundImage.onlyFixed && this.header.paramHasImage) {
+        // backgroundImage.active = true;
+        // backgroundImage.onlyFixed = true;
+        // backgroundImage.fixed[0] = "https://i.guim.co.uk/img/media/26392d05302e02f7bf4eb143bb84c8097d09144b/446_167_3683_2210/master/3683.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=49ed3252c0b2ffb49cf8b508892e452d"
+        this.selectedBackgroundImage = backgroundImage.fixed[0];
+        this.imageElement = new Image();
+        this.imageElement.src = backgroundImage.fixed[0];
+        this.imageElement.onload = () => {
+          this.draw();
+        };
+      }
+      if (stickers.fixedAmountItems) {
+        const urlList: string[] = stickers.itemsRule.map((sticker) => {
+          let url;
+          if (sticker.onlyFixed) url = sticker.fixed[0];
+          else url = this.stickerList[0];
+          return url;
+        });
+        const promises = urlList.map((url) => this.fetchSVG(url));
+        Promise.all(promises).then((result) => {
+          result.forEach((svg) => {
+            if (svg) {
+              this.addSticker(svg, 0);
             }
           });
+        });
+      }
+      if (texts.fixedAmountItems) {
+        // Text input below canvas
+        this.willShowInput = true;
+        this.inputMaxLength = texts.itemsRule.reduce(
+          (prev, curr) => prev + curr.fixedLength,
+          0
+        );
+        this.hiddenFontText = texts.itemsRule.reduce(
+          (prev, curr) => prev + curr.defaultText,
+          ''
+        );
+        if (
+          texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
+          texts.itemsRule[0].fixedFonts[0] === 'Elegant'
+        ) {
+          if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+            this.isLongText = true;
+          this.willHideInput = true;
         }
+        if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+          this.isLongText = true;
+        // Text input below canvas
+        texts.itemsRule.forEach((text) => {
+          if (text.defaultText) {
+            let textData: TextData = {
+              imageText: text.defaultText,
+              fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
+              fontColor: text.onlyFixedColor
+                ? text.fixedColors[0]
+                : { fixedValue: '#ffffff', name: 'Default' },
+              fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
+            };
+            this.typographyData = textData;
+            this.exitEditing(textData);
+          }
+        });
       }
     }
   }
@@ -923,7 +938,7 @@ export class PostCustomizerComponent
     this.modifyingElement = -1;
     this.modifyingSticker = -1;
     this.modifyingText = -1;
-    // this.selectedOption = '';
+    this.selectedOption = '';
     this.selectedElementOption = '';
   }
 
@@ -1739,7 +1754,7 @@ export class PostCustomizerComponent
             t.position.y + t.position.height / 2
           );
           this.context.rotate(t.position.rotation);
-          if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
+          if (t.typography.color.fixedValue === this.selectedBackgroundColor.fixedValue) {
             if (t.typography.color.fixedValue !== '#000000')
               this.context.fillStyle = 'black';
             else this.context.fillStyle = 'white';
@@ -2244,14 +2259,14 @@ export class PostCustomizerComponent
   }
 
   // Changes background color. Background Image takes priority if one is selected
-  onChangeBackgroundColor(color: string) {
+  onChangeBackgroundColor(color: { name?: string; fixedValue?: string }) {
     this.selectedBackgroundColor = color;
     this.draw();
   }
 
   // Draws the selected Background color. Background Image takes priority if one is selected
   drawBackgroundColor() {
-    this.context.fillStyle = this.selectedBackgroundColor;
+    this.context.fillStyle = this.selectedBackgroundColor.fixedValue;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
@@ -2271,7 +2286,7 @@ export class PostCustomizerComponent
       this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.imageElement = new Image();
     this.imageElement.src = url;
-    this.selectedBackgroundColor = 'none';
+    this.selectedBackgroundColor = null;
     this.draw();
     this.selectedBackgroundImage = url;
     this.imageFile = null;
@@ -2286,7 +2301,7 @@ export class PostCustomizerComponent
       this.imageElement = new Image();
       this.imageElement.src = event.target.result;
       this.imageElement.onload = () => {
-        this.selectedBackgroundColor = 'none';
+        this.selectedBackgroundColor = null;
         this.draw();
       };
     };
@@ -2422,7 +2437,10 @@ export class PostCustomizerComponent
         rules: this.customizerRuleID ?? this.customizerValueID,
         backgroundImage,
         backgroundColor: {
-          color: this.selectedBackgroundColor,
+          color: {
+            fixedValue: this.selectedBackgroundColor.fixedValue,
+            name: this.selectedBackgroundColor.name
+          },
         },
         canvas: {
           rounded: false,
@@ -2437,9 +2455,11 @@ export class PostCustomizerComponent
         lines,
         preview: file,
       };
-      // console.log(customizerValues);
-      // unlockUI();
-      // return;
+      const items = this.header.getItems(this.header.getSaleflow()._id);
+      this.header.emptyItems(this.header.getSaleflow()._id);
+      this.header.items[0].images[0] = url;
+      items[0].images[0] = url;
+      this.header.storeItem(this.header.getSaleflow()._id, items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
@@ -2496,7 +2516,7 @@ export class PostCustomizerComponent
       id: this.customizerRuleID,
     };
 
-    this.header.storeCustomizer(this.header.saleflow._id, customizerValues);
+    this.header.storeCustomizer(this.header.saleflow?._id ?? this.header.getSaleflow()._id, customizerValues);
 
     this.header.isComplete.customizer = true;
   }
@@ -2534,7 +2554,7 @@ export class PostCustomizerComponent
   restart() {
     this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.elementList = [];
-    this.selectedBackgroundColor = 'none';
+    this.selectedBackgroundColor = null;
   }
 
   // Clears the canvas, leaves it blank
@@ -2579,7 +2599,7 @@ export class PostCustomizerComponent
     if (this.imageElement) this.drawBackgroundImage();
     if (
       this.customizerRules.backgroundColor.active &&
-      this.selectedBackgroundColor !== 'none'
+      this.selectedBackgroundColor
     )
       this.drawBackgroundColor();
     for (let i = 0; i < this.elementList.length; i++) {
