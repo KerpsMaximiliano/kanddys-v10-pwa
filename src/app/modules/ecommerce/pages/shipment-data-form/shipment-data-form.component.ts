@@ -12,6 +12,8 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
+import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 interface FieldStyles {
   fieldStyles?: any;
@@ -87,7 +89,11 @@ interface OptionalLink {
   styleUrls: ['./shipment-data-form.component.scss'],
 })
 export class ShipmentDataFormComponent implements OnInit {
-  constructor(private header: HeaderService, private router: Router) {}
+  constructor(
+    private header: HeaderService,
+    private router: Router,
+    private dialog: DialogService
+  ) {}
 
   steps: Array<FormStep> = [
     {
@@ -168,7 +174,10 @@ export class ShipmentDataFormComponent implements OnInit {
         this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
         this.header.isComplete.delivery = true;
         this.header.storeOrderProgress(this.header.saleflow._id);
-        this.router.navigate([`ecommerce/flow-completion`]);
+
+        this.openDialog();
+
+        // this.router.navigate([`ecommerce/flow-completion`]);
         return { ok: true };
       },
       bottomLeftAction: {
@@ -177,8 +186,8 @@ export class ShipmentDataFormComponent implements OnInit {
           console.log(params.dataModel.value['1']);
 
           const deliveryData = {
-            street: params.dataModel.value['1'].street,
-            note: params.dataModel.value['1'].note,
+            street: '',
+            note: '',
             city: '',
           };
           if (
@@ -189,7 +198,8 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.storeLocation(this.header.saleflow._id, deliveryData);
           this.header.isComplete.delivery = true;
           this.header.storeOrderProgress(this.header.saleflow._id);
-          this.router.navigate([`ecommerce/flow-completion`]);
+
+          this.openDialog();
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
@@ -199,29 +209,37 @@ export class ShipmentDataFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if(!this.header.saleflow) {
+    if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
-      if(saleflow) {
+      if (saleflow) {
         this.header.saleflow = saleflow;
         this.header.order = this.header.getOrder(saleflow._id);
-        if(!this.header.order) {
+        if (!this.header.order) {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
-        if(items && items.length > 0) this.header.items = items;
+        if (items && items.length > 0) this.header.items = items;
         else this.router.navigate([`/ecommerce/trivias`]);
       } else this.router.navigate([`/ecommerce/trivias`]);
     } else {
       this.header.order = this.header.getOrder(this.header.saleflow._id);
-      if(!this.header.order) {
+      if (!this.header.order) {
         this.router.navigate([`/ecommerce/trivias`]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
-      if(items && items.length > 0) this.header.items = items;
+      if (items && items.length > 0) this.header.items = items;
       else this.router.navigate([`/ecommerce/trivias`]);
     }
+  }
+
+  openDialog() {
+    this.dialog.open(MagicLinkDialogComponent, {
+      type: 'flat-action-sheet',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

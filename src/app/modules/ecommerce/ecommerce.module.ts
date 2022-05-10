@@ -24,6 +24,7 @@ import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-
 import { MyItemsComponent } from './pages/my-items/my-items.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
+import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 
@@ -123,7 +124,11 @@ const routes: Routes = [
   },
   {
     path: 'order-sales/:id',
-    component: OrderSalesComponent
+    component: OrderSalesComponent,
+  },
+  {
+    path: 'redirections',
+    component: RedirectionsComponent
   },
   {
       path: 'tag-detail',
@@ -161,8 +166,9 @@ const routes: Routes = [
     MyItemsComponent,
     LandingComponent,
     OrderSalesComponent,
+    RedirectionsComponent,
     TagDetailComponent,
-    TagsEditComponent,
+    TagsEditComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -73,6 +73,7 @@ import { InformationBoxComponent } from './components/information-box/informatio
 import { ImageViewComponent } from './dialogs/image-view/image-view.component';
 import { HeaderButtonComponent } from './components/header-button/header-button.component';
 import { TagsSquareComponent } from './components/tags-square/tags-square.component';
+import { MagicLinkDialogComponent } from './components/magic-link-dialog/magic-link-dialog.component';
 
 const imports = [
   CommonModule,
@@ -143,6 +144,7 @@ const declarations = [
   ImageViewComponent,
   HeaderButtonComponent,
   TagsSquareComponent,
+  MagicLinkDialogComponent,
 ];
 
 @NgModule({
