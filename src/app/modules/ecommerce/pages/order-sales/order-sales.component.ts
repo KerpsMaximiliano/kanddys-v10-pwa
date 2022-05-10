@@ -26,7 +26,7 @@ export class OrderSalesComponent implements OnInit {
 
   testTags: string[] = [' ', ' ', ' ', ' ', ' '];
   inSearch: boolean = false;
-  isLogged: boolean = true
+  isLogged: boolean = true;
   merchantID: string ;
   tags = [{subtitle: 'FILTERED BY TAGS', options: [],}];
   search: searchInput = {
@@ -36,120 +36,13 @@ export class OrderSalesComponent implements OnInit {
   mouseDown = false;
   startX: any;
   scrollLeft: any;
-
-  ordurs: Array<any> = [{
-    title: 'NombreID',
-    eventTitle: 'event title',
-    subtitle: 'compradorID',
-    price: null,
-    description: this.fields,
-    image: '',
-    eventImage: undefined,
-    icon: '',
-    text_style: true,
-    text_left: 'hace 2 dias',
-    text_right: 'adiciona un tag',
-    full_text: '',
-    icons: [],
-    text_icon: '',
-    icons_image: [],
-    icon_bottom: {},
-    icons_right: [],
-    icons_bottom_right: [],
-    bar: false,
-    barColor: 'transparent',
-    barText: '',
-    barLeftIcon: '',
-    barRightIcon: '',
-    contentBgColor: '',
-  },
-  {
-    title: 'NombreID',
-    eventTitle: undefined,
-    subtitle: 'CompradorID',
-    price: null,
-    description: this.fields,
-    image: '',
-    eventImage: undefined,
-    icon: '',
-    text_style: true,
-    text_left: 'Hace 2 dias',
-    text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-    full_text: '',
-    icons: [],
-    text_icon: '',
-    icons_image: [],
-    icon_bottom: {},
-    icons_right: [],
-    icons_bottom_right: [],
-    bar: false,
-    barColor: 'transparent',
-    barText: '',
-    barLeftIcon: '',
-    barRightIcon: '',
-    contentBgColor: '',
-  },
-  {
-    title: 'NombreID',
-    eventTitle: undefined,
-    subtitle: 'compradorID',
-    price: null,
-    description: this.fields,
-    image: '',
-    eventImage: undefined,
-    icon: '',
-    text_style: true,
-    text_left: 'hace 2 dias',
-    text_right: 'adiciona un tag',
-    full_text: '',
-    icons: [],
-    text_icon: '',
-    icons_image: [],
-    icon_bottom: {},
-    icons_right: [],
-    icons_bottom_right: [],
-    bar: false,
-    barColor: 'transparent',
-    barText: '',
-    barLeftIcon: '',
-    barRightIcon: '',
-    contentBgColor: '',
-  },
-  {
-    title: 'NombreID',
-    eventTitle: undefined,
-    subtitle: 'CompradorID',
-    price: null,
-    description: this.fields,
-    image: '',
-    eventImage: undefined,
-    icon: '',
-    text_style: true,
-    text_left: 'hace 2 dias',
-    text_right: 'TagID, TagID, TagID, TagID, TagID, TagID',
-    full_text: '',
-    icons: [],
-    text_icon: '',
-    icons_image: [],
-    icon_bottom: {},
-    icons_right: [],
-    icons_bottom_right: [],
-    bar: false,
-    barColor: 'transparent',
-    barText: '',
-    barLeftIcon: '',
-    barRightIcon: '',
-    contentBgColor: '',
-  },
-];
-  
+  auxNumbers: Array<string> = [''];  
 
   options: Array<any> = [
     {label: "Sales", selected: true},
     {label: "Info de la Encuesta en la Notificación", selected: false}
   ] //Parte de un componente comentado 1/4/2022
   selectedOption: number = 0
-
 
   orders: Array<any> = [];
 
@@ -347,7 +240,6 @@ export class OrderSalesComponent implements OnInit {
      }).then(data =>{
        console.log(data)
        data.ordersByMerchant.forEach(order => {
-         
          let auxTags: Array<any> = []
 
          order.tags.forEach(tag => {
@@ -376,6 +268,7 @@ export class OrderSalesComponent implements OnInit {
            tags: auxTags,
            text_left: 'Create by ' +  order.user.name + '.' + timeAgo ,
            text_style: true,
+           phone: order.user.phone,
            //icons_image_bool: true,
            icons_bottom_right: [
              { 
@@ -473,6 +366,13 @@ export class OrderSalesComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  searchNumber(event: any){
+      this.auxNumbers = event.target.value;
+      console.log(this.auxNumbers);
+      let filteredNumber = this.orders.filter(number => number.phone.includes(this.auxNumbers));
+    //   console.log(filteredNumber);
   }
 
 }
