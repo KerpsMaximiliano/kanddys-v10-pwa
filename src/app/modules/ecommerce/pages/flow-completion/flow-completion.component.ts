@@ -56,44 +56,6 @@ export class FlowCompletionComponent implements OnInit {
       status: false,
     },
   ];
-  communityOptions = [
-    {
-      value: 'Tengo mas de 300 seguidores',
-      status: true,
-    },
-    {
-      value: 'Trabajo en una estacion de radio/tv',
-      status: true,
-    },
-    {
-      value: 'Soy creador de contenido',
-      status: true,
-    },
-    {
-      value: 'Me gusta crear Trivias',
-      status: true,
-    },
-    {
-      value: 'Trabajo en una organización sin fines de lucro',
-      status: true,
-    },
-    {
-      value: 'Soy parte de la asociación de padres de una escuela',
-      status: true,
-    },
-    {
-      value: 'Soy un usual en TikTok',
-      status: true,
-    },
-    {
-      value: 'Soy un usual en Snapchat',
-      status: true,
-    },
-    {
-      value: 'Ayudo a recaudar fondos',
-      status: true,
-    },
-  ];
   options = [
     {
       status: true,
@@ -128,7 +90,6 @@ export class FlowCompletionComponent implements OnInit {
   showLoginPassword: boolean;
   selectedBank: BankDetails;
   selectedPayment: number;
-  selectedCommunitiesOptions: number[] = [];
   paymentCode: string = '';
   image: File;
   merchantInfo: Merchant;
@@ -142,7 +103,6 @@ export class FlowCompletionComponent implements OnInit {
   orderInfo: any;
   fakeData: ItemOrder;
   reservationOrProduct: string = '';
-  flow: 'flow-completion' | 'create-community' | 'create-merchant';
   headerText: string;
   newProviderName: string = '';
   dialogProps: Record<string, any>;
@@ -163,7 +123,6 @@ export class FlowCompletionComponent implements OnInit {
     private header: HeaderService,
     private customizerValueService: CustomizerValueService,
     private postsService: PostsService,
-    private communitiesService: CommunitiesService,
     private readonly app: AppService,
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
@@ -316,7 +275,6 @@ export class FlowCompletionComponent implements OnInit {
       }
 
       if (this.router.url.includes('flow-completion')) {
-        this.flow = 'flow-completion';
         this.headerText = 'INFORMACIÓN NECESARIA';
         let products: string[] = [];
         let packages: string[] = [];
@@ -356,12 +314,6 @@ export class FlowCompletionComponent implements OnInit {
         });
       } else {
         this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
-      }
-      if (this.router.url.includes('create-community')) {
-        this.flow = 'create-community';
-      }
-      if (this.router.url.includes('create-merchant')) {
-        this.flow = 'create-merchant';
       }
 
       if (!token) {
@@ -492,9 +444,6 @@ export class FlowCompletionComponent implements OnInit {
       case 7:
         this.payOrder();
         break;
-      case 8:
-        this.createNewProvider();
-        break;
       case 9:
         this.gotToUpdatePassword();
         break;
@@ -528,10 +477,7 @@ export class FlowCompletionComponent implements OnInit {
         this.userSelect(index);
         break;
       case 5: {
-        this.flow !== 'flow-completion'
-          ? this.multipleSelect(index)
-          : (this.selectedPayment = index);
-
+        this.selectedPayment = index;
         let showProducts = [];
         if (this.orderData.isPackage) {
           showProducts.push(this.fakeData.itemPackage);
@@ -583,17 +529,6 @@ export class FlowCompletionComponent implements OnInit {
       this.sendCodeToEmailOrWhatsapp();
     } else {
       this.checkUser();
-    }
-  }
-
-  multipleSelect(index: number) {
-    if (this.step == 5) {
-      if (this.selectedCommunitiesOptions.includes(index)) {
-        this.selectedCommunitiesOptions.splice(
-          this.selectedCommunitiesOptions.indexOf(index),
-          1
-        );
-      } else this.selectedCommunitiesOptions.push(index);
     }
   }
 
@@ -753,9 +688,7 @@ export class FlowCompletionComponent implements OnInit {
           this.router.navigate(['ecommerce/error-screen']);
           return;
         }
-        if (this.flow === 'flow-completion') this.createOrSkipOrder();
-        if (this.flow === 'create-community') this.step = 5;
-        if (this.flow === 'create-merchant') this.step = 5;
+        this.createOrSkipOrder();
       } else {
         this.showLoginPassword = true;
       }
@@ -789,9 +722,7 @@ export class FlowCompletionComponent implements OnInit {
           this.router.navigate(['ecommerce/error-screen']);
           return;
         }
-        if (this.flow === 'flow-completion') this.createOrSkipOrder();
-        if (this.flow === 'create-community') this.step = 5;
-        if (this.flow === 'create-merchant') this.step = 5;
+        this.createOrSkipOrder();
       } else {
         this.incorrectPasswordAttempt = true;
         this.password = '';
@@ -988,31 +919,6 @@ export class FlowCompletionComponent implements OnInit {
     ) {
     } else {
       event.preventDefault();
-    }
-  }
-
-  // Case 8
-  async createNewProvider() {
-    lockUI();
-    try {
-      if (this.flow === 'create-community') {
-        const data = await this.communitiesService.create({
-          owner: this.userData._id,
-          name: this.newProviderName,
-          creator: this.userData._id,
-        });
-        unlockUI();
-      }
-      if (this.flow === 'create-merchant') {
-        const data = await this.merchant.createMerchant({
-          owner: this.userData._id,
-          name: this.newProviderName,
-        });
-        unlockUI();
-      }
-    } catch (error) {
-      console.log(error);
-      unlockUI();
     }
   }
 

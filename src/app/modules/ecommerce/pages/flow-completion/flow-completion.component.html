@@ -76,21 +76,13 @@
       *ngIf="isANewUser"
     >
       <p class="label1">
-        {{
-          flow !== "flow-completion"
-            ? "Cual es tu nombre?"
-            : "Nombre y Apellido"
-        }}
+        Nombre y Apellido
       </p>
       <input
         type="text"
         class="input"
         [(ngModel)]="name"
-        [placeholder]="
-          flow !== 'flow-completion'
-            ? 'Mi nombre es..'
-            : 'Mi nombre y apellido es..'
-        "
+        [placeholder]="'Mi nombre y apellido es..'"
       />
       <div
         [ngStyle]="{
@@ -168,33 +160,15 @@
         </div>
       </div>
     </div>
-
-    <div class="content" *ngIf="flow !== 'flow-completion'">
-      <p class="label2">Cuál es tu apellido?</p>
-      <input
-        type="text"
-        class="input"
-        [(ngModel)]="lastName"
-        placeholder="Mi apellido es.."
-      />
-    </div>
     <div class="content" *ngIf="!comesFromMagicLink">
       <p style="margin-bottom: 11px" class="label2">
-        {{
-          flow !== "flow-completion"
-            ? "Añade una clave para re-ingresar"
-            : "Adiciona un nuevo password:"
-        }}
+        Adiciona un nuevo password:
       </p>
       <input
         type="password"
         class="input"
         [(ngModel)]="password"
-        [placeholder]="
-          flow !== 'flow-completion'
-            ? 'Mi clave para re-ingresar es..'
-            : 'Password..'
-        "
+        [placeholder]="'Password..'"
       />
     </div>
   </div>
@@ -317,9 +291,7 @@
         class="label1"
       >
         {{
-          flow !== "flow-completion"
-            ? "Cuentanos un poco más:"
-            : orderData?.hasCustomizer
+          orderData?.hasCustomizer
             ? "¿Cómo prefieres hacer el pago de $" +
               (orderData?.amount | number: "1.0-2") +
               " DOP / PAQ." +
@@ -331,10 +303,7 @@
         }}
       </p>
       <app-answer-selector
-        [options]="
-          flow !== 'flow-completion' ? communityOptions : paymentOptions
-        "
-        [isMultipleOption]="flow !== 'flow-completion'"
+        [options]="paymentOptions"
         (onSelector)="selectOption($event)"
       ></app-answer-selector>
     </div>
@@ -516,7 +485,7 @@
     class="footer"
     [ngStyle]="{
       justifyContent:
-        flow === 'flow-completion' && step >= 4 && step < 8
+        step >= 4 && step < 8
           ? 'space-between'
           : 'flex-end'
     }"
@@ -627,13 +596,9 @@
           (password.length < 3 && !comesFromMagicLink)) &&
         isANewUser) ||
       (step === 4 && password.length < 3) ||
-      (step === 5 &&
-        (flow !== 'flow-completion'
-          ? selectedCommunitiesOptions.length < 1
-          : !(selectedPayment >= 0))) ||
+      (step === 5 && !(selectedPayment >= 0)) ||
       (step === 6 && !selectedBank) ||
       (step === 7 && (paymentCode.length !== 4 || !image || !selectedBank)) ||
-      (step === 8 && newProviderName.trim().length === 0) ||
       (step === 9 && code.length < 3) ||
       (step === 10 && password.length < 3)
         ? 'disabled-fixed'
@@ -641,44 +606,28 @@
     "
     [text]="
       step === 1
-        ? flow !== 'flow-completion'
-          ? 'ASIGNA EL WHATSAPP AL MAPP'
-          : inputData.length < 500
-          ? 'ADICIONA TU CELULAR'
-          : 'VERIFICAR MI CELULAR'
+        ? inputData.length < 500
+            ? 'ADICIONA TU CELULAR'
+            : 'VERIFICAR MI CELULAR'
         : step === 2
-        ? flow !== 'flow-completion'
-          ? 'VERIFICAR'
-          : 'VERIFICAR MI CELULAR'
+        ? 'VERIFICAR MI CELULAR'
         : step === 3
-        ? flow !== 'flow-completion'
-          ? 'ADICIONA EL CONTACTO DEL MAPP'
-          : (!name || (password.length < 3 && !comesFromMagicLink)) &&
+        ? (!name || (password.length < 3 && !comesFromMagicLink)) &&
             isANewUser
           ? 'ESCRIBE TU NOMBRE Y APELLIDO'
           : 'CONTINUAR'
         : step === 4
         ? showLoginPassword
           ? password.length < 3
-            ? flow !== 'flow-completion'
-              ? 'INGRESA A MI MAPP'
-              : !incorrectPasswordAttempt
+            ? !incorrectPasswordAttempt
               ? 'ADICIONA LA CLAVE'
               : 'ADICIONA LA CLAVE CORRECTA'
-            : flow !== 'flow-completion'
-            ? 'INGRESA A MI MAPP'
             : incorrectPasswordAttempt
-            ? 'ADICIONA LA CLAVE CORRECTA'
-            : 'ACCEDER A LO MÁGICO'
-          : flow !== 'flow-completion'
-          ? 'SELECCIONA PARA IR AL MAPP'
+                ? 'ADICIONA LA CLAVE CORRECTA'
+                : 'ACCEDER A LO MÁGICO'
           : 'HAZ UNA SELECCION'
         : step === 5
-        ? flow !== 'flow-completion'
-          ? selectedCommunitiesOptions.length > 0
-            ? 'NOMBRA EL CLUB DE TU MAPP'
-            : 'SELECCIONA TODAS LAS POSIBLES'
-          : selectedPayment >= 0
+        ? selectedPayment >= 0
           ? 'CONTINUAR'
           : 'SELECCIONA'
         : step === 6
@@ -689,16 +638,12 @@
         ? paymentCode.length !== 4 || !image || !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
           : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
-        : step === 8
-        ? !newProviderName.trim()
-          ? 'NOMBRA EL CLUB DE TU MAPP'
-          : 'VE A TU CLUB'
         : step === 9
-        ? flow !== 'flow-completion' && code.length > 3
+        ? code.length > 3
           ? 'INGRESA EL CODIGO'
           : 'ENVIAR CODIGO'
         : step === 10
-        ? flow !== 'flow-completion' && password.length < 3
+        ? password.length < 3
           ? 'INGRESE PASSWORD'
           : 'ACTUALIZAR EL PASSWORD'
         : ''
