@@ -407,11 +407,16 @@
         </div>
       </ng-container> -->
 
-      <p class="label3" [ngStyle]="{ marginBottom: '26px' }">
+      <p
+        class="label3"
+        [ngStyle]="{ marginBottom: '26px' }"
+        *ngIf="banks.length > 1"
+      >
         En cuál cuenta hizo la transferencia?
       </p>
 
       <app-answer-selector
+        *ngIf="banks.length > 1"
         [options]="bankOptions"
         (onSelector)="selectOption($event)"
         [showDescription]="false"

@@ -536,6 +536,11 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   createOrSkipOrder() {
+    if (this.banks.length === 1) {
+      this.selectedBank = this.bankOptions[0];
+      this.step = 7;
+    }
+
     if (this.orderId) {
       this.step = 7;
     } else {
