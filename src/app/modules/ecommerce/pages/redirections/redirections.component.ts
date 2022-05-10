@@ -44,6 +44,7 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
               break;
             case '/ecommerce/shipment-data-form':
             case '/ecommerce/reservations':
+            case '/ecommerce/provider-store/user-info':
               redirectURL.url = '/ecommerce/flow-completion';
               redirectURL.queryParams = { token };
               break;
