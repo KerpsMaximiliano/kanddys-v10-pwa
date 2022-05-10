@@ -19,7 +19,6 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { CommunitiesService } from 'src/app/core/services/communities.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
 
@@ -148,6 +147,7 @@ export class FlowCompletionComponent implements OnInit {
   flow: 'flow-completion' | 'create-community' | 'create-merchant';
   headerText: string;
   newProviderName: string = '';
+  dialogProps: Record<string, any>;
   comesFromMagicLink: boolean = false;
   saleflowData: any;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
@@ -169,7 +169,6 @@ export class FlowCompletionComponent implements OnInit {
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
-    private dialog: DialogService,
     private saleflow: SaleFlowService,
     private location: Location
   ) {}
@@ -251,6 +250,7 @@ export class FlowCompletionComponent implements OnInit {
   async ngOnInit() {
     this.route.queryParams.subscribe(async (params) => {
       const { token } = params;
+      this.comesFromMagicLink = true;
 
       if (token) {
         try {
@@ -282,7 +282,7 @@ export class FlowCompletionComponent implements OnInit {
           const currentSession = await this.authService.me();
 
           if (currentSession) {
-            if (currentSession.name) {
+            if (!currentSession.name) {
               this.relativeStep = 4;
               this.createOrSkipOrder();
               this.userData = currentSession;
@@ -523,6 +523,18 @@ export class FlowCompletionComponent implements OnInit {
         this.flow !== 'flow-completion'
           ? this.multipleSelect(index)
           : (this.selectedPayment = index);
+
+        let showProducts = [];
+        if (this.orderData.isPackage) {
+          showProducts.push(this.fakeData.itemPackage);
+        } else {
+          showProducts = this.products;
+        }
+
+        this.dialogProps = {
+          orderFinished: this.orderData?.id ? true : false,
+          products: showProducts,
+        };
 
         if (this.selectedPayment === 0) {
           if (this.bankOptions.length === 1)
@@ -1014,24 +1026,6 @@ export class FlowCompletionComponent implements OnInit {
       console.log(error);
       unlockUI();
     }
-  }
-
-  showItems() {
-    let showProducts = [];
-    if (this.orderData.isPackage) {
-      showProducts.push(this.fakeData.itemPackage);
-    } else {
-      showProducts = this.products;
-    }
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        orderFinished: this.orderData?.id ? true : false,
-        products: showProducts,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   generateOTP() {

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from '../../dialogs/show-items/show-items.component';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
 
@@ -17,9 +19,11 @@ export class HelperHeaderComponent implements OnInit {
   @Input() extraText: string = '';
   @Input() middleText: string = '';
   @Input() middleTextTransform: string = 'none';
+  @Input() orderItems: boolean = false;
   @Input() middleTextColor: string = '#27A2FC';
   @Input() middleTextFontFamily: string = 'RobotoMedium';
   @Input() middleTextFontSize: string = '19px';
+  @Input() dialogProps: Record<string, any>;
   // @Input() middleTextLeft: string  = '20%';
   // @Input() middleTextTop: string  = '33%';
   @Output() onClose: EventEmitter<boolean> = new EventEmitter(false);
@@ -45,7 +49,8 @@ export class HelperHeaderComponent implements OnInit {
   env: string = environment.assetsUrl;
 
   constructor(
-    private headerService: HeaderService // private _DialogRef: DialogRef
+    private headerService: HeaderService, // private _DialogRef: DialogRef
+    private dialog: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +58,16 @@ export class HelperHeaderComponent implements OnInit {
       this.walletBalance = this.headerService.walletData.balance;
       //this.wallet = true;
     }
+  }
+
+  openDialog() {
+    let showProducts = [];
+    this.dialog.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: this.dialogProps,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   sendData(value: string) {
