@@ -88,7 +88,7 @@ export class FlowCompletionComponent implements OnInit {
   password: string = '';
   code: string = '';
   showLoginPassword: boolean;
-  selectedBank: BankDetails;
+  selectedBank: BankDetails = null;
   selectedPayment: number;
   paymentCode: string = '';
   image: File;
@@ -186,6 +186,18 @@ export class FlowCompletionComponent implements OnInit {
             }
             return newItem;
           });
+
+          let showProducts = [];
+          if (this.orderData.isPackage) {
+            showProducts.push(this.fakeData.itemPackage);
+          } else {
+            showProducts = this.products;
+          }
+
+          this.dialogProps = {
+            orderFinished: true,
+            products: showProducts,
+          };
 
           if (!this.orderData) {
             this.router.navigate(['/error-screen/?type=item']);
@@ -437,7 +449,7 @@ export class FlowCompletionComponent implements OnInit {
         // }
 
         // this.totalQuestions = 2;
-        this.selectedBank = this.bankOptions[0];
+        // this.selectedBank = this.bankOptions[0];
         this.headerText = 'INFORMACIÓN DEL PAGO';
         this.step = 7;
         break;
@@ -475,37 +487,39 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   selectOption(index: number) {
-    switch (this.step) {
-      case 4:
-        this.userSelect(index);
-        break;
-      case 5: {
-        this.selectedPayment = index;
-        let showProducts = [];
-        if (this.orderData.isPackage) {
-          showProducts.push(this.fakeData.itemPackage);
-        } else {
-          showProducts = this.products;
-        }
+    this.selectedBank = this.bankOptions[index];
 
-        this.dialogProps = {
-          orderFinished: this.orderData?.id ? true : false,
-          products: showProducts,
-        };
+    // switch (this.step) {
+    //   case 4:
+    //     this.userSelect(index);
+    //     break;
+    //   case 5: {
+    //     this.selectedPayment = index;
+    //     let showProducts = [];
+    //     if (this.orderData.isPackage) {
+    //       showProducts.push(this.fakeData.itemPackage);
+    //     } else {
+    //       showProducts = this.products;
+    //     }
 
-        if (this.selectedPayment === 0) {
-          if (this.bankOptions.length === 1)
-            this.selectedBank = this.bankOptions[0];
-          this.headerText = 'INFORMACIÓN DEL PAGO';
-          this.step = 7;
-        }
-        break;
-      }
-      case 6: {
-        this.selectedBank = this.bankOptions[index];
-        break;
-      }
-    }
+    //     this.dialogProps = {
+    //       orderFinished: true,
+    //       products: showProducts,
+    //     };
+
+    //     if (this.selectedPayment === 0) {
+    //       if (this.bankOptions.length === 1)
+    //         this.selectedBank = this.bankOptions[0];
+    //       this.headerText = 'INFORMACIÓN DEL PAGO';
+    //       this.step = 7;
+    //     }
+    //     break;
+    //   }
+    //   case 6: {
+    //     this.selectedBank = this.bankOptions[index];
+    //     break;
+    //   }
+    // }
   }
 
   async sendCodeToEmailOrWhatsapp() {
@@ -795,6 +809,8 @@ export class FlowCompletionComponent implements OnInit {
         this.order
           .createOrder(this.header.order)
           .then((data) => {
+            this.header.deleteSaleflowOrder(saleflow._id);
+            this.header.resetIsComplete();
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
             this.orderId = data.createOrder._id;
@@ -935,20 +951,4 @@ export class FlowCompletionComponent implements OnInit {
       this.step = 9;
     });
   }
-
-  // ngOnDestroy(): void {
-  //   const saleflow =
-  //     this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
-
-  //   console.log(
-  //     this.comesFromWhatsappOrEmailRedirection,
-  //     this.orderId,
-  //     saleflow._id
-  //   );
-
-  //   if (this.comesFromWhatsappOrEmailRedirection && this.orderId) {
-  //     this.header.deleteSaleflowOrder(saleflow._id);
-  //     this.header.resetIsComplete();
-  //   }
-  // }
 }

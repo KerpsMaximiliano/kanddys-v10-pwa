@@ -128,7 +128,6 @@
       >
         <h6
           [ngStyle]="{
-            cursor: 'pointer',
             color: 'black',
             fontWeight: 'bold',
             fontFamily: 'RobotoMedium',
@@ -652,9 +651,13 @@
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
     <app-sticky-button
-      [mode]="paymentCode.length !== 4 || !image ? 'disabled-fixed' : 'fixed'"
+      [mode]="
+        paymentCode.length !== 4 || !image || !selectedBank
+          ? 'disabled-fixed'
+          : 'fixed'
+      "
       [text]="
-        paymentCode.length !== 4 || !image
+        paymentCode.length !== 4 || !image || !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
           : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
       "
