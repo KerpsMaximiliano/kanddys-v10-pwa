@@ -75,9 +75,7 @@
       }"
       *ngIf="isANewUser"
     >
-      <p class="label1">
-        Nombre y Apellido
-      </p>
+      <p class="label1">Nombre y Apellido</p>
       <input
         type="text"
         class="input"
@@ -118,11 +116,12 @@
         backgroundColor: 'rgba(254, 210, 48, 0.43)',
         color: 'black',
         borderRadius: '20px',
-        margin: '0px 32px'
+        margin: '0px 32px',
+        marginBottom: '25px'
       }"
+      *ngFor="let bank of bankOptions"
     >
       <div
-        *ngFor="let bank of bankOptions"
         [ngStyle]="{
           padding: '24px 38px'
         }"
@@ -284,7 +283,7 @@
       </div>
     </div>
   </div> -->
-  <div *ngIf="step === 5">
+  <!-- <div *ngIf="step === 5">
     <div class="questions">
       <p
         style="padding-left: 33px; padding-right: 33px; margin-bottom: 0px"
@@ -307,7 +306,7 @@
         (onSelector)="selectOption($event)"
       ></app-answer-selector>
     </div>
-  </div>
+  </div> -->
   <!-- <div *ngIf="step === 6">
     <div class="questions-step-6">
       <p
@@ -365,29 +364,12 @@
   <div *ngIf="step === 7">
     <div class="content step-7">
       <p style="margin-bottom: 47px" class="label1">
-        Por favor confirme la transferencia de ${{
-          orderData?.amount | number: "1.0-2"
-        }}
-        DOP
-        <ng-container *ngIf="orderData.hasCustomizer">
-          / PAQ. {{ orderData?.itemAmount }}UNDS
-        </ng-container>
-        que se realizó:
+        Sobre la transferencia que realizó como pago:
       </p>
 
-      <p style="margin-bottom: 22px" class="label2">
-        Adicione los últimos 4 digitos de la transferencia que realizó:
+      <p style="margin-bottom: 22px; margin-top: 0px" class="label3">
+        Que monto transfirió?
       </p>
-      <input
-        type="text"
-        [(ngModel)]="paymentCode"
-        minlength="4"
-        maxlength="4"
-        class="input payment"
-        placeholder="Los 4 digitos son.."
-      />
-
-      <p style="margin-bottom: 22px" class="label3">Monto transferido:</p>
       <input
         type="number"
         min="1"
@@ -399,7 +381,21 @@
         inputmode="numeric"
       />
 
-      <p class="label3">Adicione la imagen (captura):</p>
+      <p style="margin-bottom: 22px; margin-top: 88px" class="label2">
+        Adicione los últimos 4 digitos de la transferencia que realizó:
+      </p>
+      <input
+        type="text"
+        [(ngModel)]="paymentCode"
+        minlength="4"
+        maxlength="4"
+        class="input payment"
+        placeholder="Los 4 digitos son.."
+      />
+
+      <p class="label3" style="margin-top: 87px">
+        Adicione la imagen (captura):
+      </p>
       <app-image-input
         [allowedTypes]="['png', 'jpg', 'jpeg']"
         (onFileInput)="onFileInput($event)"
@@ -433,7 +429,8 @@
           color: '#7B7B7B',
           fontFamily: 'Roboto',
           fontStyle: 'italic',
-          fontSize: '17px'
+          fontSize: '17px',
+          paddingBottom: '67px'
         }"
       >
         En la siguiente pantalla le mandarás el record de tu orden y la
@@ -484,10 +481,7 @@
   <div
     class="footer"
     [ngStyle]="{
-      justifyContent:
-        step >= 4 && step < 8
-          ? 'space-between'
-          : 'flex-end'
+      justifyContent: step >= 4 && step < 8 ? 'space-between' : 'flex-end'
     }"
   >
     <!-- <div
@@ -607,13 +601,12 @@
     [text]="
       step === 1
         ? inputData.length < 500
-            ? 'ADICIONA TU CELULAR'
-            : 'VERIFICAR MI CELULAR'
+          ? 'ADICIONA TU CELULAR'
+          : 'VERIFICAR MI CELULAR'
         : step === 2
         ? 'VERIFICAR MI CELULAR'
         : step === 3
-        ? (!name || (password.length < 3 && !comesFromMagicLink)) &&
-            isANewUser
+        ? (!name || (password.length < 3 && !comesFromMagicLink)) && isANewUser
           ? 'ESCRIBE TU NOMBRE Y APELLIDO'
           : 'CONTINUAR'
         : step === 4
@@ -623,8 +616,8 @@
               ? 'ADICIONA LA CLAVE'
               : 'ADICIONA LA CLAVE CORRECTA'
             : incorrectPasswordAttempt
-                ? 'ADICIONA LA CLAVE CORRECTA'
-                : 'ACCEDER A LO MÁGICO'
+            ? 'ADICIONA LA CLAVE CORRECTA'
+            : 'ACCEDER A LO MÁGICO'
           : 'HAZ UNA SELECCION'
         : step === 5
         ? selectedPayment >= 0
