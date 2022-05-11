@@ -29,8 +29,8 @@ export class UserInfoComponent implements OnInit {
   redirect() {
     if (this.isDataMissing()) this.openWarningDialog();
     else {
-      this.openMagicLinkDialog();
-      // this.router.navigate([`ecommerce/flow-completion`])
+      // this.openMagicLinkDialog();
+      this.router.navigate([`ecommerce/auth-classic`])
     }
   }
 
