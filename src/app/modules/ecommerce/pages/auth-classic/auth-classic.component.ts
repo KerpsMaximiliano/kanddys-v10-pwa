@@ -123,6 +123,8 @@ export class AuthClassicComponent implements OnInit {
   actual: string = '';
   stepsLeft: number;
   firstData: any = '';
+  totalOrderAmmount: number = 0;
+  totalOrderAmmountString: string = '';
   inputData: string = '';
   name: string = '';
   lastName: string = '';
@@ -326,6 +328,15 @@ export class AuthClassicComponent implements OnInit {
           // this.router.navigate([`ecommerce/landing-vouchers`]);
         }
       });
+
+      const { itemData } = JSON.parse(
+        localStorage.getItem(this.header.saleflow._id)
+      );
+      itemData.forEach((product) => {
+        this.totalOrderAmmount += product.total;
+      });
+
+      this.totalOrderAmmountString = this.totalOrderAmmount.toFixed(2);
 
       if (!token) {
         this.authService.me().then((data) => {
