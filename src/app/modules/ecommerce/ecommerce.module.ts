@@ -27,6 +27,8 @@ import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
+import { AuthClassicComponent } from './pages/auth-classic/auth-classic.component';
+import { PaymentsComponent } from './pages/payments/payments.component';
 
 const routes: Routes = [
   {
@@ -80,8 +82,16 @@ const routes: Routes = [
     component: FlowCompletionComponent,
   },
   {
-    path: 'flow-completion/:id',
-    component: FlowCompletionComponent,
+    path: 'auth-classic',
+    component: AuthClassicComponent,
+  },
+  {
+    path: 'payments',
+    component: PaymentsComponent,
+  },
+  {
+    path: 'payments/:id',
+    component: PaymentsComponent,
   },
   {
     path: 'privacy-policy',
@@ -128,15 +138,15 @@ const routes: Routes = [
   },
   {
     path: 'redirections',
-    component: RedirectionsComponent
+    component: RedirectionsComponent,
   },
   {
-      path: 'tag-detail',
-      component: TagDetailComponent
+    path: 'tag-detail',
+    component: TagDetailComponent,
   },
   {
-      path: 'tags-edit',
-      component: TagsEditComponent
+    path: 'tags-edit',
+    component: TagsEditComponent,
   },
 ];
 
@@ -168,7 +178,9 @@ const routes: Routes = [
     OrderSalesComponent,
     RedirectionsComponent,
     TagDetailComponent,
-    TagsEditComponent
+    TagsEditComponent,
+    AuthClassicComponent,
+    PaymentsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
