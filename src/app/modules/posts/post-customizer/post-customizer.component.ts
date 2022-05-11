@@ -2120,6 +2120,8 @@ export class PostCustomizerComponent
       const textRules = this.customizerRules.texts.itemsRule[this.modifyingText];
       if(threeLetters && fontStyle === 'Cheltenham') {
         fontSize = (textRules.fixSize - 45)+'';
+      } else if(threeLetters && fontStyle === 'Commercial-Script') {
+        fontSize = (textRules.fixSize - 30)+'';
       } else {
         fontSize = textRules.fixSize+'';
       }
@@ -2282,7 +2284,7 @@ export class PostCustomizerComponent
       this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.imageElement = new Image();
     this.imageElement.src = url;
-    this.selectedBackgroundColor = null;
+    this.imageElement.crossOrigin = 'Anonymous';
     this.draw();
     this.selectedBackgroundImage = url;
     this.imageFile = null;
@@ -2429,6 +2431,7 @@ export class PostCustomizerComponent
         url,
         (this.customizerRuleID ?? this.customizerValueID) + '.png'
       );
+      console.log(this.selectedBackgroundColor)
       const customizerValues: CustomizerValueInput = {
         rules: this.customizerRuleID ?? this.customizerValueID,
         backgroundImage,
@@ -2595,7 +2598,8 @@ export class PostCustomizerComponent
     if (this.imageElement) this.drawBackgroundImage();
     if (
       this.customizerRules.backgroundColor.active &&
-      this.selectedBackgroundColor
+      this.selectedBackgroundColor &&
+      this.selectedBackgroundColor.name !== 'Blanco'
     )
       this.drawBackgroundColor();
     for (let i = 0; i < this.elementList.length; i++) {

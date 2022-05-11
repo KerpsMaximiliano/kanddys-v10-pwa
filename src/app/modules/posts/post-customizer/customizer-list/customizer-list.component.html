@@ -23,6 +23,10 @@
     <label>Autofill Bg Colors</label>
     <input type="checkbox" [(ngModel)]="autofillBgColors">
   </div>
+  <div>
+    <label>Autofill background</label>
+    <input type="checkbox" [(ngModel)]="autofillBackground">
+  </div>
 </div>
   <form [formGroup]="customizerForm">
     <button *ngIf="!customizerID" (click)="createCustomizer()">submit</button>

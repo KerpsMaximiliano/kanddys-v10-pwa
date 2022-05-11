@@ -29,6 +29,7 @@ export class CustomizerListComponent implements OnInit {
   autofillFonts: boolean = false;
   autofillStickers: boolean = false;
   autofillBgColors: boolean = false;
+  autofillBackground: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
@@ -312,6 +313,11 @@ export class CustomizerListComponent implements OnInit {
       customizerData.backgroundColor.active = true;
       customizerData.backgroundColor.onlyFixed = true;
       customizerData.backgroundColor.fixed = bgColors;
+    }
+    if(this.autofillBackground) {
+      customizerData.backgroundImage.active = true;
+      customizerData.backgroundImage.onlyFixed = true;
+      customizerData.backgroundImage.urls = ["https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/napkin_PNG912.png"];
     }
     if(customizerData.stickers.fixedAmountItems) {
       customizerData.stickers.fixedAmount = customizerData.stickers.itemsRule.length;
