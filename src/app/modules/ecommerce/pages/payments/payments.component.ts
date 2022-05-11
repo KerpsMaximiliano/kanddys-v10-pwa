@@ -608,6 +608,7 @@ export class PaymentsComponent implements OnInit {
         this.header.orderId = null;
         this.router.navigate([`/ecommerce/auth-classic`]);
       }
+      //added something to fix bad push
     }
   }
 
