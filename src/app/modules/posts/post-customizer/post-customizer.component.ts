@@ -2121,7 +2121,8 @@ export class PostCustomizerComponent
       if(threeLetters && fontStyle === 'Cheltenham') {
         fontSize = (textRules.fixSize - 45)+'';
       } else if(threeLetters && fontStyle === 'Commercial-Script') {
-        fontSize = (textRules.fixSize - 30)+'';
+        if(textRules.fixedFonts[0] === "Dorsa") fontSize = (textRules.fixSize - 45)+'';
+        else fontSize = (textRules.fixSize - 25)+'';
       } else {
         fontSize = textRules.fixSize+'';
       }
