@@ -561,30 +561,30 @@ export class AuthClassicComponent implements OnInit {
 
       return;
     }
-    // this.code = '';
-    // this.paymentCode = '';
-    // this.imageField = undefined;
-    // if (this.step === 5) this.selectedPayment = undefined;
-    // if (this.step === 6) this.selectedBank = undefined;
-    // if (
-    //   (this.step > 4 &&
-    //     this.step < 8 &&
-    //     !(this.step === 7 && this.banks.length === 1)) ||
-    //   this.step === 2
-    // )
-    //   this.step--;
-    // if (this.step === 7 && this.banks.length === 1) this.step = 5;
+    this.code = '';
+    this.paymentCode = '';
+    this.imageField = undefined;
+    if (this.step === 5) this.selectedPayment = undefined;
+    if (this.step === 6) this.selectedBank = undefined;
+    if (
+      (this.step > 4 &&
+        this.step < 8 &&
+        !(this.step === 7 && this.banks.length === 1)) ||
+      this.step === 2
+    )
+      this.step--;
+    if (this.step === 7 && this.banks.length === 1) this.step = 5;
 
-    // if (this.step === 8) this.step = 5;
+    if (this.step === 8) this.step = 5;
 
-    // if (this.step === 9 || this.step === 10) {
-    //   if (this.isLogged) {
-    //     this.step = 4;
-    //   } else {
-    //     this.step = 1;
-    //   }
-    //   return;
-    // }
+    if (this.step === 9 || this.step === 10) {
+      if (this.isLogged) {
+        this.step = 4;
+      } else {
+        this.step = 1;
+      }
+      return;
+    }
 
     // this.relativeStep--;
   }
