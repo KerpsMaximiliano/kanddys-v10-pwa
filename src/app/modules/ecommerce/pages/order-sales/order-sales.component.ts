@@ -267,19 +267,20 @@ export class OrderSalesComponent implements OnInit {
            price: order.subtotals[0].amount,
            tags: auxTags,
            text_left: 'Create by ' +  order.user.name + '.' + timeAgo ,
+           text_right: 'Adiciona un tag',
            text_style: true,
            phone: order.user.phone,
            //icons_image_bool: true,
            icons_bottom_right: [
              { 
-               /* icon: '../../../../../assets/images/grayBookmark.svg',
-               type:'img', */
-               function: () => this.openTagsDialog(order._id, auxTags, dateID),
+                icon: '/Etiqueta_lapiz.svg',
+                type: 'img',
+                function: () => this.tagFunction()
              },
              {
-               icon: 'fa-heart',
-               color: '#7B7B7B',
-               type: 'icon',
+             /*icon: '../../../../../assets/images/grayBookmark.svg',
+               type:'img',
+               function: () => this.openTagsDialog(order._id, auxTags, dateID), */
              },
            ],
          })
@@ -370,9 +371,13 @@ export class OrderSalesComponent implements OnInit {
 
   searchNumber(event: any){
       this.auxNumbers = event.target.value;
-      console.log(this.auxNumbers);
+    //   console.log(this.auxNumbers);
       let filteredNumber = this.orders.filter(number => number.phone.includes(this.auxNumbers));
     //   console.log(filteredNumber);
+  }
+
+  tagFunction(){
+      this.router.navigate([`ecommerce/tags-edit`]);
   }
 
 }
