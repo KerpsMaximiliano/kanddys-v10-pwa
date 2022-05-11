@@ -117,6 +117,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
+        orderFinished: true,
         footerCallback: () =>
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
