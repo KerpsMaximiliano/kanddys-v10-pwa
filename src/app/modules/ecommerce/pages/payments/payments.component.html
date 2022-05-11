@@ -596,7 +596,11 @@
       (step === 4 && password.length < 3) ||
       (step === 5 && !(selectedPayment >= 0)) ||
       (step === 6 && !selectedBank) ||
-      (step === 7 && (paymentCode.length !== 4 || !image || !selectedBank)) ||
+      (step === 7 &&
+        (ammount.value == '' ||
+          paymentCode.length !== 4 ||
+          !image ||
+          !selectedBank)) ||
       (step === 9 && code.length < 3) ||
       (step === 10 && password.length < 3)
         ? 'disabled-fixed'
@@ -632,7 +636,10 @@
           ? 'CONTINUAR'
           : 'SELECCIONA DONDE TRANSFERISTE'
         : step === 7
-        ? paymentCode.length !== 4 || !image || !selectedBank
+        ? ammount.value == '' ||
+          paymentCode.length !== 4 ||
+          !image ||
+          !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
           : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
         : step === 9
@@ -652,12 +659,18 @@
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
     <app-sticky-button
       [mode]="
-        paymentCode.length !== 4 || !image || !selectedBank
+        ammount.value === '' ||
+        paymentCode.length !== 4 ||
+        !image ||
+        !selectedBank
           ? 'disabled-fixed'
           : 'fixed'
       "
       [text]="
-        paymentCode.length !== 4 || !image || !selectedBank
+        ammount.value === '' ||
+        paymentCode.length !== 4 ||
+        !image ||
+        !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
           : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
       "
