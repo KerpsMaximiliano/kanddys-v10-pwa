@@ -56,10 +56,11 @@ export class TagsEditComponent implements OnInit {
 
     if(this.tagID.length < 1){
         this.tagsService.createTag(data);
+        console.log('Create')
       }else { 
-        console.log(data, this.tagID)  
-        this.tagsService.updateTag(data, this.tagID);
-      }
+          this.tagsService.updateTag(data, this.tagID);
+          console.log('Update')  
+        }
   }
 
   checkNotifyAble(){
@@ -95,3 +96,7 @@ export class TagsEditComponent implements OnInit {
    */
 
 }
+
+/* tag-detail --> tags-edit{
+    order.service = orden --->tag cualesquiera que viene de la orden --> this.tagId
+}*/
