@@ -2286,7 +2286,9 @@ export class PostCustomizerComponent
     this.imageElement = new Image();
     this.imageElement.src = url;
     this.imageElement.crossOrigin = 'Anonymous';
-    this.draw();
+    this.imageElement.onload = () => {
+      this.draw();
+    }
     this.selectedBackgroundImage = url;
     this.imageFile = null;
   }
