@@ -228,11 +228,13 @@ export class PostCustomizerComponent
       fontName: 'GeorgiaRegular',
     },
     {
-      fileName: 'CheltenhamStdBold.otf',
+      // fileName: 'CheltenhamStdBold.otf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf',
       fontName: 'Cheltenham',
     },
     {
-      fileName: 'Dorsa-Regular.ttf',
+      // fileName: 'Dorsa-Regular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Dorsa-Regular.ttf',
       fontName: 'Dorsa',
     },
     {
@@ -240,11 +242,13 @@ export class PostCustomizerComponent
       fontName: 'Village',
     },
     {
-      fileName: 'AirForce45-Regular.ttf',
+      // fileName: 'AirForce45-Regular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf',
       fontName: 'AirForce45-Regular',
     },
     {
-      fileName: 'PomfritDandyNFRegular.ttf',
+      // fileName: 'PomfritDandyNFRegular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf',
       fontName: 'PomfritDandyNFRegular',
     },
     {
@@ -272,11 +276,13 @@ export class PostCustomizerComponent
       fontName: 'Empire',
     },
     {
-      fileName: 'Commercial-Script.ttf',
+      // fileName: 'Commercial-Script.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf',
       fontName: 'Commercial-Script',
     },
     {
-      fileName: 'ONYX.TTF',
+      // fileName: 'ONYX.TTF',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF',
       fontName: 'Onyx',
     },
   ];
@@ -798,7 +804,7 @@ export class PostCustomizerComponent
           this.elementList[elementIndex].typography.font
       );
       if (fontElement) {
-        let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
+        let myFont = new FontFace(fontElement.fontName, `url(${fontElement.fileName})`);
 
         myFont.load().then((font) => {
           (document as any).fonts.add(font);
