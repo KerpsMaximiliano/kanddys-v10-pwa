@@ -86,6 +86,12 @@ export class TagsEditComponent implements OnInit {
       false
     },
 
+    {
+       id:627d60ff456106f4571b226d,
+       name: Calzado,
+       message: Su calzado esta en camino
+       notify: true
+    }
    */
 
 }

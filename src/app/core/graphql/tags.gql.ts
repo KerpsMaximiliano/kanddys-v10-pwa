@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 
 export const updateTag = gql`
    mutation updateTag( $input: TagInput!, $tagId: ObjectID!) {
-    updateTag( input: $input, tagId: $tagID ) {
+    updateTag( input: $input, tagId: $tagId ) {
         name
         messageNotify
         notify
@@ -21,8 +21,8 @@ export const createTag = gql`
 `
 
 export const tagsByUser = gql`
-  query tagsByUser($Tag: [Tag!]!){
-      tagsByUser(Tag: $Tag){
+  query {
+      tagsByUser{
           name
           messageNotify
           notify

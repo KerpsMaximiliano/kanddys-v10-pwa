@@ -41,11 +41,11 @@ export class TagsService {
         return result;
     }
 
-    async tagsByUser(Tag: any){
+    async tagsByUser(){
         try{
            const result = await this.graphql.query({
                query: tagsByUser,
-               variables:{Tag},
+               fetchPolicy: 'no-cache',
            })
            
            console.log(result);
