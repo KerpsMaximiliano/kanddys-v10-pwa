@@ -1515,7 +1515,7 @@ export class PostCustomizerComponent
         stickerElements[current].sticker.decoded = decodedValue;
         stickerElements[current].sticker.color = {
           fixedValue: '#' + currentColor[0],
-          name: specifiedColor.name,
+          name: 'color',
         };
       }
     };
