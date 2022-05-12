@@ -210,7 +210,7 @@
             />
           </div>
         </div> -->
-        <div *ngIf="!selectedOption && backgroundColorActive">
+        <div *ngIf="!selectedOption && backgroundColorActive && getBackgroundColors().length > 2">
           <div class="option-list">
             <div
               class="list-option"
@@ -229,6 +229,10 @@
             </ng-container>
             </div>
           </div>
+          <h6 class="color-disclaimer">
+            Puede haber variación en los colores vistos en este App con la
+            Realidad
+          </h6>
         </div>
         <!-- ---------------------- STICKERS ---------------------- -->
         <div *ngIf="selectedOption === 'stickers'">
