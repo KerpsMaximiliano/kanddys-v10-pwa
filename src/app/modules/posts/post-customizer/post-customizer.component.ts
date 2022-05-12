@@ -2440,7 +2440,6 @@ export class PostCustomizerComponent
         url,
         (this.customizerRuleID ?? this.customizerValueID) + '.png'
       );
-      console.log(this.selectedBackgroundColor)
       const customizerValues: CustomizerValueInput = {
         rules: this.customizerRuleID ?? this.customizerValueID,
         backgroundImage,

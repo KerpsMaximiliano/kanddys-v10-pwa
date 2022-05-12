@@ -321,8 +321,6 @@ export class FlowCompletionComponent implements OnInit {
             this.orderId = params.id;
             this.getOrderData(params.id);
           } else if (!this.header.isDataComplete()) {
-            console.log('enttrando');
-
             this.header.resetIsComplete();
             // this.router.navigate([`ecommerce/landing-vouchers`]);
           }
@@ -791,7 +789,6 @@ export class FlowCompletionComponent implements OnInit {
         const customizerId =
           await this.customizerValueService.createCustomizerValue(customizer);
 
-        console.log(customizerId, 'CID');
         this.header.order.products[0].customizer = customizerId;
         this.header.customizer = null;
         this.header.customizerData = null;
@@ -861,18 +858,16 @@ export class FlowCompletionComponent implements OnInit {
       0
     );
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
-    const ammount = new Intl.NumberFormat('es-MX').format(
-      this.ammount.value.toLocaleString('es-MX')
-    );
+    // const ammount = new Intl.NumberFormat('es-MX').format(
+    //   this.ammount.value.toLocaleString('es-MX')
+    // );
     if (this.fakeData.items[0].customizer)
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        ammount && ammount != '0'
-          ? ammount
-          : Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
+        Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
@@ -882,7 +877,7 @@ export class FlowCompletionComponent implements OnInit {
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        ammount && ammount != '0' ? ammount : totalPrice.toLocaleString('es-MX')
+        totalPrice.toLocaleString('es-MX')
       }.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
