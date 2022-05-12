@@ -317,7 +317,7 @@ export class CustomizerListComponent implements OnInit {
     if(this.autofillBackground) {
       customizerData.backgroundImage.active = true;
       customizerData.backgroundImage.onlyFixed = true;
-      customizerData.backgroundImage.urls = ["https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/napkin_PNG912.png"];
+      customizerData.backgroundImage.urls = ["https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1652369816745.png"];
     }
     if(customizerData.stickers.fixedAmountItems) {
       customizerData.stickers.fixedAmount = customizerData.stickers.itemsRule.length;
