@@ -334,8 +334,7 @@ export class PaymentsComponent implements OnInit {
               this.userData = data;
               this.isLogged = true;
               this.inputData = this.userData.phone;
-
-              if (this.banks.length === 1) {
+              if (this.banks.length === 1 && this.bankOptions.length > 0) {
                 this.selectedBank = this.bankOptions[0];
               }
 
@@ -404,6 +403,9 @@ export class PaymentsComponent implements OnInit {
           ],
         };
       });
+      if (this.isLogged && this.banks.length === 1 && this.bankOptions.length > 0) {
+        this.selectedBank = this.bankOptions[0];
+      }
     });
   }
 
