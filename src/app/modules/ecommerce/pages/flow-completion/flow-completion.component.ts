@@ -82,6 +82,8 @@ export class FlowCompletionComponent implements OnInit {
   step: number = 0;
   actual: string = '';
   firstData: any = '';
+  totalOrderAmmount: number = 0;
+  totalOrderAmmountString: string = '';
   inputData: string = '';
   name: string = '';
   lastName: string = '';
@@ -328,6 +330,18 @@ export class FlowCompletionComponent implements OnInit {
       } else {
         this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
       }
+
+      const { itemData } = JSON.parse(localStorage.getItem(saleflow._id));
+
+      console.log('ItemData', itemData);
+
+      itemData.forEach((product) => {
+        this.totalOrderAmmount += product.pricing;
+      });
+
+      this.totalOrderAmmountString = (
+        Math.round((this.totalOrderAmmount + Number.EPSILON) * 100) / 100
+      ).toLocaleString('es-MX');
 
       if (!token) {
         this.authService.me().then((data) => {
@@ -876,9 +890,9 @@ export class FlowCompletionComponent implements OnInit {
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        totalPrice.toLocaleString('es-MX')
-      }.%20Mi%20nombre%20es:%20${
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${totalPrice.toLocaleString(
+        'es-MX'
+      )}.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
     try {
