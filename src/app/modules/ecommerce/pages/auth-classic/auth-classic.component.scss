@@ -22,14 +22,6 @@
     -webkit-box-shadow: 0px 8px 41px -32px inset;
     -moz-box-shadow: 0px 8px 41px -32px inset;
 
-    &.payment {
-      text-transform: uppercase;
-    }
-
-    &.payment::placeholder {
-      text-transform: none;
-    }
-
     &:focus {
       border: 1px solid #31a4f9;
     }
@@ -191,4 +183,29 @@ input::-webkit-inner-spin-button {
   .m-top {
     margin-top: 50px !important;
   }
+}
+
+$char-w: 1ch;
+$gap: .5*$char-w;
+$n-char: 4;
+$in-w: $n-char*($char-w + $gap);
+
+.code-input {
+	display: block;
+	margin: 0 auto;
+  text-transform: uppercase;
+	border: none;
+	padding: 0;
+	width: $in-w;
+  letter-spacing: $gap;
+	background: repeating-linear-gradient(90deg, 
+  dimgrey 0, dimgrey $char-w, 
+  transparent 0, transparent $char-w + $gap) 
+  0 100%/ #{$in-w - $gap} 2px no-repeat;
+  font: 5ch droid sans mono, consolas, monospace;
+	
+	&:focus {
+		outline: none;
+		color: dodgerblue;
+	}
 }
