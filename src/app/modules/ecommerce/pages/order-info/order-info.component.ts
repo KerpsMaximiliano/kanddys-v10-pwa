@@ -97,11 +97,11 @@ export class OrderInfoComponent implements OnInit {
       title: 'Tik Tok',
     },
   ];
-  facturado: boolean = true;
+  facturado: boolean;
   escenarios: boolean;
   reservacion: boolean;
   personalizacion: boolean;
-  tabsOptions = ['Lo Facturado'];
+  tabsOptions = [];
   mensajeRegalo: boolean;
   orderId: string;
   pago: number;
@@ -157,6 +157,11 @@ export class OrderInfoComponent implements OnInit {
               (user) =>
                 (this.showNotificationButton = user._id === data.order.user._id)
             );
+          if(data.order.ocr) {
+            this.tabsOptions.push('Pago');
+            this.pagoView = true;
+          } else this.facturado = true;
+          this.tabsOptions.push('Lo Facturado');
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');
@@ -171,7 +176,6 @@ export class OrderInfoComponent implements OnInit {
             this.tabsOptions.push('Reservación');
             this.titleTab = 'Horario de la sesión';
           }
-          this.tabsOptions.push('Pago');
           if (data.order.items[0].deliveryLocation) {
             this.tabsOptions.push('Entrega');
             this.titleTab = 'Entrega';
