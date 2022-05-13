@@ -336,7 +336,7 @@ export class AuthClassicComponent implements OnInit {
         this.totalOrderAmmount += product.total;
       });
 
-      this.totalOrderAmmountString = this.totalOrderAmmount.toFixed(2);
+      this.totalOrderAmmountString = (Math.round((this.totalOrderAmmount + Number.EPSILON) * 100) / 100).toLocaleString('es-MX');
 
       if (!token) {
         this.authService.me().then((data) => {
