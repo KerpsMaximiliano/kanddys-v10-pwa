@@ -133,6 +133,14 @@ export const createOrder = gql`
   }
 `;
 
+export const createPreOrder = gql`
+  mutation createPreOrder($input: ItemOrderInput!) {
+    createPreOrder(input: $input) {
+      _id
+    }
+  }
+`;
+
 export const ordersByUser = gql`
   query ordersByUser($pagination: PaginationInput) {
     ordersByUser(pagination: $pagination) {
