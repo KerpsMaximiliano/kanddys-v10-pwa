@@ -373,7 +373,7 @@ export class PaymentsComponent implements OnInit {
         )
       );
     }
-    Promise.all(wallets).then((values) => {
+    await Promise.all(wallets).then((values) => {
       let descriptions = data.ExchangeData.bank.map((value) => {
         return {
           owner: value.ownerAccount,
