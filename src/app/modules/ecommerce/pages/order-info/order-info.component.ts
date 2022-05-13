@@ -17,6 +17,7 @@ import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
 import { ItemSubOrder } from 'src/app/core/models/order';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 moment.locale('es');
 
 @Component({
@@ -364,6 +365,17 @@ export class OrderInfoComponent implements OnInit {
       // });
 
     this.notifications = !this.notifications;
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   wichName(e) {

@@ -511,7 +511,7 @@
       <input type="text" class="input payment" placeholder="Pagué.." [value]="'$'+price.toLocaleString('en-US')+' DOP'" disabled/>
 
       <p class="top-text">Imagen (captura):</p>
-      <div class="pay-image" [ngStyle]="{'background-image': 'url(' + orders.ocr.image + ')'}"></div>
+      <div class="pay-image" (click)="openImageModal(orders.ocr.image)" [ngStyle]="{'background-image': 'url(' + orders.ocr.image + ')'}"></div>
     </div>
   </div>
 </div>
