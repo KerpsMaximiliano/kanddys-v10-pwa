@@ -11,9 +11,9 @@
         </div>
         <div class="spread">
             <div class="min-max" *ngIf="!header.order.itemPackage && header.order.products[0].amount">
-                <i *ngIf="currentUrl !== '/ecommerce/provider-store/payment-methods'" class="fas fa-minus icon" [style.marginRight.px]="17" (click)="minMax(false)"></i>
+                <i *ngIf="currentUrl !== '/ecommerce/provider-store/'+header.saleflow._id+'/'+header.items[0]._id+'/payment-methods'" class="fas fa-minus icon" [style.marginRight.px]="17" (click)="minMax(false)"></i>
                 <div class="num">{{ header.order.products[0].amount }}</div>
-                <i *ngIf="currentUrl !== '/ecommerce/provider-store/payment-methods'" class="fas fa-plus icon" [style.marginLeft.px]="15" (click)="minMax(true)"></i>
+                <i *ngIf="currentUrl !== '/ecommerce/provider-store/'+header.saleflow._id+'/'+header.items[0]._id+'/payment-methods'" class="fas fa-plus icon" [style.marginLeft.px]="15" (click)="minMax(true)"></i>
             </div>
             <span class="card-price">
                 <ng-container *ngIf="itemData.customizerId else pricing">

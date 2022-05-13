@@ -40,7 +40,7 @@ const routes: Routes = [
     component: CategoryItemsComponent,
   },
   {
-    path: 'provider-store',
+    path: 'provider-store/:saleflowId/:itemId',
     component: ProviderStoreComponent,
     children: [
       {

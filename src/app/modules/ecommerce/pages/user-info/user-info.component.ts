@@ -45,7 +45,7 @@ export class UserInfoComponent implements OnInit {
       .pipe(filter((e) => e.type === 'result'))
       .subscribe((e) => {
         if (e.data)
-          this.router.navigate([`ecommerce/provider-store/${e.data}`]);
+          this.router.navigate([`ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/${e.data}`]);
         sub.unsubscribe();
       });
   }

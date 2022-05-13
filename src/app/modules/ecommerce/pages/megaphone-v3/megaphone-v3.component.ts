@@ -505,7 +505,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         };
         this.header.storeOrderProduct(this.saleflowData._id, product);
         this.header.storeItem(this.saleflowData._id, itemData);
-        this.router.navigate([`/ecommerce/provider-store`]);
+        this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
       } else
         this.router.navigate([
           '/ecommerce/item-detail/' +
@@ -527,38 +527,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   save(index?: number) {
     if (index) this.header.packId = index;
     this.header.items = [];
-
     let products = [];
     let order;
-
-    if (this.inputPackage.length > 0) {
-      for (
-        let i = 0;
-        i < this.packageData[this.header.packId].items.listItems.length;
-        i++
-      ) {
-        products.push({
-          item: this.packageData[this.header.packId].items.listItems[i]._id,
-          amount:
-            this.packageData[this.header.packId].package.packageRules[i]
-              .fixedQuantity,
-          isScenario:
-            this.packageData[this.header.packId].items.listItems[i].itemExtra
-              .length > 0,
-          limitScenario:
-            this.packageData[this.header.packId].package.packageRules[i]
-              .maxQuantity,
-        });
-      }
-      order = {
-        itemPackage: this.packageData[this.header.packId].package._id,
-        products: products,
-      };
-      this.header.order = order;
-      this.header.order.products[0].saleflow = this.header.saleflow._id;
-      this.router.navigate(['/ecommerce/provider-store']);
-    }
-
     if (this.inputPackage.length === 0) {
       products.push({
         item: this.inputsItems[index]._id,
@@ -572,7 +542,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
-      //this.router.navigate(['/ecommerce/provider-store']);
       this.router.navigate([
         '/ecommerce/item-detail/' +
           this.header.saleflow._id +

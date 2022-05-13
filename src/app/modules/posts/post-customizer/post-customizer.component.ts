@@ -2470,16 +2470,13 @@ export class PostCustomizerComponent
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
-        this.router.navigate([`/ecommerce/provider-store/gift-message`]);
-        if (!this.header.isComplete.qualityQuantity)
-          this.router.navigate([`/ecommerce/provider-store`]);
-        else if (
+        if (
           !this.header.isComplete.message &&
           this.header.saleflow.module.post &&
           this.header.saleflow.module.post.isActive
         )
-          this.router.navigate([`ecommerce/provider-store/gift-message`]);
-        else this.router.navigate([`ecommerce/provider-store/user-info`]);
+          this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/gift-message`]);
+        else this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/user-info`]);
       } else {
         await this.customizerValueService.updateCustomizerValue(
           customizerValues,
@@ -2532,7 +2529,7 @@ export class PostCustomizerComponent
     if (this.customizerValueID)
       this.router.navigate([`/ecommerce/order-info/${this.itemId}`]);
     else
-      this.router.navigate([`/ecommerce/provider-store/quantity-and-quality`]);
+      this.router.navigate([`/ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/quantity-and-quality`]);
   }
 
   // Searches Stickers, currently doing nothing

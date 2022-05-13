@@ -8,9 +8,9 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WarningStepsComponent } from 'src/app/shared/dialogs/warning-steps/warning-steps.component';
-import { Location } from '@angular/common';
 import { lockUI } from 'src/app/core/helpers/ui.helpers';
-import { environment } from 'src/environments/environment';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 
 @Component({
   selector: 'app-provider-store',
@@ -23,9 +23,8 @@ export class ProviderStoreComponent implements OnInit {
     private saleflow: SaleFlowService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location,
-    private authService: AuthService,
     private dialog: DialogService,
+    private itemService: ItemsService,
     private readonly app: AppService
   ) {
     router.events.subscribe((val) => {
@@ -247,31 +246,120 @@ export class ProviderStoreComponent implements OnInit {
     }
   }
 
+  async getData(saleflowId: string, itemId: string) {
+    try {
+      const saleflow = (await this.saleflow.saleflow(saleflowId)).saleflow
+      this.header.saleflow = saleflow;
+      this.header.storeSaleflow(saleflow);
+      const saleflowItem = saleflow.items.find((item) => item.item._id === itemId);
+      if(saleflowItem) this.getItemData(saleflowId, itemId, saleflowItem.customizer._id);
+    } catch (error) {
+      console.log(error);
+      this.router.navigate([`/ecommerce/trivias`]);
+    }
+  }
+
+  async getItemData(saleflowId: string, itemId: string, customizerId: string) {
+    try {
+      const item = await this.itemService.item(itemId);
+      this.header.emptyOrderProducts(saleflowId);
+      this.header.emptyItems(saleflowId);
+      this.header.resetIsComplete();
+      item.customizerId = customizerId;
+      this.header.items = [item];
+      let itemParams: ItemSubOrderParamsInput[];
+      if (item.params.length > 0) {
+        itemParams = [
+          {
+            param: item.params[0]._id,
+            paramValue: item.params[0].values[0]._id,
+          },
+        ];
+      }
+      const product = {
+        item: item._id,
+        customizer: customizerId,
+        params: itemParams,
+        amount: item.customizerId ? undefined : 1,
+        saleflow: saleflowId,
+        name: item.name,
+      };
+      this.header.order = {
+        products: [product],
+      };
+      this.header.storeOrderProduct(saleflowId, product);
+      this.header.storeItem(saleflowId, item);
+      lockUI(this.fillData());
+    } catch (error) {
+      console.log(error);
+      this.router.navigate([`/ecommerce/trivias`]);
+    }
+  }
+
   async ngOnInit(): Promise<void> {
-    this.header.flowRoute = 'provider-store';
     if (this.header.orderId) {
       this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
       return;
     };
+    let saleflowId: string;
+    let itemId: string;
+    this.route.params.subscribe((params) => {
+      saleflowId = params.saleflowId;
+      itemId = params.itemId;
+      this.header.flowRoute = `provider-store/${saleflowId}/${itemId}`;
+    })
     if(!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
-      if(saleflow) {
-        this.header.saleflow = saleflow;
-        this.header.order = this.header.getOrder(saleflow._id);
-        if(!this.header.order) {
-          this.router.navigate([`/ecommerce/trivias`]);
-          return;
-        }
-        this.header.getOrderProgress(saleflow._id);
-        const items = this.header.getItems(saleflow._id);
-        if(items && items.length > 0) this.header.items = items;
-        else this.router.navigate([`/ecommerce/trivias`]);
+      if(!saleflow) {
+        this.getData(saleflowId, itemId);
+        return
+      }
+      this.header.saleflow = saleflow;
+      this.header.order = this.header.getOrder(saleflow._id);
+      if(!this.header.order) {
+        this.getData(saleflowId, itemId);
+        return
+      }
+      this.header.getOrderProgress(saleflow._id);
+      const items: Item[] = this.header.getItems(saleflow._id);
+      if(
+        items &&
+        items.length > 0 &&
+        this.header.order.products.length > 0 &&
+        this.header.order.products[0].item === items[0]._id &&
+        items[0]._id === itemId
+      ) {
+        this.header.items = items;
         lockUI(this.fillData());
-      } else this.router.navigate([`/ecommerce/trivias`]);
-    } else {
-      this.header.order = this.header.getOrder(this.header.saleflow._id);
-      if(!this.header.order) this.router.navigate([`/ecommerce/trivias`]);
-      else lockUI(this.fillData());
+      }
+      else {
+        this.getData(saleflowId, itemId);
+        return
+      }
+    }
+    if(this.header.saleflow._id !== saleflowId) {
+      this.getData(saleflowId, itemId);
+      return
+    }
+    this.header.order = this.header.getOrder(this.header.saleflow._id);
+    if(!this.header.order) {
+      this.getData(saleflowId, itemId);
+      return
+    }
+    const items: Item[] = this.header.getItems(this.header.saleflow._id);
+    if(
+      items &&
+      items.length > 0 &&
+      this.header.order.products.length > 0 &&
+      this.header.order.products[0].item === items[0]._id &&
+      items[0]._id === itemId
+    ) {
+      this.header.items = items;
+      lockUI(this.fillData());
+    }
+    else {
+      this.getData(saleflowId, itemId);
+      return
     }
   }
 
@@ -335,7 +423,7 @@ export class ProviderStoreComponent implements OnInit {
       link: 'payment-methods',
       active: false,
     });
-    this.router.navigate(['/ecommerce/provider-store/payment-methods']);
+    this.router.navigate([`/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/payment-methods`]);
     this.finalizacion = true;
   }
 

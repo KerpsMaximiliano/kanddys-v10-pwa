@@ -132,8 +132,6 @@ export class CategoryItemsComponent implements OnInit {
           this.hasCustomizer = true;
       }
 
-      console.log('tiene customizer', this.hasCustomizer);
-
       const selectedItems =
         orderData?.products?.length > 0
           ? orderData.products.map((subOrder) => subOrder.item)
@@ -143,9 +141,7 @@ export class CategoryItemsComponent implements OnInit {
           limit: 100,
         },
       }, params.categoryId);
-      console.log(items);
       const bestSellersIds = await this.item.bestSellersByMerchant(15, this.saleflowData.merchant._id)
-      console.log(bestSellersIds);
 
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
@@ -169,7 +165,6 @@ export class CategoryItemsComponent implements OnInit {
         const item = items.find((item) => item._id === id);
         if(item) this.bestSellers.push(item);
       })
-      console.log(this.bestSellers);
       this.items = [...items];
       this.originalItems = [...items];
 
@@ -194,7 +189,6 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   onClick(index: any, type?: string) {
-    console.log(index);
     let itemData = type === 'slider' ? this.bestSellers[index] : this.items[index];
     // if (index.index) {
     //   itemData = this.items[index.index];
@@ -226,7 +220,7 @@ export class CategoryItemsComponent implements OnInit {
       };
       this.header.storeOrderProduct(this.saleflowData._id, product);
       this.header.storeItem(this.saleflowData._id, itemData);
-      this.router.navigate([`/ecommerce/provider-store`]);
+      this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
     }
     else this.router.navigate([
       '/ecommerce/item-detail/' +

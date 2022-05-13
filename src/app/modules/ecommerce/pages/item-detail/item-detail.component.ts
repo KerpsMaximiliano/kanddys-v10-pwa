@@ -82,7 +82,7 @@ export class ItemDetailComponent implements OnInit {
             for (let i = 0; i < data.saleflow.items.length; i++) {
               if (data.saleflow.items[i].item._id === this.itemData._id) {
                 if (data.saleflow.items[i].customizer) {
-                  this.router.navigate([`ecommerce/provider-store`])
+                  this.router.navigate([`ecommerce/provider-store/${this.header.saleflow._id}/${this.itemData._id}`])
                 }else{
                   this.router.navigate(['/ecommerce/create-giftcard']);
                 }
