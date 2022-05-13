@@ -388,8 +388,7 @@
         [(ngModel)]="paymentCode"
         minlength="4"
         maxlength="4"
-        class="input payment"
-        placeholder="Los 4 digitos son.."
+        class="code-input"
       />
 
       <p class="label3" style="margin-top: 87px">
@@ -597,8 +596,7 @@
       (step === 5 && !(selectedPayment >= 0)) ||
       (step === 6 && !selectedBank) ||
       (step === 7 &&
-        (ammount.value == '' ||
-          paymentCode.length !== 4 ||
+        (paymentCode.length !== 4 ||
           !image ||
           !selectedBank)) ||
       (step === 9 && code.length < 3) ||
@@ -636,8 +634,7 @@
           ? 'CONTINUAR'
           : 'SELECCIONA DONDE TRANSFERISTE'
         : step === 7
-        ? ammount.value == '' ||
-          paymentCode.length !== 4 ||
+        ? paymentCode.length !== 4 ||
           !image ||
           !selectedBank
           ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
@@ -659,7 +656,6 @@
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
     <app-sticky-button
       [mode]="
-        ammount.value === '' ||
         paymentCode.length !== 4 ||
         !image ||
         !selectedBank
@@ -667,7 +663,6 @@
           : 'fixed'
       "
       [text]="
-        ammount.value === '' ||
         paymentCode.length !== 4 ||
         !image ||
         !selectedBank
