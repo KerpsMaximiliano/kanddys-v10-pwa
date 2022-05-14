@@ -28,7 +28,7 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
     };
 
     this.route.queryParams.subscribe(async (params) => {
-      const { token } = params;
+      const { token, orderId } = params;
 
       try {
         const { analizeMagicLink: session } =
@@ -45,7 +45,9 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
             case '/ecommerce/shipment-data-form':
             case '/ecommerce/reservations':
             case '/ecommerce/provider-store/user-info':
-              redirectURL.url = '/ecommerce/flow-completion';
+              if (!token) redirectURL.url = '/ecommerce/flow-completion/';
+              else redirectURL.url = `/ecommerce/flow-completion/${orderId}`;
+
               redirectURL.queryParams = { token };
               break;
             default:

@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   order,
+  authOrder,
+  orderStatus,
   createOrder,
   createPreOrder,
   payOrder,
@@ -74,6 +76,16 @@ export class OrderService {
     }
   }
 
+  async authOrder(orderId: string): Promise<{ authOrder: ItemOrder }> {
+    const result = await this.graphql.mutate({
+      mutation: authOrder,
+      variables: { orderId },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
   async order(orderId: string): Promise<{ order: ItemOrder }> {
     try {
       const response = await this.graphql.query({
@@ -84,6 +96,19 @@ export class OrderService {
       return response;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async getOrderStatus(orderId: string): Promise<ItemOrder> {
+    try {
+      const { order } = await this.graphql.query({
+        query: orderStatus,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return order;
+    } catch (error) {
+      console.log(error);
     }
   }
 

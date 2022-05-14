@@ -132,9 +132,9 @@ export class MagicLinkDialogComponent implements OnInit {
 
     let linkRef = document.querySelector(`#sendWS`) as HTMLAnchorElement;
     linkRef.href = this.whatsappLink;
-    // linkRef.click();
+    linkRef.click();
 
-    // this.close();
+    this.close();
   }
 
   close() {

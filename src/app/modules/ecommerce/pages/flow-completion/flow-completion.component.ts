@@ -79,7 +79,7 @@ export class FlowCompletionComponent implements OnInit {
   bankOptions: BankDetails[] = [];
   banks: Bank[] = [];
   windowReference: any;
-  step: number = 0;
+  step: string = 'UPDATE_NAME_AND_SHOW_BANKS';
   actual: string = '';
   firstData: any = '';
   totalOrderAmmount: number = 0;
@@ -134,10 +134,12 @@ export class FlowCompletionComponent implements OnInit {
     private location: Location
   ) {}
 
-  getOrderData(id: string) {
+  async getOrderData(id: string) {
     return this.order
       .order(id)
       .then((data) => {
+        console.log('PreOrderData', data);
+
         if (
           data.order.orderStatus === 'cancelled' ||
           data.order.orderStatus === 'to confirm' ||
@@ -161,6 +163,7 @@ export class FlowCompletionComponent implements OnInit {
             (a, b) => a + b.amount,
             0
           );
+
           this.orderData = {
             id: this.fakeData._id,
             userId: this.fakeData.user._id,
@@ -175,6 +178,7 @@ export class FlowCompletionComponent implements OnInit {
             hasCustomizer: this.fakeData.items[0].customizer ? true : false,
             isPackage: this.fakeData.itemPackage ? true : false,
           };
+
           this.products = this.fakeData.items.map((item) => {
             const newItem = item.item;
             if (item.customizer) {
@@ -226,74 +230,41 @@ export class FlowCompletionComponent implements OnInit {
   products: any[] = [];
 
   async ngOnInit() {
-    this.route.queryParams.subscribe(async (params) => {
-      const saleflow =
-        this.header.saleflow ||
-        JSON.parse(localStorage.getItem('saleflow-data'));
-      this.saleflowData = saleflow;
+    this.route.params.subscribe(async (routeParams) => {
+      const { orderId } = routeParams;
 
-      const { token } = params;
-      this.comesFromMagicLink = true;
+      this.route.queryParams.subscribe(async (params) => {
+        const saleflow =
+          this.header.saleflow ||
+          JSON.parse(localStorage.getItem('saleflow-data'));
+        this.saleflowData = saleflow;
 
-      if (token) {
-        this.comesFromWhatsappOrEmailRedirection = true;
+        const { token } = params;
 
-        try {
-          // const { analizeMagicLink: session } =
-          //   await this.authService.analizeMagicLink(token);
-          // this.comesFromMagicLink = true;
+        this.comesFromMagicLink = true;
 
-          // localStorage.setItem('session-token', session.token);
+        if (token) {
+          this.comesFromWhatsappOrEmailRedirection = true;
 
-          // let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
+          try {
+            const currentSession = await this.authService.me();
+            this.userData = currentSession;
 
-          // localStorage.removeItem('phoneNumberOrEmail');
-
-          // const data = await this.authService.checkUser(
-          //   phoneNumberOrEmail,
-          //   'whatsapp'
-          // );
-
-          // if (data) this.userData = data;
-
-          // if (session.new) {
-          //   this.step = 3;
-          // } else {
-          //   this.createOrSkipOrder();
-          // }
-
-          const currentSession = await this.authService.me();
-          this.userData = currentSession;
-
-          if (currentSession) {
-            await this.getExchangeData(
-              saleflow.module.paymentMethod.paymentModule._id
-            );
-            this.isANewUser = currentSession.name === '';
-            this.step = 3;
-
-            // if (!currentSession.name) {
-            //   this.createOrSkipOrder();
-            //   this.userData = currentSession;
-            // } else {
-            //   await this.getExchangeData(
-            //     saleflow.module.paymentMethod.paymentModule._id
-            //   );
-            //   this.step = 3;
-            // }
-          } else {
-            this.router.navigate(['/']);
+            if (currentSession) {
+              await this.getExchangeData(
+                saleflow.module.paymentMethod.paymentModule._id
+              );
+              this.isANewUser = currentSession.name === '';
+              this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+            } else {
+              this.router.navigate(['/']);
+            }
+          } catch (error) {
+            console.log(error);
           }
-
-          // this.submit();
-        } catch (error) {
-          console.log(error);
         }
-      }
 
-      if (this.router.url.includes('flow-completion')) {
         this.headerText = 'INFORMACIÓN DEL PAGO';
-        let products: string[] = [];
         let packages: string[] = [];
         if (this.header.order?.itemPackage) {
           packages.push(this.header.order.itemPackage);
@@ -307,54 +278,26 @@ export class FlowCompletionComponent implements OnInit {
             })
           ).listItemPackage;
           this.products = listPackages;
-        } else if (this.header.order?.products) {
-          for (let i = 0; i < this.header.order.products.length; i++) {
-            products.push(this.header.order.products[i].item);
-          }
-          this.findItemData(products);
         }
 
         if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
           this.merchantInfo =
             this.header.merchantInfo ||
             JSON.parse(localStorage.getItem('merchantInfo'));
-        this.route.params.subscribe((params) => {
-          if (params.id) {
-            this.orderId = params.id;
-            this.getOrderData(params.id);
-          } else if (!this.header.isDataComplete()) {
-            this.header.resetIsComplete();
-            // this.router.navigate([`ecommerce/landing-vouchers`]);
+        if (orderId) {
+          this.orderId = orderId;
+
+          const { orderStatus } = await this.order.getOrderStatus(orderId);
+
+          if (orderStatus === 'draft') {
+            await this.order.authOrder(orderId);
           }
-        });
-      } else {
-        this.headerText = 'CREANDO UN CLUB PARA MONETIZAR';
-      }
 
-      const { itemData } = JSON.parse(localStorage.getItem(saleflow._id));
-
-      console.log('ItemData', itemData);
-
-      itemData.forEach((product) => {
-        this.totalOrderAmmount += product.pricing;
+          await this.getOrderData(orderId);
+        } else if (!this.header.isDataComplete()) {
+          this.header.resetIsComplete();
+        }
       });
-
-      this.totalOrderAmmountString = (
-        Math.round((this.totalOrderAmmount + Number.EPSILON) * 100) / 100
-      ).toLocaleString('es-MX');
-
-      if (!token) {
-        this.authService.me().then((data) => {
-          if (data) {
-            this.userData = data;
-            this.isLogged = true;
-            this.inputData = this.userData.phone;
-            this.step = 4;
-          } else {
-            this.step = 1;
-          }
-        });
-      }
     });
   }
 
@@ -429,109 +372,18 @@ export class FlowCompletionComponent implements OnInit {
 
   submit() {
     switch (this.step) {
-      case 1:
-        // this.totalQuestions = 1;
-        this.checkUser();
-        break;
-      case 2:
-        // this.totalQuestions = 3;
-        this.sendCode();
-        break;
-      case 3:
+      case 'UPDATE_NAME_AND_SHOW_BANKS':
         // this.totalQuestions = 2;
         this.updateUser();
         break;
-      case 4:
-        this.signIn();
-        break;
-      case 5:
-        //AUTH CLÁSICO
-        // if (this.flow !== 'flow-completion') {
-        //   // this.totalQuestions = 1;
-        //   this.step = 8;
-        // } else {
-        //   // this.totalQuestions = 2;
-
-        //   if (this.banks.length > 1) this.step = 6;
-        //   else {
-        //     this.selectedBank = this.bankOptions[0];
-        //     this.headerText = 'INFORMACIÓN DEL PAGO';
-        //     this.step = 7;
-        //   }
-        // }
-
-        // this.totalQuestions = 2;
-        // this.selectedBank = this.bankOptions[0];
-        this.headerText = 'INFORMACIÓN DEL PAGO';
-        this.step = 7;
-        break;
-      case 6:
-        this.step = 7;
-        break;
-      case 7:
+      case 'PAYMENT_INFO':
         this.payOrder();
-        break;
-      case 9:
-        this.gotToUpdatePassword();
-        break;
-      case 10:
-        this.updatePassword();
         break;
     }
   }
 
-  gotToUpdatePassword() {
-    this.authService
-      .verify(this.code, localStorage.getItem('id'))
-      .then((data: any) => {
-        if (data != undefined) {
-          this.step = 10;
-        }
-      });
-  }
-
-  updatePassword() {
-    this.authService.updateMe({ password: this.password }).then((data) => {
-      this.inputData = '';
-      this.password = '';
-      this.step = 1;
-    });
-  }
-
-  selectOption(index: number) {
+  selectBank(index: number) {
     this.selectedBank = this.bankOptions[index];
-
-    // switch (this.step) {
-    //   case 4:
-    //     this.userSelect(index);
-    //     break;
-    //   case 5: {
-    //     this.selectedPayment = index;
-    //     let showProducts = [];
-    //     if (this.orderData.isPackage) {
-    //       showProducts.push(this.fakeData.itemPackage);
-    //     } else {
-    //       showProducts = this.products;
-    //     }
-
-    //     this.dialogProps = {
-    //       orderFinished: true,
-    //       products: showProducts,
-    //     };
-
-    //     if (this.selectedPayment === 0) {
-    //       if (this.bankOptions.length === 1)
-    //         this.selectedBank = this.bankOptions[0];
-    //       this.headerText = 'INFORMACIÓN DEL PAGO';
-    //       this.step = 7;
-    //     }
-    //     break;
-    //   }
-    //   case 6: {
-    //     this.selectedBank = this.bankOptions[index];
-    //     break;
-    //   }
-    // }
   }
 
   async sendCodeToEmailOrWhatsapp() {
@@ -551,36 +403,6 @@ export class FlowCompletionComponent implements OnInit {
     }
   }
 
-  async selectLoginOption(index: number) {
-    if (index == 0) {
-      localStorage.setItem('phoneNumberOrEmail', this.inputData);
-
-      this.sendCodeToEmailOrWhatsapp();
-    } else {
-      this.checkUser();
-    }
-  }
-
-  createOrSkipOrder() {
-    if (this.banks.length === 1) {
-      this.selectedBank = this.bankOptions[0];
-      this.step = 7;
-    }
-
-    if (this.orderId) {
-      this.step = 7;
-    } else {
-      lockUI(
-        this.createOrder().then((data) => {
-          this.location.replaceState(`ecommerce/flow-completion/${data}`);
-          return this.getOrderData(this.header.orderId).then(() => {
-            this.step = 7;
-          });
-        })
-      );
-    }
-  }
-
   validateNumbers(event: KeyboardEvent) {
     event.preventDefault();
     let transformedOutput: string = this.ammount.value;
@@ -596,92 +418,17 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   goBack() {
-    if (
-      (this.step === 1 || this.step === 3 || this.step === 4) &&
-      !this.orderData
-    ) {
+    if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS' && !this.orderData) {
       this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
     }
-    // this.code = '';
-    // this.paymentCode = '';
-    // this.imageField = undefined;
-    // if (this.step === 5) this.selectedPayment = undefined;
-    // if (this.step === 6) this.selectedBank = undefined;
 
-    if (this.step === 7) {
-      this.step = 3;
+    if (this.step === 'PAYMENT_INFO') {
+      this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
       this.isANewUser = false;
     }
   }
 
-  // Case 1
-  async checkUser() {
-    try {
-      const input = '1' + this.inputData;
-      const data = await this.authService.checkUser(input, 'whatsapp');
-      if (data) {
-        this.userData = data;
-        localStorage.setItem('id', data._id);
-        if (data.validatedAt) {
-          if (data.name) {
-            this.step = 4;
-          } else {
-            const data = await this.authService.generateOTP(input);
-            if (data) {
-              this.step = 2;
-            }
-          }
-        } else {
-          const data = await this.authService.generateOTP('1' + this.inputData);
-          if (data) {
-            this.step = 2;
-          }
-        }
-      } else {
-        this.signUp();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Case 1
-  async signUp() {
-    try {
-      const data = await this.authService.signup(
-        { phone: '1' + this.inputData },
-        'whatsapp'
-      );
-      if (data) {
-        localStorage.setItem('id', data._id);
-        this.step = 2;
-      } else {
-        console.log('error');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Case 2
-  async sendCode() {
-    try {
-      const data = await this.authService.verify(
-        this.code,
-        localStorage.getItem('id')
-      );
-      if (data != undefined) {
-        this.step = 3;
-      } else {
-        this.code = '';
-      }
-    } catch (error) {
-      this.code = '';
-      console.log(error);
-    }
-  }
-
-  // Case 3
+  // PAYMENT INFO
   async updateUser() {
     try {
       const input = !this.comesFromMagicLink
@@ -703,161 +450,15 @@ export class FlowCompletionComponent implements OnInit {
       //   this.router.navigate(['ecommerce/error-screen']);
       //   return;
       // }
-      this.createOrSkipOrder();
+
+      if (this.banks.length === 1) {
+        this.selectedBank = this.bankOptions[0];
+      }
+
+      this.step = 'PAYMENT_INFO';
     } catch (error) {
       console.log(error);
     }
-  }
-
-  // Case 4
-  async userSelect(index: number) {
-    if (index === 0) {
-      if (this.isLogged) {
-        if (
-          this.orderId &&
-          this.userData.phone !== this.orderData?.user.phone
-        ) {
-          this.router.navigate(['ecommerce/error-screen']);
-          return;
-        }
-        this.createOrSkipOrder();
-      } else {
-        this.showLoginPassword = true;
-      }
-    } else {
-      this.step = 1;
-      this.userData = undefined;
-      this.isLogged = false;
-      this.inputData = '';
-      this.password = '';
-      this.incorrectPasswordAttempt = false;
-      this.authService.signoutThree();
-      this.showLoginPassword = false;
-    }
-  }
-
-  // Case 4
-  async signIn() {
-    try {
-      const data = await this.authService.signin(
-        '1' + this.inputData,
-        this.password,
-        false
-      );
-      if (data) {
-        this.userData = data.user;
-        this.isLogged = true;
-        this.password = '';
-        this.showLoginPassword = false;
-        this.incorrectPasswordAttempt = false;
-        if (this.orderId && data.user.phone !== this.orderData?.user.phone) {
-          this.router.navigate(['ecommerce/error-screen']);
-          return;
-        }
-        this.createOrSkipOrder();
-      } else {
-        this.incorrectPasswordAttempt = true;
-        this.password = '';
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Case 3, 4
-  createOrder() {
-    const saleflow =
-      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
-    this.saleflowData = saleflow;
-
-    this.header.order = this.header.getOrder(saleflow._id);
-    this.header.order.products.forEach((product) => {
-      delete product.isScenario;
-      delete product.limitScenario;
-      delete product.name;
-    });
-    return new Promise(async (resolve, reject) => {
-      let customizer = this.header.customizer;
-
-      if (!this.header.customizer) {
-        const saleflowData = JSON.parse(localStorage.getItem('saleflow-data'));
-        const customizerPreview = JSON.parse(
-          localStorage.getItem('customizerFile')
-        );
-
-        let saleflow = JSON.parse(localStorage.getItem(saleflowData._id));
-
-        if ('customizer' in saleflow) {
-          customizer = saleflow.customizer;
-
-          const res: Response = await fetch(customizerPreview.base64);
-          const blob: Blob = await res.blob();
-
-          customizer.preview = new File([blob], customizerPreview.fileName, {
-            type: customizerPreview.type,
-          });
-        }
-      }
-
-      if (customizer) {
-        const customizerId =
-          await this.customizerValueService.createCustomizerValue(customizer);
-
-        this.header.order.products[0].customizer = customizerId;
-        this.header.customizer = null;
-        this.header.customizerData = null;
-      }
-      if (saleflow.module.post) {
-        if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
-        if (saleflow.canBuyMultipleItems)
-          this.header.order.products.forEach((product) => {
-            const createdPostId = localStorage.getItem('createdPostId');
-
-            product.deliveryLocation =
-              this.header.order.products[0].deliveryLocation;
-            product.post = createdPostId;
-          });
-        this.order
-          .createOrder(this.header.order)
-          .then((data) => {
-            this.header.deleteSaleflowOrder(saleflow._id);
-            this.header.resetIsComplete();
-            this.isLoading = false;
-            this.header.orderId = data.createOrder._id;
-            this.orderId = data.createOrder._id;
-            this.header.currentMessageOption = undefined;
-            this.header.post = undefined;
-            this.header.locationData = undefined;
-            // this.app.events.emit({ type: 'order-done', data: true });
-            resolve(data.createOrder._id);
-          })
-          .catch((err) => {
-            console.log(err);
-            reject('Error creando la orden');
-            this.isLoading = false;
-          });
-      } else {
-        await this.order
-          .createOrder(this.header.order)
-          .then(async (data) => {
-            this.header.deleteSaleflowOrder(saleflow._id);
-            this.header.resetIsComplete();
-            this.isLoading = false;
-            this.header.orderId = data.createOrder._id;
-            this.orderId = data.createOrder._id;
-            // this.app.events.emit({ type: 'order-done', data: true });
-            resolve(data.createOrder._id);
-          })
-          .catch((err) => {
-            console.log(err);
-            reject('Error creando la orden');
-            this.isLoading = false;
-          });
-      }
-    }).catch((err) => {
-      console.log(err);
-      this.isLoading = false;
-    });
   }
 
   // Case 7
@@ -917,16 +518,6 @@ export class FlowCompletionComponent implements OnInit {
     }
   }
 
-  /*openOrderDetail() {
-    this.dialog.open(OrderDetailComponent, {
-      //type:'window',
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: {},
-    });
-  }*/
-
   redirect() {
     this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
   }
@@ -947,17 +538,5 @@ export class FlowCompletionComponent implements OnInit {
     } else {
       event.preventDefault();
     }
-  }
-
-  generateOTP() {
-    let input;
-    if (this.isLogged) {
-      input = this.inputData;
-    } else {
-      input = '1' + this.inputData;
-    }
-    this.authService.generateOTP(input).then((data) => {
-      this.step = 9;
-    });
   }
 }

@@ -108,6 +108,108 @@ const orderData = `
   }
 `;
 
+const preOrderData = `
+  _id
+  dateId
+  createdAt
+  tags
+  userNotifications
+  subtotals {
+    amount
+  }
+  merchants {
+    _id
+  }
+  items {
+    _id
+    deliveryLocation {
+      googleMapsURL
+      city
+      street
+      houseNumber
+      referencePoint
+      nickName
+      note
+    }
+    saleflow{
+      _id
+      name 
+      headline
+      subheadline
+      banner
+      merchant {
+        _id
+        name
+        owner {
+          phone
+        }
+      }
+      social {
+        name
+        url
+      }
+      module {
+        paymentMethod{
+          paymentModule{
+            _id
+          }
+        }
+      }
+    }
+    post {
+      _id
+    }
+    amount
+    item {
+      _id
+      name
+      pricing
+      images
+      hasSelection
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+        }
+      }
+    }
+    params {
+      param
+      paramValue
+    }
+    reservation {
+      _id
+    }
+    itemExtra {
+      _id
+      images
+      name
+    }
+    customizer {
+      _id
+      preview
+    }
+  }
+  orderStatus
+  itemPackage {
+    _id
+    name
+    images
+    price
+  }
+  ocr {
+    _id
+    image
+    transactionCode
+    total
+    status
+    platform
+    from
+  }
+`;
+
 export const toggleUserNotifications = gql`
   mutation toggleUserNotifications($active: Boolean!, $orderId: ObjectID!) {
     toggleUserNotifications(active: $active, orderId: $orderId) {
@@ -117,10 +219,28 @@ export const toggleUserNotifications = gql`
   }
 `;
 
+export const authOrder = gql`
+  mutation authOrder(
+    $orderId: ObjectID!
+  ) {
+    authOrder(orderId: $orderId) {
+      ${orderData}
+    }
+  }
+`;
+
 export const order = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {
       ${orderData}
+    }
+  }
+`;
+
+export const orderStatus = gql`
+  query order($orderId: ObjectID!) {
+    order(orderId: $orderId) {
+      orderStatus
     }
   }
 `;
