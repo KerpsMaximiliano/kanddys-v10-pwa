@@ -28,7 +28,7 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
     };
 
     this.route.queryParams.subscribe(async (params) => {
-      const { token, orderId } = params;
+      const { token, orderId, destinationRoute } = params;
 
       try {
         const { analizeMagicLink: session } =
@@ -36,44 +36,23 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
 
         localStorage.setItem('session-token', session.token);
 
-        if (storedRoute && storedRoute !== '') {
-          switch (storedRoute) {
-            case '/ecommerce/test':
-              redirectURL.url = '/ecommerce/test';
-              redirectURL.queryParams = { token };
-              break;
-            case '/ecommerce/shipment-data-form':
-            case '/ecommerce/reservations':
-            case '/ecommerce/provider-store/user-info':
-              if (!token) redirectURL.url = '/ecommerce/flow-completion/';
-              else redirectURL.url = `/ecommerce/flow-completion/${orderId}`;
+        redirectURL.url = destinationRoute;
+        redirectURL.queryParams = { token };
 
-              redirectURL.queryParams = { token };
-              break;
-            default:
-              redirectURL.url = '/home';
-              this.errored = true;
-              this.message =
-                'OCURRIO UN ERROR, redirigiendo a la página principal en ' +
-                this.secondsLeft +
-                ' segundos...';
-              break;
+        this.interval = setInterval(() => {
+          if (!this.errored)
+            this.message = `Redirigiendo a ${redirectURL.url} en ${this.secondsLeft} segundos...`;
+
+          console.log('Cambiando', this.secondsLeft);
+
+          this.secondsLeft--;
+
+          if (this.secondsLeft === -1) {
+            this.router.navigate([redirectURL.url], {
+              queryParams: redirectURL.queryParams,
+            });
           }
-          this.interval = setInterval(() => {
-            if (!this.errored)
-              this.message = `Redirigiendo a ${redirectURL.url} en ${this.secondsLeft} segundos...`;
-
-            console.log('Cambiando', this.secondsLeft);
-
-            this.secondsLeft--;
-
-            if (this.secondsLeft === -1) {
-              this.router.navigate([redirectURL.url], {
-                queryParams: redirectURL.queryParams,
-              });
-            }
-          }, 1000);
-        }
+        }, 1000);
       } catch (error) {
         console.error(error);
       }

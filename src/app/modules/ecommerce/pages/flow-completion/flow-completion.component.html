@@ -107,7 +107,9 @@
         marginBottom: '25px'
       }"
     >
-      Por favor transfiera como pago la suma de ${{ orderData?.amount }}
+      Por favor transfiera como pago la suma de ${{
+        orderData?.amount | number: "1.0-2"
+      }}
       DOP.
     </p>
 

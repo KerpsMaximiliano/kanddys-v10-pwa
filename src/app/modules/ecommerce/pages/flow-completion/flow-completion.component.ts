@@ -16,8 +16,6 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemOrder } from 'src/app/core/models/order';
 import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
-import { CommunitiesService } from 'src/app/core/services/communities.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';

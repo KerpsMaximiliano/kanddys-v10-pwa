@@ -125,10 +125,7 @@ export class MagicLinkDialogComponent implements OnInit {
     const createdPreOrderId = await this.createPreOrder();
     console.log(createdPreOrderId);
 
-    this.whatsappLink = `https://wa.me/19295263397?text=Keyword-Order%20 ${createdPreOrderId}`;
-    const currentRoute = this.router.url;
-
-    localStorage.setItem('currentRoute', JSON.stringify(currentRoute));
+    this.whatsappLink = `https://wa.me/19295263397?text=Keyword-Order%20${createdPreOrderId}`;
 
     let linkRef = document.querySelector(`#sendWS`) as HTMLAnchorElement;
     linkRef.href = this.whatsappLink;
