@@ -46,6 +46,7 @@ export const addTagsInOrder = gql`
 export const tag = gql`
  query tag($tagId: ObjectID!){
     tag(tagId: $tagId){
+        _id
         name
         messageNotify
         notify
