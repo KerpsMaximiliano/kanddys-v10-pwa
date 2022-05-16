@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WarningStepsComponent } from '../../../../shared/dialogs/warning-steps/warning-steps.component';
@@ -12,17 +13,18 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
   styleUrls: ['./user-info.component.scss'],
 })
 export class UserInfoComponent implements OnInit {
-  constructor(
-    private dialog: DialogService,
-    private router: Router,
-    public header: HeaderService
-  ) {}
-
+  saleflowData: SaleFlow;
   warningSteps: {
     name: string;
     url: string;
     status: boolean;
   }[] = [];
+
+  constructor(
+    private dialog: DialogService,
+    private router: Router,
+    public header: HeaderService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -52,6 +54,14 @@ export class UserInfoComponent implements OnInit {
   openMagicLinkDialog() {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
+      props: {
+        asyncCallback: async (whatsappLink: string) => {
+          let preOrderID = await this.header.createPreOrder();
+          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
+
+          return whatsappLink;
+        },
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });

@@ -132,88 +132,97 @@ export class FlowCompletionComponent implements OnInit {
     private location: Location
   ) {}
 
-  async getOrderData(id: string) {
-    return this.order
-      .order(id)
-      .then((data) => {
-        console.log('PreOrderData', data);
+  afterOrderRequest = (data) => {
+    console.log('PreOrderData', data);
 
-        if (
-          data.order.orderStatus === 'cancelled' ||
-          data.order.orderStatus === 'to confirm' ||
-          data.order.orderStatus === 'completed'
-        )
-          this.router.navigate([`ecommerce/order-info/${id}`]);
-        if (data.order.items[0].reservation?._id !== null) {
-          this.reservationOrProduct = 'reservacion';
-        } else {
-          this.reservationOrProduct = 'producto';
-        }
-        if (data) {
-          this.header.saleflow = data.order.items[0].saleflow;
-          this.fakeData = data.order;
-          if (!this.merchantInfo) {
-            this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
-              this.merchantInfo = this.header.merchantInfo;
+    if (
+      data.order.orderStatus === 'cancelled' ||
+      data.order.orderStatus === 'to confirm' ||
+      data.order.orderStatus === 'completed'
+    )
+      this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
+    if (data.order.items[0].reservation?._id !== null) {
+      this.reservationOrProduct = 'reservacion';
+    } else {
+      this.reservationOrProduct = 'producto';
+    }
+    if (data) {
+      this.header.saleflow = data.order.items[0].saleflow;
+      this.fakeData = data.order;
+      if (!this.merchantInfo) {
+        this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
+          this.merchantInfo = this.header.merchantInfo;
+        });
+      }
+      const totalPrice = this.fakeData.subtotals.reduce(
+        (a, b) => a + b.amount,
+        0
+      );
+
+      this.orderData = {
+        id: this.fakeData._id,
+        userId: this.fakeData.user ? this.fakeData.user._id : null,
+        user: this.fakeData.user ? this.fakeData.user : null,
+        itemAmount: this.fakeData.items.reduce((a, b) => a + b.amount, 0),
+        name: this.fakeData.itemPackage?.name
+          ? this.fakeData.itemPackage?.name
+          : this.fakeData.items[0].item.name,
+        amount: this.fakeData.items[0].customizer
+          ? totalPrice * 1.18
+          : totalPrice,
+        hasCustomizer: this.fakeData.items[0].customizer ? true : false,
+        isPackage: this.fakeData.itemPackage ? true : false,
+      };
+
+      this.products = this.fakeData.items.map((item) => {
+        const newItem = item.item;
+        if (item.customizer) {
+          newItem.customizerId = item.customizer._id;
+          newItem.total = totalPrice * 1.18;
+          this.customizerValueService
+            .getCustomizerValuePreview(item.customizer._id)
+            .then((value) => {
+              newItem.images[0] = value.preview;
             });
-          }
-          const totalPrice = this.fakeData.subtotals.reduce(
-            (a, b) => a + b.amount,
-            0
-          );
-
-          this.orderData = {
-            id: this.fakeData._id,
-            userId: this.fakeData.user._id,
-            user: this.fakeData.user,
-            itemAmount: this.fakeData.items.reduce((a, b) => a + b.amount, 0),
-            name: this.fakeData.itemPackage?.name
-              ? this.fakeData.itemPackage?.name
-              : this.fakeData.items[0].item.name,
-            amount: this.fakeData.items[0].customizer
-              ? totalPrice * 1.18
-              : totalPrice,
-            hasCustomizer: this.fakeData.items[0].customizer ? true : false,
-            isPackage: this.fakeData.itemPackage ? true : false,
-          };
-
-          this.products = this.fakeData.items.map((item) => {
-            const newItem = item.item;
-            if (item.customizer) {
-              newItem.customizerId = item.customizer._id;
-              newItem.total = totalPrice * 1.18;
-              this.customizerValueService
-                .getCustomizerValuePreview(item.customizer._id)
-                .then((value) => {
-                  newItem.images[0] = value.preview;
-                });
-            }
-            return newItem;
-          });
-
-          let showProducts = [];
-          if (this.orderData.isPackage) {
-            showProducts.push(this.fakeData.itemPackage);
-          } else {
-            showProducts = this.products;
-          }
-
-          this.dialogProps = {
-            orderFinished: true,
-            products: showProducts,
-          };
-
-          if (!this.orderData) {
-            this.router.navigate(['/error-screen/?type=item']);
-          }
-          this.getExchangeData(
-            data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
-          );
-        } else {
-          this.router.navigate(['/ecommerce/error-screen']);
         }
-      })
-      .catch((error) => console.log(error));
+        return newItem;
+      });
+
+      let showProducts = [];
+      if (this.orderData.isPackage) {
+        showProducts.push(this.fakeData.itemPackage);
+      } else {
+        showProducts = this.products;
+      }
+
+      this.dialogProps = {
+        orderFinished: true,
+        products: showProducts,
+      };
+
+      if (!this.orderData) {
+        this.router.navigate(['/error-screen/?type=item']);
+      }
+      this.getExchangeData(
+        data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
+      );
+    } else {
+      this.router.navigate(['/ecommerce/error-screen']);
+    }
+  };
+
+  async getOrderData(id: string, preOrder = false) {
+    if (preOrder) {
+      return this.order
+        .preOrder(id)
+        .then(this.afterOrderRequest)
+        .catch((error) => console.log(error));
+    } else {
+      return this.order
+        .order(id)
+        .then(this.afterOrderRequest)
+        .catch((error) => console.log(error));
+    }
   }
 
   async getMerchant(id: string) {
@@ -232,6 +241,22 @@ export class FlowCompletionComponent implements OnInit {
       const { orderId } = routeParams;
 
       this.route.queryParams.subscribe(async (params) => {
+        await this.getOrderData(orderId, true);
+
+        if (orderId) {
+          this.orderId = orderId;
+
+          const { orderStatus } = await this.order.getOrderStatus(orderId);
+
+          if (orderStatus === 'draft') {
+            await this.order.authOrder(orderId);
+
+            await this.getOrderData(orderId, false);
+          }
+        } else if (!this.header.isDataComplete()) {
+          this.header.resetIsComplete();
+        }
+
         const saleflow =
           this.header.saleflow ||
           JSON.parse(localStorage.getItem('saleflow-data'));
@@ -282,19 +307,6 @@ export class FlowCompletionComponent implements OnInit {
           this.merchantInfo =
             this.header.merchantInfo ||
             JSON.parse(localStorage.getItem('merchantInfo'));
-        if (orderId) {
-          this.orderId = orderId;
-
-          const { orderStatus } = await this.order.getOrderStatus(orderId);
-
-          if (orderStatus === 'draft') {
-            await this.order.authOrder(orderId);
-          }
-
-          await this.getOrderData(orderId);
-        } else if (!this.header.isDataComplete()) {
-          this.header.resetIsComplete();
-        }
       });
     });
   }

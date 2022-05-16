@@ -237,6 +237,14 @@ export const order = gql`
   }
 `;
 
+export const preOrder = gql`
+  query order($orderId: ObjectID!) {
+    order(orderId: $orderId) {
+      ${preOrderData}
+    }
+  }
+`;
+
 export const orderStatus = gql`
   query order($orderId: ObjectID!) {
     order(orderId: $orderId) {

@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   order,
+  preOrder,
   authOrder,
   orderStatus,
   createOrder,
@@ -90,6 +91,19 @@ export class OrderService {
     try {
       const response = await this.graphql.query({
         query: order,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async preOrder(orderId: string): Promise<{ order: ItemOrder }> {
+    try {
+      const response = await this.graphql.query({
+        query: preOrder,
         variables: { orderId },
         fetchPolicy: 'no-cache',
       });
