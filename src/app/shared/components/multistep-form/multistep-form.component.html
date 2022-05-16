@@ -84,6 +84,23 @@
                     : null
                 "
               />
+
+              <span
+                *ngIf="currentField.bottomLabel"
+                class="input-label-bottom"
+                [ngStyle]="
+                  currentField.styles.bottomLabelStyles
+                    ? currentField.styles.bottomLabelStyles
+                    : null
+                "
+                (click)="
+                  currentField.bottomLabel.clickable
+                    ? currentField.bottomLabel.callback()
+                    : null
+                "
+              >
+                {{ currentField.label }}
+              </span>
             </ng-container>
 
             <!-- MULTIPLE INPUTS GO HERE -->
@@ -124,6 +141,18 @@
                       : null
                   "
                 />
+
+                <span
+                  *ngIf="currentField.bottomLabel"
+                  class="input-label-bottom"
+                  [ngStyle]="
+                    currentField.styles.bottomLabelStyles
+                      ? currentField.styles.bottomLabelStyles
+                      : null
+                  "
+                >
+                  {{ currentField.label }}
+                </span>
               </ng-container>
 
               <!-- BUTTON FOR ADDING MORE INPUTS TO THE MULTIPLE GROUP -->
@@ -173,6 +202,18 @@
                     : null
                 "
               ></textarea>
+
+              <span
+                *ngIf="currentField.bottomLabel"
+                class="input-label-bottom"
+                [ngStyle]="
+                  currentField.styles.bottomLabelStyles
+                    ? currentField.styles.bottomLabelStyles
+                    : null
+                "
+              >
+                {{ currentField.label }}
+              </span>
             </ng-container>
           </div>
 
