@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -6,19 +6,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { Location, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
-import { PostsService } from 'src/app/core/services/posts.service';
-import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemOrder } from 'src/app/core/models/order';
 import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
-import { CommunitiesService } from 'src/app/core/services/communities.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-//import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
@@ -36,65 +32,35 @@ interface BankDetails {
   providers: [TitleCasePipe],
 })
 export class AuthClassicComponent implements OnInit {
-  @Input() type1: boolean = true;
-  @Input() type2: boolean = true;
-  @Input() addPhoto: boolean = true;
-  @Input() simpleQuestion: boolean = true;
-  @Input() inputQuestion: boolean = true;
-  @Input() paymentQuestion: boolean = true;
-  @Input() bankQuestion: boolean = true;
-  paymentOptions = [
-    {
-      value: 'Por transferencia bancaria',
-      status: true,
-    },
-    {
-      value: 'Pagaré después que me confirmen por WhatsApp (no disponible)',
-      status: false,
-    },
-    {
-      value: 'Ya pagué (no disponible)',
-      status: false,
-    },
-  ];
-  communityOptions = [
-    {
-      value: 'Tengo mas de 300 seguidores',
-      status: true,
-    },
-    {
-      value: 'Trabajo en una estacion de radio/tv',
-      status: true,
-    },
-    {
-      value: 'Soy creador de contenido',
-      status: true,
-    },
-    {
-      value: 'Me gusta crear Trivias',
-      status: true,
-    },
-    {
-      value: 'Trabajo en una organización sin fines de lucro',
-      status: true,
-    },
-    {
-      value: 'Soy parte de la asociación de padres de una escuela',
-      status: true,
-    },
-    {
-      value: 'Soy un usual en TikTok',
-      status: true,
-    },
-    {
-      value: 'Soy un usual en Snapchat',
-      status: true,
-    },
-    {
-      value: 'Ayudo a recaudar fondos',
-      status: true,
-    },
-  ];
+  bankOptions: BankDetails[] = [];
+  banks: Bank[] = [];
+  step: string = 'PHONE_NUMBER_INPUT';
+  firstData: any = '';
+  totalOrderAmmount: number = 0;
+  totalOrderAmmountString: string = '';
+  inputData: string = '';
+  name: string = '';
+  password: string = '';
+  code: string = '';
+  showLoginPassword: boolean;
+  selectedBank: BankDetails;
+  paymentCode: string = '';
+  image: File;
+  merchantInfo: Merchant;
+  imageField: string | ArrayBuffer;
+  isLoading: boolean;
+  orderId: string;
+  isLogged: boolean;
+  userData: User;
+  orderData: any;
+  fakeData: ItemOrder;
+  flow: 'auth-classic';
+  headerText: string;
+  ammount = new FormControl('', Validators.pattern(/^\d+$/));
+  incorrectPasswordAttempt: boolean = false;
+  whatsappLink: string = '';
+  reservationOrProduct: string = '';
+  env: string = environment.assetsUrl;
   options = [
     {
       status: true,
@@ -105,56 +71,6 @@ export class AuthClassicComponent implements OnInit {
       value: 'No',
     },
   ];
-  logInOptions = [
-    {
-      status: true,
-      value: 'Simple. Mándame un link a mi WhatsApp',
-    },
-    {
-      status: true,
-      value: 'Como en 1997 donde recibirás un código y asignarás una clave',
-    },
-  ];
-  bankOptions: BankDetails[] = [];
-  banks: Bank[] = [];
-  windowReference: any;
-  step: number = 0;
-  relativeStep: number = 1;
-  actual: string = '';
-  stepsLeft: number;
-  firstData: any = '';
-  totalOrderAmmount: number = 0;
-  totalOrderAmmountString: string = '';
-  inputData: string = '';
-  name: string = '';
-  lastName: string = '';
-  password: string = '';
-  code: string = '';
-  showLoginPassword: boolean;
-  selectedBank: BankDetails;
-  selectedPayment: number;
-  selectedCommunitiesOptions: number[] = [];
-  paymentCode: string = '';
-  image: File;
-  merchantInfo: Merchant;
-  imageField: string | ArrayBuffer;
-  isLoading: boolean;
-  orderId: string;
-  isLogged: boolean;
-  userData: User;
-  orderData: any;
-  error: string = '';
-  orderInfo: any;
-  fakeData: ItemOrder;
-  reservationOrProduct: string = '';
-  flow: 'auth-classic' | 'create-community' | 'create-merchant';
-  headerText: string;
-  newProviderName: string = '';
-  comesFromMagicLink: boolean = false;
-  ammount = new FormControl('', Validators.pattern(/^\d+$/));
-  incorrectPasswordAttempt: boolean = false;
-  whatsappLink: string = '';
-  env: string = environment.assetsUrl;
 
   constructor(
     private authService: AuthService,
@@ -164,15 +80,11 @@ export class AuthClassicComponent implements OnInit {
     private wallet: WalletService,
     private header: HeaderService,
     private customizerValueService: CustomizerValueService,
-    private postsService: PostsService,
-    private communitiesService: CommunitiesService,
-    private readonly app: AppService,
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
     private dialog: DialogService,
-    private saleflow: SaleFlowService,
-    private location: Location
+    private saleflow: SaleFlowService
   ) {}
 
   getOrderData(id: string) {
@@ -257,7 +169,6 @@ export class AuthClassicComponent implements OnInit {
         try {
           const { analizeMagicLink: session } =
             await this.authService.analizeMagicLink(token);
-          this.comesFromMagicLink = true;
 
           localStorage.setItem('session-token', session.token);
 
@@ -273,10 +184,8 @@ export class AuthClassicComponent implements OnInit {
           if (data) this.userData = data;
 
           if (session.new) {
-            this.step = 3;
-            this.relativeStep += 2;
+            this.step = 'SIGNUP_STEP';
           } else {
-            this.relativeStep = 4;
             this.createOrSkipOrder();
           }
 
@@ -336,7 +245,9 @@ export class AuthClassicComponent implements OnInit {
         this.totalOrderAmmount += product.total;
       });
 
-      this.totalOrderAmmountString = (Math.round((this.totalOrderAmmount + Number.EPSILON) * 100) / 100).toLocaleString('es-MX');
+      this.totalOrderAmmountString = (
+        Math.round((this.totalOrderAmmount + Number.EPSILON) * 100) / 100
+      ).toLocaleString('es-MX');
 
       if (!token) {
         this.authService.me().then((data) => {
@@ -344,12 +255,9 @@ export class AuthClassicComponent implements OnInit {
             this.userData = data;
             this.isLogged = true;
             this.inputData = this.userData.phone;
-            this.step = 4;
-
-            if (this.flow === 'auth-classic') this.stepsLeft = 4;
+            this.step = 'LOGIN_STEP';
           } else {
-            this.step = 1;
-            if (this.flow === 'auth-classic') this.stepsLeft = 6;
+            this.step = 'PHONE_NUMBER_INPUT';
           }
         });
       }
@@ -411,8 +319,6 @@ export class AuthClassicComponent implements OnInit {
           ],
         };
       });
-
-      if (this.bankOptions.length < 2) this.stepsLeft--;
     });
   }
 
@@ -429,25 +335,26 @@ export class AuthClassicComponent implements OnInit {
 
   submit() {
     switch (this.step) {
-      case 1:
+      case 'PHONE_NUMBER_INPUT':
         // this.totalQuestions = 1;
+        console.log('VOY POR AQUÍ');
         this.checkUser();
         break;
-      case 2:
+      case 'UNIQUE_CODE_INPUT':
         // this.totalQuestions = 3;
         this.sendCode();
         break;
-      case 3:
+      case 'SIGNUP_STEP':
         // this.totalQuestions = 2;
         this.updateUser();
         break;
-      case 4:
+      case 'LOGIN_STEP':
         this.signIn();
         break;
-      case 9:
+      case 'RECEIVED_CODE_STEP':
         this.gotToUpdatePassword();
         break;
-      case 10:
+      case 'NEW_PASSWORD_STEP':
         this.updatePassword();
         break;
     }
@@ -458,7 +365,7 @@ export class AuthClassicComponent implements OnInit {
       .verify(this.code, localStorage.getItem('id'))
       .then((data: any) => {
         if (data != undefined) {
-          this.step = 10;
+          this.step = 'NEW_PASSWORD_STEP';
         }
       });
   }
@@ -467,71 +374,15 @@ export class AuthClassicComponent implements OnInit {
     this.authService.updateMe({ password: this.password }).then((data) => {
       this.inputData = '';
       this.password = '';
-      this.step = 1;
+      this.step = 'PHONE_NUMBER_INPUT';
     });
   }
 
   selectOption(index: number) {
     switch (this.step) {
-      case 4:
+      case 'LOGIN_STEP':
         this.userSelect(index);
         break;
-      // case 5: {
-      //   this.flow !== 'auth-classic'
-      //     ? this.multipleSelect(index)
-      //     : (this.selectedPayment = index);
-
-      //   if (this.selectedPayment === 0) {
-      //     if (this.bankOptions.length === 1)
-      //       this.selectedBank = this.bankOptions[0];
-      //     this.headerText = 'INFORMACIÓN DEL PAGO';
-      //     this.step = this.bankOptions.length > 1 ? 6 : 7;
-      //     this.relativeStep++;
-      //   }
-      //   break;
-      // }
-      // case 6: {
-      //   this.selectedBank = this.bankOptions[index];
-      //   break;
-      // }
-    }
-  }
-
-  async sendCodeToEmailOrWhatsapp() {
-    const validEmail = new RegExp(
-      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-    );
-    const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
-
-    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
-      const executedSuccessfully = await this.authService.generateMagicLink(
-        this.inputData
-      );
-
-      if (executedSuccessfully) {
-        console.log('Email o whatsapp enviado correctamente');
-      }
-    }
-  }
-
-  async selectLoginOption(index: number) {
-    if (index == 0) {
-      localStorage.setItem('phoneNumberOrEmail', this.inputData);
-
-      this.sendCodeToEmailOrWhatsapp();
-    } else {
-      this.checkUser();
-    }
-  }
-
-  multipleSelect(index: number) {
-    if (this.step == 5) {
-      if (this.selectedCommunitiesOptions.includes(index)) {
-        this.selectedCommunitiesOptions.splice(
-          this.selectedCommunitiesOptions.indexOf(index),
-          1
-        );
-      } else this.selectedCommunitiesOptions.push(index);
     }
   }
 
@@ -565,7 +416,9 @@ export class AuthClassicComponent implements OnInit {
 
   goBack() {
     if (
-      (this.step === 1 || this.step === 3 || this.step === 4) &&
+      (this.step === 'PHONE_NUMBER_INPUT' ||
+        this.step === 'SIGNUP_STEP' ||
+        this.step === 'LOGIN_STEP') &&
       !this.orderData
     ) {
       this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
@@ -575,29 +428,18 @@ export class AuthClassicComponent implements OnInit {
     this.code = '';
     this.paymentCode = '';
     this.imageField = undefined;
-    if (this.step === 5) this.selectedPayment = undefined;
-    if (this.step === 6) this.selectedBank = undefined;
+  
     if (
-      (this.step > 4 &&
-        this.step < 8 &&
-        !(this.step === 7 && this.banks.length === 1)) ||
-      this.step === 2
-    )
-      this.step--;
-    if (this.step === 7 && this.banks.length === 1) this.step = 5;
-
-    if (this.step === 8) this.step = 5;
-
-    if (this.step === 9 || this.step === 10) {
+      this.step === 'RECEIVED_CODE_STEP' ||
+      this.step === 'NEW_PASSWORD_STEP'
+    ) {
       if (this.isLogged) {
-        this.step = 4;
+        this.step = 'LOGIN_STEP';
       } else {
-        this.step = 1;
+        this.step = 'PHONE_NUMBER_INPUT';
       }
       return;
     }
-
-    // this.relativeStep--;
   }
 
   // Case 1
@@ -610,19 +452,17 @@ export class AuthClassicComponent implements OnInit {
         localStorage.setItem('id', data._id);
         if (data.validatedAt) {
           if (data.name) {
-            this.step = 4;
+            this.step = 'LOGIN_STEP';
           } else {
             const data = await this.authService.generateOTP(input);
             if (data) {
-              this.step = 2;
-              this.relativeStep++;
+              this.step = 'UNIQUE_CODE_INPUT';
             }
           }
         } else {
           const data = await this.authService.generateOTP('1' + this.inputData);
           if (data) {
-            this.step = 2;
-            this.relativeStep++;
+            this.step = 'UNIQUE_CODE_INPUT';
           }
         }
       } else {
@@ -642,8 +482,7 @@ export class AuthClassicComponent implements OnInit {
       );
       if (data) {
         localStorage.setItem('id', data._id);
-        this.step = 2;
-        this.relativeStep++;
+        this.step = 'UNIQUE_CODE_INPUT';
       } else {
         console.log('error');
       }
@@ -660,8 +499,7 @@ export class AuthClassicComponent implements OnInit {
         localStorage.getItem('id')
       );
       if (data != undefined) {
-        this.step = 3;
-        this.relativeStep++;
+        this.step = 'SIGNUP_STEP';
       } else {
         this.code = '';
       }
@@ -674,14 +512,11 @@ export class AuthClassicComponent implements OnInit {
   // Case 3
   async updateUser() {
     try {
-      const input = !this.comesFromMagicLink
-        ? {
-            name: this.name,
-            password: this.password,
-          }
-        : {
-            name: this.name,
-          };
+      const input = {
+        name: this.name,
+        password: this.password,
+      };
+
       const data = await this.authService.updateMe(input);
       this.userData = data;
       this.isLogged = true;
@@ -707,15 +542,11 @@ export class AuthClassicComponent implements OnInit {
           return;
         }
         if (this.flow === 'auth-classic') this.createOrSkipOrder();
-        if (this.flow === 'create-community') this.step = 5;
-        if (this.flow === 'create-merchant') this.step = 5;
       } else {
         this.showLoginPassword = true;
-        this.stepsLeft = this.banks.length > 1 ? 4 : 3;
       }
     } else {
-      this.stepsLeft = this.banks.length > 1 ? 6 : 5;
-      this.step = 1;
+      this.step = 'PHONE_NUMBER_INPUT';
       this.userData = undefined;
       this.isLogged = false;
       this.inputData = '';
@@ -745,8 +576,6 @@ export class AuthClassicComponent implements OnInit {
           return;
         }
         if (this.flow === 'auth-classic') this.createOrSkipOrder();
-        if (this.flow === 'create-community') this.step = 5;
-        if (this.flow === 'create-merchant') this.step = 5;
       } else {
         this.incorrectPasswordAttempt = true;
         this.password = '';
@@ -800,7 +629,7 @@ export class AuthClassicComponent implements OnInit {
         this.header.customizerData = null;
       }
       if (saleflow.module.post) {
-        if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
+        this.header.emptyPost(saleflow._id);
         if (saleflow.canBuyMultipleItems)
           this.header.order.products.forEach((product) => {
             const createdPostId = localStorage.getItem('createdPostId');
@@ -833,7 +662,6 @@ export class AuthClassicComponent implements OnInit {
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
             this.orderId = data.createOrder._id;
-            // this.app.events.emit({ type: 'order-done', data: true });
             resolve(data.createOrder._id);
           })
           .catch((err) => {
@@ -878,26 +706,13 @@ export class AuthClassicComponent implements OnInit {
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        totalPrice.toLocaleString('es-MX')
-      }.%20Mi%20nombre%20es:%20${
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${totalPrice.toLocaleString(
+        'es-MX'
+      )}.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
     try {
       lockUI();
-
-      // alert(this.orderData.userId + " === " + this.orderData.user._id + " === " + this.orderData.user.name);
-
-      const data = await this.order.payOrder(
-        {
-          image: this.image,
-          platform: 'bank-transfer',
-          transactionCode: this.paymentCode,
-        },
-        this.orderData.userId,
-        'bank-transfer',
-        this.orderData.id
-      );
       this.orderFinished();
     } catch (error) {
       console.log(error);
@@ -905,15 +720,6 @@ export class AuthClassicComponent implements OnInit {
     }
   }
 
-  /*openOrderDetail() {
-    this.dialog.open(OrderDetailComponent, {
-      //type:'window',
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: {},
-    });
-  }*/
 
   redirect() {
     this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
@@ -934,31 +740,6 @@ export class AuthClassicComponent implements OnInit {
     ) {
     } else {
       event.preventDefault();
-    }
-  }
-
-  // Case 8
-  async createNewProvider() {
-    lockUI();
-    try {
-      if (this.flow === 'create-community') {
-        const data = await this.communitiesService.create({
-          owner: this.userData._id,
-          name: this.newProviderName,
-          creator: this.userData._id,
-        });
-        unlockUI();
-      }
-      if (this.flow === 'create-merchant') {
-        const data = await this.merchant.createMerchant({
-          owner: this.userData._id,
-          name: this.newProviderName,
-        });
-        unlockUI();
-      }
-    } catch (error) {
-      console.log(error);
-      unlockUI();
     }
   }
 
@@ -988,7 +769,7 @@ export class AuthClassicComponent implements OnInit {
       input = '1' + this.inputData;
     }
     this.authService.generateOTP(input).then((data) => {
-      this.step = 9;
+      this.step = 'RECEIVED_CODE_STEP';
     });
   }
 }
