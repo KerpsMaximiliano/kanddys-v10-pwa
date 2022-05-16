@@ -4,7 +4,7 @@
         <img [src]="imageFolder + '/Etiquetas_vacias.svg'" width="23px" height="21px" class="bruteimg"/>
         <app-helper-header
         [bgcolor]="'#FFFFFF'"
-        [middleText]="tagID"
+        [middleText]="tagName"
         [middleTextColor]="'#7B7B7B'"
         [middleTextFontSize]="'17px'"
         [middleTextFontFamily]="'SfProRegular'"
@@ -15,17 +15,17 @@
     
         <div class="ws-container">
 
-        <ng-container *ngIf="transparent">
-            <div class="tws-area" (click)="letsChange()"> <!--letsChange es temporal-->
+        <ng-container *ngIf="!transparent">
+            <div class="tws-area"> <!--letsChange es temporal-->
                 <img alt="" [src]="imageFolder + '/whatsapp_verde.svg'" height="30.36px" width="30.06px" style="cursor: pointer;"/>
                 <p class="inner-tp">Adicionar notificación al taguear la orden/venta.</p>
             </div>
         </ng-container>
 
-        <ng-container *ngIf="!transparent">
-            <div class="fws-area" (click)="letsChange()"> <!--letsChange es temporal-->
+        <ng-container *ngIf="transparent">
+            <div class="fws-area"> <!--letsChange es temporal-->
                 <img alt="" [src]="imageFolder + '/whatsapp_blanco.svg'" height="30.36px" width="30.06px" style="cursor: pointer;"/>
-                <p class="inner-fp">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et</p>
+                <p class="inner-fp">{{tagMessage}}</p>
             </div>
         </ng-container>
 

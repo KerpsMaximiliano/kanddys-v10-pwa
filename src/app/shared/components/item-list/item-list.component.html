@@ -192,7 +192,7 @@
         <p *ngIf="itemListContent.text_right">
           {{ itemListContent.text_right }}
         </p>
-        <ng-container *ngIf="itemListContent.icons_bottom_right && !itemListContent.text_right && !itemListContent.icon_bottom" >
+        <ng-container *ngIf="itemListContent.icons_bottom_right && itemListContent.text_right && !itemListContent.icon_bottom" >
           <div class="container-icon">
             <div class="item-list-icon">
               <ng-container
