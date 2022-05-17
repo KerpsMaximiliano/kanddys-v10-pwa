@@ -7,7 +7,30 @@
 </div>
 <hr>
 <div>
+  <div>
+    <label>Autofill Colors (stickers Texts)</label>
+    <input type="checkbox" [(ngModel)]="autofillColors">
+  </div>
+  <div>
+    <label>Autofill Stickers</label>
+    <input type="checkbox" [(ngModel)]="autofillStickers">
+  </div>
+  <div>
+    <label>Autofill Fonts</label>
+    <input type="checkbox" [(ngModel)]="autofillFonts">
+  </div>
+  <div>
+    <label>Autofill Bg Colors</label>
+    <input type="checkbox" [(ngModel)]="autofillBgColors">
+  </div>
+  <div>
+    <label>Autofill background</label>
+    <input type="checkbox" [(ngModel)]="autofillBackground">
+  </div>
+</div>
   <form [formGroup]="customizerForm">
+    <button *ngIf="!customizerID" (click)="createCustomizer()">submit</button>
+    <button *ngIf="customizerID" (click)="modifyCustomizer()">actualizar</button>
     <div formGroupName="canvas">
       <div>
         <label>Canvas rounded</label>
@@ -62,12 +85,13 @@
         <!-- <div *ngIf="checkControlValue(customizerForm, 'backgroundColor.onlyFixed')" formArrayName="fixed"> -->
         <div *ngIf="customizerForm.get('backgroundColor.onlyFixed').value" formArrayName="fixed"  style="margin-left: 10px;">
           <label>fixed</label>
-          <button type="button" (click)="onAddArrayItem('backgroundColor.fixed')">
+          <button type="button" (click)="onAddArrayItemColor('backgroundColor.fixed')">
             Add new backgroundColor
           </button>
-          <div *ngFor="let fixedControl of getArrayControls(customizerForm, 'backgroundColor.fixed'); index as i">
-            <!-- <input type="text" [formControlName]="i"><button type="button" (click)="onRemoveArrayItem('backgroundColor.fixed', i)">remove background color</button> -->
-            <input type="color" [formControlName]="i"><button type="button" (click)="onRemoveArrayItem('backgroundColor.fixed', i)">remove background color</button>
+          <div *ngFor="let fixedControl of getArrayControls(customizerForm, 'backgroundColor.fixed'); index as i" [formGroupName]="i">
+            <input type="color" formControlName="fixedValue">
+            <input type="text" formControlName="name">
+            <button type="button" (click)="onRemoveArrayItem('backgroundColor.fixed', i)">remove background color</button>
           </div>
         </div>
       </div>
@@ -485,22 +509,7 @@
       </div>
     </div>
     <hr>
-    <button *ngIf="!customizerID" (click)="createCustomizer()">submit</button>
-    <button *ngIf="customizerID" (click)="modifyCustomizer()">actualizar</button>
   </form>
-  <div>
-    <label>Autofill Colors (stickers Texts)</label>
-    <input type="checkbox" [(ngModel)]="autofillColors">
-  </div>
-  <div>
-    <label>Autofill Stickers</label>
-    <input type="checkbox" [(ngModel)]="autofillStickers">
-  </div>
-  <div>
-    <label>Autofill Fonts</label>
-    <input type="checkbox" [(ngModel)]="autofillFonts">
-  </div>
-</div>
 <hr>
 <pre>{{customizerForm.value | json}}</pre>
 <ul>

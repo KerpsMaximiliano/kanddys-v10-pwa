@@ -32,6 +32,11 @@ interface FormField {
   validators?: Array<any>;
   description?: string;
   label: string;
+  bottomLabel?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   placeholder?: string;
   inputType?: string;
   showImageBottomLabel?: string;
@@ -51,6 +56,18 @@ interface EmbeddedComponent {
   afterIndex: number;
 }
 
+interface PromiseFunction {
+  type: 'promise';
+  function(params): Promise<any>;
+}
+
+interface ObservableFunction {
+  type: 'observable';
+  function(params): Observable<any>;
+}
+
+type AsyncFunction = PromiseFunction | ObservableFunction;
+
 interface FormStep {
   fieldsList: Array<FormField>;
   headerText: string;
@@ -58,7 +75,7 @@ interface FormStep {
   accessCondition?(...params): boolean;
   stepButtonValidText: string;
   stepButtonInvalidText: string;
-  asyncStepProcessingFunction?(...params): Observable<any>;
+  asyncStepProcessingFunction?: AsyncFunction;
   stepProcessingFunction?(...params): any;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
@@ -102,6 +119,13 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           styles: {
             containerStyles: {
               marginTop: '150px',
+            },
+          },
+          bottomLabel: {
+            text: '¿No tienes un número?',
+            clickable: true,
+            callback: () => {
+              console.log('Se ha clickeado el callback');
             },
           },
         },
@@ -192,11 +216,14 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           },
         },
       ],
-      asyncStepProcessingFunction: (): Observable<any> => {
-        return of({
-          message: 'Continuar',
-          ok: true,
-        }).pipe(delay(3000));
+      asyncStepProcessingFunction: {
+        type: 'observable',
+        function: () => {
+          return of({
+            message: 'Continuar',
+            ok: true,
+          }).pipe(delay(3000));
+        },
       },
       bottomLeftAction: {
         text: 'Sin mensaje de regalo',
@@ -294,8 +321,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
 
       this.dataModel.addControl(currentStepKey, new FormGroup({}));
 
-      console.log(this.dataModel);
-
       let currentStepFormGroup = this.dataModel.get(
         currentStepKey
       ) as FormGroup;
@@ -309,11 +334,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       });
 
       step.fieldsList.forEach((field) => {
-        console.log(field.name, field.fieldControl);
-
-        if (!currentStepFormGroup.get(field.name))
-          console.log(field.name + ' ya existe');
-
         if (!currentStepFormGroup.get(field.name))
           currentStepFormGroup.addControl(field.name, field.fieldControl);
 
@@ -330,8 +350,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     });
 
     if (this.scrollableForm) this.blockScrollPastCurrentStep();
-
-    console.log('Modelo de datos', this.dataModel);
   }
 
   //Removes all subscriptions from every formControl
@@ -396,7 +414,9 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     const reader = new FileReader();
 
     const file = (event.target as HTMLInputElement).files[0];
+
     this.header.flowImage = event.target.files[0];
+
     reader.readAsDataURL(file);
 
     reader.onload = () => {
@@ -405,6 +425,12 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           [currentField.name]: reader.result,
         },
       });
+
+      // this.header.storeMultistepFormImages({
+      //   base64: reader.result,
+      //   filename: 'multistep-form' + Date.now() + this.currentStep + '.png',
+      //   type: 'image/png',
+      // });
 
       this.dataModel
         .get((this.currentStep + 1).toString())
@@ -514,7 +540,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    *
    */
   scrollToStep = (index = this.currentStep + 1, scrollToNextStep = true) => {
-    console.log('MOVING TO STEP ' + index);
     let previousCurrentStep;
 
     if (!scrollToNextStep) {
@@ -572,6 +597,46 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     this.shouldScrollBackwards = !this.shouldScrollBackwards;
   };
 
+  handleAsyncFunction(
+    asyncFunction: AsyncFunction,
+    stepButtonText,
+    stepFunctionParams
+  ) {
+    if (asyncFunction.type === 'observable') {
+      asyncFunction.function(stepFunctionParams).subscribe((result) => {
+        this.steps[this.currentStep].stepButtonValidText = stepButtonText;
+        if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          !('customScrollToStep' in this.steps[this.currentStep])
+        )
+          this.scrollToStep();
+        else if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          'customScrollToStep' in this.steps[this.currentStep]
+        )
+          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+      });
+    } else {
+      asyncFunction.function(stepFunctionParams).then((result) => {
+        this.steps[this.currentStep].stepButtonValidText = stepButtonText;
+        if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          !('customScrollToStep' in this.steps[this.currentStep])
+        )
+          this.scrollToStep();
+        else if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          'customScrollToStep' in this.steps[this.currentStep]
+        )
+          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+      });
+    }
+  }
+
   executeStepDataProcessing = () => {
     let stepFunctionParams = {
       dataModel: this.dataModel,
@@ -609,23 +674,11 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       let stepButtonText = this.steps[this.currentStep].stepButtonValidText;
       this.steps[this.currentStep].stepButtonValidText = 'ESPERE...';
 
-      this.steps[this.currentStep]
-        .asyncStepProcessingFunction(stepFunctionParams)
-        .subscribe((result) => {
-          this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-          if (
-            result.ok &&
-            this.currentStep !== this.steps.length - 1 &&
-            !('customScrollToStep' in this.steps[this.currentStep])
-          )
-            this.scrollToStep();
-          else if (
-            result.ok &&
-            this.currentStep !== this.steps.length - 1 &&
-            'customScrollToStep' in this.steps[this.currentStep]
-          )
-            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
-        });
+      this.handleAsyncFunction(
+        this.steps[this.currentStep].asyncStepProcessingFunction,
+        stepButtonText,
+        stepFunctionParams
+      );
     }
   };
 }

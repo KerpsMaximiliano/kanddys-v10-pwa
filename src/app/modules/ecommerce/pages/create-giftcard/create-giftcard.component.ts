@@ -3,6 +3,8 @@ import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { Observable, of } from 'rxjs';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 const lightLabelStyles = {
@@ -21,7 +23,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private post: PostsService
   ) {}
   //added create-giftcard again because the merge was deleted??????
 
@@ -42,6 +45,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
       ],
     };
+
     this.header.storePost(
       this.header.saleflow?._id ?? this.header.getSaleflow()._id,
       {
@@ -113,8 +117,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver mas productos',
-        footerCallback: () => this.router.navigate(['/ecommerce/create-giftcard']),
-        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`])
+        orderFinished: true,
+        footerCallback: () =>
+          this.router.navigate(['/ecommerce/create-giftcard']),
+        headerCallback: () =>
+          this.router.navigate([
+            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+          ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -400,27 +409,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           this.storeEmptyMessageAndGoToShipmentDataForm(params);
         },
       },
-      stepProcessingFunction: (params) => {
-        this.header.post = {
-          message: params.dataModel.value['4']['message-edit'],
-          targets: [
-            {
-              name: params.dataModel.value['4']['receiver-edit'],
-              emailOrPhone: '',
-            },
-          ],
-          from: params.dataModel.value['4']['sender-edit'],
-          // multimedia: [this.header.flowImage],
-          multimedia: this.header.flowImage,
-          socialNetworks: [
-            {
-              url: '',
-            },
-          ],
-        };
-        this.header.storePost(
-          this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-          {
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          this.header.post = {
             message: params.dataModel.value['4']['message-edit'],
             targets: [
               {
@@ -436,12 +428,48 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
                 url: '',
               },
             ],
+          };
+
+          const postInput = {
+            message: params.dataModel.value['4']['message-edit'],
+            targets: [
+              {
+                name: params.dataModel.value['4']['receiver-edit'],
+                emailOrPhone: '',
+              },
+            ],
+            from: params.dataModel.value['4']['sender-edit'],
+            multimedia: this.header.flowImage,
+            socialNetworks: [
+              {
+                url: '',
+              },
+            ],
+          };
+
+          try {
+            let postResult = await this.post.creationPost(postInput);
+
+            const { createPost } = postResult;
+            const { _id: postId } = createPost;
+
+            localStorage.setItem('createdPostId', postId);
+
+            this.header.isComplete.message = true;
+            this.header.storeOrderProgress(this.header.saleflow._id);
+            this.router.navigate([`ecommerce/shipment-data-form`]);
+
+            return of({
+              ok: true,
+            });
+          } catch (error) {
+            console.log('Error creando la orden', error);
+
+            return of({
+              ok: false,
+            });
           }
-        );
-        this.header.isComplete.message = true;
-        this.header.storeOrderProgress(this.header.saleflow._id);
-        this.router.navigate([`ecommerce/shipment-data-form`]);
-        return { ok: true };
+        },
       },
       headerText: 'INFORMACIÓN DEL MENSAJE DE REGALO',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
@@ -451,28 +479,28 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.header.flowRoute = 'create-giftcard';
-    if(!this.header.saleflow) {
+    if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
-      if(saleflow) {
+      if (saleflow) {
         this.header.saleflow = saleflow;
         this.header.order = this.header.getOrder(saleflow._id);
-        if(!this.header.order) {
+        if (!this.header.order) {
           this.router.navigate([`/ecommerce/trivias`]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
-        if(items && items.length > 0) this.header.items = items;
+        if (items && items.length > 0) this.header.items = items;
         else this.router.navigate([`/ecommerce/trivias`]);
       } else this.router.navigate([`/ecommerce/trivias`]);
     } else {
       this.header.order = this.header.getOrder(this.header.saleflow._id);
-      if(!this.header.order) {
+      if (!this.header.order) {
         this.router.navigate([`/ecommerce/trivias`]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
-      if(items && items.length > 0) this.header.items = items;
+      if (items && items.length > 0) this.header.items = items;
       else this.router.navigate([`/ecommerce/trivias`]);
     }
   }

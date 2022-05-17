@@ -1,0 +1,202 @@
+<div class="container">
+  <app-helper-header
+    bgcolor="#FFFFFF"
+    [searchAble]="false"
+    middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular"
+    middleTextColor="#7B7B7B"
+    [middleText]="headerText"
+    [back]="step === 'PAYMENT_INFO'"
+    [basic]="step === 'UPDATE_NAME' && !orderData"
+    [dialogProps]="dialogProps"
+    [orderItems]="step === 'PAYMENT_INFO'"
+    (onClose)="goBack()"
+  ></app-helper-header>
+
+  <div *ngIf="step === 'UPDATE_NAME'">
+    <div
+      [ngStyle]="{
+        padding: '0px 33px',
+        marginTop: '69px'
+      }"
+      *ngIf="isANewUser"
+    >
+      <p class="label1">Nombre y Apellido</p>
+      <input
+        type="text"
+        class="input"
+        [(ngModel)]="name"
+        [placeholder]="'Mi nombre y apellido es..'"
+      />
+      <div
+        [ngStyle]="{
+          width: '100%',
+          paddingTop: '12px',
+          paddingLeft: '15px',
+          paddingBottom: '66.5px',
+          borderBottom: '1px solid rgba(112, 112, 112, 0.49)',
+          color: '#7B7B7B',
+          fontFamily: 'Roboto',
+          fontStyle: 'italic',
+          fontSize: '17px'
+        }"
+      >
+        En la siguiente pantalla subirás una foto con la imagen (pantallaso,
+        screenshot) de la transferencia que realizaste.
+      </div>
+    </div>
+
+    <p
+      class="label3"
+      [ngStyle]="{
+        margin: '0px 33px',
+        marginTop: '50.5px',
+        marginBottom: '25px'
+      }"
+    >
+      Por favor transfiera como pago la suma de $595.00 DOP.
+    </p>
+
+    <div
+      [ngStyle]="{
+        backgroundColor: 'rgba(254, 210, 48, 0.43)',
+        color: 'black',
+        borderRadius: '20px',
+        margin: '0px 32px',
+        marginBottom: '25px'
+      }"
+      *ngFor="let bank of bankOptions"
+    >
+      <div
+        [ngStyle]="{
+          padding: '24px 38px'
+        }"
+      >
+        <h6
+          [ngStyle]="{
+            color: 'black',
+            fontWeight: 'bold',
+            fontFamily: 'RobotoMedium',
+            margin: '0px'
+          }"
+        >
+          {{ bank.value }}
+        </h6>
+        <div
+          *ngIf="bank.description"
+          [ngStyle]="{
+            marginTop: '15px'
+          }"
+        >
+          <p
+            [ngStyle]="{
+              fontFamily: 'RobotoLight',
+              fontStyle: 'italic',
+              fontSize: '17px',
+              color: '#202020',
+              paddingLeft: '45px',
+              margin: 0
+            }"
+            *ngFor="let description of bank.description"
+          >
+            {{ description }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="step === 'PAYMENT_INFO'">
+    <div class="content step-7">
+      <p style="margin-bottom: 47px" class="label1">
+        Sobre la transferencia que realizó como pago:
+      </p>
+
+      <p style="margin-bottom: 22px; margin-top: 88px" class="label2">
+        Adicione los últimos 4 digitos de la transferencia que realizó:
+      </p>
+      <input
+        type="text"
+        [(ngModel)]="paymentCode"
+        minlength="4"
+        maxlength="4"
+        class="code-input"
+      />
+
+      <p class="label3" style="margin-top: 87px">
+        Adicione la imagen (captura):
+      </p>
+      <app-image-input
+        [allowedTypes]="['png', 'jpg', 'jpeg']"
+        (onFileInput)="onFileInput($event)"
+      ></app-image-input>
+
+      <p
+        class="label3"
+        [ngStyle]="{ marginBottom: '26px' }"
+        *ngIf="banks.length > 1"
+      >
+        En cuál cuenta hizo la transferencia?
+      </p>
+
+      <app-answer-selector
+        *ngIf="banks.length > 1"
+        [options]="bankOptions"
+        (onSelector)="selectOption($event)"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '72px',
+          borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+        }"
+      ></app-answer-selector>
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          paddingTop: '29.5px',
+          color: '#7B7B7B',
+          fontFamily: 'Roboto',
+          fontStyle: 'italic',
+          fontSize: '17px',
+          paddingBottom: '67px'
+        }"
+      >
+        En la siguiente pantalla le mandarás el record de tu orden y la
+        confirmación del pago que hiciste a {{ saleflowData.merchant.name }}
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="footer"
+    [ngStyle]="{
+      justifyContent: step === 'PAYMENT_INFO' ? 'space-between' : 'flex-end'
+    }"
+  ></div>
+
+  <div class="bottom-separator"></div>
+
+  <app-sticky-button
+    [mode]="(!name || name.trim().length === 0) && isANewUser"
+    [text]="!name && isANewUser ? 'ESCRIBE TU NOMBRE Y APELLIDO' : 'CONTINUAR'"
+    (click)="submit()"
+    *ngIf="step === 'UPDATE_NAME'"
+  ></app-sticky-button>
+
+  <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
+    <app-sticky-button
+      [mode]="
+        paymentCode.length !== 4 || !image || !selectedBank
+          ? 'disabled-fixed'
+          : 'fixed'
+      "
+      [text]="
+        paymentCode.length !== 4 || !image || !selectedBank
+          ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+          : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
+      "
+      (click)="submit()"
+    ></app-sticky-button>
+  </a>
+</div>

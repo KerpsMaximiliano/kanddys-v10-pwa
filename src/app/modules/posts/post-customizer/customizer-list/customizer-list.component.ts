@@ -28,6 +28,8 @@ export class CustomizerListComponent implements OnInit {
   autofillColors: boolean = false;
   autofillFonts: boolean = false;
   autofillStickers: boolean = false;
+  autofillBgColors: boolean = false;
+  autofillBackground: boolean = false;
 
   ngOnInit(): void {
     this.initForm();
@@ -39,7 +41,7 @@ export class CustomizerListComponent implements OnInit {
         if(value.backgroundColor.active)
           if(value.backgroundColor.onlyFixed)
             for(let i = 0; i < value.backgroundColor.fixed.length; i++) {
-              this.onAddArrayItem('backgroundColor.fixed');
+              this.onAddArrayItemColor('backgroundColor.fixed');
             }
         if(value.backgroundImage.active)
           if(value.backgroundImage.onlyFixed)
@@ -244,7 +246,8 @@ export class CustomizerListComponent implements OnInit {
       'name': new FormControl(null, Validators.required),
       'fixedValue': new FormControl(null, Validators.required),
     });
-    (<FormArray>form.get(controlName)).push(control);
+    if(form) (<FormArray>form.get(controlName)).push(control);
+    else (<FormArray>this.customizerForm.get(controlName)).push(control);
     return;
   }
 
@@ -306,6 +309,16 @@ export class CustomizerListComponent implements OnInit {
       console.log('some values will be autofilled')
     }
     customizerData.merchant = this.userMerchant; // local
+    if(this.autofillBgColors) {
+      customizerData.backgroundColor.active = true;
+      customizerData.backgroundColor.onlyFixed = true;
+      customizerData.backgroundColor.fixed = bgColors;
+    }
+    if(this.autofillBackground) {
+      customizerData.backgroundImage.active = true;
+      customizerData.backgroundImage.onlyFixed = true;
+      customizerData.backgroundImage.urls = ["https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1652369816745.png"];
+    }
     if(customizerData.stickers.fixedAmountItems) {
       customizerData.stickers.fixedAmount = customizerData.stickers.itemsRule.length;
       for(let i = 0; i < customizerData.stickers.itemsRule.length; i++) {
@@ -342,12 +355,13 @@ export class CustomizerListComponent implements OnInit {
         let textFonts = this.hasDuplicate(font[0], fonts);
         customizerData.texts.itemsRule[i].fixedFonts = textFonts;
       }
-    } else if(customizerData.texts.active) {
-      for(let i = 0; i < customizerData.texts.itemsRule.length; i++) {
-        let font = customizerData.texts.itemsRule[i].fixedFonts
-        customizerData.texts.itemsRule[i].fixedFonts = [font[0]];
-      }
     }
+    // else if(customizerData.texts.active) {
+    //   for(let i = 0; i < customizerData.texts.itemsRule.length; i++) {
+    //     let font = customizerData.texts.itemsRule[i].fixedFonts
+    //     customizerData.texts.itemsRule[i].fixedFonts = [font[0]];
+    //   }
+    // }
     // else customizerData.texts.fixedAmount = 0;
     console.log(customizerData)
     return customizerData;
@@ -513,6 +527,29 @@ const colorList = [
   {
     fixedValue: "#9F8689",
     name: "35-AP"
+  },
+]
+
+const bgColors = [
+  {
+    fixedValue: "#3A3A3A",
+    name: 'Negro'
+  },
+  {
+    fixedValue: "#FB3E3F",
+    name: 'Rojo'
+  },
+  {
+    fixedValue: "#B4B4B4",
+    name: 'Gris'
+  },
+  {
+    fixedValue: "#676881",
+    name: 'Azul Marino'
+  },
+  {
+    fixedValue: "#FFFFFF",
+    name: 'Blanco'
   },
 ]
 

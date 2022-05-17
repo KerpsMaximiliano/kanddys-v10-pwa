@@ -105,25 +105,43 @@ export const item = gql`
   query item($id: ObjectID!) {
     item(id: $id) {
       _id
-      content
       name
+      pricing
+      pricePerUnit
       description
-      category{
+      createdAt
+      images
+      fixedQuantity
+      size
+      quality
+      iconImage
+      hasExtraPrice
+      content
+      hasSelection
+      calendar {
+        _id
+      }
+      category {
         _id
         name
       }
-      hasSelection
-      images
-      pricing
-      itemExtra{
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
+      itemExtra {
         _id
         images
         name
         isActive
         createdAt
-      }
-      calendar {
-        _id
       }
     }
   }

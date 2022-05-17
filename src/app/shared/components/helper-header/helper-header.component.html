@@ -13,7 +13,7 @@
       [style.fontFamily]="middleTextFontFamily"
       [style.color]="middleTextColor"
       [style.fontSize]="middleTextFontSize"
-      [style.text-transform] = "middleTextTransform"
+      [style.text-transform]="middleTextTransform"
     >
       {{ middleText }}
     </div>
@@ -52,6 +52,13 @@
         class="img-hlprhdr"
         *ngIf="add === true"
         src="{{ env }}/plus-circle-o.svg"
+        alt="add"
+      />
+      <img
+        class="img-hlprhdr"
+        *ngIf="orderItems === true"
+        src="{{ env }}/order-items.svg"
+        (click)="openDialog()"
         alt="add"
       />
       <img

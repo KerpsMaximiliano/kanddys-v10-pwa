@@ -280,31 +280,64 @@
 <!-- ---------------------------------------- WORKING VERSION ---------------------------------------- -->
 
 <div class="container-v2" *ngIf="dateId">
-  <app-helper-header *ngIf="showHeader" [basic]="false" [back]="true" middleTextTransform="uppercase"
-    middleText="información de la orden" middleTextColor="#7B7B7B" middleTextFontFamily="SfProRegular"
-    middleTextFontSize="17px" [bgcolor]="'transparent'" [searchAble]="false" (onClose)="back()">
+  <app-helper-header
+    *ngIf="showHeader"
+    [basic]="false"
+    [back]="true"
+    middleTextTransform="uppercase"
+    middleText="información de la orden"
+    middleTextColor="#7B7B7B"
+    middleTextFontFamily="SfProRegular"
+    middleTextFontSize="17px"
+    [bgcolor]="'transparent'"
+    [searchAble]="false"
+    (onClose)="back()"
+  >
   </app-helper-header>
   <div class="provider-info-wrapper">
-    <app-provider-info [providerId]="providerData.headline" [providerBio1]="'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()"
-      [providerImage]="providerData.image" [providerSocials]="providerData.socials" [background]="'#FFFFFF'"
-      [leftInfo]="dateId" [rightInfo]="date">
+    <app-provider-info
+      [providerId]="providerData.headline"
+      [providerBio1]="
+        name
+          ? 'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()
+          : ''
+      "
+      [providerImage]="providerData.image"
+      [providerSocials]="providerData.socials"
+      [background]="'#FFFFFF'"
+      [leftInfo]="dateId"
+      [rightInfo]="date"
+    >
     </app-provider-info>
   </div>
 
-  <app-page-component-tabs [tabsOptions]="tabsOptions" (changeValue)="wichName($event)"></app-page-component-tabs>
+  <app-page-component-tabs
+    [tabsOptions]="tabsOptions"
+    (changeValue)="wichName($event)"
+  ></app-page-component-tabs>
 
-  <div class="content" *ngIf="facturado" style="margin-bottom: 100px; min-height: 90vh">
+  <div
+    class="content"
+    *ngIf="facturado"
+    style="margin-bottom: 100px; min-height: 90vh"
+  >
     <div class="list-items">
       <ng-container *ngIf="!existPackage">
         <ng-container *ngFor="let item of items; let i = index">
           <div class="list-item">
-            <ng-container *ngIf="item.item.images.length > 0; else elseTemplate">
-              <img [src]="item.item.images[0]" alt="no-image" class="image-item" />
+            <ng-container
+              *ngIf="item.item.images.length > 0; else elseTemplate"
+            >
+              <img
+                [src]="item.item.images[0]"
+                alt="no-image"
+                class="image-item"
+              />
             </ng-container>
             <ng-template #elseTemplate>
               <div class="list-square"></div>
             </ng-template>
-  
+
             <div class="list-item-content">
               <div class="item">
                 <p class="title">{{ item.item.name }}</p>
@@ -332,12 +365,15 @@
       <ng-container *ngIf="existPackage">
         <div class="list-items">
           <div class="list-item">
-            <img [src]="orders.itemPackage.images[0]" alt="no-image" class="image-item" />
+            <img
+              [src]="orders.itemPackage.images[0]"
+              alt="no-image"
+              class="image-item"
+            />
             <div class="list-item-content">
               <div class="item">
                 <p class="title">{{ orders.itemPackage.name }}</p>
-                <div class="bottom">
-                </div>
+                <div class="bottom"></div>
               </div>
             </div>
           </div>
@@ -346,18 +382,35 @@
     </div>
 
     <!-- <p class="total-text" *ngIf="price">Total Facturado en DOP</p>-->
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; margin-top: 142px;">
+    <div
+      style="display: flex; gap: 10px; margin-bottom: 20px; margin-top: 142px"
+    >
       <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
-      <div class="dop" style="font-family: 'SfProRegular'; font-size: 19px; color: #7B7B7B; margin-top: 10px;">
+      <div
+        class="dop"
+        style="
+          font-family: 'SfProRegular';
+          font-size: 19px;
+          color: #7b7b7b;
+          margin-top: 10px;
+        "
+      >
         DOP
       </div>
     </div>
-    <div class="status" *ngIf="status" style="margin-bottom: 20px;">STATUS DEL PAGO: {{ status }}</div>
+    <div class="status" *ngIf="status" style="margin-bottom: 20px">
+      STATUS DEL PAGO: {{ status }}
+    </div>
     <div *ngIf="showNotificationButton">
       <label class="input-container">
-        <div class="notif-check" (click)="toggleNotifications()"
-          [ngStyle]="{backgroundColor: notifications ? '#4773d8' : '#ffffff'}"></div>
-        <div>Si, quiero ser notificado (a) cuando mi pago cambie de estado.</div>
+        <div
+          class="notif-check"
+          (click)="toggleNotifications()"
+          [ngStyle]="{ backgroundColor: notifications ? '#4773d8' : '#ffffff' }"
+        ></div>
+        <div>
+          Si, quiero ser notificado (a) cuando mi pago cambie de estado.
+        </div>
       </label>
     </div>
     <!-- <p class="date">{{ createdAt | date: "short" }}</p> -->
@@ -408,8 +461,7 @@
     <div class="text-container">
       <ng-container *ngIf="orders.items[0].deliveryLocation.city; else pickUp">
         {{ orders.items[0].deliveryLocation.street }},
-        {{ orders.items[0].deliveryLocation.city }},
-        República Dominicana
+        {{ orders.items[0].deliveryLocation.city }}, República Dominicana
       </ng-container>
       <ng-template #pickUp>
         {{ orders.items[0].deliveryLocation.nickName }}
@@ -418,7 +470,7 @@
     <ng-container *ngIf="orders.items[0].deliveryLocation.note">
       <div class="target">
         <p class="top-text">Nota:</p>
-        <div class="text-container" style="margin-bottom: 60px;">
+        <div class="text-container" style="margin-bottom: 60px">
           {{ orders.items[0].deliveryLocation.note }}
         </div>
       </div>
@@ -496,22 +548,43 @@
   </div>
 
   <div *ngIf="mensajeRegalo">
-    <app-gift-message [data]="message" [isPreview]="true" [message]="currentMessage"></app-gift-message>
+    <app-gift-message
+      [data]="message"
+      [isPreview]="true"
+      [message]="currentMessage"
+    ></app-gift-message>
   </div>
 
   <div *ngIf="pagoView">
     <div class="pagoView">
-
       <p class="top-text">Los últimos 4 digitos de la transferencia:</p>
 
-      <input type="text" minlength="4" maxlength="4" class="input payment" placeholder="Los 4 digitos son.." [(ngModel)]="orders.ocr.transactionCode" disabled/>
+      <input
+        type="text"
+        minlength="4"
+        maxlength="4"
+        class="input payment"
+        placeholder="Los 4 digitos son.."
+        [(ngModel)]="orders.ocr.transactionCode"
+        disabled
+      />
 
       <p class="top-text">Monto transferido:</p>
 
-      <input type="text" min="1" class="input payment" placeholder="Pagué.." pattern="\d*" [value]="'$'+price.toLocaleString('en-US')+' DOP'" disabled/>
+      <input
+        type="text"
+        class="input payment"
+        placeholder="Pagué.."
+        [value]="'$' + price.toLocaleString('en-US') + ' DOP'"
+        disabled
+      />
 
       <p class="top-text">Imagen (captura):</p>
-      <div class="pay-image" [ngStyle]="{'background-image': 'url(' + orders.ocr.image + ')'}"></div>
+      <div
+        class="pay-image"
+        (click)="openImageModal(orders.ocr.image)"
+        [ngStyle]="{ 'background-image': 'url(' + orders.ocr.image + ')' }"
+      ></div>
     </div>
   </div>
 </div>

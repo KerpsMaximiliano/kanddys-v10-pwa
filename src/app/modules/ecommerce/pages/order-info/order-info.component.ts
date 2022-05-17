@@ -16,6 +16,8 @@ import { environment } from 'src/environments/environment';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
+import { ItemSubOrder } from 'src/app/core/models/order';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 moment.locale('es');
 
 @Component({
@@ -67,7 +69,7 @@ export class OrderInfoComponent implements OnInit {
   delivery: string;
   message: any;
   createdAt: string;
-  items: Array<any>;
+  items: Array<ItemSubOrder>;
   itemsExtra = [];
   customizer: {
     _id: string;
@@ -96,11 +98,11 @@ export class OrderInfoComponent implements OnInit {
       title: 'Tik Tok',
     },
   ];
-  facturado: boolean = true;
+  facturado: boolean;
   escenarios: boolean;
   reservacion: boolean;
   personalizacion: boolean;
-  tabsOptions = ['Lo Facturado'];
+  tabsOptions = [];
   mensajeRegalo: boolean;
   orderId: string;
   pago: number;
@@ -129,18 +131,13 @@ export class OrderInfoComponent implements OnInit {
   date: any;
 
   ngOnInit(): void {
-    console.log('la orden es');
-    console.log(this.headerService.order);
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
     //lockUI()
     this.route.params.subscribe((params) => {
-      console.log(params);
       this.linkId = params.id;
       this.headerService.orderId = params.id;
       this.order.order(params.id).then((data) => {
-        console.log('el callback de la orden');
-        console.log(data);
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
           this.orders = data.order;
@@ -161,6 +158,11 @@ export class OrderInfoComponent implements OnInit {
               (user) =>
                 (this.showNotificationButton = user._id === data.order.user._id)
             );
+          if (data.order.ocr) {
+            this.tabsOptions.push('Pago');
+            this.pagoView = true;
+          } else this.facturado = true;
+          this.tabsOptions.push('Lo Facturado');
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');
@@ -175,20 +177,17 @@ export class OrderInfoComponent implements OnInit {
             this.tabsOptions.push('Reservación');
             this.titleTab = 'Horario de la sesión';
           }
-          this.tabsOptions.push('Pago');
           if (data.order.items[0].deliveryLocation) {
-            console.log('Order data', data.order.items);
             this.tabsOptions.push('Entrega');
             this.titleTab = 'Entrega';
           }
-          console.log(this.itemsExtra);
           this.phone = data.order.user.phone;
           const totalPrice = data.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
           );
           this.price = data.order.items[0].customizer
-            ? totalPrice * 1.18
+            ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
             : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
@@ -201,7 +200,10 @@ export class OrderInfoComponent implements OnInit {
 
           this.delivery = data.order.items[0].deliveryLocation.googleMapsURL;
           this.image = data.order.items[0].item.images;
-          this.name = data.order.user.name;
+          this.name =
+            String(data.order.user.name) !== 'null' && data.order.user.name
+              ? data.order.user.name
+              : '';
           this.merchantName = data.order.items[0].saleflow.headline;
           this.orderId = data.order._id;
           // this.date = `${moment(data.order.createdAt).format(
@@ -210,13 +212,10 @@ export class OrderInfoComponent implements OnInit {
           this.date = `${moment(data.order.createdAt).format(
             'LL'
           )} a las ${moment(data.order.createdAt).format('LT')}`;
-          console.log(this.id);
           if (data.order.itemPackage) this.pago = data.order.itemPackage.price;
           this.createdAt = data.order.createdAt;
-          console.log(this.price);
 
           // this.dateOfOrder = this.headerService.walletData.createdAt;
-          // console.log(this.dateOfOrder);
 
           this.showItem = {
             showArrow: true,
@@ -244,26 +243,18 @@ export class OrderInfoComponent implements OnInit {
             this.reservation
               .getReservation(data.order.items[0].reservation._id)
               .then((data) => {
-                console.log(data);
-                console.log(data.getReservation.date.from.split('-'));
-                console.log('el día de la semana de la reservación es');
-                console.log(moment(data.getReservation.date.from).isoWeekday());
                 let dateInfo = data.getReservation.date.from.split('-');
-                console.log(dateInfo);
                 let day = dateInfo[2].split('T')[0];
                 let hour =
                   (
                     parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset
                   ).toString() + '00';
-                console.log(day);
-                console.log(hour);
                 let month;
                 for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
                   if (
                     parseInt(dateInfo[1]) - 1 ==
                     this.calendar.allFullMonths[i].id
                   ) {
-                    console.log('entré');
                     month = this.calendar.allFullMonths[i].name;
                   }
                 }
@@ -276,29 +267,24 @@ export class OrderInfoComponent implements OnInit {
                   dateInfo[0] +
                   ' a las ' +
                   this.formatHour(data.getReservation.date.from)),
-                  console.log(month);
-                this.reservationItem = {
-                  showArrow: true,
-                  title: 'Fecha',
-                  description: `El ${
-                    this.days[
-                      moment(data.getReservation.date.from).isoWeekday() + 1
-                    ]
-                  } ${day} de ${month}, ${this.formatHour(
-                    data.getReservation.date.from
-                  )}`,
-                };
-                console.log('el reservation item es');
-                console.log(this.reservationItem);
+                  (this.reservationItem = {
+                    showArrow: true,
+                    title: 'Fecha',
+                    description: `El ${
+                      this.days[
+                        moment(data.getReservation.date.from).isoWeekday() + 1
+                      ]
+                    } ${day} de ${month}, ${this.formatHour(
+                      data.getReservation.date.from
+                    )}`,
+                  });
                 this.allDone = true;
               });
           }
           if (data.order.items[0].post) {
             this.posts.getPost(data.order.items[0].post._id).then((data) => {
               this.message = data.post;
-              console.log(this.message);
               this.currentMessage = this.message.message;
-              console.log(this.currentMessage);
               if (this.message.from === '' && this.message.message === '') {
                 for (let i = 0; i < this.tabsOptions.length; i++) {
                   if (this.tabsOptions[i] === 'Mensaje') {
@@ -309,13 +295,13 @@ export class OrderInfoComponent implements OnInit {
             });
           }
           if (data.order.items[0].customizer) {
-            console.log('dasdsad');
-
+            this.dateId = '';
             this.customizerValueService
               .getCustomizerValuePreview(data.order.items[0].customizer._id)
               .then((value) => {
                 this.customizer = value;
-                console.log(this.customizer);
+                this.items[0].item.images[0] = value.preview;
+                this.dateId = this.formatID(data.order.dateId);
               });
           }
           if (params.notification) {
@@ -342,7 +328,6 @@ export class OrderInfoComponent implements OnInit {
   }
 
   formatID(dateId: string) {
-    console.log(dateId);
     const splits = dateId.split('/');
     const year = splits[2].substring(0, 4);
     const number = splits[2].substring(4);
@@ -375,18 +360,27 @@ export class OrderInfoComponent implements OnInit {
   }
 
   toggleNotifications() {
-    this.order
-      .toggleUserNotifications(!this.notifications, this.linkId)
-      .then((result) => {
-        console.log('Cambiaste las preferencias de notificaciones');
-        console.log(result);
-      });
+    this.order.toggleUserNotifications(!this.notifications, this.linkId);
+    // .then((result) => {
+    //   console.log('Cambiaste las preferencias de notificaciones');
+    //   console.log(result);
+    // });
 
     this.notifications = !this.notifications;
   }
 
+  openImageModal(imageSourceURL: string) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   wichName(e) {
-    console.log(e);
     if (e === 'Reservación') {
       this.reservacion = true;
       this.address = false;

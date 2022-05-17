@@ -6,7 +6,6 @@ import {
   ElementRef,
   HostListener,
   NgZone,
-  AfterContentChecked,
 } from '@angular/core';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -84,14 +83,14 @@ interface TextData {
   imageText: string;
   fontSize: string;
   fontStyle: string;
-  fontColor: { name: string, fixedValue: string };
+  fontColor: { name: string; fixedValue: string };
 }
 
-const allColors: { name: string, fixedValue: string }[] = [
-  { 
+const allColors: { name: string; fixedValue: string }[] = [
+  {
     name: 'Default',
-    fixedValue: '#D5D5D5'
-  }
+    fixedValue: '#D5D5D5',
+  },
 ];
 
 @Component({
@@ -100,7 +99,7 @@ const allColors: { name: string, fixedValue: string }[] = [
   styleUrls: ['./post-customizer.component.scss'],
 })
 export class PostCustomizerComponent
-  implements OnInit, AfterViewInit, AfterContentChecked
+  implements OnInit, AfterViewInit
 {
   @ViewChild('myCanvas', { static: false })
   canvasRef: ElementRef<HTMLCanvasElement>;
@@ -155,7 +154,7 @@ export class PostCustomizerComponent
     sepia: 0,
     contrast: 100,
   };
-  backgroundColors: { name: string, fixedValue: string }[] = [...allColors];
+  backgroundColors: { name: string; fixedValue: string }[] = [...allColors];
   // EFECTOS
 
   // STICKERS
@@ -182,7 +181,7 @@ export class PostCustomizerComponent
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253683952.svg',
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253684463.svg',
   ];
-  stickerColors: { name: string, fixedValue: string }[] = allColors;
+  stickerColors: { name: string; fixedValue: string }[] = allColors;
   currentStickersAmount: number = 0;
   stickerMax: boolean = false;
   stickerColor: string = '';
@@ -193,7 +192,7 @@ export class PostCustomizerComponent
   canDraw: boolean = false;
   lineWidth: number = 2;
   lineColor: string = '#D5D5D5';
-  lineColors: { name: string, fixedValue: string }[] = allColors;
+  lineColors: { name: string; fixedValue: string }[] = allColors;
   // LÁPIZ
 
   // TIPOGRAFIA
@@ -204,7 +203,7 @@ export class PostCustomizerComponent
     fontStyle: 'Arial',
     fontColor: {
       fixedValue: '#D5D5D5',
-      name: 'Default'
+      name: 'Default',
     },
   };
   fontStyles: string[] = [
@@ -229,11 +228,13 @@ export class PostCustomizerComponent
       fontName: 'GeorgiaRegular',
     },
     {
-      fileName: 'CheltenhamStdBold.otf',
+      // fileName: 'CheltenhamStdBold.otf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf',
       fontName: 'Cheltenham',
     },
     {
-      fileName: 'Dorsa-Regular.ttf',
+      // fileName: 'Dorsa-Regular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Dorsa-Regular.ttf',
       fontName: 'Dorsa',
     },
     {
@@ -241,11 +242,13 @@ export class PostCustomizerComponent
       fontName: 'Village',
     },
     {
-      fileName: 'AirForce45-Regular.ttf',
+      // fileName: 'AirForce45-Regular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf',
       fontName: 'AirForce45-Regular',
     },
     {
-      fileName: 'PomfritDandyNFRegular.ttf',
+      // fileName: 'PomfritDandyNFRegular.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf',
       fontName: 'PomfritDandyNFRegular',
     },
     {
@@ -273,11 +276,17 @@ export class PostCustomizerComponent
       fontName: 'Empire',
     },
     {
-      fileName: 'Commercial-Script.ttf',
+      // fileName: 'Commercial-Script.ttf',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf',
       fontName: 'Commercial-Script',
     },
+    {
+      // fileName: 'ONYX.TTF',
+      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF',
+      fontName: 'Onyx',
+    },
   ];
-  fontColors: { name: string, fixedValue: string }[] = allColors;
+  fontColors: { name: string; fixedValue: string }[] = allColors;
   currentTextsAmount: number = 0;
   currentMaxLength: number;
   textMax: boolean = false;
@@ -293,7 +302,8 @@ export class PostCustomizerComponent
   imageUrl: string;
   selectedBackgroundImage: string;
   imageElement: HTMLImageElement;
-  selectedBackgroundColor: string = '#ffffff';
+  backgroundColorActive: boolean;
+  selectedBackgroundColor: { name?: string; fixedValue?: string };
   // IMAGE
 
   // EDITING
@@ -362,7 +372,7 @@ export class PostCustomizerComponent
 
   getCustomizerRules(customizer: Customizer) {
     this.customizerRules = customizer;
-    const { canvas, stickers, texts, lines } = customizer;
+    const { canvas, backgroundColor, backgroundImage, stickers, texts, lines } = customizer;
     if (canvas.onlyFixed) {
       // this.canvasHeight = canvas.fixedSize.height;
       // this.canvasRatio = canvas.fixedSize.ratio;
@@ -414,68 +424,82 @@ export class PostCustomizerComponent
           texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
           texts.itemsRule[0].fixedFonts[0] === 'Elegant'
         ) {
-          if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
+          if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+            this.isLongText = true;
           this.willHideInput = true;
         }
         // Text input below canvas
         if (this.currentTextsAmount === texts.fixedAmount) {
           this.textMax = true;
         }
-        if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true;
+        if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+          this.isLongText = true;
       }
-    } else {
-      if (this.route.snapshot.url[0].path === 'post-customizer') {
-        if (stickers.fixedAmountItems) {
-          const urlList: string[] = stickers.itemsRule.map((sticker) => {
-            let url;
-            if (sticker.onlyFixed) url = sticker.fixed[0];
-            else url = this.stickerList[0];
-            return url;
-          });
-          const promises = urlList.map((url) => this.fetchSVG(url));
-          Promise.all(promises).then((result) => {
-            result.forEach((svg) => {
-              if (svg) {
-                this.addSticker(svg, 0);
-              }
-            });
-          });
+    } else if (this.route.snapshot.url[0].path === 'post-customizer') {
+      if (backgroundColor.active && backgroundColor.onlyFixed) {
+        if(this.header.paramHasColor) {
+          this.backgroundColorActive = true;
+          this.selectedBackgroundColor = backgroundColor.fixed[0];
+          this.drawBackgroundColor();
+        } else {
+          this.selectedBackgroundColor = backgroundColor.fixed.find((value) => value.name === 'Blanco');
         }
-        if (texts.fixedAmountItems) {
-          // Text input below canvas
-          this.willShowInput = true;
-          this.inputMaxLength = texts.itemsRule.reduce(
-            (prev, curr) => prev + curr.fixedLength,
-            0
-          );
-          this.hiddenFontText = texts.itemsRule.reduce(
-            (prev, curr) => prev + curr.defaultText,
-            ''
-          );
-          if (
-            texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
-            texts.itemsRule[0].fixedFonts[0] === 'Elegant'
-          ) {
-            if(texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
-            this.willHideInput = true;
-          }
-          if(texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
-          // Text input below canvas
-          texts.itemsRule.forEach((text) => {
-            if (text.defaultText) {
-              let textData: TextData = {
-                imageText: text.defaultText,
-                fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
-                fontColor: text.onlyFixedColor
-                  ? text.fixedColors[0]
-                  : { fixedValue: '#ffffff', name: 'Default'},
-                fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
-              };
-              this.typographyData = textData;
-              this.exitEditing(textData);
+      }
+      if (backgroundImage.active && backgroundImage.onlyFixed && this.header.paramHasImage) {
+        this.onChangeBackgroundImage(backgroundImage.fixed[0])
+      }
+      if (stickers.fixedAmountItems) {
+        const urlList: string[] = stickers.itemsRule.map((sticker) => {
+          let url;
+          if (sticker.onlyFixed) url = sticker.fixed[0];
+          else url = this.stickerList[0];
+          return url;
+        });
+        const promises = urlList.map((url) => this.fetchSVG(url));
+        Promise.all(promises).then((result) => {
+          result.forEach((svg) => {
+            if (svg) {
+              this.addSticker(svg, 0);
             }
           });
+        });
+      }
+      if (texts.fixedAmountItems) {
+        // Text input below canvas
+        this.willShowInput = true;
+        this.inputMaxLength = texts.itemsRule.reduce(
+          (prev, curr) => prev + curr.fixedLength,
+          0
+        );
+        this.hiddenFontText = texts.itemsRule.reduce(
+          (prev, curr) => prev + curr.defaultText,
+          ''
+        );
+        if (
+          texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
+          texts.itemsRule[0].fixedFonts[0] === 'Elegant'
+        ) {
+          if (texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+            this.isLongText = true;
+          this.willHideInput = true;
         }
+        if (texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+          this.isLongText = true;
+        // Text input below canvas
+        texts.itemsRule.forEach((text) => {
+          if (text.defaultText) {
+            let textData: TextData = {
+              imageText: text.defaultText,
+              fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
+              fontColor: text.onlyFixedColor
+                ? text.fixedColors[0]
+                : { fixedValue: '#ffffff', name: 'Default' },
+              fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
+            };
+            this.typographyData = textData;
+            this.exitEditing(textData);
+          }
+        });
       }
     }
   }
@@ -749,10 +773,12 @@ export class PostCustomizerComponent
             rules.texts.itemsRule[0].fixedFonts[0] === 'Oval' ||
             rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant'
           ) {
-            if(rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant') this.isLongText = true
+            if (rules.texts.itemsRule[0].fixedFonts[0] === 'Elegant')
+              this.isLongText = true;
             this.willHideInput = true;
           }
-          if(rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular') this.isLongText = true
+          if (rules.texts.itemsRule[0].fixedFonts[0] === 'AirForce45-Regular')
+            this.isLongText = true;
           // Text input below canvas
           if (this.currentTextsAmount === rules.texts.fixedAmount) {
             this.textMax = true;
@@ -777,27 +803,8 @@ export class PostCustomizerComponent
           fontFileName.fontName ===
           this.elementList[elementIndex].typography.font
       );
-
-      this.fontFileName.forEach((font) => {
-        if (this.elementList[elementIndex].typography.font !== font.fontName) {
-          console.log(
-            this.elementList[elementIndex].typography.font +
-              ' No es ' +
-              font.fontName
-          );
-        } else {
-          console.log(
-            this.elementList[elementIndex].typography.font +
-              ' es ' +
-              font.fontName
-          );
-        }
-      });
-
-      console.log('FUENTE', this.elementList[elementIndex].typography.font);
-
       if (fontElement) {
-        let myFont = new FontFace('My Font', `url(${fontElement.fileName})`);
+        let myFont = new FontFace(fontElement.fontName, `url(${fontElement.fileName})`);
 
         myFont.load().then((font) => {
           (document as any).fonts.add(font);
@@ -856,19 +863,6 @@ export class PostCustomizerComponent
           });
       }
     }
-  }
-
-  ngAfterContentChecked(): void {
-    /*this.done = true;
-    setTimeout(() => {this.draw()}, 1000);
-    let myFont = new FontFace('My Font', 'url(NIRVANA.TTF)');
-    myFont.load().then(function (font) {
-      console.log(font);
-      
-      // with canvas, if this is ommited won't work
-      (document as any).fonts.add(font);
-      console.log('Font loaded');
-    });*/
   }
 
   // Initializes Customizer
@@ -932,9 +926,9 @@ export class PostCustomizerComponent
     this.canvasRef.nativeElement.ontouchend = (e) => {
       this.mouseUp();
     };
-    this.canvasRef.nativeElement.ondblclick = (e) => {
-      this.dbClicked(e);
-    };
+    // this.canvasRef.nativeElement.ondblclick = (e) => {
+    //   this.dbClicked(e);
+    // };
 
     this.context.lineCap = 'round';
     this.context.lineJoin = 'round';
@@ -946,7 +940,7 @@ export class PostCustomizerComponent
     this.modifyingElement = -1;
     this.modifyingSticker = -1;
     this.modifyingText = -1;
-    // this.selectedOption = '';
+    this.selectedOption = '';
     this.selectedElementOption = '';
   }
 
@@ -1013,7 +1007,8 @@ export class PostCustomizerComponent
     let options: string[] = [];
     if (this.modifyingElement >= 0) {
       if (this.elementList[this.modifyingElement].sticker) {
-        if(this.customizerRules.stickers.itemsRule[0].fixed.length > 1) options = ['iconos'];
+        if (this.customizerRules.stickers.itemsRule[0].fixed.length > 1)
+          options = ['iconos'];
         if (this.showStickerPosition()) options.push(...['tamaño', 'angulo']);
         options.push('color');
       }
@@ -1025,7 +1020,8 @@ export class PostCustomizerComponent
         options = ['editar'];
         if (!this.isFixedSize()) options.push('tamaño');
         if (!this.isFixedPosition()) options.push('angulo');
-        if(this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1) options.push('tipografia');
+        if (this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1)
+          options.push('tipografia');
         options.push('color');
       }
     }
@@ -1041,7 +1037,7 @@ export class PostCustomizerComponent
   changeElementOption(option: string) {
     if (this.selectedOption === 'stickers') {
       this.modifyingSticker =
-        this.elementList[this.modifyingElement].sticker.number;
+        this.elementList[this.modifyingElement]?.sticker?.number;
       // this.modifyingElement = -1;
       if (option === 'iconos') {
         this.openDialog();
@@ -1102,7 +1098,7 @@ export class PostCustomizerComponent
     return !this.elementList[this.modifyingElement].fixPositionOnly;
   }
 
-  getStickerColors(): { name: string, fixedValue: string }[] {
+  getStickerColors(): { name: string; fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.stickers.fixedAmountItems) {
         const element = this.elementList[this.modifyingElement].sticker.number;
@@ -1188,7 +1184,7 @@ export class PostCustomizerComponent
   }
 
   // Changes sticker color, only should work on unicolor stickers
-  onChangeStickerColor(color: { name: string, fixedValue: string }) {
+  onChangeStickerColor(color: { name: string; fixedValue: string }) {
     const newSticker = this.elementList[this.modifyingElement].sticker;
     const re = new RegExp(newSticker.color.fixedValue, 'g');
     const replacedColor = newSticker.decoded.replace(re, color.fixedValue);
@@ -1255,7 +1251,7 @@ export class PostCustomizerComponent
     url: string,
     element: CanvasElement,
     srcUrl: string,
-    color?: { name: string, fixedValue: string }
+    color?: { name: string; fixedValue: string }
   ) {
     element.sticker.url = srcUrl;
     let canvasSticker = new Image();
@@ -1293,7 +1289,10 @@ export class PostCustomizerComponent
         this.draw();
       };
       element.sticker.decoded = decodedValue;
-      element.sticker.color = { fixedValue: '#' + currentColor[0], name: color.name };
+      element.sticker.color = {
+        fixedValue: '#' + currentColor[0],
+        name: color.name,
+      };
     }
     // Temporal
     const stickerRules =
@@ -1321,7 +1320,7 @@ export class PostCustomizerComponent
   // Sends a sticker for modification or adds a new one
   addSticker(url: string, id: number) {
     let srcUrl: string;
-    let specifiedColor: { name: string, fixedValue: string };
+    let specifiedColor: { name: string; fixedValue: string };
     if (this.customizerRules.stickers.fixedAmountItems) {
       if (this.modifyingSticker >= 0) {
         if (
@@ -1500,10 +1499,15 @@ export class PostCustomizerComponent
           height: +dimensions.height,
         });
       }
-      const stickerElements = this.elementList.filter(element => element.sticker)
+      const stickerElements = this.elementList.filter(
+        (element) => element.sticker
+      );
       if (specifiedColor) {
         const re = new RegExp('#' + currentColor[0], 'g');
-        const replacedColor = decodedValue.replace(re, specifiedColor.fixedValue);
+        const replacedColor = decodedValue.replace(
+          re,
+          specifiedColor.fixedValue
+        );
         const canvasImage = new Image();
         stickerElements[current].sticker.image = canvasImage;
         stickerElements[current].sticker.color = specifiedColor;
@@ -1515,8 +1519,10 @@ export class PostCustomizerComponent
         };
       } else {
         stickerElements[current].sticker.decoded = decodedValue;
-        stickerElements[current].sticker.color =
-          { fixedValue: '#' + currentColor[0], name: specifiedColor.name};
+        stickerElements[current].sticker.color = {
+          fixedValue: '#' + currentColor[0],
+          name: 'color',
+        };
       }
     };
   }
@@ -1650,7 +1656,7 @@ export class PostCustomizerComponent
     }
   }
 
-  getFontColors(): { name: string, fixedValue: string }[] {
+  getFontColors(): { name: string; fixedValue: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.texts.fixedAmountItems) {
         const element =
@@ -1682,7 +1688,7 @@ export class PostCustomizerComponent
   }
 
   // Changes font color. If not editing text, draws the new color
-  onChangeFontColor(color: { name: string, fixedValue: string }) {
+  onChangeFontColor(color: { name: string; fixedValue: string }) {
     this.typographyData.fontColor = color;
     if (this.isEditing) return;
     const element = this.elementList[this.modifyingElement];
@@ -1711,7 +1717,7 @@ export class PostCustomizerComponent
     this.typographyData.fontStyle = style;
     if (this.isEditing) return;
     this.elementList.forEach((element) => {
-      if(element.typography) {
+      if (element.typography && !element.typography.hidden) {
         element.typography.font = this.typographyData.fontStyle;
         this.modifyingText = element.typography.number;
         const text = {
@@ -1719,10 +1725,10 @@ export class PostCustomizerComponent
           fontColor: element.typography.color,
           fontSize: element.typography.size,
           fontStyle: style,
-        }
+        };
         this.exitEditing(text);
       }
-    })
+    });
   }
 
   // Changes FontSize out of editing. Needs to recalculate width and height WIP
@@ -1750,7 +1756,7 @@ export class PostCustomizerComponent
             t.position.y + t.position.height / 2
           );
           this.context.rotate(t.position.rotation);
-          if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
+          if (t.typography.color.fixedValue === this.selectedBackgroundColor.fixedValue) {
             if (t.typography.color.fixedValue !== '#000000')
               this.context.fillStyle = 'black';
             else this.context.fillStyle = 'white';
@@ -1776,7 +1782,8 @@ export class PostCustomizerComponent
       );
       this.context.rotate(t.position.rotation);
       if (t.typography.color.fixedValue === this.selectedBackgroundColor) {
-        if (t.typography.color.fixedValue !== '#000000') this.context.fillStyle = 'black';
+        if (t.typography.color.fixedValue !== '#000000')
+          this.context.fillStyle = 'black';
         else this.context.fillStyle = 'white';
         this.context.fillText(line, 1 - lineWidth / 2, y + 1);
         this.context.fillStyle = t.typography.color.fixedValue;
@@ -1825,61 +1832,171 @@ export class PostCustomizerComponent
 
     return Math.max(...greatestWidth);
   }
-  
+
   validateInput($event: KeyboardEvent) {
-    if(this.isLongText && (/[a-zA-Z0-9]/.test($event.key) || $event.code === 'Space')) return $event;
-    else if(/[a-zA-Z0-9]/.test($event.key)) return $event;
+    if (
+      this.isLongText &&
+      (/[a-zA-Z0-9]/.test($event.key) || $event.code === 'Space')
+    )
+      return $event;
+    else if (/[a-zA-Z0-9]/.test($event.key)) return $event;
     else return $event.preventDefault();
   }
 
   // Text input below canvas
   setInputText() {
-    const textElements = this.elementList.filter(element => element.typography)
+    const textElements = this.elementList.filter(
+      (element) => element.typography && !element.typography.hidden
+    );
     this.hiddenFontText = textElements
       .sort((a, b) =>
         a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
       )
-      .reduce(
-        (prev, curr) => prev + curr.typography.text,
-        ''
-      );
+      .reduce((prev, curr) => prev + curr.typography.text, '');
   }
 
   // Changes text from input below canvas
   onChangeInput() {
-    if(!this.hiddenFontText) return;
+    if (!this.hiddenFontText) return;
     const textElements = this.elementList
-    .filter(element => element.typography)
-    .sort((a, b) =>
-      a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
-    );
-    if(textElements.length > 1) {
+      .filter((element) => element.typography)
+      .sort((a, b) =>
+        a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+      );
+    if (textElements.length > 1) {
       const letters = this.hiddenFontText.split('');
+      let threeLetters = textElements.length === 3;
       letters.forEach((letter, index) => {
         this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
         let width = this.context.measureText(letter).width;
-        textElements[index].typography.text = letter.toUpperCase();
-        textElements[index].position.width = width;
-        textElements[index].position.x = Math.floor(this.canvasWidth * (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) - width / 2);
+        if(threeLetters) {
+          if(this.hiddenFontText.length === 3) {
+            textElements[index].typography.text = letter.toUpperCase();
+            textElements[index].position.width = width;
+            textElements[index].position.x = Math.floor(
+              this.canvasWidth *
+                (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+                width / 2
+            );
+          }
+          if(this.hiddenFontText.length === 2) {
+            if(index === 0) {
+              textElements[0].position.x = Math.floor(
+                this.canvasWidth *
+                  ((this.customizerRules.texts.itemsRule[0].fixPosition.x + 3) / 100) -
+                  width / 2
+              );
+            }
+            if(index === 1) {
+              index = 2;
+              textElements[2].position.x = Math.floor(
+                this.canvasWidth *
+                  ((this.customizerRules.texts.itemsRule[2].fixPosition.x - 3) / 100) -
+                  width / 2
+              );
+            }
+            if(index != 1) {
+              textElements[index].typography.text = letter.toUpperCase();
+              textElements[index].position.width = width;
+            }
+            textElements[1].typography.hidden = true;
+          } else {
+            textElements[1].typography.hidden = false;
+          }
+          if(this.hiddenFontText.length === 1) {
+            this.context.font = `${textElements[1].typography.size}px ${textElements[1].typography.font}`;
+            let width = this.context.measureText(letter).width;
+            textElements[1].typography.text = letter.toUpperCase();
+            textElements[1].position.width = width;
+            textElements[1].position.x = Math.floor(
+              this.canvasWidth *
+                (this.customizerRules.texts.itemsRule[1].fixPosition.x / 100) -
+                width / 2
+            );
+            this.drawOutline(textElements[1].position, true);
+            textElements[0].typography.hidden = true;
+            textElements[2].typography.hidden = true;
+          } else {
+            textElements[0].typography.hidden = false;
+            textElements[2].typography.hidden = false;
+          }
+        } else {
+          textElements[index].typography.text = letter.toUpperCase();
+          textElements[index].position.width = width;
+          textElements[index].position.x = Math.floor(
+            this.canvasWidth *
+              (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+              width / 2
+          );
+        }
         this.draw();
-        this.drawOutline(textElements[index].position, true);
-      })
+      });
     } else {
       let width = this.context.measureText(this.hiddenFontText).width;
       this.context.font = `${textElements[0].typography.size}px ${textElements[0].typography.font}`;
-      textElements[0].typography.text = this.inputMaxLength < 4 ? this.hiddenFontText.toUpperCase() : this.hiddenFontText;
+      textElements[0].typography.text =
+        this.inputMaxLength < 4
+          ? this.hiddenFontText.toUpperCase()
+          : this.hiddenFontText;
       textElements[0].position.width = width;
-      textElements[0].position.x = Math.floor(this.canvasWidth * (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) - width / 2);
+      textElements[0].position.x = Math.floor(
+        this.canvasWidth *
+          (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) -
+          width / 2
+      );
       this.draw();
-      if(!this.willHideInput) this.drawOutline(textElements[0].position, true);
+      if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
     }
   }
   // Text input below canvas
 
+  // Old text input below canvas
+  // onChangeInput() {
+  //   if (!this.hiddenFontText) return;
+  //   const textElements = this.elementList
+  //     .filter((element) => element.typography)
+  //     .sort((a, b) =>
+  //       a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+  //     );
+  //   if (textElements.length > 1) {
+  //     const letters = this.hiddenFontText.split('');
+  //     letters.forEach((letter, index) => {
+  //       this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
+  //       let width = this.context.measureText(letter).width;
+  //       textElements[index].typography.text = letter.toUpperCase();
+  //       textElements[index].position.width = width;
+  //       textElements[index].position.x = Math.floor(
+  //         this.canvasWidth *
+  //           (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+  //           width / 2
+  //       );
+  //       this.draw();
+  //       this.drawOutline(textElements[index].position, true);
+  //     });
+  //   } else {
+  //     let width = this.context.measureText(this.hiddenFontText).width;
+  //     this.context.font = `${textElements[0].typography.size}px ${textElements[0].typography.font}`;
+  //     textElements[0].typography.text =
+  //       this.inputMaxLength < 4
+  //         ? this.hiddenFontText.toUpperCase()
+  //         : this.hiddenFontText;
+  //     textElements[0].position.width = width;
+  //     textElements[0].position.x = Math.floor(
+  //       this.canvasWidth *
+  //         (this.customizerRules.texts.itemsRule[0].fixPosition.x / 100) -
+  //         width / 2
+  //     );
+  //     this.draw();
+  //     if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
+  //   }
+  // }
+
   // Modifies a text element that was already in the canvas
   modifyText(width: number, height: number, textData: TextData, index: number) {
     const { imageText, fontSize, fontStyle, fontColor } = textData;
-    const text = this.elementList.find((element) => element.typography?.number === index);
+    const text = this.elementList.find(
+      (element) => element.typography?.number === index
+    );
     const textElement = {
       typography: {
         text: imageText,
@@ -1889,14 +2006,33 @@ export class PostCustomizerComponent
         hidden: false,
       },
       position: {
-        width: width,
-        height: height,
+        width,
+        height
       },
       originalSize: width,
     };
+    const textElements = this.elementList
+      .filter((element) => element.typography)
+      .sort((a, b) =>
+        a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+      );
+    let threeLetters = textElements.length === 3;
     if (text.fixPositionOnly) {
+      const textRules = this.customizerRules.texts.itemsRule[text.typography.number];
       textElement.position['x'] =
-        text.position.x + text.position.width / 2 - width / 2;
+        this.canvasWidth * (textRules.fixPosition.x / 100) - width / 2;
+      textElement.position['y'] = 
+        this.canvasHeight * (textRules.fixPosition.y / 100) - height / 2;
+      if(threeLetters && this.hiddenFontText.length === 2) {
+        if(index === 0) {
+          textElement.position['x'] =
+            this.canvasWidth * ((textRules.fixPosition.x + 3) / 100) - width / 2;
+        }
+        if(index === 2) {
+          textElement.position['x'] =
+            this.canvasWidth * ((textRules.fixPosition.x - 3) / 100) - width / 2;
+        }
+      }
     }
     text.typography = {
       ...text.typography,
@@ -1910,33 +2046,11 @@ export class PostCustomizerComponent
 
     this.typographyData.imageText = '';
     // Text input below canvas
-    if(this.willShowInput) this.setInputText();
+    if (this.willShowInput) this.setInputText();
     this.draw();
   }
 
-  // Exits exit mode and sends the text for modification or creates a new element
-  exitEditing(textData: TextData) {
-    let { imageText, fontSize, fontStyle, fontColor } = textData;
-    if (this.isEditing) {
-      this.isEditing = false;
-      this.selectedElementOption = '';
-    }
-    // this.customizeOptions[this.customizeOptions.indexOf('confirmar')] =
-    //   'tipografía';
-
-    if (!imageText.trim()) {
-      this.typographyData.imageText = '';
-      if (this.modifyingElement >= 0)
-        this.elementList[this.modifyingElement].typography.hidden = false;
-      this.draw();
-      return;
-    }
-    imageText.trim();
-    this.elementRotation = 0;
-
-    this.context.font = `${fontSize}px ${fontStyle}`;
-    if (imageText.length < 4) imageText = imageText.toUpperCase();
-
+  getTextDimensions(fontSize: string, imageText: string) {
     const getWidth = (textString: string[]) => {
       let greatestWidth: number[] = [];
 
@@ -1982,14 +2096,61 @@ export class PostCustomizerComponent
       width = getWidth(text);
       height = Math.floor(y * parseInt(fontSize));
     }
+    return {height, width}
+  }
+
+  // Exits exit mode and sends the text for modification or creates a new element
+  exitEditing(textData: TextData) {
+    let { imageText, fontSize, fontStyle, fontColor } = textData;
+    if (this.isEditing) {
+      this.isEditing = false;
+      this.selectedElementOption = '';
+    }
+    if (!imageText.trim()) {
+      this.typographyData.imageText = '';
+      if (this.modifyingElement >= 0)
+        this.elementList[this.modifyingElement].typography.hidden = false;
+      this.draw();
+      return;
+    }
+    imageText.trim();
+    this.elementRotation = 0;
+    /// Reduce font size when font is Cheltenham
+    if (this.modifyingText >= 0) {
+      const textElements = this.elementList
+        .filter((element) => element.typography)
+        .sort((a, b) =>
+          a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
+        );
+      let threeLetters = textElements.length === 3;
+      const textRules = this.customizerRules.texts.itemsRule[this.modifyingText];
+      if(threeLetters && fontStyle === 'Cheltenham') {
+        fontSize = (textRules.fixSize - 45)+'';
+      } else if(threeLetters && fontStyle === 'Commercial-Script') {
+        if(textRules.fixedFonts[0] === "Dorsa") fontSize = (textRules.fixSize - 45)+'';
+        else fontSize = (textRules.fixSize - 25)+'';
+      } else {
+        fontSize = textRules.fixSize+'';
+      }
+    }
+    /// Reduce font size when font is Cheltenham
+    this.context.font = `${fontSize}px ${fontStyle}`;
+    if (imageText.length < 4) imageText = imageText.toUpperCase();
+
+    let { height, width } = this.getTextDimensions(fontSize, imageText);
 
     if (this.modifyingText >= 0) {
-      this.modifyText(width, height, {
-        imageText,
-        fontSize,
-        fontColor,
-        fontStyle,
-      }, this.modifyingText);
+      this.modifyText(
+        width,
+        height,
+        {
+          imageText,
+          fontSize,
+          fontColor,
+          fontStyle,
+        },
+        this.modifyingText
+      );
       return;
     }
 
@@ -2079,7 +2240,7 @@ export class PostCustomizerComponent
   // ------------------------------------ LINES --------------------------------------
 
   // Returns line colors, either fixed or default
-  getLineColors(): { name: string, fixedValue: string }[] {
+  getLineColors(): { name: string; fixedValue: string }[] {
     if (this.customizerRules.lines.onlyFixedColor)
       return this.customizerRules.lines.fixedColors;
     else return this.lineColors;
@@ -2103,14 +2264,14 @@ export class PostCustomizerComponent
   }
 
   // Changes background color. Background Image takes priority if one is selected
-  onChangeBackgroundColor(color: string) {
+  onChangeBackgroundColor(color: { name?: string; fixedValue?: string }) {
     this.selectedBackgroundColor = color;
     this.draw();
   }
 
   // Draws the selected Background color. Background Image takes priority if one is selected
   drawBackgroundColor() {
-    this.context.fillStyle = this.selectedBackgroundColor;
+    this.context.fillStyle = this.selectedBackgroundColor.fixedValue;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
@@ -2130,8 +2291,10 @@ export class PostCustomizerComponent
       this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.imageElement = new Image();
     this.imageElement.src = url;
-    this.selectedBackgroundColor = 'none';
-    this.draw();
+    this.imageElement.crossOrigin = 'Anonymous';
+    this.imageElement.onload = () => {
+      this.draw();
+    }
     this.selectedBackgroundImage = url;
     this.imageFile = null;
   }
@@ -2145,7 +2308,7 @@ export class PostCustomizerComponent
       this.imageElement = new Image();
       this.imageElement.src = event.target.result;
       this.imageElement.onload = () => {
-        this.selectedBackgroundColor = 'none';
+        this.selectedBackgroundColor = null;
         this.draw();
       };
     };
@@ -2176,6 +2339,9 @@ export class PostCustomizerComponent
   async urltoFile(dataUrl: string, fileName: string): Promise<File> {
     const res: Response = await fetch(dataUrl);
     const blob: Blob = await res.blob();
+
+    this.header.storeCustomizerPreviewBase64(dataUrl, fileName, 'image/png');
+
     return new File([blob], fileName, { type: 'image/png' });
   }
 
@@ -2269,6 +2435,7 @@ export class PostCustomizerComponent
       }
       this.draw();
       const url = this.canvasRef.nativeElement.toDataURL('image/png');
+
       const file = await this.urltoFile(
         url,
         (this.customizerRuleID ?? this.customizerValueID) + '.png'
@@ -2277,7 +2444,10 @@ export class PostCustomizerComponent
         rules: this.customizerRuleID ?? this.customizerValueID,
         backgroundImage,
         backgroundColor: {
-          color: this.selectedBackgroundColor,
+          color: {
+            fixedValue: this.selectedBackgroundColor.fixedValue,
+            name: this.selectedBackgroundColor.name
+          },
         },
         canvas: {
           rounded: false,
@@ -2292,22 +2462,21 @@ export class PostCustomizerComponent
         lines,
         preview: file,
       };
-      // console.log(customizerValues);
-      // unlockUI();
-      // return;
+      const items = this.header.getItems(this.header.getSaleflow()._id);
+      this.header.emptyItems(this.header.getSaleflow()._id);
+      this.header.items[0].images[0] = url;
+      items[0].images[0] = url;
+      this.header.storeItem(this.header.getSaleflow()._id, items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
-        this.router.navigate([`/ecommerce/provider-store/gift-message`]);
-        if (!this.header.isComplete.qualityQuantity)
-          this.router.navigate([`/ecommerce/provider-store`]);
-        else if (
+        if (
           !this.header.isComplete.message &&
           this.header.saleflow.module.post &&
           this.header.saleflow.module.post.isActive
         )
-          this.router.navigate([`ecommerce/provider-store/gift-message`]);
-        else this.router.navigate([`ecommerce/provider-store/user-info`]);
+          this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/gift-message`]);
+        else this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/user-info`]);
       } else {
         await this.customizerValueService.updateCustomizerValue(
           customizerValues,
@@ -2338,6 +2507,7 @@ export class PostCustomizerComponent
     // };
     // this.header.isComplete.giftABox.customizer = true;
     this.header.customizer = customizerValues;
+
     this.header.customizerData = {
       ...this.header.customizerData,
       willModify: false,
@@ -2349,6 +2519,9 @@ export class PostCustomizerComponent
       textsAmount: this.currentTextsAmount,
       id: this.customizerRuleID,
     };
+
+    this.header.storeCustomizer(this.header.saleflow?._id ?? this.header.getSaleflow()._id, customizerValues);
+
     this.header.isComplete.customizer = true;
   }
 
@@ -2356,7 +2529,7 @@ export class PostCustomizerComponent
     if (this.customizerValueID)
       this.router.navigate([`/ecommerce/order-info/${this.itemId}`]);
     else
-      this.router.navigate([`/ecommerce/provider-store/quantity-and-quality`]);
+      this.router.navigate([`/ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/quantity-and-quality`]);
   }
 
   // Searches Stickers, currently doing nothing
@@ -2385,7 +2558,7 @@ export class PostCustomizerComponent
   restart() {
     this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.elementList = [];
-    this.selectedBackgroundColor = 'none';
+    this.selectedBackgroundColor = null;
   }
 
   // Clears the canvas, leaves it blank
@@ -2430,7 +2603,8 @@ export class PostCustomizerComponent
     if (this.imageElement) this.drawBackgroundImage();
     if (
       this.customizerRules.backgroundColor.active &&
-      this.selectedBackgroundColor !== 'none'
+      this.selectedBackgroundColor &&
+      this.selectedBackgroundColor.name !== 'Blanco'
     )
       this.drawBackgroundColor();
     for (let i = 0; i < this.elementList.length; i++) {
@@ -2529,6 +2703,7 @@ export class PostCustomizerComponent
           this.changeCustomizer('stickers', true);
         }
         if (r.typography) {
+          this.changeCustomizer('tipografía', true);
           this.modifyingElement = i;
           this.onEditText(r);
         }
@@ -2581,17 +2756,17 @@ export class PostCustomizerComponent
         m.y <= r.position.y + r.position.height
       ) {
         // DoubleClick Logic
-        if (this.touchtime == 0) {
-          this.touchtime = new Date().getTime();
-        } else {
-          if (new Date().getTime() - this.touchtime < 150) {
-            this.dbClicked(e);
-            this.touchtime = 0;
-            return;
-          } else {
-            this.touchtime = new Date().getTime();
-          }
-        }
+        // if (this.touchtime == 0) {
+        //   this.touchtime = new Date().getTime();
+        // } else {
+        //   if (new Date().getTime() - this.touchtime < 150) {
+        //     this.dbClicked(e);
+        //     this.touchtime = 0;
+        //     return;
+        //   } else {
+        //     this.touchtime = new Date().getTime();
+        //   }
+        // }
         // DoubleClick Logic
         this.draw();
         if (r.sticker) {

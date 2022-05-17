@@ -76,7 +76,8 @@ export class ItemOrder extends Model<ItemOrder> {
     | 'in progress'
     | 'to confirm'
     | 'completed'
-    | 'error';
+    | 'error'
+    | 'draft';
   orderType: 'regular' | 'itemPackage';
   isComplete: boolean;
   subtotals: OrderSubtotal[];
@@ -97,4 +98,12 @@ export class ItemOrderInput {
   products?: ItemSubOrderInput[];
   itemPackage?: string;
   tags?: string[];
+}
+
+export class OCRInput {
+  total?: number;
+  subtotal?: number;
+  transactionCode?: string;
+  image?: File;
+  platform?: string;
 }

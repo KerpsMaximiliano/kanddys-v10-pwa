@@ -17,6 +17,9 @@ export class AnswerSelectorComponent {
   activeMultipleOption: number[] = [];
   @Input() editable: boolean = true;
   @Input() showSelectedFeedback: boolean = true;
+  @Input() showDescription: boolean = true;
+  @Input() containerStyles: Record<string, any> | null = null;
+  @Input() itemStyles: Record<string, any> | null = null;
 
   @Input() isMultipleOption: boolean = false;
   @Input() useMargins: boolean = true;
@@ -49,7 +52,6 @@ export class AnswerSelectorComponent {
   }
 
   clickSelector(index: number) {
-    console.log(this.options);
     if (this.isMultipleOption) {
       this.activateMultipleOption(index);
       this.onSelector.emit(index);

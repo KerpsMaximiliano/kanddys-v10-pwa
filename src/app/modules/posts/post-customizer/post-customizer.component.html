@@ -71,22 +71,12 @@
             (keydown)="validateInput($event)"
             #imageTextRef
           ></textarea>
-          <!-- oninput="this.value = this.value.toUpperCase()" -->
         </div>
       </div>
       <div
         class="button-carousel"
         *ngIf="customizerRules && modifyingElement < 0 && !isEditing"
       >
-        <!-- <button
-          class="btn"
-          *ngFor="let option of customizeOptions"
-          (click)="changeCustomizer(option)"
-          [ngClass]="{ active: selectedOption === option || option === 'confirmar'}"
-          [disabled]="disableButton && option === 'confirmar'"
-        >
-          {{ option | titlecase }}
-        </button> -->
         <button
           class="btn"
           (click)="changeCustomizer('stickers')"
@@ -120,7 +110,7 @@
       </div>
       <div class="customizer" *ngIf="customizerRules">
         <!-- ----------------------- EFFECTS ----------------------- -->
-        <div *ngIf="selectedOption === 'efectos'">
+        <!-- <div *ngIf="selectedOption === 'efectos'">
           <div class="button-carousel" style="margin-bottom: 10px">
             <button
               class="btn"
@@ -176,7 +166,6 @@
             </div>
           </div>
           <div *ngIf="!imageElement">
-            <!-- <h5>Selecciona una imagen para aplicarle filtros!</h5> -->
             <div *ngIf="customizerRules.backgroundColor.active">
               <div class="option-list">
                 <div
@@ -220,22 +209,33 @@
               }"
             />
           </div>
+        </div> -->
+        <div *ngIf="!selectedOption && backgroundColorActive && getBackgroundColors().length > 2">
+          <div class="option-list">
+            <div
+              class="list-option"
+              *ngFor="let color of getBackgroundColors()"
+            >
+            <ng-container *ngIf="color.name !== 'Blanco'">
+              <span
+                (click)="onChangeBackgroundColor(color)"
+                class="color-font"
+                style.backgroundColor="{{ color.fixedValue }}"
+                [ngClass]="{
+                  'selected-option': selectedBackgroundColor.fixedValue === color.fixedValue
+                }"
+              ></span>
+              <span style="white-space: nowrap">{{ color.name }}</span>
+            </ng-container>
+            </div>
+          </div>
+          <h6 class="color-disclaimer">
+            Puede haber variación en los colores vistos en este App con la
+            Realidad
+          </h6>
         </div>
         <!-- ---------------------- STICKERS ---------------------- -->
         <div *ngIf="selectedOption === 'stickers'">
-          <!-- <div class="stickers-options">
-            <div class="stickers-radio">
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
-              <label class="btn-radio" for="btnradio1"><i class="fas fa-quote-left"></i></label>
-            
-              <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
-              <label class="btn-radio" for="btnradio2"><i class="far fa-image"></i></label>
-            </div>
-            <div class="searchBar">
-              <i class="fas fa-search"></i>
-              <input id="searchInput" type="text" placeholder="birthday, runners..." [(ngModel)]="stickerSearchValue" (keydown)="search($event)">
-            </div>
-          </div> -->
           <div class="font-range" *ngIf="selectedElementOption === 'tamaño'">
             <p class="option-label">Tamaño de stickers: {{ stickerSize }}</p>
             <input
@@ -278,11 +278,17 @@
                   (click)="onChangeStickerColor(color)"
                   class="color-font"
                   style.backgroundColor="{{ color.fixedValue }}"
-                  [ngClass]="{ 'selected-option': stickerColor === color.fixedValue }"
+                  [ngClass]="{
+                    'selected-option': stickerColor === color.fixedValue
+                  }"
                 ></span>
-                <span style="white-space: nowrap;">{{color.name}}</span>
+                <span style="white-space: nowrap">{{ color.name }}</span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App con la
+              Realidad
+            </h6>
           </div>
 
           <!-- <div *ngIf="showStickerOptions()">
@@ -396,12 +402,17 @@
                   class="color-font"
                   style.backgroundColor="{{ color.fixedValue }}"
                   [ngClass]="{
-                    'selected-option': typographyData.fontColor === color.fixedValue
+                    'selected-option':
+                      typographyData.fontColor === color.fixedValue
                   }"
                 ></span>
-                <span style="white-space: nowrap;">{{ color.name }}</span>
+                <span style="white-space: nowrap">{{ color.name }}</span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App con la
+              Realidad
+            </h6>
           </div>
         </div>
         <div *ngIf="willShowInput">
@@ -444,6 +455,10 @@
                 ></span>
               </div>
             </div>
+            <h6 class="color-disclaimer">
+              Puede haber variación en los colores vistos en este App respecto a
+              la Realidad
+            </h6>
           </div>
         </div>
       </div>
