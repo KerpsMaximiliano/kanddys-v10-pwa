@@ -75,6 +75,7 @@ import { HeaderButtonComponent } from './components/header-button/header-button.
 import { TagsSquareComponent } from './components/tags-square/tags-square.component';
 import { CtaButtonsComponent } from './components/cta-buttons/cta-buttons.component';
 import { MagicLinkDialogComponent } from './components/magic-link-dialog/magic-link-dialog.component';
+import { HelperHeaderv2Component } from './components/helper-headerv2/helper-headerv2.component';
 
 const imports = [
   CommonModule,
@@ -147,6 +148,7 @@ const declarations = [
   TagsSquareComponent,
   CtaButtonsComponent,
   MagicLinkDialogComponent,
+  HelperHeaderv2Component,
 ];
 
 @NgModule({
