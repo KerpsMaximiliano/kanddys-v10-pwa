@@ -1,32 +1,10 @@
 <ng-container *ngIf="itemData">
     <div class="container">
-        <div class="top-bar">
-            <div class="left-area">
-                <i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i>
-                <label for="Volver" class="return">Volver</label>
-            </div>
-
-            <div class="right-area">
-                <div *ngIf="whatsapp == true"><img [src]="imageFolder + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px" alt="" style="cursor: pointer; margin-right: 23px"></div>
-                <div *ngIf="shopcart == true"><img [src]="imageFolder + '/carrito_blanco.svg'" style="margin-left: 23px;" height="24.5px" width="30.14px" alt="" style="cursor: pointer;"></div>
-            </div>
-        </div>
+        <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
+        middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="itemData.name.toUpperCase()"
+        [back]="true" [options]="true" (onClose)="back()">
+        </app-helper-header>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
-        <div class="desc-area">
-            <div class="left-area">
-                <span class="value">Vale</span>
-                <label for="Precio producto" class="price">${{priceLabel}}</label>
-                    <div for="Promocion" class="ptext"> <!--Esto es una misma linea de texto-->
-                        <label for="aja" class="earn">Ganas 58 <img [src]="imageFolder + '/star.svg'"></label> 
-                        <div *ngIf="myStore == true"><span class="con-text"> y recaudas fondos </span></div>
-                    </div>
-            </div>
-
-            <div class="right-area">
-                <img [src]="imageFolder + '/upload.svg' " alt=""  style="cursor: pointer;" height="25px" width="19px">
-                <img [src]="imageFolder + '/info.svg' " alt=""  style="cursor: pointer; margin-left: 5px" height="20px" width="5px">
-            </div>
-        </div>
         <div class="wrapper">
             <div class="included" *ngIf="itemData?.content?.length > 0">
                 <div class="title">
@@ -39,25 +17,6 @@
                 </ng-container>
             </div>
         </div>
-
-        <div class="cta-area">
-            <app-cta-buttons
-                [ctaText]="'Añadelo A Mi Lista'"
-                [btnColor]="'#40772F'"
-            >
-            </app-cta-buttons>
-
-            <app-cta-buttons
-                [ctaText]="'Recauda Fondos'"
-                [btnColor]="'#8351FE'"
-            >
-            </app-cta-buttons>
-
-            <app-cta-buttons
-                [ctaText]="'Al Carrito Para Comprarlo'"
-                [btnColor]="'#4773D8'"
-            >
-            </app-cta-buttons>
-        </div>
     </div>
+    <app-sticky-button [mode]="'basic'" [bgColor]="bgColor" [text]="ctaText" (click)="saveProduct()"></app-sticky-button>
 </ng-container>

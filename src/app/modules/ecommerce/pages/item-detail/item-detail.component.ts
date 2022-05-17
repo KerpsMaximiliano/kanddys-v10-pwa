@@ -17,7 +17,6 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
   styleUrls: ['./item-detail.component.scss'],
 })
 export class ItemDetailComponent implements OnInit {
-    imageFolder: string;
   constructor(
     public items: ItemsService,
     private route: ActivatedRoute,
@@ -28,8 +27,6 @@ export class ItemDetailComponent implements OnInit {
     private appService: AppService,
     private saleflow: SaleFlowService
   ) {
-    this.imageFolder = environment.assetsUrl;
-
     const sub = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
@@ -37,10 +34,7 @@ export class ItemDetailComponent implements OnInit {
         sub.unsubscribe();
       });
   }
-  shopcart: boolean = true;
-  whatsapp: boolean = true;
-  myStore: boolean = true;
-  priceLabel : string = '14,020.00';
+
   itemData: Item;
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
