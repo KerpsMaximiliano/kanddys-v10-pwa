@@ -277,7 +277,9 @@ export class FlowCompletionComponent implements OnInit {
               await this.getExchangeData(
                 saleflow.module.paymentMethod.paymentModule._id
               );
-              this.isANewUser = currentSession.name === '';
+              this.isANewUser =
+                currentSession.name === '' ||
+                String(currentSession.name) === 'null';
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
             } else {
               this.router.navigate(['/']);
@@ -493,8 +495,10 @@ export class FlowCompletionComponent implements OnInit {
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
         Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
-      }.%20Mi%20nombre%20es:%20${
-        this.userData.name
+      }.${
+        String(this.userData.name) !== 'null' && this.userData.name
+          ? '%20Mi%20nombre%20es:%20' + this.userData.name
+          : ''
       }.%20Mas%20info%20aquí%20${fullLink}`;
     else
       this.whatsappLink = `https://wa.me/${
