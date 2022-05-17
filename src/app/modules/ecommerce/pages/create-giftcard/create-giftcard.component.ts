@@ -479,6 +479,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.header.flowRoute = 'create-giftcard';
+    localStorage.setItem('flowRoute', 'create-giftcard');
+    
     if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
       if (saleflow) {

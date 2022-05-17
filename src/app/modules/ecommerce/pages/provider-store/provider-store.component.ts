@@ -188,7 +188,10 @@ export class ProviderStoreComponent implements OnInit {
                 this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.isComplete.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
-              this.header.storeLocation(this.header.getSaleflow()._id, this.header.saleflow.module.delivery.pickUpLocations[0]);
+              this.header.storeLocation(
+                this.header.getSaleflow()._id,
+                this.header.saleflow.module.delivery.pickUpLocations[0]
+              );
             }
           }
         }
@@ -200,9 +203,12 @@ export class ProviderStoreComponent implements OnInit {
       active: false,
     });
 
-    if(this.header.saleflow?._id === '61b8df151e8962cdd6f30feb') {
-      this.aux = this.options.find(el => el.option = 'Reservación');
-      this.options.splice(this.options.findIndex(el => el.option = 'Reservación'), 1);
+    if (this.header.saleflow?._id === '61b8df151e8962cdd6f30feb') {
+      this.aux = this.options.find((el) => (el.option = 'Reservación'));
+      this.options.splice(
+        this.options.findIndex((el) => (el.option = 'Reservación')),
+        1
+      );
       this.aux2 = this.options.pop();
 
       this.options.push(this.aux);
@@ -248,11 +254,14 @@ export class ProviderStoreComponent implements OnInit {
 
   async getData(saleflowId: string, itemId: string) {
     try {
-      const saleflow = (await this.saleflow.saleflow(saleflowId)).saleflow
+      const saleflow = (await this.saleflow.saleflow(saleflowId)).saleflow;
       this.header.saleflow = saleflow;
       this.header.storeSaleflow(saleflow);
-      const saleflowItem = saleflow.items.find((item) => item.item._id === itemId);
-      if(saleflowItem) this.getItemData(saleflowId, itemId, saleflowItem.customizer._id);
+      const saleflowItem = saleflow.items.find(
+        (item) => item.item._id === itemId
+      );
+      if (saleflowItem)
+        this.getItemData(saleflowId, itemId, saleflowItem.customizer._id);
     } catch (error) {
       console.log(error);
       this.router.navigate([`/ecommerce/trivias`]);
@@ -304,8 +313,12 @@ export class ProviderStoreComponent implements OnInit {
       saleflowId = params.saleflowId;
       itemId = params.itemId;
       this.header.flowRoute = `provider-store/${saleflowId}/${itemId}`;
-    })
-    if(!this.header.saleflow) {
+      localStorage.setItem(
+        'flowRoute',
+        `provider-store/${saleflowId}/${itemId}`
+      );
+    });
+    if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
       if(!saleflow) return this.getData(saleflowId, itemId);
       this.header.saleflow = saleflow;
@@ -313,7 +326,7 @@ export class ProviderStoreComponent implements OnInit {
       if(!this.header.order) return this.getData(saleflowId, itemId);
       this.header.getOrderProgress(saleflow._id);
       const items: Item[] = this.header.getItems(saleflow._id);
-      if(
+      if (
         items &&
         items.length > 0 &&
         this.header.order.products.length > 0 &&
@@ -329,7 +342,7 @@ export class ProviderStoreComponent implements OnInit {
     this.header.order = this.header.getOrder(this.header.saleflow._id);
     if(!this.header.order) return this.getData(saleflowId, itemId);
     const items: Item[] = this.header.getItems(this.header.saleflow._id);
-    if(
+    if (
       items &&
       items.length > 0 &&
       this.header.order.products.length > 0 &&
@@ -402,7 +415,9 @@ export class ProviderStoreComponent implements OnInit {
       link: 'payment-methods',
       active: false,
     });
-    this.router.navigate([`/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/payment-methods`]);
+    this.router.navigate([
+      `/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/payment-methods`,
+    ]);
     this.finalizacion = true;
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -9,15 +9,12 @@ import { Bank } from 'src/app/core/models/wallet';
 import { Location, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
-import { PostsService } from 'src/app/core/services/posts.service';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemOrder } from 'src/app/core/models/order';
 import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
-import { CommunitiesService } from 'src/app/core/services/communities.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { OrderDetailComponent } from 'src/app/shared/dialogs/order-detail/order-detail.component';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
@@ -35,58 +32,12 @@ interface BankDetails {
   providers: [TitleCasePipe],
 })
 export class PaymentsComponent implements OnInit {
-  @Input() type1: boolean = true;
-  @Input() type2: boolean = true;
-  @Input() addPhoto: boolean = true;
-  @Input() simpleQuestion: boolean = true;
-  @Input() inputQuestion: boolean = true;
-  @Input() paymentQuestion: boolean = true;
   @Input() bankQuestion: boolean = true;
-  paymentOptions = [
-    {
-      value: 'Por transferencia bancaria',
-      status: true,
-    },
-    {
-      value: 'Pagaré después que me confirmen por WhatsApp (no disponible)',
-      status: false,
-    },
-    {
-      value: 'Ya pagué (no disponible)',
-      status: false,
-    },
-  ];
-  options = [
-    {
-      status: true,
-      value: 'Si',
-    },
-    {
-      status: true,
-      value: 'No',
-    },
-  ];
-  logInOptions = [
-    {
-      status: true,
-      value: 'Simple. Mándame un link a mi WhatsApp',
-    },
-    {
-      status: true,
-      value: 'Como en 1997 donde recibirás un código y asignarás una clave',
-    },
-  ];
   bankOptions: BankDetails[] = [];
   banks: Bank[] = [];
-  windowReference: any;
-  step: number = 0;
-  actual: string = '';
-  firstData: any = '';
+  step: string = 'UPDATE_NAME';
   inputData: string = '';
   name: string = '';
-  lastName: string = '';
-  password: string = '';
-  code: string = '';
   showLoginPassword: boolean;
   selectedBank: BankDetails = null;
   selectedPayment: number;
@@ -100,18 +51,13 @@ export class PaymentsComponent implements OnInit {
   userData: User;
   orderData: any;
   tmpOrderData: any;
-  error: string = '';
-  orderInfo: any;
   fakeData: ItemOrder;
   reservationOrProduct: string = '';
   headerText: string;
-  newProviderName: string = '';
   dialogProps: Record<string, any>;
   comesFromMagicLink: boolean = false;
-  comesFromWhatsappOrEmailRedirection: boolean = false;
   saleflowData: any;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
-  incorrectPasswordAttempt: boolean = false;
   whatsappLink: string = '';
   isANewUser: boolean = false;
   env: string = environment.assetsUrl;
@@ -124,7 +70,6 @@ export class PaymentsComponent implements OnInit {
     private wallet: WalletService,
     private header: HeaderService,
     private customizerValueService: CustomizerValueService,
-    private postsService: PostsService,
     private readonly app: AppService,
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
@@ -234,62 +179,6 @@ export class PaymentsComponent implements OnInit {
       const { token } = params;
       this.comesFromMagicLink = true;
 
-      // if (token) {
-      //   this.comesFromWhatsappOrEmailRedirection = true;
-
-      //   try {
-      //     // const { analizeMagicLink: session } =
-      //     //   await this.authService.analizeMagicLink(token);
-      //     // this.comesFromMagicLink = true;
-
-      //     // localStorage.setItem('session-token', session.token);
-
-      //     // let phoneNumberOrEmail = localStorage.getItem('phoneNumberOrEmail');
-
-      //     // localStorage.removeItem('phoneNumberOrEmail');
-
-      //     // const data = await this.authService.checkUser(
-      //     //   phoneNumberOrEmail,
-      //     //   'whatsapp'
-      //     // );
-
-      //     // if (data) this.userData = data;
-
-      //     // if (session.new) {
-      //     //   this.step = 3;
-      //     // } else {
-      //     //   this.createOrSkipOrder();
-      //     // }
-
-      //     const currentSession = await this.authService.me();
-      //     this.userData = currentSession;
-
-      //     if (currentSession) {
-      //       await this.getExchangeData(
-      //         saleflow.module.paymentMethod.paymentModule._id
-      //       );
-      //       this.isANewUser = currentSession.name === '';
-      //       this.step = 3;
-
-      //       // if (!currentSession.name) {
-      //       //   this.createOrSkipOrder();
-      //       //   this.userData = currentSession;
-      //       // } else {
-      //       //   await this.getExchangeData(
-      //       //     saleflow.module.paymentMethod.paymentModule._id
-      //       //   );
-      //       //   this.step = 3;
-      //       // }
-      //     } else {
-      //       this.router.navigate(['/']);
-      //     }
-
-      //     // this.submit();
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // }
-
       this.headerText = 'INFORMACIÓN DEL PAGO';
       let products: string[] = [];
       let packages: string[] = [];
@@ -338,7 +227,7 @@ export class PaymentsComponent implements OnInit {
                 this.selectedBank = this.bankOptions[0];
               }
 
-              this.step = 7;
+              this.step = 'PAYMENT_INFO';
             } else {
               this.router.navigate([`ecommerce/auth-classic`]);
             }
@@ -409,122 +298,20 @@ export class PaymentsComponent implements OnInit {
     });
   }
 
-  keyPressNumbers(event) {
-    var charCode = event.which ? event.which : event.keyCode;
-
-    if (charCode < 48 || charCode > 57) {
-      event.preventDefault();
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   submit() {
     switch (this.step) {
-      case 1:
-        // this.totalQuestions = 1;
-        this.checkUser();
-        break;
-      case 2:
-        // this.totalQuestions = 3;
-        this.sendCode();
-        break;
-      case 3:
+      case 'UPDATE_NAME':
         // this.totalQuestions = 2;
         this.updateUser();
         break;
-      case 4:
-        this.signIn();
-        break;
-      case 5:
-        //AUTH CLÁSICO
-        // if (this.flow !== 'flow-completion') {
-        //   // this.totalQuestions = 1;
-        //   this.step = 8;
-        // } else {
-        //   // this.totalQuestions = 2;
-
-        //   if (this.banks.length > 1) this.step = 6;
-        //   else {
-        //     this.selectedBank = this.bankOptions[0];
-        //     this.headerText = 'INFORMACIÓN DEL PAGO';
-        //     this.step = 7;
-        //   }
-        // }
-
-        // this.totalQuestions = 2;
-        // this.selectedBank = this.bankOptions[0];
-        this.headerText = 'INFORMACIÓN DEL PAGO';
-        this.step = 7;
-        break;
-      case 6:
-        this.step = 7;
-        break;
-      case 7:
+      case 'PAYMENT_INFO':
         this.payOrder();
         break;
-      case 9:
-        this.gotToUpdatePassword();
-        break;
-      case 10:
-        this.updatePassword();
-        break;
     }
-  }
-
-  gotToUpdatePassword() {
-    this.authService
-      .verify(this.code, localStorage.getItem('id'))
-      .then((data: any) => {
-        if (data != undefined) {
-          this.step = 10;
-        }
-      });
-  }
-
-  updatePassword() {
-    this.authService.updateMe({ password: this.password }).then((data) => {
-      this.inputData = '';
-      this.password = '';
-      this.step = 1;
-    });
   }
 
   selectOption(index: number) {
     this.selectedBank = this.bankOptions[index];
-
-    // switch (this.step) {
-    //   case 4:
-    //     this.userSelect(index);
-    //     break;
-    //   case 5: {
-    //     this.selectedPayment = index;
-    //     let showProducts = [];
-    //     if (this.orderData.isPackage) {
-    //       showProducts.push(this.fakeData.itemPackage);
-    //     } else {
-    //       showProducts = this.products;
-    //     }
-
-    //     this.dialogProps = {
-    //       orderFinished: true,
-    //       products: showProducts,
-    //     };
-
-    //     if (this.selectedPayment === 0) {
-    //       if (this.bankOptions.length === 1)
-    //         this.selectedBank = this.bankOptions[0];
-    //       this.headerText = 'INFORMACIÓN DEL PAGO';
-    //       this.step = 7;
-    //     }
-    //     break;
-    //   }
-    //   case 6: {
-    //     this.selectedBank = this.bankOptions[index];
-    //     break;
-    //   }
-    // }
   }
 
   async sendCodeToEmailOrWhatsapp() {
@@ -544,30 +331,20 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  async selectLoginOption(index: number) {
-    if (index == 0) {
-      localStorage.setItem('phoneNumberOrEmail', this.inputData);
-
-      this.sendCodeToEmailOrWhatsapp();
-    } else {
-      this.checkUser();
-    }
-  }
-
   createOrSkipOrder() {
     if (this.banks.length === 1) {
       this.selectedBank = this.bankOptions[0];
-      this.step = 7;
+      this.step = 'PAYMENT_INFO';
     }
 
     if (this.orderId) {
-      this.step = 7;
+      this.step = 'PAYMENT_INFO';
     } else {
       lockUI(
         this.createOrder().then((data) => {
           this.location.replaceState(`ecommerce/payments/${data}`);
           return this.getOrderData(this.header.orderId).then(() => {
-            this.step = 7;
+            this.step = 'PAYMENT_INFO';
           });
         })
       );
@@ -589,21 +366,13 @@ export class PaymentsComponent implements OnInit {
   }
 
   goBack() {
-    if (
-      (this.step === 1 || this.step === 3 || this.step === 4) &&
-      !this.orderData
-    ) {
+    if (this.step === 'UPDATE_NAME' && !this.orderData) {
       this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
     }
-    // this.code = '';
-    // this.paymentCode = '';
-    // this.imageField = undefined;
-    // if (this.step === 5) this.selectedPayment = undefined;
-    // if (this.step === 6) this.selectedBank = undefined;
 
-    if (this.step === 7) {
+    if (this.step === 'PAYMENT_INFO') {
       if (!this.comesFromMagicLink) {
-        this.step = 3;
+        this.step = 'UPDATE_NAME';
         this.isANewUser = false;
       } else {
         this.header.order = this.tmpOrderData;
@@ -614,84 +383,12 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  // Case 1
-  async checkUser() {
-    try {
-      const input = '1' + this.inputData;
-      const data = await this.authService.checkUser(input, 'whatsapp');
-      if (data) {
-        this.userData = data;
-        localStorage.setItem('id', data._id);
-        if (data.validatedAt) {
-          if (data.name) {
-            this.step = 4;
-          } else {
-            const data = await this.authService.generateOTP(input);
-            if (data) {
-              this.step = 2;
-            }
-          }
-        } else {
-          const data = await this.authService.generateOTP('1' + this.inputData);
-          if (data) {
-            this.step = 2;
-          }
-        }
-      } else {
-        this.signUp();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Case 1
-  async signUp() {
-    try {
-      const data = await this.authService.signup(
-        { phone: '1' + this.inputData },
-        'whatsapp'
-      );
-      if (data) {
-        localStorage.setItem('id', data._id);
-        this.step = 2;
-      } else {
-        console.log('error');
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // Case 2
-  async sendCode() {
-    try {
-      const data = await this.authService.verify(
-        this.code,
-        localStorage.getItem('id')
-      );
-      if (data != undefined) {
-        this.step = 3;
-      } else {
-        this.code = '';
-      }
-    } catch (error) {
-      this.code = '';
-      console.log(error);
-    }
-  }
-
   // Case 3
   async updateUser() {
     try {
-      const input = !this.comesFromMagicLink
-        ? {
-            name: this.name,
-            password: this.password,
-          }
-        : {
-            name: this.name,
-          };
+      const input = {
+        name: this.name,
+      };
 
       if (this.isANewUser) {
         const data = await this.authService.updateMe(input);
@@ -699,10 +396,6 @@ export class PaymentsComponent implements OnInit {
       }
 
       this.isLogged = true;
-      // if (this.orderId) {
-      //   this.router.navigate(['ecommerce/error-screen']);
-      //   return;
-      // }
       this.createOrSkipOrder();
     } catch (error) {
       console.log(error);
@@ -725,42 +418,11 @@ export class PaymentsComponent implements OnInit {
         this.showLoginPassword = true;
       }
     } else {
-      this.step = 1;
       this.userData = undefined;
       this.isLogged = false;
       this.inputData = '';
-      this.password = '';
-      this.incorrectPasswordAttempt = false;
       this.authService.signoutThree();
       this.showLoginPassword = false;
-    }
-  }
-
-  // Case 4
-  async signIn() {
-    try {
-      const data = await this.authService.signin(
-        '1' + this.inputData,
-        this.password,
-        false
-      );
-      if (data) {
-        this.userData = data.user;
-        this.isLogged = true;
-        this.password = '';
-        this.showLoginPassword = false;
-        this.incorrectPasswordAttempt = false;
-        if (this.orderId && data.user.phone !== this.orderData?.user.phone) {
-          this.router.navigate(['ecommerce/error-screen']);
-          return;
-        }
-        this.createOrSkipOrder();
-      } else {
-        this.incorrectPasswordAttempt = true;
-        this.password = '';
-      }
-    } catch (error) {
-      console.log(error);
     }
   }
 
@@ -846,7 +508,6 @@ export class PaymentsComponent implements OnInit {
             this.isLoading = false;
             this.header.orderId = data.createOrder._id;
             this.orderId = data.createOrder._id;
-            // this.app.events.emit({ type: 'order-done', data: true });
             resolve(data.createOrder._id);
           })
           .catch((err) => {
@@ -873,9 +534,6 @@ export class PaymentsComponent implements OnInit {
       0
     );
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
-    // const ammount = new Intl.NumberFormat('es-MX').format(
-    //   this.ammount.value.toLocaleString('es-MX')
-    // );
     if (this.fakeData.items[0].customizer)
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
@@ -891,15 +549,13 @@ export class PaymentsComponent implements OnInit {
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        totalPrice.toLocaleString('es-MX')
-      }.%20Mi%20nombre%20es:%20${
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${totalPrice.toLocaleString(
+        'es-MX'
+      )}.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
     try {
       lockUI();
-
-      // alert(this.orderData.userId + " === " + this.orderData.user._id + " === " + this.orderData.user.name);
 
       const data = await this.order.payOrder(
         {
@@ -918,16 +574,6 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  /*openOrderDetail() {
-    this.dialog.open(OrderDetailComponent, {
-      //type:'window',
-      type: 'flat-action-sheet',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: {},
-    });
-  }*/
-
   redirect() {
     this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
   }
@@ -935,30 +581,5 @@ export class PaymentsComponent implements OnInit {
   orderFinished() {
     unlockUI();
     this.redirect();
-  }
-
-  validCharacters(event: KeyboardEvent) {
-    if (
-      event.key == '-' ||
-      event.key == '(' ||
-      event.key == ')' ||
-      event.key == '+' ||
-      !isNaN(parseInt(event.key))
-    ) {
-    } else {
-      event.preventDefault();
-    }
-  }
-
-  generateOTP() {
-    let input;
-    if (this.isLogged) {
-      input = this.inputData;
-    } else {
-      input = '1' + this.inputData;
-    }
-    this.authService.generateOTP(input).then((data) => {
-      this.step = 9;
-    });
   }
 }

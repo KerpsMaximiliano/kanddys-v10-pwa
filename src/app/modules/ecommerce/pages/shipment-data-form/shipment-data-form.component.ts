@@ -209,35 +209,68 @@ export class ShipmentDataFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (!this.header.saleflow) {
+    this.header.flowRoute = 'shipment-data-form';
+    localStorage.setItem('flowRoute', 'shipment-data-form');
+    const saleflowData =
+      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+    const orderData = this.header.getOrder(saleflowData._id);
+
+    if (!saleflowData) {
       const saleflow = this.header.getSaleflow();
       if (saleflow) {
         this.header.saleflow = saleflow;
-        this.header.order = this.header.getOrder(saleflow._id);
+        this.header.order = orderData;
         if (!this.header.order) {
-          this.router.navigate([`/ecommerce/trivias`]);
+          this.router.navigate([
+            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          ]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if (items && items.length > 0) this.header.items = items;
-        else this.router.navigate([`/ecommerce/trivias`]);
-      } else this.router.navigate([`/ecommerce/trivias`]);
+        else {
+          this.router.navigate([
+            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          ]);
+        }
+      } else {
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
+      }
     } else {
-      this.header.order = this.header.getOrder(this.header.saleflow._id);
+      this.header.order = orderData;
+
+      console.log(orderData);
       if (!this.header.order) {
-        this.router.navigate([`/ecommerce/trivias`]);
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
       if (items && items.length > 0) this.header.items = items;
-      else this.router.navigate([`/ecommerce/trivias`]);
+      else {
+        console.log(5);
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
+      }
     }
   }
 
   openDialog() {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
+      props: {
+        asyncCallback: async (whatsappLink: string) => {
+          let preOrderID = await this.header.createPreOrder();
+          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
+
+          return whatsappLink;
+        },
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });

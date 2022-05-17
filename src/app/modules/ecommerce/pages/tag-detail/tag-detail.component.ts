@@ -7,6 +7,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
+import { TagsService } from '../../../../core/services/tags.service';
 import * as moment from 'moment';
 
 @Component({
@@ -20,14 +21,16 @@ export class TagDetailComponent implements OnInit {
   merchantID: string ;
   orders: Array<any> = [];
   ordersTags: any = [];
-  tags = [{subtitle: 'FILTERED BY TAGS', options: [],}];
+//   tags = [{subtitle: 'FILTERED BY TAGS', options: [],}];
   imageFolder: string;
   fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
-  tagID: string = 'TAG ID';
-  transparent: boolean = true;
+  tagName: string = 'Tag ID';
+  tagMessage: string = '';
+  tagID: string = '627d60ff456106f4571b226d'; //627d60ff456106f4571b226d(con mensaje) y 627ebc6fe48bbbfddd6a89a7(sin mensaje)
+  transparent: boolean = false;
 
   ordurs: Array<any> = [{
-    title: 'NombreID',
+    title: 'DummyOrder',
     eventTitle: 'event title',
     subtitle: 'compradorID',
     price: null,
@@ -140,11 +143,12 @@ export class TagDetailComponent implements OnInit {
     private dialog: DialogService,
     private headerSevice: HeaderService,
     private authService: AuthService,
+    private tagsService: TagsService,
     ) { this.imageFolder = environment.assetsUrl; }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-        this.merchantID = params.id
+        this.merchantID = '616a13a527bcf7b8ba3ac312'// params.id
       });
       this.merchantService.myMerchants({}).then(async (data) => {
         console.log(data)}
@@ -175,7 +179,7 @@ export class TagDetailComponent implements OnInit {
       //console.log(data)
       if (data.length > 0) {
         this.route.params.subscribe(async (params) => {
-          this.merchantID = params.id
+          this.merchantID = '616a13a527bcf7b8ba3ac312' //params.id
           console.log(this.merchantID)
         });
 
@@ -240,14 +244,9 @@ export class TagDetailComponent implements OnInit {
            //icons_image_bool: true,
            icons_bottom_right: [
              { 
-               /* icon: '../../../../../assets/images/grayBookmark.svg',
-               type:'img', */
+               icon: this.imageFolder + '/Etiqueta_lapiz.svg',
+               type:'img',
                function: () => this.openTagsDialog(order._id, auxTags, dateID),
-             },
-             {
-               icon: 'fa-heart',
-               color: '#7B7B7B',
-               type: 'icon',
              },
            ],
          })
@@ -256,8 +255,22 @@ export class TagDetailComponent implements OnInit {
    }
 
   async getTagsOptions(){
+
+    await this.tagsService.tag(this.tagID).then(data =>{
+        if( data.tag._id.length > 0){
+            console.log(data.tag._id);
+            this.tagName = data.tag.name;
+            console.log(this.tagName); //*
+            this.tagMessage = data.tag.messageNotify;
+            console.log(this.transparent); //*
+            this.transparent = data.tag.notify;
+            console.log(this.tagMessage); //*
+        } else {
+            console.log('No Tag Data')
+        }
+    })
     
-    await this.merchantService.tagsByMerchant(this.merchantID).then(data =>{
+    /* await this.merchantService.tagsByMerchant(this.merchantID).then(data =>{
       console.log(data);
       this.tags[0].options = [];
       data.tagsByMerchant.results.forEach(element => {
@@ -268,7 +281,7 @@ export class TagDetailComponent implements OnInit {
           selected: false,
         });
       })
-    })
+    }) DEPRECATED*/
   }
 
   goToOderinfo(orderID:string){
@@ -287,7 +300,7 @@ export class TagDetailComponent implements OnInit {
   openTagsDialog(orderID: string, tags: any, dateID: string){
 
     // console.log(this.merchantID)
-    console.log('Uso de Dialog para autenticacion')
+    console.log('Uso de Dialog para tags. Aqui nos dirigiriamos a tags-edit')
   }
 
   letsChange() {

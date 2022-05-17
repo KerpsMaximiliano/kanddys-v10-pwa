@@ -16,3 +16,9 @@ export class Tag extends Model<Tag> {
   notifyUserOrder: boolean;
   notifyMerchantOrder: boolean;
 }
+
+export class TagInput {
+  messageNotify: string;
+  name: string;
+  notify: boolean;
+}

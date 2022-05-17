@@ -39,24 +39,28 @@ export class PackageDetailComponent implements OnInit {
   ngOnInit(): void {
     this.header.saleflow = this.header.getSaleflow();
     this.saleflowId = this.header.saleflow._id;
-    this.items.itemCategories(this.header.saleflow.merchant._id, {
-      options: {
-        limit: 15
-      }
-    }).then(data => {
-      //this.filters = data.itemCategoriesList;
-      for (let i = 0; i < data.itemCategoriesList.length; i++) {
-        this.filters[0].options.push({
-          id: data.itemCategoriesList[i]._id,
-          label: data.itemCategoriesList[i].name,
-          type: 'label',
-          selected: false,
-        });
-      }
-    })
+    this.items
+      .itemCategories(this.header.saleflow.merchant._id, {
+        options: {
+          limit: 15,
+        },
+      })
+      .then((data) => {
+        //this.filters = data.itemCategoriesList;
+        for (let i = 0; i < data.itemCategoriesList.length; i++) {
+          this.filters[0].options.push({
+            id: data.itemCategoriesList[i]._id,
+            label: data.itemCategoriesList[i].name,
+            type: 'label',
+            selected: false,
+          });
+        }
+      });
     this.route.params.subscribe((params) => {
       this.header.flowRoute = `package-detail/${params.id}`;
-      this.items.itemPacakge(params.id).then(data => {
+      localStorage.setItem('flowRoute', `package-detail/${params.id}`);
+
+      this.items.itemPacakge(params.id).then((data) => {
         this.packageData = data.itemPackage;
         this.listItems();
       });
@@ -92,18 +96,23 @@ export class PackageDetailComponent implements OnInit {
             item: data.listItems[i]._id,
             itemExtra: [],
             //saleflow: this.saleflowId,
-            amount: this.packageData.packageRules[i].fixedQuantity
-          })
+            amount: this.packageData.packageRules[i].fixedQuantity,
+          });
         }
         let alreadySelected = this.header.getOrder(this.saleflowId);
         if (alreadySelected.itemPackage === this.packageData._id) {
           if (alreadySelected.products[0].itemExtra.length > 0) {
-            this.orderProducts[0].itemExtra = alreadySelected.products[0].itemExtra;
+            this.orderProducts[0].itemExtra =
+              alreadySelected.products[0].itemExtra;
             let index;
             this.selectedsQty = alreadySelected.products[0].itemExtra.length;
-            for (let i = 0; i < alreadySelected.products[0].itemExtra.length; i++) {
-              index = this.scenarios.findIndex(object => {
-                return object._id === alreadySelected.products[0].itemExtra[i]
+            for (
+              let i = 0;
+              i < alreadySelected.products[0].itemExtra.length;
+              i++
+            ) {
+              index = this.scenarios.findIndex((object) => {
+                return object._id === alreadySelected.products[0].itemExtra[i];
               });
               this.scenarios[index].isActive = true;
             }
@@ -116,7 +125,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   handleSelection(event) {
-    this.scenarios.map(data => {
+    this.scenarios.map((data) => {
       if (data._id === event.item._id) {
         if (this.selectedsQty < this.limitScenarios && !data.isActive) {
           data.isActive = event.isSelected;

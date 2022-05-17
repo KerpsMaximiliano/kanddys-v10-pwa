@@ -32,6 +32,11 @@ interface FormField {
   validators?: Array<any>;
   description?: string;
   label: string;
+  bottomLabel?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   placeholder?: string;
   inputType?: string;
   showImageBottomLabel?: string;
@@ -114,6 +119,13 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           styles: {
             containerStyles: {
               marginTop: '150px',
+            },
+          },
+          bottomLabel: {
+            text: '¿No tienes un número?',
+            clickable: true,
+            callback: () => {
+              console.log('Se ha clickeado el callback');
             },
           },
         },

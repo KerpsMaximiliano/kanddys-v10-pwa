@@ -158,7 +158,7 @@ export class OrderInfoComponent implements OnInit {
               (user) =>
                 (this.showNotificationButton = user._id === data.order.user._id)
             );
-          if(data.order.ocr) {
+          if (data.order.ocr) {
             this.tabsOptions.push('Pago');
             this.pagoView = true;
           } else this.facturado = true;
@@ -187,7 +187,7 @@ export class OrderInfoComponent implements OnInit {
             0
           );
           this.price = data.order.items[0].customizer
-            ? (Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100)
+            ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
             : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
@@ -200,7 +200,10 @@ export class OrderInfoComponent implements OnInit {
 
           this.delivery = data.order.items[0].deliveryLocation.googleMapsURL;
           this.image = data.order.items[0].item.images;
-          this.name = data.order.user.name;
+          this.name =
+            String(data.order.user.name) !== 'null' && data.order.user.name
+              ? data.order.user.name
+              : '';
           this.merchantName = data.order.items[0].saleflow.headline;
           this.orderId = data.order._id;
           // this.date = `${moment(data.order.createdAt).format(
@@ -264,17 +267,17 @@ export class OrderInfoComponent implements OnInit {
                   dateInfo[0] +
                   ' a las ' +
                   this.formatHour(data.getReservation.date.from)),
-                this.reservationItem = {
-                  showArrow: true,
-                  title: 'Fecha',
-                  description: `El ${
-                    this.days[
-                      moment(data.getReservation.date.from).isoWeekday() + 1
-                    ]
-                  } ${day} de ${month}, ${this.formatHour(
-                    data.getReservation.date.from
-                  )}`,
-                };
+                  (this.reservationItem = {
+                    showArrow: true,
+                    title: 'Fecha',
+                    description: `El ${
+                      this.days[
+                        moment(data.getReservation.date.from).isoWeekday() + 1
+                      ]
+                    } ${day} de ${month}, ${this.formatHour(
+                      data.getReservation.date.from
+                    )}`,
+                  });
                 this.allDone = true;
               });
           }
@@ -357,12 +360,11 @@ export class OrderInfoComponent implements OnInit {
   }
 
   toggleNotifications() {
-    this.order
-      .toggleUserNotifications(!this.notifications, this.linkId)
-      // .then((result) => {
-      //   console.log('Cambiaste las preferencias de notificaciones');
-      //   console.log(result);
-      // });
+    this.order.toggleUserNotifications(!this.notifications, this.linkId);
+    // .then((result) => {
+    //   console.log('Cambiaste las preferencias de notificaciones');
+    //   console.log(result);
+    // });
 
     this.notifications = !this.notifications;
   }

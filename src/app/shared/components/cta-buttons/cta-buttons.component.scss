@@ -1,0 +1,40 @@
+.body{ 
+    background-color: transparent;
+    width: 121px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .round{
+        border-radius: 50%;
+        background-color: #707070;
+        height: 81px;
+        width: 81px;
+        border: 2px solid transparent;
+        z-index: 1;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .round-button{
+            cursor: pointer;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            z-index: 2;
+        }
+    }
+
+    .text-btn{
+        width: 105px;
+        margin-top: 3px;
+        text-align: center;
+        color: #141414;
+        opacity: 0.64;
+        font-size: 16px;
+        font-family: 'RobotoRegular';
+    }
+}

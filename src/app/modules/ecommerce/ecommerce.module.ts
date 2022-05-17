@@ -83,6 +83,10 @@ const routes: Routes = [
     component: FlowCompletionComponent,
   },
   {
+    path: 'flow-completion/:orderId',
+    component: FlowCompletionComponent,
+  },
+  {
     path: 'auth-classic',
     component: AuthClassicComponent,
   },

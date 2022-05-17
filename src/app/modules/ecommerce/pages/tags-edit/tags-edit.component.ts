@@ -58,8 +58,10 @@ export class TagsEditComponent implements OnInit {
         this.tagsService.createTag(data);
         console.log('Create')
       }else { 
+          console.log(this.tagID)
           this.tagsService.updateTag(data, this.tagID);
-          console.log('Update')  
+          console.log('Update')
+          console.log(data, this.tagID)  
         }
   }
 
@@ -92,6 +94,12 @@ export class TagsEditComponent implements OnInit {
        name: Calzado,
        message: Su calzado esta en camino
        notify: true
+    },
+    {
+       id:627ebc6fe48bbbfddd6a89a7
+       name: InitialD
+       messageNotify: ''
+       notify: false 
     }
    */
 

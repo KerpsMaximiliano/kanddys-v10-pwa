@@ -76,7 +76,8 @@ export class ItemOrder extends Model<ItemOrder> {
     | 'in progress'
     | 'to confirm'
     | 'completed'
-    | 'error';
+    | 'error'
+    | 'draft';
   orderType: 'regular' | 'itemPackage';
   isComplete: boolean;
   subtotals: OrderSubtotal[];

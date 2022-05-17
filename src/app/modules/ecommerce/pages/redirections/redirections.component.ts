@@ -1,23 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { analizeMagicLink } from 'src/app/core/graphql/auth.gql';
+import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-redirections',
   templateUrl: './redirections.component.html',
   styleUrls: ['./redirections.component.scss'],
 })
-export class RedirectionsComponent implements OnInit, OnDestroy {
+export class RedirectionsComponent implements OnInit {
   errored: boolean = false;
-  message = 'Autenticando tu identidad...';
-  secondsLeft = 5;
-  interval: any;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private header: HeaderService,
+    private appService: AppService
   ) {}
 
   ngOnInit(): void {
@@ -27,8 +29,27 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
       queryParams: {},
     };
 
+    if (localStorage.getItem('session-token')) {
+      if (!this.header.user) {
+        let sub = this.appService.events
+          .pipe(filter((e) => e.type === 'auth')) 
+          .subscribe((e) => {
+            this.afterLoaderProcesses(redirectURL);
+
+            sub.unsubscribe();
+          });
+      } else this.afterLoaderProcesses(redirectURL);
+    } else this.afterLoaderProcesses(redirectURL);
+  }
+
+  afterLoaderProcesses(redirectURL: {
+    url: string;
+    queryParams: Record<string, any>;
+  }) {
+    lockUI();
+
     this.route.queryParams.subscribe(async (params) => {
-      const { token } = params;
+      const { token, destinationRoute } = params;
 
       try {
         const { analizeMagicLink: session } =
@@ -36,49 +57,17 @@ export class RedirectionsComponent implements OnInit, OnDestroy {
 
         localStorage.setItem('session-token', session.token);
 
-        if (storedRoute && storedRoute !== '') {
-          switch (storedRoute) {
-            case '/ecommerce/test':
-              redirectURL.url = '/ecommerce/test';
-              redirectURL.queryParams = { token };
-              break;
-            case '/ecommerce/shipment-data-form':
-            case '/ecommerce/reservations':
-            case '/ecommerce/provider-store/user-info':
-              redirectURL.url = '/ecommerce/flow-completion';
-              redirectURL.queryParams = { token };
-              break;
-            default:
-              redirectURL.url = '/home';
-              this.errored = true;
-              this.message =
-                'OCURRIO UN ERROR, redirigiendo a la página principal en ' +
-                this.secondsLeft +
-                ' segundos...';
-              break;
-          }
-          this.interval = setInterval(() => {
-            if (!this.errored)
-              this.message = `Redirigiendo a ${redirectURL.url} en ${this.secondsLeft} segundos...`;
+        redirectURL.url = destinationRoute;
+        redirectURL.queryParams = { token };
 
-            console.log('Cambiando', this.secondsLeft);
+        unlockUI();
 
-            this.secondsLeft--;
-
-            if (this.secondsLeft === -1) {
-              this.router.navigate([redirectURL.url], {
-                queryParams: redirectURL.queryParams,
-              });
-            }
-          }, 1000);
-        }
+        this.router.navigate([redirectURL.url], {
+          queryParams: redirectURL.queryParams,
+        });
       } catch (error) {
         console.error(error);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    clearInterval(this.interval);
   }
 }

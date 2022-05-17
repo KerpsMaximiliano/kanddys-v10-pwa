@@ -103,6 +103,8 @@ export class ReservationComponent implements OnInit {
     this.header.disableNav();
     this.header.hide();
     this.header.flowRoute = 'reservations';
+    localStorage.setItem('flowRoute', 'reservations');
+    
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
     this.saleflowData = this.header.getSaleflow();
@@ -883,6 +885,14 @@ export class ReservationComponent implements OnInit {
   openMagicLinkDialog() {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
+      props: {
+        asyncCallback: async (whatsappLink: string) => {
+          let preOrderID = await this.header.createPreOrder();
+          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
+
+          return whatsappLink;
+        },
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });

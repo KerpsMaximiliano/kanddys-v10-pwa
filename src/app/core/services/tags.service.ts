@@ -8,7 +8,7 @@ import {
     removeTagsInOrder,
     tag
  } from '../graphql/tags.gql'
-import { Tag } from '../models/tags';
+import { Tag, TagInput } from '../models/tags';
 
 @Injectable({
     providedIn: 'root',
@@ -18,7 +18,7 @@ export class TagsService {
 
     constructor(private graphql: GraphQLWrapper) {}
 
-    async updateTag(input: any, tagId: any){
+    async updateTag(input: TagInput, tagId: string){
         const result = await this.graphql.mutate({
             mutation: updateTag,
             variables: {input, tagId},
@@ -31,7 +31,7 @@ export class TagsService {
         return result;
     }
 
-    async createTag(input: any){
+    async createTag(input: TagInput){
         const result = await this.graphql.mutate({
             mutation: createTag,
             variables: {input},
