@@ -6,10 +6,10 @@
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
-    [back]="step > 4 || step === 2"
-    [basic]="(step === 1 || step === 3 || step === 4) && !orderData"
+    [back]="true"
+    [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
-    [orderItems]="step === 7"
+    [orderItems]="step === 'PAYMENT_INFO'"
     (onClose)="goBack()"
   ></app-helper-header>
 
@@ -67,7 +67,7 @@
       (keypress)="keyPressNumbers($event)"
     />
   </div> -->
-  <div *ngIf="step === 3">
+  <div *ngIf="step === 'UPDATE_NAME_AND_SHOW_BANKS'">
     <div
       [ngStyle]="{
         padding: '0px 33px',
@@ -107,7 +107,9 @@
         marginBottom: '25px'
       }"
     >
-      Por favor transfiera como pago la suma de ${{ totalOrderAmmountString }}
+      Por favor transfiera como pago la suma de ${{
+        orderData?.amount | number: "1.0-2"
+      }}
       DOP.
     </p>
 
@@ -360,7 +362,7 @@
       </div>
     </div>
   </div> -->
-  <div *ngIf="step === 7">
+  <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
       <p style="margin-bottom: 47px" class="label1">
         Sobre la transferencia que realizó como pago:
@@ -416,7 +418,7 @@
       <app-answer-selector
         *ngIf="banks.length > 1"
         [options]="bankOptions"
-        (onSelector)="selectOption($event)"
+        (onSelector)="selectBank($event)"
         [showDescription]="false"
         [containerStyles]="{
           margin: '0px',
@@ -484,7 +486,7 @@
   <div
     class="footer"
     [ngStyle]="{
-      justifyContent: step >= 4 && step < 8 ? 'space-between' : 'flex-end'
+      justifyContent: step === 'PAYMENT_INFO' ? 'space-between' : 'flex-end'
     }"
   >
     <!-- <div
@@ -585,70 +587,32 @@
 
   <app-sticky-button
     [mode]="
-      (step === 1 && inputData.length < 500) ||
-      (step === 2 && code.length < 4) ||
-      (step === 3 &&
+      (step === 'UPDATE_NAME_AND_SHOW_BANKS' &&
         (!name ||
           name.trim().length === 0 ||
           (password.length < 3 && !comesFromMagicLink)) &&
         isANewUser) ||
-      (step === 4 && password.length < 3) ||
-      (step === 5 && !(selectedPayment >= 0)) ||
-      (step === 6 && !selectedBank) ||
-      (step === 7 && (paymentCode.length !== 4 || !image || !selectedBank)) ||
-      (step === 9 && code.length < 3) ||
-      (step === 10 && password.length < 3)
+      (step === 'PAYMENT_INFO' &&
+        (paymentCode.length !== 4 || !image || !selectedBank))
         ? 'disabled-fixed'
         : 'fixed'
     "
     [text]="
-      step === 1
-        ? inputData.length < 500
-          ? 'ADICIONA TU CELULAR'
-          : 'VERIFICAR MI CELULAR'
-        : step === 2
-        ? 'VERIFICAR MI CELULAR'
-        : step === 3
+      step === 'UPDATE_NAME_AND_SHOW_BANKS'
         ? (!name || (password.length < 3 && !comesFromMagicLink)) && isANewUser
           ? 'ESCRIBE TU NOMBRE Y APELLIDO'
           : 'CONTINUAR'
-        : step === 4
-        ? showLoginPassword
-          ? password.length < 3
-            ? !incorrectPasswordAttempt
-              ? 'ADICIONA LA CLAVE'
-              : 'ADICIONA LA CLAVE CORRECTA'
-            : incorrectPasswordAttempt
-            ? 'ADICIONA LA CLAVE CORRECTA'
-            : 'ACCEDER A LO MÁGICO'
-          : 'HAZ UNA SELECCION'
-        : step === 5
-        ? selectedPayment >= 0
-          ? 'CONTINUAR'
-          : 'SELECCIONA'
-        : step === 6
-        ? selectedBank
-          ? 'CONTINUAR'
-          : 'SELECCIONA DONDE TRANSFERISTE'
-        : step === 7
-        ? paymentCode.length !== 4 || !image || !selectedBank
-          ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-          : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
-        : step === 9
-        ? code.length > 3
-          ? 'INGRESA EL CODIGO'
-          : 'ENVIAR CODIGO'
-        : step === 10
-        ? password.length < 3
-          ? 'INGRESE PASSWORD'
-          : 'ACTUALIZAR EL PASSWORD'
-        : ''
+        : step === 'PAYMENT_INFO' ||
+          paymentCode.length !== 4 ||
+          !image ||
+          !selectedBank
+        ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+        : 'CONFIRMAR AL WHATSAPP DE ' + merchantInfo.name.toUpperCase()
     "
     (click)="submit()"
-    *ngIf="step != 7"
   ></app-sticky-button>
 
-  <a [href]="whatsappLink" target="_blank" *ngIf="step === 7">
+  <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
     <app-sticky-button
       [mode]="
         paymentCode.length !== 4 || !image || !selectedBank

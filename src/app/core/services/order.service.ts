@@ -3,7 +3,11 @@ import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   order,
+  preOrder,
+  authOrder,
+  orderStatus,
   createOrder,
+  createPreOrder,
   payOrder,
   ordersByUser,
   addTagsInOrder,
@@ -19,7 +23,9 @@ export class OrderService {
 
   orders: any = [];
 
-  async createOrder(input: ItemOrderInput): Promise<{createOrder: { _id: string }}> {
+  async createOrder(
+    input: ItemOrderInput
+  ): Promise<{ createOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
       mutation: createOrder,
       variables: { input },
@@ -29,12 +35,24 @@ export class OrderService {
     return result;
   }
 
+  async createPreOrder(
+    input: ItemOrderInput
+  ): Promise<{ createPreOrder: { _id: string } }> {
+    const result = await this.graphql.mutate({
+      mutation: createPreOrder,
+      variables: { input },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
   async payOrder(
-    ocr: OCRInput, 
-    userId: string, 
-    payMode: string, 
+    ocr: OCRInput,
+    userId: string,
+    payMode: string,
     orderId: string
-  ): Promise<{payOrder: {_id: string}}> {
+  ): Promise<{ payOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
       mutation: payOrder,
       variables: { ocr, userId, payMode, orderId },
@@ -59,6 +77,16 @@ export class OrderService {
     }
   }
 
+  async authOrder(orderId: string): Promise<{ authOrder: ItemOrder }> {
+    const result = await this.graphql.mutate({
+      mutation: authOrder,
+      variables: { orderId },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
   async order(orderId: string): Promise<{ order: ItemOrder }> {
     try {
       const response = await this.graphql.query({
@@ -69,6 +97,32 @@ export class OrderService {
       return response;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async preOrder(orderId: string): Promise<{ order: ItemOrder }> {
+    try {
+      const response = await this.graphql.query({
+        query: preOrder,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getOrderStatus(orderId: string): Promise<ItemOrder> {
+    try {
+      const { order } = await this.graphql.query({
+        query: orderStatus,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return order;
+    } catch (error) {
+      console.log(error);
     }
   }
 

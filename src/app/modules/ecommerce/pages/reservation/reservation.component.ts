@@ -883,6 +883,14 @@ export class ReservationComponent implements OnInit {
   openMagicLinkDialog() {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
+      props: {
+        asyncCallback: async (whatsappLink: string) => {
+          let preOrderID = await this.header.createPreOrder();
+          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
+
+          return whatsappLink;
+        },
+      },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });

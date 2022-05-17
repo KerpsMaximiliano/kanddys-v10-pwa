@@ -6,6 +6,7 @@ import { SearchHashtagComponent } from '../../shared/dialogs/search-hashtag/sear
 import { Location } from '@angular/common';
 import { AuthService } from './auth.service';
 import { AppService } from 'src/app/app.service';
+import { OrderService } from './order.service';
 import { filter } from 'rxjs/operators';
 import { User } from '../models/user';
 import { WalletService } from './wallet.service';
@@ -14,6 +15,7 @@ import { BookmarksService } from './bookmarks.service';
 import { CustomizerValueInput } from '../models/customizer-value';
 import { Merchant } from '../models/merchant';
 import { DeliveryLocationInput, SaleFlow } from '../models/saleflow';
+import { CustomizerValueService } from './customizer-value.service';
 import { ProviderStoreComponent } from 'src/app/modules/ecommerce/pages/provider-store/provider-store.component';
 import {
   ItemOrderInput,
@@ -119,7 +121,9 @@ export class HeaderService {
     private auth: AuthService,
     public wallet: WalletService,
     private bookmark: BookmarksService,
-    private merchantService: MerchantsService
+    private merchantService: MerchantsService,
+    private customizerValueService: CustomizerValueService,
+    private orderService: OrderService
   ) {
     this.visible = false;
     this.auth.me().then((data) => {
@@ -486,4 +490,98 @@ export class HeaderService {
   deleteSaleflowOrder(saleflow: string) {
     localStorage.removeItem(saleflow);
   }
+
+  createPreOrder = () => {
+    const saleflow =
+      this.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+
+    this.order = this.getOrder(saleflow._id);
+
+    this.order.products.forEach((product) => {
+      delete product.isScenario;
+      delete product.limitScenario;
+      delete product.name;
+    });
+
+    return new Promise(async (resolve, reject) => {
+      let customizer = this.customizer;
+
+      if (!this.customizer) {
+        const saleflowData = JSON.parse(localStorage.getItem('saleflow-data'));
+        const customizerPreview = JSON.parse(
+          localStorage.getItem('customizerFile')
+        );
+
+        let saleflow = JSON.parse(localStorage.getItem(saleflowData._id));
+
+        if ('customizer' in saleflow) {
+          customizer = saleflow.customizer;
+
+          const res: Response = await fetch(customizerPreview.base64);
+          const blob: Blob = await res.blob();
+
+          customizer.preview = new File([blob], customizerPreview.fileName, {
+            type: customizerPreview.type,
+          });
+        }
+      }
+
+      if (customizer) {
+        const customizerId =
+          await this.customizerValueService.createCustomizerValue(customizer);
+
+        this.order.products[0].customizer = customizerId;
+        this.customizer = null;
+        this.customizerData = null;
+      }
+
+      if (saleflow.module.post) {
+        console.log('1');
+        // if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
+        if (saleflow.canBuyMultipleItems)
+          this.order.products.forEach((product) => {
+            const createdPostId = localStorage.getItem('createdPostId');
+
+            product.deliveryLocation = this.order.products[0].deliveryLocation;
+            product.post = createdPostId;
+          });
+
+        try {
+          const { createPreOrder } = await this.orderService.createPreOrder(
+            this.order
+          );
+
+          this.deleteSaleflowOrder(saleflow._id);
+          this.resetIsComplete();
+          this.orderId = createPreOrder._id;
+          this.currentMessageOption = undefined;
+          this.post = undefined;
+          this.locationData = undefined;
+          // this.app.events.emit({ type: 'order-done', data: true });
+          resolve(createPreOrder._id);
+        } catch (error) {
+          console.log(error);
+          reject('Error creando la orden');
+        }
+      } else {
+        try {
+          console.log('2');
+          const { createPreOrder } = await this.orderService.createPreOrder(
+            this.order
+          );
+
+          this.deleteSaleflowOrder(saleflow._id);
+          this.resetIsComplete();
+          this.orderId = createPreOrder._id;
+          // this.app.events.emit({ type: 'order-done', data: true });
+          resolve(createPreOrder._id);
+        } catch (error) {
+          console.log(error);
+          reject('Error creando la orden');
+        }
+      }
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
 }
