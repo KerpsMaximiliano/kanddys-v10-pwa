@@ -40,6 +40,7 @@ export class ItemDetailComponent implements OnInit {
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
+  priceLabel : string = '14,020.00';
   itemData: Item;
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
