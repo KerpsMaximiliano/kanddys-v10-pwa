@@ -40,6 +40,7 @@ export class FlowCompletionComponent implements OnInit {
   @Input() inputQuestion: boolean = true;
   @Input() paymentQuestion: boolean = true;
   @Input() bankQuestion: boolean = true;
+  @Input() localStorageFlowRoute = '';
   paymentOptions = [
     {
       value: 'Por transferencia bancaria',
@@ -133,8 +134,6 @@ export class FlowCompletionComponent implements OnInit {
   ) {}
 
   afterOrderRequest = (data) => {
-    console.log('PreOrderData', data);
-
     if (
       data.order.orderStatus === 'cancelled' ||
       data.order.orderStatus === 'to confirm' ||
@@ -237,6 +236,11 @@ export class FlowCompletionComponent implements OnInit {
   products: any[] = [];
 
   async ngOnInit() {
+    this.localStorageFlowRoute =
+      this.header.flowRoute || localStorage.getItem('flowRoute');
+
+    console.log(this.localStorageFlowRoute);
+
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
 
@@ -279,7 +283,7 @@ export class FlowCompletionComponent implements OnInit {
               );
               this.isANewUser =
                 currentSession.name === '' ||
-                String(currentSession.name) === 'null'; 
+                String(currentSession.name) === 'null';
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
             } else {
               this.router.navigate(['/']);
@@ -398,23 +402,6 @@ export class FlowCompletionComponent implements OnInit {
     this.selectedBank = this.bankOptions[index];
   }
 
-  async sendCodeToEmailOrWhatsapp() {
-    const validEmail = new RegExp(
-      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-    );
-    const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
-
-    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
-      const executedSuccessfully = await this.authService.generateMagicLink(
-        '1' + this.inputData
-      );
-
-      if (executedSuccessfully) {
-        console.log('Email o whatsapp enviado correctamente');
-      }
-    }
-  }
-
   validateNumbers(event: KeyboardEvent) {
     event.preventDefault();
     let transformedOutput: string = this.ammount.value;
@@ -430,8 +417,15 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   goBack() {
-    if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS' && !this.orderData) {
-      this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
+    if (
+      this.step === 'UPDATE_NAME_AND_SHOW_BANKS' &&
+      (this.header.flowRoute || this.localStorageFlowRoute !== '')
+    ) {
+      const redirectionURL = `/ecommerce/${
+        this.header.flowRoute || this.localStorageFlowRoute
+      }`;
+      console.log(this.localStorageFlowRoute, redirectionURL);
+      this.router.navigate([redirectionURL]);
     }
 
     if (this.step === 'PAYMENT_INFO') {
