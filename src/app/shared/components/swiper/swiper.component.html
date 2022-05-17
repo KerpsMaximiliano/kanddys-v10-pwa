@@ -950,37 +950,4 @@
       ></div>
     </swiper>
   </div>
-  <div class="customPagination">
-    <div
-      class="price"
-      style="
-        position: absolute;
-        left: 32px;
-        bottom: -5px;
-        color: #7b7b7b;
-        font-family: 'Roboto';
-        font-size: 17px;
-      "
-    >
-      <ng-container *ngIf="saleFlowTwoData.pricing; else price">
-        ${{ saleFlowTwoData.pricing }}
-      </ng-container>
-      <ng-template #price> ${{ saleFlowTwoData.price }} </ng-template>
-    </div>
-    <ng-container *ngIf="saleFlowTwoData.images.length > 1">
-      <ng-container *ngFor="let item of saleFlowTwoData.images; let j = index">
-        <div
-          class="pageBall"
-          [ngStyle]="
-            realIndex1 === j
-              ? { 'background-color': '#7b7b7b' }
-              : { 'background-color': '#a9a9a9' }
-          "
-        ></div>
-      </ng-container>
-    </ng-container>
-  </div>
-  <div class="text">
-    {{ saleFlowTwoData.description }}
-  </div>
 </div>
