@@ -134,7 +134,8 @@ export class HeaderService {
         this.user = undefined;
         this.walletData = undefined;
         this.savedBookmarks = undefined;
-        this.session.revoke();
+
+        if (this.session) this.session.revoke();
       }
     });
     const sub = this.app.events
