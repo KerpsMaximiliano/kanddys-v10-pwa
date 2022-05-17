@@ -552,7 +552,6 @@ export class HeaderService {
             this.order
           );
 
-          this.deleteSaleflowOrder(saleflow._id);
           this.resetIsComplete();
           this.orderId = createPreOrder._id;
           this.currentMessageOption = undefined;

@@ -6,7 +6,7 @@
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
-    [back]="true"
+    [back]="localStorageFlowRoute && localStorageFlowRoute !== ''"
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
     [orderItems]="step === 'PAYMENT_INFO'"
