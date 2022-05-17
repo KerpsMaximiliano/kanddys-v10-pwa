@@ -1,5 +1,9 @@
 <ng-container style="border-radius: 10px;" *ngIf="type === 'tag'">
-    <div class="card">
+    <div 
+        class="card" 
+        [ngStyle]="{cursor: isSelectable && 'pointer'}"
+        [ngClass]="{'selected': isSelectable && selected}"
+    >
         <div class="toptext">
             {{toptext}} <svg id="tags" xmlns="http://www.w3.org/2000/svg" width="16.464" height="15.408"
                 viewBox="0 0 16.464 15.408">

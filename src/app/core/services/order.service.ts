@@ -6,7 +6,6 @@ import {
   createOrder,
   payOrder,
   ordersByUser,
-  addTagsInOrder,
   toggleUserNotifications,
   updateTagsInOrder,
 } from '../graphql/order.gql';
@@ -86,19 +85,6 @@ export class OrderService {
     } catch (e) {
       console.log(e);
     }
-  }
-
-  async addTagsInOrder(orderId: any, tags: any, merchantId: any) {
-    console.log(tags);
-    const result = await this.graphql.mutate({
-      mutation: addTagsInOrder,
-      variables: { orderId, tags, merchantId },
-    });
-
-    if (!result || result?.errors) return undefined;
-
-    console.log(result);
-    return result;
   }
 
   async updateTagsInOrder(orderId: any, tags: any, merchantId: any) {

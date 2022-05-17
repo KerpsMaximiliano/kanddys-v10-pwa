@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 export interface ItemList {
+  id?: string;
   title: string;
   eventTitle?: any;
   subtitle?: string;
@@ -38,6 +39,7 @@ export interface ItemList {
 })
 export class ItemListComponent implements OnInit {
   @Input() itemListContent: ItemList = {
+    id: '',
     title: '',
     eventTitle: undefined,
     subtitle: '',

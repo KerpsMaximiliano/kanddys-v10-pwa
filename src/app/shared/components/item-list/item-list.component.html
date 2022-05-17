@@ -189,7 +189,8 @@
     >
       <p *ngIf="itemListContent.text_left">{{ itemListContent.text_left }}</p>
       <div *ngIf="itemListContent.text_right || itemListContent.icon_bottom || itemListContent.icons_bottom_right">
-        <p *ngIf="itemListContent.text_right">
+        <p *ngIf="itemListContent.text_right" [routerLink]="['/ecommerce/tags-list',itemListContent.id]">
+          <!-- este routerLink es temporal y debe ser modificado -->
           {{ itemListContent.text_right }}
         </p>
         <ng-container *ngIf="itemListContent.icons_bottom_right && !itemListContent.text_right && !itemListContent.icon_bottom" >

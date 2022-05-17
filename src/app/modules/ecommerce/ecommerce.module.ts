@@ -29,6 +29,7 @@ import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 import { AuthClassicComponent } from './pages/auth-classic/auth-classic.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
+import { TagsListComponent } from './pages/tags-list/tags-list.component';
 
 const routes: Routes = [
   {
@@ -148,6 +149,10 @@ const routes: Routes = [
     path: 'tags-edit',
     component: TagsEditComponent,
   },
+  {
+    path: 'tags-list/:orderId',
+    component: TagsListComponent,
+  },
 ];
 
 @NgModule({
@@ -181,6 +186,7 @@ const routes: Routes = [
     TagsEditComponent,
     AuthClassicComponent,
     PaymentsComponent,
+    TagsListComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

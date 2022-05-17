@@ -203,6 +203,7 @@ export class OrderSalesComponent implements OnInit {
         });
 
         let merchant = data.find(element => element._id === this.merchantID)
+        this.headerSevice.merchantInfo = merchant;
         console.log(merchant)
         if(merchant!=undefined)
         {

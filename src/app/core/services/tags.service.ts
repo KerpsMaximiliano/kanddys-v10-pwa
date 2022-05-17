@@ -5,8 +5,10 @@ import {
     createTag, 
     tagsByUser,
     addTagsInOrder,
+    removeTagsInOrder,
     tag
  } from '../graphql/tags.gql'
+import { Tag } from '../models/tags';
 
 @Injectable({
     providedIn: 'root',
@@ -41,31 +43,40 @@ export class TagsService {
         return result;
     }
 
-    async tagsByUser(){
+    async tagsByUser(): Promise<Tag[]> {
         try{
            const result = await this.graphql.query({
                query: tagsByUser,
                fetchPolicy: 'no-cache',
            })
-           
-           console.log(result);
-           return result;
-           
+           if(!result) return undefined;
+           return result.tagsByUser;
         } catch (e) {
            console.log(e);
         }
     }
 
-    async addTagsInOrder(merchantId: any, tagId: string, orderId: string){
+    async addTagsInOrder(merchantId: string, tagId: string, orderId: string){
         try{
            const result = await this.graphql.mutate({
                mutation: addTagsInOrder,
                variables:{merchantId, tagId, orderId},
            })
-           
-           console.log(result);
+           if (!result || result?.errors) return undefined;
            return result;
-           
+        } catch (e) {
+           console.log(e);
+        }
+    }
+
+    async removeTagsInOrder(merchantId: string, tagId: string, orderId: string){
+        try{
+           const result = await this.graphql.mutate({
+               mutation: removeTagsInOrder,
+               variables:{merchantId, tagId, orderId},
+           })
+           if (!result || result?.errors) return undefined;
+           return result;
         } catch (e) {
            console.log(e);
         }

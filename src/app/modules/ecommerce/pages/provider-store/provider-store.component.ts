@@ -296,11 +296,8 @@ export class ProviderStoreComponent implements OnInit {
     }
   }
 
-  async ngOnInit(): Promise<void> {
-    if (this.header.orderId) {
-      this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
-      return;
-    };
+  async ngOnInit() {
+    if (this.header.orderId) return this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
     let saleflowId: string;
     let itemId: string;
     this.route.params.subscribe((params) => {
@@ -310,16 +307,10 @@ export class ProviderStoreComponent implements OnInit {
     })
     if(!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
-      if(!saleflow) {
-        this.getData(saleflowId, itemId);
-        return
-      }
+      if(!saleflow) return this.getData(saleflowId, itemId);
       this.header.saleflow = saleflow;
       this.header.order = this.header.getOrder(saleflow._id);
-      if(!this.header.order) {
-        this.getData(saleflowId, itemId);
-        return
-      }
+      if(!this.header.order) return this.getData(saleflowId, itemId);
       this.header.getOrderProgress(saleflow._id);
       const items: Item[] = this.header.getItems(saleflow._id);
       if(
@@ -332,20 +323,11 @@ export class ProviderStoreComponent implements OnInit {
         this.header.items = items;
         lockUI(this.fillData());
       }
-      else {
-        this.getData(saleflowId, itemId);
-        return
-      }
+      else return this.getData(saleflowId, itemId);
     }
-    if(this.header.saleflow._id !== saleflowId) {
-      this.getData(saleflowId, itemId);
-      return
-    }
+    if(this.header.saleflow._id !== saleflowId) return this.getData(saleflowId, itemId);
     this.header.order = this.header.getOrder(this.header.saleflow._id);
-    if(!this.header.order) {
-      this.getData(saleflowId, itemId);
-      return
-    }
+    if(!this.header.order) return this.getData(saleflowId, itemId);
     const items: Item[] = this.header.getItems(this.header.saleflow._id);
     if(
       items &&
@@ -357,10 +339,7 @@ export class ProviderStoreComponent implements OnInit {
       this.header.items = items;
       lockUI(this.fillData());
     }
-    else {
-      this.getData(saleflowId, itemId);
-      return
-    }
+    else return this.getData(saleflowId, itemId);
   }
 
   changeOption(index: any) {

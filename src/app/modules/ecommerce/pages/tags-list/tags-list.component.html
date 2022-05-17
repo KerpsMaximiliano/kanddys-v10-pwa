@@ -1,0 +1,39 @@
+<div style="min-height: 100vh;">
+  <nav [routerLink]="['/ecommerce/order-sales', merchantId]">
+    Salir De La Asignacion De Tags
+  </nav>
+  <div class="input">
+    <input
+      class="leadword-input"
+      (input)="searchKeyword()"
+      [(ngModel)]="keyword"
+      type="text"
+      id="search"
+      placeholder="Type the LeadWord"
+    />
+  </div>
+  <p class="label">
+    <ng-container *ngIf="!keyword">RECIENTES</ng-container>
+    <ng-container *ngIf="keyword">
+      <ng-container *ngIf="filteredTagList.length > 0 else noTags">
+        RESULTADOS PARECIDOS
+      </ng-container>
+      <ng-template #noTags>
+        <div class="addButton" [routerLink]="['/ecommerce/tags-edit']">
+          Añadir Nuevo Tag
+        </div>
+      </ng-template>
+    </ng-container> 
+  </p>
+  <div class="tag-container">
+    <app-info-card
+        *ngFor="let tag of filteredTagList"
+        (click)="onTagClick(tag)"
+        type="tag"
+        [bottomtext]="tag.name"
+        [toptext]="tag.counter"
+        [isSelectable]="true"
+        [selected]="tag.notifyMerchantOrder"
+      ></app-info-card>
+  </div>
+</div>

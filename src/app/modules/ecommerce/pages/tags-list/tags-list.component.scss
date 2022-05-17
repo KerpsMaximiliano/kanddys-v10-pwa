@@ -1,0 +1,54 @@
+nav {
+  background-color: #4773D8;
+  font-family: 'RobotoBold';
+  font-size: 14px;
+  height: 36px;
+  color: white;
+  margin: auto;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.label {
+  margin: 0 38px 21px;
+  font-family: "SfProRegular";
+  font-size: 14px;
+  color: #7B7B7B;
+}
+
+.input {
+  margin: 29px 20px 38px 20px;
+}
+
+.leadword-input {
+  margin-top: 16px;
+  padding: 20px 32px;
+  font-family: "SfProSemiBold";
+  font-size: 17px;
+  border-radius: 30px;
+  border: none;
+  width: 100%;
+  line-height: 1;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 18%);
+
+  &::placeholder {
+    color: rgba(11, 31, 56, 0.31);
+    font-family: inherit;
+  }
+}
+
+.tag-container {
+  margin: 0 32px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.addButton {
+  font-family: "SfProSemiBold";
+  font-size: 17px;
+  color: #4773D8;
+  text-align: center;
+  cursor: pointer;
+}
