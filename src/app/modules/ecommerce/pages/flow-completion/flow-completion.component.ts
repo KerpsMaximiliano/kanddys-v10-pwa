@@ -279,7 +279,7 @@ export class FlowCompletionComponent implements OnInit {
               );
               this.isANewUser =
                 currentSession.name === '' ||
-                String(currentSession.name) === 'null';
+                String(currentSession.name) === 'null'; 
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
             } else {
               this.router.navigate(['/']);

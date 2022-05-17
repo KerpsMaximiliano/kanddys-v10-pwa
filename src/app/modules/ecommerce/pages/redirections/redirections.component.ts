@@ -32,7 +32,7 @@ export class RedirectionsComponent implements OnInit {
     if (localStorage.getItem('session-token')) {
       if (!this.header.user) {
         let sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth'))
+          .pipe(filter((e) => e.type === 'auth')) 
           .subscribe((e) => {
             this.afterLoaderProcesses(redirectURL);
 
