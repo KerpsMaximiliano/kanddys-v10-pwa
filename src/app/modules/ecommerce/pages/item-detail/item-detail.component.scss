@@ -74,6 +74,13 @@
         padding-top: 15px;
         display: flex;
 
+        .box-paragraph{
+            font-size: 16px;
+            font-family: 'SfProRegular';
+            color: #7B7B7B;
+            margin: 16px 63px 1px 15px;
+        }
+
         .l-wrapper{
             display: flex;
             flex-direction: column;

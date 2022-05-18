@@ -1,5 +1,6 @@
 <ng-container *ngIf="itemData">
     <div class="container">
+        
          <ng-container *ngIf="viewtype == 'preview'">
             <app-helper-headerv2
             [mode]="'basic'"
@@ -13,6 +14,7 @@
                     <p class="box-paragraph">{{boxText}}</p>
                 </div>
          </ng-container>
+
          <ng-container *ngIf="viewtype == 'merchant'">
             <app-helper-headerv2
             [mode]="'basic'"
@@ -72,7 +74,7 @@
             </div>
         </div>
 
-        <ng-container *ngIf="viewtype == 'merchant' || 'community' ">
+        <ng-container *ngIf="viewtype == ('merchant' || 'community') ">
             <div class="cta-area">
                 <app-cta-buttons
                     [ctaText]="'Añadelo A Mi Lista'"

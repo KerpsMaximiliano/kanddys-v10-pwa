@@ -43,7 +43,7 @@ export class ItemDetailComponent implements OnInit {
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
-  viewtype: string = 'merchant';
+  viewtype: string ;
   preamount: string = '20';
   priceLabel : string = '14,020.00';
   itemData: Item;
@@ -62,10 +62,15 @@ export class ItemDetailComponent implements OnInit {
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
-      /* if(params.type) {
-          this.viewtype = params.viewtype;
-      } */
     });
+
+    this.route.queryParams.subscribe( params=>{
+        this.viewtype = params.viewtype;
+        if (this.viewtype === 'merchant') this.viewtype = 'merchant';
+        else if( this.viewtype === 'preview') this.viewtype = 'preview';
+        else if (this.viewtype === 'community') this.viewtype = 'community';
+        /*Esta demas pero por si panik */
+    })
   }
 
   itemInCart() {
