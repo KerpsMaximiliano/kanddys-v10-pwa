@@ -34,6 +34,10 @@
                 font-size: 18px;
                 color: #8351FE;
                 margin-right: 4px;
+
+                img {
+                    filter: invert(43%) sepia(48%) saturate(6485%) hue-rotate(240deg) brightness(98%) contrast(104%);
+                }
             }
             .con-text{
                 font-family: 'SfProRegular';

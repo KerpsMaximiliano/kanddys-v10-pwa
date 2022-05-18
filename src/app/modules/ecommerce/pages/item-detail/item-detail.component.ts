@@ -10,6 +10,7 @@ import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 
 @Component({
   selector: 'app-item-detail',
@@ -99,6 +100,19 @@ export class ItemDetailComponent implements OnInit {
             }
           })
         },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openMagicLinkDialog() {
+    this.dialog.open(MagicLinkDialogComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        ids: {
+          id: this.itemData._id
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
