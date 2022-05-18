@@ -3,6 +3,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { OrderService } from 'src/app/core/services/order.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-magic-link-dialog',
@@ -13,17 +14,17 @@ export class MagicLinkDialogComponent implements OnInit {
   @Input() ids: Record<string, string>;
   @Input() callback: (...params) => any;
   @Input() asyncCallback: (...params) => Promise<any>;
-  whatsappLink: string;
+  whatsappLink: string = 'https://wa.me/19295263397?';
 
   constructor(private ref: DialogRef) {}
 
-  ngOnInit(): void {
-    this.storeRouteState();
+  async ngOnInit() {
+    lockUI();
+    await this.storeRouteState();
+    unlockUI();
   }
 
   async storeRouteState() {
-    this.whatsappLink = `https://wa.me/19295263397?`;
-
     if (this.callback) {
       this.whatsappLink = await this.callback(this.whatsappLink);
     } else if (this.asyncCallback) {
@@ -34,8 +35,6 @@ export class MagicLinkDialogComponent implements OnInit {
         if (index !== 0) this.whatsappLink += `&`;
 
         this.whatsappLink += `${encodeURIComponent(key + ' ' + this.ids[key])}`;
-
-        console.log(this.whatsappLink);
       });
     }
   }
