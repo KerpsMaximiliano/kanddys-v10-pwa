@@ -64,13 +64,12 @@ export class ItemDetailComponent implements OnInit {
       }
     });
 
-    this.route.queryParams.subscribe( params=>{
+    this.route.queryParams.subscribe((params)=>{
         this.viewtype = params.viewtype;
-        if (this.viewtype === 'merchant') this.viewtype = 'merchant';
-        else if( this.viewtype === 'preview') this.viewtype = 'preview';
-        else if (this.viewtype === 'community') this.viewtype = 'community';
-        /*Esta demas pero por si panik */
-    })
+        if (this.viewtype === 'merchant') this.viewtype = 'merchant'
+        else if( this.viewtype === 'preview') this.viewtype = 'preview'
+        else if (this.viewtype === 'community') this.viewtype = 'community'    
+    });
   }
 
   itemInCart() {
