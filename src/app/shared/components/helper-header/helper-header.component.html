@@ -18,7 +18,13 @@
       {{ middleText }}
     </div>
   </ng-container>
-  <div class="top-area-hlprhdr">
+  <div
+    class="top-area-hlprhdr"
+    [ngClass]="{
+      'top-area-hlprhdr': !replaceXWithLabel,
+      'top-area-hlprhdr-full': replaceXWithLabel && leftLabel
+    }"
+  >
     <!--Left area-->
     <div class="wrapper-hdrhlpr">
       <a (click)="close()" class="icon-hlprhdr" *ngIf="!basic && back && !empty"
@@ -27,9 +33,16 @@
       <button
         (click)="close()"
         class="x-button-hlprhdr"
-        *ngIf="basic && !empty"
+        *ngIf="basic && !empty && !replaceXWithLabel"
       >
         X
+      </button>
+      <button
+        (click)="close()"
+        class="label-hlprhdr"
+        *ngIf="basic && !empty && replaceXWithLabel && leftLabel !== ''"
+      >
+        {{ leftLabel }}
       </button>
       <div class="helper-area-hlprhdr" *ngIf="userID">{{ userID }}</div>
     </div>

@@ -54,6 +54,23 @@
           >
             <!-- SINGLE INPUTS GO HERE -->
             <ng-container *ngIf="!currentField.multiple">
+              <span
+                *ngIf="currentField.topLabelAction"
+                class="input-label-top-action"
+                [ngStyle]="
+                  currentField.styles.topLabelActionStyles
+                    ? currentField.styles.topLabelActionStyles
+                    : null
+                "
+                (click)="
+                  currentField.topLabelAction.clickable
+                    ? currentField.topLabelAction.callback(stepFunctionParams)
+                    : null
+                "
+              >
+                {{ currentField.topLabelAction.text }}
+              </span>
+
               <label
                 [for]="currentField.name"
                 class="input-label"
@@ -99,7 +116,7 @@
                     : null
                 "
               >
-                {{ currentField.label }}
+                {{ currentField.bottomLabel.text }}
               </span>
             </ng-container>
 
@@ -151,7 +168,7 @@
                       : null
                   "
                 >
-                  {{ currentField.label }}
+                  {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
 
@@ -177,6 +194,23 @@
             "
           >
             <ng-container *ngIf="!currentField.multiple">
+              <span
+                *ngIf="currentField.topLabelAction"
+                class="input-label-top-action"
+                [ngStyle]="
+                  currentField.styles.topLabelActionStyles
+                    ? currentField.styles.topLabelActionStyles
+                    : null
+                "
+                (click)="
+                  currentField.topLabelAction.clickable
+                    ? currentField.topLabelAction.callback(stepFunctionParams)
+                    : null
+                "
+              >
+                {{ currentField.topLabelAction.text }}
+              </span>
+
               <label
                 [for]="currentField.name"
                 class="input-label"
@@ -212,7 +246,7 @@
                     : null
                 "
               >
-                {{ currentField.label }}
+                {{ currentField.bottomLabel.text }}
               </span>
             </ng-container>
           </div>
