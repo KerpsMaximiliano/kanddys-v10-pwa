@@ -17,7 +17,9 @@ export class MagicLinkDialogComponent implements OnInit {
 
   constructor(private ref: DialogRef) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.storeRouteState();
+  }
 
   async storeRouteState() {
     this.whatsappLink = `https://wa.me/19295263397?`;
@@ -28,15 +30,14 @@ export class MagicLinkDialogComponent implements OnInit {
       this.whatsappLink = await this.asyncCallback(this.whatsappLink);
     } else if (this.ids) {
       Object.keys(this.ids).forEach((key, index) => {
+        if (index === 0) this.whatsappLink += `&text=`;
         if (index !== 0) this.whatsappLink += `&`;
 
-        this.whatsappLink += `${key}=${encodeURIComponent(this.ids[key])}`;
+        this.whatsappLink += `${encodeURIComponent(key + ' ' + this.ids[key])}`;
+
+        console.log(this.whatsappLink);
       });
     }
-    let linkRef = document.querySelector(`#sendWS`) as HTMLAnchorElement;
-    linkRef.href = this.whatsappLink;
-    linkRef.click();
-    this.close();
   }
 
   close() {
