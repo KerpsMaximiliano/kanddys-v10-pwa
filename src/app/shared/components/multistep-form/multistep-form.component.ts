@@ -35,7 +35,7 @@ interface FormField {
   topLabelAction?: {
     text: string;
     clickable?: boolean;
-    callback?: (...params) => any;
+    callback?: (...params) => any | Promise<any>;
   };
   label: string;
   bottomLabel?: {
