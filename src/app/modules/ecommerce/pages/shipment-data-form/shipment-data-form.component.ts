@@ -132,10 +132,11 @@ export class ShipmentDataFormComponent implements OnInit {
             text: 'Sin envio, lo pasaré a recoger',
             clickable: true,
             callback: async (params) => {
+              const pickupLocation =
+                this.header.saleflow.module.delivery.pickUpLocations[0]
+                  .nickName;
               const deliveryData = {
-                street: '',
-                note: '',
-                city: '',
+                nickName: pickupLocation,
               };
               if (
                 this.header.order?.products &&
