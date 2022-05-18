@@ -153,7 +153,8 @@
 
     .total-option{
         width: 100%;
-        height: 100px;
+        margin-top: 25px;
+        margin-bottom: 28px;
         padding-left: 19px;
         display: flex;
         justify-content: space-between;
@@ -206,9 +207,9 @@
   }
 @media (max-width: 427px) {
     
-    .orderSection{
-        //margin-top: 50px;
-    }
+    // .orderSection{
+    //     margin-top: 50px;
+    // }
     .optionsBar{height: 49px; column-gap: 22px;}
 
     .option{
@@ -219,9 +220,9 @@
 }
 @media (max-width: 374px) {
 
-    .orderSection{
-        //margin-top: 40px;
-    }
+    // .orderSection{
+    //     margin-top: 40px;
+    // }
 
     .optionsBar{height: 42px; column-gap: 19px;}
   

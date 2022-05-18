@@ -14,6 +14,7 @@ export interface ItemList {
   text_style?: boolean;
   text_left?: string;
   text_right?: string;
+  text_right_function?: () => void,
   full_text?: string;
   icons?: Array<any>;
   text_icon?: string;
@@ -21,6 +22,7 @@ export interface ItemList {
   icon_bottom?: any;
   icons_right?: Array<any>;
   icons_bottom_right?: Array<any>;
+  icons_bottom_right_first?: Array<any>;
   bar?: boolean;
   barColor?: string;
   barText?: string;

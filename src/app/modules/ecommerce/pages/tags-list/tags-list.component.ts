@@ -53,13 +53,35 @@ export class TagsListComponent implements OnInit {
   }
 
   onTagClick(tag: Tag) {
+    // console.log('=========================================')
     if(tag.notifyMerchantOrder) {
-      this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.orderId);
       tag.counter--;
+      this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.orderId)
+        .then((value) => {
+          // console.log(value);
+          // console.log(tag._id)
+          // console.log(value.removeTagsInOrder.tags)
+          // console.log(value.removeTagsInOrder.tags.includes(tag._id));
+          console.log('removed successfully!')
+        })
+        .catch((error) => {
+          console.log(error);
+          tag.counter++;
+        });
     }
     else {
       tag.counter++;
-      this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.orderId);
+      this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.orderId)
+        .then((value) => {
+          // console.log(tag._id)
+          // console.log(value.addTagsInOrder.tags)
+          // console.log(value.addTagsInOrder.tags.includes(tag._id));
+          console.log('added successfully!')
+        })
+        .catch((error) => {
+          console.log(error);
+          tag.counter--;
+        }); 
     }
     tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
+import { ItemOrder } from '../models/order';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -71,7 +72,7 @@ export class MerchantsService {
     return response;
   }
 
-  async ordersByMerchant(merchant: any, pagination?: any) {
+  async ordersByMerchant(merchant: any, pagination?: any): Promise<{ ordersByMerchant: ItemOrder[] }> {
     console.log(merchant);
 
     const response = await this.graphql.query({
