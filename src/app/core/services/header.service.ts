@@ -570,8 +570,10 @@ export class HeaderService {
             this.order
           );
 
-          this.deleteSaleflowOrder(saleflow._id);
-          this.resetIsComplete();
+          if (saleflow._id !== '6201d72bdfeceed4d13805bc') {
+            this.deleteSaleflowOrder(saleflow._id);
+            this.resetIsComplete();
+          }
           this.orderId = createPreOrder._id;
           // this.app.events.emit({ type: 'order-done', data: true });
           resolve(createPreOrder._id);

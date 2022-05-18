@@ -484,7 +484,7 @@ export class FlowCompletionComponent implements OnInit {
       (a, b) => a + b.amount,
       0
     );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
     // const ammount = new Intl.NumberFormat('es-MX').format(
     //   this.ammount.value.toLocaleString('es-MX')
     // );
@@ -533,7 +533,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/order-info/${this.orderData._id}`]);
+    this.router.navigate([`ecommerce/order-info/${this.orderData.id}`]);
   }
 
   orderFinished() {
