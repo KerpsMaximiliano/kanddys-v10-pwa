@@ -37,9 +37,12 @@ export class ItemDetailComponent implements OnInit {
         sub.unsubscribe();
       });
   }
+  boxTitle: string = 'Añade el nombre y el WhatsApp de tu Tienda';
+  boxText: string = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam';
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
+  preview: boolean = false;
   priceLabel : string = '14,020.00';
   itemData: Item;
   saleflowId: string;

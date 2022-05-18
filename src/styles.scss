@@ -246,6 +246,11 @@ ngx-form {
   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("truetype");
 }
 
+@font-face {
+    font-family: 'SfProBold';
+    src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf') format("truetype");
+}
+
 @font-face{
   font-family: 'ProDisplaySemiBold';
   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf');

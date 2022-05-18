@@ -1,16 +1,14 @@
 <ng-container *ngIf="itemData">
     <div class="container">
-        <div class="top-bar">
-            <div class="left-area">
-                <i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i>
-                <label for="Volver" class="return">Volver</label>
+        <app-helper-headerv2
+        [mode]="'basic'"
+        ></app-helper-headerv2>
+        <ng-container *ngIf="preview">
+            <div class="box-container">
+                <span class="box-title">{{boxTitle}}</span>
+                <p class="box-paragraph">{{boxText}}</p>
             </div>
-
-            <div class="right-area">
-                <div *ngIf="whatsapp == true"><img [src]="imageFolder + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px" alt="" style="cursor: pointer; margin-right: 23px"></div>
-                <div *ngIf="shopcart == true"><img [src]="imageFolder + '/carrito_blanco.svg'" style="margin-left: 23px;" height="24.5px" width="30.14px" alt="" style="cursor: pointer;"></div>
-            </div>
-        </div>
+        </ng-container>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
         <div class="desc-area">
             <div class="left-area">
@@ -30,7 +28,7 @@
         <div class="wrapper">
             <div class="included" *ngIf="itemData?.content?.length > 0">
                 <div class="title">
-                    Incluido
+                    Incluido:
                 </div>
                 <ng-container *ngFor="let item of itemData.content">
                     <div class="item">
