@@ -51,6 +51,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
+
+            .upload-icon{
+                position: absolute;
+                right: 2%;
+            }
+
+            .info-icon{
+                position: absolute;
+                right: 6px;
+                top: 70%;
+            }
         }
         
     }
@@ -59,18 +71,38 @@
         width: 100%;
         height: 132px;
         background-color: #FFFFFF;
+        padding-top: 15px;
+        display: flex;
 
-        .box-title{
-            font-size: 17px;
-            font-family: 'SfProRegular';
-            color: #27A2FF;
-            margin: 15px 72px 16px 15px;
+        .l-wrapper{
+            display: flex;
+            flex-direction: column;
+
+            .box-title{
+                font-size: 17px;
+                font-family: 'SfProRegular';
+                color: #27A2FF;
+                margin: 0 72px 0 15px;
+            }
+            .box-paragraph{
+                font-size: 16px;
+                font-family: 'SfProRegular';
+                color: #7B7B7B;
+                margin: 16px 63px 1px 15px;
+            }
         }
-        .box-paragraph{
-            font-size: 16px;
-            font-family: 'SfProRegular';
-            color: #7B7B7B;
-            margin: 0 63px 1px 15px;
+
+        .rwrapper{
+            display: flex;
+            flex-direction: column;
+            margin-right: 16px;
+
+            .ws-grey{
+                filter: invert(47%) sepia(0%) saturate(3066%) hue-rotate(57deg) brightness(99%) contrast(92%);
+                margin-top: -3px;
+                margin-bottom: 24px;
+                cursor: pointer;
+            }
         }
     }
 
@@ -104,37 +136,5 @@
         width: 100%;
         height: 169px;
         background-color: transparent;
-    }
-}
-
-.top-bar{
-    display: flex;
-    height: 36px;
-    justify-content: space-between;
-    background-color: #4773D8;
-    align-items: center;
-
-    .left-area{
-        display: flex;
-        margin-left: 17px;
-
-        .return{
-            margin-left: 17px;
-            font-family: 'SfProSemibold';
-            font-size: 14px;
-            color: #FFFFFF;
-            cursor: pointer;
-        }
-
-        .fas{
-            cursor: pointer;
-            height: 9px;
-            width: 5px;
-        }
-    }
-    
-    .right-area{
-        display: flex;
-        margin-right: 22px;
     }
 }

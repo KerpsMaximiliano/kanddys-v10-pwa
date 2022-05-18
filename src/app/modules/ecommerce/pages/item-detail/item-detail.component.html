@@ -1,28 +1,62 @@
 <ng-container *ngIf="itemData">
     <div class="container">
-        <app-helper-headerv2
-        [mode]="'basic'"
-        ></app-helper-headerv2>
-        <ng-container *ngIf="preview">
+         <ng-container *ngIf="viewtype == 'preview'">
+            <app-helper-headerv2
+            [mode]="'basic'"
+            [navtext]="''"
+            [shopcart]="false"
+            [whatsapp]="false"
+            [plus]="false"
+            [upload]="false"
+            ></app-helper-headerv2>
+                <div class="box-container">
+                    <p class="box-paragraph">{{boxText}}</p>
+                </div>
+         </ng-container>
+         <ng-container *ngIf="viewtype == 'merchant'">
+            <app-helper-headerv2
+            [mode]="'basic'"
+            ></app-helper-headerv2>
+         </ng-container>
+
+         <ng-container *ngIf="viewtype == 'community'">
+            <app-helper-headerv2
+            [bgColor]="'#8351FE'"
+            [mode]="'basic'"
+            [navtext]="'Volver'"
+            [shopcart]="true"
+            [whatsapp]="false"
+            [plus]="false"
+            [upload]="false"
+            ></app-helper-headerv2>
             <div class="box-container">
-                <span class="box-title">{{boxTitle}}</span>
-                <p class="box-paragraph">{{boxText}}</p>
+                <div class="l-wrapper">
+                    <span class="box-title">{{boxTitle}}</span>
+                    <p class="box-paragraph">{{boxText}}</p>
+                </div>
+
+                <div class="rwrapper">
+                    <img class="ws-grey" [src]="imageFolder + '/whatsapp_blanco.svg'" width="21px" height="21px" alt="">
+                    <img [src]="imageFolder + '/upload.svg'" alt="" width="19.19px" height="25px" style="cursor: pointer;">
+                </div>
             </div>
-        </ng-container>
+         </ng-container>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
         <div class="desc-area">
             <div class="left-area">
                 <span class="value">Vale</span>
                 <label for="Precio producto" class="price">${{priceLabel}}</label>
                     <div for="Promocion" class="ptext"> <!--Esto es una misma linea de texto-->
-                        <label for="aja" class="earn">Ganas 58 <img [src]="imageFolder + '/star.svg'"></label> 
-                        <div *ngIf="myStore == true"><span class="con-text"> y recaudas fondos </span></div>
+                        <label for="aja" class="earn">Ganas 58 <img class="star" [src]="imageFolder + '/star.svg'"></label> 
+                        <div *ngIf="myStore && viewtype == 'merchant'"><span class="con-text"> y recaudas fondos </span></div>
+                        <div *ngIf="viewtype == 'preview'"><span class="con-text"> se colabora ${{preamount}} </span></div>
+                        <div *ngIf="viewtype === 'community'"><span class="con-text"> y recaudamos ${{preamount}}</span></div>
                     </div>
             </div>
 
             <div class="right-area">
-                <img [src]="imageFolder + '/upload.svg' " alt=""  style="cursor: pointer;" height="25px" width="19px">
-                <img [src]="imageFolder + '/info.svg' " alt=""  style="cursor: pointer; margin-left: 5px" height="20px" width="5px">
+               <ng-container *ngIf="viewtype == 'merchant'"><img class="upload-icon" [src]="imageFolder + '/upload.svg' " alt=""  style="cursor: pointer;" height="25px" width="19px"></ng-container>
+                <img class="info-icon" [src]="imageFolder + '/info.svg' " alt=""  style="cursor: pointer; margin-left: 5px" height="20px" width="5px">
             </div>
         </div>
         <div class="wrapper">
@@ -38,24 +72,48 @@
             </div>
         </div>
 
+        <ng-container *ngIf="viewtype == 'merchant' || 'community' ">
+            <div class="cta-area">
+                <app-cta-buttons
+                    [ctaText]="'Añadelo A Mi Lista'"
+                    [btnColor]="'#40772F'"
+                >
+                </app-cta-buttons>
+    
+                <app-cta-buttons
+                    [ctaText]="'Recauda Fondos'"
+                    [btnColor]="'#8351FE'"
+                >
+                </app-cta-buttons>
+    
+                <app-cta-buttons
+                    [ctaText]="'Al Carrito Para Comprarlo'"
+                    [btnColor]="'#4773D8'"
+                >
+                </app-cta-buttons>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="viewtype == 'preview'">
         <div class="cta-area">
             <app-cta-buttons
-                [ctaText]="'Añadelo A Mi Lista'"
+                [ctaText]="'Vista En Mi Tienda'"
                 [btnColor]="'#40772F'"
             >
             </app-cta-buttons>
 
             <app-cta-buttons
-                [ctaText]="'Recauda Fondos'"
+                [ctaText]="'Vista En Comunidades'"
                 [btnColor]="'#8351FE'"
             >
             </app-cta-buttons>
 
             <app-cta-buttons
-                [ctaText]="'Al Carrito Para Comprarlo'"
+                [ctaText]="'Empieza A Venderlo'"
                 [btnColor]="'#4773D8'"
             >
             </app-cta-buttons>
         </div>
+        </ng-container>
     </div>
 </ng-container>

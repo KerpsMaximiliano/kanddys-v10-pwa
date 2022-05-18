@@ -4,7 +4,7 @@
     <div class="top-bar">
         <div class="left-area">
             <a *ngIf="returnAble == true" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a> 
-            <label for="Volver" class="return">Volver</label>
+            <ng-container *ngIf="navtext"><label for="Volver" class="return">{{navtext}}</label></ng-container>
         </div>
     
         <div class="right-area">

@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class HelperHeaderv2Component implements OnInit {
     imageFolder: string;
     @Input() bgColor: string = '#4773D8';
+    @Input() navtext: string = 'Volver';
     @Input() mode: string = 'basic' || 'double' || 'options' || 'center'; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;

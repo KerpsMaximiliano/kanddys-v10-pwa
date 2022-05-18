@@ -38,12 +38,13 @@ export class ItemDetailComponent implements OnInit {
         sub.unsubscribe();
       });
   }
-  boxTitle: string = 'Añade el nombre y el WhatsApp de tu Tienda';
+  boxTitle: string = 'Tienda que vende: ProviderID';
   boxText: string = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam';
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
-  preview: boolean = false;
+  viewtype: string = 'merchant';
+  preamount: string = '20';
   priceLabel : string = '14,020.00';
   itemData: Item;
   saleflowId: string;
@@ -61,6 +62,9 @@ export class ItemDetailComponent implements OnInit {
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
+      /* if(params.type) {
+          this.viewtype = params.viewtype;
+      } */
     });
   }
 
