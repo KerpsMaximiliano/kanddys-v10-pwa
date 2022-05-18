@@ -9,7 +9,7 @@
     [back]="localStorageFlowRoute && localStorageFlowRoute !== ''"
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
-    [orderItems]="step === 'PAYMENT_INFO'"
+    [orderItems]="true"
     (onClose)="goBack()"
   ></app-helper-header>
   <div *ngIf="step === 'UPDATE_NAME_AND_SHOW_BANKS'">
