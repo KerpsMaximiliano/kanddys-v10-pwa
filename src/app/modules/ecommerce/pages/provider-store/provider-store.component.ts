@@ -298,7 +298,7 @@ export class ProviderStoreComponent implements OnInit {
       };
       this.header.storeOrderProduct(saleflowId, product);
       this.header.storeItem(saleflowId, item);
-      lockUI(this.fillData());
+      return lockUI(this.fillData());
     } catch (error) {
       console.log(error);
       this.router.navigate([`/ecommerce/trivias`]);
@@ -334,7 +334,7 @@ export class ProviderStoreComponent implements OnInit {
         items[0]._id === itemId
       ) {
         this.header.items = items;
-        lockUI(this.fillData());
+        return lockUI(this.fillData());
       }
       else return this.getData(saleflowId, itemId);
     }
@@ -350,7 +350,7 @@ export class ProviderStoreComponent implements OnInit {
       items[0]._id === itemId
     ) {
       this.header.items = items;
-      lockUI(this.fillData());
+      return lockUI(this.fillData());
     }
     else return this.getData(saleflowId, itemId);
   }
