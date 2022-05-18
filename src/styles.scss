@@ -200,6 +200,11 @@ ngx-form {
 }
 
 @font-face {
+  font-family: "RobotoBlack";
+  src: url("../src/assets/fonts/Roboto-Black.ttf");
+}
+
+@font-face {
   font-family: "Graphik";
   src: url("../src/assets/fonts/GraphikRegular.otf") format("opentype");
 }
@@ -244,6 +249,11 @@ ngx-form {
 @font-face{
   font-family: 'SfProMedium';
   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("truetype");
+}
+
+@font-face{
+  font-family: 'SfProDisplayBold';
+  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf');
 }
 
 @font-face{

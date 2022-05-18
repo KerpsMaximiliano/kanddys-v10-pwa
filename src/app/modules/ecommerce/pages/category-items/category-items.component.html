@@ -20,39 +20,15 @@
             </div> -->
       <span class="category-name">{{ categoryName }}</span>
     </ng-container>
-    <a >
-      <div
-      class="dot-trio-hlprhdr"
-      style="
-      color: #27a2ff;
-      position: absolute;
-      right: 5%;
-      cursor: pointer;
-      top: 34.5%;
-    "
-    >
-      <div class="dot-hlprhdr"> </div>
-      <div class="dot-hlprhdr"> </div>
-      <div class="dot-hlprhdr"> </div>
-    </div>
-    </a>
   </div>
   <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
-      <h6
-        class="header-text"
-        [ngStyle]="{
-          fontFamily: 'SfProRegular',
-          color: '#7b7b7b',
-          fontWeight: 100
-        }"
-      >
-        BEST SELLERS
+      <h6 class="header-text" [ngClass]="{'header-text': !isMerchant, 'merchant-header': isMerchant}">
+        Best Sellers
       </h6>
     </div>
     <app-swiper
       [saleFlowTwo]="true"
-      [selectable]="saleflowData?.canBuyMultipleItems"
       [saleFlowTwoData]="bestSellers"
       [showPrice]="hasCustomizer ? false : true"
       [showDescription]="hasCustomizer ? false : true"
@@ -61,33 +37,36 @@
     ></app-swiper>
   </div>
   <div style="background-color: white">
-    <app-see-filters
-      [type]="3"
-      title="TO SHOP"
-      [tags]="filters"
-      (loadingSwiper)="startLoading($event)"
-      (eventTags)="closeTagEvent($event)"
-      (deletedTag)="tagDeleted($event)"
-    ></app-see-filters>
     <ng-container *ngIf="hasCustomizer; else selectableItems">
-      <app-item-grid
-        [items]="items"
-        (eventEmitter)="onClick($event)"
-      ></app-item-grid>
+      <div class="itemGrid" style="row-gap: 0;">
+        <div class="item" *ngFor="let item of items; let i = index">
+          <div class="item-img"
+            [ngStyle]="{ backgroundImage: item.images.length > 0 ? 'url(' + item.images[0] + ')' : 'linear-gradient(#7b7b7b 0%, #3e3e3e 100%)' }"
+            (click)="onClick(i)">
+          </div>
+        </div>
+      </div>
     </ng-container>
     <ng-template #selectableItems>
-      <div class="itemGrid">
+      <div class="grid-header" *ngIf="isMerchant">
+        <h6 class="merchant-header">Todos los items</h6>
+        <p class="income">$000,000.00 de ingreso</p>
+        <p class="colaborations">
+          00 <img [src]="env + '/star.svg'" alt="stars">
+          {{' '}}$000,000.00 colaborado
+        </p>
+      </div>
+      <div class="itemGrid" style="margin-top: 30px;">
         <ng-container *ngFor="let item of items; index as i">
           <app-saleflow-item
             type="2"
             [itemExtra]="item"
+            [showBox]="true"
+            [showIcon]="isMerchant"
+            [income]="isMerchant && 123456.55"
             [price]="item.pricing"
-            [description]="item.description"
             [imgURL]="item.images ? item.images[0] : ''"
-            [isSelected]="item.isSelected"
-            [selectable]="true"
             [showPrice]="item.customizerId ? false : true"
-            [showDescription]="hasCustomizer ? false : true"
             (itemClicked)="onClick(i)"
             (changeSelection)="toggleSelected('item', i)"
             [priceAlign]="'start'"

@@ -16,6 +16,9 @@ import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { environment } from 'src/environments/environment';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 @Component({
   selector: 'app-category-items',
@@ -36,6 +39,9 @@ export class CategoryItemsComponent implements OnInit {
   bestSellers: Item[] = [];
   deleteEvent: Subscription;
   canOpenCart: boolean;
+  isMerchant: boolean;
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private dialog: DialogService,
@@ -44,7 +50,9 @@ export class CategoryItemsComponent implements OnInit {
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private header: HeaderService,
-    private appService: AppService
+    private appService: AppService,
+    private authService: AuthService,
+    private merchantService: MerchantsService,
   ) {}
 
   async getCategories(
@@ -110,7 +118,20 @@ export class CategoryItemsComponent implements OnInit {
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();
-
+      this.route.queryParams.subscribe(async (queries) => {
+        if(queries.edit) {
+          const user = await this.authService.me();
+          if(user) {
+            const merchants = await this.merchantService.myMerchants();
+            if(merchants?.length > 0) {
+              const merchant = merchants.find(element => element._id === queries.edit)
+              if(merchant) {
+                this.isMerchant = true;
+              }
+            }
+          }
+        }
+      })
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       const orderData = this.header.getOrder(this.saleflowData._id);
       let saleflowItems: {

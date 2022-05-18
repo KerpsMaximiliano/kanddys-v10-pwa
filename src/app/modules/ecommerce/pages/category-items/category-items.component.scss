@@ -33,6 +33,10 @@
   .header-text {
     font-size: 14px;
     text-transform: uppercase;
+    font-family: 'SfProRegular';
+    color: '#7b7b7b';
+    font-weight: 100;
+    text-transform: uppercase;
   }
 
   .see-all-more {
@@ -42,6 +46,35 @@
     cursor: pointer;
   }
 }
+
+.merchant-header {
+  margin-top: 40px;
+  margin-bottom: 14px;
+  font-family: "SfProDisplayBold";
+  font-size: 22px;
+  color: #313131;
+}
+
+.grid-header {
+  padding-left: 34px;
+  padding-right: 31px;
+}
+
+.income {
+  font-family: "SfProMedium";
+  font-size: 16px;
+  color: #4773D8;
+}
+
+.colaborations {
+  font-family: "SfProMedium";
+  font-size: 16px;
+  color: #8351FE;
+
+  img {
+    filter: invert(39%) sepia(92%) saturate(3715%) hue-rotate(240deg) brightness(98%) contrast(104%);
+  }
+} 
 
 .header-text-bottom {
   font-family: "SfProRegular";
@@ -68,6 +101,28 @@
   grid-template-columns: repeat(2, 1fr);
   background-color: #ffffff;
   row-gap: 70px;
+}
+
+.item {
+  padding: 16px;
+  border-bottom: 1px solid rgba(112, 112, 112, 0.24);
+
+  &:nth-of-type(1n) {
+    border-right: 1px solid rgba(112, 112, 112, 0.24);
+  }
+
+  &:nth-of-type(2n) {
+    border-right: none;
+  }
+
+  .item-img {
+    height: 10.97rem;
+    background-image: linear-gradient(#7b7b7b 0%, #3e3e3e 100%);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    cursor: pointer;
+  }
 }
 
 .dot-trio-hlprhdr {
