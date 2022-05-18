@@ -62,7 +62,11 @@ export class SaleflowItemComponent implements OnInit {
     ]);
   }
 
-  onBoxClick() {
+  onTopBoxClick() {
+    // DoSomething
+  }
+
+  onBottomBoxClick() {
     // DoSomething
   }
 

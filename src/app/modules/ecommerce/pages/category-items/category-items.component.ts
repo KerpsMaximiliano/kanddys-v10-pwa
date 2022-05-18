@@ -118,13 +118,14 @@ export class CategoryItemsComponent implements OnInit {
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();
+      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       this.route.queryParams.subscribe(async (queries) => {
         if(queries.edit) {
           const user = await this.authService.me();
           if(user) {
             const merchants = await this.merchantService.myMerchants();
             if(merchants?.length > 0) {
-              const merchant = merchants.find(element => element._id === queries.edit)
+              const merchant = merchants.find(element => element._id === this.saleflowData.merchant._id)
               if(merchant) {
                 this.isMerchant = true;
               }
@@ -132,7 +133,6 @@ export class CategoryItemsComponent implements OnInit {
           }
         }
       })
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
       const orderData = this.header.getOrder(this.saleflowData._id);
       let saleflowItems: {
         item: string;

@@ -25,13 +25,21 @@
 
       .box {
         font-family: "RobotoBlack";
+        font-size: 12px;
         padding: 5px 8px;
         border-radius: 10px;
         background-color: #8351FE;
         color: white;
+
+        &.white {
+          background-color: #ffffff;
+          color: #4773D8;
+          font-family: "RobotoMedium";
+          font-size: 13px;
+        }
       }
 
-      .icon {
+      .image-icon {
         background-color: white;
         border-radius: 50%;
         border: solid 1px #4773D8;
@@ -48,6 +56,16 @@
         position: absolute;
         top: 10%;
         right: 10%;
+      }
+
+      .middle {
+        position: absolute;
+        bottom: 10%;
+        left: 0; 
+        right: 0; 
+        margin-left: auto; 
+        margin-right: auto; 
+        width: 105px;
       }
     }
     .price{

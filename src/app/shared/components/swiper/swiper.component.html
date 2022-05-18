@@ -918,10 +918,9 @@
       <div *ngFor="let item of saleFlowTwoData; let i = index" class="item">
         <app-saleflow-item
           [imgURL]="item.images"
-          [isSelected]="item.selected"
+          [isSelected]="item.selected || item.isSelected"
           [priceAlign]="'start'"
           [type]="2"
-          [isSelected]="item.isSelected"
           [selectable]="selectable"
           [price]="item.pricing"
           [showPrice]="showPrice"

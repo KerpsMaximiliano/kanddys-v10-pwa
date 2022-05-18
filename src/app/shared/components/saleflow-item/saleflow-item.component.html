@@ -41,12 +41,16 @@
       style="cursor: pointer;"
       (click)="onClick()"
     >
-      <div *ngIf="showBox" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onBoxClick()">
+      <div *ngIf="showBox" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onTopBoxClick()">
         00
         <img [src]="env + '/star.svg'" alt="star-icon">
       </div>
-      <div *ngIf="showIcon" class="icon right" (click)="onIconClick()">
+      <div *ngIf="showIcon" class="image-icon right" (click)="onIconClick()">
         <img [src]="env + '/closed-eye.svg'" alt="hide-item">
+      </div>
+      <div *ngIf="isSelected" class="box white middle" (click)="onBottomBoxClick()">
+        En el Carrito
+        <i class="fas fa-check-circle icon"></i>
       </div>
     </div>
     <div class="infoContainer">

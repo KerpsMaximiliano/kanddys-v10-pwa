@@ -23,7 +23,7 @@
   </div>
   <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
-      <h6 class="header-text" [ngClass]="{'header-text': !isMerchant, 'merchant-header': isMerchant}">
+      <h6 class="header-text" [ngClass]="{'header-text': hasCustomizer, 'merchant-header': !hasCustomizer}">
         Best Sellers
       </h6>
     </div>
@@ -48,13 +48,15 @@
       </div>
     </ng-container>
     <ng-template #selectableItems>
-      <div class="grid-header" *ngIf="isMerchant">
+      <div class="grid-header">
         <h6 class="merchant-header">Todos los items</h6>
-        <p class="income">$000,000.00 de ingreso</p>
-        <p class="colaborations">
-          00 <img [src]="env + '/star.svg'" alt="stars">
-          {{' '}}$000,000.00 colaborado
-        </p>
+        <ng-container  *ngIf="isMerchant">
+          <p class="income">$000,000.00 de ingreso</p>
+          <p class="colaborations">
+            00 <img [src]="env + '/star.svg'" alt="stars">
+            {{' '}}$000,000.00 colaborado
+          </p>
+        </ng-container>
       </div>
       <div class="itemGrid" style="margin-top: 30px;">
         <ng-container *ngFor="let item of items; index as i">
@@ -62,6 +64,7 @@
             type="2"
             [itemExtra]="item"
             [showBox]="true"
+            [isSelected]="item.isSelected"
             [showIcon]="isMerchant"
             [income]="isMerchant && 123456.55"
             [price]="item.pricing"
