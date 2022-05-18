@@ -18,6 +18,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
+  topLabelActionStyles?: any;
   labelStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
@@ -32,7 +33,17 @@ interface FormField {
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
+  topLabelAction?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   label: string;
+  bottomLabel?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   placeholder?: string;
   inputType?: string;
   showImageBottomLabel?: string;
@@ -104,6 +115,29 @@ export class ShipmentDataFormComponent implements OnInit {
           label: 'Dónde entregaremos?',
           inputType: 'textarea',
           placeholder: 'Escriba la calle, número, (nombre del edificio)',
+          topLabelAction: {
+            text: 'Sin envio, lo pasaré a recoger',
+            clickable: true,
+            callback: (params) => {
+              console.log(params.dataModel.value['1']);
+
+              const deliveryData = {
+                street: '',
+                note: '',
+                city: '',
+              };
+              if (
+                this.header.order?.products &&
+                this.header.order?.products?.length > 0
+              )
+                this.header.order.products[0].deliveryLocation = deliveryData;
+              this.header.storeLocation(this.header.saleflow._id, deliveryData);
+              this.header.isComplete.delivery = true;
+              this.header.storeOrderProgress(this.header.saleflow._id);
+
+              this.openDialog();
+            },
+          },
           styles: {
             containerStyles: {
               marginTop: '60px',
@@ -113,29 +147,15 @@ export class ShipmentDataFormComponent implements OnInit {
               height: '180px',
               borderRadius: '10px',
             },
+            topLabelActionStyles: {
+              color: '#27A2FF',
+              fontFamily: 'Roboto',
+              fontSize: '17px',
+              fontStyle: 'italic',
+            },
             labelStyles: {
+              marginTop: '34px',
               fontWeight: '600',
-            },
-          },
-        },
-        {
-          name: 'note',
-          fieldControl: new FormControl(''),
-          label: 'Nota',
-          inputType: 'textarea',
-          placeholder:
-            'Ej: Color relevante, algo en común conocido que sirva como referencia...',
-          styles: {
-            containerStyles: {
-              marginTop: '74px',
-            },
-            fieldStyles: {
-              backgroundColor: 'white',
-              height: '180px',
-              borderRadius: '10px',
-            },
-            labelStyles: {
-              fontWeight: '100',
             },
           },
         },
@@ -146,9 +166,9 @@ export class ShipmentDataFormComponent implements OnInit {
           inputs: {
             text: 'Los envios son exclusivamente en Santo Domingo, República Dominicana.',
           },
-          afterIndex: 1,
+          afterIndex: 0,
           containerStyles: {
-            marginTop: '37px',
+            marginTop: '129px',
           },
         },
       ],
@@ -179,28 +199,6 @@ export class ShipmentDataFormComponent implements OnInit {
 
         // this.router.navigate([`ecommerce/flow-completion`]);
         return { ok: true };
-      },
-      bottomLeftAction: {
-        text: 'Sin envio, lo pasaré a recoger',
-        execute: (params) => {
-          console.log(params.dataModel.value['1']);
-
-          const deliveryData = {
-            street: '',
-            note: '',
-            city: '',
-          };
-          if (
-            this.header.order?.products &&
-            this.header.order?.products?.length > 0
-          )
-            this.header.order.products[0].deliveryLocation = deliveryData;
-          this.header.storeLocation(this.header.saleflow._id, deliveryData);
-          this.header.isComplete.delivery = true;
-          this.header.storeOrderProgress(this.header.saleflow._id);
-
-          this.openDialog();
-        },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
       stepButtonInvalidText: 'ADICIONA DIRECCIÓN DEL ENVIO',

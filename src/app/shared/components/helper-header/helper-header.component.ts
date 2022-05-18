@@ -39,6 +39,8 @@ export class HelperHeaderComponent implements OnInit {
   @Input() back: boolean = true;
   @Input() shadow: boolean = false;
   @Input() position: string = 'relative';
+  @Input() replaceXWithLabel: boolean = false;
+  @Input() leftLabel: string = 'Cancel';
   wallet: boolean = false;
   walletBalance: number;
   @Input() searchLabel: string = 'label';

@@ -17,14 +17,13 @@
     align-items: center;
     justify-content: center;
 
-    @media(max-width: 434px)
-    {
+    @media (max-width: 434px) {
       font-size: 14.5px !important;
     }
-    @media(max-width: 389px){
+    @media (max-width: 389px) {
       font-size: 13.5px !important;
     }
-    @media(max-width: 359px){
+    @media (max-width: 359px) {
       font-size: 12px !important;
     }
   }
@@ -39,6 +38,15 @@
   position: relative;
 }
 
+.top-area-hlprhdr-full {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  min-height: 60px;
+}
+
 .wrapper-hdrhlpr {
   display: flex;
   justify-content: space-between;
@@ -49,6 +57,16 @@
   font-family: "RobotoMedium";
   font-size: 16px;
   margin-left: 20px;
+  color: #27a2ff;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.label-hlprhdr {
+  font-family: "Roboto";
+  font-size: 17px;
+  margin-left: 26px;
   color: #27a2ff;
   border: none;
   cursor: pointer;
