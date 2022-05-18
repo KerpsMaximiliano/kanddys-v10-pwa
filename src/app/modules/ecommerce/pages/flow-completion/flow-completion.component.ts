@@ -133,18 +133,19 @@ export class FlowCompletionComponent implements OnInit {
     private location: Location
   ) {}
 
-  afterOrderRequest = (data) => {
+  afterOrderRequest = async (data) => {
     if (
       data.order.orderStatus === 'cancelled' ||
       data.order.orderStatus === 'to confirm' ||
       data.order.orderStatus === 'completed'
     )
-      this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
+      this.router.navigate([`ecommerce/order-info/${data.order._id}`]);
     if (data.order.items[0].reservation?._id !== null) {
       this.reservationOrProduct = 'reservacion';
     } else {
       this.reservationOrProduct = 'producto';
     }
+
     if (data) {
       this.header.saleflow = data.order.items[0].saleflow;
       this.fakeData = data.order;
@@ -199,10 +200,13 @@ export class FlowCompletionComponent implements OnInit {
         products: showProducts,
       };
 
+      console.log('Order data', this.orderData);
+
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
-      this.getExchangeData(
+
+      await this.getExchangeData(
         data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
       );
     } else {
@@ -333,7 +337,9 @@ export class FlowCompletionComponent implements OnInit {
 
   async getExchangeData(id: string) {
     const data = await this.wallet.exchangedata(id);
+
     this.banks = data.ExchangeData.bank;
+
     let wallets = [];
     for (let i = 0; i < data.ExchangeData.bank.length; i++) {
       wallets.push(
@@ -478,7 +484,7 @@ export class FlowCompletionComponent implements OnInit {
       (a, b) => a + b.amount,
       0
     );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
     // const ammount = new Intl.NumberFormat('es-MX').format(
     //   this.ammount.value.toLocaleString('es-MX')
     // );
@@ -527,7 +533,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
+    this.router.navigate([`ecommerce/order-info/${this.orderData._id}`]);
   }
 
   orderFinished() {
