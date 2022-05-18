@@ -178,7 +178,7 @@ export class CategoryItemsComponent implements OnInit {
         );
         items[i].customizerId = saleflowItem?.customizer;
         items[i].index = saleflowItem?.index;
-        items[i].isSelected = selectedItems.includes(items[i]._id);
+        if(!items[i].customizerId) items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +

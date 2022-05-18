@@ -61,11 +61,10 @@
       <div class="itemGrid" style="margin-top: 30px;">
         <ng-container *ngFor="let item of items; index as i">
           <app-saleflow-item
-            type="2"
-            [itemExtra]="item"
+            [type]=2
             [showBox]="true"
             [isSelected]="item.isSelected"
-            [showIcon]="isMerchant"
+            [showIcon]="isMerchant" 
             [income]="isMerchant && 123456.55"
             [price]="item.pricing"
             [imgURL]="item.images ? item.images[0] : ''"

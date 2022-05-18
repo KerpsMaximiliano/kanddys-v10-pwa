@@ -15,6 +15,7 @@ import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -57,6 +58,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 5,
+  };
 
   constructor(
     private dialog: DialogService,
