@@ -7,14 +7,15 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 //import { MultistepFormComponent } from 'src/app/shared/components/multistep-form/multistep-form.component';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
@@ -63,6 +64,18 @@ interface EmbeddedComponent {
   afterIndex: number;
 }
 
+interface PromiseFunction {
+  type: 'promise';
+  function(params): Promise<any>;
+}
+
+interface ObservableFunction {
+  type: 'observable';
+  function(params): Observable<any>;
+}
+
+type AsyncFunction = PromiseFunction | ObservableFunction;
+
 interface FormStep {
   fieldsList: Array<FormField>;
   headerText: string;
@@ -70,7 +83,7 @@ interface FormStep {
   accessCondition?(...params): boolean;
   stepButtonValidText: string;
   stepButtonInvalidText: string;
-  asyncStepProcessingFunction?(...params): Observable<any>;
+  asyncStepProcessingFunction?: AsyncFunction;
   stepProcessingFunction?(...params): any;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
@@ -118,13 +131,12 @@ export class ShipmentDataFormComponent implements OnInit {
           topLabelAction: {
             text: 'Sin envio, lo pasaré a recoger',
             clickable: true,
-            callback: (params) => {
-              console.log(params.dataModel.value['1']);
-
+            callback: async (params) => {
+              const pickupLocation =
+                this.header.saleflow.module.delivery.pickUpLocations[0]
+                  .nickName;
               const deliveryData = {
-                street: '',
-                note: '',
-                city: '',
+                nickName: pickupLocation,
               };
               if (
                 this.header.order?.products &&
@@ -135,7 +147,16 @@ export class ShipmentDataFormComponent implements OnInit {
               this.header.isComplete.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
 
-              this.openDialog();
+              lockUI();
+
+              let preOrderID = (await this.header.createPreOrder()) as string;
+              const whatsappLinkQueryParams = {
+                'Keyword-Order': preOrderID,
+              };
+
+              unlockUI();
+
+              this.openDialog(whatsappLinkQueryParams);
             },
           },
           styles: {
@@ -180,25 +201,40 @@ export class ShipmentDataFormComponent implements OnInit {
 
         this.router.navigate(['ecommerce/create-giftcard']);
       },
-      stepProcessingFunction: (params) => {
-        const deliveryData = {
-          street: params.dataModel.value['1'].street,
-          note: params.dataModel.value['1'].note,
-          city: 'Santo Domingo',
-        };
-        if (
-          this.header.order?.products &&
-          this.header.order?.products?.length > 0
-        )
-          this.header.order.products[0].deliveryLocation = deliveryData;
-        this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
-        this.header.isComplete.delivery = true;
-        this.header.storeOrderProgress(this.header.saleflow._id);
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          const deliveryData = {
+            street: params.dataModel.value['1'].street,
+            note: params.dataModel.value['1'].note,
+            city: 'Santo Domingo',
+          };
+          if (
+            this.header.order?.products &&
+            this.header.order?.products?.length > 0
+          )
+            this.header.order.products[0].deliveryLocation = deliveryData;
+          this.header.storeLocation(
+            this.header.getSaleflow()._id,
+            deliveryData
+          );
+          this.header.isComplete.delivery = true;
+          this.header.storeOrderProgress(this.header.saleflow._id);
 
-        this.openDialog();
+          lockUI();
 
-        // this.router.navigate([`ecommerce/flow-completion`]);
-        return { ok: true };
+          let preOrderID = (await this.header.createPreOrder()) as string;
+          const whatsappLinkQueryParams = {
+            'Keyword-Order': preOrderID,
+          };
+
+          unlockUI();
+
+          this.openDialog(whatsappLinkQueryParams);
+
+          // this.router.navigate([`ecommerce/flow-completion`]);
+          return { ok: true };
+        },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
       stepButtonInvalidText: 'ADICIONA DIRECCIÓN DEL ENVIO',
@@ -258,16 +294,11 @@ export class ShipmentDataFormComponent implements OnInit {
     }
   }
 
-  openDialog() {
+  openDialog(whatsappLinkQueryParams: Record<string, string>) {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
       props: {
-        asyncCallback: async (whatsappLink: string) => {
-          let preOrderID = await this.header.createPreOrder();
-          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
-
-          return whatsappLink;
-        },
+        ids: whatsappLinkQueryParams,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
