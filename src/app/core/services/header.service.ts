@@ -494,7 +494,7 @@ export class HeaderService {
 
   createPreOrder = () => {
     const saleflow =
-      this.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+      this.saleflow || this.getSaleflow();
 
     this.order = this.getOrder(saleflow._id);
 
@@ -508,15 +508,13 @@ export class HeaderService {
       let customizer = this.customizer;
 
       if (!this.customizer) {
-        const saleflowData = JSON.parse(localStorage.getItem('saleflow-data'));
         const customizerPreview = JSON.parse(
           localStorage.getItem('customizerFile')
         );
 
-        let saleflow = JSON.parse(localStorage.getItem(saleflowData._id));
-
-        if ('customizer' in saleflow) {
-          customizer = saleflow.customizer;
+        let order = JSON.parse(localStorage.getItem(saleflow._id));
+        if ('customizer' in order) {
+          customizer = order.customizer;
 
           const res: Response = await fetch(customizerPreview.base64);
           const blob: Blob = await res.blob();
@@ -551,13 +549,13 @@ export class HeaderService {
           const { createPreOrder } = await this.orderService.createPreOrder(
             this.order
           );
-
+          this.deleteSaleflowOrder(saleflow._id);
           this.resetIsComplete();
           this.orderId = createPreOrder._id;
           this.currentMessageOption = undefined;
           this.post = undefined;
           this.locationData = undefined;
-          // this.app.events.emit({ type: 'order-done', data: true });
+          this.app.events.emit({ type: 'order-done', data: true });
           resolve(createPreOrder._id);
         } catch (error) {
           console.log(error);
@@ -569,13 +567,10 @@ export class HeaderService {
           const { createPreOrder } = await this.orderService.createPreOrder(
             this.order
           );
-
-          if (saleflow._id !== '6201d72bdfeceed4d13805bc') {
-            this.deleteSaleflowOrder(saleflow._id);
-            this.resetIsComplete();
-          }
+          this.deleteSaleflowOrder(saleflow._id);
+          this.resetIsComplete();
           this.orderId = createPreOrder._id;
-          // this.app.events.emit({ type: 'order-done', data: true });
+          this.app.events.emit({ type: 'order-done', data: true });
           resolve(createPreOrder._id);
         } catch (error) {
           console.log(error);

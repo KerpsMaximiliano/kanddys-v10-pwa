@@ -276,6 +276,9 @@ export class ProviderStoreComponent implements OnInit {
       this.header.resetIsComplete();
       item.customizerId = customizerId;
       this.header.items = [item];
+      this.router.navigate([
+        `/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/quantity-and-quality`,
+      ]);
       let itemParams: ItemSubOrderParamsInput[];
       if (item.params.length > 0) {
         itemParams = [
@@ -409,15 +412,11 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   deleteRoutes() {
-    this.options = [];
-    this.options.push({
-      option: 'Finalización',
-      link: 'payment-methods',
-      active: false,
-    });
-    this.router.navigate([
-      `/ecommerce/provider-store/${this.header.saleflow?._id}/${this.header.items[0]._id}/payment-methods`,
-    ]);
+    this.options = [{
+      option: 'Info',
+      link: 'user-info',
+      active: true,
+    }];
     this.finalizacion = true;
   }
 

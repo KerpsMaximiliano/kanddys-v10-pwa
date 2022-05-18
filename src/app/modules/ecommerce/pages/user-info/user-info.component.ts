@@ -28,8 +28,8 @@ export class UserInfoComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  redirect() {
-    if (this.isDataMissing()) this.openWarningDialog();
+  onClick() {
+    if (this.isDataMissing() && !this.header.orderId) this.openWarningDialog();
     else {
       this.openMagicLinkDialog();
     }
@@ -56,7 +56,9 @@ export class UserInfoComponent implements OnInit {
       type: 'flat-action-sheet',
       props: {
         asyncCallback: async (whatsappLink: string) => {
-          let preOrderID = await this.header.createPreOrder();
+          let preOrderID;
+          if(!this.header.orderId) preOrderID = await this.header.createPreOrder();
+          else preOrderID = this.header.orderId;
           whatsappLink += `text=Keyword-Order%20${preOrderID}`;
 
           return whatsappLink;
