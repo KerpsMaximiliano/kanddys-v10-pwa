@@ -113,6 +113,9 @@ interface OptionalLink {
   styleUrls: ['./shipment-data-form.component.scss'],
 })
 export class ShipmentDataFormComponent implements OnInit {
+  createdOrderWithDelivery = false;
+  createdOrderWithoutDelivery = false;
+
   constructor(
     private header: HeaderService,
     private router: Router,
@@ -132,6 +135,13 @@ export class ShipmentDataFormComponent implements OnInit {
             text: 'Sin envio, lo pasaré a recoger',
             clickable: true,
             callback: async (params) => {
+              if (this.createdOrderWithDelivery === true) {
+                this.header.orderId = null;
+                this.createdOrderWithDelivery = false;
+              }
+
+              let preOrderID;
+              let whatsappLinkQueryParams;
               const pickupLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0]
                   .nickName;
@@ -147,16 +157,24 @@ export class ShipmentDataFormComponent implements OnInit {
               this.header.isComplete.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
 
-              lockUI();
+              if (!this.header.orderId) {
+                lockUI();
 
-              let preOrderID = await this.header.createPreOrder();
-              const whatsappLinkQueryParams = {
-                'Keyword-Order': preOrderID as string,
-              };
+                preOrderID = await this.header.createPreOrder();
+                this.header.orderId = preOrderID;
 
-              unlockUI();
+                whatsappLinkQueryParams = {
+                  'Keyword-Order': preOrderID as string,
+                };
 
-              this.openDialog(whatsappLinkQueryParams);
+                unlockUI();
+                this.openDialog(whatsappLinkQueryParams);
+                this.createdOrderWithoutDelivery = true;
+              } else {
+                this.openDialog({
+                  'Keyword-Order': this.header.orderId as string,
+                });
+              }
             },
           },
           styles: {
@@ -204,6 +222,14 @@ export class ShipmentDataFormComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
+          let preOrderID;
+          let whatsappLinkQueryParams;
+
+          if(this.createdOrderWithoutDelivery) {
+            this.createdOrderWithoutDelivery = false;
+            this.header.orderId = null;
+          }
+
           const deliveryData = {
             street: params.dataModel.value['1'].street,
             note: params.dataModel.value['1'].note,
@@ -221,17 +247,24 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.isComplete.delivery = true;
           this.header.storeOrderProgress(this.header.saleflow._id);
 
-          lockUI();
+          if (!this.header.orderId && !this.createdOrderWithDelivery) {
+            lockUI();
 
-          let preOrderID = await this.header.createPreOrder();
-          const whatsappLinkQueryParams = {
-            'Keyword-Order': preOrderID as string,
-          };
+            preOrderID = await this.header.createPreOrder();
+            this.header.orderId = preOrderID;
 
-          unlockUI();
+            whatsappLinkQueryParams = {
+              'Keyword-Order': preOrderID as string,
+            };
 
-          this.openDialog(whatsappLinkQueryParams);
-
+            unlockUI();
+            this.openDialog(whatsappLinkQueryParams);
+            this.createdOrderWithDelivery = true;
+          } else {
+            this.openDialog({
+              'Keyword-Order': this.header.orderId as string,
+            });
+          }
           // this.router.navigate([`ecommerce/flow-completion`]);
           return { ok: true };
         },
