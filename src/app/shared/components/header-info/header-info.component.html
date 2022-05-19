@@ -2,24 +2,24 @@
 
     <div class="profile-name">
         <div class="profile-purple">
-            <img [src]="imageFolder + profileImage" alt="Imagen de perfil" class="image-profile">
+            <img [src]="env + profileImage" alt="Imagen de perfil" class="image-profile">
             <div class="purple">
                 <label for="Cantidad de popularidad" class="stars-amount">{{starsAmount}}</label>
-                <img [src]="imageFolder + '/star.svg'" alt="" width="13.75px" height="13.02px">
+                <img [src]="env + '/star.svg'" alt="" width="13.75px" height="13.02px">
             </div>
         </div>
 
         <div class="names-wrapper">
-            <label for="Nombre de la tienda" class="header-name">{{headerName}}</label>
-            <label for="Nombre del vendedor" class="header-desc"> vendio a {{userName}}</label>
-            <label for="Fecha de la venta" class="header-desc">en {{fechaId}} {{horaId}}</label>
+            <label class="header-name">{{title}}</label>
+            <label class="header-desc">{{description}}</label>
+            <label class="header-desc">{{description2}}</label>
         </div>
     </div>
 
-    <div class="test">
-    <svg xmlns="http://www.w3.org/2000/svg" width="14.502" height="18.916" viewBox="0 0 14.502 18.916">
-        <path id="user" d="M18.693,14.037l-2.87-1.865,1.082-1.984a3.162,3.162,0,0,0,.385-1.509V5.539a4.414,4.414,0,0,0-8.827,0v3.14a3.162,3.162,0,0,0,.385,1.51l1.082,1.984L7.06,14.038a3.142,3.142,0,0,0-1.435,2.643v3.36h14.5v-3.36a3.142,3.142,0,0,0-1.434-2.643Zm.173,4.743H6.886v-2.1a1.885,1.885,0,0,1,.861-1.586l3.849-2.5L9.955,9.585a1.9,1.9,0,0,1-.231-.906V5.539a3.153,3.153,0,1,1,6.305,0v3.14a1.9,1.9,0,0,1-.231.906l-1.641,3.008,3.849,2.5a1.885,1.885,0,0,1,.86,1.587Z" transform="translate(-5.625 -1.125)" fill="#4773d8"/>
-      </svg>
+    <div class="more-info-button">
+        <span (click)="openDialog()">
+            <img [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
+        </span>
     </div>
       
     <!-- <img [src]="imageFolder + " alt=""> -->

@@ -59,7 +59,7 @@
             .header-desc{
                 font-family: 'RobotoRegular';
                 font-size: 16px;
-                margin-left: 6px;
+                margin-left: 3px;
                 margin-bottom: 3px;
                 color: #141414;
                 opacity: 0.64;
@@ -67,8 +67,15 @@
         }
     }
 
-    .test{
-        margin: 29px 19px 0 0;
-        cursor: pointer;
+    .more-info-button {
+        margin-top: 29px;
+        margin-right: 10px;
+        span {
+            padding: 10px;
+            cursor: pointer;
+            img {
+                filter: invert(48%) sepia(25%) saturate(6660%) hue-rotate(206deg) brightness(89%) contrast(89%);
+            }
+        }
     }
 }

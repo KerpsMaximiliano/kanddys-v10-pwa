@@ -7,20 +7,20 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./header-info.component.scss']
 })
 export class HeaderInfoComponent implements OnInit {
+  @Input() profileImage: string = '/Logo.svg';
+  @Input() starsAmount: string = '14,458';
+  @Input() title: string = 'TIENDA NAME';
+  @Input() description: string = 'José Amado';
+  @Input() description2: string = 'FechaID HoraID';
+  env: string = environment.assetsUrl;
 
-    imageFolder: string;
-    @Input() profileImage: string = '/Logo.svg';
-    @Input() starsAmount: string = '14,458';
-    @Input() headerName: string = 'TIENDA NAME';
-    @Input() userName: string = 'José Amado';
-    @Input() fechaId: string = 'FechaID';
-    @Input() horaId: string = 'NombreID';
-
-  constructor() {
-    this.imageFolder = environment.assetsUrl;
-   }
+  constructor() {}
 
   ngOnInit(): void {
+  }
+
+  openDialog() {
+    //
   }
 
 }
