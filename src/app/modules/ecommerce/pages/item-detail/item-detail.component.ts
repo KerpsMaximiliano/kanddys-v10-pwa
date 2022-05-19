@@ -43,7 +43,7 @@ export class ItemDetailComponent implements OnInit {
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
-  viewtype: string ;
+  viewtype: 'merchant' | 'community' | 'preview';
   preamount: string = '20';
   priceLabel : string = '14,020.00';
   itemData: Item;
