@@ -149,9 +149,9 @@ export class ShipmentDataFormComponent implements OnInit {
 
               lockUI();
 
-              let preOrderID = (await this.header.createPreOrder()) as string;
+              let preOrderID = await this.header.createPreOrder();
               const whatsappLinkQueryParams = {
-                'Keyword-Order': preOrderID,
+                'Keyword-Order': preOrderID as string,
               };
 
               unlockUI();
@@ -223,9 +223,9 @@ export class ShipmentDataFormComponent implements OnInit {
 
           lockUI();
 
-          let preOrderID = (await this.header.createPreOrder()) as string;
+          let preOrderID = await this.header.createPreOrder();
           const whatsappLinkQueryParams = {
-            'Keyword-Order': preOrderID,
+            'Keyword-Order': preOrderID as string,
           };
 
           unlockUI();
