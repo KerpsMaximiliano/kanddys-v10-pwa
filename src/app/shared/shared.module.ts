@@ -77,6 +77,7 @@ import { CtaButtonsComponent } from './components/cta-buttons/cta-buttons.compon
 import { MagicLinkDialogComponent } from './components/magic-link-dialog/magic-link-dialog.component';
 import { HelperHeaderv2Component } from './components/helper-headerv2/helper-headerv2.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
+import { HeaderInfoComponent } from './components/header-info/header-info.component';
 
 const imports = [
   CommonModule,
@@ -151,6 +152,7 @@ const declarations = [
   MagicLinkDialogComponent,
   HelperHeaderv2Component,
   ItemCardComponent,
+  HeaderInfoComponent,
 ];
 
 @NgModule({
