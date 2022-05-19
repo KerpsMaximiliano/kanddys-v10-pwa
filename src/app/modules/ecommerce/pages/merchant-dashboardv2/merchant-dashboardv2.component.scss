@@ -1,0 +1,101 @@
+.container{
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+
+    .circle-container{
+        width: 177.1px;
+        height: 88.56px;
+        background-color: #2F6ED8;
+        border-bottom-left-radius: 90px;
+        border-bottom-right-radius: 90px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        padding-bottom: 15px;
+    }
+
+    .text-and-circle{
+        margin: 0 auto;
+
+        .text-area{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 85px;
+            margin-top: 68px;
+
+            .title{
+                font-family: 'RobotoBold';
+                font-size: 22px;
+                color: #2E2E2E;
+                margin-bottom: 5px;
+            }
+
+            .text{
+                font-size: 17px;
+                font-family: 'RobotoRegular';
+                color: #0B1F38;
+                margin: 0 48px 0 49px;
+                text-align: center;
+                width: 331px;
+            }
+        }
+
+        .circles-area{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 391px;
+            margin-top: 42px;
+        }
+
+        .page-breaker{
+            width: 90%;
+            color: #707070;
+            opacity: 0.46;
+            height: 2px;
+        }
+
+        .ctext-circles{
+            margin-top: 33px;
+
+            .ctext{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                .collab-title{
+                    font-family: 'RobotoBold';
+                    font-size: 22px;
+                    color: #2E2E2E;
+                    margin-bottom: 5px;
+                }
+
+                .collab-text{
+                    font-family: 'RobotoRegular';
+                    font-size: 17px;
+                    color: #0B1F38;
+                    margin: 0 48px 0 49px;
+                    text-align: center;
+                    width: 331px;
+                }
+            }
+
+            .c-circles-area{
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                height: 386px;
+                margin-bottom: 103px;
+                margin-top: 50px;
+            }
+        }
+    }
+
+}
