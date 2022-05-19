@@ -9,12 +9,13 @@ import { environment } from 'src/environments/environment';
 export class HelperHeaderv2Component implements OnInit {
     imageFolder: string;
     @Input() bgColor: string = '#4773D8';
+    @Input() navtext: string = 'Volver';
     @Input() mode: string = 'basic' || 'double' || 'options' || 'center'; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;
     @Input() returnAble: boolean = true;
-    @Input() upload: boolean = false;
     @Input() plus: boolean = false;
+    @Input() upload: boolean = false;
     @Input() line: boolean = true;
     @Input() leftText: string = 'Ir A Mis Datos Personales';
     @Input() rightText: string = 'Ir A Los Datos Mi Tienda';

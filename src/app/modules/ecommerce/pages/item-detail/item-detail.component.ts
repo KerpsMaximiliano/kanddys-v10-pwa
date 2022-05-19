@@ -10,6 +10,7 @@ import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 
 @Component({
   selector: 'app-item-detail',
@@ -34,11 +35,19 @@ export class ItemDetailComponent implements OnInit {
         sub.unsubscribe();
       });
   }
-
+  boxTitle: string = 'Tienda que vende: ProviderID';
+  boxText: string = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam';
+  shopcart: boolean = true;
+  whatsapp: boolean = true;
+  myStore: boolean = true;
+  viewtype: 'merchant' | 'community' | 'preview';
+  preamount: string = '20';
+  priceLabel : string = '14,020.00';
   itemData: Item;
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
   bgColor: string = "#27a2ff";
+  env: string = environment.assetsUrl;
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -51,6 +60,13 @@ export class ItemDetailComponent implements OnInit {
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
+    });
+
+    this.route.queryParams.subscribe((params)=>{
+        this.viewtype = params.viewtype;
+        if (this.viewtype === 'merchant') this.viewtype = 'merchant'
+        else if( this.viewtype === 'preview') this.viewtype = 'preview'
+        else if (this.viewtype === 'community') this.viewtype = 'community'    
     });
   }
 
@@ -90,6 +106,19 @@ export class ItemDetailComponent implements OnInit {
             }
           })
         },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openMagicLinkDialog() {
+    this.dialog.open(MagicLinkDialogComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        ids: {
+          id: this.itemData._id
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

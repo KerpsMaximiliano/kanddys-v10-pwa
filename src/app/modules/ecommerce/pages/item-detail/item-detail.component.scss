@@ -1,21 +1,128 @@
 .container{
     min-height: 100vh;
+
+    & .desc-area{
+        width: 100%;
+        height: 151px;
+        display: flex;
+        justify-content: space-between;
+        background-color: #FFFFFF;
+
+        .left-area{
+            display: flex;
+            flex-direction: column;
+            margin: 17px 0 47.7px 32px;
+
+            .value{
+                font-family: 'SfProRegular';
+                font-size: 19px;
+                color: #3F3F3F;
+                margin-bottom: 4px;
+            }
+            .price{
+                font-family: 'SfProBold';
+                font-size: 28px;
+                color: #3F3F3F;
+                margin-bottom: 4px;
+            }
+
+            .ptext{
+                display: flex;
+            }
+            .earn{
+                font-family: 'SfProRegular';
+                font-size: 18px;
+                color: #8351FE;
+                margin-right: 4px;
+
+                img {
+                    filter: invert(43%) sepia(48%) saturate(6485%) hue-rotate(240deg) brightness(98%) contrast(104%);
+                }
+            }
+            .con-text{
+                font-family: 'SfProRegular';
+                font-size: 18px;
+                color: #8351FE;
+            }
+        }
+
+        .right-area{
+            margin: 20px 16px 52px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+
+            .upload-icon{
+                position: absolute;
+                right: 2%;
+            }
+
+            .info-icon{
+                position: absolute;
+                right: 6px;
+                top: 70%;
+            }
+        }
+        
+    }
+
+    & .box-container{
+        width: 100%;
+        height: 132px;
+        background-color: #FFFFFF;
+        padding-top: 15px;
+        display: flex;
+
+        .box-paragraph{
+            font-size: 16px;
+            font-family: 'SfProRegular';
+            color: #7B7B7B;
+            margin: 16px 63px 1px 15px;
+        }
+
+        .l-wrapper{
+            display: flex;
+            flex-direction: column;
+
+            .box-title{
+                font-size: 17px;
+                font-family: 'SfProRegular';
+                color: #27A2FF;
+                margin: 0 72px 0 15px;
+            }
+            .box-paragraph{
+                font-size: 16px;
+                font-family: 'SfProRegular';
+                color: #7B7B7B;
+                margin: 16px 63px 1px 15px;
+            }
+        }
+
+        .rwrapper{
+            display: flex;
+            flex-direction: column;
+            margin-right: 16px;
+
+            .ws-grey{
+                filter: invert(47%) sepia(0%) saturate(3066%) hue-rotate(57deg) brightness(99%) contrast(92%);
+                margin-top: -3px;
+                margin-bottom: 24px;
+                cursor: pointer;
+            }
+        }
+    }
+
     & .wrapper{
         font-family: 'Roboto';
-        padding-left: 22px;
-        padding-right: 22px;
         & .included{
-            border-radius: 10px;
             background-color: white;
             padding-top: 33px;
             padding-left: 22px;
             padding-right: 22px;
-            padding-bottom: 33px;
+            padding-bottom: 37px;
             margin-bottom: 33px;
-            margin-top: 36px;
-            -webkit-box-shadow: 0px 0px 15px 5px #cccccc70; 
-            -moz-box-shadow: 0px 0px 15px 5px #cccccc70;
-            box-shadow: 0px 0px 15px 5px #cccccc70;
+            margin-top: 9px;
             & .title{
                 color: #2e2e2e;
                 font-size: 22px;
@@ -28,5 +135,13 @@
                 margin-bottom: 5px;
             }
         }
+    }
+
+    .cta-area{
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+        height: 169px;
+        background-color: transparent;
     }
 }

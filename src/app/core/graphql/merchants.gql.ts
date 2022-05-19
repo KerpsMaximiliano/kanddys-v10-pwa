@@ -25,6 +25,7 @@ export const body = `
   email
   image
   bio
+  active
   owner { 
     phone
     email

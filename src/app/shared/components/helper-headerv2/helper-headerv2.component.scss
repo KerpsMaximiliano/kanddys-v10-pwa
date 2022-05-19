@@ -15,7 +15,7 @@
 
             .return{
                 margin-left: 17px;
-                font-family: 'SfProSemibold';
+                font-family: 'SfProBold';
                 font-size: 14px;
                 color: #FFFFFF;
             }
@@ -32,16 +32,22 @@
             margin-right: 22px;
         }
 
+        .plus{
+            font-family: 'SfProBold';
+            font-size: 35px;
+            color: #FFFFFF;
+        }
+
     }
 
     .double-text{
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
         align-items: center;
 
         .left-text{
             font-size: 14px;
-            font-family: 'RobotoMedium';
+            font-family: 'RobotoBlack';
             color: #FFFFFF;
             cursor: pointer;
         }
@@ -49,7 +55,7 @@
         .linea{
             height: 19px;
             width: 1px;
-            background-color: #FFF;
+            background-color: transparent;
             border: none;
             margin-left: 25px;
             margin-right: 17px;
@@ -57,7 +63,7 @@
 
         .right-text{
             font-size: 14px;
-            font-family: 'RobotoMedium';
+            font-family: 'RobotoBlack';
             color: #FFFFFF;
             cursor: pointer;
         }

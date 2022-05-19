@@ -71,14 +71,15 @@ export class SaleFlowService {
     }
   }
 
-  async saleflows(id: string, params: any) {
+  async saleflows(merchant: string, params: any): Promise<SaleFlow[]> {
     try {
       const response = await this.graphql.query({
         query: saleflows,
-        variables: { id, params },
+        variables: { merchant, params },
         fetchPolicy: 'no-cache',
       });
-      return response;
+      if (!response || response?.errors) return undefined;
+      return response.saleflows;
     } catch (e) {
       console.log(e);
     }
