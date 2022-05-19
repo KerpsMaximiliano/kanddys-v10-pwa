@@ -20,12 +20,12 @@
 
             <div class="circles-area">
                <app-cta-buttons
-               [mode]="'white'"
-               [circle]="true"
-               [borderc]="'#82F18D'"
-               [borderw]="'3px'"
-               [ctaText]="'Activa Mi tienda para empezar a vender'"
-               [icon]="'/etiqueta_azul.svg'"
+                mode="white"
+                [circle]="!merchantInfo?.active"
+                [borderc]="merchantInfo?.active ? '#2F6ED8' : '#82F18D'"
+                [borderw]="merchantInfo?.active ? '1px' : '3px'"
+                [ctaText]="merchantInfo?.active ? 'La Tienda de Mis Compradores (activa)' : 'Activa Mi tienda para empezar a vender'"
+                icon="/etiqueta_azul.svg"
                ></app-cta-buttons>
 
                <app-cta-buttons
