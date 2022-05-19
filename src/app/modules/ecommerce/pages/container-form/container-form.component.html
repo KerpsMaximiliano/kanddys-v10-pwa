@@ -1,0 +1,27 @@
+
+<div class="container">
+    <div class="topbar"></div>
+
+    <app-header-info></app-header-info>
+
+    <div class="tab-area">
+        <div class="tab">Adicionando Recipientes a {{tagName}}</div>
+    </div>
+
+    <div class="name-input">
+        <label for="Nombre y apellido" class="name">Nombre y Apellido:</label>
+
+        <input type="text" placeholder="Escribe tu Nombre y Apellido.." class="input-name" (keyup)=" nameIn($event) "/>
+    </div>
+
+    <div class="button-text">
+        <button class="ws-confirm" [style.background-color]=" nameLast.length > 4 ? '#4773D8' : '#AFAFAF'">Confírmanos por WhatsApp</button>
+
+        <p class="ws-text" [style.color]="nameLast.length > 4 ? '#4773D8' : '#AFAFAF'">Después de tu confirmación recibirás el Magic-Link que al tocarlo activarás tu # de WhatsApp al Tag del {{providerID}}.</p>
+    </div>
+
+    <app-sticky-button
+    [mode]=" nameLast.length > 4 ? 'fixed' : 'disabled-fixed' "
+    [text]=" nameLast.length > 4 ? 'Confírmanos por WhatsApp' : 'ADICIONA TU NOMBRE Y APELLIDO'"
+    ></app-sticky-button>
+</div>
