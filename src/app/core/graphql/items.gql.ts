@@ -118,6 +118,7 @@ export const item = gql`
       hasExtraPrice
       content
       hasSelection
+      status
       calendar {
         _id
       }
@@ -248,7 +249,10 @@ export const addItem = gql`
 
 export const updateItem = gql`
   mutation updateItem($id: ObjectID!, $input: ItemInput!) {
-    updateItem(id: $id, input: $input) { ${body} }
+    updateItem(id: $id, input: $input) { 
+      _id
+      status
+    }
   }
 `;
 

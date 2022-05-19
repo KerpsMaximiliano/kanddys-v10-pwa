@@ -138,6 +138,17 @@ export class ItemDetailComponent implements OnInit {
     //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
   }
 
+  toggleActivateItem() {
+    this.items.updateItem({
+      status: this.itemData.status === 'disabled' ? 'active' : 'disabled'
+    }, this.itemData._id).then((response) => {
+      console.log(response)
+    }).catch((error) => {
+      this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
+    })
+    this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
+  }
+
   back(){
     this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
     //this.location.back();

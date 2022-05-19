@@ -2,12 +2,12 @@
     <div class="container">
          <ng-container *ngIf="viewtype == 'preview'">
             <app-helper-headerv2
-            [mode]="'basic'"
-            [navtext]="''"
-            [shopcart]="false"
-            [whatsapp]="false"
-            [plus]="false"
-            [upload]="false"
+							[mode]="'basic'"
+							[navtext]="''"
+							[shopcart]="false"
+							[whatsapp]="false"
+							[plus]="false"
+							[upload]="false"
             ></app-helper-headerv2>
                 <div class="box-container">
                     <p class="box-paragraph">{{boxText}}</p>
@@ -22,13 +22,14 @@
 
          <ng-container *ngIf="viewtype == 'community'">
             <app-helper-headerv2
-            [bgColor]="'#8351FE'"
-            [mode]="'basic'"
-            [navtext]="'Volver'"
-            [shopcart]="true"
-            [whatsapp]="false"
-            [plus]="false"
-            [upload]="false"
+							[bgColor]="'#8351FE'"
+							[mode]="'basic'"
+							[navtext]="'Volver'"
+							[shopcart]="true"
+							[whatsapp]="false"
+							[plus]="false"
+							[upload]="false"
+							(returnEvent)="back()"
             ></app-helper-headerv2>
             <div class="box-container">
                 <div class="l-wrapper">
@@ -73,7 +74,40 @@
             </div>
         </div>
 
-        <ng-container *ngIf="viewtype == 'merchant' || viewtype == 'community' ">
+				<ng-container *ngIf="viewtype == 'merchant'">
+					<div class="cta-area">
+							<app-cta-buttons
+									[ctaText]="'Añadelo A Mi Lista'"
+									[btnColor]="'#40772F'"
+							>
+							</app-cta-buttons>
+	
+							<app-cta-buttons
+									[ctaText]="'Recauda Fondos'"
+									[btnColor]="'#8351FE'"
+							>
+							</app-cta-buttons>
+	
+							<app-cta-buttons
+									[ctaText]="
+										(itemData?.status === 'disabled' && 'Empieza a venderlo') ||
+										(itemData?.status === 'active' && 'En Venta')
+									"
+									[btnColor]="
+										(itemData?.status === 'disabled' && '#4773D8') ||
+										(itemData?.status === 'active' && '#4FE95F')
+									"
+									[icon]="
+										(itemData?.status === 'disabled' && env + '/closed-eye.svg') ||
+										(itemData?.status === 'active' && env + '/open-eye.svg')
+									"
+									(click)="toggleActivateItem()"
+							>
+							</app-cta-buttons>
+					</div>
+			</ng-container>
+
+        <ng-container *ngIf="viewtype == 'community' ">
             <div class="cta-area">
                 <app-cta-buttons
                     [ctaText]="'Añadelo A Mi Lista'"
@@ -90,6 +124,7 @@
                 <app-cta-buttons
                     [ctaText]="'Al Carrito Para Comprarlo'"
                     [btnColor]="'#4773D8'"
+                    (click)="saveProduct()"
                 >
                 </app-cta-buttons>
             </div>
