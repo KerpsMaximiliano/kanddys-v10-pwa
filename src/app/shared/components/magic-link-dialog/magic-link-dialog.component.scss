@@ -11,35 +11,43 @@
   padding: 0px 25px;
   padding-bottom: 53px;
 
-  p {
-    width: 75.23%;
-    margin-left: 28px;
-    align-self: flex-start;
-    color: #4773d8;
+  h2 {
     font-family: Roboto;
-    font-style: italic;
-    font-size: 17px;
-    margin-bottom: 36px;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0px;
+    align-self: flex-start;
+    margin-left: 10px;
+    margin-top: 61px;
   }
 
-  a {
-    margin: 0px;
-    margin-left: 28px;
-    font-family: Roboto;
-    font-size: 17px;
-    color: #7b7b7b;
-    font-weight: 400;
+  p {
     align-self: flex-start;
-    text-decoration: none;
+    font-family: Roboto;
+    color: #7b7b7b;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    margin-left: 28px;
 
-    &:hover {
-      cursor: pointer;
-      color: darken($color: #7b7b7b, $amount: 10);
+    &.first {
+      width: 75.23%;
+      margin-bottom: 0px;
+    }
+
+    &.second {
+      margin-top: 48px;
+      margin-left: 40px;
     }
   }
 
+  a {
+    width: 100%;
+  }
+
   button {
-    margin-top: 54px;
+    margin: 0px;
+    margin-top: 21px;
     background-color: #4773d8;
     color: #fff;
     padding: 25px 0px;

@@ -13,3 +13,12 @@
     height: 84px;
     justify-content: space-around;
 }
+
+.selected {
+    background-color: #4773D8;
+    color: white;
+
+    svg {
+        filter: brightness(0) saturate(100%) invert(96%) sepia(0%) saturate(7495%) hue-rotate(347deg) brightness(110%) contrast(104%);
+    }
+}

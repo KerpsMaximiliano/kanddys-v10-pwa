@@ -7,17 +7,19 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 //import { MultistepFormComponent } from 'src/app/shared/components/multistep-form/multistep-form.component';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { delay } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
+  topLabelActionStyles?: any;
   labelStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
@@ -32,7 +34,17 @@ interface FormField {
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
+  topLabelAction?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   label: string;
+  bottomLabel?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any;
+  };
   placeholder?: string;
   inputType?: string;
   showImageBottomLabel?: string;
@@ -52,6 +64,18 @@ interface EmbeddedComponent {
   afterIndex: number;
 }
 
+interface PromiseFunction {
+  type: 'promise';
+  function(params): Promise<any>;
+}
+
+interface ObservableFunction {
+  type: 'observable';
+  function(params): Observable<any>;
+}
+
+type AsyncFunction = PromiseFunction | ObservableFunction;
+
 interface FormStep {
   fieldsList: Array<FormField>;
   headerText: string;
@@ -59,7 +83,7 @@ interface FormStep {
   accessCondition?(...params): boolean;
   stepButtonValidText: string;
   stepButtonInvalidText: string;
-  asyncStepProcessingFunction?(...params): Observable<any>;
+  asyncStepProcessingFunction?: AsyncFunction;
   stepProcessingFunction?(...params): any;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
@@ -104,6 +128,37 @@ export class ShipmentDataFormComponent implements OnInit {
           label: 'Dónde entregaremos?',
           inputType: 'textarea',
           placeholder: 'Escriba la calle, número, (nombre del edificio)',
+          topLabelAction: {
+            text: 'Sin envio, lo pasaré a recoger',
+            clickable: true,
+            callback: async (params) => {
+              const pickupLocation =
+                this.header.saleflow.module.delivery.pickUpLocations[0]
+                  .nickName;
+              const deliveryData = {
+                nickName: pickupLocation,
+              };
+              if (
+                this.header.order?.products &&
+                this.header.order?.products?.length > 0
+              )
+                this.header.order.products[0].deliveryLocation = deliveryData;
+              this.header.storeLocation(this.header.saleflow._id, deliveryData);
+              this.header.isComplete.delivery = true;
+              this.header.storeOrderProgress(this.header.saleflow._id);
+
+              lockUI();
+
+              let preOrderID = (await this.header.createPreOrder()) as string;
+              const whatsappLinkQueryParams = {
+                'Keyword-Order': preOrderID,
+              };
+
+              unlockUI();
+
+              this.openDialog(whatsappLinkQueryParams);
+            },
+          },
           styles: {
             containerStyles: {
               marginTop: '60px',
@@ -113,29 +168,15 @@ export class ShipmentDataFormComponent implements OnInit {
               height: '180px',
               borderRadius: '10px',
             },
+            topLabelActionStyles: {
+              color: '#27A2FF',
+              fontFamily: 'Roboto',
+              fontSize: '17px',
+              fontStyle: 'italic',
+            },
             labelStyles: {
+              marginTop: '34px',
               fontWeight: '600',
-            },
-          },
-        },
-        {
-          name: 'note',
-          fieldControl: new FormControl(''),
-          label: 'Nota',
-          inputType: 'textarea',
-          placeholder:
-            'Ej: Color relevante, algo en común conocido que sirva como referencia...',
-          styles: {
-            containerStyles: {
-              marginTop: '74px',
-            },
-            fieldStyles: {
-              backgroundColor: 'white',
-              height: '180px',
-              borderRadius: '10px',
-            },
-            labelStyles: {
-              fontWeight: '100',
             },
           },
         },
@@ -146,9 +187,9 @@ export class ShipmentDataFormComponent implements OnInit {
           inputs: {
             text: 'Los envios son exclusivamente en Santo Domingo, República Dominicana.',
           },
-          afterIndex: 1,
+          afterIndex: 0,
           containerStyles: {
-            marginTop: '37px',
+            marginTop: '129px',
           },
         },
       ],
@@ -160,46 +201,39 @@ export class ShipmentDataFormComponent implements OnInit {
 
         this.router.navigate(['ecommerce/create-giftcard']);
       },
-      stepProcessingFunction: (params) => {
-        const deliveryData = {
-          street: params.dataModel.value['1'].street,
-          note: params.dataModel.value['1'].note,
-          city: 'Santo Domingo',
-        };
-        if (
-          this.header.order?.products &&
-          this.header.order?.products?.length > 0
-        )
-          this.header.order.products[0].deliveryLocation = deliveryData;
-        this.header.storeLocation(this.header.getSaleflow()._id, deliveryData);
-        this.header.isComplete.delivery = true;
-        this.header.storeOrderProgress(this.header.saleflow._id);
-
-        this.openDialog();
-
-        // this.router.navigate([`ecommerce/flow-completion`]);
-        return { ok: true };
-      },
-      bottomLeftAction: {
-        text: 'Sin envio, lo pasaré a recoger',
-        execute: (params) => {
-          console.log(params.dataModel.value['1']);
-
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
           const deliveryData = {
-            street: '',
-            note: '',
-            city: '',
+            street: params.dataModel.value['1'].street,
+            note: params.dataModel.value['1'].note,
+            city: 'Santo Domingo',
           };
           if (
             this.header.order?.products &&
             this.header.order?.products?.length > 0
           )
             this.header.order.products[0].deliveryLocation = deliveryData;
-          this.header.storeLocation(this.header.saleflow._id, deliveryData);
+          this.header.storeLocation(
+            this.header.getSaleflow()._id,
+            deliveryData
+          );
           this.header.isComplete.delivery = true;
           this.header.storeOrderProgress(this.header.saleflow._id);
 
-          this.openDialog();
+          lockUI();
+
+          let preOrderID = (await this.header.createPreOrder()) as string;
+          const whatsappLinkQueryParams = {
+            'Keyword-Order': preOrderID,
+          };
+
+          unlockUI();
+
+          this.openDialog(whatsappLinkQueryParams);
+
+          // this.router.navigate([`ecommerce/flow-completion`]);
+          return { ok: true };
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',
@@ -209,42 +243,62 @@ export class ShipmentDataFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (!this.header.saleflow) {
+    this.header.flowRoute = 'shipment-data-form';
+    localStorage.setItem('flowRoute', 'shipment-data-form');
+    const saleflowData =
+      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+    const orderData = this.header.getOrder(saleflowData._id);
+
+    if (!saleflowData) {
       const saleflow = this.header.getSaleflow();
       if (saleflow) {
         this.header.saleflow = saleflow;
-        this.header.order = this.header.getOrder(saleflow._id);
+        this.header.order = orderData;
         if (!this.header.order) {
-          this.router.navigate([`/ecommerce/trivias`]);
+          this.router.navigate([
+            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          ]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if (items && items.length > 0) this.header.items = items;
-        else this.router.navigate([`/ecommerce/trivias`]);
-      } else this.router.navigate([`/ecommerce/trivias`]);
+        else {
+          this.router.navigate([
+            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          ]);
+        }
+      } else {
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
+      }
     } else {
-      this.header.order = this.header.getOrder(this.header.saleflow._id);
+      this.header.order = orderData;
+
+      console.log(orderData);
       if (!this.header.order) {
-        this.router.navigate([`/ecommerce/trivias`]);
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
       if (items && items.length > 0) this.header.items = items;
-      else this.router.navigate([`/ecommerce/trivias`]);
+      else {
+        console.log(5);
+        this.router.navigate([
+          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+        ]);
+      }
     }
   }
 
-  openDialog() {
+  openDialog(whatsappLinkQueryParams: Record<string, string>) {
     this.dialog.open(MagicLinkDialogComponent, {
       type: 'flat-action-sheet',
       props: {
-        asyncCallback: async (whatsappLink: string) => {
-          let preOrderID = await this.header.createPreOrder();
-          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
-
-          return whatsappLink;
-        },
+        ids: whatsappLinkQueryParams,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

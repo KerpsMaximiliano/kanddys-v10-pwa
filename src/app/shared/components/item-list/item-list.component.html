@@ -188,7 +188,54 @@
       }"
     >
       <p *ngIf="itemListContent.text_left">{{ itemListContent.text_left }}</p>
-      <div *ngIf="itemListContent.text_right || itemListContent.icon_bottom || itemListContent.icons_bottom_right">
+      <div
+        class="right-text-icon"
+        *ngIf="
+          itemListContent.text_right ||
+          itemListContent.icon_bottom ||
+          itemListContent.icons_bottom_right ||
+          itemListContent.icons_bottom_right_first
+        "
+        (click)="itemListContent.text_right_function && itemListContent.text_right_function()"
+      >
+      <ng-container *ngIf="itemListContent.icons_bottom_right_first && itemListContent.text_right && !itemListContent.icon_bottom" >
+        <div class="container-icon">
+          <div class="item-list-icon">
+            <ng-container
+              *ngFor="
+                let icon of itemListContent.icons_bottom_right_first;
+                let i = index
+              "
+            >
+              <div
+                *ngIf="icon.type === 'img'"
+                [style.marginRight.px]="
+                  itemListContent.icons_bottom_right_first.length !== i + 1 ? 10 : 0
+                "
+              >
+                <img
+                  [src]="icon.icon"
+                  alt="no-image"
+                  [height]="icon.size"
+                  (click)="icon.function()"
+                />
+              </div>
+              <div
+                *ngIf="icon.type === 'icon'"
+                [style.marginRight.px]="
+                  itemListContent.icons_bottom_right_first.length !== i + 1 ? 10 : 0
+                "
+              >
+                <i
+                  class="fas {{ icon.icon }}"
+                  [style.color]="icon.color"
+                  (click)="icon.function()"
+                ></i>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
         <p *ngIf="itemListContent.text_right">
           {{ itemListContent.text_right }}
         </p>
@@ -210,7 +257,7 @@
                   <img
                     [src]="icon.icon"
                     alt="no-image"
-                    height="16px"
+                    [height]="icon.size"
                     (click)="icon.function()"
                   />
                 </div>
@@ -262,10 +309,9 @@
     </div>
   </div>
 
-  <div class="bar-wrapper">
+  <div class="bar-wrapper" *ngIf="itemListContent.bar">
     <div
       class="bar"
-      *ngIf="itemListContent.bar"
       [ngStyle]="{ background: itemListContent.barColor }"
     >
       <span class="bar-text">{{ itemListContent.barText }}</span>

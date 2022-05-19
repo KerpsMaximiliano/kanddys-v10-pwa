@@ -6,6 +6,16 @@
 }
 
 .form-step {
+  .step-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+    .top-left-action {
+      color: #27a2ff;
+    }
+  }
+
   background-color: #f6f6f6;
   min-height: calc(100vh - 77px);
   width: 100%;

@@ -17,6 +17,7 @@ import { ActivitiesOptionComponent } from '../activities-option/activities-optio
 interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
+  topLabelActionStyles?: any;
   labelStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
@@ -31,6 +32,11 @@ interface FormField {
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
+  topLabelAction?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any | Promise<any>;
+  };
   label: string;
   bottomLabel?: {
     text: string;

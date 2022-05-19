@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 export interface ItemList {
+  id?: string;
   title: string;
   eventTitle?: any;
   subtitle?: string;
@@ -13,6 +14,7 @@ export interface ItemList {
   text_style?: boolean;
   text_left?: string;
   text_right?: string;
+  text_right_function?: () => void,
   full_text?: string;
   icons?: Array<any>;
   text_icon?: string;
@@ -20,6 +22,7 @@ export interface ItemList {
   icon_bottom?: any;
   icons_right?: Array<any>;
   icons_bottom_right?: Array<any>;
+  icons_bottom_right_first?: Array<any>;
   bar?: boolean;
   barColor?: string;
   barText?: string;
@@ -38,6 +41,7 @@ export interface ItemList {
 })
 export class ItemListComponent implements OnInit {
   @Input() itemListContent: ItemList = {
+    id: '',
     title: '',
     eventTitle: undefined,
     subtitle: '',

@@ -87,9 +87,6 @@ export class OrderSalesComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       this.merchantID = params.id
     });
-    this.merchantService.myMerchants({}).then(async (data) => {
-      console.log(data)}
-    )
     this.authService.me().then((data) => {
       //console.log(data);
       this.isLogged = data != undefined;
@@ -203,6 +200,7 @@ export class OrderSalesComponent implements OnInit {
         });
 
         let merchant = data.find(element => element._id === this.merchantID)
+        this.headerSevice.merchantInfo = merchant;
         console.log(merchant)
         if(merchant!=undefined)
         {
@@ -240,44 +238,47 @@ export class OrderSalesComponent implements OnInit {
      }).then(data =>{
        console.log(data)
        data.ordersByMerchant.forEach(order => {
-         let auxTags: Array<any> = []
-
-         order.tags.forEach(tag => {
-           auxTags.push({tag:{name: tag }})
-         });
-         
          let today = moment()
          let daysAgo = today.diff(order.createdAt, 'days');
          let timeAgo = "Today"
          
          if(daysAgo>0){
-           timeAgo = daysAgo + "days ago"
+           timeAgo = "Hace "+daysAgo+ " dias."
          }
-
-         let dateID = this.formatID(order.dateId)
-
-
+        //  let dateID = this.formatID(order.dateId)
          this.orders.push({
            visible: true,
            id: order._id,
            image: order.items[0].item.images[0],
            eventImage: () => this.goToOderinfo(order._id),
-           title: order.user.name,
+           title: '$'+order.subtotals[0].amount.toLocaleString('es-MX'),
            eventTitle: () => this.goToOderinfo(order._id),
-           price: order.subtotals[0].amount,
-           tags: auxTags,
-           text_left: 'Create by ' +  order.user.name + '.' + timeAgo ,
-           text_right: 'Adiciona un tag',
+           subtitle: order.user.name,
+           text_left: timeAgo ,
+           text_right: 
+            order.tags.length > 0
+              ? order.tags.length + ' tags asignado(s)'
+              : 'Adiciona un tag',
+           text_right_function: () => this.router.navigate([`ecommerce/tags-list/${order._id}`]),
            text_style: true,
            phone: order.user.phone,
            //icons_image_bool: true,
-           icons_bottom_right: [
-             { 
-                icon: this.imageFolder + '/Etiqueta_lapiz.svg',
-                type: 'img',
-                function: () => this.tagFunction()
-             },
-           ],
+           icons_bottom_right_first: order.tags.length > 0
+            ? [{ 
+              icon: this.imageFolder + '/Etiquetas_rellenas.svg',
+              type: 'img',
+              size: '26',
+              function: () => this.tagFunction()
+           }] 
+           : null,
+           icons_bottom_right: order.tags.length === 0
+           ? [{ 
+              icon: this.imageFolder + '/Etiqueta_lapiz.svg',
+              type: 'img',
+              size: '26',
+              function: () => this.tagFunction()
+             }]
+            : null,
          })
        })
      })
@@ -321,14 +322,14 @@ export class OrderSalesComponent implements OnInit {
     this.router.navigate([`ecommerce/order-info/${orderID}`]);
   }
 
-  formatID(dateId: string) {
-    const splits = dateId.split('/');
-    const year = splits[2].substring(0, 4);
-    const number = splits[2].substring(4);
-    const month = splits[0];
-    const day = splits[1];
-    return `#${year}${month}${day}${number}`;
-  }
+  // formatID(dateId: string) {
+  //   const splits = dateId.split('/');
+  //   const year = splits[2].substring(0, 4);
+  //   const number = splits[2].substring(4);
+  //   const month = splits[0];
+  //   const day = splits[1];
+  //   return `#${year}${month}${day}${number}`;
+  // }
 
   searchToggling(){
     this.inSearch = !this.inSearch;

@@ -75,13 +75,12 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 250px;
-      margin-top: 0;
     }
 
     .subtitle {
       color: #0b1f38;
       font-family: "RobotoItalic";
-      font-size: 14px;
+      font-size: 15px;
       margin: 0.5rem 0rem;
       width: 250px;
       margin-bottom: 0;
@@ -127,7 +126,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0.5rem 1.25rem;
+  margin: 0.5rem 1.25rem 0 2rem;
 
   p {
     color: #7b7b7b;
@@ -190,4 +189,11 @@
       }
     }
   }
+}
+
+.right-text-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }

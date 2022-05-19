@@ -9,9 +9,12 @@ export class InfoCardComponent implements OnInit {
 
   constructor() { }
 
-  @Input() toptext: String;
-  @Input() bottomtext: String;
-  @Input() type: String;
+  @Input() toptext: string | number;
+  @Input() bottomtext: string;
+  @Input() type: string;
+  @Input() isSelectable: boolean;
+  @Input() selected: boolean;
+
   
   ngOnInit(): void {
   }

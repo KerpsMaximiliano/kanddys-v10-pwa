@@ -1621,7 +1621,7 @@ export class PostCustomizerComponent
     }
   }
 
-  checkMaxLength(event: InputEvent) {
+  checkMaxLength(event: Event) {
     let { value } = event.target as HTMLInputElement;
     this.typographyData.imageText = value;
     if (value.length >= this.currentMaxLength) {

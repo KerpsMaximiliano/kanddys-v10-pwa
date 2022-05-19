@@ -40,6 +40,7 @@ export class FlowCompletionComponent implements OnInit {
   @Input() inputQuestion: boolean = true;
   @Input() paymentQuestion: boolean = true;
   @Input() bankQuestion: boolean = true;
+  @Input() localStorageFlowRoute = '';
   paymentOptions = [
     {
       value: 'Por transferencia bancaria',
@@ -132,20 +133,19 @@ export class FlowCompletionComponent implements OnInit {
     private location: Location
   ) {}
 
-  afterOrderRequest = (data) => {
-    console.log('PreOrderData', data);
-
+  afterOrderRequest = async (data) => {
     if (
       data.order.orderStatus === 'cancelled' ||
       data.order.orderStatus === 'to confirm' ||
       data.order.orderStatus === 'completed'
     )
-      this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
+      this.router.navigate([`ecommerce/order-info/${data.order._id}`]);
     if (data.order.items[0].reservation?._id !== null) {
       this.reservationOrProduct = 'reservacion';
     } else {
       this.reservationOrProduct = 'producto';
     }
+
     if (data) {
       this.header.saleflow = data.order.items[0].saleflow;
       this.fakeData = data.order;
@@ -200,10 +200,13 @@ export class FlowCompletionComponent implements OnInit {
         products: showProducts,
       };
 
+      console.log('Order data', this.orderData);
+
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
-      this.getExchangeData(
+
+      await this.getExchangeData(
         data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
       );
     } else {
@@ -237,6 +240,11 @@ export class FlowCompletionComponent implements OnInit {
   products: any[] = [];
 
   async ngOnInit() {
+    this.localStorageFlowRoute =
+      this.header.flowRoute || localStorage.getItem('flowRoute');
+
+    console.log(this.localStorageFlowRoute);
+
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
 
@@ -279,7 +287,7 @@ export class FlowCompletionComponent implements OnInit {
               );
               this.isANewUser =
                 currentSession.name === '' ||
-                String(currentSession.name) === 'null'; 
+                String(currentSession.name) === 'null';
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
             } else {
               this.router.navigate(['/']);
@@ -329,7 +337,9 @@ export class FlowCompletionComponent implements OnInit {
 
   async getExchangeData(id: string) {
     const data = await this.wallet.exchangedata(id);
+
     this.banks = data.ExchangeData.bank;
+
     let wallets = [];
     for (let i = 0; i < data.ExchangeData.bank.length; i++) {
       wallets.push(
@@ -398,23 +408,6 @@ export class FlowCompletionComponent implements OnInit {
     this.selectedBank = this.bankOptions[index];
   }
 
-  async sendCodeToEmailOrWhatsapp() {
-    const validEmail = new RegExp(
-      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-    );
-    const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
-
-    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
-      const executedSuccessfully = await this.authService.generateMagicLink(
-        '1' + this.inputData
-      );
-
-      if (executedSuccessfully) {
-        console.log('Email o whatsapp enviado correctamente');
-      }
-    }
-  }
-
   validateNumbers(event: KeyboardEvent) {
     event.preventDefault();
     let transformedOutput: string = this.ammount.value;
@@ -430,8 +423,15 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   goBack() {
-    if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS' && !this.orderData) {
-      this.router.navigate([`/ecommerce/${this.header.flowRoute}`]);
+    if (
+      this.step === 'UPDATE_NAME_AND_SHOW_BANKS' &&
+      (this.header.flowRoute || this.localStorageFlowRoute !== '')
+    ) {
+      const redirectionURL = `/ecommerce/${
+        this.header.flowRoute || this.localStorageFlowRoute
+      }`;
+      console.log(this.localStorageFlowRoute, redirectionURL);
+      this.router.navigate([redirectionURL]);
     }
 
     if (this.step === 'PAYMENT_INFO') {
@@ -484,7 +484,7 @@ export class FlowCompletionComponent implements OnInit {
       (a, b) => a + b.amount,
       0
     );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderId}`;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
     // const ammount = new Intl.NumberFormat('es-MX').format(
     //   this.ammount.value.toLocaleString('es-MX')
     // );
@@ -533,7 +533,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/order-info/${this.orderId}`]);
+    this.router.navigate([`ecommerce/order-info/${this.orderData.id}`]);
   }
 
   orderFinished() {

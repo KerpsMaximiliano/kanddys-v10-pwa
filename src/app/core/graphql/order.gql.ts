@@ -290,19 +290,6 @@ export const payOrder = gql`
   }
 `;
 
-export const addTagsInOrder = gql`
-  mutation addTagsInOrder(
-    $merchantId: ObjectID!
-    $tags: [String!]!
-    $orderId: ObjectID!
-  ) {
-    addTagsInOrder(merchantId: $merchantId, tags: $tags, orderId: $orderId) {
-      _id
-      tags
-    }
-  }
-`;
-
 export const updateTagsInOrder = gql`
   mutation updateTagsInOrder(
     $merchantId: ObjectID!

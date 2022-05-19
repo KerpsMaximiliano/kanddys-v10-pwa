@@ -20,9 +20,10 @@ import {
   itemCategoryHeadlineByMerchant,
   itemsByCategory,
   bestSellersByMerchant,
-  itemExtras
+  itemExtras,
+  updateItem
 } from '../graphql/items.gql';
-import { Item, ItemCategory, ItemCategoryHeadline } from '../models/item';
+import { Item, ItemCategory, ItemCategoryHeadline, ItemInput } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
@@ -64,6 +65,15 @@ export class ItemsService {
       fetchPolicy: 'no-cache',
     });
     return (result || []).map((r: any) => new Item(r));
+  }
+
+  async updateItem(input: ItemInput, id: string) {
+    const response = await this.graphql.query({
+      query: updateItem,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+    });
+    return response;
   }
 
   async itemsByMerchant(id: string) {

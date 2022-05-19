@@ -267,11 +267,11 @@
             <p class="option-label">Colores:</p>
             <div
               class="option-list"
-              #stickerColor
-              (mousedown)="startDragging($event, false, stickerColor)"
+              #stickerColorDiv
+              (mousedown)="startDragging($event, false, stickerColorDiv)"
               (mouseup)="stopDragging($event, false)"
               (mouseleave)="stopDragging($event, false)"
-              (mousemove)="moveEvent($event, stickerColor)"
+              (mousemove)="moveEvent($event, stickerColorDiv)"
             >
               <div class="list-option" *ngFor="let color of getStickerColors()">
                 <span
@@ -403,7 +403,7 @@
                   style.backgroundColor="{{ color.fixedValue }}"
                   [ngClass]="{
                     'selected-option':
-                      typographyData.fontColor === color.fixedValue
+                      typographyData.fontColor.fixedValue=== color.fixedValue
                   }"
                 ></span>
                 <span style="white-space: nowrap">{{ color.name }}</span>
@@ -448,10 +448,10 @@
             <div class="option-list">
               <div class="list-option" *ngFor="let color of getLineColors()">
                 <span
-                  (click)="lineColor = color"
+                  (click)="lineColor = color.fixedValue"
                   class="color-font"
-                  style.backgroundColor="{{ color }}"
-                  [ngClass]="{ 'selected-option': lineColor === color }"
+                  style.backgroundColor="{{ color.fixedValue }}"
+                  [ngClass]="{ 'selected-option': lineColor === color.fixedValue }"
                 ></span>
               </div>
             </div>

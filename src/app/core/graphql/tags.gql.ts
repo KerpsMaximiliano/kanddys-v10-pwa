@@ -22,11 +22,20 @@ export const createTag = gql`
 
 export const tagsByUser = gql`
   query {
-      tagsByUser{
-          name
-          messageNotify
-          notify
-      }
+		tagsByUser {
+            _id
+			messageNotify
+			counter
+			name
+			notify
+			containers {
+				phone
+				notify
+				name
+			}
+			notifyUserOrder
+			notifyMerchantOrder
+    }
   }
 `
 
@@ -34,15 +43,20 @@ export const addTagsInOrder = gql`
     mutation addTagsInOrder( $merchantId: ObjectID!, $tagId: ObjectID!, $orderId: ObjectID!){
         addTagsInOrder( merchantId: $merchantId, tagId: $tagId, orderId: $orderId){
         _id
-        subtotals
-        items
-        user
-        userNotification
-        merchants
         tags
         }
     }
 `
+
+export const removeTagsInOrder = gql`
+    mutation removeTagsInOrder( $merchantId: ObjectID!, $tagId: ObjectID!, $orderId: ObjectID!){
+        removeTagsInOrder( merchantId: $merchantId, tagId: $tagId, orderId: $orderId){
+        _id
+        tags
+        }
+    }
+`
+
 export const tag = gql`
  query tag($tagId: ObjectID!){
     tag(tagId: $tagId){

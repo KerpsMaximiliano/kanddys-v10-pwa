@@ -59,6 +59,7 @@ export class Item extends Model<Item> {
   quality: string;
   iconImage: string;
   hasExtraPrice: boolean;
+  status: 'draft' | 'disabled' | 'active';
 
   customizerId?: string;
   totalPrice?: number;
@@ -110,3 +111,51 @@ export class ItemExtra extends Model<ItemExtra> {
   merchant: Merchant;
   categories: ItemCategory[];
 }
+
+export class ItemPricingInput {
+  currencyType: string;
+  amount: number;
+}
+
+export class ItemParamValueInput {
+  name?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  image?: string;
+}
+
+export class ItemParamInput {
+  name?: string;
+  category?: string;
+  formType?: string;
+  values?: ItemParamValueInput[];
+}
+
+export class ItemInput {
+  hasSelection?: boolean;
+  merchant?: string;
+  category?: string[];
+  name?: string;
+  images?: File[];
+  iconImage?: string;
+  fixedQuantity?: number;
+  pricePerUnit?: number;
+  stock?: number;
+  featuredImage?: string;
+  description?: string;
+  purchaseLocations?: string[];
+  pricing?: number;
+  isPhysical?: boolean;
+  hasExtraPrice?: boolean;
+  tags?: string[];
+  currencies?: ItemPricingInput[];
+  params?: ItemParamInput[];
+  calendar?: string;
+  itemExtra?: string[];
+  size?: String
+  content?: string[];
+  quality?: String
+  toPromotion?: boolean;
+  status?: 'draft' | 'disabled' | 'active';
+  }

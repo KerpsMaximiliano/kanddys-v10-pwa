@@ -15,6 +15,7 @@ import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -57,6 +58,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 5,
+  };
 
   constructor(
     private dialog: DialogService,
@@ -287,8 +293,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.merchantHours = this.saleflowData.workingHours;
       this.merchantId = this.saleflowData.merchant._id;
 
-      this.getCategories();
-      this.getMerchant(this.saleflowData.merchant._id);
+      await this.getCategories();
+      await this.getMerchant(this.saleflowData.merchant._id);
 
       let saleflowItems: {
         item: string;
@@ -339,18 +345,19 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           orderData?.products?.length > 0
             ? orderData.products.map((subOrder) => subOrder.item)
             : [];
-        this.items = (
-          await this.saleflow.listItems({
-            findBy: {
-              _id: {
-                __in: ([] = saleflowItems.map((items) => items.item)),
-              },
+        const items = await this.saleflow.listItems({
+          findBy: {
+            _id: {
+              __in: ([] = saleflowItems.map((items) => items.item)),
             },
-            options: {
-              limit: 60,
-            },
-          })
-        ).listItems;
+          },
+          options: {
+            limit: 60,
+          },
+        });
+
+        this.items = items.listItems;
+
         this.canOpenCart = orderData?.products?.length > 0;
         this.inputsItems = this.items;
         for (let i = 0; i < this.items.length; i++) {
@@ -359,7 +366,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
-          this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
+          if(!this.items[i].customizerId) this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
+
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
               this.items[i].fixedQuantity *
@@ -505,7 +513,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         };
         this.header.storeOrderProduct(this.saleflowData._id, product);
         this.header.storeItem(this.saleflowData._id, itemData);
-        this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
+        this.router.navigate([
+          `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
+        ]);
       } else
         this.router.navigate([
           '/ecommerce/item-detail/' +

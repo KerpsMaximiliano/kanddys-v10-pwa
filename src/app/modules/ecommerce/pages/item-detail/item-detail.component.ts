@@ -18,7 +18,6 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
   styleUrls: ['./item-detail.component.scss'],
 })
 export class ItemDetailComponent implements OnInit {
-    imageFolder: string;
   constructor(
     public items: ItemsService,
     private route: ActivatedRoute,
@@ -29,8 +28,6 @@ export class ItemDetailComponent implements OnInit {
     private appService: AppService,
     private saleflow: SaleFlowService
   ) {
-    this.imageFolder = environment.assetsUrl;
-
     const sub = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
@@ -50,6 +47,7 @@ export class ItemDetailComponent implements OnInit {
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
   bgColor: string = "#27a2ff";
+  env: string = environment.assetsUrl;
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
@@ -138,6 +136,17 @@ export class ItemDetailComponent implements OnInit {
     this.itemInCart();
     //this.router.navigate(['/ecommerce/provider-store']);
     //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
+  }
+
+  toggleActivateItem() {
+    this.items.updateItem({
+      status: this.itemData.status === 'disabled' ? 'active' : 'disabled'
+    }, this.itemData._id).then((response) => {
+      console.log(response)
+    }).catch((error) => {
+      this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
+    })
+    this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
   }
 
   back(){

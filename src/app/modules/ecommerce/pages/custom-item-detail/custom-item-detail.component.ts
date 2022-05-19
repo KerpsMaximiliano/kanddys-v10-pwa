@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
@@ -20,6 +20,7 @@ export class CustomItemDetailComponent implements OnInit {
   constructor(
     private header: HeaderService,
     private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
@@ -43,10 +44,14 @@ export class CustomItemDetailComponent implements OnInit {
         }
       })
     }
+
+    this.route.queryParams.subscribe((queries) => {
+      this.onClick(queries.quality);
+    });
   }
 
   onClick(index: number) {
-    const total = (this.header.items[0] as Item).params[1].values[index].price + (this.header.items[0].params[1].values[index].quantity * this.header.items[0].params[0].values[0].price)
+    const total = this.header.items[0].params[1].values[index].price + (this.header.items[0].params[1].values[index].quantity * this.header.items[0].params[0].values[0].price)
     this.header.items[0].total = total+(total*0.18);
     this.header.items[0].qualityQuantity = {
       price: this.header.items[0].params[1].values[index].price,
