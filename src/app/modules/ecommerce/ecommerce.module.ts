@@ -31,6 +31,7 @@ import { AuthClassicComponent } from './pages/auth-classic/auth-classic.componen
 import { PaymentsComponent } from './pages/payments/payments.component';
 import { TagsListComponent } from './pages/tags-list/tags-list.component';
 import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merchant-dashboardv2.component';
+import { ContainerFormComponent } from './pages/container-form/container-form.component';
 
 const routes: Routes = [
   {
@@ -162,6 +163,10 @@ const routes: Routes = [
     path: 'merchant-dashboardv2',
     component: MerchantDashboardv2Component
   },
+  {
+    path: 'container-form',
+    component: ContainerFormComponent
+  },
 ];
 
 @NgModule({
@@ -197,6 +202,7 @@ const routes: Routes = [
     PaymentsComponent,
     TagsListComponent,
     MerchantDashboardv2Component,
+    ContainerFormComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

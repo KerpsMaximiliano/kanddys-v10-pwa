@@ -1,0 +1,95 @@
+.container{
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+    background-color: #F6F6F6;
+
+    .topbar{
+        width: 100%;
+        height: 46px;
+        background-color: #4773D8;
+    }
+
+    .tab-area{
+        width: 100%;
+        height: 46px;
+        background-color: rgba(39, 162, 255, 22%);
+        margin-top: 5.5px;
+        display: flex;
+        flex-direction: column-reverse;
+
+        .tab{
+            background: linear-gradient(135deg, #2F9BF5 0%, #1D58DB 100%);
+            color: #ffffff;
+            font-size: 16px;
+            height: 32px;
+            font-family: 'RobotoMedium';
+            border-top-right-radius: 16px;
+            border-top-left-radius: 16px;
+            text-align: center;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .name-input{
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        margin-top: 60px;
+        margin-bottom: 218px;
+
+        .name{
+            text-align: left;
+            font-family: 'RobotoLight';
+            font-size: 19px;
+            color: #000000;
+            margin-left: 8%;
+            margin-bottom: 16px;
+        }
+
+        .input-name{
+            width: 84.81%;
+            height: 72px;
+            margin: 0 auto;
+            border-radius: 9px;
+            border: none;
+            font-size: 20px;
+            font-family: 'RobotoMedium';
+            text-indent: 16px;
+            box-shadow: inset 0 3px 7px 3px rgba( 0, 0, 0, 10%);
+
+            &::placeholder{
+                margin-left: 8px;
+                color: rgba(161, 161, 161, 60%);
+            }
+        }
+    }
+
+    .button-text{
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 44px;
+
+        .ws-confirm{
+            width: 88.31%;
+            height: 65px;
+            border-radius: 33px;
+            color: #ffffff;
+            font-size: 20px;
+            font-family: 'SfProMedium';
+            margin: 0 auto;
+            border: none;
+        }
+
+        .ws-text{
+            font-family: 'RobotoItalic';
+            font-size: 17px;
+            text-align: justify;
+            margin: 10px 9.80% 0 10.6%;
+        }
+    }
+}
