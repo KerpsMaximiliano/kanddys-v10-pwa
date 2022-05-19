@@ -547,7 +547,7 @@
     </section>
   </div>
 
-  <div *ngIf="mensajeRegalo">
+  <div *ngIf="mensajeRegalo && message && currentMessage">
     <app-gift-message
       [data]="message"
       [isPreview]="true"
