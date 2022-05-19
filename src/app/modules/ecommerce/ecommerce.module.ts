@@ -30,6 +30,7 @@ import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 import { AuthClassicComponent } from './pages/auth-classic/auth-classic.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
 import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merchant-dashboardv2.component';
+import { ContainerFormComponent } from './pages/container-form/container-form.component';
 
 const routes: Routes = [
   {
@@ -156,6 +157,10 @@ const routes: Routes = [
   {
     path: 'merchant-dashboardv2',
     component: MerchantDashboardv2Component
+  },
+  {
+    path: 'container-form',
+    component: ContainerFormComponent
   }
 ];
 
@@ -191,6 +196,7 @@ const routes: Routes = [
     AuthClassicComponent,
     PaymentsComponent,
     MerchantDashboardv2Component,
+    ContainerFormComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
