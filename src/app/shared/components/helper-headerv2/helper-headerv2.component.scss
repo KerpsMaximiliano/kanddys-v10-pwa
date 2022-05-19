@@ -42,12 +42,12 @@
 
     .double-text{
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
         align-items: center;
 
         .left-text{
             font-size: 14px;
-            font-family: 'RobotoMedium';
+            font-family: 'RobotoBlack';
             color: #FFFFFF;
             cursor: pointer;
         }
@@ -55,7 +55,7 @@
         .linea{
             height: 19px;
             width: 1px;
-            background-color: #FFF;
+            background-color: transparent;
             border: none;
             margin-left: 25px;
             margin-right: 17px;
@@ -63,7 +63,7 @@
 
         .right-text{
             font-size: 14px;
-            font-family: 'RobotoMedium';
+            font-family: 'RobotoBlack';
             color: #FFFFFF;
             cursor: pointer;
         }
