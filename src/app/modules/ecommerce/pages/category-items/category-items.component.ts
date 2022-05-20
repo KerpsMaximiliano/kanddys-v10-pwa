@@ -201,13 +201,13 @@ export class CategoryItemsComponent implements OnInit {
       const itemCategoriesList = (
         await this.item.itemCategories(merchantId, {
           options: {
-            limit: 15,
+            limit: 20,
           },
         })
       ).itemCategoriesList;
       this.categoryName = itemCategoriesList.find(
         (category) => category._id === params.categoryId
-      ).name;
+      )?.name;
       const headlines = await this.item.itemCategoryHeadlineByMerchant(
         merchantId
       );

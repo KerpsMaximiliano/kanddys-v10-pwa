@@ -2,8 +2,11 @@
 
     <div class="profile-name">
         <div class="profile-purple">
-            <img [src]="env + profileImage" alt="Imagen de perfil" class="image-profile">
-            <div class="purple">
+            <img *ngIf="profileImage else placeholder" [src]="env + profileImage" alt="profile-image" class="image-profile">
+            <ng-template #placeholder>
+                <div class="placeholder"></div>
+            </ng-template>
+            <div class="purple" *ngIf="starsAmount">
                 <label for="Cantidad de popularidad" class="stars-amount">{{starsAmount}}</label>
                 <img [src]="env + '/star.svg'" alt="" width="13.75px" height="13.02px">
             </div>

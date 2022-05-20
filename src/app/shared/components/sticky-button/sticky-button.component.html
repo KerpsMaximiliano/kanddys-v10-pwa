@@ -1,12 +1,12 @@
 <div class="container" *ngIf="mode == 'basic'">
-  <button class="button"  [ngClass]="{ 'with-icon': icon }" [style.background-color]="bgColor">
+  <button class="button"  [ngClass]="{ 'with-icon': icon }" [style.background-color]="bgColor" [ngClass]="{'small': size === 'small'}">
     {{ text }}
     <img *ngIf="icon" [src]="icon" [alt]="icon">
   </button>
 </div>
 
 <div class="container" *ngIf="mode == 'disabled'">
-  <button disabled="true" class="disabled">{{ text }}</button>
+  <button disabled="true" class="disabled" [ngClass]="{'small': size === 'small'}">{{ text }}</button>
 </div>
 
 <div class="fixed-container" *ngIf="mode == 'disabled-fixed'">

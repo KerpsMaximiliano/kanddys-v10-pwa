@@ -526,6 +526,9 @@ export class FlowCompletionComponent implements OnInit {
         this.orderData.id
       );
       this.orderFinished();
+
+      this.header.deleteSaleflowOrder(this.saleflowData._id);
+      this.header.resetIsComplete();
     } catch (error) {
       console.log(error);
       this.orderFinished();

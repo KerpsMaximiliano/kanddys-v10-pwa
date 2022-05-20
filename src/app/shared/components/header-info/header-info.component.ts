@@ -7,11 +7,11 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./header-info.component.scss']
 })
 export class HeaderInfoComponent implements OnInit {
-  @Input() profileImage: string = '/Logo.svg';
-  @Input() starsAmount: string = '14,458';
-  @Input() title: string = 'TIENDA NAME';
-  @Input() description: string = 'José Amado';
-  @Input() description2: string = 'FechaID HoraID';
+  @Input() profileImage: string;
+  @Input() starsAmount: string;
+  @Input() title: string;
+  @Input() description: string;
+  @Input() description2: string;
   env: string = environment.assetsUrl;
 
   constructor() {}

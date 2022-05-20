@@ -16,6 +16,11 @@
     height: 77px;
     max-width: 500px;
     white-space: break-spaces;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+    }
   }
 
   .inactive {
@@ -32,9 +37,14 @@
     border: none;
     height: 77px;
     cursor: default;
-    background-color: #7b7b7b;
+    background-color: #AFAFAF;
     z-index: 10;
     white-space: break-spaces;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+    }
   }
 
   .disabled-fixed {

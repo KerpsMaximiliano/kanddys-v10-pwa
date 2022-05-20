@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { Item, ItemPackage } from 'src/app/core/models/item';
+import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AppService } from 'src/app/app.service';
@@ -15,7 +15,7 @@ import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
+// import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -42,7 +42,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   swiperPackageOrder: any = [];
   selectedTagsIds: any = [];
-  categories: string[] = [];
+  categories: ItemCategory[] = [];
   flowId: string;
   merchantId: string;
   merchantName: string = '';
@@ -58,11 +58,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
-  public swiperConfig: SwiperOptions = {
-    slidesPerView: 'auto',
-    freeMode: true,
-    spaceBetween: 5,
-  };
+  // public swiperConfig: SwiperOptions = {
+  //   slidesPerView: 'auto',
+  //   freeMode: true,
+  //   spaceBetween: 5,
+  // };
 
   constructor(
     private dialog: DialogService,
@@ -94,7 +94,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const itemCategoriesList = (
       await this.item.itemCategories(this.merchantId, {
         options: {
-          limit: 15,
+          limit: 20,
         },
       })
     ).itemCategoriesList;
@@ -130,7 +130,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.categories = headlines[0].itemsCategories
       .map(
         (value) =>
-          itemCategoriesList.find((element) => element._id === value)?.name
+          itemCategoriesList.find((element) => element._id === value)
       )
       .filter((value) => value);
     this.filters = filters;
@@ -161,16 +161,16 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   organizeItems() {
     if (this.categories) {
-      this.categories.forEach((name) => {
+      this.categories.forEach((saleflowCategory) => {
         if (
           this.items.some((item) =>
-            item.category.some((category) => category.name === name)
+            item.category.some((category) => category.name === saleflowCategory.name)
           )
         ) {
           this.itemsByCategory.push({
-            label: name,
+            label: saleflowCategory.name,
             items: this.items.filter((item) =>
-              item.category.some((category) => category.name === name)
+              item.category.some((category) => category.name === saleflowCategory.name)
             ),
           });
         }
@@ -473,11 +473,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  seeCategories(i: number) {
-    this.router.navigate([
+  seeCategories(index: number | string) {
+    if(typeof index === 'string') this.router.navigate([
+      `ecommerce/category-items/${this.saleflowData._id}/${index}`,
+    ]);
+    else this.router.navigate([
       `ecommerce/category-items/${this.saleflowData._id}/${
-        this.itemsByCategory[i].items[0].category.find(
-          (category) => category.name === this.itemsByCategory[i].label
+        this.itemsByCategory[index].items[0].category.find(
+          (category) => category.name === this.itemsByCategory[index].label
         )._id
       }`,
     ]);
