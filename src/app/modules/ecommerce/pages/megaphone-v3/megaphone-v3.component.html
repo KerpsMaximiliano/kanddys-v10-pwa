@@ -2,15 +2,6 @@
   Ir a mi view
 </div>-->
 <div style="min-height: 100vh">
-  <!-- <app-provider-info
-    *ngIf="saleflowData"
-    [providerId]="merchantName"
-    [providerBio1]="merchantSubheadline"
-    [providerBio2]="merchantHours"
-    [providerImage]="banner"
-    [providerSocials]="saleflowData.social"
-    [flowId]="flowId"
-  ></app-provider-info> -->
   <div class="header-bg">
     <app-header-info
       [profileImage]="banner"
@@ -18,7 +9,6 @@
       [description]="merchantSubheadline"
     ></app-header-info>
   </div>
-
   <!-- <app-page-component-tabs *ngIf="customizersId.length === 0" [tabsOptions]="pagesList"></app-page-component-tabs> -->
   <!-- <p class="headerParagraph" *ngIf="itemsByCategory.length > 0 && !hasCustomizer">
     <a>Lorem ipsum</a> dolor sit, amet consectetur adipisicing elit. Architecto nobis aperiam neque quas sint inventore esse error veniam sed animi.
@@ -56,17 +46,6 @@
             [type]="2"
             (click)="goToPackageDetail(i)"
           >
-          <!-- <app-saleflow-item
-            [imgURL]="item.images"
-            [price]="item.price"
-            [showPrice]="true"
-            [description]="item.description"
-            [showDescription]="true"
-            [isSelected]="item.selected"
-            [priceAlign]="'start'"
-            [type]="2"
-            (click)="goToPackageDetail(i)"
-          > -->
           </app-saleflow-item>
         </div>
       </ng-container>
@@ -149,6 +128,20 @@
           </div>
         </swiper> 
       </div> -->
+      <div class="categories-wrapper" *ngIf="i === 0">
+        <h6 class="header-text">
+          Ver mas de:
+        </h6>
+        <div class="categories-list">
+          <div
+            *ngFor="let category of categories"
+            class="category-item"
+            (click)="seeCategories(category._id)"
+          >
+            {{category.name}}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <section
