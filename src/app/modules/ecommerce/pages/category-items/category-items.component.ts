@@ -19,6 +19,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-category-items',
@@ -40,6 +41,11 @@ export class CategoryItemsComponent implements OnInit {
   deleteEvent: Subscription;
   canOpenCart: boolean;
   isMerchant: boolean;
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 1,
+  };
 
   env: string = environment.assetsUrl;
 

@@ -27,14 +27,28 @@
         Best Sellers
       </h6>
     </div>
-    <app-swiper
+    <!-- <app-swiper
       [saleFlowTwo]="true"
       [saleFlowTwoData]="bestSellers"
       [showPrice]="hasCustomizer ? false : true"
       [showDescription]="hasCustomizer ? false : true"
       (slideActive)="onClick($event, 'slider')"
       (toggleEmitter)="toggleSelected('slider', $event)"
-    ></app-swiper>
+    ></app-swiper> -->
+    <div style="padding: 0 1.20rem;">
+      <swiper [config]="swiperConfig">
+        <div *ngFor="let swiperItem of bestSellers; let j = index" style="max-width: 259px;">
+          <app-item-card
+            [image]="swiperItem.images[0]"
+            [boxAmount]="50"
+            [price]="swiperItem.pricing"
+            [showBox]="true"
+            [showIcon]="isMerchant"
+            [isSelected]="!isMerchant && swiperItem.isSelected"
+          ></app-item-card>
+        </div>
+      </swiper>
+    </div>
   </div>
   <div style="background-color: white">
     <ng-container *ngIf="hasCustomizer; else selectableItems">
