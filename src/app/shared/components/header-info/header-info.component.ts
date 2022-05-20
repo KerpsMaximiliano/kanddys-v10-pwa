@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./header-info.component.scss']
 })
 export class HeaderInfoComponent implements OnInit {
-  @Input() profileImage: string = '/Logo.svg';
+  @Input() profileImage: string;
   @Input() starsAmount: string;
   @Input() title: string;
   @Input() description: string;
