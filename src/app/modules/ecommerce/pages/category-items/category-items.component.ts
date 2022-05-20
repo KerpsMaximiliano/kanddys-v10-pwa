@@ -125,6 +125,7 @@ export class CategoryItemsComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       lockUI();
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
+      this.header.saleflow = this.saleflowData;
       this.route.queryParams.subscribe(async (queries) => {
         if(queries.edit) {
           const user = await this.authService.me();
@@ -226,11 +227,6 @@ export class CategoryItemsComponent implements OnInit {
   onClick(index: any, type?: string) {
     let itemData =
       type === 'slider' ? this.bestSellers[index] : this.items[index];
-    // if (index.index) {
-    //   itemData = this.items[index.index];
-    // } else {
-    //   itemData = this.items[index];
-    // }
     this.header.items = [itemData];
     if (itemData.customizerId) {
       this.header.emptyOrderProducts(this.saleflowData._id);
@@ -262,8 +258,8 @@ export class CategoryItemsComponent implements OnInit {
       ]);
     } else
       this.router.navigate([
-        '/ecommerce/item-detail/' + this.saleflowData._id + '/' + itemData._id,
-      ]);
+        '/ecommerce/item-detail/'+this.saleflowData._id+'/' + itemData._id, 
+      ], {queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' }});
   }
 
   closeTagEvent(e) {

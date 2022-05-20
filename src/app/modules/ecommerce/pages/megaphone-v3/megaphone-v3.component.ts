@@ -525,7 +525,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             this.header.saleflow._id +
             '/' +
             itemData._id,
-        ]);
+        ], {queryParams: { viewtype: 'community' }});
     }
   }
 

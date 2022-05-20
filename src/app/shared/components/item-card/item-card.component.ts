@@ -14,12 +14,18 @@ export class ItemCardComponent implements OnInit {
   @Input() showBox: boolean;
   @Input() showIcon: boolean;
   @Input() isSelected: boolean;
+  @Output() changeSelection = new EventEmitter();
+  @Output() itemClicked = new EventEmitter();
 
   env: string = environment.assetsUrl;
 
   constructor() {}
 
   ngOnInit(): void {
+  }
+
+  onClick() {
+    this.itemClicked.emit()
   }
 
   onTopBoxClick() {
@@ -31,7 +37,7 @@ export class ItemCardComponent implements OnInit {
   }
 
   onSelectedClick() {
-    //
+    this.changeSelection.emit();
   }
 
 }

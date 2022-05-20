@@ -92,13 +92,13 @@ export class ItemDetailComponent implements OnInit {
       type: 'flat-action-sheet',
       props: { 
         headerButton: 'Ver mas productos',
-        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow._id}`]),
+        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow?._id}`]),
         footerCallback: () => {
           this.saleflow.saleflow(this.saleflowId, true).then(data =>{
             for (let i = 0; i < data.saleflow.items.length; i++) {
               if (data.saleflow.items[i].item._id === this.itemData._id) {
                 if (data.saleflow.items[i].customizer) {
-                  this.router.navigate([`ecommerce/provider-store/${this.header.saleflow._id}/${this.itemData._id}`])
+                  this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id}/${this.itemData._id}`])
                 }else{
                   this.router.navigate(['/ecommerce/create-giftcard']);
                 }

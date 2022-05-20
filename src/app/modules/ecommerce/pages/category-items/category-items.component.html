@@ -37,7 +37,7 @@
     ></app-swiper> -->
     <div style="padding: 0 1.20rem;">
       <swiper [config]="swiperConfig">
-        <div *ngFor="let swiperItem of bestSellers; let j = index" style="max-width: 259px;">
+        <div *ngFor="let swiperItem of bestSellers; let i = index" style="max-width: 259px;">
           <app-item-card
             [image]="swiperItem.images[0]"
             [boxAmount]="50"
@@ -45,6 +45,8 @@
             [showBox]="true"
             [showIcon]="isMerchant"
             [isSelected]="!isMerchant && swiperItem.isSelected"
+            (itemClicked)="onClick(i, 'slider')"
+            (changeSelection)="toggleSelected('slider', i)"
           ></app-item-card>
         </div>
       </swiper>
@@ -98,6 +100,7 @@
 
 <app-sticky-button
   *ngIf="!hasCustomizer"
+  [size]="canOpenCart ? 'normal' : 'small'"
   [mode]="canOpenCart ? 'basic' : 'disabled'"
   [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
   (click)="showShoppingCartDialog()"

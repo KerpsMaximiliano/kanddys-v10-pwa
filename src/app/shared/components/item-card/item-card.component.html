@@ -16,10 +16,18 @@
   </div>
 
   <div class="image-prices">
-    <img *ngIf="image else placeholder" [src]="image " alt="item-image" class="center-img">
-    <ng-template #placeholder>
-      <div class="placeholder"></div>
-    </ng-template>
+    <ng-container>
+      <img
+        *ngIf="image else placeholder"
+        [src]="image"
+        alt="item-image"
+        class="center-img"
+        (click)="onClick()"
+      >
+      <ng-template #placeholder>
+        <div class="placeholder" (click)="onClick()"></div>
+      </ng-template>
+    </ng-container>
 
     <label class="item-price">${{price | number}}</label>
     <label *ngIf="income" class="income">${{income | number}} ingreso</label>
