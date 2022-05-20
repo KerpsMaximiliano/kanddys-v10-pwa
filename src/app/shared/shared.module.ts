@@ -79,6 +79,7 @@ import { HelperHeaderv2Component } from './components/helper-headerv2/helper-hea
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { HeaderInfoComponent } from './components/header-info/header-info.component';
 import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.component';
+import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualizer.component';
 
 const imports = [
   CommonModule,
@@ -155,6 +156,7 @@ const declarations = [
   ItemCardComponent,
   HeaderInfoComponent,
   MerchantInfoComponent,
+  PreVisualizerComponent,
 ];
 
 @NgModule({

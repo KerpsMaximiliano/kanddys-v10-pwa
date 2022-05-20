@@ -1,0 +1,112 @@
+.container{
+    background-color: transparent;
+    width: 100%;
+
+    .audio{ /*AUDIO MODE*/
+        width: 80%;
+        margin: 0 auto;
+        height: 167px;
+        background-color: transparent;
+        border-radius: 9px;
+        border: 1px solid #707070;
+        display: flex;
+        flex-direction: column;
+
+        .audio-title{
+            font-family: 'SfProBold';
+            font-size: 17px;
+            color: #474747;
+            display: flex;
+            margin: 0 auto;
+            margin-top: 25px;
+        }
+
+        .button-play{
+            margin: 0 auto;
+            padding: 0;
+            background-color: transparent;
+            border: none;
+            margin-top: 19px;
+            cursor: pointer;
+        }
+
+        .bar{
+            position: relative;
+            width: 79.47%;
+            height: 6px;
+            background-color: rgba(161, 161, 161, 13%);
+            margin: 0 auto;
+            margin-top: 21px;
+            cursor: pointer;
+
+            .circulito{
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: #A1A1A1;
+                position: absolute;
+                bottom: -2px;
+                cursor: pointer;
+            }
+        }
+
+        .labels{
+            display: flex;
+            justify-content: space-between;
+            margin: 0 10%;
+            margin-top: 5px;
+        }
+    }/*AUDIO MODE*/
+
+
+    .poster{
+        width: 80%;
+        margin: 0 auto;
+        height: 433px;
+        background-color: transparent;
+        border-radius: 9px;
+        border: 1px solid #707070;
+        display: flex;
+        flex-direction: column;
+
+        .poster-title{
+            font-family: 'SfProBold';
+            font-size: 17px;
+            color: #474747;
+            display: flex;
+            margin: 0 auto;
+            margin-top: 40px;
+            margin-bottom: 23px;
+        }
+
+        .title-image{
+            width: 70.19%;
+            height: 297px;
+            margin: 0 auto;
+            background-color: #707070;
+            border-radius: 9px;
+        }
+    }
+
+    .text{
+        width: 80%;
+        margin: 0 auto;
+        height: fit-content;
+        background-color: transparent;
+        border-radius: 9px;
+        border: 1px solid #707070;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 33px 24px 40px;
+
+        .inner-text{
+            font-family: 'RobotoRegular';
+            font-size: 21px;
+            color: rgba(20, 20, 20, 64%);
+            max-width: 82%;
+        }
+    }
+
+}
