@@ -361,8 +361,14 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               await this.order.authOrder(this.orderId, registeredNewUser._id);
           }
 
+          //disable 1st step inputs to avoid further changes to existing order
           this.phoneNumber.disable();
           this.name.disable();
+
+          if (this.banks.length === 1) {
+            this.selectedBank = this.bankOptions[0];
+          }
+
           this.step = 'PAYMENT_INFO';
           unlockUI();
         } else {
