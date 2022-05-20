@@ -1,0 +1,49 @@
+.container{
+    width: 90%;
+    min-height: 594px;
+    background-color: #FFFFFF;
+    border-radius: 13px;
+
+    .image{
+        display: flex;
+        margin: 0 auto;
+    }
+
+    .merchant-name{
+        display: flex;
+        margin: 0 auto;
+        margin-top: 10px;
+        margin-bottom: 50px;
+    }
+
+    .images-info{
+        display: flex;
+        margin-left: 39px;
+        margin-bottom: 67px ;
+
+        .images-area{
+            display: flex;
+            flex-direction: column;
+            margin-right: 21px;
+
+            .merchant-icon{
+                color: #272727;
+            }
+        }
+
+        .texts-info{
+            display: flex;
+            flex-direction: column;
+            margin-top: 9px;
+
+            .merchant-text{
+                font-family: 'NeueMontreal';
+                font-size: 18px;
+                color: #38373B;
+                margin-bottom: 68px;
+            }
+        }
+    }
+
+    
+}
