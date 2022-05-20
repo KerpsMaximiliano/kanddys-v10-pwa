@@ -11,6 +11,7 @@ import { OrderInfoComponent } from './pages/order-info/order-info.component';
 import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { FlowCompletionComponent } from './pages/flow-completion/flow-completion.component';
+import { FlowCompletionAuthLessComponent } from './pages/flow-completion-auth-less/flow-completion-auth-less.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
 import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
 import { UserInfoComponent } from './pages/user-info/user-info.component';
@@ -85,6 +86,14 @@ const routes: Routes = [
   {
     path: 'flow-completion/:orderId',
     component: FlowCompletionComponent,
+  },
+  {
+    path: 'flow-completion-auth-less',
+    component: FlowCompletionAuthLessComponent,
+  },
+  {
+    path: 'flow-completion-auth-less/:orderId',
+    component: FlowCompletionAuthLessComponent,
   },
   {
     path: 'auth-classic',
@@ -172,6 +181,7 @@ const routes: Routes = [
     ShipmentDataFormComponent,
     ItemDetailComponent,
     FlowCompletionComponent,
+    FlowCompletionAuthLessComponent,
     PrivacyPolicyComponent,
     CustomizerRedirectComponent,
     UserInfoComponent,

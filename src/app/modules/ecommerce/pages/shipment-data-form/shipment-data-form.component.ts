@@ -157,6 +157,7 @@ export class ShipmentDataFormComponent implements OnInit {
               this.header.isComplete.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
 
+              //========================= CÓDIGO PARA CREAR PREORDER =========================
               if (!this.header.orderId) {
                 lockUI();
 
@@ -168,13 +169,25 @@ export class ShipmentDataFormComponent implements OnInit {
                 };
 
                 unlockUI();
-                this.openDialog(whatsappLinkQueryParams);
+
+                //Para el magicLink
+                // this.openDialog(whatsappLinkQueryParams);
+                this.router.navigate([
+                  `ecommerce/flow-completion-auth-less/${preOrderID}`,
+                ]);
+
                 this.createdOrderWithoutDelivery = true;
               } else {
-                this.openDialog({
-                  'Keyword-Order': this.header.orderId as string,
-                });
+                this.router.navigate([
+                  `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+                ]);
+
+                //Para el magicLink
+                // this.openDialog({
+                //   'Keyword-Order': this.header.orderId as string,
+                // });
               }
+              //========================= CÓDIGO PARA CREAR PREORDER =========================
             },
           },
           styles: {
@@ -225,7 +238,7 @@ export class ShipmentDataFormComponent implements OnInit {
           let preOrderID;
           let whatsappLinkQueryParams;
 
-          if(this.createdOrderWithoutDelivery) {
+          if (this.createdOrderWithoutDelivery) {
             this.createdOrderWithoutDelivery = false;
             this.header.orderId = null;
           }
@@ -247,6 +260,7 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.isComplete.delivery = true;
           this.header.storeOrderProgress(this.header.saleflow._id);
 
+          //========================= CÓDIGO PARA CREAR PREORDER =========================
           if (!this.header.orderId && !this.createdOrderWithDelivery) {
             lockUI();
 
@@ -258,14 +272,30 @@ export class ShipmentDataFormComponent implements OnInit {
             };
 
             unlockUI();
-            this.openDialog(whatsappLinkQueryParams);
+
+            console.log(
+              'RUTA',
+              `ecommerce/flow-completion-auth-less/${preOrderID}`
+            );
+
+            //Para el magicLink
+            // this.openDialog(whatsappLinkQueryParams);
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${preOrderID}`,
+            ]);
+
             this.createdOrderWithDelivery = true;
           } else {
-            this.openDialog({
-              'Keyword-Order': this.header.orderId as string,
-            });
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+            ]);
+
+            //Para el magicLink
+            // this.openDialog({
+            //   'Keyword-Order': this.header.orderId as string,
+            // });
           }
-          // this.router.navigate([`ecommerce/flow-completion`]);
+          //========================= CÓDIGO PARA CREAR PREORDER =========================
           return { ok: true };
         },
       },
