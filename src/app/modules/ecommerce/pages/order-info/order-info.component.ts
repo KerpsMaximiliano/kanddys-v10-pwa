@@ -111,6 +111,7 @@ export class OrderInfoComponent implements OnInit {
   existPackage: boolean = false;
   notifications: boolean = true;
   showNotificationButton: boolean;
+  ocrPayments: any;
 
   days: string[] = [
     '',
@@ -158,9 +159,37 @@ export class OrderInfoComponent implements OnInit {
               (user) =>
                 (this.showNotificationButton = user._id === data.order.user._id)
             );
+          this.status = data.order.orderStatus;
+          if (this.status === 'in progress') this.status = 'en revisión';
+          else if (this.status === 'to confirm') this.status = 'por confirmar';
+          else if (this.status === 'completed') this.status = 'completado';
+          const totalPrice = data.order.subtotals.reduce(
+            (a, b) => a + b.amount,
+            0
+          );
+          this.price = data.order.items[0].customizer
+            ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
+            : totalPrice;
+          let today = moment();
+          let daysAgo = today.diff(data.order.createdAt, 'days');
+          let timeAgo = "Today";
+          if (daysAgo > 0) timeAgo = "Hace "+daysAgo+ " dias";
           if (data.order.ocr) {
             this.tabsOptions.push('Pago');
             this.pagoView = true;
+            this.ocrPayments = [
+              {
+                id: '534534536',
+                visible: true,
+                image: data.order.ocr.image,
+                imageSize: 'small',
+                title: '$' + this.price.toLocaleString('en-US') + ' DOP',
+                subtitle: 'Verificado por '+'AliciaID',
+                description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode,
+                description2: timeAgo,
+                status: this.status,
+              }
+            ]
           } else this.facturado = true;
           this.tabsOptions.push('Lo Facturado');
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
@@ -182,21 +211,9 @@ export class OrderInfoComponent implements OnInit {
             this.titleTab = 'Entrega';
           }
           this.phone = data.order.user.phone;
-          const totalPrice = data.order.subtotals.reduce(
-            (a, b) => a + b.amount,
-            0
-          );
-          this.price = data.order.items[0].customizer
-            ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
-            : totalPrice;
           this.headerService.orderId = data.order._id;
           this.id = data.order._id;
           this.dateId = this.formatID(data.order.dateId);
-          this.status = data.order.orderStatus;
-
-          if (this.status === 'in progress') this.status = 'EN REVISIÓN';
-          else if (this.status === 'to confirm') this.status = 'POR CONFIRMAR';
-          else if (this.status === 'completed') this.status = 'COMPLETADO';
 
           this.delivery = data.order.items[0].deliveryLocation.googleMapsURL;
           this.image = data.order.items[0].item.images;

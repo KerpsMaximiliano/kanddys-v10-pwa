@@ -19,6 +19,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-category-items',
@@ -40,6 +41,11 @@ export class CategoryItemsComponent implements OnInit {
   deleteEvent: Subscription;
   canOpenCart: boolean;
   isMerchant: boolean;
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 1,
+  };
 
   env: string = environment.assetsUrl;
 
@@ -119,6 +125,7 @@ export class CategoryItemsComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       lockUI();
       this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
+      this.header.saleflow = this.saleflowData;
       this.route.queryParams.subscribe(async (queries) => {
         if(queries.edit) {
           const user = await this.authService.me();
@@ -201,13 +208,13 @@ export class CategoryItemsComponent implements OnInit {
       const itemCategoriesList = (
         await this.item.itemCategories(merchantId, {
           options: {
-            limit: 15,
+            limit: 20,
           },
         })
       ).itemCategoriesList;
       this.categoryName = itemCategoriesList.find(
         (category) => category._id === params.categoryId
-      ).name;
+      )?.name;
       const headlines = await this.item.itemCategoryHeadlineByMerchant(
         merchantId
       );
@@ -220,11 +227,6 @@ export class CategoryItemsComponent implements OnInit {
   onClick(index: any, type?: string) {
     let itemData =
       type === 'slider' ? this.bestSellers[index] : this.items[index];
-    // if (index.index) {
-    //   itemData = this.items[index.index];
-    // } else {
-    //   itemData = this.items[index];
-    // }
     this.header.items = [itemData];
     if (itemData.customizerId) {
       this.header.emptyOrderProducts(this.saleflowData._id);
@@ -256,8 +258,8 @@ export class CategoryItemsComponent implements OnInit {
       ]);
     } else
       this.router.navigate([
-        '/ecommerce/item-detail/' + this.saleflowData._id + '/' + itemData._id,
-      ]);
+        '/ecommerce/item-detail/'+this.saleflowData._id+'/' + itemData._id, 
+      ], {queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' }});
   }
 
   closeTagEvent(e) {

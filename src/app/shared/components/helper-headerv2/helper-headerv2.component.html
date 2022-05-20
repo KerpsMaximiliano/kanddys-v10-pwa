@@ -20,9 +20,15 @@
 
     <ng-container *ngIf="mode == 'double'">
         <div class="double-text">
-            <label for="Texto izquierdo" class="left-text">{{leftText}}</label>
+            <label class="text bold-text">{{leftText}}</label>
             <div *ngIf="line == true"><hr class="linea"/></div>
-            <label for="Texto derecho" class="right-text">{{rightText}}</label>
+            <label class="text bold-text">{{rightText}}</label>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="mode == 'center'">
+        <div class="double-text">
+            <label class="text light-text">{{navtext}}</label>
         </div>
     </ng-container>
 </div>

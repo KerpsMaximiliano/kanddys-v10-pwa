@@ -1,284 +1,3 @@
-<!--<div class="container" *ngIf="allDone">
-    <section class="select-letters-header">
-        <div class="flex">
-          <div class="title">
-            D’Licianthus
-          </div>
-          <div class="icons">
-            <div class="icon">
-              <img src="./../../../../../assets/images/Asset 1.png" alt="">
-            </div>
-            <div class="icon">
-              <img src="./../../../../../assets/images/Asset 2.png" alt="">
-            </div>
-            <div class="icon">
-              <img src="./../../../../../assets/images/Asset 3.png" alt="">
-            </div>
-            <div class="icon">
-              <img src="./../../../../../assets/images/Asset 4.png" alt="">
-            </div>
-          </div>
-        </div>
-      </section>
-    <div class="confirmation">
-        <img src="./../../../../../assets/images/check-circle.png" alt="" class="check-image">
-        <div class="confirmation-title">
-            Gracias.
-        </div>
-        <div class="info">
-            Te estamos mandando el status de tu orden a:
-        </div>
-        <div class="emailorphone">
-            {{phone}}
-        </div>
-    </div>
-    <div class="order-button" (click)="redirect()">
-      <div class="wrapper">
-        Orden: {{ dateId }} <img src="./../../../../../assets/images/paper-plane.png" alt="">
-      </div>
-    </div>
-    <div class="order-data">
-      <div class="card-title">
-        Arreglos seleccionados:
-      </div>
-      <div class="data">
-        <div class="image" style="background-image: url({{image}});">
-          
-        </div>
-        <i class="fas fa-chevron-right" id="arrow"></i>
-      </div>
-    </div>
-    <hr>
-    <div class="order-data" *ngIf="paramType || paramValue">
-      <div class="card-title">
-        Paquete
-      </div>
-      <div class="data">
-        <div class="order-text">
-          <div class="text">
-            {{paramType}}
-          </div>
-          <div class="text">
-            {{paramValue}}
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr *ngIf="paramType || paramValue">
-    <div class="order-data">
-      <div class="card-title">
-        Lugar de la Entrega
-      </div>
-      <div class="data">
-        <div class="order-text">
-          <div class="text">
-            <a href="{{delivery}}" target="_blank" style="color: #0071E3; text-decoration: none;">Ir a Google Maps</a>
-          </div>
-          <div class="text">
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr>
-    <div class="order-data" *ngIf="message">
-      <div class="card-title">
-        Mensaje
-      </div>
-      <div class="data">
-        <div class="order-text">
-          <div class="text">
-            {{message}}
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr *ngIf="message">
-    <div class="order-data">
-      <div class="card-title">
-        Reservación
-      </div>
-      <div class="data">
-        <div class="order-text">
-          <div class="text">
-            {{dateString}}
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr>
-    <div class="order-data">
-      <div class="card-title">
-        Sobre el pago:
-        <div class="text">
-          {{price}} DOP
-        </div>
-      </div>
-      <div class="data">
-        <div class="info-status">
-            {{status}}
-        </div>
-        <i class="fas fa-chevron-right" id="arrow"></i>
-      </div>
-    </div>
-</div>-->
-<!--<div class="container">
-  <div class="header">
-      <div class="content" id="left">
-          <i class="fas fa-equals"></i>
-          <p>Foto Davitte</p>
-      </div>
-      
-      <div class="content" id="right">
-          <i class="fal fa-phone-alt"></i>
-          <img src="../../../../../assets/images/greenLocation2.png" alt="" class="icon">
-          <i class="fab fa-instagram"></i>
-      </div>
-  </div>
-  <div class="mainBanner">
-      <img src="../../../../../assets/images/blue-share.png" alt="" (click)="redirect()"  class="icon">
-      <div style="padding-top: 16px;">
-          <app-thanks-message 
-          [info] = "'Recibirás la confirmación y estatus de ordenID en:'"
-          [name] = "name"
-          [email] = "phone"
-          [orderDesc] ="'Estado e información de tu orden:'"
-          [order] = "dateId"
-          [linkId] = "linkId"
-          >
-          </app-thanks-message>
-      </div>
-  </div>
-  <div class="section2">
-      <img src="../../../../../assets/images/gift.png" class="mainImg" alt="">
-      <p class="text"> Dinos mas sobre Ti para sorpresas</p>
-      <p class="smallText">Que usas mas?</p>
-      <div class="socialNetworks">
-          <div *ngFor ="let socialNetwork of socialNetworks; index as i">
-              <div class="img" [ngStyle]="{'background-image': 'url(' + socialNetwork.iconURL + ')'}"></div>
-              <div class="title">{{socialNetwork.title}}</div>
-          </div>
-      </div>
-  </div>
-</div>-->
-<!-- <div class="container">
-  <div class="header">
-    <div class="contentFlexBox">
-      <svg class="iconSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 153.52 69.36"
-        (click)="redirect()"
-        style="
-          filter: invert(47%) sepia(98%) saturate(1692%) hue-rotate(185deg)
-            brightness(104%) contrast(101%);
-        "
-      >
-        <g id="Layer_2" data-name="Layer 2">
-          <g id="Layer_2-2" data-name="Layer 2">
-            <g id="Grupo_62769" data-name="Grupo 62769">
-              <g id="Grupo_62360" data-name="Grupo 62360">
-                <g id="menu">
-                  <path id="Trazado_23570" data-name="Trazado 23570" d="M0,0H153.52V17.34H0Z"/>
-                  <path id="Trazado_23571" data-name="Trazado 23571" d="M0,52H153.52V69.36H0Z"/>
-                </g>
-              </g>
-            </g>
-          </g>
-        </g>
-      </svg>
-    </div>
-    <ng-container *ngIf="merchantName">
-      <span style="color: #272727; font-family: RobotoMedium; font-size: 16px"
-      >{{merchantName}}</span
-    >
-    </ng-container>
-    <div class="contentFlexBox flexbox">
-      <i class="fas fa-ellipsis-h" style="color: #27a2ff"></i>
-    </div>
-  </div> -->
-
-<!-- ---------------------------------------- WORKING VERSION ---------------------------------------- -->
-
-<!-- 
-<div class="container">
-  <div class="mainBanner">
-    <div (click)="redirect()">
-      <svg
-        class="icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 180.81 239.33"
-      >
-        <defs>
-          <style>
-            .shareIcon {
-              fill: none;
-              stroke: #0380ff;
-              stroke-linecap: round;
-              stroke-linejoin: round;
-              stroke-width: 12px;
-            }
-          </style>
-        </defs>
-        <g id="Layer_2" data-name="Layer 2" (click)="redirect()">
-          <g id="Layer_1-2" data-name="Layer 1">
-            <path
-              class="shareIcon"
-              d="M158.27,87H164c7.66,0,13.86,6.57,13.86,14.68v120c0,8.1-6.2,14.67-13.86,14.67H16.86C9.21,236.33,3,229.76,3,221.66v-120C3,93.56,9.21,87,16.86,87h5.68"
-            />
-            <polyline
-              class="shareIcon"
-              points="33.72 62.75 88.87 3 147.09 62.75"
-            />
-            <line class="shareIcon" x1="88.87" y1="3" x2="88.87" y2="159.46" />
-          </g>
-        </g>
-      </svg>
-    </div>
-    <div style="padding-top: 16px">
-      <app-thanks-message
-        [name]="name"
-        [email]="phone"
-        [orderDesc]="'Estado e información de tu orden:'"
-        [order]="dateId"
-        [linkId]="linkId"
-      >
-      </app-thanks-message>
-    </div>
-  </div>
-  <div class="section2">
-    <img
-      src="../../../../../assets/images/gift.png"
-      class="mainImg"
-      alt=""
-      style="
-        filter: invert(41%) sepia(99%) saturate(445%) hue-rotate(185deg)
-          brightness(88%) contrast(92%);
-      "
-    />
-    <p class="text" style="color: #272727; font-family: RobotoMedium">
-      Dinos más sobre ti para sorpresas
-    </p>
-    <p class="smallText">¿Qué usas más?</p>
-    <div class="socialNetworks">
-      <div>
-        <div class="img insta"></div>
-        <div class="title">Instagram</div>
-      </div>
-      <div>
-        <div class="img fb"></div>
-        <div class="title">Faebook</div>
-      </div>
-      <div>
-        <div class="img twitter"></div>
-        <div class="title">Twitter</div>
-      </div>
-      <div>
-        <div class="img tikTok"></div>
-        <div class="title">Tik Tok</div>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<!-- ---------------------------------------- WORKING VERSION ---------------------------------------- -->
-
 <div class="container-v2" *ngIf="dateId">
   <app-helper-header
     *ngIf="showHeader"
@@ -295,20 +14,21 @@
   >
   </app-helper-header>
   <div class="provider-info-wrapper">
-    <app-provider-info
-      [providerId]="providerData.headline"
-      [providerBio1]="
+    <app-helper-headerv2
+      mode="center"
+      [navtext]="'Codigo: '+dateId"
+    ></app-helper-headerv2>
+    <app-header-info
+      [profileImage]="providerData.image"
+      [starsAmount]="14.458"
+      [title]="providerData.headline"
+      [description]="
         name
           ? 'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()
           : ''
       "
-      [providerImage]="providerData.image"
-      [providerSocials]="providerData.socials"
-      [background]="'#FFFFFF'"
-      [leftInfo]="dateId"
-      [rightInfo]="date"
-    >
-    </app-provider-info>
+      [description2]="'en '+date"
+    ></app-header-info>
   </div>
 
   <app-page-component-tabs
@@ -480,66 +200,6 @@
   <div class="content-customizer" *ngIf="personalizacion">
     <section class="customization-container" *ngIf="customizer">
       <div class="card">
-        <div class="flex-container-two">
-          <!-- <div class="detail">
-            <svg
-              class="svg2"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 419.3 404.16"
-            >
-              <defs>
-                <style>
-                  .cls-1 {
-                    fill: #231f20;
-                  }
-                </style>
-              </defs>
-              <g id="Layer_2" data-name="Layer 2">
-                <g id="Layer_3" data-name="Layer 3">
-                  <path
-                    class="cls-1"
-                    d="M33.07,404.16A21.42,21.42,0,0,1,19.19,399h0L8,389.55a22.92,22.92,0,0,1-3.09-31.49L235.94,65.86a21.52,21.52,0,0,1,30.93-3.19l11.23,9.48a22.93,22.93,0,0,1,3.09,31.5L50.12,395.84a21.61,21.61,0,0,1-14.87,8.21C34.52,404.12,33.79,404.16,33.07,404.16ZM25.64,391.4a11.51,11.51,0,0,0,8.61,2.7,11.71,11.71,0,0,0,8-4.46L273.34,97.44a12.84,12.84,0,0,0-1.69-17.65l-11.23-9.48a11.49,11.49,0,0,0-8.61-2.71,11.69,11.69,0,0,0-8,4.46L12.71,364.26a12.84,12.84,0,0,0,1.7,17.65Z"
-                  />
-                  <path
-                    class="cls-1"
-                    d="M250.58,139.28a5,5,0,0,1-3.29-1.23l-36.86-32.28A5,5,0,1,1,217,98.25l36.86,32.27a5,5,0,0,1-3.3,8.76Z"
-                  />
-                  <path
-                    class="cls-1"
-                    d="M117.39,86.72h-.12a5,5,0,0,1-4.81-4.15,41.14,41.14,0,0,0-8.65-19.07C95.09,52.88,83.24,49.84,78.54,49a5,5,0,0,1,0-9.85,42.52,42.52,0,0,0,23.3-12.52,42.7,42.7,0,0,0,11-22.43,5,5,0,0,1,9.91.27,39.91,39.91,0,0,0,11.34,23.76,39.35,39.35,0,0,0,22,10.9,5,5,0,0,1,.34,9.84A44.4,44.4,0,0,0,135.2,60a44.94,44.94,0,0,0-12.93,22.77A5,5,0,0,1,117.39,86.72ZM95,44a50.08,50.08,0,0,1,16.5,13.13,49.43,49.43,0,0,1,6.16,9.54,53.72,53.72,0,0,1,22.18-22.22A48.31,48.31,0,0,1,127,35.36a48.46,48.46,0,0,1-9.63-13.54,51.59,51.59,0,0,1-8.3,11.7A51.65,51.65,0,0,1,95,44Z"
-                  />
-                  <path
-                    class="cls-1"
-                    d="M295.18,287.55h-.12a5,5,0,0,1-4.81-4.15,41.1,41.1,0,0,0-8.65-19.07c-8.72-10.63-20.57-13.67-25.27-14.48a5,5,0,0,1,0-9.85,42,42,0,0,0,34.29-34.95,5,5,0,0,1,4.94-4.23h.13a5,5,0,0,1,4.84,4.48,40,40,0,0,0,11.34,23.77,39.41,39.41,0,0,0,22,10.89,5,5,0,0,1,.34,9.85,44.36,44.36,0,0,0-21.22,11,45.1,45.1,0,0,0-12.93,22.77A5,5,0,0,1,295.18,287.55Zm-22.35-42.69a50.08,50.08,0,0,1,22.66,22.66,53.72,53.72,0,0,1,22.18-22.22,48.53,48.53,0,0,1-22.48-22.65,51.49,51.49,0,0,1-22.36,22.21Z"
-                  />
-                  <path
-                    class="cls-1"
-                    d="M340.91,110.68a5,5,0,0,1-4.35-7.46,58.82,58.82,0,0,0,7.65-28.84c0-19.6-10.38-33.62-14.81-38.74A5,5,0,0,1,335.61,28a60.51,60.51,0,0,0,37,7.18,60.67,60.67,0,0,0,32.32-14.82,5,5,0,0,1,7.51,6.48,57,57,0,0,0-8.94,36.5A56.31,56.31,0,0,0,418,95.27a5,5,0,0,1-6,7.83,63.14,63.14,0,0,0-33.29-6.92A63.87,63.87,0,0,0,344,109.61,5,5,0,0,1,340.91,110.68Zm5.57-67.53a67.25,67.25,0,0,1,5,50.1,72.33,72.33,0,0,1,49.35-5,65.05,65.05,0,0,1-4.78-50,69.42,69.42,0,0,1-22.23,6.81A69.38,69.38,0,0,1,346.48,43.15Z"
-                  />
-                </g>
-              </g>
-            </svg>
-            <div class="text-detail">Detalle</div>
-          </div> -->
-          <!-- <div class="see-more" (click)="editCustomizer()">
-            <div class="text-see-more">Editar</div>
-            <svg
-              style="align-self: center"
-              xmlns="http://www.w3.org/2000/svg"
-              width="5.805"
-              height="12.229"
-              viewBox="0 0 5.805 12.229"
-            >
-              <path
-                id="Trazado_27495"
-                data-name="Trazado 27495"
-                d="M17.719,10.284a.73.73,0,0,0-1.182,0l-4.131,5.135a1.22,1.22,0,0,0-.026,1.427l4.071,5.06a.728.728,0,0,0,1.182.005,1.216,1.216,0,0,0,0-1.465L14.177,16.1l3.547-4.351A1.216,1.216,0,0,0,17.719,10.284Z"
-                transform="translate(17.967 22.212) rotate(180)"
-                fill="#27a2ff"
-              />
-            </svg>
-          </div> -->
-        </div>
         <div class="img-container" *ngIf="customizer.preview">
           <img class="img" [src]="customizer.preview" alt="" />
         </div>
@@ -547,7 +207,7 @@
     </section>
   </div>
 
-  <div *ngIf="mensajeRegalo">
+  <div *ngIf="mensajeRegalo && message && currentMessage">
     <app-gift-message
       [data]="message"
       [isPreview]="true"
@@ -557,34 +217,9 @@
 
   <div *ngIf="pagoView">
     <div class="pagoView">
-      <p class="top-text">Los últimos 4 digitos de la transferencia:</p>
-
-      <input
-        type="text"
-        minlength="4"
-        maxlength="4"
-        class="input payment"
-        placeholder="Los 4 digitos son.."
-        [(ngModel)]="orders.ocr.transactionCode"
-        disabled
-      />
-
-      <p class="top-text">Monto transferido:</p>
-
-      <input
-        type="text"
-        class="input payment"
-        placeholder="Pagué.."
-        [value]="'$' + price.toLocaleString('en-US') + ' DOP'"
-        disabled
-      />
-
-      <p class="top-text">Imagen (captura):</p>
-      <div
-        class="pay-image"
-        (click)="openImageModal(orders.ocr.image)"
-        [ngStyle]="{ 'background-image': 'url(' + orders.ocr.image + ')' }"
-      ></div>
+      <div *ngFor="let item of ocrPayments">
+        <app-item-list [itemListContent]="item" [marginTop]="'0px'"></app-item-list>
+      </div>
     </div>
   </div>
 </div>

@@ -46,7 +46,7 @@ export class CustomItemDetailComponent implements OnInit {
     }
 
     this.route.queryParams.subscribe((queries) => {
-      this.onClick(queries.quality);
+      if(queries.quality >= 0) this.onClick(queries.quality);
     });
   }
 

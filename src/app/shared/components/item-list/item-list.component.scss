@@ -10,6 +10,12 @@
       flex-basis: 110px;
       height: 120px;
       width: 110px;
+
+      &.small {
+        flex-basis: 84px;
+        height: 88px;
+        width: 84px;
+      }
     }
 
     .icons {
@@ -34,6 +40,7 @@
     flex-basis: 350px;
     flex-direction: column;
     margin-left: 1rem;
+    justify-content: space-between;
 
     .container {
       display: flex;
@@ -42,6 +49,18 @@
 
     .container-title {
       flex-basis: 85%;
+    }
+
+    .status {
+      font-size: 16px;
+      font-family: "RobotoMedium";
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 0 20px;
+      color: white;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
     .container-icon {
@@ -70,19 +89,19 @@
       font-family: "RobotoBold";
       font-size: 20px;
       margin-bottom: 0;
-      margin-top: 0.5rem;
+      margin-top: 6px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      width: 250px;
+      max-width: 250px;
     }
 
     .subtitle {
       color: #0b1f38;
       font-family: "RobotoItalic";
       font-size: 15px;
-      margin: 0.5rem 0rem;
-      width: 250px;
+      margin: 0;
+      max-width: 250px;
       margin-bottom: 0;
     }
 
@@ -94,6 +113,7 @@
     }
 
     .informacion {
+      margin: 0;
       color: #7b7b7b;
       font-family: "RobotoRegular";
       font-size: 15px;
@@ -101,6 +121,19 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 250px;
+    }
+
+    .small-desc {
+      .informacion {
+        margin: 0;
+        color: #7b7b7b;
+        font-family: "RobotoItalic";
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 250px;
+      }
     }
 
     .icons-text {
@@ -196,4 +229,18 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
+}
+
+.placeholder {
+  border-radius: 8px;
+  flex-basis: 110px;
+  height: 120px;
+  width: 110px;
+  border-radius: 15px;
+  background: rgb(123, 123, 123);
+  background: linear-gradient(
+    180deg,
+    rgba(123, 123, 123, 1) 0%,
+    rgba(62, 62, 62, 1) 100%
+  );
 }

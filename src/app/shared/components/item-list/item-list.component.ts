@@ -3,12 +3,15 @@ import { Router } from '@angular/router';
 
 export interface ItemList {
   id?: string;
+  visible?: boolean;
   title: string;
   eventTitle?: any;
   subtitle?: string;
   price?: number | '';
   description?: string;
+  description2?: string;
   image?: string;
+  imageSize?: 'small' | 'normal';
   eventImage?: any;
   icon?: string;
   text_style?: boolean;
@@ -32,6 +35,8 @@ export interface ItemList {
   bar_icons?: boolean;
   contentBgColor?: string;
   phone?: string;
+  status?: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
+  statusCallback?: () => void,
 }
 
 @Component({
@@ -48,6 +53,7 @@ export class ItemListComponent implements OnInit {
     price: null,
     description: '',
     image: '',
+    imageSize: 'normal',
     eventImage: undefined,
     icon: '',
     text_style: true,
