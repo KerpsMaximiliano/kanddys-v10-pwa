@@ -33,6 +33,7 @@ import { TagsListComponent } from './pages/tags-list/tags-list.component';
 import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merchant-dashboardv2.component';
 import { ContainerFormComponent } from './pages/container-form/container-form.component';
 import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
+import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 
 const routes: Routes = [
   {
@@ -172,6 +173,10 @@ const routes: Routes = [
     path: 'post-creator',
     component: PostCreatorComponent
   },
+  {
+    path: 'post-preview',
+    component: PostPreviewComponent
+  },
 ];
 
 @NgModule({
@@ -209,6 +214,7 @@ const routes: Routes = [
     MerchantDashboardv2Component,
     ContainerFormComponent,
     PostCreatorComponent,
+    PostPreviewComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
