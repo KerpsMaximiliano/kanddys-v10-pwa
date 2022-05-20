@@ -32,6 +32,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { TagsListComponent } from './pages/tags-list/tags-list.component';
 import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merchant-dashboardv2.component';
 import { ContainerFormComponent } from './pages/container-form/container-form.component';
+import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
 
 const routes: Routes = [
   {
@@ -167,6 +168,10 @@ const routes: Routes = [
     path: 'container-form',
     component: ContainerFormComponent
   },
+  {
+    path: 'post-creator',
+    component: PostCreatorComponent
+  },
 ];
 
 @NgModule({
@@ -203,6 +208,7 @@ const routes: Routes = [
     TagsListComponent,
     MerchantDashboardv2Component,
     ContainerFormComponent,
+    PostCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
