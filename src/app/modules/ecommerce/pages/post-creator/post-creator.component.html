@@ -1,0 +1,91 @@
+<div class="container">
+    <ng-container *ngIf="viewtype == 'standalone'"> <!-- VISTA STANDALONE -->
+        <div class="topbar">
+            <label for="Cancelar" class="cancel">Cancel</label>
+        </div>
+
+        <div class="title-icons">
+            <label for="Titulo" class="title">Crea un mensaje memorable</label>
+
+            <div class="icons">
+                <app-cta-buttons
+				[ctaText]="'Audio'"
+				[btnColor]="'#FC2727'"
+				>
+                </app-cta-buttons>
+                
+                <app-cta-buttons
+				[ctaText]="'Imagen'"
+				[btnColor]="'#40772F'"
+				>
+                </app-cta-buttons>
+                
+                <app-cta-buttons
+				[ctaText]="'Texto'"
+				[btnColor]="'#4773D8'"
+				>
+                </app-cta-buttons>
+            </div>
+        </div>
+
+    </ng-container> <!-- VISTA STANDALONE -->
+
+    <ng-container *ngIf="viewtype == 'provider'"> <!-- VISTA PROVIDER -->
+
+        <app-helper-header
+        [bgcolor]="'#FFFFFF'"
+        [middleText]="'INFORMACIÓN DE LA ORDEN'"
+        [middleTextColor]="'#7B7B7B'"
+        [middleTextFontSize]="'17px'"
+        [middleTextFontFamily]="'SfProRegular'"
+        [options]="false"
+        [searchAble]="false"
+        ></app-helper-header>
+
+        <div class="ptitle-icons">
+            <label for="Titulo" class="provider-title">Que tipo de mensajito de regalo prefieres?</label>
+
+            <div class="options">
+                <p class="option-text"> Sin mensaje y sin tarjetita</p>
+                <p class="option-text"> Recibes la tarjetita vacía y escribes tu<br> el mensajito</p>
+                <p class="option-text"> Nosotros escribiremos el mensaje en<br> una tarjetita</p>
+            </div>
+
+            <div class="picons">
+
+                <div class="message-info">
+                    <p class="message">{{message}}</p>
+
+                    <img [src]="imageFolder + '/info.svg'" alt="" width="5.62px" height="20.46px" style="margin-top: 22px; cursor: pointer;">
+                </div>
+
+                <div class="icons-wrapper">
+                    <app-cta-buttons
+				    [ctaText]="'Audio'"
+				    [btnColor]="'#FC2727'"
+				    >
+                    </app-cta-buttons>
+
+                    <app-cta-buttons
+				    [ctaText]="'Poster'"
+				    [btnColor]="'#40772F'"
+				    >
+                    </app-cta-buttons>
+
+                    <app-cta-buttons
+				    [ctaText]="'Texto'"
+				    [btnColor]="'#4773D8'"
+				    >
+                    </app-cta-buttons>
+                </div>
+
+            </div>
+        </div>
+
+    </ng-container> <!-- VISTA PROVIDER -->
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [text]="'TOCA EN LA OPCION QUE PREFIERAS'"
+    ></app-sticky-button>
+</div>

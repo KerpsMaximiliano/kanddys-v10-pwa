@@ -25,6 +25,17 @@
             border-radius: 50%;
             border: 2px solid #FFFFFF;
             z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .img-container{
+                max-width: 35px;
+                max-height: 35px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 

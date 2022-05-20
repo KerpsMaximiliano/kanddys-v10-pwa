@@ -1,7 +1,11 @@
 <ng-container *ngIf="mode == 'basic'">
     <div class="body">
         <div class="round">
-          <div class="round-button" [style.background-color]="btnColor"></div>
+          <div class="round-button" [style.background-color]="btnColor">
+            <div *ngIf="icon" class="img-container">
+                <img [src]="icon" alt="">
+            </div>
+          </div>
         </div>
         <label for="Texto boton" class="text-btn">{{ctaText}}</label>
     </div>
