@@ -423,8 +423,6 @@
 }
 
 .pagoView {
-  padding-left: 24px;
-  padding-right: 24px;
   padding-bottom: 60px;
 }
 
@@ -706,6 +704,7 @@
       border-radius: 5px;
       max-width: 400px;
       text-align: center;
+      text-transform: uppercase;
     }
     .date {
       margin-top: 10px;

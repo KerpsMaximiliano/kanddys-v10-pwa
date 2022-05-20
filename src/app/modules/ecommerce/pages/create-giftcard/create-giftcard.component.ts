@@ -29,6 +29,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   //added create-giftcard again because the merge was deleted??????
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
+    localStorage.removeItem('createdPostId');
+
     this.header.post = {
       message: '',
       targets: [
@@ -480,7 +482,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.header.flowRoute = 'create-giftcard';
     localStorage.setItem('flowRoute', 'create-giftcard');
-    
+
     if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
       if (saleflow) {

@@ -7,16 +7,37 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./item-card.component.scss']
 })
 export class ItemCardComponent implements OnInit {
-    imageFolder: string;
-    @Input() quantity: string = '00';
-    @Input() centerImage: string;
-    @Input() itemPrice: string = '0.00';
-    @Input() itemIncome: string = '000,000.00'
-  constructor() {
-    this.imageFolder = environment.assetsUrl;
-   }
+  @Input() boxAmount: number;
+  @Input() image: string;
+  @Input() price: number;
+  @Input() income?: number;
+  @Input() showBox: boolean;
+  @Input() showIcon: boolean;
+  @Input() isSelected: boolean;
+  @Output() changeSelection = new EventEmitter();
+  @Output() itemClicked = new EventEmitter();
+
+  env: string = environment.assetsUrl;
+
+  constructor() {}
 
   ngOnInit(): void {
+  }
+
+  onClick() {
+    this.itemClicked.emit()
+  }
+
+  onTopBoxClick() {
+    //
+  }
+
+  onIconClick() {
+    //
+  }
+
+  onSelectedClick() {
+    this.changeSelection.emit();
   }
 
 }

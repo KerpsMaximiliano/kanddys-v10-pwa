@@ -11,6 +11,7 @@ import { WarningStepsComponent } from 'src/app/shared/dialogs/warning-steps/warn
 import { lockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-provider-store',
@@ -25,7 +26,8 @@ export class ProviderStoreComponent implements OnInit {
     private route: ActivatedRoute,
     private dialog: DialogService,
     private itemService: ItemsService,
-    private readonly app: AppService
+    private readonly app: AppService,
+    private location: LocationStrategy
   ) {
     router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
@@ -418,6 +420,10 @@ export class ProviderStoreComponent implements OnInit {
       active: true,
     }];
     this.finalizacion = true;
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
   }
 
   goback() {

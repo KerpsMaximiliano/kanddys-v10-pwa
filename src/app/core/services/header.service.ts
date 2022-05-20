@@ -549,8 +549,7 @@ export class HeaderService {
           const { createPreOrder } = await this.orderService.createPreOrder(
             this.order
           );
-          this.deleteSaleflowOrder(saleflow._id);
-          this.resetIsComplete();
+
           this.orderId = createPreOrder._id;
           this.currentMessageOption = undefined;
           this.post = undefined;

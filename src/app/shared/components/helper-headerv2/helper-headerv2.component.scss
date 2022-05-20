@@ -41,15 +41,24 @@
     }
 
     .double-text{
+        height: 100%;
         display: flex;
         justify-content: space-around;
         align-items: center;
 
-        .left-text{
-            font-size: 14px;
-            font-family: 'RobotoBlack';
+        .text {
             color: #FFFFFF;
             cursor: pointer;
+        }
+
+        .bold-text{
+            font-size: 14px;
+            font-family: 'RobotoBlack';
+        }
+
+        .light-text {
+            font-size: 16px;
+            font-size: "RobotoRegular";
         }
 
         .linea{
@@ -59,13 +68,6 @@
             border: none;
             margin-left: 25px;
             margin-right: 17px;
-        }
-
-        .right-text{
-            font-size: 14px;
-            font-family: 'RobotoBlack';
-            color: #FFFFFF;
-            cursor: pointer;
         }
     }
 
