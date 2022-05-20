@@ -78,7 +78,8 @@ import { MagicLinkDialogComponent } from './components/magic-link-dialog/magic-l
 import { HelperHeaderv2Component } from './components/helper-headerv2/helper-headerv2.component';
 import { ItemCardComponent } from './components/item-card/item-card.component';
 import { HeaderInfoComponent } from './components/header-info/header-info.component';
-// import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.component';
+import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.component';
+import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualizer.component';
 
 const imports = [
   CommonModule,
@@ -154,7 +155,8 @@ const declarations = [
   HelperHeaderv2Component,
   ItemCardComponent,
   HeaderInfoComponent,
-  // MerchantInfoComponent,
+  MerchantInfoComponent,
+  PreVisualizerComponent,
 ];
 
 @NgModule({
