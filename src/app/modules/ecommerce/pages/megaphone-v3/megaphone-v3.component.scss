@@ -28,17 +28,22 @@
     font-family: "Roboto";
     padding-left: 34px;
     padding-right: 31px;
-    height: 75px;
   
     .header-text {
-      font-size: 14px;
-      text-transform: uppercase;
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #313131;
+      font-family: 'SfProMedium';
+      font-weight: 100;
     }
   
     .see-all-more {
       color: #7b7b7b;
       font-family: 'RobotoMedium';
       font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 8px;
       cursor: pointer;
     }
   }
@@ -93,6 +98,17 @@
     border: none;
     padding-bottom: 0;
   }
+}
+
+.content {
+  padding-top: 15px;
+  box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.16);
+  -webkit-box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.16);
+  -moz-box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.16);
+}
+
+.header-bg {
+  padding-bottom: 27px;
 }
 
 // .headerParagraph {

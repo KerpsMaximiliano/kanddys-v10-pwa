@@ -2,7 +2,7 @@
   Ir a mi view
 </div>-->
 <div style="min-height: 100vh">
-  <app-provider-info
+  <!-- <app-provider-info
     *ngIf="saleflowData"
     [providerId]="merchantName"
     [providerBio1]="merchantSubheadline"
@@ -10,7 +10,14 @@
     [providerImage]="banner"
     [providerSocials]="saleflowData.social"
     [flowId]="flowId"
-  ></app-provider-info>
+  ></app-provider-info> -->
+  <div class="header-bg">
+    <app-header-info
+      [profileImage]="banner"
+      [title]="merchantName"
+      [description]="merchantSubheadline"
+    ></app-header-info>
+  </div>
 
   <!-- <app-page-component-tabs *ngIf="customizersId.length === 0" [tabsOptions]="pagesList"></app-page-component-tabs> -->
   <!-- <p class="headerParagraph" *ngIf="itemsByCategory.length > 0 && !hasCustomizer">
@@ -26,7 +33,7 @@
         [ngStyle]="{
           fontFamily: 'SfProRegular',
           color: '#7b7b7b',
-          fontWeight: 100
+          fontWeight: 100 
         }"
       >
         Paquetes
@@ -96,22 +103,17 @@
     </ng-container> -->
   </div>
   <!-- <div *ngIf="itemsByCategory.length > 0" [ngStyle]="{backgroundColor: !hasCustomizer && '#ffffff'}"> -->
-  <div *ngIf="itemsByCategory.length > 0" style="margin-bottom: 30px">
+  <div class="content" *ngIf="itemsByCategory.length > 0">
     <div
       *ngFor="let item of itemsByCategory; let i = index"
-      [ngStyle]="{ marginBottom: '110px' }"
+      [ngStyle]="{ paddingBottom: '67px' }"
     >
       <div
         class="header-wrapper"
-        [ngStyle]="{ marginTop: i == 0 ? '32.5px' : '0px' }"
+        [ngStyle]="{ marginTop: i == 0 ? '15px' : '0px' }"
       >
         <h6
           class="header-text"
-          [ngStyle]="{
-            fontFamily: 'SfProRegular',
-            color: '#7b7b7b',
-            fontWeight: 100
-          }"
         >
           {{ item.label }}
         </h6>
@@ -120,13 +122,13 @@
           style="font-weight: 100"
           (click)="seeCategories(i)"
         >
-          Ver más
+          Ver..
         </h6>
       </div>
       <app-swiper
         [saleFlowTwo]="true"
         [saleFlowTwoData]="item.items"
-        [showPrice]="false"
+        [showPrice]="!hasCustomizer"
         (slideActive)="onItemCategoryClick(i, $event)"
         (toggleEmitter)="toggleSelected('item', i, $event)"
       ></app-swiper>
@@ -187,12 +189,13 @@
   <ng-container *ngIf="!hasCustomizer; else noCTA">
     <app-sticky-button
       [mode]="canOpenCart ? 'basic' : 'disabled'"
+      [size]="canOpenCart ? 'normal' : 'small'"
       [text]="
         canOpenCart
           ? 'VER CARRITO DE COMPRAS'
           : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
           ? 'SELECCIONA TU PAQUETE'
-          : 'SELECCIONAR'
+          : 'TOCA DONDE PREFIERAS'
       "
       (click)="showShoppingCartDialog()"
     ></app-sticky-button>
@@ -200,7 +203,8 @@
   <ng-template #noCTA>
     <app-sticky-button
       [mode]="'disabled'"
-      [text]="'SELECCIONAR'"
+      size="small"
+      [text]="'TOCA DONDE PREFIERAS'"
     ></app-sticky-button>
   </ng-template>
 </ng-container>

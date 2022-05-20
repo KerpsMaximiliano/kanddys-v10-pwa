@@ -1,0 +1,26 @@
+<div class="body">
+
+    <div class="profile-name">
+        <div class="profile-purple">
+            <img [src]="env + profileImage" alt="Imagen de perfil" class="image-profile">
+            <div class="purple" *ngIf="starsAmount">
+                <label for="Cantidad de popularidad" class="stars-amount">{{starsAmount}}</label>
+                <img [src]="env + '/star.svg'" alt="" width="13.75px" height="13.02px">
+            </div>
+        </div>
+
+        <div class="names-wrapper">
+            <label class="header-name">{{title}}</label>
+            <label class="header-desc">{{description}}</label>
+            <label class="header-desc">{{description2}}</label>
+        </div>
+    </div>
+
+    <div class="more-info-button">
+        <span (click)="openDialog()">
+            <img [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
+        </span>
+    </div>
+      
+    <!-- <img [src]="imageFolder + " alt=""> -->
+</div>
