@@ -1,0 +1,253 @@
+<div class="container">
+  <app-helper-header
+    bgcolor="#FFFFFF"
+    [searchAble]="false"
+    middleTextFontSize="17px"
+    middleTextFontFamily="SfProRegular"
+    middleTextColor="#7B7B7B"
+    [middleText]="headerText"
+    [back]="localStorageFlowRoute && localStorageFlowRoute !== ''"
+    [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
+    [dialogProps]="dialogProps"
+    [orderItems]="true"
+    (onClose)="goBack()"
+  ></app-helper-header>
+  <div *ngIf="step === 'UPDATE_NAME_AND_SHOW_BANKS'">
+    <div
+      [ngStyle]="{
+        padding: '0px 33px',
+        marginTop: '28px'
+      }"
+    >
+      <p class="label2" [ngStyle]="{ marginBottom: '11px' }">
+        Nombre y Apellido
+      </p>
+      <input
+        type="text"
+        class="input"
+        [formControl]="name"
+        [placeholder]="'Mi nombre y apellido es..'"
+      />
+      <p class="label2" [ngStyle]="{ marginTop: '42px', marginBottom: '11px' }">
+        Donde te mandaremos las notificaciones de esta orden?
+      </p>
+      <input
+        type="number"
+        class="input"
+        placeholder="Mi WhatsApp es..."
+        [formControl]="phoneNumber"
+        pattern="[0-9]*"
+        inputmode="numeric"
+      />
+    </div>
+
+    <div
+      [ngStyle]="{
+        width: '88.32%',
+        margin: '0 auto',
+        padding: '0px 25px',
+        paddingTop: '42px',
+        borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+      }"
+    ></div>
+
+    <div
+      [ngStyle]="{
+        width: '88.32%',
+        margin: '0 auto',
+        marginTop: '28px',
+        marginBottom: '28px'
+      }"
+    >
+      <p
+        class="label3"
+        [ngStyle]="{
+          width: '90.47%',
+          margin: 'auto'
+        }"
+      >
+        Por favor transfiera como pago la suma de ${{
+          orderData?.amount | number: "1.0-2"
+        }}
+        DOP.
+      </p>
+
+      <div
+        [ngStyle]="{
+          width: '90.47%',
+          margin: 'auto'
+        }"
+      >
+        <div
+          *ngFor="let bank of bankOptions"
+          [ngStyle]="{
+            marginTop: '28px'
+          }"
+        >
+          <h6
+            [ngStyle]="{
+              color: 'black',
+              fontWeight: 'bold',
+              fontFamily: 'RobotoMedium',
+              margin: '0px'
+            }"
+          >
+            {{ bank.value }}
+          </h6>
+          <div *ngIf="bank.description">
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+              *ngFor="let description of bank.description"
+            >
+              {{ description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      [ngStyle]="{
+        backgroundColor: 'rgba(254, 210, 48, 0.43)',
+        color: 'black',
+        borderRadius: '10px',
+        fontStyle: 'italic',
+        fontSize: '17px',
+        fontFamily: 'Roboto',
+        margin: '0px 32px',
+        marginTop: '42px',
+        marginBottom: '98px',
+        padding: '21px'
+      }"
+    >
+      En la siguiente pantalla subirás una foto con la imagen (pantallaso,
+      screenshot) de la transferencia que realizaste.
+    </div>
+  </div>
+  <div *ngIf="step === 'PAYMENT_INFO'">
+    <div class="content step-7">
+      <p style="margin-bottom: 47px" class="label1">
+        Sobre la transferencia que realizó como pago:
+      </p>
+      <!-- Temporalmente deshabilitado -->
+      <!-- <p style="margin-bottom: 22px; margin-top: 0px" class="label3">
+        Que monto transfirió?
+      </p>
+      <input
+        type="number"
+        min="1"
+        class="input payment"
+        placeholder="Pagué.."
+        [formControl]="ammount"
+        (keydown)="validateNumbers($event)"
+        pattern="[0-9]*"
+        inputmode="numeric"
+      /> -->
+
+      <p style="margin-bottom: 22px; margin-top: 88px" class="label2">
+        Adicione los últimos 4 digitos de la transferencia que realizó:
+      </p>
+      <input
+        type="text"
+        [(ngModel)]="paymentCode"
+        minlength="4"
+        maxlength="4"
+        class="code-input"
+      />
+
+      <p class="label3" style="margin-top: 87px">
+        Adicione la imagen (captura):
+      </p>
+      <app-image-input
+        [allowedTypes]="['png', 'jpg', 'jpeg']"
+        (onFileInput)="onFileInput($event)"
+      ></app-image-input>
+      <!-- <ng-container *ngIf="selectedBank">
+        <div class="unique-bank">
+          <h2>{{ selectedBank.value }}</h2>
+          <span *ngFor="let desc of selectedBank.description">{{ desc }}</span>
+        </div>
+      </ng-container> -->
+
+      <p
+        class="label3"
+        [ngStyle]="{ marginBottom: '26px' }"
+        *ngIf="banks.length > 1"
+      >
+        En cuál cuenta hizo la transferencia?
+      </p>
+
+      <app-answer-selector
+        *ngIf="banks.length > 1"
+        [options]="bankOptions"
+        (onSelector)="selectBank($event)"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '72px',
+          borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+        }"
+      ></app-answer-selector>
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          paddingTop: '29.5px',
+          color: '#7B7B7B',
+          fontFamily: 'Roboto',
+          fontStyle: 'italic',
+          fontSize: '17px',
+          paddingBottom: '67px'
+        }"
+      >
+        En la siguiente pantalla le mandarás el record de tu orden y la
+        confirmación del pago que hiciste a {{ saleflowData.merchant.name }}
+      </div>
+    </div>
+  </div>
+  <div
+    class="footer"
+    [ngStyle]="{
+      justifyContent: step === 'PAYMENT_INFO' ? 'space-between' : 'flex-end'
+    }"
+  ></div>
+
+  <div class="bottom-separator"></div>
+
+  <app-sticky-button
+    *ngIf="step === 'UPDATE_NAME_AND_SHOW_BANKS'"
+    [mode]="
+      name.status === 'INVALID' || phoneNumber.status === 'INVALID'
+        ? 'disabled-fixed'
+        : 'fixed'
+    "
+    [text]="
+      name.status === 'INVALID' || phoneNumber.status === 'INVALID'
+        ? 'ESCRIBE QUIEN ERES Y COMO TE CONTACTAMOS'
+        : 'CONFIRMA TU PAGO'
+    "
+    (click)="submit()"
+  ></app-sticky-button>
+
+  <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
+    <app-sticky-button
+      [mode]="
+        paymentCode.length !== 4 || !image || !selectedBank
+          ? 'disabled-fixed'
+          : 'fixed'
+      "
+      [text]="
+        paymentCode.length !== 4 || !image || !selectedBank
+          ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+          : 'Manda tu orden a ' + merchantInfo.name.toUpperCase()
+      "
+      (click)="submit()"
+    ></app-sticky-button>
+  </a>
+</div>
