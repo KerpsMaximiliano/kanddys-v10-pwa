@@ -34,6 +34,7 @@ import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merch
 import { ContainerFormComponent } from './pages/container-form/container-form.component';
 import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
+import { PostEditComponent } from './pages/post-edit/post-edit.component';
 
 const routes: Routes = [
   {
@@ -177,6 +178,10 @@ const routes: Routes = [
     path: 'post-preview',
     component: PostPreviewComponent
   },
+  {
+    path: 'post-edit',
+    component: PostEditComponent
+  }
 ];
 
 @NgModule({
@@ -215,6 +220,7 @@ const routes: Routes = [
     ContainerFormComponent,
     PostCreatorComponent,
     PostPreviewComponent,
+    PostEditComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
