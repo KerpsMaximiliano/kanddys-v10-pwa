@@ -338,10 +338,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           lockUI();
 
           let registeredNewUser: User = null;
-          console.log(this.phoneNumber.value);
 
           let foundUser = await this.authService.checkUser(
-            String(this.phoneNumber.value)
+            '1' + String(this.phoneNumber.value)
           );
           this.userData = foundUser;
 
