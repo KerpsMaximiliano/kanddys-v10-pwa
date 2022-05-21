@@ -113,6 +113,11 @@ export class HeaderService {
   flowRoute: string;
   paramHasColor: boolean;
   paramHasImage: boolean;
+  storedDeliveryLocation: string = null;
+  disableGiftMessageTextarea: boolean = false;
+  createdOrderWithDelivery: boolean = false;
+  createdOrderWithoutDelivery: boolean = false;
+
   public session: Session;
   constructor(
     private dialog: DialogService,
@@ -493,8 +498,7 @@ export class HeaderService {
   }
 
   createPreOrder = () => {
-    const saleflow =
-      this.saleflow || this.getSaleflow();
+    const saleflow = this.saleflow || this.getSaleflow();
 
     this.order = this.getOrder(saleflow._id);
 

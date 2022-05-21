@@ -27,6 +27,7 @@ interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
   selectionOptions?: Array<string>;
@@ -342,6 +343,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       step.fieldsList.forEach((field) => {
         if (!currentStepFormGroup.get(field.name))
           currentStepFormGroup.addControl(field.name, field.fieldControl);
+
+        if (field.enabledOnInit === 'DISABLED') {
+          currentStepFormGroup.get(field.name).disable();
+        }
 
         //Adds an onChange function to every formControl, if you wish to transform Data or
         //trigger code execution on every input change
