@@ -98,7 +98,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
 
     if (data) {
-      this.header.saleflow = data.order.items[0].saleflow;
       this.fakeData = data.order;
       if (!this.merchantInfo) {
         this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
@@ -361,6 +360,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               await this.order.authOrder(this.orderId, registeredNewUser._id);
           }
 
+          await this.getOrderData(this.orderId, false);
+
           //disable 1st step inputs to avoid further changes to existing order
           this.phoneNumber.disable();
           this.name.disable();
@@ -517,10 +518,11 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         'bank-transfer',
         this.orderData.id
       );
-      this.orderFinished();
-
       this.header.deleteSaleflowOrder(this.saleflowData._id);
       this.header.resetIsComplete();
+      this.header.storedDeliveryLocation = null;
+
+      this.orderFinished();
     } catch (error) {
       console.log(error);
       this.orderFinished();
