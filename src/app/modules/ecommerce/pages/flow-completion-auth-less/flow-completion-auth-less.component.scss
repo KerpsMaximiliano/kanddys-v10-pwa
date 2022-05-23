@@ -1,0 +1,211 @@
+@import "forms"; 
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.content {
+  padding: 20px 33px;
+  .input {
+    border-radius: 10px;
+    padding: 0px 20px;
+    width: 100%;
+    height: 73px;
+    font-family: RobotoMedium;
+    font-size: 20px;
+    border: none;
+    color: #0b1f38;
+    box-shadow: 0px 8px 41px -32px inset;
+    -webkit-box-shadow: 0px 8px 41px -32px inset;
+    -moz-box-shadow: 0px 8px 41px -32px inset;
+
+    &:focus {
+      border: 1px solid #31a4f9;
+    }
+
+    &::placeholder {
+      font-family: RobotoMedium;
+      font-size: 20px;
+      color: rgb(161, 161, 161, 0.6);
+    }
+  }
+
+  .square {
+    height: 165px;
+    width: 195px;
+    border: 1px solid #31a4f9;
+    border-radius: 9px;
+    padding: 56px 21px 0px;
+    background-color: #ffffff;
+    p {
+      margin: 0;
+      text-align: center;
+      font-family: RobotoMedium;
+      font-size: 20px;
+      color: #a1a1a1;
+      opacity: 0.6;
+    }
+  }
+
+  &.step-7 {
+    padding-top: 47px;
+    padding-bottom: 52px;
+  }
+}
+
+.label1 {
+  font-size: 24px;
+  font-family: Roboto;
+  font-weight: bold;
+  margin: 0px;
+  margin-bottom: 33px;
+  color: #2e2e2e;
+}
+
+.label1-step-6 {
+  font-size: 24px;
+  font-family: Roboto;
+  margin-bottom: 39px;
+  font-weight: bold;
+  color: #2e2e2e;
+}
+
+.label2,
+.label3 {
+  font-family: RobotoLight;
+  font-size: 19px;
+  color: #000000;
+}
+
+.label3 {
+  margin-top: 70px;
+  margin-bottom: 22px;
+}
+
+.sublabel {
+  font-family: "RobotoItalic";
+  font-size: 17px;
+  color: #7b7b7b;
+  margin: 0px;
+  margin-left: 16px;
+  margin-top: 20px;
+  width: 76.95%;
+}
+
+.questions {
+  margin-top: 118px;
+}
+
+.extra {
+  margin-top: 145px;
+}
+
+.questions-step-6 {
+  margin-top: 117px;
+}
+
+.m-top {
+  margin-top: 100px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+//nuevo merge, devuelta a los estilos originales
+.footer {
+  margin-top: auto;
+  display: flex;
+  position: relative;
+  padding-top: 1rem;
+  margin-bottom: 25px;
+  padding-left: 33px;
+  padding-right: 40px;
+}
+
+.step-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 7.5px;
+}
+
+.redirect {
+  font-family: "RobotoItalic";
+  color: #7b7b7b;
+  font-size: 17px;
+  width: 50%;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.steps {
+  font-family: "Roboto";
+  font-size: 14px;
+  color: #3d3d3d;
+  align-self: flex-end;
+}
+
+.unique-bank {
+  background-color: rgba($color: #fed230, $alpha: 0.43);
+  border-radius: 20px;
+  padding: 24.6px 38px;
+  font-family: "Roboto";
+  margin-top: 64px;
+
+  h2 {
+    color: #0b1f38;
+    margin: 0;
+    font-size: 19px;
+    margin-bottom: 21px;
+  }
+
+  span {
+    display: block;
+    width: 100%;
+    margin-bottom: 8px;
+    color: #202020;
+    font-size: 17px;
+    font-style: italic;
+    margin-left: 22px;
+  }
+}
+
+@media only screen and (max-width: 380px) {
+  .questions,
+  .extra {
+    margin-top: 72.5px !important;
+  }
+  .m-top {
+    margin-top: 50px !important;
+  }
+}
+
+$char-w: 1ch;
+$gap: .5*$char-w;
+$n-char: 4;
+$in-w: $n-char*($char-w + $gap);
+
+.code-input {
+	display: block;
+	margin: 0 auto;
+  text-transform: uppercase;
+	border: none;
+	padding: 0;
+	width: $in-w;
+  letter-spacing: $gap;
+	background: repeating-linear-gradient(90deg, 
+  dimgrey 0, dimgrey $char-w, 
+  transparent 0, transparent $char-w + $gap) 
+  0 100%/ #{$in-w - $gap} 2px no-repeat;
+  font: 5ch droid sans mono, consolas, monospace;
+	
+	&:focus {
+		outline: none;
+		color: dodgerblue;
+	}
+}

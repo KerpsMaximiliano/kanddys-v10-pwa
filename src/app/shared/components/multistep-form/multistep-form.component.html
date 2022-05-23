@@ -445,7 +445,9 @@
           : steps[currentStepIndex].stepButtonInvalidText
       "
       [mode]="
-        dataModel.get(currentStepString).valid ? 'fixed' : 'disabled-fixed'
+        dataModel.get(currentStepString).status !== 'INVALID'
+          ? 'fixed'
+          : 'disabled-fixed'
       "
       (click)="executeStepDataProcessing()"
     ></app-sticky-button>

@@ -6,6 +6,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WarningStepsComponent } from '../../../../shared/dialogs/warning-steps/warning-steps.component';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-user-info',
@@ -28,10 +29,21 @@ export class UserInfoComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onClick() {
+  async onClick() {
     if (this.isDataMissing() && !this.header.orderId) this.openWarningDialog();
     else {
-      this.openMagicLinkDialog();
+      lockUI();
+      let preOrderID;
+      if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+      else preOrderID = this.header.orderId;
+
+      this.router.navigate([
+        `ecommerce/flow-completion-auth-less/${preOrderID}`,
+      ]);
+
+      unlockUI();
+
+      // this.openMagicLinkDialog();para usar magicLink
     }
   }
 
@@ -46,7 +58,9 @@ export class UserInfoComponent implements OnInit {
       .pipe(filter((e) => e.type === 'result'))
       .subscribe((e) => {
         if (e.data)
-          this.router.navigate([`ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/${e.data}`]);
+          this.router.navigate([
+            `ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/${e.data}`,
+          ]);
         sub.unsubscribe();
       });
   }
@@ -57,7 +71,8 @@ export class UserInfoComponent implements OnInit {
       props: {
         asyncCallback: async (whatsappLink: string) => {
           let preOrderID;
-          if(!this.header.orderId) preOrderID = await this.header.createPreOrder();
+          if (!this.header.orderId)
+            preOrderID = await this.header.createPreOrder();
           else preOrderID = this.header.orderId;
           whatsappLink += `text=Keyword-Order%20${preOrderID}`;
 
