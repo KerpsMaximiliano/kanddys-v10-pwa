@@ -185,20 +185,14 @@
         <div class="payment-card">
           <div class="price">
             <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
-            <div class="dop">
-              DOP
-            </div>
           </div>
-          <p class="payment-type">Total Facturado</p>
+          <p class="payment-type">Total Facturado en DOP</p>
         </div>
         <div class="payment-card">
           <div class="price">
             <p class="total" *ngIf="totalPayed">${{ totalPayed | number: "1.0-2" }}</p>
-            <div class="dop">
-              DOP
-            </div>
           </div>
-          <p class="payment-type">Total Pagado</p>
+          <p class="payment-type">Total Pagado en DOP</p>
         </div>
       </div>
       <div *ngFor="let item of ocrPayments">

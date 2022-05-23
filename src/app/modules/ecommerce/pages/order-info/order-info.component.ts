@@ -185,7 +185,7 @@ export class OrderInfoComponent implements OnInit {
                 image: data.order.ocr.image,
                 eventImage: () => this.openImageModal(data.order.ocr.image),
                 imageSize: 'small',
-                title: '$' + this.price.toLocaleString('en-US') + ' DOP',
+                title: '$' + this.price.toLocaleString('en-US'),
                 // subtitle: 'Verificado por '+'AliciaID',
                 description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode.toUpperCase(),
                 description2: timeAgo,
