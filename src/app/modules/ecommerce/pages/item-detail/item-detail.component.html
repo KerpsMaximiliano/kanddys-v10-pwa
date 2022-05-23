@@ -125,8 +125,9 @@
                 </app-cta-buttons>
     
                 <app-cta-buttons
-                    [ctaText]="'Al Carrito Para Comprarlo'"
+                    [ctaText]="inCart ? 'En El Carrito De Compras' : 'Al Carrito Para Comprarlo'"
                     [btnColor]="'#4773D8'"
+                    [icon]="inCart && env  + '/white-checkmark.svg'"
                     (click)="saveProduct()"
                 >
                 </app-cta-buttons>

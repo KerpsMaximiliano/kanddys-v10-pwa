@@ -47,8 +47,8 @@ export class ItemDetailComponent implements OnInit {
   priceLabel : number = 0.00;
   itemData: Item;
   saleflowId: string;
-  ctaText: string = 'ADICIONAR AL CARRITO';
-  bgColor: string = "#27a2ff";
+  itemCartCTA: string = 'Al Carrito Para Comprarlo';
+  inCart: boolean;
   whatsappLink: string = '';
   fullLink: string = '';
   showCartCallBack: any;
@@ -56,6 +56,9 @@ export class ItemDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
+      if (params.saleflow) {
+        this.saleflowId = params.saleflow;
+      }
       if (params.id) {
         await this.items.item(params.id).then((data) => {
           this.itemData = data;
@@ -64,9 +67,6 @@ export class ItemDetailComponent implements OnInit {
           this.priceLabel = this.itemData.pricing;
           this.itemInCart();
         });
-      }
-      if (params.saleflow) {
-        this.saleflowId = params.saleflow;
       }
       this.fullLink = `${this.saleflowId 
         ? `${environment.uri}/ecommerce/item-detail/${this.saleflowId}/${params.id}?viewtype=community`
@@ -86,18 +86,8 @@ export class ItemDetailComponent implements OnInit {
   itemInCart() {
     const productData = this.header.getItems(this.saleflowId);
     if (productData && productData.length > 0) {
-      if (productData.some((item) => item._id === this.itemData._id)) {
-        this.ctaText = 'QUITAR DEL CARRITO';
-        this.bgColor = "#FC2727";
-      }
-      else {
-        this.ctaText = 'ADICIONAR AL CARRITO';
-        this.bgColor = "#27a2ff";
-      }
-    } else {
-      this.ctaText = 'ADICIONAR AL CARRITO';
-      this.bgColor = "#27a2ff";
-    }
+      this.inCart = productData.some((item) => item._id === this.itemData._id);
+    } else this.inCart = false;
   }
 
   showItems() {
