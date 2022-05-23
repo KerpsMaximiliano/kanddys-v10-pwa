@@ -81,6 +81,7 @@ import { HeaderInfoComponent } from './components/header-info/header-info.compon
 import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.component';
 import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualizer.component';
 import { PostPrivacyComponent } from './dialogs/post-privacy/post-privacy.component';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 
 const imports = [
   CommonModule,
@@ -92,6 +93,7 @@ const imports = [
   QRCodeModule,
   SwiperModule,
   TextFieldModule,
+  NgxIntlTelInputModule,
 ];
 const declarations = [
   // Pages
