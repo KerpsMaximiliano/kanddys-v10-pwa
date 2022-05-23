@@ -18,6 +18,7 @@ import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
 import { ItemSubOrder } from 'src/app/core/models/order';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 moment.locale('es');
 
 @Component({
@@ -58,7 +59,7 @@ export class OrderInfoComponent implements OnInit {
   id: string;
   linkId: string;
   price: number = 0;
-  status: string;
+  status: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
   paramValue: string;
   paramType: string;
   image: string[];
@@ -98,7 +99,7 @@ export class OrderInfoComponent implements OnInit {
       title: 'Tik Tok',
     },
   ];
-  facturado: boolean;
+  comprado: boolean;
   escenarios: boolean;
   reservacion: boolean;
   personalizacion: boolean;
@@ -106,12 +107,12 @@ export class OrderInfoComponent implements OnInit {
   mensajeRegalo: boolean;
   orderId: string;
   pago: number;
-  comprado: string;
   dateOfOrder: string;
   existPackage: boolean = false;
   notifications: boolean = true;
   showNotificationButton: boolean;
-  ocrPayments: any;
+  ocrPayments: ItemList[] = [];
+  totalPayed: number;
 
   days: string[] = [
     '',
@@ -157,12 +158,11 @@ export class OrderInfoComponent implements OnInit {
             .me()
             .then(
               (user) =>
-                (this.showNotificationButton = user._id === data.order.user._id)
+                (this.showNotificationButton = user?._id === data.order.user._id)
             );
-          this.status = data.order.orderStatus;
-          if (this.status === 'in progress') this.status = 'en revisión';
-          else if (this.status === 'to confirm') this.status = 'por confirmar';
-          else if (this.status === 'completed') this.status = 'completado';
+          if (data.order.orderStatus === 'in progress') this.status = 'en revisión';
+          else if (data.order.orderStatus === 'to confirm') this.status = 'por confirmar';
+          else if (data.order.orderStatus === 'completed') this.status = 'completado';
           const totalPrice = data.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
@@ -172,26 +172,29 @@ export class OrderInfoComponent implements OnInit {
             : totalPrice;
           let today = moment();
           let daysAgo = today.diff(data.order.createdAt, 'days');
-          let timeAgo = "Today";
+          let timeAgo = "Hoy";
           if (daysAgo > 0) timeAgo = "Hace "+daysAgo+ " dias";
           if (data.order.ocr) {
             this.tabsOptions.push('Pago');
             this.pagoView = true;
+            this.totalPayed = this.price;
             this.ocrPayments = [
               {
-                id: '534534536',
+                id: data.order.ocr._id,
                 visible: true,
                 image: data.order.ocr.image,
+                eventImage: () => this.openImageModal(data.order.ocr.image),
                 imageSize: 'small',
                 title: '$' + this.price.toLocaleString('en-US') + ' DOP',
-                subtitle: 'Verificado por '+'AliciaID',
-                description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode,
+                // subtitle: 'Verificado por '+'AliciaID',
+                description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode.toUpperCase(),
                 description2: timeAgo,
                 status: this.status,
+                // statusCallback: () => this.openStatusDialog(),
               }
             ]
-          } else this.facturado = true;
-          this.tabsOptions.push('Lo Facturado');
+          } else this.comprado = true;
+          this.tabsOptions.push('Comprado');
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');
@@ -220,7 +223,7 @@ export class OrderInfoComponent implements OnInit {
           this.name =
             String(data.order.user.name) !== 'null' && data.order.user.name
               ? data.order.user.name
-              : '';
+              : 'usuario';
           this.merchantName = data.order.items[0].saleflow.headline;
           this.orderId = data.order._id;
           // this.date = `${moment(data.order.createdAt).format(
@@ -344,6 +347,10 @@ export class OrderInfoComponent implements OnInit {
     });
   }
 
+  openStatusDialog() {
+    //
+  }
+
   formatID(dateId: string) {
     const splits = dateId.split('/');
     const year = splits[2].substring(0, 4);
@@ -378,11 +385,6 @@ export class OrderInfoComponent implements OnInit {
 
   toggleNotifications() {
     this.order.toggleUserNotifications(!this.notifications, this.linkId);
-    // .then((result) => {
-    //   console.log('Cambiaste las preferencias de notificaciones');
-    //   console.log(result);
-    // });
-
     this.notifications = !this.notifications;
   }
 
@@ -402,7 +404,7 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = true;
       this.address = false;
       this.escenarios = false;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
@@ -410,7 +412,7 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = false;
       this.address = true;
       this.escenarios = false;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
@@ -418,15 +420,15 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = false;
       this.address = false;
       this.escenarios = true;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
-    } else if (e === 'Lo Facturado') {
+    } else if (e === 'Comprado') {
       this.reservacion = false;
       this.address = false;
       this.escenarios = false;
-      this.facturado = true;
+      this.comprado = true;
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = false;
@@ -434,7 +436,7 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = false;
       this.address = false;
       this.escenarios = false;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = true;
       this.mensajeRegalo = false;
       this.pagoView = false;
@@ -442,7 +444,7 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = false;
       this.address = false;
       this.escenarios = false;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = false;
       this.mensajeRegalo = true;
       this.pagoView = false;
@@ -450,7 +452,7 @@ export class OrderInfoComponent implements OnInit {
       this.reservacion = false;
       this.address = false;
       this.escenarios = false;
-      this.facturado = false;
+      this.comprado = false;
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = true;

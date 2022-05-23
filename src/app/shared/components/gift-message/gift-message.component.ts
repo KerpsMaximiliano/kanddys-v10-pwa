@@ -25,7 +25,6 @@ export class GiftMessageComponent implements OnInit {
 
   ngOnInit(): void {
     this.initControllers();
-    console.log(this.isPreview);
   }
 
   initControllers() {
@@ -49,7 +48,6 @@ export class GiftMessageComponent implements OnInit {
       this.controller.disable();
       this.controllers.disable();
     }
-    console.log('aux', this.aux);
     
   }
 
@@ -62,6 +60,5 @@ export class GiftMessageComponent implements OnInit {
       target: this.controller.get('target').value,
       from: this.controller.get('from').value,
     };
-    console.log(result);
   }
 }

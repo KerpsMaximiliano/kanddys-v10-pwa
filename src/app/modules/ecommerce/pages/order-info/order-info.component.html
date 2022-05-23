@@ -20,7 +20,6 @@
     ></app-helper-headerv2>
     <app-header-info
       [profileImage]="providerData.image"
-      [starsAmount]="14.458"
       [title]="providerData.headline"
       [description]="
         name
@@ -38,7 +37,7 @@
 
   <div
     class="content"
-    *ngIf="facturado"
+    *ngIf="comprado"
     style="margin-bottom: 100px; min-height: 90vh"
   >
     <div class="list-items">
@@ -100,41 +99,6 @@
         </div>
       </ng-container>
     </div>
-
-    <!-- <p class="total-text" *ngIf="price">Total Facturado en DOP</p>-->
-    <div
-      style="display: flex; gap: 10px; margin-bottom: 20px; margin-top: 142px"
-    >
-      <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
-      <div
-        class="dop"
-        style="
-          font-family: 'SfProRegular';
-          font-size: 19px;
-          color: #7b7b7b;
-          margin-top: 10px;
-        "
-      >
-        DOP
-      </div>
-    </div>
-    <div class="status" *ngIf="status" style="margin-bottom: 20px">
-      STATUS DEL PAGO: {{ status }}
-    </div>
-    <div *ngIf="showNotificationButton">
-      <label class="input-container">
-        <div
-          class="notif-check"
-          (click)="toggleNotifications()"
-          [ngStyle]="{ backgroundColor: notifications ? '#4773d8' : '#ffffff' }"
-        ></div>
-        <div>
-          Si, quiero ser notificado (a) cuando mi pago cambie de estado.
-        </div>
-      </label>
-    </div>
-    <!-- <p class="date">{{ createdAt | date: "short" }}</p> -->
-    <!-- <app-provider-info providerId="ProviderID"></app-provider-info> -->
   </div>
 
   <!-- ---------------------------------- -->
@@ -217,6 +181,26 @@
 
   <div *ngIf="pagoView">
     <div class="pagoView">
+      <div class="payment-list">
+        <div class="payment-card">
+          <div class="price">
+            <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
+            <div class="dop">
+              DOP
+            </div>
+          </div>
+          <p class="payment-type">Total Facturado</p>
+        </div>
+        <div class="payment-card">
+          <div class="price">
+            <p class="total" *ngIf="totalPayed">${{ totalPayed | number: "1.0-2" }}</p>
+            <div class="dop">
+              DOP
+            </div>
+          </div>
+          <p class="payment-type">Total Pagado</p>
+        </div>
+      </div>
       <div *ngFor="let item of ocrPayments">
         <app-item-list [itemListContent]="item" [marginTop]="'0px'"></app-item-list>
       </div>

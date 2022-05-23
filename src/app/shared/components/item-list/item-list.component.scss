@@ -57,10 +57,9 @@
       display: flex;
       align-items: center;
       border-radius: 6px;
-      padding: 0 20px;
+      padding: 14px 20px;
       color: white;
       white-space: nowrap;
-      cursor: pointer;
     }
 
     .container-icon {
@@ -243,4 +242,8 @@
     rgba(123, 123, 123, 1) 0%,
     rgba(62, 62, 62, 1) 100%
   );
+}
+
+.pointer {
+  cursor: pointer;
 }

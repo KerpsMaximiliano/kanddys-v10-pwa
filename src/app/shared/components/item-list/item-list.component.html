@@ -1,7 +1,7 @@
 <div [style.marginTop]="marginTop" [style.marginBottom]="marginBottom">
   <div class="content-wrapper" [ngStyle]="{ background: itemListContent.contentBgColor }">
     <div class="item-list">
-      <div class="item-list-img" *ngIf="itemListContent.image" (click)="itemListContent.eventImage()">
+      <div class="item-list-img" [ngClass]="{'pointer': itemListContent.eventImage}" *ngIf="itemListContent.image" (click)="itemListContent.eventImage && itemListContent.eventImage()">
         <img src="{{ itemListContent.image }}" class="item-img"  [ngClass]="{'small': itemListContent.imageSize === 'small'}" alt="image" />
         <div *ngIf="
             itemListContent.icons_image &&
@@ -9,7 +9,7 @@
             !itemListContent.bar_icons
           " class="icons">
           <ng-container *ngFor="let icon of itemListContent.icons_image; let i = index">
-            <img [src]="icon.img" alt="no-icon" (click)="icon.function()" [style.marginRight.px]="
+            <img [src]="icon.img" alt="no-icon" (click)="icon.function && icon.function()" [style.marginRight.px]="
                 itemListContent.icons_image.length !== i + 1 ? 11 : 0
               " />
           </ng-container>
@@ -19,7 +19,7 @@
       <div
         *ngIf="!itemListContent.image"
         class="item-list-img"
-        (click)="itemListContent.eventImage()"
+        (click)="itemListContent.eventImage && itemListContent.eventImage()"
       >
         <div class="placeholder"></div>
         <div *ngIf="
@@ -28,7 +28,7 @@
             !itemListContent.bar_icons
           " class="icons">
           <ng-container *ngFor="let icon of itemListContent.icons_image; let i = index">
-            <img [src]="icon.img" alt="no-icon" (click)="icon.function()" [style.marginRight.px]="
+            <img [src]="icon.img" alt="no-icon" (click)="icon.function && icon.function()" [style.marginRight.px]="
                 itemListContent.icons_image.length !== i + 1 ? 11 : 0
               " />
           </ng-container>
@@ -38,7 +38,7 @@
       <div class="item-list-info">
         <div class="container">
           <div class="container-title">
-            <h1 (click)="itemListContent.eventTitle()">{{ itemListContent.title }}</h1>
+            <h1 (click)="itemListContent.eventTitle && itemListContent.eventTitle()">{{ itemListContent.title }}</h1>
             <p class="subtitle" *ngIf="itemListContent.subtitle">
               {{ itemListContent.subtitle }}
             </p>
@@ -66,12 +66,12 @@
                   <div *ngIf="icon.type === 'img'" [style.marginRight.px]="
                       itemListContent.icons_right.length !== i + 1 ? 10 : 0
                     ">
-                    <img [src]="icon.icon" alt="no-image" width="22" (click)="icon.function()" />
+                    <img [src]="icon.icon" alt="no-image" width="22" (click)="icon.function && icon.function()" />
                   </div>
                   <div *ngIf="icon.type === 'icon'" [style.marginRight.px]="
                       itemListContent.icons_right.length !== i + 1 ? 10 : 0
                     ">
-                    <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function()"></i>
+                    <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function && icon.function()"></i>
                   </div>
                 </ng-container>
               </div>
@@ -80,7 +80,8 @@
           <div
             *ngIf="itemListContent.status"
             class="status"
-            (click)="itemListContent.statusCallback()"
+            [ngClass]="{'pointer': itemListContent.statusCallback}"
+            (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
             [ngStyle]="{
               backgroundColor: 
                 (itemListContent.status === 'verificado' && '#40772F') ||
@@ -142,12 +143,12 @@
                 <div *ngIf="icon.type === 'img'" [style.marginRight.px]="
                   itemListContent.icons_bottom_right_first.length !== i + 1 ? 10 : 0
                 ">
-                  <img [src]="icon.icon" alt="no-image" [height]="icon.size" (click)="icon.function()" />
+                  <img [src]="icon.icon" alt="no-image" [height]="icon.size" (click)="icon.function && icon.function()" />
                 </div>
                 <div *ngIf="icon.type === 'icon'" [style.marginRight.px]="
                   itemListContent.icons_bottom_right_first.length !== i + 1 ? 10 : 0
                 ">
-                  <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function()"></i>
+                  <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function && icon.function()"></i>
                 </div>
               </ng-container>
             </div>
@@ -167,12 +168,12 @@
                 <div *ngIf="icon.type === 'img'" [style.marginRight.px]="
                     itemListContent.icons_bottom_right.length !== i + 1 ? 10 : 0
                   ">
-                  <img [src]="icon.icon" alt="no-image" [height]="icon.size" (click)="icon.function()" />
+                  <img [src]="icon.icon" alt="no-image" [height]="icon.size" (click)="icon.function && icon.function()" />
                 </div>
                 <div *ngIf="icon.type === 'icon'" [style.marginRight.px]="
                     itemListContent.icons_bottom_right.length !== i + 1 ? 10 : 0
                   ">
-                  <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function()"></i>
+                  <i class="fas {{ icon.icon }}" [style.color]="icon.color" (click)="icon.function && icon.function()"></i>
                 </div>
               </ng-container>
             </div>
@@ -181,11 +182,11 @@
         <ng-container *ngIf="itemListContent.icon_bottom">
           <div *ngIf="itemListContent.icon_bottom.type === 'img'" [style.marginLeft.px]="10">
             <img [src]="itemListContent.icon_bottom.icon" alt="no-image" width="25"
-              (click)="itemListContent.icon_bottom.function()" />
+              (click)="itemListContent.icon_bottom.function && itemListContent.icon_bottom.function()" />
           </div>
           <div *ngIf="itemListContent.icon_bottom.type === 'icon'" [style.marginLeft.px]="10">
             <i class="fas {{ itemListContent.icon_bottom.icon }}" [style.color]="itemListContent.icon_bottom.color"
-              (click)="itemListContent.icon_bottom.function()"></i>
+              (click)="itemListContent.icon_bottom.function && itemListContent.icon_bottom.function()"></i>
           </div>
         </ng-container>
       </div>
