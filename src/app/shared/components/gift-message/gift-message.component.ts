@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-gift-message',
@@ -21,7 +22,9 @@ export class GiftMessageComponent implements OnInit {
   controller: FormGroup = new FormGroup({});
   aux: any = {};
 
-  constructor() {}
+  constructor(
+    private dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.initControllers();
@@ -60,5 +63,16 @@ export class GiftMessageComponent implements OnInit {
       target: this.controller.get('target').value,
       from: this.controller.get('from').value,
     };
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

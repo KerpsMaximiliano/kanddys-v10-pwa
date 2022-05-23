@@ -119,7 +119,19 @@
         </div>
       </div>
     </div>
-
+    <div
+      *ngIf="itemListContent.status"
+      class="bottom-status"
+      [ngClass]="{'pointer': itemListContent.statusCallback}"
+      (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
+      [ngStyle]="{
+        backgroundColor: 
+          (itemListContent.status === 'verificado' && '#40772F') ||
+          ('#DD9204')
+      }"
+    >
+      {{itemListContent.status}}
+    </div>
     <div class="item-list-text" *ngIf="itemListContent.text_left || itemListContent.text_right" [ngStyle]="{
         'justify-content': itemListContent.text_style
           ? 'space-between'
