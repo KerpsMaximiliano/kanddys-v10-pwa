@@ -11,6 +11,8 @@ import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
+import { copyText } from 'src/app/core/helpers/strings.helpers';
+import { notification } from 'onsenui';
 
 @Component({
   selector: 'app-item-detail',
@@ -35,31 +37,44 @@ export class ItemDetailComponent implements OnInit {
         sub.unsubscribe();
       });
   }
-  boxTitle: string = 'Tienda que vende: ProviderID';
-  boxText: string = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam';
+  boxTitle: string = '';
+  boxText: string = '';
   shopcart: boolean = true;
   whatsapp: boolean = true;
   myStore: boolean = true;
   viewtype: 'merchant' | 'community' | 'preview';
   preamount: string = '20';
-  priceLabel : string = '14,020.00';
+  priceLabel : number = 0.00;
   itemData: Item;
   saleflowId: string;
   ctaText: string = 'ADICIONAR AL CARRITO';
   bgColor: string = "#27a2ff";
+  whatsappLink: string = '';
+  fullLink: string = '';
+  showCartCallBack: any;
   env: string = environment.assetsUrl;
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+    this.route.params.subscribe(async (params) => {
       if (params.id) {
-        this.items.item(params.id).then((data) => {
+        await this.items.item(params.id).then((data) => {
           this.itemData = data;
+          console.log(this.itemData);
+          this.boxTitle = this.itemData.merchant.name;
+          this.boxText = this.itemData.description || this.itemData.name;
+          this.priceLabel = this.itemData.pricing;
           this.itemInCart();
         });
       }
       if (params.saleflow) {
         this.saleflowId = params.saleflow;
       }
+      this.fullLink = `${this.saleflowId 
+        ? `${environment.uri}/ecommerce/item-detail/${this.saleflowId}/${params.id}?viewtype=community`
+        : `${environment.uri}/ecommerce/item-detail/${params.id}?viewtype=community`}`;
+      this.generateWhatsappLink(this.itemData.merchant.owner.phone, this.itemData.merchant.name, this.fullLink);
+      console.log(this.whatsappLink);
+      this.showCartCallBack = () => this.showItems();
     });
 
     this.route.queryParams.subscribe((params)=>{
@@ -72,7 +87,7 @@ export class ItemDetailComponent implements OnInit {
 
   itemInCart() {
     const productData = this.header.getItems(this.saleflowId);
-    if (productData.length > 0) {
+    if (productData && productData.length > 0) {
       if (productData.some((item) => item._id === this.itemData._id)) {
         this.ctaText = 'QUITAR DEL CARRITO';
         this.bgColor = "#FC2727";
@@ -149,8 +164,23 @@ export class ItemDetailComponent implements OnInit {
     this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
   }
 
+  generateWhatsappLink(phone: string, merchantName: string, link: string) {
+    this.whatsappLink = `https://wa.me/${
+        phone
+      }?text=Hola%20${
+        merchantName
+      },%20me%20interesa%20este%20producto: \n${
+        link
+      }`;
+  }
+
   back(){
     this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
     //this.location.back();
+  }
+
+  async copyLink() {
+    await copyText(this.fullLink);
+    await notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
   }
 }

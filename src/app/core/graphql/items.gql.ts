@@ -144,6 +144,13 @@ export const item = gql`
         isActive
         createdAt
       }
+      merchant {
+        _id
+        name
+        owner {
+          phone
+        }
+      }
     }
   }
 `;

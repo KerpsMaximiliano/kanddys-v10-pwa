@@ -13,6 +13,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() mode: string = 'basic' || 'double' || 'options' || 'center'; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;
+    @Input() public shopCartCallback: () => void;
     @Input() returnAble: boolean = true;
     @Input() plus: boolean = false;
     @Input() upload: boolean = false;
@@ -26,6 +27,10 @@ export class HelperHeaderv2Component implements OnInit {
    }
 
   ngOnInit(): void {
+  }
+
+  shopCartTrigger() {
+    this.shopCartCallback();
   }
 
   return(event){
