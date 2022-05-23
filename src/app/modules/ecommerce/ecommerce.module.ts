@@ -35,6 +35,8 @@ import { ContainerFormComponent } from './pages/container-form/container-form.co
 import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PostEditComponent } from './pages/post-edit/post-edit.component';
+import { DeliveryPreviewComponent } from './pages/delivery-preview/delivery-preview.component';
+import { PostAuthComponent } from './pages/post-auth/post-auth.component';
 
 const routes: Routes = [
   {
@@ -181,6 +183,14 @@ const routes: Routes = [
   {
     path: 'post-edit',
     component: PostEditComponent
+  },
+  {
+    path: 'delivery-preview',
+    component: DeliveryPreviewComponent
+  },
+  {
+    path: 'post-auth',
+    component: PostAuthComponent
   }
 ];
 
@@ -221,6 +231,8 @@ const routes: Routes = [
     PostCreatorComponent,
     PostPreviewComponent,
     PostEditComponent,
+    DeliveryPreviewComponent,
+    PostAuthComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
