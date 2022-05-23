@@ -1,23 +1,23 @@
 <div class="container">
 
-    <div class="image"> <img [src]="imageFolder + 'mercahntImage'" alt=""> </div>
+    <div class="image"> <img [src]="env + 'mercahntImage'" alt=""> </div>
 
         <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
 
     <div class="images-info">
 
         <div class="info-part1">
-            <img [src]="imageFolder + ''" alt="Direccion" class="merchant-icon" width="36px" height="50px">
-            <label for="info del merchant" class="merchant-text">{{direccion}}</label>
+            <img [src]="env + ''" alt="Direccion" class="merchant-icon" width="36px" height="50px">
+            <label for="info del merchant" class="merchant-text">{{direction}}</label>
         </div>
 
         <div class="info-part2">
-            <img [src]="imageFolder + '/whatsapp_blanco.svg'" alt="Whatsapp" class="merchant-icon" width="36px" height="36.21px">
+            <img [src]="env + '/whatsapp_blanco.svg'" alt="Whatsapp" class="merchant-icon" width="36px" height="36.21px">
             <label for="info del merchant" class="merchant-text">{{whatsapp}}</label>           
         </div>
 
         <div class="info-part3">
-            <img [src]="imageFolder + ''" alt="Instagram" class="merchant-icon" width="36px" height="36px">
+            <img [src]="env + ''" alt="Instagram" class="merchant-icon" width="36px" height="36px">
             <label for="info del merchant" class="merchant-text">{{instagram}}</label>
         </div>
 

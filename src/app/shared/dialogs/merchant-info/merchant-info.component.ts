@@ -7,17 +7,15 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./merchant-info.component.scss']
 })
 export class MerchantInfoComponent implements OnInit {
+  @Input() merchantImage: string;
+  @Input() merchantName: string = 'Breakfast By Mage';
+  @Input() direction: string = 'Direccion ID y CTA';
+  @Input() whatsapp: string = 'WhatsApp ID y CTA';
+  @Input() instagram: string = 'still yet';
 
-    @Input() mercahntImage: string;
-    @Input() merchantName: string = 'Breakfast By Mage';
-    @Input() direccion: string = 'Direccion ID y CTA';
-    @Input() whatsapp: string = 'WhatsApp ID y CTA';
-    @Input() instagram: string = 'still yet';
+  env: string = environment.assetsUrl;
 
-    imageFolder: string;
-  constructor() {
-    this.imageFolder = environment.assetsUrl;
-   }
+  constructor() { }
 
   ngOnInit(): void {
   }
