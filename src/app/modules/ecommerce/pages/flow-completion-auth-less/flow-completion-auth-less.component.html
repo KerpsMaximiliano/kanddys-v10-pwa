@@ -6,7 +6,11 @@
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
-    [back]="localStorageFlowRoute && localStorageFlowRoute !== ''"
+    [back]="
+      localStorageFlowRoute &&
+      localStorageFlowRoute !== '' &&
+      step !== 'PHONE_CHECK_AND_SHOW_BANKS'
+    "
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
     [orderItems]="true"
