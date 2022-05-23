@@ -13,13 +13,14 @@ export class CtaButtonsComponent implements OnInit {
   @Input() mode: string = 'basic' || 'white' //Modos del boton
     
   @Input() btnColor: string = '#40772F'; //Basic
-  @Input() ctaText: string = ''; //Basic
+  @Input() ctaText: string = ''; //Basic & White
 
   @Input() borderc: string = '#2F6ED8'; //white
   @Input() borderw: string = '1px' //white
   @Input() fontColor: string = '#4773D8'; //white
   @Input() circle: boolean = false; //white
   @Input() icon: string; //white
+  @Input() information: boolean = true;
 
 
   constructor() { 

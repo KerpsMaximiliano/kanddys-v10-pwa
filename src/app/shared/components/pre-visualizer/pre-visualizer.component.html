@@ -1,6 +1,6 @@
 <div class="container">
     <div class="audio" *ngIf="mode == 'audio'">
-        <label for="Audio" class="audio-title">Audio</label>
+        <label for="Audio" class="audio-title">AUDIO</label>
 
         <button class='button-play' (click)="action()"><svg xmlns="http://www.w3.org/2000/svg" width="30.842" height="29.236" viewBox="0 0 30.842 29.236">
             <path id="Polígono_2" data-name="Polígono 2" d="M12.161,0,24.322,19.276H0Z" transform="matrix(-0.848, -0.53, 0.53, -0.848, 20.627, 29.236)" fill="#a1a1a1"/>
@@ -26,6 +26,7 @@
     </div>
 
     <div *ngIf="mode == 'text'" class="text">
+        <div *ngIf="textTitle"> <label class="text-title">{{textTitle}}</label> </div>
         <p class="inner-text">{{textPost}}</p>
     </div>
 </div>

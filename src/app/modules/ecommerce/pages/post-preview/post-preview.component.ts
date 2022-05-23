@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class PostPreviewComponent implements OnInit {
 
     imageFolder : string;
+    nameId: string = 'NameID';
 
   constructor() { 
       this.imageFolder = environment.assetsUrl;

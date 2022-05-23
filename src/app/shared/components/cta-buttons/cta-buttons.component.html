@@ -23,7 +23,7 @@
                 </div>
                 <label for="Texto boton" class="text-btn2" [style.color]="fontColor">{{ctaText}}</label>
             </div>
-            <img id="info" [src]="imageFolder + '/info.svg'" alt="">
+           <div *ngIf="information"> <img id="info" [src]="imageFolder + '/info.svg'" alt=""> </div>
         </div>
     </div>
 </ng-container>

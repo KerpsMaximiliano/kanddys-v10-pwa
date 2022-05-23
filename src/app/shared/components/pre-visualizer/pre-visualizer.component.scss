@@ -8,7 +8,7 @@
         height: 167px;
         background-color: transparent;
         border-radius: 9px;
-        border: 1px solid #707070;
+        border: 1px solid rgba(161, 161, 161, 43%);
         display: flex;
         flex-direction: column;
 
@@ -65,7 +65,7 @@
         height: 433px;
         background-color: transparent;
         border-radius: 9px;
-        border: 1px solid #707070;
+        border: 1px solid rgba(161, 161, 161, 43%);
         display: flex;
         flex-direction: column;
 
@@ -94,12 +94,22 @@
         height: fit-content;
         background-color: transparent;
         border-radius: 9px;
-        border: 1px solid #707070;
+        border: 1px solid rgba(161, 161, 161, 43%);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 30px 33px 24px 40px;
+
+        .text-title{
+            font-family: 'SfProBold';
+            font-size: 17px;
+            color: #474747;
+            display: flex;
+            margin: 0 auto;
+            margin-top: 27px;
+            margin-bottom: 22px;
+        }
 
         .inner-text{
             font-family: 'RobotoRegular';
