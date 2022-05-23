@@ -20,11 +20,22 @@
         display: flex;
         margin: 0 auto;
         margin-top: 10px;
-        margin-bottom: 50px;
         justify-content: center;
         font-family: 'RobotoBold';
         font-size: 25px;
         color: #202020;
+    }
+
+    .website{
+        display: flex;
+        justify-content: center;
+        margin-top: 11px;
+        margin-bottom: 44px;
+        font-family: 'NeueMontreal';
+        font-size: 18px;
+        color: #27A2FC;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .images-info{

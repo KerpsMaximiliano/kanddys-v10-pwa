@@ -12,7 +12,8 @@ export class MerchantInfoComponent implements OnInit {
     @Input() merchantName: string = 'Breakfast By Mage';
     @Input() direccion: string = 'Direccion ID y CTA';
     @Input() whatsapp: string = 'WhatsApp ID y CTA';
-    @Input() instagram: string = 'still yet';
+    @Input() instagram: string = 'Instagram CTA';
+    @Input() merchantSite: string = 'www.website.com'
 
     imageFolder: string;
   constructor() {
@@ -20,6 +21,10 @@ export class MerchantInfoComponent implements OnInit {
    }
 
   ngOnInit(): void {
+  }
+
+  redirect(){
+      console.log('to redirect')
   }
 
 }
