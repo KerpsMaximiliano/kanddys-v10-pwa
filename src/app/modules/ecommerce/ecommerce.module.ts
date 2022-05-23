@@ -38,6 +38,7 @@ import { PostPreviewComponent } from './pages/post-preview/post-preview.componen
 import { PostEditComponent } from './pages/post-edit/post-edit.component';
 import { DeliveryPreviewComponent } from './pages/delivery-preview/delivery-preview.component';
 import { PostAuthComponent } from './pages/post-auth/post-auth.component';
+import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-creator.component';
 
 const routes: Routes = [
   {
@@ -200,6 +201,10 @@ const routes: Routes = [
   {
     path: 'post-auth',
     component: PostAuthComponent
+  },
+  {
+    path: 'merchant-creator',
+    component: MerchantCreatorComponent 
   }
 ];
 
@@ -243,6 +248,7 @@ const routes: Routes = [
     PostEditComponent,
     DeliveryPreviewComponent,
     PostAuthComponent,
+    MerchantCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
