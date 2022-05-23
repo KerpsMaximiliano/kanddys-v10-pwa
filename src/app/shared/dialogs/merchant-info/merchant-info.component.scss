@@ -1,3 +1,10 @@
+.merchant-info-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .container{
     width: 90%;
     min-height: 594px;
@@ -8,12 +15,15 @@
 
     .image{
         display: flex;
-        margin: 0 auto;
-        width: 101px;
-        height: 101px;
-        border-radius: 50%;
-        background-color: #a1a1a166;
-        box-shadow: 0px 2px 6px 2px rgb(0 0 0 / 20%);
+        
+
+        img {
+            margin: 0 auto;
+            border-radius: 50%;
+            width: 101px;
+            height: 101px;
+            box-shadow: 0px 3px 5px #dddddd;
+        }
     }
 
     .merchant-name{
