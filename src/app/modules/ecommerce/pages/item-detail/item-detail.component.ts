@@ -59,7 +59,6 @@ export class ItemDetailComponent implements OnInit {
       if (params.id) {
         await this.items.item(params.id).then((data) => {
           this.itemData = data;
-          console.log(this.itemData);
           this.boxTitle = this.itemData.merchant.name;
           this.boxText = this.itemData.description || this.itemData.name;
           this.priceLabel = this.itemData.pricing;
@@ -73,7 +72,6 @@ export class ItemDetailComponent implements OnInit {
         ? `${environment.uri}/ecommerce/item-detail/${this.saleflowId}/${params.id}?viewtype=community`
         : `${environment.uri}/ecommerce/item-detail/${params.id}?viewtype=community`}`;
       this.generateWhatsappLink(this.itemData.merchant.owner.phone, this.itemData.merchant.name, this.fullLink);
-      console.log(this.whatsappLink);
       this.showCartCallBack = () => this.showItems();
     });
 
@@ -156,9 +154,8 @@ export class ItemDetailComponent implements OnInit {
   toggleActivateItem() {
     this.items.updateItem({
       status: this.itemData.status === 'disabled' ? 'active' : 'disabled'
-    }, this.itemData._id).then((response) => {
-      console.log(response)
-    }).catch((error) => {
+    }, this.itemData._id).catch((error) => {
+      console.log(error);
       this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
     })
     this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';

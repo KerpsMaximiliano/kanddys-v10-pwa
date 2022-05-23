@@ -38,7 +38,7 @@
   <div
     class="content"
     *ngIf="comprado"
-    style="margin-bottom: 100px; min-height: 90vh"
+    style="padding: 0; padding-left: 24px;"
   >
     <div class="list-items">
       <ng-container *ngIf="!existPackage">
@@ -195,6 +195,7 @@
           <p class="payment-type">Total Pagado en DOP</p>
         </div>
       </div>
+      <h3 class="payments-title">Pagos realizados</h3>
       <div *ngFor="let item of ocrPayments">
         <app-item-list [itemListContent]="item" [marginTop]="'0px'"></app-item-list>
       </div>

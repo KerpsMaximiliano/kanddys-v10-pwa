@@ -1,7 +1,9 @@
 <div class="merchant-info-container" (click)="close()">
     <div class="container">
-        <div class="image"> <img [src]="merchantImage" alt=""> </div>
-        <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
+        <div class="social-header">
+            <div class="image"> <img [src]="merchantImage" alt=""> </div>
+            <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
+        </div>
         <div class="images-info">
             <a [href]="location.url">
                 <div class="info-part1" *ngIf="location">
