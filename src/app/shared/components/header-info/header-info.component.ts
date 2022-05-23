@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter } from '@angular/core';
-import { SocialMediaModel } from 'src/app/core/models/post';
+import { SocialMediaModel } from 'src/app/core/models/saleflow';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import { MerchantInfoComponent } from '../../dialogs/merchant-info/merchant-info.component';
@@ -26,16 +26,18 @@ export class HeaderInfoComponent implements OnInit {
   }
 
   openDialog() {
-    // this.dialog.open(MerchantInfoComponent, {
-    //   type: 'fullscreen-translucent',
-    //   props: {
-    //     merchantImage: this.profileImage,
-    //     merchantName: this.title,
-
-    //   },
-    //   customClass: 'app-dialog',
-    //   flags: ['no-header'],
-    // });
+    this.dialogService.open(MerchantInfoComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        merchantImage: this.profileImage,
+        merchantName: this.title,
+        location: this.socials?.find((social) => social.name === 'location'),
+        instagram: this.socials?.find((social) => social.name === 'instagram'),
+        whatsapp: this.socials?.find((social) => social.name === 'phone'),
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
 }

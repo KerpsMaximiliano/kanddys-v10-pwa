@@ -36,40 +36,34 @@
   class="container"
   [ngStyle]="{ background: background }"
 >
-  <p class="top-text">Mensaje Escrito:</p>
-  <div class="text-container">
-    <!-- <input
-      *ngFor="let controller of controllers.controls"
-      placeholder="Escribe el mensaje de aprecio…"
-      class="message"
-      [formControl]="controller"
-    /> -->
-    <!--<p class="message-v2">{{ message }}</p>
-    <div class="plus">+</div>-->
-    {{message}}
+  <div class="preview-container">
+    <p class="top-text">Mensaje a escribir:</p>
+    <div class="text-container">
+      {{message}}
+    </div>
   </div>
-  <div class="target">
+  <div class="preview-container">
     <p class="top-text">Para:</p>
     <div class="little-text-container">
       {{aux.from}}
     </div>
   </div>
-  <div class="from" [style.marginBottom]="!submition ? '60px' : ''">
+  <div class="preview-container" [style.marginBottom]="!submition ? '60px' : ''">
     <p class="top-text">De parte:</p>
     <div class="little-text-container">
       {{aux.targets[0].name}}
     </div>
   </div>
   <div *ngIf="aux.multimedia.length > 0">
-    <p class="top-text">Foto de la tarjeta:</p>
+    <p class="top-text" style="padding-bottom: 10px;">Foto de la tarjeta:</p>
     <div class="pay-image" [ngStyle]="{'background-image': 'url(' + aux.multimedia[0] + ')'}"></div>
-    <p class="bottom-text">
+    <!-- <p class="bottom-text">
       Editar Fotografia
     </p>
 
     <p class="bottom-text">
       $200.00 Kanddys como Gift-Cards
-    </p>
+    </p> -->
   </div>
 </div>
 

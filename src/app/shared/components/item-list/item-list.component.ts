@@ -5,14 +5,14 @@ export interface ItemList {
   id?: string;
   visible?: boolean;
   title: string;
-  eventTitle?: any;
+  eventTitle?: () => void;
   subtitle?: string;
   price?: number | '';
   description?: string;
   description2?: string;
   image?: string;
   imageSize?: 'small' | 'normal';
-  eventImage?: any;
+  eventImage?: () => void;
   icon?: string;
   text_style?: boolean;
   text_left?: string;

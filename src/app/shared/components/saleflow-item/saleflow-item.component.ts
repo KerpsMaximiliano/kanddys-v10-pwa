@@ -32,6 +32,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() selectable: boolean;
   @Input() isSelected: boolean;
   @Input() showBox: boolean;
+  @Input() boxAmount: number;
   @Input() showIcon: boolean;
 
   @Output() changeSelection = new EventEmitter();

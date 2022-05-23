@@ -8,7 +8,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+import { SaleFlow, SocialMediaModel } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
@@ -47,6 +47,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantId: string;
   merchantName: string = '';
   merchantSubheadline: string = '';
+  merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
   merchantLabel: string = ''; //Asignado en ngOnInit
   labelValues: any = [];
@@ -292,6 +293,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.merchantSubheadline = this.saleflowData.subheadline;
       this.merchantHours = this.saleflowData.workingHours;
       this.merchantId = this.saleflowData.merchant._id;
+      this.merchantSocials = this.saleflowData.social;
 
       await this.getCategories();
       await this.getMerchant(this.saleflowData.merchant._id);

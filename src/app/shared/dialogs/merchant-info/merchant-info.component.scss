@@ -1,6 +1,16 @@
+.merchant-info-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-header {
+    margin-bottom: 40px;
+}
+
 .container{
     width: 90%;
-    min-height: 594px;
     background-color: #FFFFFF;
     margin: 0 auto;
     border-radius: 13px;
@@ -8,23 +18,37 @@
 
     .image{
         display: flex;
-        margin: 0 auto;
-        width: 101px;
-        height: 101px;
-        border-radius: 50%;
-        background-color: #a1a1a166;
-        box-shadow: 0px 2px 6px 2px rgb(0 0 0 / 20%);
+        
+
+        img {
+            margin: 0 auto;
+            border-radius: 50%;
+            width: 101px;
+            height: 101px;
+            box-shadow: 0px 3px 5px #dddddd;
+        }
     }
 
     .merchant-name{
         display: flex;
         margin: 0 auto;
         margin-top: 10px;
-        margin-bottom: 50px;
         justify-content: center;
         font-family: 'RobotoBold';
         font-size: 25px;
         color: #202020;
+    }
+
+    .website{
+        display: flex;
+        justify-content: center;
+        margin-top: 11px;
+        margin-bottom: 44px;
+        font-family: 'NeueMontreal';
+        font-size: 18px;
+        color: #27A2FC;
+        text-decoration: none;
+        cursor: pointer;
     }
 
     .images-info{
@@ -35,12 +59,12 @@
         .info-part1, .info-part2, .info-part3{
             display: flex;
             align-items: center;
-            margin-bottom: 68px;
+            margin-bottom: 20px;
             cursor: pointer;
 
             .merchant-icon{
                 cursor: pointer;
-                filter: invert(70%) sepia(0%) saturate(1%) hue-rotate(294deg) brightness(97%) contrast(98%);
+                filter: brightness(0) saturate(100%) invert(11%) sepia(13%) saturate(0%) hue-rotate(302deg) brightness(108%) contrast(93%);
             }
         }
 

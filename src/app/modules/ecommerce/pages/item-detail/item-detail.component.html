@@ -26,6 +26,7 @@
 							[mode]="'basic'"
 							[navtext]="'Volver'"
 							[shopcart]="true"
+                            [shopCartCallback]="showCartCallBack"
 							[whatsapp]="false"
 							[plus]="false"
 							[upload]="false"
@@ -33,13 +34,15 @@
             ></app-helper-headerv2>
             <div class="box-container">
                 <div class="l-wrapper">
-                    <span class="box-title">{{boxTitle}}</span>
-                    <p class="box-paragraph">{{boxText}}</p>
+                    <span class="box-title">Tienda que vende: {{boxTitle}}</span>
+                    <p class="box-paragraph" *ngIf="boxText">{{boxText}}</p>
                 </div>
 
                 <div class="rwrapper">
-                    <img class="ws-grey" [src]="env + '/whatsapp_blanco.svg'" width="21px" height="21px" alt="">
-                    <img [src]="env + '/upload.svg'" alt="" width="19.19px" height="25px" style="cursor: pointer;">
+                    <a target="_blank" [href]="whatsappLink" *ngIf="itemData && itemData.merchant.owner.phone && whatsappLink">
+                        <img class="ws-grey" [src]="env + '/whatsapp_blanco.svg'" width="21px" height="21px" alt="">
+                    </a>
+                    <img [src]="env + '/upload.svg'" alt="" width="19.19px" height="25px" style="cursor: pointer;" (click)="copyLink()" *ngIf="fullLink">
                 </div>
             </div>
          </ng-container>
@@ -47,7 +50,7 @@
         <div class="desc-area">
             <div class="left-area">
                 <span class="value">Vale</span>
-                <label for="Precio producto" class="price">${{priceLabel}}</label>
+                <label for="Precio producto" class="price">${{ priceLabel | number: "1.0-2" }}</label>
                     <div for="Promocion" class="ptext"> <!--Esto es una misma linea de texto-->
                         <label for="aja" class="earn">Ganas 58 <img class="star" [src]="env + '/star.svg'"></label> 
                         <div *ngIf="myStore && viewtype == 'merchant'"><span class="con-text"> y recaudas fondos </span></div>

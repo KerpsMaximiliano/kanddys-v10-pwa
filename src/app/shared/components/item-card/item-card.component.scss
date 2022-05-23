@@ -21,8 +21,11 @@
             height: 176px;
             border-radius: 10px;
             margin-bottom: 15px;
-            box-shadow: 0px 4px 10px #ddd;
             cursor: pointer;
+
+            &.center-img-shadow {
+                box-shadow: 0px 4px 10px #ddd;
+            }
         }
 
         .placeholder {

@@ -23,26 +23,18 @@
   </div>
   <div class="top-wrapper" *ngIf="bestSellers.length > 2">
     <div class="header-wrapper">
-      <h6 class="header-text" [ngClass]="{'header-text': hasCustomizer, 'merchant-header': !hasCustomizer}">
+      <h6 class="merchant-header">
         Best Sellers
       </h6>
     </div>
-    <!-- <app-swiper
-      [saleFlowTwo]="true"
-      [saleFlowTwoData]="bestSellers"
-      [showPrice]="hasCustomizer ? false : true"
-      [showDescription]="hasCustomizer ? false : true"
-      (slideActive)="onClick($event, 'slider')"
-      (toggleEmitter)="toggleSelected('slider', $event)"
-    ></app-swiper> -->
     <div style="padding: 0 1.20rem;">
       <swiper [config]="swiperConfig">
         <div *ngFor="let swiperItem of bestSellers; let i = index" style="max-width: 259px;">
           <app-item-card
             [image]="swiperItem.images[0]"
             [boxAmount]="50"
-            [price]="swiperItem.pricing"
-            [showBox]="true"
+            [showBox]="!hasCustomizer && true"
+            [price]="!hasCustomizer && swiperItem.pricing"
             [showIcon]="isMerchant"
             [isSelected]="!isMerchant && swiperItem.isSelected"
             (itemClicked)="onClick(i, 'slider')"
@@ -53,46 +45,35 @@
     </div>
   </div>
   <div style="background-color: white">
-    <ng-container *ngIf="hasCustomizer; else selectableItems">
-      <div class="itemGrid" style="row-gap: 0;">
-        <div class="item" *ngFor="let item of items; let i = index">
-          <div class="item-img"
-            [ngStyle]="{ backgroundImage: item.images.length > 0 ? 'url(' + item.images[0] + ')' : 'linear-gradient(#7b7b7b 0%, #3e3e3e 100%)' }"
-            (click)="onClick(i)">
-          </div>
-        </div>
-      </div>
-    </ng-container>
-    <ng-template #selectableItems>
-      <div class="grid-header">
-        <h6 class="merchant-header">Todos los items</h6>
-        <ng-container  *ngIf="isMerchant">
-          <p class="income">$000,000.00 de ingreso</p>
-          <p class="colaborations">
-            00 <img [src]="env + '/star.svg'" alt="stars">
-            {{' '}}$000,000.00 colaborado
-          </p>
-        </ng-container>
-      </div>
-      <div class="itemGrid" style="margin-top: 30px;">
-        <ng-container *ngFor="let item of items; index as i">
-          <app-saleflow-item
-            [type]=2
-            [showBox]="true"
-            [isSelected]="item.isSelected"
-            [showIcon]="isMerchant" 
-            [income]="isMerchant && 123456.55"
-            [price]="item.pricing"
-            [imgURL]="item.images ? item.images[0] : ''"
-            [showPrice]="item.customizerId ? false : true"
-            (itemClicked)="onClick(i)"
-            (changeSelection)="toggleSelected('item', i)"
-            [priceAlign]="'start'"
-          >
-          </app-saleflow-item>
-        </ng-container>
-      </div>
-    </ng-template>
+    <div class="grid-header">
+      <h6 class="merchant-header">Todos los items</h6>
+      <ng-container  *ngIf="isMerchant">
+        <p class="income">$000,000.00 de ingreso</p>
+        <p class="colaborations">
+          00 <img [src]="env + '/star.svg'" alt="stars">
+          {{' '}}$000,000.00 colaborado
+        </p>
+      </ng-container>
+    </div>
+    <div class="itemGrid" style="margin-top: 30px;">
+      <ng-container *ngFor="let item of items; index as i">
+        <app-saleflow-item
+          [type]=2
+          [boxAmount]="0"
+          [showBox]="!hasCustomizer && true"
+          [isSelected]="!hasCustomizer && item.isSelected"
+          [showIcon]="isMerchant" 
+          [income]="isMerchant && 123456.55"
+          [price]="!hasCustomizer && item.pricing"
+          [imgURL]="item.images ? item.images[0] : ''"
+          [showPrice]="item.customizerId ? false : true"
+          (itemClicked)="onClick(i)"
+          (changeSelection)="toggleSelected('item', i)"
+          [priceAlign]="'start'"
+        >
+        </app-saleflow-item>
+      </ng-container>
+    </div>
   </div>
 </div>
 
