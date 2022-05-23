@@ -10,7 +10,7 @@ export class PostEditComponent implements OnInit {
 
     imageFolder : string;
     inPreview: boolean = true;
-    mode: string = 'pos';
+    mode: string = 'poster';
     image: string;
 
   constructor() { 

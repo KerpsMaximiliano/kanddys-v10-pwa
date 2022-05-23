@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="topbar">
+        <label for="Cancelar" class="cancel">Cancel</label>
+
+        <label for="Opcion salvar" class="right">Compartelo</label>
+    </div>
+
+    <div class="visualizer-area">
+        <app-pre-visualizer
+        [mode]="'text'"
+        ></app-pre-visualizer>
+
+        <hr class="separate">
+
+        <app-pre-visualizer
+        [mode]="'audio'"
+        ></app-pre-visualizer>
+
+        <hr class="separate">
+
+        <app-pre-visualizer
+        [mode]="'poster'"
+        ></app-pre-visualizer>
+    </div>
+
+    <div class="gallery">
+
+        <label for="Titulo" class="gallery-title">Galeria {{nameId}} </label>
+
+        <img [src]="" alt="IMAGE IS MISSING" class="gallery-image">
+
+    </div>
+
+    <app-sticky-button
+    [mode]="'basic'"
+    [text]="'COMPARTELO'"
+    ></app-sticky-button>
+</div>
