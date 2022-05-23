@@ -299,11 +299,6 @@ export class ShipmentDataFormComponent implements OnInit {
 
             unlockUI();
 
-            console.log(
-              'RUTA',
-              `ecommerce/flow-completion-auth-less/${preOrderID}`
-            );
-
             this.header.disableGiftMessageTextarea = true;
 
             //Para el magicLink
@@ -366,8 +361,6 @@ export class ShipmentDataFormComponent implements OnInit {
       }
     } else {
       this.header.order = orderData;
-
-      console.log(orderData);
       if (!this.header.order) {
         this.router.navigate([
           `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
@@ -377,7 +370,6 @@ export class ShipmentDataFormComponent implements OnInit {
       const items = this.header.getItems(this.header.saleflow._id);
       if (items && items.length > 0) this.header.items = items;
       else {
-        console.log(5);
         this.router.navigate([
           `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
         ]);

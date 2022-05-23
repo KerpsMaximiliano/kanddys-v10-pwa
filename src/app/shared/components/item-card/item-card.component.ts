@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 export class ItemCardComponent implements OnInit {
   @Input() boxAmount: number;
   @Input() image: string;
-  @Input() price: number;
+  @Input() price?: number;
   @Input() income?: number;
   @Input() showBox: boolean;
   @Input() showIcon: boolean;

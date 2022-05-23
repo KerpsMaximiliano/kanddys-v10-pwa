@@ -150,8 +150,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         products: showProducts,
       };
 
-      console.log('Order data', this.orderData);
-
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
@@ -192,8 +190,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   async ngOnInit() {
     this.localStorageFlowRoute =
       this.header.flowRoute || localStorage.getItem('flowRoute');
-
-    console.log(this.localStorageFlowRoute);
 
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
@@ -344,8 +340,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           );
           this.userData = foundUser;
 
-          console.log(foundUser);
-
           const { orderStatus } = await this.order.getOrderStatus(this.orderId);
 
           if (foundUser && foundUser._id !== '') {
@@ -409,7 +403,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       const redirectionURL = `/ecommerce/${
         this.header.flowRoute || this.localStorageFlowRoute
       }`;
-      console.log(this.localStorageFlowRoute, redirectionURL);
       this.router.navigate([redirectionURL]);
     }
 
