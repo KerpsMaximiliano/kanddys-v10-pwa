@@ -221,9 +221,10 @@ export const toggleUserNotifications = gql`
 
 export const authOrder = gql`
   mutation authOrder(
-    $orderId: ObjectID!
+    $orderId: ObjectID!,
+    $userId: ObjectID!,
   ) {
-    authOrder(orderId: $orderId) {
+    authOrder(userId: $userId, orderId: $orderId) {
       ${orderData}
     }
   }

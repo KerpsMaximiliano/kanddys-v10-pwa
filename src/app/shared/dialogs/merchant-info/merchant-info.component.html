@@ -1,27 +1,25 @@
-<div class="container">
-
-    <div class="image"> <img [src]="imageFolder + 'mercahntImage'" alt=""> </div>
-
-    <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
-    <a (click)="redirect()" class="website">{{merchantSite}}</a>
-
-    <div class="images-info">
-
-        <div class="info-part1">
-            <img [src]="imageFolder + ''" alt="Direccion" class="merchant-icon" width="36px" height="50px">
-            <label for="info del merchant" class="merchant-text">{{direccion}}</label>
+<div class="merchant-info-container" (click)="close()">
+    <div class="container">
+        <div class="image"> <img [src]="merchantImage" alt=""> </div>
+        <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
+        <div class="images-info">
+            <a [href]="location.url">
+                <div class="info-part1" *ngIf="location">
+                    <img [src]="env + '/location123.svg'" alt="Direccion" class="merchant-icon" width="36px" height="50px">
+                    <span for="info del merchant" class="merchant-text">{{location.url | slice:0:30}}</span>
+                </div>
+            </a>
+            <div class="info-part2" *ngIf="whatsapp" (click)="goLink(whatsapp.url, 'whatsapp')">
+                <img [src]="env + '/whatsapp_blanco.svg'" alt="Whatsapp" class="merchant-icon" width="36px"
+                    height="36.21px">
+                <span for="info del merchant" class="merchant-text">{{whatsapp.url}}</span>
+            </div>
+            <a [href]="instagram.url">
+                <div class="info-part3" *ngIf="instagram">
+                    <img [src]="env + '/instagram.svg'" alt="Instagram" class="merchant-icon" width="36px" height="36px">
+                    <span for="info del merchant" class="merchant-text">{{instagram.url}}</span>
+                </div>
+            </a>
         </div>
-
-        <div class="info-part2">
-            <img [src]="imageFolder + '/whatsapp_blanco.svg'" alt="Whatsapp" class="merchant-icon" width="36px" height="36.21px">
-            <label for="info del merchant" class="merchant-text">{{whatsapp}}</label>           
-        </div>
-
-        <div class="info-part3">
-            <img [src]="imageFolder + ''" alt="Instagram" class="merchant-icon" width="36px" height="36px">
-            <label for="info del merchant" class="merchant-text">{{instagram}}</label>
-        </div>
-
     </div>
-
 </div>

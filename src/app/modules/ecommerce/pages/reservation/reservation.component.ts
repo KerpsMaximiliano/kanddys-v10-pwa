@@ -104,7 +104,7 @@ export class ReservationComponent implements OnInit {
     this.header.hide();
     this.header.flowRoute = 'reservations';
     localStorage.setItem('flowRoute', 'reservations');
-    
+
     this.version = this.router.url.split('/')[2];
     this.calendar.setInitalState();
     this.saleflowData = this.header.getSaleflow();
@@ -843,7 +843,7 @@ export class ReservationComponent implements OnInit {
     window.location.href = this.whatsappLink;*/
   }
 
-  save() {
+  async save() {
     this.orderData.products[0].deliveryLocation = {
       city: null,
       houseNumber: null,
@@ -861,7 +861,14 @@ export class ReservationComponent implements OnInit {
     this.header.isComplete.reservation = true;
     this.header.isComplete.delivery = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    this.openMagicLinkDialog();
+
+    let preOrderID;
+    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+    else preOrderID = this.header.orderId;
+
+    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+
+    // this.openMagicLinkDialog();
     // this.router.navigate([`ecommerce/flow-completion`]);
   }
 

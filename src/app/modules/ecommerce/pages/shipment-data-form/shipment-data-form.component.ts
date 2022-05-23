@@ -32,6 +32,7 @@ interface FormField {
   changeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
   selectionOptions?: Array<string>;
+  enabledOnInit?: 'ENABLED' | 'DISABLED';
   validators?: Array<any>;
   description?: string;
   topLabelAction?: {
@@ -113,8 +114,6 @@ interface OptionalLink {
   styleUrls: ['./shipment-data-form.component.scss'],
 })
 export class ShipmentDataFormComponent implements OnInit {
-  createdOrderWithDelivery = false;
-  createdOrderWithoutDelivery = false;
 
   constructor(
     private header: HeaderService,
@@ -122,29 +121,54 @@ export class ShipmentDataFormComponent implements OnInit {
     private dialog: DialogService
   ) {}
 
+  getStoredDeliveryLocation() {
+    const saleflowData =
+      this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+    const orderData = this.header.getOrder(saleflowData._id);
+    let deliveryLocation = null;
+
+    if (orderData.products.length > 0 && orderData.products[0].deliveryLocation)
+      deliveryLocation = orderData.products[0].deliveryLocation.street;
+
+    return deliveryLocation;
+  }
+
   steps: Array<FormStep> = [
     {
       fieldsList: [
         {
           name: 'street',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(
+            this.getStoredDeliveryLocation() || '',
+            Validators.required
+          ),
           label: 'Dónde entregaremos?',
           inputType: 'textarea',
+          enabledOnInit: !this.header.disableGiftMessageTextarea
+            ? 'ENABLED'
+            : 'DISABLED',
           placeholder: 'Escriba la calle, número, (nombre del edificio)',
           topLabelAction: {
             text: 'Sin envio, lo pasaré a recoger',
             clickable: true,
             callback: async (params) => {
-              if (this.createdOrderWithDelivery === true) {
+              if (this.header.createdOrderWithDelivery === true) {
                 this.header.orderId = null;
-                this.createdOrderWithDelivery = false;
+                this.header.createdOrderWithDelivery = false;
               }
 
               let preOrderID;
               let whatsappLinkQueryParams;
-              const pickupLocation =
-                this.header.saleflow.module.delivery.pickUpLocations[0]
-                  .nickName;
+
+              if (this.header.saleflow.module.delivery) {
+                this.header.storedDeliveryLocation =
+                  this.header.saleflow.module.delivery.pickUpLocations[0].nickName;
+              }
+
+              const pickupLocation = this.header.saleflow.module.delivery
+                ? this.header.saleflow.module.delivery.pickUpLocations[0]
+                    .nickName
+                : this.header.storedDeliveryLocation;
               const deliveryData = {
                 nickName: pickupLocation,
               };
@@ -157,6 +181,9 @@ export class ShipmentDataFormComponent implements OnInit {
               this.header.isComplete.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
 
+              this.header.disableGiftMessageTextarea = false;
+
+              //========================= CÓDIGO PARA CREAR PREORDER =========================
               if (!this.header.orderId) {
                 lockUI();
 
@@ -168,13 +195,25 @@ export class ShipmentDataFormComponent implements OnInit {
                 };
 
                 unlockUI();
-                this.openDialog(whatsappLinkQueryParams);
-                this.createdOrderWithoutDelivery = true;
+
+                //Para el magicLink
+                // this.openDialog(whatsappLinkQueryParams);
+                this.router.navigate([
+                  `ecommerce/flow-completion-auth-less/${preOrderID}`,
+                ]);
+
+                this.header.createdOrderWithoutDelivery = true;
               } else {
-                this.openDialog({
-                  'Keyword-Order': this.header.orderId as string,
-                });
+                this.router.navigate([
+                  `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+                ]);
+
+                //Para el magicLink
+                // this.openDialog({
+                //   'Keyword-Order': this.header.orderId as string,
+                // });
               }
+              //========================= CÓDIGO PARA CREAR PREORDER =========================
             },
           },
           styles: {
@@ -225,8 +264,8 @@ export class ShipmentDataFormComponent implements OnInit {
           let preOrderID;
           let whatsappLinkQueryParams;
 
-          if(this.createdOrderWithoutDelivery) {
-            this.createdOrderWithoutDelivery = false;
+          if (this.header.createdOrderWithoutDelivery) {
+            this.header.createdOrderWithoutDelivery = false;
             this.header.orderId = null;
           }
 
@@ -247,7 +286,8 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.isComplete.delivery = true;
           this.header.storeOrderProgress(this.header.saleflow._id);
 
-          if (!this.header.orderId && !this.createdOrderWithDelivery) {
+          //========================= CÓDIGO PARA CREAR PREORDER =========================
+          if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
             lockUI();
 
             preOrderID = await this.header.createPreOrder();
@@ -258,14 +298,32 @@ export class ShipmentDataFormComponent implements OnInit {
             };
 
             unlockUI();
-            this.openDialog(whatsappLinkQueryParams);
-            this.createdOrderWithDelivery = true;
+
+            console.log(
+              'RUTA',
+              `ecommerce/flow-completion-auth-less/${preOrderID}`
+            );
+
+            this.header.disableGiftMessageTextarea = true;
+
+            //Para el magicLink
+            // this.openDialog(whatsappLinkQueryParams);
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${preOrderID}`,
+            ]);
+
+            this.header.createdOrderWithDelivery = true;
           } else {
-            this.openDialog({
-              'Keyword-Order': this.header.orderId as string,
-            });
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+            ]);
+
+            //Para el magicLink
+            // this.openDialog({
+            //   'Keyword-Order': this.header.orderId as string,
+            // });
           }
-          // this.router.navigate([`ecommerce/flow-completion`]);
+          //========================= CÓDIGO PARA CREAR PREORDER =========================
           return { ok: true };
         },
       },

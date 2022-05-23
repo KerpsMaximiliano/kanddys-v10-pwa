@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="more-info-button">
+    <div class="more-info-button" *ngIf="socials">
         <span (click)="openDialog()">
             <img [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
         </span>

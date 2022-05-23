@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { SocialMediaModel } from 'src/app/core/models/saleflow';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -7,24 +9,37 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./merchant-info.component.scss']
 })
 export class MerchantInfoComponent implements OnInit {
+  @Input() merchantImage: string;
+  @Input() merchantName: string;
+  @Input() location: SocialMediaModel;
+  @Input() whatsapp: SocialMediaModel;
+  @Input() instagram: SocialMediaModel;
 
-    @Input() mercahntImage: string;
-    @Input() merchantName: string = 'Breakfast By Mage';
-    @Input() direccion: string = 'Direccion ID y CTA';
-    @Input() whatsapp: string = 'WhatsApp ID y CTA';
-    @Input() instagram: string = 'Instagram CTA';
-    @Input() merchantSite: string = 'www.website.com'
+  env: string = environment.assetsUrl;
 
-    imageFolder: string;
-  constructor() {
-    this.imageFolder = environment.assetsUrl;
-   }
+  constructor(
+    private ref: DialogRef,
+  ) { }
 
   ngOnInit(): void {
   }
 
-  redirect(){
-      console.log('to redirect')
+  close() {
+    this.ref.close();
+  }
+
+  goLink(url: string, type?:string) {
+    if(type == 'whatsapp'){
+      url = url.replace(/[^0-9]/g, '');
+      console.log(url)
+      const whatsappLink = `https://wa.me/+1${url}`;
+      console.log(whatsappLink);
+      window.open(whatsappLink, "_blank");
+    } else if(type == 'email'){
+      const emailAddress = `mailto:${url}`;
+      console.log(emailAddress);
+      window.location.href = emailAddress;
+    }
   }
 
 }

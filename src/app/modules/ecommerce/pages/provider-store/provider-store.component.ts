@@ -311,7 +311,7 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   async ngOnInit() {
-    if (this.header.orderId) return this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
+    // if (this.header.orderId) return this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
     let saleflowId: string;
     let itemId: string;
     this.route.params.subscribe((params) => {

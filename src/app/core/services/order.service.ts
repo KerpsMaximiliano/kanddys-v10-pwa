@@ -76,10 +76,13 @@ export class OrderService {
     }
   }
 
-  async authOrder(orderId: string): Promise<{ authOrder: ItemOrder }> {
+  async authOrder(
+    orderId: string,
+    userId?: string
+  ): Promise<{ authOrder: ItemOrder }> {
     const result = await this.graphql.mutate({
       mutation: authOrder,
-      variables: { orderId },
+      variables: { orderId, userId },
     });
 
     if (!result || result?.errors) return undefined;
