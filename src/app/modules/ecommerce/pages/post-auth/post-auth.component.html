@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="topbar">
+        <label for="Cancelar" class="cancel">Cancel</label>
+    </div>
+
+    <ng-container *ngIf="condition1">
+        <label for="Link" class="title">Link de tu mensaje creado!!</label>
+
+        <p class="sub-text">Para recibir el link por favor confirmanos por WhatsApp que no eres Spam:</p>
+    </ng-container>
+
+    <ng-container *ngIf="condition2">
+        <label for="Link" class="title">Este mensaje es privado</label>
+
+        <p class="sub-text">Para recibir el link de acceso por favor confirmanos quien eres:</p>
+    </ng-container>
+
+    <!-- BOTON -->
+    <div class="button-area">
+        <button class="middle-button">Confirmar por WhatsApp</button>
+
+        
+        <ng-container *ngIf="condition1">
+            <p class="sub-button">Después de tu confirmación recibirás Link y un qrCode para compartirlo.</p>
+        </ng-container>
+
+        <ng-container *ngIf="condition2">
+            <p class="sub-button">Después de tu confirmación recibirás el link donde ingresarás la clave de acceso asignada por el creador.</p>
+
+            <a (click)="redirect()" class="another">Otras maneras de confirmar que no eres Spam ></a>
+        </ng-container>
+    </div>
+
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [text]="'CONFIRMANOS QUE NO ERES UN BOT'"
+    ></app-sticky-button>
+</div>
