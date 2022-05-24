@@ -131,7 +131,7 @@
                     (click)="saveProduct()"
                 >
                 </app-cta-buttons>
-                <div class="cart">
+                <div class="cart" *ngIf="itemCartAmount">
                     <app-cart-button
                         [cartAmount]="itemCartAmount"
                         [shopCartCallback]="showCartCallBack"
