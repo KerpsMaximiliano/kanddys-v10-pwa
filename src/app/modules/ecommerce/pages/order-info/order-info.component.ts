@@ -131,6 +131,7 @@ export class OrderInfoComponent implements OnInit {
   currentMessage: string;
   showHeader: boolean;
   date: any;
+  fotodavitte: boolean = false;
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -210,8 +211,13 @@ export class OrderInfoComponent implements OnInit {
             this.titleTab = 'Horario de la sesión';
           }
           if (data.order.items[0].deliveryLocation) {
-            this.tabsOptions.push('Entrega');
-            this.titleTab = 'Entrega';
+            if(data.order.items[0].saleflow.merchant._id === '616a13a527bcf7b8ba3ac312'){
+              this.tabsOptions.push('Lugar de la sesión');
+              this.titleTab = 'Lugar de la sesión';
+              this.fotodavitte = true;
+            } else
+              this.tabsOptions.push('Entrega');
+              this.titleTab = 'Entrega';
           }
           this.phone = data.order.user.phone;
           this.headerService.orderId = data.order._id;
@@ -456,6 +462,14 @@ export class OrderInfoComponent implements OnInit {
       this.personalizacion = false;
       this.mensajeRegalo = false;
       this.pagoView = true;
+    } else if (e === 'Lugar de la sesión') {
+      this.reservacion = false;
+      this.address = true;
+      this.escenarios = false;
+      this.comprado = false;
+      this.personalizacion = false;
+      this.mensajeRegalo = false;
+      this.pagoView = false;
     }
   }
 }
