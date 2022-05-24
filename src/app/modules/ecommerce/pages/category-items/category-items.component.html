@@ -33,7 +33,7 @@
           <app-item-card
             [image]="swiperItem.images[0]"
             [boxAmount]="50"
-            [showBox]="!hasCustomizer && true"
+            [showBox]="false"
             [price]="!hasCustomizer && swiperItem.pricing"
             [showIcon]="isMerchant"
             [isSelected]="!isMerchant && swiperItem.isSelected"
@@ -60,7 +60,7 @@
         <app-saleflow-item
           [type]=2
           [boxAmount]="0"
-          [showBox]="!hasCustomizer && true"
+          [showBox]="false"
           [isSelected]="!hasCustomizer && item.isSelected"
           [showIcon]="isMerchant" 
           [income]="isMerchant && 123456.55"

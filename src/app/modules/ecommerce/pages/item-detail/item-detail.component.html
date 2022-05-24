@@ -2,12 +2,12 @@
     <div class="container">
          <ng-container *ngIf="viewtype == 'preview'">
             <app-helper-headerv2
-							[mode]="'basic'"
-							[navtext]="''"
-							[shopcart]="false"
-							[whatsapp]="false"
-							[plus]="false"
-							[upload]="false"
+                [mode]="'basic'"
+                [navtext]="''"
+                [shopcart]="false"
+                [whatsapp]="false"
+                [plus]="false"
+                [upload]="false"
             ></app-helper-headerv2>
                 <div class="box-container">
                     <p class="box-paragraph">{{boxText}}</p>
@@ -22,17 +22,16 @@
 
          <ng-container *ngIf="viewtype == 'community'">
             <app-helper-headerv2
-							[bgColor]="'#8351FE'"
-							[mode]="'basic'"
-							[navtext]="'Volver'"
-							[shopcart]="true"
-                            [shopCartCallback]="showCartCallBack"
-							[whatsapp]="false"
-							[plus]="false"
-							[upload]="false"
-							(returnEvent)="back()"
+                [mode]="'basic'"
+                [navtext]="'Volver'"
+                [shopcart]="true"
+                [shopCartCallback]="showCartCallBack"
+                [whatsapp]="false"
+                [plus]="false"
+                [upload]="false"
+                (returnEvent)="back()"
             ></app-helper-headerv2>
-            <div class="box-container">
+            <!-- <div class="box-container">
                 <div class="l-wrapper">
                     <span class="box-title">Tienda que vende: {{boxTitle}}</span>
                     <p class="box-paragraph" *ngIf="boxText">{{boxText}}</p>
@@ -44,19 +43,19 @@
                     </a>
                     <img [src]="env + '/upload.svg'" alt="" width="19.19px" height="25px" style="cursor: pointer;" (click)="copyLink()" *ngIf="fullLink">
                 </div>
-            </div>
+            </div> -->
          </ng-container>
         <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
         <div class="desc-area">
             <div class="left-area">
                 <span class="value">Vale</span>
                 <label for="Precio producto" class="price">${{ priceLabel | number: "1.0-2" }}</label>
-                    <div for="Promocion" class="ptext"> <!--Esto es una misma linea de texto-->
-                        <label for="aja" class="earn">Ganas 58 <img class="star" [src]="env + '/star.svg'"></label> 
-                        <div *ngIf="myStore && viewtype == 'merchant'"><span class="con-text"> y recaudas fondos </span></div>
-                        <div *ngIf="viewtype == 'preview'"><span class="con-text"> se colabora ${{preamount}} </span></div>
-                        <div *ngIf="viewtype === 'community'"><span class="con-text"> y recaudamos ${{preamount}}</span></div>
-                    </div>
+                <!-- <div class="ptext">
+                    <label class="earn">Ganas 58 <img class="star" [src]="env + '/star.svg'"></label> 
+                    <div *ngIf="myStore && viewtype == 'merchant'"><span class="con-text"> y recaudas fondos </span></div>
+                    <div *ngIf="viewtype == 'preview'"><span class="con-text"> se colabora ${{preamount}} </span></div>
+                    <div *ngIf="viewtype === 'community'"><span class="con-text"> y recaudamos ${{preamount}}</span></div>
+                </div> -->
             </div>
 
             <div class="right-area">
@@ -112,7 +111,7 @@
 
         <ng-container *ngIf="viewtype == 'community' ">
             <div class="cta-area">
-                <app-cta-buttons
+                <!-- <app-cta-buttons
                     [ctaText]="'Añadelo A Mi Lista'"
                     [btnColor]="'#40772F'"
                 >
@@ -122,7 +121,7 @@
                     [ctaText]="'Recauda Fondos'"
                     [btnColor]="'#8351FE'"
                 >
-                </app-cta-buttons>
+                </app-cta-buttons> -->
     
                 <app-cta-buttons
                     [ctaText]="inCart ? 'En El Carrito De Compras' : 'Al Carrito Para Comprarlo'"
