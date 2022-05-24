@@ -141,7 +141,8 @@
   </div>
 
   <div class="content" *ngIf="address">
-    <p class="top-text">Lugar de entrega:</p>
+    <ng-container *ngIf="!fotodavitte; else sesion"> <p class="top-text">Lugar de entrega:</p> </ng-container>
+    <ng-template #sesion> <p class="top-text">Lugar de la sesión:</p> </ng-template>
     <div class="text-container">
       <ng-container *ngIf="orders.items[0].deliveryLocation.city; else pickUp">
         {{ orders.items[0].deliveryLocation.street }},
