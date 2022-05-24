@@ -5,12 +5,14 @@
             <label for="Nomber de la tienda" class="merchant-name">{{merchantName}}</label>
         </div>
         <div class="images-info">
+            <ng-container *ngIf="location">
             <a target="_blank" [href]="location.url">
-                <div class="info-part1" *ngIf="location">
+                <div class="info-part1">
                     <img [src]="env + '/location123.svg'" alt="Direccion" class="merchant-icon" width="36px" height="50px">
                     <span for="info del merchant" class="merchant-text">{{location.url | slice:0:30}}</span>
                 </div>
             </a>
+            </ng-container>
             <a target="_blank" [href]="'https://wa.me/' + whatsapp.url" class="info-part2" *ngIf="whatsapp">
                 <img [src]="env + '/whatsapp_blanco.svg'" alt="Whatsapp" class="merchant-icon" width="36px"
                     height="36.21px">
