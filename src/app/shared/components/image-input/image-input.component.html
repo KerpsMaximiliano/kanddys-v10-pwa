@@ -2,7 +2,7 @@
     <div *ngFor="let input of imageField; index as i" class="input-container">
         <input
             [id]="'file'+i"
-            (change)="fileProgress($event.target.files, i)"
+            (change)="fileProgress($event, i)"
             type="file"
             class="d-none"
             [accept]="acceptTypes"

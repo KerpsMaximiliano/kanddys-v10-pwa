@@ -45,7 +45,7 @@ export class MakeTriggerComponent implements AfterViewInit, OnDestroy {
     await this.setPicture(base64ToFile(b64));
   }
 
-  async uploadPhoto(event: InputEvent) {
+  async uploadPhoto(event: Event) {
     const { files = [] as any }: HTMLInputElement = event.target as any;
     if (files.length) await this.setPicture(files[0]);
   }

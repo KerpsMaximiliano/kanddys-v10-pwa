@@ -6,7 +6,7 @@
   <p class="top-text">¿Qué mensaje escribiremos?</p>
   <div class="text-container">
     <input
-      *ngFor="let controller of controllers.controls"
+      *ngFor="let controller of getControllers()"
       placeholder="Escribe el mensaje de aprecio…"
       class="message"
       [formControl]="controller"
@@ -16,7 +16,7 @@
   <div class="target">
     <p class="input-texts">¿Para quién es?</p>
     <input
-      [formControl]="controller.get('target')"
+      [formControl]="getControl('target')"
       class="gift-input"
       placeholder="Lo recibirá..."
     />
@@ -24,7 +24,7 @@
   <div class="from" [style.marginBottom]="!submition ? '60px' : ''">
     <p class="input-texts">¿De parte de quién o quienes?</p>
     <input
-      [formControl]="controller.get('from')"
+      [formControl]="getControl('from')"
       class="gift-input"
       placeholder="De parte de..."
     />
