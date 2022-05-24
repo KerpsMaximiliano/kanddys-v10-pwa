@@ -178,7 +178,7 @@
   <div class="bottom-separator"></div>
 
   <app-sticky-button
-    [mode]="(!name || name.trim().length === 0) && isANewUser"
+    [mode]="(!name || name.trim().length === 0) && isANewUser && 'basic'"
     [text]="!name && isANewUser ? 'ESCRIBE TU NOMBRE Y APELLIDO' : 'CONTINUAR'"
     (click)="submit()"
     *ngIf="step === 'UPDATE_NAME'"

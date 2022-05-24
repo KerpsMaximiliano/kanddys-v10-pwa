@@ -30,6 +30,14 @@ export class GiftMessageComponent implements OnInit {
     this.initControllers();
   }
 
+  getControllers() {
+    return this.controllers.controls as FormControl[];
+  }
+
+  getControl(type: string) {
+    return this.controller.get(type) as FormControl;
+  }
+
   initControllers() {
     const [target] = this.aux.targets ? this.aux.targets : [{ name: '' }];
     this.controller.addControl(

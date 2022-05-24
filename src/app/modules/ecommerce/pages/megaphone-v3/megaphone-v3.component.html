@@ -37,12 +37,12 @@
           *ngFor="let item of sliderPackage; let i = index"
         >
           <app-saleflow-item
-            [imgURL]="item.images"
+            [imgURL]="item.images[0]"
             [price]="item.price"
             [showPrice]="true"
             [description]="item.description"
             [showDescription]="true"
-            [isSelected]="item.selected"
+            [isSelected]="item.isSelected"
             [priceAlign]="'start'"
             [type]="2"
             (click)="goToPackageDetail(i)"

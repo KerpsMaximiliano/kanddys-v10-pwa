@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Customizer, CustomizerInput } from 'src/app/core/models/customizer';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -193,7 +193,7 @@ export class CustomizerListComponent implements OnInit {
   //   this.customizerForm.patchValue(customizer);
   // }
 
-  getArrayControls(form: FormGroup, controlName: string) {
+  getArrayControls(form: FormGroup | AbstractControl, controlName: string) {
     return (form.get(controlName) as FormArray).controls;
   }
   
@@ -201,15 +201,15 @@ export class CustomizerListComponent implements OnInit {
     return (this.customizerForm.get(`${form}.itemsRule`) as FormArray).length;
   }
 
-  getMaxLength(form: FormGroup) {
+  getMaxLength(form: FormGroup | AbstractControl) {
     return form.get('fixedLengthOnly').value ? form.get('fixedLength').value : 200
   }
 
-  checkControlValue(form: FormGroup, controlName: string) {
+  checkControlValue(form: FormGroup | AbstractControl, controlName: string) {
     return form.get(controlName).value;
   }
 
-  onAddArrayItem(controlName: string, form?: FormGroup) {
+  onAddArrayItem(controlName: string, form?: FormGroup | AbstractControl) {
     // -------------------- Default color value --------------------
     // if(form) {
     //   let control = new FormControl(null, Validators.required);
@@ -241,7 +241,7 @@ export class CustomizerListComponent implements OnInit {
     (<FormArray>this.customizerForm.get(controlName)).push(control);
   }
 
-  onAddArrayItemColor(controlName: string, form?: FormGroup) {
+  onAddArrayItemColor(controlName: string, form?: FormGroup | AbstractControl) {
     const control = new FormGroup({
       'name': new FormControl(null, Validators.required),
       'fixedValue': new FormControl(null, Validators.required),
@@ -251,7 +251,7 @@ export class CustomizerListComponent implements OnInit {
     return;
   }
 
-  onRemoveArrayItem(controlName: string, i: number, form?: FormGroup, ) {
+  onRemoveArrayItem(controlName: string, i: number, form?: FormGroup | AbstractControl) {
     if(form) {
       (<FormArray>form.get(controlName)).removeAt(i);
       return;
@@ -259,12 +259,13 @@ export class CustomizerListComponent implements OnInit {
     (<FormArray>this.customizerForm.get(controlName)).removeAt(i);
   }
 
-  handleFileInput(files: FileList, form: FormControl) {
+  handleFileInput(e: Event, form: FormControl | AbstractControl) {
+    const files = (e.target as HTMLInputElement).files;
     form.setValue(files.item(0));
   }
 
-  handleStickerSize(value: number, form: FormGroup) {
-    console.log(value);
+  handleStickerSize(e: Event, form: FormGroup | AbstractControl) {
+    const value = (e.target as HTMLInputElement).value;
     form.patchValue({
       fixPosition: {
         width: +value,

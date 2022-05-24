@@ -523,8 +523,9 @@ export class PaymentsComponent implements OnInit {
   }
 
   // Case 7
-  onFileInput(file: File) {
-    this.image = file;
+  onFileInput(file: File | {image: File, index: number}) {
+    if(!('index' in file))
+      this.image = file;
   }
 
   // Case 7
