@@ -26,6 +26,7 @@ import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
 import { MerchantsService } from './merchants.service';
+import { SaleFlowService } from './saleflow.service';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -128,7 +129,8 @@ export class HeaderService {
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
     private customizerValueService: CustomizerValueService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private saleflowService: SaleFlowService,
   ) {
     this.visible = false;
     this.auth.me().then((data) => {
@@ -253,6 +255,12 @@ export class HeaderService {
       this.savedBookmarks = data.bookmarkByUser;
     });
     return this.savedBookmarks;
+  }
+
+  async fetchSaleflow(id: string) {
+    this.saleflow = (await this.saleflowService.saleflow(id)).saleflow;
+    this.storeSaleflow(this.saleflow);
+    return this.saleflow;
   }
 
   storeSaleflow(saleflow: SaleFlow) {

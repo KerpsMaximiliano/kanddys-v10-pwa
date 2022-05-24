@@ -282,9 +282,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
-      this.header.saleflow = this.saleflowData;
-      this.header.storeSaleflow(this.saleflowData);
+      if(!this.header.getSaleflow() && !this.header.saleflow) this.saleflowData = await this.header.fetchSaleflow(params.id);
+      if(this.header.getSaleflow()._id !== params.id) this.saleflowData = await this.header.fetchSaleflow(params.id);
+      else {
+        this.saleflowData = this.header.getSaleflow();
+        this.header.saleflow = this.saleflowData;
+      }
       const orderData = this.header.getOrder(this.saleflowData._id);
       if (!orderData || !orderData.products || orderData.products.length === 0)
         this.header.emptyItems(this.saleflowData._id);
@@ -489,6 +492,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   onItemCategoryClick(listIndex: number, itemIndex: number) {
+    console.log(this.header.saleflow)
     const itemData = this.itemsByCategory[listIndex].items[itemIndex];
     if (itemData) {
       this.header.categoryId = itemData.category[0]._id;

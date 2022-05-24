@@ -1,0 +1,23 @@
+.cart {
+  position: relative;
+  cursor: pointer;
+  img {
+    height: 24px;
+    width: 30px;
+    margin-left: 23px;
+
+    &.blue {
+      filter: invert(42%) sepia(29%) saturate(3571%) hue-rotate(207deg) brightness(90%) contrast(86%);
+    }
+  }
+  span {
+      position: absolute;
+      background-color: #FF0000;
+      color: #ffffff;
+      padding: 2px 5px;
+      border-radius: 50%;
+      top: -4px;
+      right: -3px;
+      font-size: 10px;
+  }
+}

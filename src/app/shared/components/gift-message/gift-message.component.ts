@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from '../../dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-gift-message',
@@ -21,11 +22,20 @@ export class GiftMessageComponent implements OnInit {
   controller: FormGroup = new FormGroup({});
   aux: any = {};
 
-  constructor() {}
+  constructor(
+    private dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.initControllers();
-    console.log(this.isPreview);
+  }
+
+  getControllers() {
+    return this.controllers.controls as FormControl[];
+  }
+
+  getControl(type: string) {
+    return this.controller.get(type) as FormControl;
   }
 
   initControllers() {
@@ -49,7 +59,6 @@ export class GiftMessageComponent implements OnInit {
       this.controller.disable();
       this.controllers.disable();
     }
-    console.log('aux', this.aux);
     
   }
 
@@ -62,6 +71,16 @@ export class GiftMessageComponent implements OnInit {
       target: this.controller.get('target').value,
       from: this.controller.get('from').value,
     };
-    console.log(result);
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

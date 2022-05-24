@@ -18,6 +18,11 @@ import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
 
 interface BankDetails {
   status: boolean;
@@ -45,20 +50,19 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   ];
   bankOptions: BankDetails[] = [];
   banks: Bank[] = [];
-  step: string = 'UPDATE_NAME_AND_SHOW_BANKS';
+  step: string = 'PHONE_CHECK_AND_SHOW_BANKS';
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  phoneNumber = new FormControl('', [
-    Validators.required,
-    Validators.pattern(/^\d{10,}$/),
-  ]);
+  phoneNumber = new FormControl('', [Validators.required]);
   selectedBank: BankDetails = null;
   paymentCode: string = '';
   image: File;
   merchantInfo: Merchant;
   orderId: string;
   isLogged: boolean;
+  userId: string;
   userData: User;
   orderData: any;
+  isAPreOrder: boolean = true;
   fakeData: ItemOrder;
   reservationOrProduct: string = '';
   headerText: string;
@@ -66,9 +70,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   dialogProps: Record<string, any>;
   saleflowData: any;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
+  stepButtonText: string;
+  stepButtonMode: string;
   whatsappLink: string = '';
   isANewUser: boolean = false;
+  pastStep: string = '';
   env: string = environment.assetsUrl;
+  separateDialCode = true;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
 
   constructor(
     private authService: AuthService,
@@ -150,8 +162,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         products: showProducts,
       };
 
-      console.log('Order data', this.orderData);
-
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
@@ -193,8 +203,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     this.localStorageFlowRoute =
       this.header.flowRoute || localStorage.getItem('flowRoute');
 
-    console.log(this.localStorageFlowRoute);
-
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
 
@@ -229,7 +237,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         await this.getExchangeData(
           saleflow.module.paymentMethod.paymentModule._id
         );
-        this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+        this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
 
         // if (currentSession) {
         //   await this.getExchangeData(
@@ -330,56 +338,96 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   async submit() {
-    switch (this.step) {
-      case 'UPDATE_NAME_AND_SHOW_BANKS':
-        // this.totalQuestions = 2;
+    try {
+      switch (this.step) {
+        case 'PHONE_CHECK_AND_SHOW_BANKS': {
+          if (this.isAPreOrder) {
+            const foundUser = await this.checkIfUserExists();
+            this.userData = foundUser;
 
-        if (!this.phoneNumber.disabled && !this.name.disabled) {
-          lockUI();
+            if (!foundUser || String(foundUser.name) === 'null') {
+              this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+              return;
+            }
 
-          let registeredNewUser: User = null;
+            if (foundUser && foundUser.name) {
+              lockUI();
 
-          let foundUser = await this.authService.checkUser(
-            '1' + String(this.phoneNumber.value)
-          );
-          this.userData = foundUser;
+              const { orderStatus } = await this.order.getOrderStatus(
+                this.orderId
+              );
 
-          console.log(foundUser);
+              if (orderStatus === 'draft') {
+                await this.order.authOrder(this.orderId, foundUser._id);
+                this.isAPreOrder = false;
+              }
 
-          const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+              await this.getOrderData(this.orderId, false);
 
-          if (foundUser && foundUser._id !== '') {
-            if (orderStatus === 'draft')
-              await this.order.authOrder(this.orderId, foundUser._id);
-          } else {
-            registeredNewUser = await this.signUp();
-            this.userData = registeredNewUser;
+              //disable 1st step inputs to avoid further changes to existing order
+              this.phoneNumber.disable();
 
-            if (registeredNewUser && orderStatus === 'draft')
-              await this.order.authOrder(this.orderId, registeredNewUser._id);
+              if (this.banks.length === 1) {
+                this.selectedBank = this.bankOptions[0];
+              }
+              unlockUI();
+            }
           }
 
-          await this.getOrderData(this.orderId, false);
-
-          //disable 1st step inputs to avoid further changes to existing order
-          this.phoneNumber.disable();
-          this.name.disable();
-
-          if (this.banks.length === 1) {
-            this.selectedBank = this.bankOptions[0];
-          }
-
+          this.pastStep = this.step;
           this.step = 'PAYMENT_INFO';
-          unlockUI();
-        } else {
-          this.step = 'PAYMENT_INFO';
+          break;
         }
+        case 'UPDATE_NAME_AND_SHOW_BANKS': {
+          if (this.isAPreOrder) {
+            // this.totalQuestions = 2;
+            const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
 
-        // this.updateUser();
-        break;
-      case 'PAYMENT_INFO':
-        this.payOrder();
-        break;
+            if (!this.name.disabled) {
+              lockUI();
+
+              let registeredNewUser: User = null;
+
+              let foundUser = await this.authService.checkUser(phoneNumber);
+              this.userData = foundUser;
+
+              const { orderStatus } = await this.order.getOrderStatus(
+                this.orderId
+              );
+
+              registeredNewUser = await this.signUp();
+              this.userData = registeredNewUser;
+
+              if (registeredNewUser && orderStatus === 'draft') {
+                await this.order.authOrder(this.orderId, registeredNewUser._id);
+                this.isAPreOrder = false;
+              }
+
+              await this.getOrderData(this.orderId, false);
+              //disable 1st step inputs to avoid further changes to existing order
+              this.name.disable();
+
+              if (this.banks.length === 1) {
+                this.selectedBank = this.bankOptions[0];
+              }
+
+              this.pastStep = this.step;
+              this.step = 'PAYMENT_INFO';
+              unlockUI();
+            }
+            // this.updateUser();
+          }
+
+          this.pastStep = this.step;
+          this.step = 'PAYMENT_INFO';
+          break;
+        }
+        case 'PAYMENT_INFO':
+          this.payOrder();
+          break;
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -402,19 +450,22 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   goBack() {
+    if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS') {
+      this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
+    }
+
     if (
-      this.step === 'UPDATE_NAME_AND_SHOW_BANKS' &&
+      this.step === 'PHONE_CHECK_AND_SHOW_BANKS' &&
       (this.header.flowRoute || this.localStorageFlowRoute !== '')
     ) {
       const redirectionURL = `/ecommerce/${
         this.header.flowRoute || this.localStorageFlowRoute
       }`;
-      console.log(this.localStorageFlowRoute, redirectionURL);
       this.router.navigate([redirectionURL]);
     }
 
     if (this.step === 'PAYMENT_INFO') {
-      this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+      this.step = this.pastStep;
       this.isANewUser = false;
     }
   }
@@ -423,7 +474,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   async signUp() {
     try {
       const data = await this.authService.signup(
-        { phone: '1' + this.phoneNumber.value, name: this.name.value },
+        {
+          phone: this.phoneNumber.value.e164Number.split('+')[1],
+          name: this.name.value,
+        },
         'whatsapp'
       );
       if (data) {
@@ -434,6 +488,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async checkIfUserExists(): Promise<User | null> {
+    const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
+    const data = await this.authService.checkUser(phoneNumber);
+
+    if (data) {
+      return data;
+    } else {
+      return null;
     }
   }
 
@@ -466,8 +531,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   // Case 7
-  onFileInput(file: File) {
-    this.image = file;
+  onFileInput(file: File | {image: File, index: number}) {
+    if(!('index' in file))
+      this.image = file;
   }
 
   // Case 7
@@ -525,6 +591,44 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     } catch (error) {
       console.log(error);
       this.orderFinished();
+    }
+  }
+
+  changeStickyButtonText() {
+    switch (this.step) {
+      case 'PHONE_CHECK_AND_SHOW_BANKS':
+        return (this.stepButtonText =
+          this.phoneNumber.status === 'INVALID'
+            ? 'ESCRIBE COMO TE CONTACTAMOS'
+            : 'CONFIRMA TU PAGO');
+      case 'UPDATE_NAME_AND_SHOW_BANKS':
+        return (this.stepButtonText =
+          this.name.status === 'INVALID'
+            ? 'ESCRIBE QUIEN ERES'
+            : 'CONFIRMA TU PAGO');
+
+      case 'PAYMENT_INFO':
+        return (this.stepButtonText =
+          this.paymentCode.length !== 4 || !this.image || !this.selectedBank
+            ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+            : 'Manda tu orden a ' + this.merchantInfo.name.toUpperCase());
+    }
+  }
+
+  changeStickyButtonMode() {
+    switch (this.step) {
+      case 'PHONE_CHECK_AND_SHOW_BANKS':
+        return (this.stepButtonMode =
+          this.phoneNumber.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
+      case 'UPDATE_NAME_AND_SHOW_BANKS':
+        return (this.stepButtonMode =
+          this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
+      case 'PAYMENT_INFO':
+        return this.paymentCode.length !== 4 ||
+          !this.image ||
+          !this.selectedBank
+          ? 'disabled-fixed'
+          : 'fixed';
     }
   }
 

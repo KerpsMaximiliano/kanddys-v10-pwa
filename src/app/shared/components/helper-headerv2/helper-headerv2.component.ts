@@ -7,12 +7,13 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./helper-headerv2.component.scss']
 })
 export class HelperHeaderv2Component implements OnInit {
-    imageFolder: string;
     @Input() bgColor: string = '#4773D8';
     @Input() navtext: string = 'Volver';
     @Input() mode: string = 'basic' || 'double' || 'options' || 'center'; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;
+    @Input() cartAmount: number;
+    @Input() public shopCartCallback: () => void;
     @Input() returnAble: boolean = true;
     @Input() plus: boolean = false;
     @Input() upload: boolean = false;
@@ -20,12 +21,15 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() leftText: string = 'Ir A Mis Datos Personales';
     @Input() rightText: string = 'Ir A Los Datos Mi Tienda';
     @Output() returnEvent = new EventEmitter()
+    env: string = environment.assetsUrl;
 
-  constructor() {
-      this.imageFolder = environment.assetsUrl;
-   }
+  constructor() {}
 
   ngOnInit(): void {
+  }
+
+  shopCartTrigger() {
+    this.shopCartCallback();
   }
 
   return(event){

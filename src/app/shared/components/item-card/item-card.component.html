@@ -1,7 +1,7 @@
 <div class="item-card">
   <div class="top-icons">
     <div>
-      <div *ngIf="showBox" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onTopBoxClick()">
+      <div *ngIf="showBox && boxAmount != null" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onTopBoxClick()">
         {{boxAmount | number}}
         <img [src]="env + '/star.svg'" alt="star-icon">
       </div>
@@ -22,6 +22,7 @@
         [src]="image"
         alt="item-image"
         class="center-img"
+        [ngClass]="{'center-img-shadow': showBox || showIcon || price}"
         (click)="onClick()"
       >
       <ng-template #placeholder>
@@ -29,7 +30,7 @@
       </ng-template>
     </ng-container>
 
-    <label class="item-price">${{price | number}}</label>
+    <label *ngIf="price" class="item-price">${{price | number}}</label>
     <label *ngIf="income" class="income">${{income | number}} ingreso</label>
   </div>
 </div>
