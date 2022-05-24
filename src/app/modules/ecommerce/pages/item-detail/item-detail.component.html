@@ -26,6 +26,7 @@
                 [navtext]="'Volver'"
                 [shopcart]="true"
                 [shopCartCallback]="showCartCallBack"
+                [cartAmount]="itemCartAmount"
                 [whatsapp]="false"
                 [plus]="false"
                 [upload]="false"
@@ -58,10 +59,10 @@
                 </div> -->
             </div>
 
-            <div class="right-area">
+            <!-- <div class="right-area">
                <ng-container *ngIf="viewtype == 'merchant'"><img class="upload-icon" [src]="env + '/upload.svg' " alt=""  style="cursor: pointer;" height="25px" width="19px"></ng-container>
                 <img class="info-icon" [src]="env + '/info.svg' " alt=""  style="cursor: pointer; margin-left: 5px" height="20px" width="5px">
-            </div>
+            </div> -->
         </div>
         <div class="wrapper">
             <div class="included" *ngIf="itemData?.content?.length > 0">
@@ -130,6 +131,13 @@
                     (click)="saveProduct()"
                 >
                 </app-cta-buttons>
+                <div class="cart">
+                    <app-cart-button
+                        [cartAmount]="itemCartAmount"
+                        [shopCartCallback]="showCartCallBack"
+                        color="blue"
+                    ></app-cart-button>
+                </div>
             </div>
         </ng-container>
 

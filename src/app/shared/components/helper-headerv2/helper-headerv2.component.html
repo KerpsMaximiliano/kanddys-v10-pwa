@@ -1,27 +1,35 @@
 <div class="main" [style.background-color]="bgColor">
 
     <ng-container *ngIf="mode == 'basic'">
-    <div class="top-bar">
-        <div class="left-area">
-            <a *ngIf="returnAble == true" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a> 
-            <ng-container *ngIf="navtext"><label for="Volver" class="return">{{navtext}}</label></ng-container>
+        <div class="top-bar">
+            <div class="left-area">
+                <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a> 
+                <ng-container *ngIf="navtext"><span class="return">{{navtext}}</span></ng-container>
+            </div>
+        
+            <div class="right-area">
+                <!-- ICONOS -->
+                <div *ngIf="whatsapp"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px" alt="" style="cursor: pointer; margin-right: 23px"></div>
+                <div *ngIf="shopcart">
+                    
+                </div>
+                <ng-container *ngIf="shopcart">
+                    <app-cart-button
+                        [cartAmount]="cartAmount"
+                        [shopCartCallback]="shopCartCallback"
+                    ></app-cart-button>
+                </ng-container>
+                <div *ngIf="plus"><span class="plus">+</span></div>
+                <div *ngIf="upload"><img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;"></div>
+            </div>
         </div>
-    
-        <div class="right-area">
-            <!-- ICONOS -->
-            <div *ngIf="whatsapp == true"><img [src]="imageFolder + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px" alt="" style="cursor: pointer; margin-right: 23px"></div>
-            <div *ngIf="shopcart == true"><img [src]="imageFolder + '/carrito_blanco.svg'" style="margin-left: 23px;" height="24.5px" width="30.14px" alt="" style="cursor: pointer;" (click)="shopCartTrigger()"></div>
-            <div *ngIf="plus == true"><label for="plus" class="plus">+</label></div>
-            <div *ngIf="upload == true"><img [src]="imageFolder + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;"></div>
-        </div>
-    </div>
     </ng-container>
 
 
     <ng-container *ngIf="mode == 'double'">
         <div class="double-text">
             <label class="text bold-text">{{leftText}}</label>
-            <div *ngIf="line == true"><hr class="linea"/></div>
+            <div *ngIf="line"><hr class="linea"/></div>
             <label class="text bold-text">{{rightText}}</label>
         </div>
     </ng-container>

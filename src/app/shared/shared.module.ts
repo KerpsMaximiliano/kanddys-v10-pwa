@@ -82,6 +82,7 @@ import { MerchantInfoComponent } from './dialogs/merchant-info/merchant-info.com
 import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualizer.component';
 import { PostPrivacyComponent } from './dialogs/post-privacy/post-privacy.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { CartButtonComponent } from './components/cart-button/cart-button.component';
 
 const imports = [
   CommonModule,
@@ -161,6 +162,7 @@ const declarations = [
   MerchantInfoComponent,
   PreVisualizerComponent,
   PostPrivacyComponent,
+  CartButtonComponent,
 ];
 
 @NgModule({

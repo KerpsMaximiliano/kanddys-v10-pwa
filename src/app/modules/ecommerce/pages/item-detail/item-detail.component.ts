@@ -51,7 +51,8 @@ export class ItemDetailComponent implements OnInit {
   inCart: boolean;
   whatsappLink: string = '';
   fullLink: string = '';
-  showCartCallBack: any;
+  showCartCallBack: () => void;
+  itemCartAmount: number;
   env: string = environment.assetsUrl;
 
   ngOnInit(): void {
@@ -85,6 +86,7 @@ export class ItemDetailComponent implements OnInit {
 
   itemInCart() {
     const productData = this.header.getItems(this.saleflowId);
+    this.itemCartAmount = productData?.length;
     if (productData && productData.length > 0) {
       this.inCart = productData.some((item) => item._id === this.itemData._id);
     } else this.inCart = false;
@@ -135,10 +137,7 @@ export class ItemDetailComponent implements OnInit {
       saleflow: this.saleflowId,
     });
     this.header.storeItem(this.saleflowId, this.itemData);
-    this.showItems();
     this.itemInCart();
-    //this.router.navigate(['/ecommerce/provider-store']);
-    //this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
   }
 
   toggleActivateItem() {
