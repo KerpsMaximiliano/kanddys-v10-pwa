@@ -57,9 +57,9 @@ export class ItemDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      if (params.saleflow) {
-        this.saleflowId = params.saleflow;
-      }
+      this.saleflowId = params.saleflow;
+      if(!this.header.getSaleflow() && !this.header.saleflow) await this.header.fetchSaleflow(params.saleflow);
+      if(this.header.getSaleflow()._id !== params.saleflow) await this.header.fetchSaleflow(params.saleflow);
       if (params.id) {
         await this.items.item(params.id).then((data) => {
           this.itemData = data;
