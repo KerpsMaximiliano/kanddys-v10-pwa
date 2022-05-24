@@ -4,7 +4,7 @@
 >
   <div *ngIf = "!searchBar" class="container-title">
     <span class="title" [ngStyle]="{ color: BigText ? 'black' : '#7b7b7b', fontFamily: BigText ? 'RobotoBold' : 'SfProRegular', fontSize: BigText ? '22px' : '14px'}">{{ title }}</span>
-    <div (click)="openDialog()" class="filterButton">
+    <div (click)="openDialog()" class="filterButton" *ngIf="filters">
       <!--<span *ngIf = "activedTags.length > 0" [ngStyle]="{'font-size':activedTags.length > 9?'8px':'16px'}" >{{activedTags.length}}</span>-->
       <img src="{{ env }}/filter.svg" alt="Filter" />
     </div>
