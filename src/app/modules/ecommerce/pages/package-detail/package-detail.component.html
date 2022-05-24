@@ -10,7 +10,7 @@
     <div class="filter-container" style="background-color: white; margin-bottom: 0px; margin-top: 50px;">
       <ng-container *ngIf="filters">
         <app-see-filters [type]="3" title="Selecciona los Escenarios" [BigText]="true" [noMarginBottom]="true"
-          [tags]="filters"></app-see-filters>
+          [tags]="filters" [filters]="false" [showOptions]="false"></app-see-filters>
       </ng-container>
     </div>
     <div class="scenarios">
