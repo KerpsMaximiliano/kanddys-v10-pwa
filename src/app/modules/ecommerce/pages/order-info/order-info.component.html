@@ -85,13 +85,13 @@
         <div class="list-items">
           <div class="list-item">
             <img
-              [src]="orders.itemPackage.images[0]"
+              [src]="order.itemPackage.images[0]"
               alt="no-image"
               class="image-item"
             />
             <div class="list-item-content">
               <div class="item">
-                <p class="title">{{ orders.itemPackage.name }}</p>
+                <p class="title">{{ order.itemPackage.name }}</p>
                 <div class="bottom"></div>
               </div>
             </div>
@@ -144,32 +144,34 @@
     <ng-container *ngIf="!fotodavitte; else sesion"> <p class="top-text">Lugar de entrega:</p> </ng-container>
     <ng-template #sesion> <p class="top-text">Lugar de la sesión:</p> </ng-template>
     <div class="text-container">
-      <ng-container *ngIf="orders.items[0].deliveryLocation.city; else pickUp">
-        {{ orders.items[0].deliveryLocation.street }},
-        {{ orders.items[0].deliveryLocation.city }}, República Dominicana
+      <ng-container *ngIf="order.items[0].deliveryLocation.city; else pickUp">
+        {{ order.items[0].deliveryLocation.street }},
+        {{ order.items[0].deliveryLocation.city }}, República Dominicana
       </ng-container>
       <ng-template #pickUp>
-        {{ orders.items[0].deliveryLocation.nickName }}
+        {{ order.items[0].deliveryLocation.nickName }}
       </ng-template>
     </div>
-    <ng-container *ngIf="orders.items[0].deliveryLocation.note">
+    <ng-container *ngIf="order.items[0].deliveryLocation.note">
       <div class="target">
         <p class="top-text">Nota:</p>
         <div class="text-container" style="margin-bottom: 60px">
-          {{ orders.items[0].deliveryLocation.note }}
+          {{ order.items[0].deliveryLocation.note }}
         </div>
       </div>
     </ng-container>
   </div>
 
-  <div class="content-customizer" *ngIf="personalizacion">
-    <section class="customization-container" *ngIf="customizer">
-      <div class="card">
-        <div class="img-container" *ngIf="customizer.preview">
-          <img class="img" [src]="customizer.preview" alt="" />
-        </div>
-      </div>
-    </section>
+  <div class="content-customizer" *ngIf="personalizacion && customizer">
+    <table>
+      <tr *ngFor="let detail of customizerDetails">
+        <th>{{detail.name}}</th>
+        <td>{{detail.value}}</td>
+      </tr>
+    </table>
+    <div class="img-container" *ngIf="customizer.preview">
+      <img class="img" [src]="customizer.preview" alt="" />
+    </div>
   </div>
 
   <div *ngIf="mensajeRegalo && message && currentMessage">

@@ -33,7 +33,7 @@
   <div *ngIf="type == 2">
     <div
       class="itemImg"
-      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
+      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')', 'background-size': backgroundSize }"
       [ngClass]="{
         'gray-shadow': shaded == true,
         borderRect: borderRadius == false

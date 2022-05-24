@@ -34,6 +34,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showBox: boolean;
   @Input() boxAmount: number;
   @Input() showIcon: boolean;
+  @Input() backgroundSize: 'cover' | 'contain' = 'cover';
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();

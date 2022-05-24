@@ -105,14 +105,7 @@
           Ver..
         </h6>
       </div>
-      <app-swiper
-        [saleFlowTwo]="true"
-        [saleFlowTwoData]="item.items"
-        [showPrice]="!hasCustomizer"
-        (slideActive)="onItemCategoryClick(i, $event)"
-        (toggleEmitter)="toggleSelected('item', i, $event)"
-      ></app-swiper>
-      <!-- <div style="padding: 0 1.20rem;">
+      <div style="padding: 0 1.20rem;">
         <swiper [config]="swiperConfig">
           <div *ngFor="let swiperItem of item.items; let j = index" style="max-width: 227px;">
             <app-saleflow-item
@@ -123,12 +116,13 @@
               [price]="swiperItem.pricing"
               [showPrice]="swiperItem.customizerId ? false : true"
               priceAlign="start"
+              [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
               (itemClicked)="onItemCategoryClick(i, j)"
             >
             </app-saleflow-item>
           </div>
         </swiper> 
-      </div> -->
+      </div>
       <div class="categories-wrapper" *ngIf="i === 0">
         <h6 class="header-text">
           Ver mas de:
