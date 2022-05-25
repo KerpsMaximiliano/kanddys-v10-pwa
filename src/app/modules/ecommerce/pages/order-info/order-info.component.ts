@@ -20,6 +20,7 @@ import { ItemOrder, ItemSubOrder } from 'src/app/core/models/order';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
+import { StatusListComponent } from 'src/app/shared/dialogs/status-list/status-list.component';
 moment.locale('es');
 
 @Component({
@@ -61,6 +62,26 @@ export class OrderInfoComponent implements OnInit {
   linkId: string;
   price: number = 0;
   status: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
+  statusList: {
+    status: 
+      | 'cancelled'
+      | 'started'
+      | 'verifying'
+      | 'in progress'
+      | 'to confirm'
+      | 'completed'
+      | 'error'
+      | 'draft';
+    name: 
+      | 'cancelado' 
+      | 'empezado' 
+      | 'verificando' 
+      | 'verificado' 
+      | 'en revisión' 
+      | 'por confirmar' 
+      | 'completado' 
+      | 'error';
+  }[] = [];
   paramValue: string;
   paramType: string;
   image: string[];
@@ -163,6 +184,22 @@ export class OrderInfoComponent implements OnInit {
           if (data.order.orderStatus === 'in progress') this.status = 'en revisión';
           else if (data.order.orderStatus === 'to confirm') this.status = 'por confirmar';
           else if (data.order.orderStatus === 'completed') this.status = 'completado';
+          // data.order.ocr.status.forEach((status) => {
+            let name: 'cancelado' | 'empezado' | 'verificando' | 'verificado' | 'en revisión' | 'por confirmar' | 'completado' | 'error';
+            switch(data.order.orderStatus) {
+              case 'cancelled': name = 'cancelado'; break;
+              case 'started': name = 'empezado'; break;
+              case 'verifying': name = 'verificando'; break;
+              case 'in progress': name = 'en revisión'; break;
+              case 'to confirm': name = 'por confirmar'; break;
+              case 'completed': name = 'completado'; break;
+              default: name = 'error';
+            }
+            this.statusList.push({
+              status: data.order.orderStatus,
+              name,
+            })
+          // })
           const totalPrice = data.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
@@ -190,7 +227,7 @@ export class OrderInfoComponent implements OnInit {
                 description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode.toUpperCase(),
                 description2: timeAgo,
                 status: this.status,
-                // statusCallback: () => this.openStatusDialog(),
+                statusCallback: () => this.openStatusDialog(),
               }
             ]
           } else this.comprado = true;
@@ -375,7 +412,14 @@ export class OrderInfoComponent implements OnInit {
   }
 
   openStatusDialog() {
-    //
+    this.dialog.open(StatusListComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        statusList: this.statusList
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   formatID(dateId: string) {
