@@ -1,0 +1,46 @@
+.collaborations-modal {
+  width: 89.25%;
+  border-radius: 10px;
+  height: 90vh;
+  margin: auto;
+  margin-top: 5vh;
+  padding: 0px 30px;
+  padding-top: 69px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+
+  h2 {
+    font-family: "NeueMontreal";
+    font-size: 23px;
+    font-weight: bold;
+    color: #0b1f38;
+    margin-bottom: 40px;
+  }
+
+  .stuff-list {
+    flex: 1;
+
+    .item-list {
+      display: flex;
+      margin-bottom: 46px;
+      align-items: center;
+
+      .icon {
+        width: 16.41%;
+        max-width: 50px;
+        max-height: 48.24px;
+      }
+
+      .text {
+        margin: 0px;
+        width: calc(83.59% - 17.7px);
+        margin-left: auto;
+        font-family: "NeueMontreal";
+        font-size: clamp(12px, 18px, 4vw);
+        color: #38373b;
+      }
+    }
+  }
+}
