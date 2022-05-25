@@ -63,7 +63,7 @@ export class ItemDetailComponent implements OnInit {
       if (params.id) {
         await this.items.item(params.id).then((data) => {
           this.itemData = data;
-          this.boxTitle = this.itemData.merchant.name;
+          this.boxTitle = this.itemData.merchant?.name;
           this.boxText = this.itemData.description || this.itemData.name;
           this.priceLabel = this.itemData.pricing;
           this.itemInCart();
