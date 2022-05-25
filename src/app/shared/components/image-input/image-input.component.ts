@@ -14,6 +14,10 @@ export class ImageInputComponent implements OnInit {
   @Output() onFileInput = new EventEmitter<
     File | { image: File; index: number }
   >();
+  @Output() onFileInputBase64 = new EventEmitter<{
+    image: string | ArrayBuffer;
+    index: number;
+  }>();
   @Input() topLabel?: {
     text: string;
     styles?: Record<string, string>;
@@ -65,6 +69,7 @@ export class ImageInputComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.imageField[index] = reader.result;
+        this.onFileInputBase64.emit({ image: reader.result, index });
       };
       reader.readAsDataURL(files[0]);
       if (this.multiple && this.imageField.length - 1 === index) {

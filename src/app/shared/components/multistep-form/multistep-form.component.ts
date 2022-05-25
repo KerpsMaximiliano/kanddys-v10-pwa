@@ -46,6 +46,7 @@ interface FormField {
   };
   placeholder?: string;
   inputType?: string;
+  shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
 }
@@ -85,6 +86,7 @@ interface FormStep {
   stepButtonInvalidText: string;
   asyncStepProcessingFunction?: AsyncFunction;
   stepProcessingFunction?(...params): any;
+  avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: BottomLeftAction;
@@ -677,18 +679,20 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     } else {
       asyncFunction.function(stepFunctionParams).then((result) => {
         this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-        if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          !('customScrollToStep' in this.steps[this.currentStep])
-        )
-          this.scrollToStep();
-        else if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          'customScrollToStep' in this.steps[this.currentStep]
-        )
-          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
       });
     }
   }

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
 import { Observable, Subscription } from 'rxjs';
+import { ItemsService } from 'src/app/core/services/items.service';
 
 interface FieldStyles {
   fieldStyles?: any;
@@ -37,6 +38,7 @@ interface FormField {
   };
   placeholder?: string;
   inputType?: string;
+  shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
 }
@@ -76,6 +78,7 @@ interface FormStep {
   stepButtonInvalidText: string;
   asyncStepProcessingFunction?: AsyncFunction;
   stepProcessingFunction?(...params): any;
+  avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: BottomLeftAction;
@@ -106,22 +109,14 @@ interface OptionalLink {
 })
 export class ItemCreatorComponent implements OnInit {
   scrollableForm = false;
+  defaultImages: (string | ArrayBuffer)[] = [''];
+  files: File[] = [];
   formSteps: FormStep[] = [
     {
       fieldsList: [
         {
           name: 'description',
           fieldControl: new FormControl('', Validators.required),
-          // changeCallbackFunction: (change, params) => {
-          //   this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
-          //     emitEvent: false,
-          //   });
-
-          //   this.formSteps[0].stepProcessingFunction(params);
-          //   if (change === 'Si') {
-          //     params.scrollToStep(1);
-          //   }
-          // },
           label: 'Descripción (Opcional)',
           bottomLabel: {
             text: 'Agrega “Lo Incluido” (opcional)',
@@ -144,6 +139,7 @@ export class ItemCreatorComponent implements OnInit {
               borderRadius: '10px',
             },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -161,6 +157,7 @@ export class ItemCreatorComponent implements OnInit {
           fieldControl: new FormControl('', Validators.required),
           label: 'Precio que te pagarán:',
           inputType: 'number',
+          shouldFormatNumber: true,
           placeholder: 'Precio...',
           styles: {
             containerStyles: {
@@ -168,6 +165,7 @@ export class ItemCreatorComponent implements OnInit {
               marginTop: '102px',
             },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -185,6 +183,7 @@ export class ItemCreatorComponent implements OnInit {
               marginTop: '101px',
             },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -195,6 +194,8 @@ export class ItemCreatorComponent implements OnInit {
         {
           component: ImageInputComponent,
           inputs: {
+            imageField:
+              this.defaultImages.length > 0 ? this.defaultImages : null,
             multiple: true,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
@@ -223,9 +224,15 @@ export class ItemCreatorComponent implements OnInit {
           },
           outputs: [
             {
+              name: 'onFileInputBase64',
+              callback: (result) => {
+                this.defaultImages[result.index] = result.image;
+              },
+            },
+            {
               name: 'onFileInput',
               callback: (result) => {
-                console.log('event emiitedaxsadaq', result);
+                this.files[result.index] = result.image;
               },
             },
           ],
@@ -247,30 +254,32 @@ export class ItemCreatorComponent implements OnInit {
           afterIndex: 2,
         },
       ],
-      // bottomLeftAction: {
-      //   text: 'Ver items facturados',
-      //   execute: () => {
-      //     this.showShoppingCartDialog();
-      //   },
-      // },
-      stepProcessingFunction: (params) => {
-        // this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        // this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
-        // if (params.scrollableForm) {
-        //   setTimeout(() => {
-        //     params.blockScrollBeforeCurrentStep();
-        //     this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        //     this.removeScrollBlockerBefore =
-        //       params.unblockScrollBeforeCurrentStep;
-        //   }, 500);
-        // }
-        // if (params.dataModel.value['1'].writeMessage === 'Si')
-        //   return { ok: true };
-        // else if (params.dataModel.value['1'].writeMessage === 'No') {
-        //   this.storeEmptyMessageAndGoToShipmentDataForm(params);
-        //   return { ok: false };
-        // }
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const values = params.dataModel.value;
+
+            console.log(this.files)
+
+            await this.itemService.createPreItem({
+              name: String(Date.now() + Math.floor(Math.random() * 10)),
+              description: values['1'].description,
+              pricing: Number(values['1'].price),
+              images: this.files,
+              content: values['2'].whatsIncluded,
+              currencies: [],
+              hasExtraPrice: false,
+              purchaseLocations: [],
+            });
+          } catch (error) {
+            console.log(error);
+          }
+
+          return { ok: true };
+        },
       },
+      avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
@@ -302,12 +311,6 @@ export class ItemCreatorComponent implements OnInit {
           },
         },
       ],
-      // bottomLeftAction: {
-      //   text: 'Ver items facturados',
-      //   execute: () => {
-      //     this.showShoppingCartDialog();
-      //   },
-      // },
       customScrollToStep: (params) => {
         params.scrollToStep(0, false);
       },
@@ -318,7 +321,7 @@ export class ItemCreatorComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private itemService: ItemsService) {}
 
   ngOnInit(): void {}
 }
