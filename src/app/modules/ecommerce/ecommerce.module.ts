@@ -211,6 +211,10 @@ const routes: Routes = [
     path: 'item-creator',
     component: ItemCreatorComponent,
   },
+  {
+    path: 'item-creator/:itemId',
+    component: ItemCreatorComponent,
+  },
 ];
 
 @NgModule({

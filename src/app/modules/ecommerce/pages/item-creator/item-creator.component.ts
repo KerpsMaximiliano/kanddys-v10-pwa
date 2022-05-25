@@ -1,106 +1,11 @@
 import { Component, OnInit, Type } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
-import { Observable, Subscription } from 'rxjs';
 import { ItemsService } from 'src/app/core/services/items.service';
-
-interface FieldStyles {
-  fieldStyles?: any;
-  containerStyles?: any;
-  topLabelActionStyles?: any;
-  labelStyles?: any;
-  bottomLabelStyles?: any;
-  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
-}
-
-interface FormField {
-  name: string;
-  styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
-  changeCallbackFunction?(...params): any;
-  changeFunctionSubscription?: Subscription;
-  selectionOptions?: Array<string>;
-  enabledOnInit?: 'ENABLED' | 'DISABLED';
-  validators?: Array<any>;
-  description?: string;
-  topLabelAction?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  label: string;
-  bottomLabel?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  placeholder?: string;
-  inputType?: string;
-  shouldFormatNumber?: boolean;
-  showImageBottomLabel?: string;
-  multiple?: boolean;
-}
-
-interface EmbeddedComponentOutput {
-  name: string;
-  callback(params: any): any;
-}
-
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  outputs?: Array<EmbeddedComponentOutput>;
-  containerStyles?: any;
-  afterIndex?: number;
-  beforeIndex?: number;
-}
-
-interface PromiseFunction {
-  type: 'promise';
-  function(params): Promise<any>;
-}
-
-interface ObservableFunction {
-  type: 'observable';
-  function(params): Observable<any>;
-}
-
-type AsyncFunction = PromiseFunction | ObservableFunction;
-
-interface FormStep {
-  fieldsList: Array<FormField>;
-  headerText: string;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?: AsyncFunction;
-  stepProcessingFunction?(...params): any;
-  avoidGoingToNextStep?: boolean;
-  customScrollToStep?(...params): any;
-  customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  optionalLinksTo?: OptionalLinks;
-  stepResult?: any;
-  justExecuteCustomScrollToStep?: boolean;
-}
-
-interface BottomLeftAction {
-  text: string;
-  execute(params): any;
-}
-
-interface OptionalLinks {
-  styles?: FieldStyles;
-  links: Array<OptionalLink>;
-}
-
-interface OptionalLink {
-  text: string;
-  action(params): any;
-}
+import { FormStep } from 'src/app/core/types/multistep-form';
 
 @Component({
   selector: 'app-item-creator',
@@ -116,14 +21,13 @@ export class ItemCreatorComponent implements OnInit {
       fieldsList: [
         {
           name: 'description',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: 'Descripción (Opcional)',
           bottomLabel: {
             text: 'Agrega “Lo Incluido” (opcional)',
             clickable: true,
             callback: (params) => {
               params.scrollToStep(1);
-              console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHH');
             },
           },
           placeholder:
@@ -173,7 +77,7 @@ export class ItemCreatorComponent implements OnInit {
         },
         {
           name: 'collaborations',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: 'Vender más a través de Las Comunidades (opcional):',
           inputType: 'number',
           placeholder: 'Pagarás...',
@@ -260,7 +164,7 @@ export class ItemCreatorComponent implements OnInit {
           try {
             const values = params.dataModel.value;
 
-            console.log(this.files)
+            console.log(this.files);
 
             await this.itemService.createPreItem({
               name: String(Date.now() + Math.floor(Math.random() * 10)),
@@ -290,7 +194,7 @@ export class ItemCreatorComponent implements OnInit {
           name: 'whatsIncluded',
           multiple: true,
           fieldControl: new FormArray([
-            new FormControl('', Validators.required),
+            new FormControl(''),
           ]),
           label: 'Adicione lo incluido:',
           inputType: 'text',
@@ -321,7 +225,38 @@ export class ItemCreatorComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router, private itemService: ItemsService) {}
+  constructor(
+    private router: Router,
+    private itemService: ItemsService,
+    private route: ActivatedRoute
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.params.subscribe(async (routeParams) => {
+      const { itemId } = routeParams;
+
+      const { pricing, images, content, description } =
+        await this.itemService.item(itemId);
+
+      // name: String(Date.now() + Math.floor(Math.random() * 10)),
+      //         description: values['1'].description,
+      //         pricing: Number(values['1'].price),
+      //         images: this.files,
+      //         content: values['2'].whatsIncluded,
+      //         currencies: [],
+      //         hasExtraPrice: false,
+      //         purchaseLocations: [],
+
+      console.log(pricing, images, content, description);
+      this.formSteps[0].fieldsList[0].fieldControl.setValue(description);
+      this.formSteps[0].fieldsList[1].fieldControl.setValue(String(pricing));
+      this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+      const formArray = this.formSteps[1].fieldsList[0]
+        .fieldControl as FormArray;
+      formArray.removeAt(0);
+      content.forEach((item) => {
+        console.log(formArray.push(new FormControl(item)));
+      });
+    });
+  }
 }
