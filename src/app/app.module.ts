@@ -16,6 +16,7 @@ import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SocialLoginModule } from 'angularx-social-login';
+import { DecimalPipe } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +41,7 @@ import { SocialLoginModule } from 'angularx-social-login';
       provide: APP_INITIALIZER,
       useFactory: (appService: AppService) => () => appService.ngOnAppInit(),
     },
+    DecimalPipe
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -1,4 +1,4 @@
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { ImageInputComponent } from 'src/app/shared/components/image-input/image
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-item-creator',
@@ -58,15 +59,51 @@ export class ItemCreatorComponent implements OnInit {
         },
         {
           name: 'price',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl('', [
+            Validators.required,
+            Validators.min(0),
+          ]),
+          onlyAllowPositiveNumbers: true,
           label: 'Precio que te pagarán:',
           inputType: 'number',
+          formattedValue: '',
           shouldFormatNumber: true,
           placeholder: 'Precio...',
+          changeCallbackFunction: (change, params) => {
+            try {
+              const plainNumber = change
+                .split(',')
+                .join('')
+                .split('.')
+                .join('');
+              const formatted = this.decimalPipe.transform(
+                Number(plainNumber),
+                '1.0-2'
+              );
+
+              this.formSteps[0].fieldsList[1].formattedValue = '$' + formatted;
+              // this.applicationRef.tick();
+            } catch (error) {
+              console.log(error);
+            }
+          },
           styles: {
             containerStyles: {
               width: '58.011%',
               marginTop: '102px',
+              position: 'relative',
+            },
+            fieldStyles: {
+              opacity: '0',
+              zIndex: '50',
+              position: 'absolute',
+              bottom: '0px',
+              left: '0px',
+            },
+            formattedInputStyles: {
+              bottom: '0px',
+              left: '0px',
+              zIndex: '1',
             },
             labelStyles: {
               fontSize: '19px',
@@ -81,10 +118,43 @@ export class ItemCreatorComponent implements OnInit {
           label: 'Vender más a través de Las Comunidades (opcional):',
           inputType: 'number',
           placeholder: 'Pagarás...',
+          formattedValue: '',
+          shouldFormatNumber: true,
+          changeCallbackFunction: (change, params) => {
+            try {
+              const plainNumber = change
+                .split(',')
+                .join('')
+                .split('.')
+                .join('');
+              const formatted = this.decimalPipe.transform(
+                Number(plainNumber),
+                '1.0-2'
+              );
+
+              this.formSteps[0].fieldsList[2].formattedValue = '$' + formatted;
+              // this.applicationRef.tick();
+            } catch (error) {
+              console.log(error);
+            }
+          },
           styles: {
             containerStyles: {
+              position: 'relative',
               width: '68.50%',
               marginTop: '101px',
+            },
+            fieldStyles: {
+              opacity: '0',
+              zIndex: '50',
+              position: 'absolute',
+              bottom: '0px',
+              left: '0px',
+            },
+            formattedInputStyles: {
+              bottom: '0px',
+              left: '0px',
+              zIndex: '1',
             },
             labelStyles: {
               fontSize: '19px',
@@ -168,6 +238,7 @@ export class ItemCreatorComponent implements OnInit {
 
             await this.itemService.createPreItem({
               name: String(Date.now() + Math.floor(Math.random() * 10)),
+              merchant: '60fecbe1e2e31b9085ce654a',
               description: values['1'].description,
               pricing: Number(values['1'].price),
               images: this.files,
@@ -193,9 +264,7 @@ export class ItemCreatorComponent implements OnInit {
         {
           name: 'whatsIncluded',
           multiple: true,
-          fieldControl: new FormArray([
-            new FormControl(''),
-          ]),
+          fieldControl: new FormArray([new FormControl('')]),
           label: 'Adicione lo incluido:',
           inputType: 'text',
           placeholder: 'Escribe...',
@@ -228,7 +297,9 @@ export class ItemCreatorComponent implements OnInit {
   constructor(
     private router: Router,
     private itemService: ItemsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private decimalPipe: DecimalPipe,
+    private applicationRef: ApplicationRef
   ) {}
 
   ngOnInit(): void {

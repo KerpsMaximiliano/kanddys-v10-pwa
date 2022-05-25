@@ -115,11 +115,11 @@
                 [name]="currentField.name"
                 [formControlName]="currentField.name"
                 [type]="currentField.inputType || 'text'"
-                [value]="
+                [min]="
                   currentField.inputType === 'number' &&
-                  currentField.shouldFormatNumber
-                    ? currentField.fieldControl.value.toLocaleString('es-MX')
-                    : currentField.fieldControl.value
+                  currentField.onlyAllowPositiveNumbers
+                    ? 0
+                    : null
                 "
                 [placeholder]="currentField.placeholder"
                 [ngClass]="
@@ -133,6 +133,19 @@
                     ? currentField.styles.fieldStyles
                     : null
                 "
+              />
+
+              <input
+                *ngIf="currentField.shouldFormatNumber"
+                [type]="'text'"
+                [placeholder]="currentField.placeholder"
+                [ngClass]="
+                  currentField.styles.customClassName
+                    ? currentField.styles.customClassName
+                    : 'input'
+                "
+                [ngStyle]="currentField.styles.formattedInputStyles"
+                [value]="currentField.formattedValue"
               />
 
               <span
