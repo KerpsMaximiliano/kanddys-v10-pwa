@@ -115,6 +115,12 @@
                 [name]="currentField.name"
                 [formControlName]="currentField.name"
                 [type]="currentField.inputType || 'text'"
+                [value]="
+                  currentField.inputType === 'number' &&
+                  currentField.shouldFormatNumber
+                    ? currentField.fieldControl.value.toLocaleString('es-MX')
+                    : currentField.fieldControl.value
+                "
                 [placeholder]="currentField.placeholder"
                 [ngClass]="
                   currentField.styles.customClassName
@@ -497,7 +503,7 @@
           : 'disabled-fixed'
       "
       (click)="
-        !steps[currentStepIndex]
+        !steps[currentStepIndex].justExecuteCustomScrollToStep
           ? executeStepDataProcessing()
           : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
       "
