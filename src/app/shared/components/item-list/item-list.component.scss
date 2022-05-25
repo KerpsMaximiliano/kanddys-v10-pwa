@@ -2,13 +2,34 @@
   display: flex;
   margin: 0rem 1.5rem;
 
+  .info-right-icons{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .person{
+        width: 15px;
+        height: 19px;
+        filter: invert(45%) sepia(25%) saturate(1380%) hue-rotate(184deg) brightness(94%) contrast(98%);
+    }
+
+    .tag{
+        width: 23px;
+        height: 23px;
+        filter: invert(45%) sepia(25%) saturate(1380%) hue-rotate(184deg) brightness(94%) contrast(98%);
+    }
+}
+
+
   .item-list-img {
     position: relative;
 
     .item-img {
-      border-radius: 8px;
-      height: 120px;
-      width: 110px;
+      border-radius: 50%;
+      height: 101px;
+      width: 101px;
       box-shadow: 0px 4px 10px #ddd;
 
       &.small {
@@ -41,6 +62,7 @@
     justify-content: space-between;
     width: 100%;
 
+    
     .container {
       display: flex;
       justify-content: space-between;
@@ -80,9 +102,9 @@
     }
 
     h1 {
-      color: #272727;
+      color: #202020;
       font-family: "RobotoBold";
-      font-size: 20px;
+      font-size: 25px;
       margin-bottom: 0;
       margin-top: 6px;
       overflow: hidden;
@@ -109,9 +131,9 @@
 
     .informacion {
       margin: 0;
-      color: #7b7b7b;
+      color: #B17608;
       font-family: "RobotoRegular";
-      font-size: 15px;
+      font-size: 16px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -154,12 +176,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0.5rem 1.25rem 0 2rem;
+  margin: 0.5rem 1.25rem 0 2.5rem;
 
   p {
     color: #7b7b7b;
-    font-family: "RobotoItalic";
-    font-size: 13px;
+    font-family: "SfProRegular";
+    font-size: 16px;
     margin: 0;
   }
 
@@ -181,6 +203,40 @@
       }
     }
   }
+  .middle-list-text{
+    display: flex;
+    align-items: center;
+
+    .total-amount{
+        color: #7b7b7b;
+        font-family: "SfProRegular";
+        font-size: 16px;
+        margin: 0;
+    }
+    
+    .stars{
+        color: #7b7b7b;
+        font-family: "SfProRegular";
+        font-size: 16px;
+        margin-left: 10px;
+
+        .starty{
+            width: 14px;
+            height: 14px;
+            filter: invert(63%) sepia(0%) saturate(1269%) hue-rotate(140deg) brightness(77%) contrast(105%);
+        }
+    }
+  }
+
+  .right-text-icon{
+
+    .tags-counter{
+        font-family: 'RobotoMedium' !important;
+        font-size: 14px !important;
+        color: #4773D8 !important;
+    }
+  }
+
 }
 
 .item-list-text-full {
@@ -241,12 +297,11 @@
 }
 
 .placeholder {
-  border-radius: 8px;
-  flex-basis: 110px;
-  height: 120px;
-  width: 110px;
-  border-radius: 15px;
-  background: rgb(123, 123, 123);
+    margin-right: 5px;
+  border-radius: 50%;
+  flex-basis: 101px;
+  height: 101px;
+  width: 101px;
   background: linear-gradient(
     180deg,
     rgba(123, 123, 123, 1) 0%,

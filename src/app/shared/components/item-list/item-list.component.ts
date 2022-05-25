@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 export interface ItemList {
   id?: string;
@@ -16,6 +17,8 @@ export interface ItemList {
   icon?: string;
   text_style?: boolean;
   text_left?: string;
+  text_middle?: string;
+  bonus?: string;
   text_right?: string;
   text_right_function?: () => void,
   full_text?: string;
@@ -26,6 +29,8 @@ export interface ItemList {
   icons_right?: Array<any>;
   icons_bottom_right?: Array<any>;
   icons_bottom_right_first?: Array<any>;
+  merchant_info?: boolean;
+  add_tag?: boolean;
   bar?: boolean;
   barColor?: string;
   barText?: string;
@@ -58,6 +63,8 @@ export class ItemListComponent implements OnInit {
     icon: '',
     text_style: true,
     text_left: '',
+    text_middle: '',
+    bonus: '',
     text_right: '',
     full_text: '',
     icons: [],
@@ -66,6 +73,8 @@ export class ItemListComponent implements OnInit {
     icon_bottom: {},
     icons_right: [],
     icons_bottom_right: [],
+    merchant_info: false,
+    add_tag: false,
     bar: false,
     barColor: 'transparent',
     barText: '',
@@ -77,6 +86,7 @@ export class ItemListComponent implements OnInit {
 
   @Input('marginTop') marginTop = '62px';
   @Input('marginBottom') marginBottom = '0px';
+  env: string = environment.assetsUrl;
 
   constructor(private router: Router) {}
 

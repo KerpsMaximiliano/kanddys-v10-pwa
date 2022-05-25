@@ -1,5 +1,6 @@
 <div [style.marginTop]="marginTop" [style.marginBottom]="marginBottom">
   <div class="content-wrapper" [ngStyle]="{ background: itemListContent.contentBgColor }">
+
     <div class="item-list">
       <div class="item-list-img" [ngClass]="{'pointer': itemListContent.eventImage}" *ngIf="itemListContent.image" (click)="itemListContent.eventImage && itemListContent.eventImage()">
         <img src="{{ itemListContent.image }}" class="item-img"  [ngClass]="{'small': itemListContent.imageSize === 'small'}" alt="image" />
@@ -117,8 +118,23 @@
             <div class="title">{{ itemListContent.text_icon }}</div>
           </div>
         </div>
+
       </div>
+
+      <ng-container *ngIf="itemListContent.merchant_info || itemListContent.add_tag">
+        <div class="info-right-icons">
+            <ng-container *ngIf="itemListContent.merchant_info">
+                <img [src]="env + '/person.svg'" alt="" class="person">
+            </ng-container>
+
+            <ng-container *ngIf="itemListContent.add_tag">
+                <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag">
+            </ng-container>
+        </div>
+        </ng-container>
+
     </div>
+
     <div
       *ngIf="itemListContent.status"
       class="bottom-status"
@@ -138,6 +154,12 @@
           : 'flex-start'
       }">
       <p *ngIf="itemListContent.text_left">{{ itemListContent.text_left }}</p>
+
+      <div class="middle-list-text" *ngIf="itemListContent.text_middle">
+        <label for="Monto total pagado" class="total-amount">{{itemListContent.text_middle}}</label>
+        <label class="stars">{{itemListContent.bonus}} <img [src]="env + '/star.svg'" class="starty" style="fill-opacity: #7B7B7B;"></label>
+      </div>
+
       <div class="right-text-icon" *ngIf="
           itemListContent.text_right ||
           itemListContent.icon_bottom ||
@@ -166,7 +188,7 @@
             </div>
           </div>
         </ng-container>
-        <p *ngIf="itemListContent.text_right">
+        <p *ngIf="itemListContent.text_right" class="tags-counter">
           {{ itemListContent.text_right }}
         </p>
         <ng-container
@@ -213,7 +235,7 @@
   <div class="bar-wrapper" *ngIf="itemListContent.bar">
     <div class="bar" [ngStyle]="{ background: itemListContent.barColor }">
       <span class="bar-text">{{ itemListContent.barText }}</span>
-      <div class="right" *ngIf="itemListContent.bar_icons && !itemListContent.icons_image_bool">
+      <div class="right" *ngIf="itemListContent.bar_icons && !itemListContent.icons_image_bool">          
         <img class="left-icon" src="{{ itemListContent.barLeftIcon }}" alt="" />
         <img src="{{ itemListContent.barRightIcon }}" alt="" />
       </div>
