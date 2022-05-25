@@ -7,6 +7,7 @@ export interface FieldStyles {
   containerStyles?: any;
   topLabelActionStyles?: any;
   labelStyles?: any;
+  formattedInputStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
@@ -15,6 +16,8 @@ export interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  onlyAllowPositiveNumbers?: boolean;
+  formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
