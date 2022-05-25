@@ -60,7 +60,8 @@ interface EmbeddedComponent {
   inputs: Record<string, any>;
   outputs?: Array<EmbeddedComponentOutput>;
   containerStyles?: any;
-  afterIndex: number;
+  afterIndex?: number;
+  beforeIndex?: number;
 }
 
 interface PromiseFunction {
@@ -89,6 +90,7 @@ interface FormStep {
   bottomLeftAction?: BottomLeftAction;
   optionalLinksTo?: OptionalLinks;
   stepResult?: any;
+  justExecuteCustomScrollToStep?: boolean;
 }
 
 interface BottomLeftAction {
@@ -291,6 +293,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   ];
   @Input() scrollableForm: boolean = false;
   @Input() disableSmoothScroll: boolean = true;
+  @Input() showStepNumbers: boolean = true;
   shouldScrollBackwards: boolean = true;
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
@@ -462,8 +465,50 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    * Agrega otro input al FormArray para hacer formularios dinamicos
    * @param {FormArray} fieldformArray - step index
    */
-  addOneMoreInputToCurrentFormArray(fieldformArray: FormArray): void {
-    fieldformArray.push(new FormControl(''));
+  fieldName: string;
+  addOneMoreInputToCurrentFormArray(
+    fieldformArray: FormArray,
+    fieldName: string
+  ): void {
+    fieldformArray.push(new FormControl('', Validators.required));
+
+    setTimeout(() => {
+      document
+        .getElementById(fieldName + '-' + String(fieldformArray.length - 1))
+        .focus();
+    }, 100);
+  }
+
+  /**
+   * Agrega otro input al FormArray para hacer formularios dinamicos
+   * @param {FormArray} fieldformArray - step index
+   */
+  removeInputToCurrentFormArray(
+    fieldformArray: FormArray,
+    fieldName: string,
+    fieldIndex: string
+  ): void {
+    let newIndexToFocus: string =
+      fieldformArray.length - 1 === Number(fieldIndex)
+        ? String(Number(fieldIndex) - 1)
+        : fieldIndex;
+
+    fieldformArray.removeAt(Number(fieldIndex));
+
+    setTimeout(() => {
+      document.getElementById(fieldName + '-' + newIndexToFocus).focus();
+    }, 100);
+  }
+
+  onMultipleInputEnterPress(
+    event: any,
+    callback: (...params) => void,
+    fieldformArray: FormArray,
+    fieldName: string
+  ) {
+    if (event.key === 'Enter') {
+      callback(fieldformArray, fieldName);
+    }
   }
 
   /**

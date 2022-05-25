@@ -16,9 +16,10 @@ import { environment } from 'src/environments/environment';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
-import { ItemSubOrder } from 'src/app/core/models/order';
+import { ItemOrder, ItemSubOrder } from 'src/app/core/models/order';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
+import { CustomizerValue } from 'src/app/core/models/customizer-value';
 moment.locale('es');
 
 @Component({
@@ -32,7 +33,7 @@ export class OrderInfoComponent implements OnInit {
   pagoView: boolean;
 
   constructor(
-    public order: OrderService,
+    public orderService: OrderService,
     private route: ActivatedRoute,
     public reservation: ReservationService,
     public headerService: HeaderService,
@@ -72,11 +73,8 @@ export class OrderInfoComponent implements OnInit {
   createdAt: string;
   items: Array<ItemSubOrder>;
   itemsExtra = [];
-  customizer: {
-    _id: string;
-    preview: string;
-  };
-  orders: any;
+  customizer: CustomizerValue;
+  order: ItemOrder;
   socialNetworks: Array<any> = [
     {
       iconURL:
@@ -132,6 +130,7 @@ export class OrderInfoComponent implements OnInit {
   showHeader: boolean;
   date: any;
   fotodavitte: boolean = false;
+  customizerDetails: {name: string; value: string}[] = [];
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -140,10 +139,10 @@ export class OrderInfoComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.linkId = params.id;
       this.headerService.orderId = params.id;
-      this.order.order(params.id).then((data) => {
+      this.orderService.order(params.id).then((data) => {
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
-          this.orders = data.order;
+          this.order = data.order;
           this.notifications = data.order.userNotifications;
           this.items = data.order.items;
           this.showHeader = this.headerService.fromOrderSales ? true : false;
@@ -323,9 +322,31 @@ export class OrderInfoComponent implements OnInit {
           if (data.order.items[0].customizer) {
             this.dateId = '';
             this.customizerValueService
-              .getCustomizerValuePreview(data.order.items[0].customizer._id)
+              .getCustomizerValue(data.order.items[0].customizer._id)
               .then((value) => {
                 this.customizer = value;
+                const printType = data.order.items[0].item.params[0].values.find((value) => value._id === data.order.items[0].params[0].paramValue)?.name;
+                if(printType) this.customizerDetails.push({name: 'Tipo de impresión', value: printType});
+
+                const selectedQuality = data.order.items[0].item.params[1].values.find((value) => value._id === data.order.items[0].params[1].paramValue)?.name;
+                if(selectedQuality) this.customizerDetails.push({name: 'Calidad de servilleta', value: selectedQuality});
+
+                const backgroundColor = value.backgroundColor.color.name;
+                if(backgroundColor) this.customizerDetails.push({name: 'Color', value: backgroundColor});
+
+                let selectedTypography = value.texts.length > 0 && value.texts[0].font;
+                switch(selectedTypography) {
+                  case 'Dorsa': selectedTypography = 'Empire'; break;
+                  case 'Commercial-Script': selectedTypography = 'Classic'; break;
+                }
+                if(selectedTypography) this.customizerDetails.push({name: 'Nombre de tipografía', value: selectedTypography});
+
+                const typographyColor = value.texts.length && value.texts[0].color.name;
+                if(typographyColor) this.customizerDetails.push({ name: 'Color de tipografía', value: typographyColor});
+
+                const stickerColor = value.stickers.length && value.stickers[0].svgOptions.color.name;
+                if(stickerColor) this.customizerDetails.push({ name: 'Color de sticker', value: stickerColor});
+
                 this.items[0].item.images[0] = value.preview;
                 this.dateId = this.formatID(data.order.dateId);
               });
@@ -374,7 +395,7 @@ export class OrderInfoComponent implements OnInit {
 
   editCustomizer() {
     this.router.navigate([
-      `posts/edit-customizer/${this.orders._id}/${this.orders.items[0].customizer._id}`,
+      `posts/edit-customizer/${this.order._id}/${this.order.items[0].customizer._id}`,
     ]);
   }
 
@@ -390,7 +411,7 @@ export class OrderInfoComponent implements OnInit {
   }
 
   toggleNotifications() {
-    this.order.toggleUserNotifications(!this.notifications, this.linkId);
+    this.orderService.toggleUserNotifications(!this.notifications, this.linkId);
     this.notifications = !this.notifications;
   }
 

@@ -41,11 +41,17 @@ export const customizerValue = `
       rotation
     }
     svgOptions {
-      color
+      color {
+        name
+        fixedValue
+      }
     }
   }
   texts {
-    color
+    color {
+      name
+      fixedValue
+    }
     text
     font
     size

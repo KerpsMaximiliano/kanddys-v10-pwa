@@ -15,7 +15,7 @@ import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
-// import { SwiperOptions } from 'swiper';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -59,11 +59,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
-  // public swiperConfig: SwiperOptions = {
-  //   slidesPerView: 'auto',
-  //   freeMode: true,
-  //   spaceBetween: 5,
-  // };
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 5,
+  };
 
   constructor(
     private dialog: DialogService,
@@ -492,7 +492,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   onItemCategoryClick(listIndex: number, itemIndex: number) {
-    console.log(this.header.saleflow)
     const itemData = this.itemsByCategory[listIndex].items[itemIndex];
     if (itemData) {
       this.header.categoryId = itemData.category[0]._id;

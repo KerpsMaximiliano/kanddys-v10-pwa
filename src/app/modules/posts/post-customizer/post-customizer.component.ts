@@ -1709,7 +1709,7 @@ export class PostCustomizerComponent
     */
 
     this.draw();
-    this.drawOutline(element.position, true);
+    // this.drawOutline(element.position, true);
   }
 
   // Changes text font. If not editing text, draws the new font
@@ -1913,7 +1913,7 @@ export class PostCustomizerComponent
                 (this.customizerRules.texts.itemsRule[1].fixPosition.x / 100) -
                 width / 2
             );
-            this.drawOutline(textElements[1].position, true);
+            // this.drawOutline(textElements[1].position, true);
             textElements[0].typography.hidden = true;
             textElements[2].typography.hidden = true;
           } else {
@@ -1945,7 +1945,7 @@ export class PostCustomizerComponent
           width / 2
       );
       this.draw();
-      if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
+      // if (!this.willHideInput) this.drawOutline(textElements[0].position, true);
     }
   }
   // Text input below canvas
@@ -2235,7 +2235,7 @@ export class PostCustomizerComponent
     }
     this.draw();
     // Text input below canvas
-    if (!this.willHideInput) this.drawOutline(textElement.position, true);
+    // if (!this.willHideInput) this.drawOutline(textElement.position, true);
   }
   // ------------------------------------ LINES --------------------------------------
 
@@ -2620,7 +2620,7 @@ export class PostCustomizerComponent
         r.typography.font !== 'Elegant'
       ) {
         this.drawText(r);
-        if (this.dragok && r.isDragging) this.drawOutline(r.position, true);
+        // if (this.dragok && r.isDragging) this.drawOutline(r.position, true);
       }
       // if (this.dragok && r.isDragging) this.drawOutline(r.position);
 
@@ -2781,7 +2781,7 @@ export class PostCustomizerComponent
         ) {
           // if (r.typography) {
           this.changeCustomizer('tipografía', true);
-          this.drawOutline(r.position, true);
+          // this.drawOutline(r.position, true);
         }
         if (r.typography?.font !== 'Oval' && r.typography?.font !== 'Elegant') {
           if (r.fixPositionOnly) {
