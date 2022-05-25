@@ -6,9 +6,10 @@ import {
     tagsByUser,
     addTagsInOrder,
     removeTagsInOrder,
-    tag
+    tag,
+    addTagContainersPublic
  } from '../graphql/tags.gql'
-import { Tag, TagInput } from '../models/tags';
+import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
 @Injectable({
     providedIn: 'root',
@@ -82,7 +83,20 @@ export class TagsService {
         }
     }
 
-    async tag(tagId: any){
+    async addTagContainersPublic(input: TagContainersInput, tagId: string) {
+        try{
+            const result = await this.graphql.mutate({
+                mutation: addTagContainersPublic,
+                variables:{ input, tagId },
+            })
+            if (!result || result?.errors) return undefined;
+            return result;
+         } catch (e) {
+            return e;
+         }
+    }
+
+    async tag(tagId: string){
         try{
             const result = await this.graphql.query({
                 query: tag,

@@ -6,6 +6,12 @@ export class TagContainers extends Model<TagContainers> {
   name: string;
 }
 
+export class TagContainersInput {
+  phone: string;
+  notify?: boolean;
+  name?: string;
+}
+
 export class Tag extends Model<Tag> {
   messageNotify: string;
   counter: number;

@@ -180,7 +180,7 @@ const routes: Routes = [
     component: MerchantDashboardv2Component,
   },
   {
-    path: 'container-form',
+    path: 'container-form/:merchantId/:tagId',
     component: ContainerFormComponent,
   },
   {

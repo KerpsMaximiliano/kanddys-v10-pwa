@@ -40,14 +40,14 @@
         flex-direction: column;
         margin: 0 auto;
         margin-top: 60px;
-        margin-bottom: 218px;
+        margin-bottom: 160px;
+        padding: 0 32px;
 
-        .name{
+        .label{
             text-align: left;
             font-family: 'RobotoLight';
             font-size: 19px;
             color: #000000;
-            margin-left: 8%;
             margin-bottom: 16px;
         }
 
@@ -83,6 +83,7 @@
             font-family: 'SfProMedium';
             margin: 0 auto;
             border: none;
+            cursor: pointer;
         }
 
         .ws-text{
