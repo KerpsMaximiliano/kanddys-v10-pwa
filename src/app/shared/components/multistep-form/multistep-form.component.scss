@@ -108,3 +108,9 @@
   padding: 5px;
   border: 1px solid #4773D8;
 }
+
+.input-label-bottom {
+  &:hover {
+    cursor: pointer;
+  }
+}
