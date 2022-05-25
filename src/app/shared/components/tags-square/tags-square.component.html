@@ -1,6 +1,11 @@
 <div class="container">
     <div class="body">
-        <label for="Number" class="number">{{number}}</label>
-        <label for="Text" class="text">{{tagText}}</label>
+        <div class="wrapper">
+        <label for="Number" class="number amount">{{number}}</label>
+        <label for="Number" class="number">${{gains}}</label>
+        </div>
+        <ng-container *ngFor="let texts of tagText; index as i">
+            <label for="Text" class="text">{{tagText[i]}}</label>
+        </ng-container>
     </div>
 </div>
