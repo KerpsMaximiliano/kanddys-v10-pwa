@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class PreVisualizerComponent implements OnInit {
 
-    @Input() mode: string;
+    @Input() mode: 'audio' | 'poster' | 'text';
     @Input() image: string;
     @Input() posterTitle: string= 'Titulo del Poster';
     @Input() textTitle: string;

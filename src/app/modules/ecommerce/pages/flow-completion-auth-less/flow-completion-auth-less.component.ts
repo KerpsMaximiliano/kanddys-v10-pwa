@@ -383,7 +383,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               this.merchantInfo.owner.phone
             }?text=Hola%20${
               this.merchantInfo.name
-            },%20%20acabo%20de%20hacer%20una%20orden%20.${
+            },%20%20acabo%20de%20hacer%20una%20orden.${
               String(this.userData.name) !== 'null' && this.userData.name
                 ? '%20Mi%20nombre%20es:%20' + this.userData.name
                 : ''
