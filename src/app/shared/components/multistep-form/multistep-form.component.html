@@ -39,6 +39,33 @@
           "
           [formGroupName]="currentStepIndex + 1"
         >
+          <ng-container *ngIf="currentStepObject['embeddedComponents']">
+            <ng-container
+              *ngFor="
+                let currentEmbeddedComponent of currentStepObject[
+                  'embeddedComponents'
+                ]
+              "
+            >
+              <div
+                *ngIf="
+                  currentEmbeddedComponent.beforeIndex === currentFieldIndex
+                "
+                [ngStyle]="
+                  currentEmbeddedComponent.containerStyles
+                    ? currentEmbeddedComponent.containerStyles
+                    : null
+                "
+              >
+                <app-dynamic-component
+                  [component]="currentEmbeddedComponent.component"
+                  [componentInputs]="currentEmbeddedComponent.inputs"
+                  [componentOutputs]="currentEmbeddedComponent.outputs"
+                ></app-dynamic-component>
+              </div>
+            </ng-container>
+          </ng-container>
+
           <!-- STANDARD INPUTS LIKE TEXT NUMBER EMAIL PASSWORDS ARE RENDERED HERE     -->
           <div
             *ngIf="
@@ -112,7 +139,7 @@
                 "
                 (click)="
                   currentField.bottomLabel.clickable
-                    ? currentField.bottomLabel.callback()
+                    ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
                 "
               >
@@ -124,11 +151,6 @@
             <div
               [formArrayName]="currentField.name"
               *ngIf="currentField.multiple"
-              [ngStyle]="
-                currentField.styles.containerStyles
-                  ? currentField.styles.containerStyles
-                  : null
-              "
             >
               <h3
                 class="input-label"
@@ -147,17 +169,47 @@
                   let i = index
                 "
               >
-                <input
-                  [formControlName]="i"
-                  [type]="currentField.inputType || 'text'"
-                  [placeholder]="currentField.placeholder"
-                  class="input"
-                  [ngStyle]="
-                    currentField.styles.fieldStyles
-                      ? currentField.styles.fieldStyles
-                      : null
-                  "
-                />
+                <div
+                  [ngStyle]="{
+                    position: 'relative',
+                    width: '100%',
+                    margin: '0px'
+                  }"
+                >
+                  <input
+                    [formControlName]="i"
+                    [type]="currentField.inputType || 'text'"
+                    [placeholder]="currentField.placeholder"
+                    class="input"
+                    id="{{ currentField.name }}-{{ i }}"
+                    [ngStyle]="
+                      currentField.styles.fieldStyles
+                        ? currentField.styles.fieldStyles
+                        : null
+                    "
+                    (keypress)="
+                      onMultipleInputEnterPress(
+                        $event,
+                        addOneMoreInputToCurrentFormArray,
+                        currentField.fieldControl,
+                        currentField.name
+                      )
+                    "
+                  />
+                  <div
+                    class="close-button"
+                    *ngIf="currentField.fieldControl.length > 1"
+                    (click)="
+                      removeInputToCurrentFormArray(
+                        currentField.fieldControl,
+                        currentField.name,
+                        i
+                      )
+                    "
+                  >
+                    X
+                  </div>
+                </div>
 
                 <span
                   *ngIf="currentField.bottomLabel"
@@ -171,16 +223,6 @@
                   {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
-
-              <!-- BUTTON FOR ADDING MORE INPUTS TO THE MULTIPLE GROUP -->
-              <button
-                class="add-another"
-                (click)="
-                  addOneMoreInputToCurrentFormArray(currentField.fieldControl)
-                "
-              >
-                Add another
-              </button>
             </div>
           </div>
 
@@ -243,6 +285,11 @@
                 [ngStyle]="
                   currentField.styles.bottomLabelStyles
                     ? currentField.styles.bottomLabelStyles
+                    : null
+                "
+                (click)="
+                  currentField.bottomLabel.clickable
+                    ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
                 "
               >
@@ -418,7 +465,7 @@
           {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
-        <div class="steps">
+        <div class="steps" *ngIf="showStepNumbers">
           <img
             src="{{ env }}/arrow-down.svg"
             class="step-icon"
@@ -449,7 +496,11 @@
           ? 'fixed'
           : 'disabled-fixed'
       "
-      (click)="executeStepDataProcessing()"
+      (click)="
+        !steps[currentStepIndex]
+          ? executeStepDataProcessing()
+          : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
+      "
     ></app-sticky-button>
   </ng-container>
 </div>

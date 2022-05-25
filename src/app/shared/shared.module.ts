@@ -83,6 +83,8 @@ import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualiz
 import { PostPrivacyComponent } from './dialogs/post-privacy/post-privacy.component';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { CartButtonComponent } from './components/cart-button/cart-button.component';
+import { CollaborationsComponent } from './dialogs/collaborations/collaborations.component';
+import { InfoButtonComponent } from './components/info-button/info-button.component';
 
 const imports = [
   CommonModule,
@@ -163,6 +165,8 @@ const declarations = [
   PreVisualizerComponent,
   PostPrivacyComponent,
   CartButtonComponent,
+  CollaborationsComponent,
+  InfoButtonComponent,
 ];
 
 @NgModule({
