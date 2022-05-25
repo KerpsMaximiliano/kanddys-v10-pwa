@@ -39,6 +39,7 @@ import { PostEditComponent } from './pages/post-edit/post-edit.component';
 import { DeliveryPreviewComponent } from './pages/delivery-preview/delivery-preview.component';
 import { PostAuthComponent } from './pages/post-auth/post-auth.component';
 import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-creator.component';
+import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
 
 const routes: Routes = [
   {
@@ -176,36 +177,40 @@ const routes: Routes = [
   },
   {
     path: 'merchant-dashboardv2',
-    component: MerchantDashboardv2Component
+    component: MerchantDashboardv2Component,
   },
   {
     path: 'container-form',
-    component: ContainerFormComponent
+    component: ContainerFormComponent,
   },
   {
     path: 'post-creator',
-    component: PostCreatorComponent
+    component: PostCreatorComponent,
   },
   {
     path: 'post-preview',
-    component: PostPreviewComponent
+    component: PostPreviewComponent,
   },
   {
     path: 'post-edit',
-    component: PostEditComponent
+    component: PostEditComponent,
   },
   {
     path: 'delivery-preview',
-    component: DeliveryPreviewComponent
+    component: DeliveryPreviewComponent,
   },
   {
     path: 'post-auth',
-    component: PostAuthComponent
+    component: PostAuthComponent,
   },
   {
     path: 'merchant-creator',
-    component: MerchantCreatorComponent 
-  }
+    component: MerchantCreatorComponent,
+  },
+  {
+    path: 'item-creator',
+    component: ItemCreatorComponent,
+  },
 ];
 
 @NgModule({
@@ -249,6 +254,7 @@ const routes: Routes = [
     DeliveryPreviewComponent,
     PostAuthComponent,
     MerchantCreatorComponent,
+    ItemCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

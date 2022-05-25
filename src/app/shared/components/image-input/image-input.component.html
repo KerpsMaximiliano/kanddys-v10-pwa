@@ -1,14 +1,29 @@
-<swiper [config]="swiperConfig">
-    <div *ngFor="let input of imageField; index as i" class="input-container">
-        <input
-            [id]="'file'+i"
-            (change)="fileProgress($event, i)"
-            type="file"
-            class="d-none"
-            [accept]="acceptTypes"
-        />
-        <label [style.background]="sanitize(input)" [for]="'file'+i" class="file" [ngClass]="{'error': error[i]}" >
-            <p *ngIf="!input">Upload / Camera</p>
-        </label>
+<div>
+  <h6 *ngIf="topLabel" [ngStyle]="topLabel.styles">
+    {{ topLabel.text }}
+  </h6>
+  <swiper [config]="swiperConfig">
+    <div
+      *ngFor="let input of imageField; index as i"
+      class="input-container"
+      [ngStyle]="containerStyles ? containerStyles : null"
+    >
+      <input
+        [id]="'file' + i"
+        (change)="fileProgress($event, i)"
+        type="file"
+        class="d-none"
+        [accept]="acceptTypes"
+      />
+      <label
+        [style.background]="sanitize(input)"
+        [for]="'file' + i"
+        class="file"
+        [ngStyle]="fileStyles ? fileStyles : null"
+        [ngClass]="{ error: error[i] }"
+      >
+        <ng-container *ngIf="!input">{{ innerLabel }}</ng-container>
+      </label>
     </div>
-</swiper>
+  </swiper>
+</div>
