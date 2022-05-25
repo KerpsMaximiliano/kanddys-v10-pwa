@@ -47,94 +47,95 @@
       ></ngx-intl-tel-input>
     </div>
 
-    <div
-      [ngStyle]="{
-        width: '88.32%',
-        margin: '0 auto',
-        padding: '0px 25px',
-        paddingTop: '42px',
-        borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
-      }"
-    ></div>
-
-    <div
-      [ngStyle]="{
-        width: '88.32%',
-        margin: '0 auto',
-        marginTop: '28px',
-        marginBottom: '28px'
-      }"
-    >
-      <p
-        class="label3"
-        [ngStyle]="{
-          width: '90.47%',
-          margin: 'auto'
-        }"
-      >
-        Por favor transfiera como pago la suma de ${{
-          orderData?.amount | number: "1.0-2"
-        }}
-        DOP.
-      </p>
-
+    <ng-container *ngIf="bankOptions && bankOptions.length">
       <div
         [ngStyle]="{
-          width: '90.47%',
-          margin: 'auto'
+          width: '88.32%',
+          margin: '0 auto',
+          padding: '0px 25px',
+          paddingTop: '42px',
+          borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+        }"
+      ></div>
+      <div
+        [ngStyle]="{
+          width: '88.32%',
+          margin: '0 auto',
+          marginTop: '28px',
+          marginBottom: '28px'
         }"
       >
-        <div
-          *ngFor="let bank of bankOptions"
+        <p
+          class="label3"
           [ngStyle]="{
-            marginTop: '28px'
+            width: '90.47%',
+            margin: 'auto'
           }"
         >
-          <h6
+          Por favor transfiera como pago la suma de ${{
+            orderData?.amount | number: "1.0-2"
+          }}
+          DOP.
+        </p>
+  
+        <div
+          [ngStyle]="{
+            width: '90.47%',
+            margin: 'auto'
+          }"
+        >
+          <div
+            *ngFor="let bank of bankOptions"
             [ngStyle]="{
-              color: 'black',
-              fontWeight: 'bold',
-              fontFamily: 'RobotoMedium',
-              margin: '0px'
+              marginTop: '28px'
             }"
           >
-            {{ bank.value }}
-          </h6>
-          <div *ngIf="bank.description">
-            <p
+            <h6
               [ngStyle]="{
-                fontFamily: 'RobotoLight',
-                fontStyle: 'italic',
-                fontSize: '17px',
-                color: '#202020',
-                margin: 0
+                color: 'black',
+                fontWeight: 'bold',
+                fontFamily: 'RobotoMedium',
+                margin: '0px'
               }"
-              *ngFor="let description of bank.description"
             >
-              {{ description }}
-            </p>
+              {{ bank.value }}
+            </h6>
+            <div *ngIf="bank.description">
+              <p
+                [ngStyle]="{
+                  fontFamily: 'RobotoLight',
+                  fontStyle: 'italic',
+                  fontSize: '17px',
+                  color: '#202020',
+                  margin: 0
+                }"
+                *ngFor="let description of bank.description"
+              >
+                {{ description }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div
-      [ngStyle]="{
-        backgroundColor: 'rgba(254, 210, 48, 0.43)',
-        color: 'black',
-        borderRadius: '10px',
-        fontStyle: 'italic',
-        fontSize: '17px',
-        fontFamily: 'Roboto',
-        margin: '0px 32px',
-        marginTop: '42px',
-        marginBottom: '98px',
-        padding: '21px'
-      }"
-    >
-      En la siguiente pantalla subirás una foto con la imagen (pantallaso,
-      screenshot) de la transferencia que realizaste.
-    </div>
+  
+      <div
+        [ngStyle]="{
+          backgroundColor: 'rgba(254, 210, 48, 0.43)',
+          color: 'black',
+          borderRadius: '10px',
+          fontStyle: 'italic',
+          fontSize: '17px',
+          fontFamily: 'Roboto',
+          margin: '0px 32px',
+          marginTop: '42px',
+          marginBottom: '98px',
+          padding: '21px'
+        }"
+      >
+        En la siguiente pantalla subirás una foto con la imagen (pantallaso,
+        screenshot) de la transferencia que realizaste.
+      </div>
+    </ng-container>
   </div>
   <div *ngIf="step === 'UPDATE_NAME_AND_SHOW_BANKS'">
     <div

@@ -23,6 +23,7 @@ import {
   CountryISO,
   PhoneNumberFormat,
 } from 'ngx-intl-tel-input';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 interface BankDetails {
   status: boolean;
@@ -68,7 +69,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   headerText: string;
   disableUserDataInputs: boolean = false;
   dialogProps: Record<string, any>;
-  saleflowData: any;
+  saleflowData: SaleFlow;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
   stepButtonText: string;
   stepButtonMode: string;
@@ -165,10 +166,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
-
-      await this.getExchangeData(
-        data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
-      );
+      if(data.order.items[0].saleflow.module.paymentMethod?.paymentModule?._id)
+        await this.getExchangeData(
+          data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
+        );
     } else {
       this.router.navigate(['/ecommerce/error-screen']);
     }
@@ -212,7 +213,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         this.orderId = orderId;
 
         const { orderStatus } = await this.order.getOrderStatus(orderId);
-
         if (orderStatus !== 'draft') {
           this.phoneNumber.setValue(this.orderData.user.phone);
           this.name.setValue(this.orderData.user.name);
@@ -232,26 +232,27 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         this.header.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
-
-      try {
-        await this.getExchangeData(
-          saleflow.module.paymentMethod.paymentModule._id
-        );
-        this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
-
-        // if (currentSession) {
-        //   await this.getExchangeData(
-        //     saleflow.module.paymentMethod.paymentModule._id
-        //   );
-        //   this.isANewUser =
-        //     currentSession.name === '' ||
-        //     String(currentSession.name) === 'null';
-        //   this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
-        // } else {
-        //   this.router.navigate(['/']);
-        // }
-      } catch (error) {
-        console.log(error);
+      if(saleflow?.module?.paymentMethod?.paymentModule?._id) {
+        try {
+          await this.getExchangeData(
+            saleflow.module.paymentMethod.paymentModule._id
+          );
+          this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
+  
+          // if (currentSession) {
+          //   await this.getExchangeData(
+          //     saleflow.module.paymentMethod.paymentModule._id
+          //   );
+          //   this.isANewUser =
+          //     currentSession.name === '' ||
+          //     String(currentSession.name) === 'null';
+          //   this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+          // } else {
+          //   this.router.navigate(['/']);
+          // }
+        } catch (error) {
+          console.log(error);
+        }
       }
 
       this.headerText = 'INFORMACIÓN DEL PAGO';
@@ -373,9 +374,23 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               unlockUI();
             }
           }
-
-          this.pastStep = this.step;
-          this.step = 'PAYMENT_INFO';
+          if(this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+            this.pastStep = this.step;
+            this.step = 'PAYMENT_INFO';
+          } else {
+            const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
+            this.whatsappLink = `https://wa.me/${
+              this.merchantInfo.owner.phone
+            }?text=Hola%20${
+              this.merchantInfo.name
+            },%20%20acabo%20de%20hacer%20una%20orden%20.${
+              String(this.userData.name) !== 'null' && this.userData.name
+                ? '%20Mi%20nombre%20es:%20' + this.userData.name
+                : ''
+            }.%20Mas%20info%20aquí%20${fullLink}`;
+            window.open(this.whatsappLink, "_blank");
+            this.redirect();
+          }
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
