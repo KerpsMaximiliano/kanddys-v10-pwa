@@ -208,12 +208,19 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
 
-      await this.getOrderData(orderId, true);
+      const { orderStatus } = await this.order.getOrderStatus(orderId);
+
+      console.log(orderStatus);
 
       if (orderId) {
         this.orderId = orderId;
 
-        const { orderStatus } = await this.order.getOrderStatus(orderId);
+        await this.getOrderData(orderId, orderStatus === 'draft');
+
+        if (orderStatus === 'completed') {
+          this.redirect();
+        }
+
         if (orderStatus !== 'draft') {
           this.phoneNumber.setValue(this.orderData.user.phone);
           this.name.setValue(this.orderData.user.name);
@@ -365,6 +372,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, foundUser._id);
+                this.header.deleteSaleflowOrder(this.saleflowData._id);
+                this.header.resetIsComplete();
                 this.isAPreOrder = false;
               }
 
@@ -420,6 +429,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (registeredNewUser && orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, registeredNewUser._id);
+                this.header.deleteSaleflowOrder(this.saleflowData._id);
+                this.header.resetIsComplete();
                 this.isAPreOrder = false;
               }
 
@@ -602,8 +613,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         'bank-transfer',
         this.orderData.id
       );
-      this.header.deleteSaleflowOrder(this.saleflowData._id);
-      this.header.resetIsComplete();
+      // this.header.deleteSaleflowOrder(this.saleflowData._id);
+      // this.header.resetIsComplete();
       this.header.storedDeliveryLocation = null;
 
       this.orderFinished();
