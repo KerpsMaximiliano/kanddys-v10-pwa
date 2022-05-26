@@ -35,7 +35,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     label: string;
     items: Item[];
   }[] = [];
-  inputsItems: any = [];
+  inputsItems: Item[] = [];
   packagesId: any = [];
   packageData: any = [];
   inputPackage: ItemPackage[] = [];
@@ -55,7 +55,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   isCategories: boolean;
   imageRoute: string = `${environment.assetsUrl}/share-outline.png`;
   renderedSwippers: number = 0;
-  showCTA: boolean = false;
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
@@ -250,23 +249,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData = this.header.getItems(this.saleflowData._id);
-
-        if (productData.length > 0) {
-          for (let i = 0; i < productData.length; i++) {
-            for (let j = 0; j < this.inputsItems.length; j++) {
-              if (productData[i]._id === this.inputsItems[j]._id) {
-                this.inputsItems[j].isSelected = true;
-              } else {
-                this.inputsItems[j].isSelected = false;
-              }
-            }
-          }
-        } else {
-          for (let i = 0; i < this.inputsItems.length; i++) {
-            this.inputsItems[i].isSelected = false;
-          }
-        }
+        let productData: Item[] = this.header.getItems(this.saleflowData._id);
+        const selectedItems =
+          productData?.length
+            ? productData.map((item) => item._id)
+            : [];
+        this.items.forEach((item) => {
+          if(!item.customizerId) item.isSelected = selectedItems.includes(item._id);
+        })
         //sub.unsubscribe();
         this.canOpenCart = this.inputsItems.some((item) => item.isSelected);
       });
@@ -386,8 +376,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         this.organizeItems();
-        if (!this.hasCustomizer && this.items.some((item) => item.isSelected))
-          this.showCTA = true;
       }
 
       if (!this.hasCustomizer) unlockUI();
@@ -444,12 +432,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             saleflow: this.saleflowData._id,
           });
           this.header.storeItem(this.saleflowData._id, this.inputsItems[index]);
-        }
-        let itemData = this.header.getItems(this.saleflowData._id);
-        if (itemData.length > 0 && !this.hasCustomizer) {
-          this.showCTA = true;
-        } else {
-          this.showCTA = false;
         }
       }
     } else if (type === 'package') {
