@@ -355,7 +355,8 @@ export class ItemCreatorComponent implements OnInit {
         }
       } else {
         unlockUI();
-        this.router.navigate(['/']);
+
+        if (itemId) this.router.navigate(['/']);
       }
     });
   }
