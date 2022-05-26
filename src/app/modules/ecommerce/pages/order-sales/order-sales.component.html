@@ -41,37 +41,65 @@
     </ng-container>
 
     <ng-container *ngIf="!inSearch">
-    <div class="tag-container">
+    <app-header-info
+    [starsAmount]="'25'"
+    [title]="'Tienda Name'"
+    [description]="'Vendió a Armando Paredes'"
+    [description2]="'en FechaID HoraID'"
+    ></app-header-info>
 
-        <div class="tag-search">
-            <div style="display: flex; align-items: end;">
-                <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="22.83px" width="22.83px" style="margin-right: 7px"/>
-                <label for="Tagged" class="tagged">Tagged </label>
+    <app-page-component-tabs
+    [tabsOptions]="tabsOptions"
+    (changeValue)="wichName($event)"
+  ></app-page-component-tabs>
+
+  <div class="compradores">
+      
+      <div class="sales">
+      <label for="Ventas" class="my-sales">Mis Ventas:</label>
+
+          <div class="images-wrapper">
+            <img alt="" [src]="imageFolder + '/search.svg'" height="24px" width="24px" style="cursor: pointer; margin-right: 21px" (click)="searchToggling()" class="icon"/>
+            <div class="icon-holder" [ngClass]="{'checked': showTags == true}">
+                <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="26px" width="25px" class="icon" (click)="tagsView()"/>
             </div>
-            <img alt="" [src]="imageFolder + '/search.svg'" height="22.83px" width="22.83px" style="cursor: pointer; margin-right: 3px" (click)="searchToggling()"/>
+            <img [src]="imageFolder + '/'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px" class="icon"/>
+          </div>
+
+      </div>
+
+      <div class="totals">
+        <div class="incomes">
+            <label for="Ganancias totales" class="total-income">${{totalIncome}} DOP</label>
+            <label for="Ventas Realizadas" class="total-income">{{totalSales}} Ventas</label>
         </div>
 
-        <div class="tags-swiper">
-            <app-swiper
-             [tagsSquare]="true"
-            ></app-swiper>
+        <div *ngIf="!showTags" class="organized">
+            <div class="arrow-circle"> <img [src]="imageFolder + '/cameraman.png'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
+            <p class="advice">Organiza todas tus ventas con las etiquetas.</p>
         </div>
+      </div>
 
-    </div>
-    
+      <div *ngIf="!showTags" class="last-sales">
+       <label class="latest">Últimas Ventas:</label> 
+      </div>
+
+      <ng-container *ngIf="showTags" >
+        <div class="tags-area">
+            <ng-container *ngFor="let tag of testTags; let i = index">
+                <app-tags-square></app-tags-square>
+            </ng-container>
+        </div>
+    </ng-container>
+
+  </div>
+</ng-container>
+
+    <ng-container *ngIf="!inSearch">   
 
     <div *ngIf = "isLogged == true">
 
         <div class="orderSection">
-
-            <div class="total-option">
-                <label for="Total" class="total-sales">$4,775 Vendido</label>
-                <div class="dot-trio" (click)="openDialog()">
-                    <div class="dot"> </div>
-                    <div class="dot"> </div>
-                    <div class="dot"> </div>
-                </div>
-            </div>
 
             <ng-container  *ngFor = "let order of orders; index as i">
 
