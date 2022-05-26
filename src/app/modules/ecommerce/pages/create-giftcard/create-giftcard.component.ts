@@ -205,11 +205,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     {
       fieldsList: [
         {
-          name: 'message',
-          fieldControl: new FormControl('', Validators.required),
-          label: '¿Que mensaje escribiremos?',
-          inputType: 'textarea',
-          placeholder: 'Type your message here...',
+          name: 'receiver',
+          fieldControl: new FormControl(''),
+          label: '¿Para quién es?',
+          placeholder: 'Type...',
           topLabelAction: {
             text: 'Sin mensaje de regalo',
             clickable: true,
@@ -219,7 +218,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
           styles: {
             containerStyles: {
-              marginTop: '60px',
+              marginTop: '68px',
             },
             topLabelActionStyles: {
               display: 'block',
@@ -230,30 +229,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               margin: '0px',
               marginTop: '68px',
               marginBottom: '33px',
-            },
-            fieldStyles: {
-              boxShadow: '0px 4px 5px 0px #ddd inset',
-              color: '#0b1f38',
-              width: '100%',
-              fontFamily: 'RobotoMedium',
-              height: '164px',
-              padding: '23px',
-              resize: 'none',
-              fontSize: '20px',
-              // border: '2px solid #31a4f9',
-              borderRadius: '10px',
-              backgroundColor: '#fff',
-            },
-          },
-        },
-        {
-          name: 'receiver',
-          fieldControl: new FormControl(''),
-          label: '¿Para quién es?',
-          placeholder: 'Type...',
-          styles: {
-            containerStyles: {
-              marginTop: '80px',
             },
             labelStyles: lightLabelStyles,
           },
@@ -267,6 +242,32 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '80px',
               marginBottom: '80px',
+            },
+            labelStyles: lightLabelStyles,
+          },
+        },
+        {
+          name: 'message',
+          fieldControl: new FormControl('', Validators.required),
+          label: '¿Que mensaje escribiremos?',
+          inputType: 'textarea',
+          placeholder: 'Type your message here...',
+          styles: {
+            containerStyles: {
+              marginBottom: '90px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 4px 5px 0px #ddd inset',
+              color: '#0b1f38',
+              width: '100%',
+              fontFamily: 'RobotoMedium',
+              height: '164px',
+              padding: '23px',
+              resize: 'none',
+              fontSize: '20px',
+              // border: '2px solid #31a4f9',
+              borderRadius: '10px',
+              backgroundColor: '#fff',
             },
             labelStyles: lightLabelStyles,
           },
