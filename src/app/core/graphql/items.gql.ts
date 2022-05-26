@@ -148,6 +148,7 @@ export const item = gql`
         _id
         name
         owner {
+          _id
           phone
         }
       }
