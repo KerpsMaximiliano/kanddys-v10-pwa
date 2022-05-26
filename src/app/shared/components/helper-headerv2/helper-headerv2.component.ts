@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class HelperHeaderv2Component implements OnInit {
     @Input() bgColor: string = '#4773D8';
     @Input() navtext: string = 'Volver';
-    @Input() mode: string = 'basic' || 'double' || 'options' || 'center'; 
+    @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' ; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;
     @Input() cartAmount: number;
@@ -20,6 +20,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() line: boolean = true;
     @Input() leftText: string = 'Ir A Mis Datos Personales';
     @Input() rightText: string = 'Ir A Los Datos Mi Tienda';
+    @Input() billId: string;
     @Output() returnEvent = new EventEmitter()
     env: string = environment.assetsUrl;
 
