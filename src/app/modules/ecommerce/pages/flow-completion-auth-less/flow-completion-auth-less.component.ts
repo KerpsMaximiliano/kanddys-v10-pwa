@@ -82,6 +82,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
+  shouldAllowPaymentSkipping: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -166,7 +167,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
-      if(data.order.items[0].saleflow.module.paymentMethod?.paymentModule?._id)
+      if (data.order.items[0].saleflow.module.paymentMethod?.paymentModule?._id)
         await this.getExchangeData(
           data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
         );
@@ -232,13 +233,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         this.header.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
-      if(saleflow?.module?.paymentMethod?.paymentModule?._id) {
+
+      if (saleflow._id === '61b8df151e8962cdd6f30feb')
+        this.shouldAllowPaymentSkipping = true;
+
+      if (saleflow?.module?.paymentMethod?.paymentModule?._id) {
         try {
           await this.getExchangeData(
             saleflow.module.paymentMethod.paymentModule._id
           );
           this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
-  
+
           // if (currentSession) {
           //   await this.getExchangeData(
           //     saleflow.module.paymentMethod.paymentModule._id
@@ -374,7 +379,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               unlockUI();
             }
           }
-          if(this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+          if (this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
             this.pastStep = this.step;
             this.step = 'PAYMENT_INFO';
           } else {
@@ -388,7 +393,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 ? '%20Mi%20nombre%20es:%20' + this.userData.name
                 : ''
             }.%20Mas%20info%20aquí%20${fullLink}`;
-            window.open(this.whatsappLink, "_blank");
+            window.open(this.whatsappLink, '_blank');
             this.redirect();
           }
           break;
@@ -546,9 +551,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   // Case 7
-  onFileInput(file: File | {image: File, index: number}) {
-    if(!('index' in file))
-      this.image = file;
+  onFileInput(file: File | { image: File; index: number }) {
+    if (!('index' in file)) this.image = file;
   }
 
   // Case 7

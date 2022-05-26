@@ -247,6 +247,7 @@
   <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
       <span
+      *ngIf="shouldAllowPaymentSkipping"
         [ngStyle]="{
           color: 'rgb(39, 162, 255)',
           fontFamily: 'Roboto',
