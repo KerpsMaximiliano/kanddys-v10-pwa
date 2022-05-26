@@ -74,6 +74,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   stepButtonText: string;
   stepButtonMode: string;
   whatsappLink: string = '';
+  fixedWhatsappLink: string = '';
   isANewUser: boolean = false;
   pastStep: string = '';
   env: string = environment.assetsUrl;
@@ -349,6 +350,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   async submit() {
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
+
     try {
       switch (this.step) {
         case 'PHONE_CHECK_AND_SHOW_BANKS': {
@@ -390,7 +393,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
             this.pastStep = this.step;
             this.step = 'PAYMENT_INFO';
           } else {
-            const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
             this.whatsappLink = `https://wa.me/${
               this.merchantInfo.owner.phone
             }?text=Hola%20${
@@ -403,6 +405,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
             window.open(this.whatsappLink, '_blank');
             this.redirect();
           }
+
+          this.fixedWhatsappLink = `https://wa.me/${
+            this.merchantInfo.owner.phone
+          }?text=Hola%20${
+            this.merchantInfo.name
+          },%20%20acabo%20de%20hacer%20una%20orden.${
+            String(this.userData.name) !== 'null' && this.userData.name
+              ? '%20Mi%20nombre%20es:%20' + this.userData.name
+              : ''
+          }.%20Mas%20info%20aquí%20${fullLink}`;
+
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
@@ -637,7 +650,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
       case 'PAYMENT_INFO':
         return (this.stepButtonText =
-          this.paymentCode.length !== 4 || !this.image || !this.selectedBank
+          !this.image || !this.selectedBank
             ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
             : 'Manda tu orden a ' + this.merchantInfo.name.toUpperCase());
     }
@@ -652,11 +665,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonMode =
           this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
       case 'PAYMENT_INFO':
-        return this.paymentCode.length !== 4 ||
-          !this.image ||
-          !this.selectedBank
-          ? 'disabled-fixed'
-          : 'fixed';
+        return !this.image || !this.selectedBank ? 'disabled-fixed' : 'fixed';
     }
   }
 

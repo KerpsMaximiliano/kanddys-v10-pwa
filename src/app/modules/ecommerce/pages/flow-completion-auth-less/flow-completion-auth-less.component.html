@@ -72,9 +72,8 @@
             margin: 'auto'
           }"
         >
-        <strong>(Opcional)</strong> Para completar la orden, transfiera como pago la suma de ${{
-            orderData?.amount | number: "1.0-2"
-          }}
+          <strong>(Opcional)</strong> Para completar la orden, transfiera como
+          pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
           DOP.
         </p>
 
@@ -132,7 +131,8 @@
           padding: '21px'
         }"
       >
-        En la siguiente pantalla decidirás si continuar con el pago de la orden o dejarlo para después.
+        En la siguiente pantalla decidirás si continuar con el pago de la orden
+        o dejarlo para después.
       </div>
     </ng-container>
   </div>
@@ -179,9 +179,8 @@
           margin: 'auto'
         }"
       >
-        <strong>(Opcional)</strong> Para completar la orden, transfiera como pago la suma de ${{
-          orderData?.amount | number: "1.0-2"
-        }}
+        <strong>(Opcional)</strong> Para completar la orden, transfiera como
+        pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
         DOP.
       </p>
 
@@ -239,13 +238,16 @@
         padding: '21px'
       }"
     >
-      En la siguiente pantalla decidirás si continuar con el pago de la orden o dejarlo para después.
+      En la siguiente pantalla decidirás si continuar con el pago de la orden o
+      dejarlo para después.
     </div>
   </div>
   <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
-      <span
-      *ngIf="shouldAllowPaymentSkipping"
+      <a
+        [href]="fixedWhatsappLink"
+        target="_blank"
+        *ngIf="shouldAllowPaymentSkipping"
         [ngStyle]="{
           color: 'rgb(39, 162, 255)',
           fontFamily: 'Roboto',
@@ -253,11 +255,14 @@
           fontStyle: 'italic',
           margin: '0px',
           marginTop: '60px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          textDecoration: 'none'
         }"
-        (click)="redirect()"
-        >Completaré pagando la orden de otra manera.</span
       >
+        <div (click)="redirect()">
+          Completaré pagando la orden de otra manera.
+        </div>
+      </a>
       <p style="margin-bottom: 47px; margin-top: 34px" class="label1">
         Sobre la transferencia que realizó como pago:
       </p>
@@ -276,7 +281,7 @@
         inputmode="numeric"
       /> -->
 
-      <p style="margin-bottom: 22px; margin-top: 88px" class="label2">
+      <!-- <p style="margin-bottom: 22px; margin-top: 88px" class="label2">
         Adicione los últimos 4 digitos de la transferencia que realizó:
       </p>
       <input
@@ -285,7 +290,7 @@
         minlength="4"
         maxlength="4"
         class="code-input"
-      />
+      /> -->
 
       <p class="label3" style="margin-top: 87px">
         Adicione la imagen (captura):
