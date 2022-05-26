@@ -258,7 +258,7 @@ export class HeaderService {
   }
 
   async fetchSaleflow(id: string) {
-    this.saleflow = (await this.saleflowService.saleflow(id)).saleflow;
+    this.saleflow = (await this.saleflowService.saleflow(id))?.saleflow;
     this.storeSaleflow(this.saleflow);
     return this.saleflow;
   }

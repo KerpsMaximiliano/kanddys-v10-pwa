@@ -272,12 +272,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
-      if(!this.header.getSaleflow() && !this.header.saleflow) this.saleflowData = await this.header.fetchSaleflow(params.id);
-      if(this.header.getSaleflow()._id !== params.id) this.saleflowData = await this.header.fetchSaleflow(params.id);
-      else {
-        this.saleflowData = this.header.getSaleflow();
-        this.header.saleflow = this.saleflowData;
-      }
+      this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
       if (!orderData || !orderData.products || orderData.products.length === 0)
         this.header.emptyItems(this.saleflowData._id);
@@ -585,13 +580,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
-        headerButton: 'Ver mas productos',
         footerCallback: () =>
           this.router.navigate(['/ecommerce/create-giftcard']),
-        headerCallback: () =>
-          this.router.navigate([
-            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
-          ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

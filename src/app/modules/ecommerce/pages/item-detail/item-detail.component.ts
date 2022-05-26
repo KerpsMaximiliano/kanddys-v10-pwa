@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Item } from '../../../../core/models/item';
@@ -13,13 +13,14 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { notification } from 'onsenui';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss'],
 })
-export class ItemDetailComponent implements OnInit {
+export class ItemDetailComponent implements OnInit, OnDestroy {
   constructor(
     public items: ItemsService,
     private route: ActivatedRoute,
@@ -29,14 +30,7 @@ export class ItemDetailComponent implements OnInit {
     private location: Location,
     private appService: AppService,
     private saleflow: SaleFlowService
-  ) {
-    const sub = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item'))
-      .subscribe((e) => {
-        this.itemInCart();
-        sub.unsubscribe();
-      });
-  }
+  ) {}
   boxTitle: string = '';
   boxText: string = '';
   shopcart: boolean = true;
@@ -54,6 +48,7 @@ export class ItemDetailComponent implements OnInit {
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
+  deleteEvent: Subscription;
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -82,6 +77,16 @@ export class ItemDetailComponent implements OnInit {
         else if( this.viewtype === 'preview') this.viewtype = 'preview'
         else if (this.viewtype === 'community') this.viewtype = 'community'    
     });
+
+    this.deleteEvent = this.appService.events
+        .pipe(filter((e) => e.type === 'deleted-item'))
+        .subscribe((e) => {
+          this.itemInCart();
+        });
+  }
+
+  ngOnDestroy() {
+    this.deleteEvent.unsubscribe();
   }
 
   itemInCart() {

@@ -230,6 +230,7 @@ export class ShipmentDataFormComponent implements OnInit {
               fontFamily: 'Roboto',
               fontSize: '17px',
               fontStyle: 'italic',
+              cursor: 'pointer',
             },
             labelStyles: {
               marginTop: '34px',
@@ -284,7 +285,7 @@ export class ShipmentDataFormComponent implements OnInit {
             deliveryData
           );
           this.header.isComplete.delivery = true;
-          this.header.storeOrderProgress(this.header.saleflow._id);
+          this.header.storeOrderProgress(this.header.saleflow?._id || this.header.getSaleflow()?._id);
 
           //========================= CÓDIGO PARA CREAR PREORDER =========================
           if (!this.header.orderId && !this.header.createdOrderWithDelivery) {

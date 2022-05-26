@@ -118,8 +118,7 @@ export class CategoryItemsComponent implements OnInit {
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
-      this.header.saleflow = this.saleflowData;
+      this.saleflowData = await this.header.fetchSaleflow(params.id);
       this.route.queryParams.subscribe(async (queries) => {
         if(queries.edit) {
           const user = await this.authService.me();
