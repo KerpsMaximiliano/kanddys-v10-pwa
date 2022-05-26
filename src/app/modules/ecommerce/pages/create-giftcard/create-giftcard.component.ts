@@ -336,8 +336,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             ],
           };
 
-          console.log(postInput);
-
           try {
             let postResult = await this.post.creationPost(postInput);
 

@@ -210,8 +210,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
       const { orderStatus } = await this.order.getOrderStatus(orderId);
 
-      console.log(orderStatus);
-
       if (orderId) {
         this.orderId = orderId;
 
