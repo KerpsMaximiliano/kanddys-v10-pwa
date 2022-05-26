@@ -110,6 +110,17 @@
                 {{ currentField.label }}
               </label>
 
+              <div
+                class="input"
+                [ngStyle]="{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }"
+              >
+                {{ currentField.formattedValue }}
+              </div>
+
               <input
                 [id]="currentField.name"
                 [name]="currentField.name"
@@ -133,19 +144,6 @@
                     ? currentField.styles.fieldStyles
                     : null
                 "
-              />
-
-              <input
-                *ngIf="currentField.shouldFormatNumber"
-                [type]="'text'"
-                [placeholder]="currentField.placeholder"
-                [ngClass]="
-                  currentField.styles.customClassName
-                    ? currentField.styles.customClassName
-                    : 'input'
-                "
-                [ngStyle]="currentField.styles.formattedInputStyles"
-                [value]="currentField.formattedValue"
               />
 
               <span
@@ -484,6 +482,14 @@
           {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
+        <span
+          *ngIf="currentStepObject['linkFooter']"
+          (click)="currentStepObject['linkFooter'].execute(stepFunctionParams)"
+          [ngStyle]="currentStepObject['linkFooter'].styles"
+        >
+          {{ currentStepObject["linkFooter"].text }}
+        </span>
+
         <div class="steps" *ngIf="showStepNumbers">
           <img
             src="{{ env }}/arrow-down.svg"
@@ -496,7 +502,12 @@
     </div>
 
     <div
-      class="bottom-separator"
+      [ngClass]="{
+        'bottom-separator':
+          dataModel.get(currentStepString).status !== 'INVALID',
+        'bottom-separator-disabled':
+          dataModel.get(currentStepString).status === 'INVALID'
+      }"
       *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
       "
