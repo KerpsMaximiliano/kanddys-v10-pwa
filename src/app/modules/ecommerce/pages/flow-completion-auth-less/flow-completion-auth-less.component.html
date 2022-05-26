@@ -254,7 +254,8 @@
           fontSize: '17px',
           fontStyle: 'italic',
           margin: '0px',
-          marginTop: '60px'
+          marginTop: '60px',
+          cursor: 'pointer'
         }"
         (click)="redirect()"
         >Completaré pagando la orden de otra manera.</span
@@ -338,14 +339,14 @@
       </div>
     </div>
   </div>
-  <div
+  <!-- <div
     class="footer"
     [ngStyle]="{
       justifyContent: step === 'PAYMENT_INFO' ? 'space-between' : 'flex-end'
     }"
-  ></div>
+  ></div> -->
 
-  <div class="bottom-separator"></div>
+  <!-- <div class="bottom-separator"></div> -->
 
   <app-sticky-button
     *ngIf="step !== 'PAYMENT_INFO'"
