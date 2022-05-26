@@ -103,6 +103,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
+        margin-bottom: 77px;
 
         .in{
             align-items: center;
@@ -136,11 +137,7 @@
             text-indent: 15px;
         }
 
-        .add-whatsapp,
-        .add-instagram,
-        .add-telefono,
-        .add-direccion,
-        .add-bank{
+        .add-media, .add-bank{
             font-family: 'SfProMedium';
             font-size: 14px;
             color: #27A2FC;
@@ -155,23 +152,17 @@
 
     }
 
-    .whatsapp,.telefono{
-        margin-bottom: 77px;
-    }
-
-    .instagram{
-        margin-bottom: 71px;
-    }
-
     .direccion{
-        margin-bottom: 85px;
+        margin-bottom: 0px;
     }
 
     .bank-name,
     .bank-number,
-    .bank-accountant,
-    .bank-accountant-doc{
+    .bank-accountant{
         margin-bottom: 55px;
+    }
+    .bank-accountant-doc{
+        margin-bottom: 6.6px;
     }
 
     #bn{

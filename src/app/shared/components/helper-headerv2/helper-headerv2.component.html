@@ -39,4 +39,26 @@
             <label class="text light-text">{{navtext}}</label>
         </div>
     </ng-container>
+
+    <ng-container *ngIf=" mode == 'options'">
+        <div class="options">
+            <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a>
+            <div class="wrapper">
+                <label for="ID" class="bill bold-text">{{billId}}</label>
+                <label for="Costo" class="bold-text">{{leftText}}</label>
+                <label for="Costo" class="bold-text">{{rightText}}</label>
+            </div>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf=" mode == '2raise'">
+        <div class="raise">
+            <div class="mi-tienda"> <label class="text">{{leftText}}</label></div>
+
+            <div class="holder">
+                <img [src]="env + '/star.svg'" alt="No image :c" class="star">
+                <label for="List2raise">{{rightText}}</label>
+            </div>
+        </div>
+    </ng-container>
 </div>
