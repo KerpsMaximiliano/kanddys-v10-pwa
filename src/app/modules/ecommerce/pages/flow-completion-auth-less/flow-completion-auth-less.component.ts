@@ -628,12 +628,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           this.phoneNumber.status === 'INVALID'
             ? 'ESCRIBE COMO TE CONTACTAMOS'
-            : 'CONFIRMA TU PAGO');
+            : 'CONTINUAR LA ORDEN');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
         return (this.stepButtonText =
           this.name.status === 'INVALID'
             ? 'ESCRIBE QUIEN ERES'
-            : 'CONFIRMA TU PAGO');
+            : 'CONTINUAR LA ORDEN');
 
       case 'PAYMENT_INFO':
         return (this.stepButtonText =
