@@ -23,20 +23,23 @@ export class OrderSalesComponent implements OnInit {
 
   imageFolder: string;
   fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
-
-  testTags: string[] = [' ', ' ', ' ', ' ', ' '];
+  tabsOptions = ['Compradores','Items'];
+  testTags: Array<any> = [' ', ' ', ' ', ' ', ' '];
   inSearch: boolean = false;
   isLogged: boolean = true;
   merchantID: string ;
   tags = [{subtitle: 'FILTERED BY TAGS', options: [],}];
   search: searchInput = {
     value: '', placeholder: 'Search..', background: '#FFFFFF',
-    searchFunction: () => this.inputChange()}
-
+    searchFunction: () => this.inputChange()
+    }
   mouseDown = false;
   startX: any;
   scrollLeft: any;
-  auxNumbers: Array<string> = [''];  
+  auxNumbers: Array<string> = [''];
+  totalIncome: string = '147,154.00';
+  totalSales: string = '154';
+  showTags: boolean = false;  
 
   options: Array<any> = [
     {label: "Sales", selected: true},
@@ -61,26 +64,6 @@ export class OrderSalesComponent implements OnInit {
     private app: AppService,) {
         
     this.imageFolder = environment.assetsUrl;
-      /* const sub = this.app.events
-      .pipe(filter((e) => e.type === 'singleAuth'))
-      .subscribe((e) => {
-        if (e.data) {
-          
-          if (this.headerSevice.user) {
-            this.isLogged = this.headerSevice.user != undefined;
-            if(this.isLogged){
-              if(this.merchantID){
-                this.getMerchants().then(e =>{
-                  this.getTagsOptions();
-                });
-              }
-              else this.getOrdersByUser();
-            }
-          }
-          sub.unsubscribe();
-        }
-      }); */
-
   }
   
   ngOnInit(): void {
@@ -353,6 +336,24 @@ export class OrderSalesComponent implements OnInit {
 
   tagFunction(){
       this.router.navigate([`ecommerce/tags-edit`]);
+  }
+
+  wichName(e) {
+      switch (e){
+        case 'Compradores':
+        console.log('Compradores'); 
+
+        break;
+
+        case 'Items':
+        console.log('Items');
+
+        break;
+      }
+  }
+
+  tagsView(){
+    this.showTags = !this.showTags;
   }
 
 }
