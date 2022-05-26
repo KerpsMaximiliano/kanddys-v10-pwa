@@ -206,7 +206,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       fieldsList: [
         {
           name: 'receiver',
-          fieldControl: new FormControl(''),
+          fieldControl: new FormControl('', Validators.required),
           label: '¿Para quién es?',
           placeholder: 'Type...',
           topLabelAction: {
@@ -236,7 +236,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         {
           name: 'sender',
           fieldControl: new FormControl(''),
-          label: '¿De parte de quién o quienes?',
+          label: '¿De parte de quién o quienes? (Opcional)',
           placeholder: 'Type...',
           styles: {
             containerStyles: {
@@ -248,8 +248,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
         {
           name: 'message',
-          fieldControl: new FormControl('', Validators.required),
-          label: '¿Que mensaje escribiremos?',
+          fieldControl: new FormControl(''),
+          label: '¿Que mensaje escribiremos? (Opcional)',
           inputType: 'textarea',
           placeholder: 'Type your message here...',
           styles: {
