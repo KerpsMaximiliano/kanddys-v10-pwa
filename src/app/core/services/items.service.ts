@@ -33,12 +33,13 @@ export class ItemsService {
   constructor(private graphql: GraphQLWrapper) {}
 
   async item(id: string): Promise<Item> {
-    const { item: result } = await this.graphql.query({
+    const result = await this.graphql.query({
       query: item,
       variables: { id },
       fetchPolicy: 'no-cache',
     });
-    return new Item(result);
+    if(!result) return;
+    return result.item;
   }
 
   async itemextra(id: string) {

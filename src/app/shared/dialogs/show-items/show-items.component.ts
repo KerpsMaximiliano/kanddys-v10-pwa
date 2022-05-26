@@ -21,7 +21,7 @@ export class ShowItemsComponent implements OnInit {
   @Input() products: any[] = [];
   @Input() orderFinished: boolean;
   @Input() headerButton: string;
-  @Input() footerButton: string = 'Continuar con la orden';
+  @Input() footerButton: string = 'CONTINUAR CON LA ORDEN';
   @Input() public headerCallback: () => void;
   @Input() public footerCallback: () => void;
   price: number = 0;
