@@ -9,53 +9,130 @@
     min-height: 100vh;
 }
 
-.topbar{
+.compradores{
     width: 100%;
-    height: 36px;
-    background-color: #4773D8;
+    min-height: 195px;
+    height: fit-content;
+    background-color: #F6F6F6;
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
 
-        .left-side{
-            font-family: 'RobotoBold';
-            font-size: 14px;
-            color: #FFFFFF;
-            margin-left: 9.12%;
-            margin-right: 8.64%;
-            cursor: pointer;
-        }
-        .line{
-            height: 19px;
-            width: 2.5px;
-            color: #ffffff;
-            margin: 6.7px 0 10.3px 0;
-            background-color: #FFFFFF;
-            border: 1px #FFFFFF; 
-        }
-        .right-side{
-            font-family: 'RobotoBold';
-            font-size: 14px;
-            color: #FFFFFF;
-            margin-left: 4.5px;
-            margin-right: 7px;
-            cursor: pointer;
-        }
-}
+    .sales{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 22px 27px 0 27px;
 
-.changer{
-    width: 100%;
-    height: 36px;
-    background-color: #4773D8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+        .my-sales{
+            font-family: 'SfProMedium';
+            font-size: 20px;
+            color: #313131;
+        }
 
-    .search-label{
-        font-family: 'RobotoBold';
-        font-size: 14px;
-        color: #FFFFFF;
-        cursor: pointer;
+        .images-wrapper{
+            display: flex;
+            align-items: center;
+            width: 130px;
+
+            .icon-holder{
+                cursor: pointer;
+
+                &.checked{
+                    padding: 3px 0px;
+                    width: 59px;
+                    border-radius: 47px;
+                    background-color: #4773D8;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    .icon{
+                        cursor: pointer;
+                        filter: invert(99%) sepia(1%) saturate(0%) hue-rotate(65deg) brightness(170%) contrast(100%);
+                    }
+                }
+                &.icon{
+                    cursor: pointer;
+                    filter: invert(56%) sepia(81%) saturate(5167%) hue-rotate(209deg) brightness(93%) contrast(82%);
+                }
+            }
+
+            .icon{
+                filter: invert(56%) sepia(81%) saturate(5167%) hue-rotate(209deg) brightness(93%) contrast(82%);
+            }
+        }
+    }
+
+    .totals{
+        display: flex;
+        justify-content: space-between;
+        margin: 0px 27px;
+
+        .incomes{
+            display: flex;
+            flex-direction: column;
+            margin-top: 18px;
+
+            .total-income{
+                font-family: 'SfProMedium';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin-bottom: 9px;
+            }
+        }
+
+        .organized{
+            display: flex;
+            flex-direction: column;
+            margin-top: 9px;
+            position: relative;
+
+            .arrow-circle{
+                position: absolute;
+                right: 4%;
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                background-color: #DD9204;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .arrow{
+                    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(248deg) brightness(106%) contrast(106%);
+                }
+            }
+
+            .advice{
+                font-family: 'NeueMontreal';
+                font-size: 16px;
+                color: #B17608;
+                text-align: right;
+                margin: 30px 0 0 0;
+                max-width: 213px;
+            }
+        }
+    }
+
+    .last-sales{
+        display: flex;
+        margin-left: 22px;
+
+        .latest{
+            margin-top: 38px;
+            font-family: 'SfProMedium';
+            font-size: 20px;
+            color: #313131;
+        }
+    }
+
+    .tags-area{
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 11px;
+        row-gap: 13px;
+        margin-left: 12%;
+        margin-top: 36px;
     }
 }
 
