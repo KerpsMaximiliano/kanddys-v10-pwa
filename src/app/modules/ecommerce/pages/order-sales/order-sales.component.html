@@ -1,16 +1,27 @@
 <div class="container">
 
     <ng-container *ngIf="!inSearch">
-        <div class="topbar">
-                <label for="Volver a los datos de mi tienda" class="left-side">Volver A Los Datos De Mi Tienda</label>
-                <div style="display: flex; align-items: center;"><hr class="line"> <label for="Editar Mi Tienda" class="right-side">Editar Mi Tienda</label></div>
-        </div>
+        <app-helper-headerv2
+        [mode]="'2raise'"
+        [billId]="'20220125N145'"
+        [leftText]="'Mi Tienda'"
+        [rightText]="'List2raise'"
+        [whatsapp]="false"
+        [shopcart]="false"
+        [line]="false"
+        ></app-helper-headerv2>
     </ng-container> 
 
     <ng-container *ngIf="inSearch">
-        <div class="changer">
-            <label for="Salir de la busqueda" class="search-label" (click)="searchToggling()">Salir De La Busquedas</label> 
-        </div>
+        <app-helper-headerv2
+        [mode]="'options'"
+        [billId]="'20220125N145'"
+        [leftText]="'amountId'"
+        [rightText]="'CompradorId'"
+        [whatsapp]="false"
+        [shopcart]="false"
+        [line]="false"
+        ></app-helper-headerv2>
      </ng-container> 
 
     <ng-container *ngIf="inSearch">

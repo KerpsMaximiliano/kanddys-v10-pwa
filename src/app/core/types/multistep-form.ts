@@ -7,6 +7,7 @@ export interface FieldStyles {
   containerStyles?: any;
   topLabelActionStyles?: any;
   labelStyles?: any;
+  formattedInputStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
@@ -15,6 +16,8 @@ export interface FormField {
   name: string;
   styles?: FieldStyles;
   fieldControl: FormControl | FormArray;
+  onlyAllowPositiveNumbers?: boolean;
+  formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
@@ -77,15 +80,17 @@ export interface FormStep {
   avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
+  bottomLeftAction?: LinkAction;
+  linkFooter?: LinkAction;
   optionalLinksTo?: OptionalLinks;
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
 }
 
-export interface BottomLeftAction {
+export interface LinkAction {
   text: string;
   execute(params): any;
+  styles?: Record<string, string>;
 }
 
 export interface OptionalLinks {

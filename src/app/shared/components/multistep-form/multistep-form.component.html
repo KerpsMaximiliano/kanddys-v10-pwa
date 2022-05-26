@@ -110,16 +110,28 @@
                 {{ currentField.label }}
               </label>
 
+              <div
+                class="input"
+                *ngIf="currentField.shouldFormatNumber"
+                [ngStyle]="{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }"
+              >
+                {{ currentField.formattedValue }}
+              </div>
+
               <input
                 [id]="currentField.name"
                 [name]="currentField.name"
                 [formControlName]="currentField.name"
                 [type]="currentField.inputType || 'text'"
-                [value]="
+                [min]="
                   currentField.inputType === 'number' &&
-                  currentField.shouldFormatNumber
-                    ? currentField.fieldControl.value.toLocaleString('es-MX')
-                    : currentField.fieldControl.value
+                  currentField.onlyAllowPositiveNumbers
+                    ? 0
+                    : null
                 "
                 [placeholder]="currentField.placeholder"
                 [ngClass]="
@@ -471,6 +483,14 @@
           {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
+        <span
+          *ngIf="currentStepObject['linkFooter']"
+          (click)="currentStepObject['linkFooter'].execute(stepFunctionParams)"
+          [ngStyle]="currentStepObject['linkFooter'].styles"
+        >
+          {{ currentStepObject["linkFooter"].text }}
+        </span>
+
         <div class="steps" *ngIf="showStepNumbers">
           <img
             src="{{ env }}/arrow-down.svg"
@@ -483,7 +503,12 @@
     </div>
 
     <div
-      class="bottom-separator"
+      [ngClass]="{
+        'bottom-separator':
+          dataModel.get(currentStepString).status !== 'INVALID',
+        'bottom-separator-disabled':
+          dataModel.get(currentStepString).status === 'INVALID'
+      }"
       *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
       "

@@ -77,7 +77,7 @@
           }}
           DOP.
         </p>
-  
+
         <div
           [ngStyle]="{
             width: '90.47%',
@@ -117,7 +117,7 @@
           </div>
         </div>
       </div>
-  
+
       <div
         [ngStyle]="{
           backgroundColor: 'rgba(254, 210, 48, 0.43)',
@@ -246,7 +246,20 @@
   </div>
   <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
-      <p style="margin-bottom: 47px" class="label1">
+      <span
+      *ngIf="shouldAllowPaymentSkipping"
+        [ngStyle]="{
+          color: 'rgb(39, 162, 255)',
+          fontFamily: 'Roboto',
+          fontSize: '17px',
+          fontStyle: 'italic',
+          margin: '0px',
+          marginTop: '60px'
+        }"
+        (click)="redirect()"
+        >Completaré pagando la orden de otra manera.</span
+      >
+      <p style="margin-bottom: 47px; margin-top: 34px" class="label1">
         Sobre la transferencia que realizó como pago:
       </p>
       <!-- Temporalmente deshabilitado -->
