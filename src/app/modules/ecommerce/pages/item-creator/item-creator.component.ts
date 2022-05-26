@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { DecimalPipe } from '@angular/common';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-item-creator',
@@ -14,6 +16,9 @@ import { DecimalPipe } from '@angular/common';
   styleUrls: ['./item-creator.component.scss'],
 })
 export class ItemCreatorComponent implements OnInit {
+  currentUserId: string = null;
+  merchantOwnerId: string = null;
+  currentItemId: string = null;
   scrollableForm = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
   files: File[] = [];
@@ -234,19 +239,34 @@ export class ItemCreatorComponent implements OnInit {
           try {
             const values = params.dataModel.value;
 
-            console.log(this.files);
-
-            await this.itemService.createPreItem({
-              name: String(Date.now() + Math.floor(Math.random() * 10)),
-              merchant: '60fecbe1e2e31b9085ce654a',
-              description: values['1'].description,
-              pricing: Number(values['1'].price),
-              images: this.files,
-              content: values['2'].whatsIncluded,
-              currencies: [],
-              hasExtraPrice: false,
-              purchaseLocations: [],
-            });
+            if (
+              this.currentUserId &&
+              this.merchantOwnerId &&
+              this.currentUserId === this.merchantOwnerId
+            ) {
+              await this.itemService.updateItem(
+                {
+                  description: values['1'].description,
+                  pricing: Number(values['1'].price),
+                  images: this.files,
+                  content: values['2'].whatsIncluded,
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                },
+                this.currentItemId
+              );
+            } else {
+              await this.itemService.createPreItem({
+                description: values['1'].description,
+                pricing: Number(values['1'].price),
+                images: this.files,
+                content: values['2'].whatsIncluded,
+                currencies: [],
+                hasExtraPrice: false,
+                purchaseLocations: [],
+              });
+            }
           } catch (error) {
             console.log(error);
           }
@@ -297,6 +317,7 @@ export class ItemCreatorComponent implements OnInit {
   constructor(
     private router: Router,
     private itemService: ItemsService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private decimalPipe: DecimalPipe,
     private applicationRef: ApplicationRef
@@ -305,29 +326,37 @@ export class ItemCreatorComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
       const { itemId } = routeParams;
+      this.currentItemId = itemId;
 
-      const { pricing, images, content, description } =
-        await this.itemService.item(itemId);
+      if (itemId && localStorage.getItem('session-token')) {
+        lockUI();
 
-      // name: String(Date.now() + Math.floor(Math.random() * 10)),
-      //         description: values['1'].description,
-      //         pricing: Number(values['1'].price),
-      //         images: this.files,
-      //         content: values['2'].whatsIncluded,
-      //         currencies: [],
-      //         hasExtraPrice: false,
-      //         purchaseLocations: [],
+        const { _id: myUserId } = await this.authService.me();
+        this.currentUserId = myUserId;
 
-      console.log(pricing, images, content, description);
-      this.formSteps[0].fieldsList[0].fieldControl.setValue(description);
-      this.formSteps[0].fieldsList[1].fieldControl.setValue(String(pricing));
-      this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-      const formArray = this.formSteps[1].fieldsList[0]
-        .fieldControl as FormArray;
-      formArray.removeAt(0);
-      content.forEach((item) => {
-        console.log(formArray.push(new FormControl(item)));
-      });
+        const { pricing, images, content, description, merchant } =
+          await this.itemService.item(itemId);
+
+        if (this.currentUserId === merchant.owner._id) {
+          this.merchantOwnerId = merchant.owner._id;
+
+          this.formSteps[0].fieldsList[0].fieldControl.setValue(description);
+          this.formSteps[0].fieldsList[1].fieldControl.setValue(
+            String(pricing)
+          );
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          const formArray = this.formSteps[1].fieldsList[0]
+            .fieldControl as FormArray;
+          formArray.removeAt(0);
+          content.forEach((item) => {
+            formArray.push(new FormControl(item));
+          });
+          unlockUI();
+        }
+      } else {
+        unlockUI();
+        this.router.navigate(['/']);
+      }
     });
   }
 }
