@@ -112,6 +112,7 @@
 
               <div
                 class="input"
+                *ngIf="currentField.shouldFormatNumber"
                 [ngStyle]="{
                   display: 'flex',
                   alignItems: 'center',
