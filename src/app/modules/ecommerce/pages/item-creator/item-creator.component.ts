@@ -86,8 +86,11 @@ export class ItemCreatorComponent implements OnInit {
                 '1.0-2'
               );
 
+              if (formatted === '0') {
+                this.formSteps[0].fieldsList[1].placeholder = '';
+              }
+
               this.formSteps[0].fieldsList[1].formattedValue = '$' + formatted;
-              // this.applicationRef.tick();
             } catch (error) {
               console.log(error);
             }
@@ -99,7 +102,8 @@ export class ItemCreatorComponent implements OnInit {
               position: 'relative',
             },
             fieldStyles: {
-              opacity: '0',
+              backgroundColor: 'transparent',
+              color: 'transparent',
               zIndex: '50',
               position: 'absolute',
               bottom: '0px',
@@ -137,6 +141,10 @@ export class ItemCreatorComponent implements OnInit {
                 '1.0-2'
               );
 
+              if (formatted === '0') {
+                this.formSteps[0].fieldsList[2].placeholder = '';
+              }
+
               this.formSteps[0].fieldsList[2].formattedValue = '$' + formatted;
               // this.applicationRef.tick();
             } catch (error) {
@@ -150,7 +158,8 @@ export class ItemCreatorComponent implements OnInit {
               marginTop: '101px',
             },
             fieldStyles: {
-              opacity: '0',
+              backgroundColor: 'transparent',
+              color: 'transparent',
               zIndex: '50',
               position: 'absolute',
               bottom: '0px',
@@ -272,6 +281,18 @@ export class ItemCreatorComponent implements OnInit {
           }
 
           return { ok: true };
+        },
+      },
+      linkFooter: {
+        text: 'Mira el preview',
+        execute: (params) => {},
+        styles: {
+          margin: 'auto',
+          cursor: 'pointer',
+          color: '#4773D8',
+          fontSize: '16px',
+          fontFamily: 'RobotoMedium',
+          marginTop: '102px',
         },
       },
       avoidGoingToNextStep: true,

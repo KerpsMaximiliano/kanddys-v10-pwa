@@ -80,15 +80,17 @@ export interface FormStep {
   avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
+  bottomLeftAction?: LinkAction;
+  linkFooter?: LinkAction;
   optionalLinksTo?: OptionalLinks;
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
 }
 
-export interface BottomLeftAction {
+export interface LinkAction {
   text: string;
   execute(params): any;
+  styles?: Record<string, string>;
 }
 
 export interface OptionalLinks {
