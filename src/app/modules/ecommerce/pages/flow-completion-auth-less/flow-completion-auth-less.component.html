@@ -72,7 +72,8 @@
             margin: 'auto'
           }"
         >
-          <strong>(Opcional)</strong> Para completar la orden, transfiera como
+          <!-- <strong>(Opcional)</strong> -->
+          Para completar la orden, transfiera como
           pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
           DOP.
         </p>
@@ -131,8 +132,8 @@
           padding: '21px'
         }"
       >
-        En la siguiente pantalla decidirás si continuar con el pago de la orden
-        o dejarlo para después.
+        En la siguiente pantalla subirás una foto con la imagen (pantallaso,
+        screenshot) de la transferencia que realizaste.
       </div>
     </ng-container>
   </div>
@@ -179,7 +180,8 @@
           margin: 'auto'
         }"
       >
-        <strong>(Opcional)</strong> Para completar la orden, transfiera como
+        <!-- <strong>(Opcional)</strong> -->
+        Para completar la orden, transfiera como
         pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
         DOP.
       </p>
@@ -238,8 +240,8 @@
         padding: '21px'
       }"
     >
-      En la siguiente pantalla decidirás si continuar con el pago de la orden o
-      dejarlo para después.
+      En la siguiente pantalla subirás una foto con la imagen (pantallaso,
+      screenshot) de la transferencia que realizaste.
     </div>
   </div>
   <div *ngIf="step === 'PAYMENT_INFO'">
@@ -259,9 +261,9 @@
           textDecoration: 'none'
         }"
       >
-        <div (click)="redirect()">
+        <!-- <div (click)="redirect()">
           Completaré pagando la orden de otra manera.
-        </div>
+        </div> -->
       </a>
       <p style="margin-bottom: 47px; margin-top: 34px" class="label1">
         Sobre la transferencia que realizó como pago:
