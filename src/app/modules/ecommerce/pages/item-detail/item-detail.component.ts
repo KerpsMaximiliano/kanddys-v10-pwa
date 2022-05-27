@@ -52,7 +52,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemCartAmount: number;
   env: string = environment.assetsUrl;
   deleteEvent: Subscription;
-  saleFlowTwoSwiperConfig: SwiperOptions = {
+  swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 5,

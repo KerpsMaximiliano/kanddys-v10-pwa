@@ -375,7 +375,6 @@ export class OrderInfoComponent implements OnInit {
               });
           }
           if (data.order.items[0].post) {
-            console.log("TIENE POST");
             this.posts.getPost(data.order.items[0].post._id).then((data) => {
               this.message = data.post;
               this.currentMessage = this.message.message;

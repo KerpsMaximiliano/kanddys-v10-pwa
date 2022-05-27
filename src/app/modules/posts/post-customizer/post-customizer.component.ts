@@ -1017,7 +1017,7 @@ export class PostCustomizerComponent
         !this.isEditing
       ) {
         // if (this.isEditing) options = ['confirmar'];
-        options = ['editar'];
+        // options = ['editar'];
         if (!this.isFixedSize()) options.push('tamaño');
         if (!this.isFixedPosition()) options.push('angulo');
         if (this.customizerRules.texts.itemsRule[0].fixedFonts.length > 1)
@@ -1046,14 +1046,14 @@ export class PostCustomizerComponent
     }
     if (this.selectedOption === 'tipografía') {
       const r = this.elementList[this.modifyingElement];
-      if (option === 'editar') {
-        this.onEditText(r);
-        return;
-      }
-      if (option === 'confirmar') {
-        this.exitEditing(this.typographyData);
-        return;
-      }
+      // if (option === 'editar') {
+      //   this.onEditText(r);
+      //   return;
+      // }
+      // if (option === 'confirmar') {
+      //   this.exitEditing(this.typographyData);
+      //   return;
+      // }
     }
     this.selectedElementOption = option;
   }
@@ -1185,21 +1185,25 @@ export class PostCustomizerComponent
 
   // Changes sticker color, only should work on unicolor stickers
   onChangeStickerColor(color: { name: string; fixedValue: string }) {
-    const newSticker = this.elementList[this.modifyingElement].sticker;
-    const re = new RegExp(newSticker.color.fixedValue, 'g');
-    const replacedColor = newSticker.decoded.replace(re, color.fixedValue);
-    const encodedSVG = this.encodeSVG(replacedColor);
-    const img = new Image();
-    img.onload = async () => {
-      this.draw();
-      if (this.elementList[this.modifyingElement].fixPositionOnly)
-        this.drawOutline(this.elementList[this.modifyingElement].position);
-    };
-    img.src = 'data:image/svg+xml;charset=UTF-8,' + encodedSVG;
-    newSticker.image = img;
-    newSticker.decoded = replacedColor;
-    newSticker.color = color;
-    this.elementList[this.modifyingElement].sticker = newSticker;
+    this.elementList.forEach((element) => {
+      if (element.sticker) {
+        const newSticker = element.sticker;
+        const re = new RegExp(newSticker.color.fixedValue, 'g');
+        const replacedColor = newSticker.decoded.replace(re, color.fixedValue);
+        const encodedSVG = this.encodeSVG(replacedColor);
+        const img = new Image();
+        img.onload = async () => {
+          this.draw();
+          if (this.elementList[this.modifyingElement].fixPositionOnly)
+            this.drawOutline(this.elementList[this.modifyingElement].position);
+        };
+        img.src = 'data:image/svg+xml;charset=UTF-8,' + encodedSVG;
+        newSticker.image = img;
+        newSticker.decoded = replacedColor;
+        newSticker.color = color;
+        // this.elementList[this.modifyingElement].sticker = newSticker;
+      }
+    });
   }
 
   // Draws a sticker on the canvas
@@ -2586,6 +2590,7 @@ export class PostCustomizerComponent
 
   // Draws an outline around the selected fixed element
   drawOutline(position: Position, isText?: boolean) {
+    if(this.currentStickersAmount > 1) return;
     this.context.strokeStyle = '#820AE8';
     const additonalWidth = isText ? position.width * 0.1 : 0;
     const additonalHeight = isText ? position.height * 0.1 : 0;

@@ -66,8 +66,6 @@ export class HelperHeaderComponent implements OnInit {
     }
 
     if (this.cart) this.getShoppinCartItems();
-
-    console.log(this.cartAmount, this.cart);
   }
 
   getShoppinCartItems() {
