@@ -351,8 +351,30 @@
 
   <!-- <div class="bottom-separator"></div> -->
 
+  <a
+    [href]="fixedWhatsappLink2"
+    target="_blank"
+    id="invisible-link"
+    *ngIf="
+      step !== 'PAYMENT_INFO' &&
+      saleflowData &&
+      saleflowData._id === '6201d72bdfeceed4d13805bc'
+    "
+  >
+    <app-sticky-button
+      *ngIf="step !== 'PAYMENT_INFO'"
+      [mode]="changeStickyButtonMode()"
+      [text]="changeStickyButtonText()"
+      (click)="submit()"
+    ></app-sticky-button>
+  </a>
+
   <app-sticky-button
-    *ngIf="step !== 'PAYMENT_INFO'"
+    *ngIf="
+      step !== 'PAYMENT_INFO' &&
+      saleflowData &&
+      saleflowData._id !== '6201d72bdfeceed4d13805bc'
+    "
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
     (click)="submit()"
