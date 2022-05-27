@@ -36,6 +36,12 @@
     font-size: 20px;
     color: rgb(161, 161, 161, 0.6);
   }
+
+  &.hide-placeholder {
+    &::placeholder {
+      display: none;
+    }
+  }
 }
 
 //ESTILOS PARA TEXTAREAS
@@ -81,6 +87,7 @@
   font-family: RobotoMedium;
   font-size: 19px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 .selector-option.active {
@@ -124,6 +131,13 @@
 /* Firefox */
 .input {
   -moz-appearance: textfield;
+}
+
+.bottom-separator-disabled {
+  margin-bottom: 31px;
+  background-color: skyblue;
+  width: 100%;
+  height: 0px;
 }
 
 .bottom-separator {

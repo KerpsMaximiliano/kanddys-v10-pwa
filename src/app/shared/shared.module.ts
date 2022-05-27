@@ -86,6 +86,7 @@ import { CartButtonComponent } from './components/cart-button/cart-button.compon
 import { CollaborationsComponent } from './dialogs/collaborations/collaborations.component';
 import { InfoButtonComponent } from './components/info-button/info-button.component';
 import { PackageItemComponent } from './components/package-item/package-item.component';
+import { StatusListComponent } from './dialogs/status-list/status-list.component';
 
 const imports = [
   CommonModule,
@@ -169,6 +170,7 @@ const declarations = [
   CollaborationsComponent,
   InfoButtonComponent,
   PackageItemComponent,
+  StatusListComponent,
 ];
 
 @NgModule({

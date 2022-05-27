@@ -1,103 +1,14 @@
-import { Component, OnInit, Type } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
+import { FormArray, FormControl, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
-import { Observable, Subscription } from 'rxjs';
-
-interface FieldStyles {
-  fieldStyles?: any;
-  containerStyles?: any;
-  topLabelActionStyles?: any;
-  labelStyles?: any;
-  bottomLabelStyles?: any;
-  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
-}
-
-interface FormField {
-  name: string;
-  styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
-  changeCallbackFunction?(...params): any;
-  changeFunctionSubscription?: Subscription;
-  selectionOptions?: Array<string>;
-  enabledOnInit?: 'ENABLED' | 'DISABLED';
-  validators?: Array<any>;
-  description?: string;
-  topLabelAction?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  label: string;
-  bottomLabel?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  placeholder?: string;
-  inputType?: string;
-  showImageBottomLabel?: string;
-  multiple?: boolean;
-}
-
-interface EmbeddedComponentOutput {
-  name: string;
-  callback(params: any): any;
-}
-
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  outputs?: Array<EmbeddedComponentOutput>;
-  containerStyles?: any;
-  afterIndex?: number;
-  beforeIndex?: number;
-}
-
-interface PromiseFunction {
-  type: 'promise';
-  function(params): Promise<any>;
-}
-
-interface ObservableFunction {
-  type: 'observable';
-  function(params): Observable<any>;
-}
-
-type AsyncFunction = PromiseFunction | ObservableFunction;
-
-interface FormStep {
-  fieldsList: Array<FormField>;
-  headerText: string;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?: AsyncFunction;
-  stepProcessingFunction?(...params): any;
-  customScrollToStep?(...params): any;
-  customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  optionalLinksTo?: OptionalLinks;
-  stepResult?: any;
-  justExecuteCustomScrollToStep?: boolean;
-}
-
-interface BottomLeftAction {
-  text: string;
-  execute(params): any;
-}
-
-interface OptionalLinks {
-  styles?: FieldStyles;
-  links: Array<OptionalLink>;
-}
-
-interface OptionalLink {
-  text: string;
-  action(params): any;
-}
+import { ItemsService } from 'src/app/core/services/items.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { FormStep } from 'src/app/core/types/multistep-form';
+import { DecimalPipe } from '@angular/common';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-item-creator',
@@ -105,30 +16,24 @@ interface OptionalLink {
   styleUrls: ['./item-creator.component.scss'],
 })
 export class ItemCreatorComponent implements OnInit {
+  currentUserId: string = null;
+  merchantOwnerId: string = null;
+  currentItemId: string = null;
   scrollableForm = false;
+  defaultImages: (string | ArrayBuffer)[] = [''];
+  files: File[] = [];
   formSteps: FormStep[] = [
     {
       fieldsList: [
         {
           name: 'description',
-          fieldControl: new FormControl('', Validators.required),
-          // changeCallbackFunction: (change, params) => {
-          //   this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
-          //     emitEvent: false,
-          //   });
-
-          //   this.formSteps[0].stepProcessingFunction(params);
-          //   if (change === 'Si') {
-          //     params.scrollToStep(1);
-          //   }
-          // },
+          fieldControl: new FormControl(''),
           label: 'Descripción (Opcional)',
           bottomLabel: {
             text: 'Agrega “Lo Incluido” (opcional)',
             clickable: true,
             callback: (params) => {
               params.scrollToStep(1);
-              console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHH');
             },
           },
           placeholder:
@@ -144,6 +49,7 @@ export class ItemCreatorComponent implements OnInit {
               borderRadius: '10px',
             },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -158,16 +64,58 @@ export class ItemCreatorComponent implements OnInit {
         },
         {
           name: 'price',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl('', [
+            Validators.required,
+            Validators.min(0),
+          ]),
+          onlyAllowPositiveNumbers: true,
           label: 'Precio que te pagarán:',
           inputType: 'number',
+          formattedValue: '',
+          shouldFormatNumber: true,
           placeholder: 'Precio...',
+          changeCallbackFunction: (change, params) => {
+            try {
+              const plainNumber = change
+                .split(',')
+                .join('')
+                .split('.')
+                .join('');
+              const formatted = this.decimalPipe.transform(
+                Number(plainNumber),
+                '1.0-2'
+              );
+
+              if (formatted === '0') {
+                this.formSteps[0].fieldsList[1].placeholder = '';
+              }
+
+              this.formSteps[0].fieldsList[1].formattedValue = '$' + formatted;
+            } catch (error) {
+              console.log(error);
+            }
+          },
           styles: {
             containerStyles: {
               width: '58.011%',
               marginTop: '102px',
+              position: 'relative',
+            },
+            fieldStyles: {
+              backgroundColor: 'transparent',
+              color: 'transparent',
+              zIndex: '50',
+              position: 'absolute',
+              bottom: '0px',
+              left: '0px',
+            },
+            formattedInputStyles: {
+              bottom: '0px',
+              left: '0px',
+              zIndex: '1',
             },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -175,16 +123,55 @@ export class ItemCreatorComponent implements OnInit {
         },
         {
           name: 'collaborations',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: 'Vender más a través de Las Comunidades (opcional):',
           inputType: 'number',
           placeholder: 'Pagarás...',
+          formattedValue: '',
+          shouldFormatNumber: true,
+          changeCallbackFunction: (change, params) => {
+            try {
+              const plainNumber = change
+                .split(',')
+                .join('')
+                .split('.')
+                .join('');
+              const formatted = this.decimalPipe.transform(
+                Number(plainNumber),
+                '1.0-2'
+              );
+
+              if (formatted === '0') {
+                this.formSteps[0].fieldsList[2].placeholder = '';
+              }
+
+              this.formSteps[0].fieldsList[2].formattedValue = '$' + formatted;
+              // this.applicationRef.tick();
+            } catch (error) {
+              console.log(error);
+            }
+          },
           styles: {
             containerStyles: {
+              position: 'relative',
               width: '68.50%',
               marginTop: '101px',
             },
+            fieldStyles: {
+              backgroundColor: 'transparent',
+              color: 'transparent',
+              zIndex: '50',
+              position: 'absolute',
+              bottom: '0px',
+              left: '0px',
+            },
+            formattedInputStyles: {
+              bottom: '0px',
+              left: '0px',
+              zIndex: '1',
+            },
             labelStyles: {
+              fontSize: '19px',
               marginBottom: '17px',
               fontWeight: '300',
             },
@@ -195,6 +182,8 @@ export class ItemCreatorComponent implements OnInit {
         {
           component: ImageInputComponent,
           inputs: {
+            imageField:
+              this.defaultImages.length > 0 ? this.defaultImages : null,
             multiple: true,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
@@ -223,9 +212,15 @@ export class ItemCreatorComponent implements OnInit {
           },
           outputs: [
             {
+              name: 'onFileInputBase64',
+              callback: (result) => {
+                this.defaultImages[result.index] = result.image;
+              },
+            },
+            {
               name: 'onFileInput',
               callback: (result) => {
-                console.log('event emiitedaxsadaq', result);
+                this.files[result.index] = result.image;
               },
             },
           ],
@@ -247,30 +242,60 @@ export class ItemCreatorComponent implements OnInit {
           afterIndex: 2,
         },
       ],
-      // bottomLeftAction: {
-      //   text: 'Ver items facturados',
-      //   execute: () => {
-      //     this.showShoppingCartDialog();
-      //   },
-      // },
-      stepProcessingFunction: (params) => {
-        // this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        // this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
-        // if (params.scrollableForm) {
-        //   setTimeout(() => {
-        //     params.blockScrollBeforeCurrentStep();
-        //     this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        //     this.removeScrollBlockerBefore =
-        //       params.unblockScrollBeforeCurrentStep;
-        //   }, 500);
-        // }
-        // if (params.dataModel.value['1'].writeMessage === 'Si')
-        //   return { ok: true };
-        // else if (params.dataModel.value['1'].writeMessage === 'No') {
-        //   this.storeEmptyMessageAndGoToShipmentDataForm(params);
-        //   return { ok: false };
-        // }
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const values = params.dataModel.value;
+
+            if (
+              this.currentUserId &&
+              this.merchantOwnerId &&
+              this.currentUserId === this.merchantOwnerId
+            ) {
+              await this.itemService.updateItem(
+                {
+                  description: values['1'].description,
+                  pricing: Number(values['1'].price),
+                  images: this.files,
+                  content: values['2'].whatsIncluded,
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                },
+                this.currentItemId
+              );
+            } else {
+              await this.itemService.createPreItem({
+                description: values['1'].description,
+                pricing: Number(values['1'].price),
+                images: this.files,
+                content: values['2'].whatsIncluded,
+                currencies: [],
+                hasExtraPrice: false,
+                purchaseLocations: [],
+              });
+            }
+          } catch (error) {
+            console.log(error);
+          }
+
+          return { ok: true };
+        },
       },
+      linkFooter: {
+        text: 'Mira el preview',
+        execute: (params) => {},
+        styles: {
+          margin: 'auto',
+          cursor: 'pointer',
+          color: '#4773D8',
+          fontSize: '16px',
+          fontFamily: 'RobotoMedium',
+          marginTop: '102px',
+        },
+      },
+      avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
@@ -280,9 +305,7 @@ export class ItemCreatorComponent implements OnInit {
         {
           name: 'whatsIncluded',
           multiple: true,
-          fieldControl: new FormArray([
-            new FormControl('', Validators.required),
-          ]),
+          fieldControl: new FormArray([new FormControl('')]),
           label: 'Adicione lo incluido:',
           inputType: 'text',
           placeholder: 'Escribe...',
@@ -302,12 +325,6 @@ export class ItemCreatorComponent implements OnInit {
           },
         },
       ],
-      // bottomLeftAction: {
-      //   text: 'Ver items facturados',
-      //   execute: () => {
-      //     this.showShoppingCartDialog();
-      //   },
-      // },
       customScrollToStep: (params) => {
         params.scrollToStep(0, false);
       },
@@ -318,7 +335,50 @@ export class ItemCreatorComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private itemService: ItemsService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private decimalPipe: DecimalPipe,
+    private applicationRef: ApplicationRef
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.params.subscribe(async (routeParams) => {
+      const { itemId } = routeParams;
+      this.currentItemId = itemId;
+
+      if (itemId && localStorage.getItem('session-token')) {
+        lockUI();
+
+        const { _id: myUserId } = await this.authService.me();
+        this.currentUserId = myUserId;
+
+        const { pricing, images, content, description, merchant } =
+          await this.itemService.item(itemId);
+
+        if (this.currentUserId === merchant.owner._id) {
+          this.merchantOwnerId = merchant.owner._id;
+
+          this.formSteps[0].fieldsList[0].fieldControl.setValue(description);
+          this.formSteps[0].fieldsList[1].fieldControl.setValue(
+            String(pricing)
+          );
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          const formArray = this.formSteps[1].fieldsList[0]
+            .fieldControl as FormArray;
+          formArray.removeAt(0);
+          content.forEach((item) => {
+            formArray.push(new FormControl(item));
+          });
+          unlockUI();
+        }
+      } else {
+        unlockUI();
+
+        if (itemId) this.router.navigate(['/']);
+      }
+    });
+  }
 }

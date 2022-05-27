@@ -258,7 +258,7 @@ export class HeaderService {
   }
 
   async fetchSaleflow(id: string) {
-    this.saleflow = (await this.saleflowService.saleflow(id)).saleflow;
+    this.saleflow = (await this.saleflowService.saleflow(id))?.saleflow;
     this.storeSaleflow(this.saleflow);
     return this.saleflow;
   }
@@ -547,7 +547,6 @@ export class HeaderService {
       }
 
       if (saleflow.module.post) {
-        console.log('1');
         // if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
         if (saleflow.canBuyMultipleItems)
           this.order.products.forEach((product) => {
@@ -574,7 +573,6 @@ export class HeaderService {
         }
       } else {
         try {
-          console.log('2');
           const { createPreOrder } = await this.orderService.createPreOrder(
             this.order
           );

@@ -46,9 +46,21 @@
                 </div>
             </div> -->
          </ng-container>
-        <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
+        <div class="fullScreenSwiper">
+            <div class="shadowWrapper">
+                <swiper [config]="saleFlowTwoSwiperConfig">
+                <div
+                    *ngFor="let item of itemData.images; let i = index"
+                    (click)="openImageModal(item)"
+                    class="item"
+                    [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+                ></div>
+              </swiper>
+            </div>
+        </div>
         <div class="desc-area">
             <div class="left-area">
+                <p class="price" *ngIf="itemData?.name" style="padding-bottom: 30px;">{{itemData.name}}</p>
                 <span class="value">Vale</span>
                 <label for="Precio producto" class="price">${{ priceLabel | number: "1.0-2" }}</label>
                 <!-- <div class="ptext">
@@ -125,8 +137,8 @@
                 </app-cta-buttons> -->
     
                 <app-cta-buttons
-                    [ctaText]="inCart ? 'En El Carrito De Compras' : 'Al Carrito Para Comprarlo'"
-                    [btnColor]="'#4773D8'"
+                    [ctaText]="inCart ? 'En Mi Carrito' : 'Agregar al Carrito'"
+                    btnColor="#3E782A"
                     [icon]="inCart && env  + '/white-checkmark.svg'"
                     (click)="saveProduct()"
                 >

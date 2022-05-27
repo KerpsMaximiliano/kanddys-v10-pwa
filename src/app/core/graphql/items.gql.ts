@@ -50,7 +50,7 @@ const itemBody = `
   itemExtra {
     _id
   }
-`
+`;
 
 export const items = gql`
   query items($merchantId: ObjectID, $params: ListParams) {
@@ -64,7 +64,7 @@ export const itemsByMerchant = gql`
       _id
       name
       images
-      category{
+      category {
         _id
         name
       }
@@ -90,14 +90,14 @@ export const bestSellersByMerchant = gql`
 
 export const itemExtraByMerchant = gql`
   query itemExtraByMerchant($merchantId: ObjectID!) {
-    itemExtraByMerchant(merchantId: $merchantId) { 
+    itemExtraByMerchant(merchantId: $merchantId) {
       _id
       name
       images
-      categories{
+      categories {
         _id
       }
-     }
+    }
   }
 `;
 
@@ -148,6 +148,7 @@ export const item = gql`
         _id
         name
         owner {
+          _id
           phone
         }
       }
@@ -214,14 +215,14 @@ export const listItemPackage = gql`
 
 export const itemPackage = gql`
   query itemPackage($id: ObjectID!) {
-    itemPackage(id: $id) { 
+    itemPackage(id: $id) {
       _id
       name
       images
       price
       description
-      packageRules{
-        item{
+      packageRules {
+        item {
           _id
         }
         fixedQuantity
@@ -240,9 +241,19 @@ export const createItem = gql`
   }
 `;
 
+export const createPreItem = gql`
+  mutation createPreItem($input: ItemInput!) {
+    createPreItem(input: $input) {
+      _id
+    }
+  }
+`;
+
 export const createItemPackage = gql`
   mutation createItemPackage($input: ItemPackageInput!) {
-    createItemPackage(input: $input) { _id }
+    createItemPackage(input: $input) {
+      _id
+    }
   }
 `;
 
@@ -256,7 +267,7 @@ export const addItem = gql`
 
 export const updateItem = gql`
   mutation updateItem($id: ObjectID!, $input: ItemInput!) {
-    updateItem(id: $id, input: $input) { 
+    updateItem(id: $id, input: $input) {
       _id
       status
     }
@@ -264,8 +275,8 @@ export const updateItem = gql`
 `;
 
 export const itemCategoriesList = gql`
-  query itemCategoriesList ($merchantId: ObjectID, $params: PaginationInput) {
-    itemCategoriesList (merchantId: $merchantId,params: $params) {
+  query itemCategoriesList($merchantId: ObjectID, $params: PaginationInput) {
+    itemCategoriesList(merchantId: $merchantId, params: $params) {
       _id
       name
       description
@@ -275,8 +286,8 @@ export const itemCategoriesList = gql`
 
 export const createItemCategory = gql`
   mutation createItemCategory($input: ItemCategoryInput!) {
-    createItemCategory(input: $input){
-      merchant{
+    createItemCategory(input: $input) {
+      merchant {
         _id
       }
       name
@@ -290,11 +301,9 @@ export const deleteItemCategory = gql`
   }
 `;
 
-
-
 export const itemextra = gql`
-  query itemextra ($id: ObjectID!) {
-    itemextra (id: $id) { 
+  query itemextra($id: ObjectID!) {
+    itemextra(id: $id) {
       _id
       name
       images
@@ -311,8 +320,8 @@ export const itemExtras = gql`
 `;
 
 export const itemCategoryHeadlineByMerchant = gql`
-  query itemCategoryHeadlineByMerchant ($merchant: ObjectID!) {
-    itemCategoryHeadlineByMerchant (merchant: $merchant) {
+  query itemCategoryHeadlineByMerchant($merchant: ObjectID!) {
+    itemCategoryHeadlineByMerchant(merchant: $merchant) {
       _id
       headline
       itemsCategories

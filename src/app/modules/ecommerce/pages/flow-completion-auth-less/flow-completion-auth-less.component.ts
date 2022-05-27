@@ -74,6 +74,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   stepButtonText: string;
   stepButtonMode: string;
   whatsappLink: string = '';
+  fixedWhatsappLink: string = '';
   isANewUser: boolean = false;
   pastStep: string = '';
   env: string = environment.assetsUrl;
@@ -82,6 +83,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
+  shouldAllowPaymentSkipping: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -166,7 +168,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
       }
-      if(data.order.items[0].saleflow.module.paymentMethod?.paymentModule?._id)
+      if (data.order.items[0].saleflow.module.paymentMethod?.paymentModule?._id)
         await this.getExchangeData(
           data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
         );
@@ -207,12 +209,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
 
-      await this.getOrderData(orderId, true);
+      const { orderStatus } = await this.order.getOrderStatus(orderId);
 
       if (orderId) {
         this.orderId = orderId;
 
-        const { orderStatus } = await this.order.getOrderStatus(orderId);
+        await this.getOrderData(orderId, orderStatus === 'draft');
+
+        if (orderStatus === 'completed') {
+          this.redirect();
+        }
+
         if (orderStatus !== 'draft') {
           this.phoneNumber.setValue(this.orderData.user.phone);
           this.name.setValue(this.orderData.user.name);
@@ -232,13 +239,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         this.header.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
-      if(saleflow?.module?.paymentMethod?.paymentModule?._id) {
+
+      if (saleflow._id === '61b8df151e8962cdd6f30feb')
+        this.shouldAllowPaymentSkipping = true;
+
+      if (saleflow?.module?.paymentMethod?.paymentModule?._id) {
         try {
           await this.getExchangeData(
             saleflow.module.paymentMethod.paymentModule._id
           );
           this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
-  
+
           // if (currentSession) {
           //   await this.getExchangeData(
           //     saleflow.module.paymentMethod.paymentModule._id
@@ -339,6 +350,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   async submit() {
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
+
     try {
       switch (this.step) {
         case 'PHONE_CHECK_AND_SHOW_BANKS': {
@@ -360,6 +373,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, foundUser._id);
+                this.header.deleteSaleflowOrder(this.saleflowData._id);
+                this.header.resetIsComplete();
                 this.isAPreOrder = false;
               }
 
@@ -374,23 +389,33 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               unlockUI();
             }
           }
-          if(this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+          if (this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
             this.pastStep = this.step;
             this.step = 'PAYMENT_INFO';
           } else {
-            const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
             this.whatsappLink = `https://wa.me/${
               this.merchantInfo.owner.phone
             }?text=Hola%20${
               this.merchantInfo.name
-            },%20%20acabo%20de%20hacer%20una%20orden%20.${
+            },%20%20acabo%20de%20hacer%20una%20orden.${
               String(this.userData.name) !== 'null' && this.userData.name
                 ? '%20Mi%20nombre%20es:%20' + this.userData.name
                 : ''
             }.%20Mas%20info%20aquí%20${fullLink}`;
-            window.open(this.whatsappLink, "_blank");
+            window.open(this.whatsappLink, '_blank');
             this.redirect();
           }
+
+          this.fixedWhatsappLink = `https://wa.me/${
+            this.merchantInfo.owner.phone
+          }?text=Hola%20${
+            this.merchantInfo.name
+          },%20%20acabo%20de%20hacer%20una%20orden.${
+            String(this.userData.name) !== 'null' && this.userData.name
+              ? '%20Mi%20nombre%20es:%20' + this.userData.name
+              : ''
+          }.%20Mas%20info%20aquí%20${fullLink}`;
+
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
@@ -415,6 +440,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (registeredNewUser && orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, registeredNewUser._id);
+                this.header.deleteSaleflowOrder(this.saleflowData._id);
+                this.header.resetIsComplete();
                 this.isAPreOrder = false;
               }
 
@@ -546,9 +573,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   // Case 7
-  onFileInput(file: File | {image: File, index: number}) {
-    if(!('index' in file))
-      this.image = file;
+  onFileInput(file: File | { image: File; index: number }) {
+    if (!('index' in file)) this.image = file;
   }
 
   // Case 7
@@ -598,8 +624,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         'bank-transfer',
         this.orderData.id
       );
-      this.header.deleteSaleflowOrder(this.saleflowData._id);
-      this.header.resetIsComplete();
+      // this.header.deleteSaleflowOrder(this.saleflowData._id);
+      // this.header.resetIsComplete();
       this.header.storedDeliveryLocation = null;
 
       this.orderFinished();
@@ -615,16 +641,16 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           this.phoneNumber.status === 'INVALID'
             ? 'ESCRIBE COMO TE CONTACTAMOS'
-            : 'CONFIRMA TU PAGO');
+            : 'CONTINUAR LA ORDEN');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
         return (this.stepButtonText =
           this.name.status === 'INVALID'
             ? 'ESCRIBE QUIEN ERES'
-            : 'CONFIRMA TU PAGO');
+            : 'CONTINUAR LA ORDEN');
 
       case 'PAYMENT_INFO':
         return (this.stepButtonText =
-          this.paymentCode.length !== 4 || !this.image || !this.selectedBank
+          !this.image || !this.selectedBank
             ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
             : 'Manda tu orden a ' + this.merchantInfo.name.toUpperCase());
     }
@@ -639,11 +665,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonMode =
           this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
       case 'PAYMENT_INFO':
-        return this.paymentCode.length !== 4 ||
-          !this.image ||
-          !this.selectedBank
-          ? 'disabled-fixed'
-          : 'fixed';
+        return !this.image || !this.selectedBank ? 'disabled-fixed' : 'fixed';
     }
   }
 

@@ -21,7 +21,7 @@ export class ShowItemsComponent implements OnInit {
   @Input() products: any[] = [];
   @Input() orderFinished: boolean;
   @Input() headerButton: string;
-  @Input() footerButton: string = 'Continuar con la orden';
+  @Input() footerButton: string = 'CONTINUAR CON LA ORDEN';
   @Input() public headerCallback: () => void;
   @Input() public footerCallback: () => void;
   price: number = 0;
@@ -53,10 +53,10 @@ export class ShowItemsComponent implements OnInit {
   deleteItem(i: number) {
     let deletedID = this.products[i]._id;
     this.header.removeOrderProduct(
-      this.header.saleflow._id,
+      this.header.saleflow?._id || this.header.getSaleflow()?._id,
       this.products[i]._id
     );
-    this.header.removeItem(this.header.saleflow._id, this.products[i]._id);
+    this.header.removeItem(this.header.saleflow?._id || this.header.getSaleflow()?._id, this.products[i]._id);
     const index = this.products.findIndex(
       (product) => product._id === this.products[i]._id
     );

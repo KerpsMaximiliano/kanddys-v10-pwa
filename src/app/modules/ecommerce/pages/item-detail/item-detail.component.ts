@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Item } from '../../../../core/models/item';
@@ -13,13 +13,17 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { notification } from 'onsenui';
+import { Subscription } from 'rxjs';
+import { SwiperOptions } from 'swiper';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss'],
 })
-export class ItemDetailComponent implements OnInit {
+export class ItemDetailComponent implements OnInit, OnDestroy {
   constructor(
     public items: ItemsService,
     private route: ActivatedRoute,
@@ -29,14 +33,7 @@ export class ItemDetailComponent implements OnInit {
     private location: Location,
     private appService: AppService,
     private saleflow: SaleFlowService
-  ) {
-    const sub = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item'))
-      .subscribe((e) => {
-        this.itemInCart();
-        sub.unsubscribe();
-      });
-  }
+  ) {}
   boxTitle: string = '';
   boxText: string = '';
   shopcart: boolean = true;
@@ -46,7 +43,7 @@ export class ItemDetailComponent implements OnInit {
   preamount: string = '20';
   priceLabel : number = 0.00;
   itemData: Item;
-  saleflowId: string;
+  saleflowData: SaleFlow;
   itemCartCTA: string = 'Al Carrito Para Comprarlo';
   inCart: boolean;
   whatsappLink: string = '';
@@ -54,23 +51,26 @@ export class ItemDetailComponent implements OnInit {
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
+  deleteEvent: Subscription;
+  saleFlowTwoSwiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 5,
+  };
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      this.saleflowId = params.saleflow;
-      if(!this.header.getSaleflow() && !this.header.saleflow) await this.header.fetchSaleflow(params.saleflow);
-      if(this.header.getSaleflow()._id !== params.saleflow) await this.header.fetchSaleflow(params.saleflow);
-      if (params.id) {
-        await this.items.item(params.id).then((data) => {
-          this.itemData = data;
-          this.boxTitle = this.itemData.merchant.name;
-          this.boxText = this.itemData.description || this.itemData.name;
-          this.priceLabel = this.itemData.pricing;
-          this.itemInCart();
-        });
-      }
-      this.fullLink = `${this.saleflowId 
-        ? `${environment.uri}/ecommerce/item-detail/${this.saleflowId}/${params.id}?viewtype=community`
+      this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
+      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
+      this.itemData = await this.items.item(params.id);
+      if(!this.itemData) return this.back();
+      this.boxTitle = this.itemData.merchant?.name;
+      this.boxText = this.itemData.description || this.itemData.name;
+      this.priceLabel = this.itemData.pricing;
+      if(this.itemData.images.length) this.openImageModal(this.itemData.images[0]);
+      this.itemInCart();
+      this.fullLink = `${this.saleflowData._id 
+        ? `${environment.uri}/ecommerce/item-detail/${this.saleflowData._id}/${params.id}?viewtype=community`
         : `${environment.uri}/ecommerce/item-detail/${params.id}?viewtype=community`}`;
       this.generateWhatsappLink(this.itemData.merchant.owner.phone, this.itemData.merchant.name, this.fullLink);
       this.showCartCallBack = () => this.showItems();
@@ -82,10 +82,20 @@ export class ItemDetailComponent implements OnInit {
         else if( this.viewtype === 'preview') this.viewtype = 'preview'
         else if (this.viewtype === 'community') this.viewtype = 'community'    
     });
+
+    this.deleteEvent = this.appService.events
+        .pipe(filter((e) => e.type === 'deleted-item'))
+        .subscribe((e) => {
+          this.itemInCart();
+        });
+  }
+
+  ngOnDestroy() {
+    this.deleteEvent.unsubscribe();
   }
 
   itemInCart() {
-    const productData = this.header.getItems(this.saleflowId);
+    const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
     if (productData && productData.length > 0) {
       this.inCart = productData.some((item) => item._id === this.itemData._id);
@@ -97,13 +107,13 @@ export class ItemDetailComponent implements OnInit {
       type: 'flat-action-sheet',
       props: { 
         headerButton: 'Ver mas productos',
-        headerCallback: () => this.router.navigate([`ecommerce/megaphone-v3/${this.header.saleflow?._id}`]),
+        headerCallback: () => this.back(),
         footerCallback: () => {
-          this.saleflow.saleflow(this.saleflowId, true).then(data =>{
+          this.saleflow.saleflow(this.saleflowData._id, true).then(data =>{
             for (let i = 0; i < data.saleflow.items.length; i++) {
               if (data.saleflow.items[i].item._id === this.itemData._id) {
                 if (data.saleflow.items[i].customizer) {
-                  this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id}/${this.itemData._id}`])
+                  this.router.navigate([`ecommerce/provider-store/${this.saleflowData._id}/${this.itemData._id}`])
                 }else{
                   this.router.navigate(['/ecommerce/create-giftcard']);
                 }
@@ -111,6 +121,17 @@ export class ItemDetailComponent implements OnInit {
             }
           })
         },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -131,13 +152,14 @@ export class ItemDetailComponent implements OnInit {
   }
 
   saveProduct() {
-    this.header.storeOrderProduct(this.saleflowId, {
+    this.header.storeOrderProduct(this.saleflowData._id, {
       item: this.itemData._id,
       amount: 1,
-      saleflow: this.saleflowId,
+      saleflow: this.saleflowData._id,
     });
-    this.header.storeItem(this.saleflowId, this.itemData);
+    this.header.storeItem(this.saleflowData._id, this.itemData);
     this.itemInCart();
+    this.showItems();
   }
 
   toggleActivateItem() {
@@ -160,9 +182,8 @@ export class ItemDetailComponent implements OnInit {
       }`;
   }
 
-  back(){
-    this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowId]);
-    //this.location.back();
+  back() {
+    this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
   }
 
   async copyLink() {

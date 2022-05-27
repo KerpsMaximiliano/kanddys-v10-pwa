@@ -180,7 +180,7 @@ const routes: Routes = [
     component: MerchantDashboardv2Component,
   },
   {
-    path: 'container-form',
+    path: 'container-form/:merchantId/:tagId',
     component: ContainerFormComponent,
   },
   {
@@ -209,6 +209,10 @@ const routes: Routes = [
   },
   {
     path: 'item-creator',
+    component: ItemCreatorComponent,
+  },
+  {
+    path: 'item-creator/:itemId',
     component: ItemCreatorComponent,
   },
 ];

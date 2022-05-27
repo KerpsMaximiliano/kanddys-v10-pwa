@@ -6,6 +6,7 @@ import {
   items,
   itemCategoriesList,
   createItem,
+  createPreItem,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -32,12 +33,13 @@ export class ItemsService {
   constructor(private graphql: GraphQLWrapper) {}
 
   async item(id: string): Promise<Item> {
-    const { item: result } = await this.graphql.query({
+    const result = await this.graphql.query({
       query: item,
       variables: { id },
       fetchPolicy: 'no-cache',
     });
-    return new Item(result);
+    if(!result) return;
+    return result.item;
   }
 
   async itemextra(id: string) {
@@ -226,6 +228,19 @@ export class ItemsService {
     console.log(result);
     return result;
   }
+
+  async createPreItem(input: any) {
+    const result = await this.graphql.mutate({
+      mutation: createPreItem,
+      variables: { input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result);
+    return result;
+  }
+
 
   async addItem(input: any) {
     console.log(input);

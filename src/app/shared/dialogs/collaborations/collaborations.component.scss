@@ -2,16 +2,18 @@
   width: 89.25%;
   border-radius: 10px;
   height: 90vh;
+  max-height: 728px;
   margin: auto;
   margin-top: 5vh;
   padding: 0px 30px;
-  padding-top: 69px;
+  padding-top: 59.7px;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   background-color: #fff;
 
   h2 {
+    margin: 0px;
     font-family: "NeueMontreal";
     font-size: 23px;
     font-weight: bold;

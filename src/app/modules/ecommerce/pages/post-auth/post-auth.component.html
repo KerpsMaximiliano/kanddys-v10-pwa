@@ -22,12 +22,12 @@
         
         <ng-container *ngIf="condition1">
             <p class="sub-button">Después de tu confirmación recibirás Link y un qrCode para compartirlo.</p>
+
+            <a (click)="redirect()" class="another">Otras maneras de confirmar que no eres Spam ></a>
         </ng-container>
 
         <ng-container *ngIf="condition2">
             <p class="sub-button">Después de tu confirmación recibirás el link donde ingresarás la clave de acceso asignada por el creador.</p>
-
-            <a (click)="redirect()" class="another">Otras maneras de confirmar que no eres Spam ></a>
         </ng-container>
     </div>
 

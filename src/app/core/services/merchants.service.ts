@@ -27,21 +27,26 @@ export class MerchantsService {
   constructor(private graphql: GraphQLWrapper) {}
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
-    if (isHot) {
-      const { merchant: result } = await this.graphql.query({
-        query: hotMerchant,
-        variables: { id },
-        fetchPolicy: 'no-cache',
-      });
-      return new Merchant(result);
-    } else {
-      const { merchant: result } = await this.graphql.query({
-        query: merchant,
-        variables: { id },
-        fetchPolicy: 'no-cache',
-      });
-
-      return new Merchant(result);
+    try {
+      if (isHot) {
+        const merchantResult = await this.graphql.query({
+          query: hotMerchant,
+          variables: { id },
+          fetchPolicy: 'no-cache',
+        });
+        if(!merchantResult) return;
+        return new Merchant(merchantResult.merchant);
+      } else {
+        const merchantResult = await this.graphql.query({
+          query: merchant,
+          variables: { id },
+          fetchPolicy: 'no-cache',
+        });
+        if(!merchantResult) return;
+        return new Merchant(merchantResult.merchant);
+      }
+    } catch (error) {
+      return error;
     }
   }
 

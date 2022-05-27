@@ -57,6 +57,14 @@ export const removeTagsInOrder = gql`
     }
 `
 
+export const addTagContainersPublic = gql`
+    mutation addTagContainersPublic($input: TagContainersInput!, $tagId: ObjectID!) {
+        addTagContainersPublic(input: $input, tagId: $tagId) {
+            phone
+        }
+    }
+`
+
 export const tag = gql`
  query tag($tagId: ObjectID!){
     tag(tagId: $tagId){

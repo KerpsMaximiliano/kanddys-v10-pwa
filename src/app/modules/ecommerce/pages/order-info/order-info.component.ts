@@ -20,6 +20,7 @@ import { ItemOrder, ItemSubOrder } from 'src/app/core/models/order';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
+import { StatusListComponent } from 'src/app/shared/dialogs/status-list/status-list.component';
 moment.locale('es');
 
 @Component({
@@ -61,6 +62,26 @@ export class OrderInfoComponent implements OnInit {
   linkId: string;
   price: number = 0;
   status: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
+  statusList: {
+    status:
+      | 'cancelled'
+      | 'started'
+      | 'verifying'
+      | 'in progress'
+      | 'to confirm'
+      | 'completed'
+      | 'error'
+      | 'draft';
+    name:
+      | 'cancelado'
+      | 'empezado'
+      | 'verificando'
+      | 'verificado'
+      | 'en revisión'
+      | 'por confirmar'
+      | 'completado'
+      | 'error';
+  }[] = [];
   paramValue: string;
   paramType: string;
   image: string[];
@@ -130,7 +151,7 @@ export class OrderInfoComponent implements OnInit {
   showHeader: boolean;
   date: any;
   fotodavitte: boolean = false;
-  customizerDetails: {name: string; value: string}[] = [];
+  customizerDetails: { name: string; value: string }[] = [];
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -158,11 +179,52 @@ export class OrderInfoComponent implements OnInit {
             .me()
             .then(
               (user) =>
-                (this.showNotificationButton = user?._id === data.order.user._id)
+                (this.showNotificationButton =
+                  user?._id === data.order.user._id)
             );
-          if (data.order.orderStatus === 'in progress') this.status = 'en revisión';
-          else if (data.order.orderStatus === 'to confirm') this.status = 'por confirmar';
-          else if (data.order.orderStatus === 'completed') this.status = 'completado';
+          if (data.order.orderStatus === 'in progress')
+            this.status = 'en revisión';
+          else if (data.order.orderStatus === 'to confirm')
+            this.status = 'por confirmar';
+          else if (data.order.orderStatus === 'completed')
+            this.status = 'completado';
+          // data.order.ocr.status.forEach((status) => {
+          let name:
+            | 'cancelado'
+            | 'empezado'
+            | 'verificando'
+            | 'verificado'
+            | 'en revisión'
+            | 'por confirmar'
+            | 'completado'
+            | 'error';
+          switch (data.order.orderStatus) {
+            case 'cancelled':
+              name = 'cancelado';
+              break;
+            case 'started':
+              name = 'empezado';
+              break;
+            case 'verifying':
+              name = 'verificando';
+              break;
+            case 'in progress':
+              name = 'en revisión';
+              break;
+            case 'to confirm':
+              name = 'por confirmar';
+              break;
+            case 'completed':
+              name = 'completado';
+              break;
+            default:
+              name = 'error';
+          }
+          this.statusList.push({
+            status: data.order.orderStatus,
+            name,
+          });
+          // })
           const totalPrice = data.order.subtotals.reduce(
             (a, b) => a + b.amount,
             0
@@ -172,8 +234,8 @@ export class OrderInfoComponent implements OnInit {
             : totalPrice;
           let today = moment();
           let daysAgo = today.diff(data.order.createdAt, 'days');
-          let timeAgo = "Hoy";
-          if (daysAgo > 0) timeAgo = "Hace "+daysAgo+ " dias";
+          let timeAgo = 'Hoy';
+          if (daysAgo > 0) timeAgo = 'Hace ' + daysAgo + ' dias';
           if (data.order.ocr) {
             this.tabsOptions.push('Pago');
             this.pagoView = true;
@@ -187,12 +249,15 @@ export class OrderInfoComponent implements OnInit {
                 imageSize: 'small',
                 title: '$' + this.price.toLocaleString('en-US'),
                 // subtitle: 'Verificado por '+'AliciaID',
-                description: 'Ultimos 4 digitos '+data.order.ocr.transactionCode.toUpperCase(),
+                description: data.order.ocr.transactionCode
+                  ? 'Ultimos 4 digitos ' +
+                    data.order.ocr.transactionCode.toUpperCase()
+                  : '',
                 description2: timeAgo,
                 status: this.status,
-                // statusCallback: () => this.openStatusDialog(),
-              }
-            ]
+                statusCallback: () => this.openStatusDialog(),
+              },
+            ];
           } else this.comprado = true;
           this.tabsOptions.push('Comprado');
           if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
@@ -210,13 +275,15 @@ export class OrderInfoComponent implements OnInit {
             this.titleTab = 'Horario de la sesión';
           }
           if (data.order.items[0].deliveryLocation) {
-            if(data.order.items[0].saleflow.merchant._id === '616a13a527bcf7b8ba3ac312'){
+            if (
+              data.order.items[0].saleflow.merchant._id ===
+              '616a13a527bcf7b8ba3ac312'
+            ) {
               this.tabsOptions.push('Lugar de la sesión');
               this.titleTab = 'Lugar de la sesión';
               this.fotodavitte = true;
-            } else
-              this.tabsOptions.push('Entrega');
-              this.titleTab = 'Entrega';
+            } else this.tabsOptions.push('Entrega');
+            this.titleTab = 'Entrega';
           }
           this.phone = data.order.user.phone;
           this.headerService.orderId = data.order._id;
@@ -325,27 +392,67 @@ export class OrderInfoComponent implements OnInit {
               .getCustomizerValue(data.order.items[0].customizer._id)
               .then((value) => {
                 this.customizer = value;
-                const printType = data.order.items[0].item.params[0].values.find((value) => value._id === data.order.items[0].params[0].paramValue)?.name;
-                if(printType) this.customizerDetails.push({name: 'Tipo de impresión', value: printType});
+                const printType =
+                  data.order.items[0].item.params[0].values.find(
+                    (value) =>
+                      value._id === data.order.items[0].params[0].paramValue
+                  )?.name;
+                if (printType)
+                  this.customizerDetails.push({
+                    name: 'Tipo de impresión',
+                    value: printType,
+                  });
 
-                const selectedQuality = data.order.items[0].item.params[1].values.find((value) => value._id === data.order.items[0].params[1].paramValue)?.name;
-                if(selectedQuality) this.customizerDetails.push({name: 'Calidad de servilleta', value: selectedQuality});
+                const selectedQuality =
+                  data.order.items[0].item.params[1].values.find(
+                    (value) =>
+                      value._id === data.order.items[0].params[1].paramValue
+                  )?.name;
+                if (selectedQuality)
+                  this.customizerDetails.push({
+                    name: 'Calidad de servilleta',
+                    value: selectedQuality,
+                  });
 
                 const backgroundColor = value.backgroundColor.color.name;
-                if(backgroundColor) this.customizerDetails.push({name: 'Color', value: backgroundColor});
+                if (backgroundColor)
+                  this.customizerDetails.push({
+                    name: 'Color',
+                    value: backgroundColor,
+                  });
 
-                let selectedTypography = value.texts.length > 0 && value.texts[0].font;
-                switch(selectedTypography) {
-                  case 'Dorsa': selectedTypography = 'Empire'; break;
-                  case 'Commercial-Script': selectedTypography = 'Classic'; break;
+                let selectedTypography =
+                  value.texts.length > 0 && value.texts[0].font;
+                switch (selectedTypography) {
+                  case 'Dorsa':
+                    selectedTypography = 'Empire';
+                    break;
+                  case 'Commercial-Script':
+                    selectedTypography = 'Classic';
+                    break;
                 }
-                if(selectedTypography) this.customizerDetails.push({name: 'Nombre de tipografía', value: selectedTypography});
+                if (selectedTypography)
+                  this.customizerDetails.push({
+                    name: 'Nombre de tipografía',
+                    value: selectedTypography,
+                  });
 
-                const typographyColor = value.texts.length && value.texts[0].color.name;
-                if(typographyColor) this.customizerDetails.push({ name: 'Color de tipografía', value: typographyColor});
+                const typographyColor =
+                  value.texts.length && value.texts[0].color.name;
+                if (typographyColor)
+                  this.customizerDetails.push({
+                    name: 'Color de tipografía',
+                    value: typographyColor,
+                  });
 
-                const stickerColor = value.stickers.length && value.stickers[0].svgOptions.color.name;
-                if(stickerColor) this.customizerDetails.push({ name: 'Color de sticker', value: stickerColor});
+                const stickerColor =
+                  value.stickers.length &&
+                  value.stickers[0].svgOptions.color.name;
+                if (stickerColor)
+                  this.customizerDetails.push({
+                    name: 'Color de sticker',
+                    value: stickerColor,
+                  });
 
                 this.items[0].item.images[0] = value.preview;
                 this.dateId = this.formatID(data.order.dateId);
@@ -375,7 +482,14 @@ export class OrderInfoComponent implements OnInit {
   }
 
   openStatusDialog() {
-    //
+    this.dialog.open(StatusListComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        statusList: this.statusList,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   formatID(dateId: string) {

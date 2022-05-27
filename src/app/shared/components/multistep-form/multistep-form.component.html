@@ -1,14 +1,26 @@
 <div class="form-wrapper">
   <app-helper-header
-    [middleText]="steps[currentStep].headerText"
+    [middleText]="
+      !steps[currentStep].headerTextSide ||
+      steps[currentStep].headerTextSide === 'CENTER'
+        ? steps[currentStep].headerText
+        : null
+    "
     [searchAble]="false"
     bgcolor="#ffffff"
     [basic]="false"
     position="fixed"
+    [leftIconText]="
+      steps[currentStep].headerTextSide === 'LEFT'
+        ? steps[currentStep].headerText
+        : null
+    "
     [empty]="!shouldScrollBackwards"
     [middleTextFontFamily]="'SfProRegular'"
     [middleTextFontSize]="'17px'"
     middleTextColor="#7b7b7b"
+    [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
+    [cartCallback]="steps[currentStep].shoppingCartCallback"
     [shadow]="false"
     (onClose)="
       currentStep > 0 &&
@@ -110,11 +122,29 @@
                 {{ currentField.label }}
               </label>
 
+              <div
+                class="input"
+                *ngIf="currentField.shouldFormatNumber"
+                [ngStyle]="{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }"
+              >
+                {{ currentField.formattedValue }}
+              </div>
+
               <input
                 [id]="currentField.name"
                 [name]="currentField.name"
                 [formControlName]="currentField.name"
                 [type]="currentField.inputType || 'text'"
+                [min]="
+                  currentField.inputType === 'number' &&
+                  currentField.onlyAllowPositiveNumbers
+                    ? 0
+                    : null
+                "
                 [placeholder]="currentField.placeholder"
                 [ngClass]="
                   currentField.styles.customClassName
@@ -465,6 +495,14 @@
           {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
+        <span
+          *ngIf="currentStepObject['linkFooter']"
+          (click)="currentStepObject['linkFooter'].execute(stepFunctionParams)"
+          [ngStyle]="currentStepObject['linkFooter'].styles"
+        >
+          {{ currentStepObject["linkFooter"].text }}
+        </span>
+
         <div class="steps" *ngIf="showStepNumbers">
           <img
             src="{{ env }}/arrow-down.svg"
@@ -477,7 +515,12 @@
     </div>
 
     <div
-      class="bottom-separator"
+      [ngClass]="{
+        'bottom-separator':
+          dataModel.get(currentStepString).status !== 'INVALID',
+        'bottom-separator-disabled':
+          dataModel.get(currentStepString).status === 'INVALID'
+      }"
       *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
       "
@@ -497,7 +540,7 @@
           : 'disabled-fixed'
       "
       (click)="
-        !steps[currentStepIndex]
+        !steps[currentStepIndex].justExecuteCustomScrollToStep
           ? executeStepDataProcessing()
           : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
       "

@@ -104,28 +104,21 @@ export class CategoryItemsComponent implements OnInit {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData = this.header.getItems(this.saleflowData._id);
-        if (productData.length > 0) {
-          for (let i = 0; i < productData.length; i++) {
-            for (let j = 0; j < this.items.length; j++) {
-              if (productData[i]._id === this.items[j]._id)
-                this.items[j].isSelected = true;
-              else this.items[j].isSelected = false;
-            }
-          }
-        } else {
-          for (let i = 0; i < this.items.length; i++) {
-            this.items[i].isSelected = false;
-          }
-        }
+        let productData: Item[] = this.header.getItems(this.saleflowData._id);
+        const selectedItems =
+          productData?.length
+            ? productData.map((item) => item._id)
+            : [];
+        this.items.forEach((item) => {
+          if(!item.customizerId) item.isSelected = selectedItems.includes(item._id);
+        })
         this.canOpenCart = this.items.some((item) => item.isSelected);
       });
     this.header.resetIsComplete();
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
-      this.header.saleflow = this.saleflowData;
+      this.saleflowData = await this.header.fetchSaleflow(params.id);
       this.route.queryParams.subscribe(async (queries) => {
         if(queries.edit) {
           const user = await this.authService.me();

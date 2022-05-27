@@ -119,11 +119,21 @@
 
 /*icon-image*/
 .icon-hlprhdr {
-  width: 6px;
+  width: 127px;
   height: 12.5px;
   margin-left: 25px;
   color: #27a2fc;
   cursor: pointer;
+
+  &.with-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .text {
+      margin-left: 12.5px;
+    }
+  }
 }
 
 .infoWallet {

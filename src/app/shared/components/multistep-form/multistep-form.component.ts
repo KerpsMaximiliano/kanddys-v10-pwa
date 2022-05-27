@@ -13,100 +13,7 @@ import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
-
-interface FieldStyles {
-  fieldStyles?: any;
-  containerStyles?: any;
-  topLabelActionStyles?: any;
-  labelStyles?: any;
-  bottomLabelStyles?: any;
-  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
-}
-
-interface FormField {
-  name: string;
-  styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
-  enabledOnInit?: 'ENABLED' | 'DISABLED';
-  changeCallbackFunction?(...params): any;
-  changeFunctionSubscription?: Subscription;
-  selectionOptions?: Array<string>;
-  validators?: Array<any>;
-  description?: string;
-  topLabelAction?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any | Promise<any>;
-  };
-  label: string;
-  bottomLabel?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  placeholder?: string;
-  inputType?: string;
-  showImageBottomLabel?: string;
-  multiple?: boolean;
-}
-
-interface EmbeddedComponentOutput {
-  name: string;
-  callback(params: any): any;
-}
-
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  outputs?: Array<EmbeddedComponentOutput>;
-  containerStyles?: any;
-  afterIndex?: number;
-  beforeIndex?: number;
-}
-
-interface PromiseFunction {
-  type: 'promise';
-  function(params): Promise<any>;
-}
-
-interface ObservableFunction {
-  type: 'observable';
-  function(params): Observable<any>;
-}
-
-type AsyncFunction = PromiseFunction | ObservableFunction;
-
-interface FormStep {
-  fieldsList: Array<FormField>;
-  headerText: string;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?: AsyncFunction;
-  stepProcessingFunction?(...params): any;
-  customScrollToStep?(...params): any;
-  customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  optionalLinksTo?: OptionalLinks;
-  stepResult?: any;
-  justExecuteCustomScrollToStep?: boolean;
-}
-
-interface BottomLeftAction {
-  text: string;
-  execute(params): any;
-}
-
-interface OptionalLinks {
-  styles?: FieldStyles;
-  links: Array<OptionalLink>;
-}
-
-interface OptionalLink {
-  text: string;
-  action(params): any;
-}
+import { FormStep, FormField, AsyncFunction  } from 'src/app/core/types/multistep-form';
 
 @Component({
   selector: 'app-multistep-form',
@@ -677,18 +584,20 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     } else {
       asyncFunction.function(stepFunctionParams).then((result) => {
         this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-        if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          !('customScrollToStep' in this.steps[this.currentStep])
-        )
-          this.scrollToStep();
-        else if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          'customScrollToStep' in this.steps[this.currentStep]
-        )
-          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
       });
     }
   }
