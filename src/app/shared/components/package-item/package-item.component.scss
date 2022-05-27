@@ -59,7 +59,9 @@
                 white-space: break-spaces;
             }
         }//Fin de plan details
-
+        &.click-able{
+            cursor: pointer;
+        }
     }//Fin de body
     
 }

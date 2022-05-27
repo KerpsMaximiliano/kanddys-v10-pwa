@@ -13,6 +13,7 @@ export class PackageItemComponent implements OnInit {
         price: '', //Precio del paquete
         content: ['', ''] //contenido del paquete
     };
+    @Input() clickAble: boolean = false;
 
     @Output() action = new EventEmitter()
 

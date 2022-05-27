@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="body" (click)="actionator($event)">
+    <div class="body" (click)="actionator($event)" [ngClass]="{'body click-able': clickAble == true}">
 
         <div class="top">
             <div class="wrapper">
