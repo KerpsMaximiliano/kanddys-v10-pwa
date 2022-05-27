@@ -83,7 +83,7 @@
     </ng-container> -->
   </div>
   <!-- <div *ngIf="itemsByCategory.length > 0" [ngStyle]="{backgroundColor: !hasCustomizer && '#ffffff'}"> -->
-  <div class="content" *ngIf="itemsByCategory.length > 0">
+  <div class="content" *ngIf="itemsByCategory.length > 1">
     <div
       *ngFor="let item of itemsByCategory; let i = index"
       [ngStyle]="{ paddingBottom: '67px' }"
@@ -138,6 +138,42 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="content" *ngIf="itemsByCategory.length === 1">
+    <div
+      class="header-wrapper"
+      style="margin-top: 15px;"
+    >
+      <h6
+        class="header-text"
+      >
+        {{ itemsByCategory[0].label }}
+      </h6>
+      <h6
+        class="see-all-more"
+        style="font-weight: 100"
+        (click)="seeCategories(0)"
+      >
+        Ver..
+      </h6>
+    </div>
+    <div class="itemGrid">
+      <ng-container *ngFor="let swiperItem of itemsByCategory[0].items; index as i">
+        <app-saleflow-item
+          [type]="2"
+          [showBox]="swiperItem.customizerId ? false : true"
+          [imgURL]="swiperItem.images[0]"
+          [isSelected]="swiperItem.isSelected"
+          [showSelected]="true"
+          [price]="swiperItem.pricing"
+          [showPrice]="swiperItem.customizerId ? false : true"
+          priceAlign="start"
+          [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+          (itemClicked)="onItemCategoryClick(0, i)"
+        >
+        </app-saleflow-item>
+      </ng-container>
     </div>
   </div>
   <section
