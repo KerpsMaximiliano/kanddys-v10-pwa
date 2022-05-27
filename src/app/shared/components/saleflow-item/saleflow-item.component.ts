@@ -31,6 +31,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() limitScenarios: number;
   @Input() selectable: boolean;
   @Input() isSelected: boolean;
+  @Input() showSelected: boolean;
   @Input() showBox: boolean;
   @Input() boxAmount: number;
   @Input() showIcon: boolean;

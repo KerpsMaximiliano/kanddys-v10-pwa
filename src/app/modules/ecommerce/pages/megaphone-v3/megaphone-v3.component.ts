@@ -572,9 +572,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   goToPackageDetail(index) {
-    this.router.navigate([
-      '/ecommerce/package-detail/' + this.sliderPackage[index]._id,
-    ]);
+    this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.sliderPackage[index]._id}`]);
   }
 
   showShoppingCartDialog() {

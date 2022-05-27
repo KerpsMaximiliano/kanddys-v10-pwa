@@ -140,7 +140,7 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'package-detail/:id',
+    path: 'package-detail/:saleflowId/:packageId',
     component: PackageDetailComponent,
   },
   {

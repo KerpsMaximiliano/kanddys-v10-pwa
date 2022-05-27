@@ -1,5 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { Calendar } from './reservation';
 
 export class ItemParamValue extends Model<ItemParamValue> {
   name?: string;
@@ -53,8 +54,8 @@ export class Item extends Model<Item> {
   pircePerUnit?: number;
   stock?: number;
   params: ItemParam[];
-  calendar: any;
-  itemExtra?: any;
+  calendar: Calendar;
+  itemExtra?: ItemExtra[];
   size: string;
   quality: string;
   iconImage: string;
@@ -105,7 +106,7 @@ export class ItemCategoryHeadline extends Model<ItemCategoryHeadline> {
 }
 
 export class ItemExtra extends Model<ItemExtra> {
-  images: string;
+  images: string[];
   name: string;
   isActive: boolean;
   merchant: Merchant;
