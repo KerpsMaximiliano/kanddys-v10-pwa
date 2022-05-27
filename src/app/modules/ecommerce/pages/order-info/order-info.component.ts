@@ -152,6 +152,7 @@ export class OrderInfoComponent implements OnInit {
   date: any;
   fotodavitte: boolean = false;
   customizerDetails: { name: string; value: string }[] = [];
+  isValidMessage: boolean = false;
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -374,15 +375,18 @@ export class OrderInfoComponent implements OnInit {
               });
           }
           if (data.order.items[0].post) {
+            console.log("TIENE POST");
             this.posts.getPost(data.order.items[0].post._id).then((data) => {
               this.message = data.post;
               this.currentMessage = this.message.message;
-              if (this.message.from === '' && this.message.message === '') {
+              if (this.message.from === '' && this.message.message === '' && !this.message.targets) {
                 for (let i = 0; i < this.tabsOptions.length; i++) {
                   if (this.tabsOptions[i] === 'Mensaje') {
                     this.tabsOptions.splice(i, 1);
                   }
                 }
+              } else {
+                this.isValidMessage = true;
               }
             });
           }
