@@ -245,8 +245,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
 
-      console.log(this.saleflowData);
-
       if (saleflow._id === '61b8df151e8962cdd6f30feb')
         this.shouldAllowPaymentSkipping = true;
 
