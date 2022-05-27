@@ -71,6 +71,7 @@ export type AsyncFunction = PromiseFunction | ObservableFunction;
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText: string;
+  headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   embeddedComponents?: Array<EmbeddedComponent>;
   accessCondition?(...params): boolean;
   stepButtonValidText: string;
@@ -85,6 +86,8 @@ export interface FormStep {
   optionalLinksTo?: OptionalLinks;
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
+  showShoppingCartOnCurrentStep?: boolean;
+  shoppingCartCallback?(...params): any;
 }
 
 export interface LinkAction {

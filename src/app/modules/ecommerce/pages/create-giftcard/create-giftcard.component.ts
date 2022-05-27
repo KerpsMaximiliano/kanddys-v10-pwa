@@ -137,82 +137,124 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   removeScrollBlockerBefore: any;
   scrollableForm = false;
   formSteps = [
+    // {
+    //   fieldsList: [
+    //     {
+    //       name: 'writeMessage',
+    //       fieldControl: new FormControl('', Validators.required),
+    //       selectionOptions: ['Si', 'No'],
+    //       changeCallbackFunction: (change, params) => {
+    //         this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
+    //           emitEvent: false,
+    //         });
+
+    //         this.formSteps[0].stepProcessingFunction(params);
+    //         if (change === 'Si') {
+    //           params.scrollToStep(1);
+    //         }
+    //       },
+    //       label: '¿Te interesa escribirle un mensajito de regalo?',
+    //       inputType: 'radio',
+    //       styles: {
+    //         containerStyles: {
+    //           marginTop: '114px',
+    //         },
+    //       },
+    //     },
+    //   ],
+    //   bottomLeftAction: {
+    //     text: 'Ver items facturados',
+    //     execute: () => {
+    //       this.showShoppingCartDialog();
+    //     },
+    //   },
+    //   stepProcessingFunction: (params) => {
+    //     this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+    //     this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
+
+    //     if (params.scrollableForm) {
+    //       setTimeout(() => {
+    //         params.blockScrollBeforeCurrentStep();
+    //         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+    //         this.removeScrollBlockerBefore =
+    //           params.unblockScrollBeforeCurrentStep;
+    //       }, 500);
+    //     }
+
+    //     if (params.dataModel.value['1'].writeMessage === 'Si')
+    //       return { ok: true };
+    //     else if (params.dataModel.value['1'].writeMessage === 'No') {
+    //       this.storeEmptyMessageAndGoToShipmentDataForm(params);
+    //       return { ok: false };
+    //     }
+    //   },
+    //   customScrollToStepBackwards: (params) => {
+    //     if (this.scrollableForm) {
+    //       params.unblockScrollPastCurrentStep();
+    //       params.unblockScrollBeforeCurrentStep();
+    //     }
+
+    //     this.router.navigate([
+    //       'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
+    //     ]);
+    //   },
+    //   headerText: 'INFORMACIÓN DE LA ORDEN',
+    //   stepButtonInvalidText: 'SELECCIONA',
+    //   stepButtonValidText: 'CONTINUAR',
+    // },
     {
       fieldsList: [
         {
-          name: 'writeMessage',
-          fieldControl: new FormControl('', Validators.required),
-          selectionOptions: ['Si', 'No'],
-          changeCallbackFunction: (change, params) => {
-            this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
-              emitEvent: false,
-            });
-
-            this.formSteps[0].stepProcessingFunction(params);
-            if (change === 'Si') {
-              params.scrollToStep(1);
-            }
-          },
-          label: '¿Te interesa escribirle un mensajito de regalo?',
-          inputType: 'radio',
-          styles: {
-            containerStyles: {
-              marginTop: '114px',
+          name: 'receiver',
+          fieldControl: new FormControl(''),
+          label: '¿Para quién es?',
+          placeholder: 'Type...',
+          topLabelAction: {
+            text: 'Sin mensaje de regalo',
+            clickable: true,
+            callback: (params) => {
+              this.storeEmptyMessageAndGoToShipmentDataForm(params);
             },
           },
+          styles: {
+            containerStyles: {
+              marginTop: '68px',
+            },
+            topLabelActionStyles: {
+              display: 'block',
+              color: '#27A2FF',
+              fontSize: '16px',
+              fontFamily: 'RobotoMedium',
+              cursor: 'pointer',
+              margin: '0px',
+              marginTop: '68px',
+              marginBottom: '33px',
+            },
+            labelStyles: lightLabelStyles,
+          },
         },
-      ],
-      bottomLeftAction: {
-        text: 'Ver items facturados',
-        execute: () => {
-          this.showShoppingCartDialog();
+        {
+          name: 'sender',
+          fieldControl: new FormControl(''),
+          label: '¿De parte de quién o quienes?',
+          placeholder: 'Type...',
+          styles: {
+            containerStyles: {
+              marginTop: '80px',
+              marginBottom: '80px',
+            },
+            labelStyles: lightLabelStyles,
+          },
         },
-      },
-      stepProcessingFunction: (params) => {
-        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
-
-        if (params.scrollableForm) {
-          setTimeout(() => {
-            params.blockScrollBeforeCurrentStep();
-            this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-            this.removeScrollBlockerBefore =
-              params.unblockScrollBeforeCurrentStep;
-          }, 500);
-        }
-
-        if (params.dataModel.value['1'].writeMessage === 'Si')
-          return { ok: true };
-        else if (params.dataModel.value['1'].writeMessage === 'No') {
-          this.storeEmptyMessageAndGoToShipmentDataForm(params);
-          return { ok: false };
-        }
-      },
-      customScrollToStepBackwards: (params) => {
-        if (this.scrollableForm) {
-          params.unblockScrollPastCurrentStep();
-          params.unblockScrollBeforeCurrentStep();
-        }
-
-        this.router.navigate([
-          'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
-        ]);
-      },
-      headerText: 'INFORMACIÓN DE LA ORDEN',
-      stepButtonInvalidText: 'SELECCIONA',
-      stepButtonValidText: 'CONTINUAR',
-    },
-    {
-      fieldsList: [
         {
           name: 'message',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl(''),
           label: '¿Que mensaje escribiremos?',
           inputType: 'textarea',
           placeholder: 'Type your message here...',
           styles: {
             containerStyles: {
-              marginTop: '60px',
+              marginBottom: '90px',
             },
             fieldStyles: {
               boxShadow: '0px 4px 5px 0px #ddd inset',
@@ -227,47 +269,27 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               borderRadius: '10px',
               backgroundColor: '#fff',
             },
-          },
-        },
-        {
-          name: 'receiver',
-          fieldControl: new FormControl('', Validators.required),
-          label: '¿Para quién es?',
-          placeholder: 'Type...',
-          styles: {
-            containerStyles: {
-              marginTop: '80px',
-            },
-            labelStyles: lightLabelStyles,
-          },
-        },
-        {
-          name: 'sender',
-          fieldControl: new FormControl('', Validators.required),
-          label: '¿De parte de quién o quienes?',
-          placeholder: 'Type...',
-          styles: {
-            containerStyles: {
-              marginTop: '80px',
-              marginBottom: '80px',
-            },
             labelStyles: lightLabelStyles,
           },
         },
       ],
       customScrollToStepBackwards: (params) => {
-        this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
-          emitEvent: false,
-        });
+        if (this.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
-        params.scrollToStep(0, false);
+        this.router.navigate([
+          'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
+        ]);
       },
-      bottomLeftAction: {
-        text: 'Sin mensaje de regalo',
-        execute: (params) => {
-          this.storeEmptyMessageAndGoToShipmentDataForm(params);
-        },
-      },
+      // customScrollToStepBackwards: (params) => { Esto estaba cuando el primer step era si/no
+      //   this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
+      //     emitEvent: false,
+      //   });
+
+      //   params.scrollToStep(0, false);
+      // },
       // optionalLinksTo: {
       //   styles: {
       //     containerStyles: { marginTop: '109px', marginBottom: '80px' },
@@ -301,15 +323,23 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         //esto deberia estar en el step 4, el de editar, está en el 2, porque se quizo quitar la foto de este flow
         type: 'promise',
         function: async (params) => {
+          if (
+            params.dataModel.value['1']['message'] === '' &&
+            params.dataModel.value['1']['receiver'] === '' &&
+            params.dataModel.value['1']['sender'] === ''
+          ) {
+            this.storeEmptyMessageAndGoToShipmentDataForm(params);
+          }
+
           this.header.post = {
-            message: params.dataModel.value['2']['message'],
+            message: params.dataModel.value['1']['message'],
             targets: [
               {
-                name: params.dataModel.value['2']['receiver'],
+                name: params.dataModel.value['1']['receiver'],
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['2']['sender'],
+            from: params.dataModel.value['1']['sender'],
             // multimedia: [this.header.flowImage],
             multimedia: this.header.flowImage,
             socialNetworks: [
@@ -320,14 +350,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           };
 
           const postInput = {
-            message: params.dataModel.value['2']['message'],
+            message: params.dataModel.value['1']['message'],
             targets: [
               {
-                name: params.dataModel.value['2']['receiver'],
+                name: params.dataModel.value['1']['receiver'],
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['2']['sender'],
+            from: params.dataModel.value['1']['sender'],
             // multimedia: this.header.flowImage,
             socialNetworks: [
               {
@@ -365,9 +395,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         // ANTES
         // params.scrollToStep(3);
 
-        params.scrollToStep(2);
+        params.scrollToStep(1);
       },
-      headerText: 'INFORMACIÓN DEL MENSAJE DE REGALO',
+      showShoppingCartOnCurrentStep: true,
+      shoppingCartCallback: () => {
+        this.showShoppingCartDialog();
+      },
+      headerText: 'Comprar más',
+      headerTextSide: 'LEFT',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
       stepButtonValidText: 'CONTINUAR',
     },

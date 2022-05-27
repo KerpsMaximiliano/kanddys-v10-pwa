@@ -175,7 +175,7 @@
     </div>
   </div>
 
-  <div *ngIf="mensajeRegalo && message && currentMessage">
+  <div *ngIf="mensajeRegalo && isValidMessage">
     <app-gift-message
       [data]="message"
       [isPreview]="true"

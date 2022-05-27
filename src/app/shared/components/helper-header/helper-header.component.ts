@@ -36,7 +36,10 @@ export class HelperHeaderComponent implements OnInit {
   @Input() options: boolean = false;
   @Input() searchAble: boolean = true;
   @Input() empty: boolean = false;
+  @Input() cart: boolean = false;
+  @Input() cartCallback: (...params) => any;
   @Input() back: boolean = true;
+  @Input() leftIconText: string = null;
   @Input() shadow: boolean = false;
   @Input() position: string = 'relative';
   @Input() replaceXWithLabel: boolean = false;
@@ -44,6 +47,7 @@ export class HelperHeaderComponent implements OnInit {
   wallet: boolean = false;
   walletBalance: number;
   @Input() searchLabel: string = 'label';
+  cartAmount: number;
 
   //OUTPUTS
   @Output() data = new EventEmitter<string>();
@@ -60,6 +64,17 @@ export class HelperHeaderComponent implements OnInit {
       this.walletBalance = this.headerService.walletData.balance;
       //this.wallet = true;
     }
+
+    if (this.cart) this.getShoppinCartItems();
+
+    console.log(this.cartAmount, this.cart);
+  }
+
+  getShoppinCartItems() {
+    const productData = this.headerService.getItems(
+      this.headerService.saleflow._id
+    );
+    this.cartAmount = productData?.length;
   }
 
   openDialog() {

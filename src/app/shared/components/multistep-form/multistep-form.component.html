@@ -1,14 +1,26 @@
 <div class="form-wrapper">
   <app-helper-header
-    [middleText]="steps[currentStep].headerText"
+    [middleText]="
+      !steps[currentStep].headerTextSide ||
+      steps[currentStep].headerTextSide === 'CENTER'
+        ? steps[currentStep].headerText
+        : null
+    "
     [searchAble]="false"
     bgcolor="#ffffff"
     [basic]="false"
     position="fixed"
+    [leftIconText]="
+      steps[currentStep].headerTextSide === 'LEFT'
+        ? steps[currentStep].headerText
+        : null
+    "
     [empty]="!shouldScrollBackwards"
     [middleTextFontFamily]="'SfProRegular'"
     [middleTextFontSize]="'17px'"
     middleTextColor="#7b7b7b"
+    [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
+    [cartCallback]="steps[currentStep].shoppingCartCallback"
     [shadow]="false"
     (onClose)="
       currentStep > 0 &&

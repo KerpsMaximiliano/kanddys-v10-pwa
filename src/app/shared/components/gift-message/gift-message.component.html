@@ -32,26 +32,26 @@
 </div>
 
 <div
-  *ngIf="isPreview === true && message !== ''"
+  *ngIf="isPreview === true"
   class="container"
   [ngStyle]="{ background: background }"
 >
-  <div class="preview-container">
+  <div class="preview-container" *ngIf="message && message != ''">
     <p class="top-text">Mensaje a escribir:</p>
     <div class="text-container">
       {{message}}
     </div>
   </div>
-  <div class="preview-container">
+  <div class="preview-container" *ngIf="aux.targets && aux.targets[0].name != ''">
     <p class="top-text">Para:</p>
     <div class="little-text-container">
-      {{aux.from}}
+      {{aux.targets[0].name}}
     </div>
   </div>
-  <div class="preview-container" [style.marginBottom]="!submition ? '60px' : ''">
+  <div class="preview-container" [style.marginBottom]="!submition ? '60px' : ''" *ngIf="aux.from && aux.from != ''">
     <p class="top-text">De parte:</p>
     <div class="little-text-container">
-      {{aux.targets[0].name}}
+      {{aux.from}}
     </div>
   </div>
   <div *ngIf="aux.multimedia.length > 0">
