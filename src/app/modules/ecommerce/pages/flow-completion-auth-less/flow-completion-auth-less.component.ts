@@ -657,7 +657,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           !this.image || !this.selectedBank
             ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-            : 'Manda tu orden a ' + this.merchantInfo.name.toUpperCase());
+            : 'MANDA TU ORDEN A ' + this.merchantInfo.name.toUpperCase());
     }
   }
 

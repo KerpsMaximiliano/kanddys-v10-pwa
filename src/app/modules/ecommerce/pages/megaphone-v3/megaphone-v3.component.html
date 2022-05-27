@@ -177,35 +177,17 @@
     </div>
   </div>
   <section
-    style="background-color: white; margin-bottom: 73px"
-    *ngIf="itemsByCategory.length === 0 && inputPackage.length === 0"
+    style="margin-bottom: 73px"
+    *ngIf="itemsByCategory.length === 0 && items.length === 0"
   >
-    <ng-container *ngIf="isCategories; else elseTemplate">
-      <div style="padding-top: 10px">
-        <app-see-filters
-          [type]="3"
-          [title]="merchantSubheadline"
-          [tags]="closeTagItems"
-          (loadingSwiper)="startLoading($event)"
-          (eventTags)="filterTags($event)"
-          (deletedTag)="tagDeleted($event)"
-          [hasBookmark]="true"
-        ></app-see-filters>
-      </div>
+    <ng-container *ngIf="status === 'loading'">
+      <h3 class="no-results">Cargando productos...</h3>
     </ng-container>
-    <ng-template #elseTemplate>
-      <div class="subheadline">
-        {{ merchantSubheadline }}
-      </div>
-    </ng-template>
-    <ng-container *ngIf="items.length > 0">
-      <app-item-grid
-        [items]="items"
-        (eventEmitter)="save($event)"
-      ></app-item-grid>
+    <ng-container *ngIf="status === 'complete'">
+      <h3 class="no-results">No se han encontrado resultados.</h3>
     </ng-container>
-    <ng-container *ngIf="items.length === 0">
-      <div class="no-results">No se han encontrado resultados...</div>
+    <ng-container *ngIf="status === 'error'">
+      <h3 class="no-results">Hubo un problema al conseguir los productos.</h3>
     </ng-container>
   </section>
 </div>

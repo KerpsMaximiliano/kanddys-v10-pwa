@@ -59,6 +59,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   canOpenCart: boolean;
   deleteEvent: Subscription;
   imageFolder: string = environment.assetsUrl;
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -140,17 +141,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.organizeItems();
     }
 
-    if (itemCategoriesList.length > 0) {
-      for (let i = 0; i < itemCategoriesList.length; i++) {
-        this.closeTagItems[0].options.push({
-          id: itemCategoriesList[i]._id,
-          label: itemCategoriesList[i].name,
-          type: 'label',
-          selected: false,
-        });
-      }
-    }
-
     if (this.categories.length == 0) {
       this.isCategories = false;
     } else {
@@ -177,59 +167,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         }
       });
     }
-
-    // let categories = [];
-    // this.items.forEach((item) => {
-    //   item.category.forEach((category) => {
-    //     if (!categories.includes(category.name)) categories.push(category.name);
-    //   });
-    // });
-    // console.log(categories);
-    // categories.forEach((name) => {
-    //   this.itemsByCategory.push({
-    //     label: name,
-    //     items: this.items.filter((item) =>
-    //       item.category.some((category) => category.name === name)
-    //     ),
-    //   });
-    // });
-
-    // if (
-    //   this.items.some((item) =>
-    //     item.category.some((category) => category.name === 'Tragos')
-    //   )
-    // ) {
-    //   this.itemsByCategory[0] = {
-    //     label: 'servilletas para tragos',
-    //     items: this.items.filter((item) =>
-    //       item.category.some((category) => category.name === 'Tragos')
-    //     ),
-    //   };
-    // }
-    // if (
-    //   this.items.some((item) =>
-    //     item.category.some((category) => category.name === 'Baño')
-    //   )
-    // ) {
-    //   this.itemsByCategory[1] = {
-    //     label: 'servilletas para baños',
-    //     items: this.items.filter((item) =>
-    //       item.category.some((category) => category.name === 'Baño')
-    //     ),
-    //   };
-    // }
-    // if (
-    //   this.items.some((item) =>
-    //     item.category.some((category) => category.name === 'Comidas')
-    //   )
-    // ) {
-    //   this.itemsByCategory[2] = {
-    //     label: 'servilletas para comidas',
-    //     items: this.items.filter((item) =>
-    //       item.category.some((category) => category.name === 'Comidas')
-    //     ),
-    //   };
-    // }
     let renderedSpinners = 0;
     for (let i = 0; i < this.itemsByCategory.length; i++) {
       renderedSpinners++;
@@ -270,6 +207,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   executeProcessesAfterLoading() {
     this.route.params.subscribe(async (params) => {
       this.flowId = params.id;
+      this.status = 'loading';
       lockUI();
 
       this.header.flowId = params.id;
@@ -372,27 +310,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         this.organizeItems();
+        this.status = 'complete';
+        unlockUI();
       }
-
-      if (!this.hasCustomizer) unlockUI();
-
       this.authService.me().then((data) => {
         this.isLogged = data != undefined;
       });
     });
     if (this.header.customizerData) this.header.customizerData = null;
-  }
-
-  endLoader() {
-    this.renderedSwippers++;
-
-    if (this.renderedSwippers === this.itemsByCategory.length) {
-      unlockUI();
-    }
-  }
-
-  logOut() {
-    this.authService.signouttwo();
   }
 
   // Logic for selecting items
@@ -512,14 +437,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  closeTagItems = [
-    {
-      title: 'Filters',
-      subtitle: 'Package Filters',
-      options: [],
-    },
-  ];
-
   save(index?: number) {
     if (index) this.header.packId = index;
     this.header.items = [];
@@ -551,24 +468,19 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     let isScenario;
     let scenariosLength;
 
-    if (this.inputPackage.length === 0) {
-      this.save(e);
-    } else {
-      // this.options = [];
-
-      for (
-        let i = 0;
-        i < this.swiperPackageOrder[e].items.listItems.length;
-        i++
-      ) {
-        scenariosLength =
-          this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0
-            ? this.swiperPackageOrder[e].items.listItems[i].itemExtra.length
-            : undefined;
-        isScenario =
-          this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
-      }
+    for (
+      let i = 0;
+      i < this.swiperPackageOrder[e].items.listItems.length;
+      i++
+    ) {
+      scenariosLength =
+        this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0
+          ? this.swiperPackageOrder[e].items.listItems[i].itemExtra.length
+          : undefined;
+      isScenario =
+        this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
     }
+    this.status = 'complete';
   }
 
   goToPackageDetail(index) {
@@ -585,103 +497,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
-
-  orderSwiper() {
-    this.swiperPackageOrder = [];
-    let aux;
-
-    for (let i = 0; i < this.inputPackage.length; i++) {
-      aux = this.packageData.find(
-        (e) => e.package._id == this.inputPackage[i]._id
-      );
-      this.swiperPackageOrder.push(aux);
-    }
-  }
-
-  validateCategories(category) {
-    return category && category._id ? category._id : '0';
-  }
-
-  filterTags(e) {
-    this.selectedTagsIds = e[0].options
-      .filter((el) => el.selected)
-      .map((el) => el.id);
-
-    if (this.selectedTagsIds.length == 0) {
-      this.inputPackage = this.packageData.map((e) => e.package);
-    }
-
-    if (this.selectedTagsIds.length == 0 && this.inputPackage.length === 0) {
-      this.inputsItems = this.items;
-    }
-
-    if (this.selectedTagsIds.length > 0 && this.inputPackage.length > 0)
-      this.inputPackage = this.packageData
-        .filter((packageEl) =>
-          packageEl.package.categories.some((element) =>
-            this.selectedTagsIds.includes(element._id)
-          )
-        )
-        .map((e) => e.package);
-
-    if (this.selectedTagsIds.length > 0 && this.inputPackage.length === 0) {
-      this.inputsItems = this.items.filter((el) =>
-        this.selectedTagsIds.includes(this.validateCategories(el.category))
-      );
-    }
-    this.loadingSwiper = false;
-    this.orderSwiper();
-    this.currentItem(0);
-  }
-
-  /*
-[1,2,3] --> [tag1, tag2]
-
-[1,2,3] --> [1,3] swiper
-  */
-
-  tagDeleted(e) {
-    this.selectedTagsIds = this.selectedTagsIds.filter(
-      (el) => el !== e.name[0].id
-    );
-
-    if (this.selectedTagsIds.length == 0) {
-      this.inputPackage = this.packageData.map((e) => e.package);
-    }
-
-    if (this.selectedTagsIds.length == 0 && this.inputPackage.length === 0) {
-      this.inputsItems = this.items;
-    }
-
-    if (this.selectedTagsIds.length > 0 && this.inputPackage.length > 0)
-      this.inputPackage = this.packageData
-        .filter((packageEl) =>
-          packageEl.package.categories.some((element) =>
-            this.selectedTagsIds.includes(element._id)
-          )
-        )
-        .map((e) => e.package);
-
-    if (this.inputPackage.length === 0 && this.selectedTagsIds.length > 0) {
-      this.inputsItems = this.items.filter((el) =>
-        this.selectedTagsIds.includes(this.validateCategories(el.category))
-      );
-    }
-
-    setTimeout(() => (this.loadingSwiper = false), 1);
-    this.orderSwiper();
-    this.currentItem(0);
-  }
-
-  /**
-   *  (click) => unload => filter/delete => load
-   *
-   *  (click) => deletedTags => unload
-   */
-
-  startLoading(e: boolean) {
-    this.loadingSwiper = e;
   }
 
   async itemOfPackage(packages: ItemPackage[]) {
@@ -714,9 +529,5 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.packageData[index].items = { listItems };
       index++;
     }
-  }
-
-  formatPrice(price: string = '') {
-    return `${price}`.replace(',', '.').replace('.', ',');
   }
 }
