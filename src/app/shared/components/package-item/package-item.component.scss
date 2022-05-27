@@ -1,0 +1,65 @@
+.container{
+    background-color: transparent;
+
+    .body{
+        width: 90%;
+        min-height: 132px;
+        height: fit-content;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(189, 189,189, 17%);
+        border-radius: 18px;
+        margin: 0 auto;
+
+        .top{
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 29px 10px 32px;
+
+            .wrapper{
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: column;
+
+                .plan-name{
+                    font-family: 'NeueMontreal';
+                    font-size: 20px;
+                    font-weight: bold;
+                    color: #000000;
+                }
+
+                .subtitle{
+                    font-family: 'NeueMontreal';
+                    font-size: 16px;
+                    color: #232323;
+                    margin-top: 5px;
+                }
+            }
+
+            .price{
+                font-family: 'NeueMontreal';
+                font-size: 16px;
+                color: #232323;
+                white-space: nowrap;
+            }
+        }//Fin de top
+
+        .plan-details{
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0 3px 32px;
+
+            .content{
+                font-family: 'NeueMontreal';
+                font-size: 16px;
+                color: #232323;
+                margin-bottom: 10px;
+                max-width: 75%;
+                white-space: break-spaces;
+            }
+        }//Fin de plan details
+
+    }//Fin de body
+    
+}
