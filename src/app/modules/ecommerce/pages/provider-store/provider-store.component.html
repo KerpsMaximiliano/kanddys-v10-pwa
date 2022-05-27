@@ -57,12 +57,7 @@
       </div>
     </ng-container>
   </div>
-  <div
-    [ngStyle]="{
-      height: '100vh'
-    }"
-    *ngIf="status === 'done'"
-  >
+  <div *ngIf="status === 'done'">
     <router-outlet></router-outlet>
   </div>
 </div>
