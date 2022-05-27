@@ -245,7 +245,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
 
-      console.log(this.saleflowData)
+      console.log(this.saleflowData);
 
       if (saleflow._id === '61b8df151e8962cdd6f30feb')
         this.shouldAllowPaymentSkipping = true;
@@ -273,7 +273,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         }
       }
 
-      this.headerText = 'INFORMACIÓN';
+      this.headerText =
+        this.saleflowData._id === '6201d72bdfeceed4d13805bc'
+          ? 'INFORMACIÓN'
+          : 'INFORMACIÓN DEL PAGO';
       let packages: string[] = [];
       if (this.header.order?.itemPackage) {
         packages.push(this.header.order.itemPackage);
