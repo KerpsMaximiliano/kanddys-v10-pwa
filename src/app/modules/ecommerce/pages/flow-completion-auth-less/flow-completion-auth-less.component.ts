@@ -273,7 +273,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         }
       }
 
-      this.headerText = 'INFORMACIÓN DEL PAGO';
+      this.headerText = 'INFORMACIÓN';
       let packages: string[] = [];
       if (this.header.order?.itemPackage) {
         packages.push(this.header.order.itemPackage);
