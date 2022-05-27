@@ -85,6 +85,7 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { CartButtonComponent } from './components/cart-button/cart-button.component';
 import { CollaborationsComponent } from './dialogs/collaborations/collaborations.component';
 import { InfoButtonComponent } from './components/info-button/info-button.component';
+import { PackageItemComponent } from './components/package-item/package-item.component';
 import { StatusListComponent } from './dialogs/status-list/status-list.component';
 
 const imports = [
@@ -168,6 +169,7 @@ const declarations = [
   CartButtonComponent,
   CollaborationsComponent,
   InfoButtonComponent,
+  PackageItemComponent,
   StatusListComponent,
 ];
 
