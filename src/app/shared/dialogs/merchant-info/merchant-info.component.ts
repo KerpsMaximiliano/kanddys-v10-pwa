@@ -22,6 +22,7 @@ export class MerchantInfoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if(this.whatsapp?.url) this.whatsapp.url = this.whatsapp.url.replace(/\D/g,'');
   }
 
   close() {
