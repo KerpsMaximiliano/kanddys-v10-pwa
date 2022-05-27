@@ -405,10 +405,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           } else {
             this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
 
-            const link = document.getElementById(
-              'invisible-link'
-            ) as HTMLAnchorElement;
-            link.click();
+            // const link = document.getElementById(
+            //   'invisible-link'
+            // ) as HTMLAnchorElement;
+            // link.click();
 
             this.redirect();
           }
