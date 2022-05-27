@@ -18,17 +18,11 @@
     style="margin-bottom: 60px"
     *ngIf="saleflowData && inputPackage.length > 0 && items.length === 0"
   >
-    <div class="header-wrapper" [ngStyle]="{ height: '90px' }">
-      <h6
-        class="header-text"
-        [ngStyle]="{
-          fontFamily: 'SfProRegular',
-          color: '#7b7b7b',
-          fontWeight: 100 
-        }"
-      >
+    <div class="header-wrapper FD" [ngStyle]="{ height: '90px' }">
+      <h6 class="header-text">
         Paquetes
       </h6>
+      <img [src]="imageFolder + '/photoCollect.svg'" alt="" class="bpf">
     </div>
     <div>
       <ng-container *ngIf="visualMode; else swiperMode">
@@ -36,7 +30,12 @@
           class="package-list"
           *ngFor="let item of sliderPackage; let i = index"
         >
-          <app-saleflow-item
+        <app-package-item
+        [package]="item"
+        [clickAble]="true"
+        (click)="goToPackageDetail(i)"
+        ></app-package-item>
+          <!-- <app-saleflow-item
             [imgURL]="item.images[0]"
             [price]="item.price"
             [showPrice]="true"
@@ -45,9 +44,10 @@
             [isSelected]="item.isSelected"
             [priceAlign]="'start'"
             [type]="2"
-            (click)="goToPackageDetail(i)"
           >
-          </app-saleflow-item>
+          </app-saleflow-item> 
+          Lo mantuve para referencia, por favor borrar una vez integrar para no tener codigo sucio xoxoxo
+            -->
         </div>
       </ng-container>
       <ng-template #swiperMode>
@@ -182,7 +182,7 @@
         canOpenCart
           ? 'VER CARRITO DE COMPRAS'
           : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
-          ? 'SELECCIONA TU PAQUETE'
+          ? 'TOCA EN TU PLAN PREFERIDO'
           : 'TOCA DONDE PREFIERAS'
       "
       (click)="showShoppingCartDialog()"

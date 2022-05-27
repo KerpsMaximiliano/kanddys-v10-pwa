@@ -58,6 +58,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
+  imageFolder: string = environment.assetsUrl;
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
