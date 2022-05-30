@@ -48,7 +48,7 @@
          </ng-container>
         <div class="fullScreenSwiper">
             <div class="shadowWrapper">
-                <swiper [config]="saleFlowTwoSwiperConfig">
+                <swiper [config]="swiperConfig">
                 <div
                     *ngFor="let item of itemData.images; let i = index"
                     (click)="openImageModal(item)"

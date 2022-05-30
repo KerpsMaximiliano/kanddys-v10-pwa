@@ -51,8 +51,6 @@ export class ImageInputComponent implements OnInit {
   fileProgress(e: Event, index: number) {
     const files = (e.target as HTMLInputElement).files;
 
-    console.log(files.length);
-
     if (files.length > 0) {
       if (
         (this.allowedTypes.length > 0 &&

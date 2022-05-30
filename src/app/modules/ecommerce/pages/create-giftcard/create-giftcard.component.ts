@@ -329,6 +329,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             params.dataModel.value['1']['sender'] === ''
           ) {
             this.storeEmptyMessageAndGoToShipmentDataForm(params);
+            return of({
+              ok: false,
+            });
           }
 
           this.header.post = {

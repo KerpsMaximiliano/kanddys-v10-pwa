@@ -48,7 +48,7 @@
       <div *ngIf="showIcon" class="image-icon right" (click)="onIconClick()">
         <img [src]="env + '/closed-eye.svg'" alt="hide-item">
       </div>
-      <div *ngIf="isSelected" class="box white middle" (click)="onBottomBoxClick()">
+      <div *ngIf="showSelected && isSelected" class="box white middle" (click)="onBottomBoxClick()">
         En el Carrito
         <i class="fas fa-check-circle icon"></i>
       </div>

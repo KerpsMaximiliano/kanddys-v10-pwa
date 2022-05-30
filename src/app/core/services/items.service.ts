@@ -24,7 +24,7 @@ import {
   itemExtras,
   updateItem
 } from '../graphql/items.gql';
-import { Item, ItemCategory, ItemCategoryHeadline, ItemInput } from '../models/item';
+import { Item, ItemCategory, ItemCategoryHeadline, ItemInput, ItemPackage } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
@@ -51,7 +51,7 @@ export class ItemsService {
     return response;
   }
 
-  async itemPacakge(id: string) {
+  async itemPacakge(id: string): Promise<{ itemPackage: ItemPackage }> {
     const response = await this.graphql.query({
       query: itemPackage,
       variables: { id },

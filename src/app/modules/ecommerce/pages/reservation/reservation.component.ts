@@ -906,8 +906,6 @@ export class ReservationComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate([
-      '/ecommerce/package-detail/' + this.orderData.itemPackage,
-    ]);
+    this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`]);
   }
 }
