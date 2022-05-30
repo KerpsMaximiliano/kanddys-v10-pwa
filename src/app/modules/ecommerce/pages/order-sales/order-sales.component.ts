@@ -13,6 +13,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { searchInput } from 'src/app/shared/components/see-filters/see-filters.component';
 import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
 import { CodeSearchByKeyword } from 'src/app/core/graphql/codes.gql';
+import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 
 @Component({
   selector: 'app-order-sales',
@@ -36,7 +37,7 @@ export class OrderSalesComponent implements OnInit {
   mouseDown = false;
   startX: any;
   scrollLeft: any;
-  auxNumbers: Array<string> = [''];
+  auxNumbers: any= [''];
   totalIncome: string = '147,154.00';
   totalSales: string = '154';
   showTags: boolean = false;  
@@ -47,7 +48,7 @@ export class OrderSalesComponent implements OnInit {
   ] //Parte de un componente comentado 1/4/2022
   selectedOption: number = 0
 
-  orders: Array<any> = [];
+  orders: Array<ItemList> = [];
 
   ordersTags: any = [];
 
@@ -238,30 +239,29 @@ export class OrderSalesComponent implements OnInit {
            eventTitle: () => this.goToOderinfo(order._id),
            subtitle: order.user.name,
            text_left: timeAgo ,
-           text_right: 
-            order.tags.length > 0
-              ? order.tags.length + ' tags asignado(s)'
-              : 'Adiciona un tag',
-           text_right_function: () => this.router.navigate([`ecommerce/tags-list/${order._id}`]),
+           text_right: order.tags.length && order.tags.length + ' etiqueta(s)',
+          //  text_right_function: () => this.router.navigate([`ecommerce/tags-list/${order._id}`]),
            text_style: true,
            phone: order.user.phone,
+           add_tag: true,
+           tag_function: () => this.router.navigate([`ecommerce/tags-list/${order._id}`]),
            //icons_image_bool: true,
-           icons_bottom_right_first: order.tags.length > 0
-            ? [{ 
-              icon: this.imageFolder + '/Etiquetas_rellenas.svg',
-              type: 'img',
-              size: '26',
-              function: () => this.tagFunction()
-           }] 
-           : null,
-           icons_bottom_right: order.tags.length === 0
-           ? [{ 
-              icon: this.imageFolder + '/Etiqueta_lapiz.svg',
-              type: 'img',
-              size: '26',
-              function: () => this.tagFunction()
-             }]
-            : null,
+          //  icons_bottom_right_first: order.tags.length > 0
+          //   ? [{ 
+          //     icon: this.imageFolder + '/Etiquetas_rellenas.svg',
+          //     type: 'img',
+          //     size: '26',
+          //     function: () => this.tagFunction()
+          //  }] 
+          //  : null,
+          //  icons_bottom_right: order.tags.length === 0
+          //  ? [{ 
+          //     icon: this.imageFolder + '/Etiqueta_lapiz.svg',
+          //     type: 'img',
+          //     size: '26',
+          //     function: () => this.tagFunction()
+          //    }]
+          //   : null,
          })
        })
      })

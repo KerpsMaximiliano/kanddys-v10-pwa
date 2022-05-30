@@ -249,7 +249,6 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
 }
 
 .placeholder {
@@ -266,5 +265,11 @@
 }
 
 .pointer {
+  cursor: pointer;
+}
+
+.icon-button {
+  all: unset;
+  padding: 5px;
   cursor: pointer;
 }

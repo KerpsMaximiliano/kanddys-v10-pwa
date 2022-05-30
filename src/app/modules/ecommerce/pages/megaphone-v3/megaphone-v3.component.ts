@@ -481,7 +481,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
     }
     this.status = 'complete';
-    unlockUI();
   }
 
   goToPackageDetail(index) {
@@ -529,6 +528,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       }
       this.packageData[index].items = { listItems };
       index++;
+      unlockUI();
     }
   }
 }
