@@ -1,0 +1,123 @@
+.item-list {
+  display: flex;
+  margin: 0rem 1.5rem;
+
+  .item-list-img {
+    border: none;
+    background: none;
+    padding: 0;
+
+    .item-img {
+      height: 88px;
+      width: 84px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px #ddd;
+    }
+  }
+
+  &-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+    justify-content: space-between;
+    width: 100%;
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status {
+      border: none;
+      font-size: 16px;
+      font-family: "RobotoMedium";
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      padding: 14px 15px;
+      color: white;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    h1 {
+      color: #202020;
+      font-family: "RobotoBold";
+      font-size: 25px;
+      margin-bottom: 0;
+      margin-top: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 250px;
+    }
+
+    .subtitle {
+      color: #0b1f38;
+      font-family: "RobotoItalic";
+      font-size: 15px;
+      margin: 0;
+      max-width: 250px;
+      margin-bottom: 0;
+    }
+
+    .informacion {
+      margin: 0;
+      color: #7b7b7b;
+      font-family: "RobotoItalic";
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 250px;
+    }
+  }
+}
+
+.bottom-status {
+  font-size: 16px;
+  font-family: "RobotoMedium";
+  display: none;
+  align-items: center;
+  border-radius: 6px;
+  margin: 5px 1.5rem 0;
+  padding: 6px 0;
+  color: white;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.placeholder {
+  margin-right: 5px;
+  border-radius: 50%;
+  flex-basis: 101px;
+  height: 101px;
+  width: 101px;
+  background: linear-gradient(180deg, rgba(123, 123, 123, 1) 0%, rgba(62, 62, 62, 1) 100%);
+}
+
+@media (max-width: 380px) {
+  .bottom-status {
+    display: block;
+    margin-top: 20px;
+  }
+  .item-list-info {
+    .status {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .item-list-info {
+    .status {
+      font-size: 14px;
+      padding: 8px 8px;
+    }
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}

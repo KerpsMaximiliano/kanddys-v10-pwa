@@ -31,12 +31,6 @@
       height: 101px;
       width: 101px;
       box-shadow: 0px 4px 10px #ddd;
-
-      &.small {
-        height: 88px;
-        width: 84px;
-        border-radius: 8px !important;
-      }
     }
 
     .icons {
@@ -67,18 +61,6 @@
     .container {
       display: flex;
       justify-content: space-between;
-    }
-
-    .status {
-      font-size: 16px;
-      font-family: "RobotoMedium";
-      display: flex;
-      align-items: center;
-      border-radius: 6px;
-      padding: 14px 15px;
-      color: white;
-      text-transform: uppercase;
-      white-space: nowrap;
     }
 
     .container-icon {
@@ -139,19 +121,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 250px;
-    }
-
-    .small-desc {
-      .informacion {
-        margin: 0;
-        color: #7b7b7b;
-        font-family: "RobotoItalic";
-        font-size: 14px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 250px;
-      }
     }
 
     .icons-text {
@@ -276,20 +245,6 @@
   }
 }
 
-.bottom-status {
-  font-size: 16px;
-  font-family: "RobotoMedium";
-  display: none;
-  align-items: center;
-  border-radius: 6px;
-  margin: 5px 1.5rem 0;
-  padding: 6px 0;
-  color: white;
-  text-align: center;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .right-text-icon {
   display: flex;
   align-items: center;
@@ -308,27 +263,6 @@
     rgba(123, 123, 123, 1) 0%,
     rgba(62, 62, 62, 1) 100%
   );
-}
-
-@media (max-width: 380px) {
-  .bottom-status {
-    display: block;
-    margin-top: 20px;
-  }
-  .item-list-info {
-    .status {
-      display: none;
-    }
-  }
-}
-
-@media (max-width: 400px) {
-  .item-list-info {
-    .status {
-      font-size: 14px;
-      padding: 8px 8px;
-    }
-  }
 }
 
 .pointer {
