@@ -12,7 +12,6 @@ export interface ItemList {
   description?: string;
   description2?: string;
   image?: string;
-  imageSize?: 'small' | 'normal';
   eventImage?: () => void;
   icon?: string;
   text_style?: boolean;
@@ -40,8 +39,6 @@ export interface ItemList {
   bar_icons?: boolean;
   contentBgColor?: string;
   phone?: string;
-  status?: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
-  statusCallback?: () => void,
 }
 
 @Component({
@@ -58,7 +55,6 @@ export class ItemListComponent implements OnInit {
     price: null,
     description: '',
     image: '',
-    imageSize: 'normal',
     eventImage: undefined,
     icon: '',
     text_style: true,

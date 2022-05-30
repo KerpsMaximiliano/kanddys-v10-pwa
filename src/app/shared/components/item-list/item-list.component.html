@@ -3,7 +3,7 @@
 
     <div class="item-list">
       <div class="item-list-img" [ngClass]="{'pointer': itemListContent.eventImage}" *ngIf="itemListContent.image" (click)="itemListContent.eventImage && itemListContent.eventImage()">
-        <img src="{{ itemListContent.image }}" class="item-img"  [ngClass]="{'small': itemListContent.imageSize === 'small'}" alt="image" />
+        <img src="{{ itemListContent.image }}" class="item-img" alt="image" />
         <div *ngIf="
             itemListContent.icons_image &&
             itemListContent.icons_image_bool &&
@@ -78,22 +78,9 @@
               </div>
             </div>
           </ng-container>
-          <div
-            *ngIf="itemListContent.status"
-            class="status"
-            [ngClass]="{'pointer': itemListContent.statusCallback}"
-            (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
-            [ngStyle]="{
-              backgroundColor: 
-                (itemListContent.status === 'verificado' && '#40772F') ||
-                ('#DD9204')
-            }"
-          >
-            {{itemListContent.status}}
-          </div>
         </div>
         
-        <div [ngClass]="{'small-desc': itemListContent.imageSize === 'small'}">
+        <div>
           <p *ngIf="itemListContent.description" class="informacion">
             {{ itemListContent.description }}
           </p>
@@ -133,20 +120,6 @@
         </div>
         </ng-container>
 
-    </div>
-
-    <div
-      *ngIf="itemListContent.status"
-      class="bottom-status"
-      [ngClass]="{'pointer': itemListContent.statusCallback}"
-      (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
-      [ngStyle]="{
-        backgroundColor: 
-          (itemListContent.status === 'verificado' && '#40772F') ||
-          ('#DD9204')
-      }"
-    >
-      {{itemListContent.status}}
     </div>
     <div class="item-list-text" *ngIf="itemListContent.text_left || itemListContent.text_right" [ngStyle]="{
         'justify-content': itemListContent.text_style

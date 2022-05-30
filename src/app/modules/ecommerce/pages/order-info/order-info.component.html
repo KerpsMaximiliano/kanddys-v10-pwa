@@ -65,12 +65,13 @@
                   <ng-container *ngIf="item.customizer?._id; else pricing">
                     ${{ price | number: "1.0-2" }}
                   </ng-container>
-                  <ng-template #pricing> ${{ item.item.pricing }} </ng-template>
+                  <ng-template #pricing> ${{ item.item.pricing | number: "1.0-2" }} </ng-template>
+                  DOP
                 </p>
                 <div class="bottom">
                   <p class="b-text">
                     <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
-                    Cantidad: {{ item.amount }}
+                    Cantidad: {{ item.amount | number }}
                   </p>
                   <p class="b-text">
                     <!--AQUI IBAN LOS DUMMY TEXT, AQUI VA ALGO-->
@@ -201,7 +202,7 @@
       </div>
       <h3 class="payments-title">Pagos realizados</h3>
       <div *ngFor="let item of ocrPayments">
-        <app-item-list [itemListContent]="item" [marginTop]="'0px'"></app-item-list>
+        <app-item-status [itemListContent]="item"></app-item-status>
       </div>
     </div>
   </div>
