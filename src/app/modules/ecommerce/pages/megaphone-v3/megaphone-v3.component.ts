@@ -481,6 +481,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
     }
     this.status = 'complete';
+    unlockUI();
   }
 
   goToPackageDetail(index) {
