@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from 'src/environments/environment'
+import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { element } from 'protractor';
 import { filter, find } from 'rxjs/operators';
