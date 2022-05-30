@@ -2,7 +2,7 @@
     <div class="body">
         <div class="wrapper">
         <label for="Number" class="number amount">{{number}}</label>
-        <label for="Number" class="number">${{gains}}</label>
+        <ng-container *ngIf="gains"> <label for="Number" class="number">${{gains}}</label> </ng-container>
         </div>
         <ng-container *ngFor="let texts of tagText; index as i">
             <label for="Text" class="text">{{tagText[i]}}</label>
