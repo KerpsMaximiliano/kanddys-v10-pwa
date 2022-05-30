@@ -80,7 +80,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         this.viewtype = params.viewtype;
         if (this.viewtype === 'merchant') this.viewtype = 'merchant'
         else if( this.viewtype === 'preview') this.viewtype = 'preview'
-        else if (this.viewtype === 'community') this.viewtype = 'community'    
+        else if (this.viewtype === 'community') this.viewtype = 'community'
+        else this.viewtype === 'preview'    
     });
 
     this.deleteEvent = this.appService.events

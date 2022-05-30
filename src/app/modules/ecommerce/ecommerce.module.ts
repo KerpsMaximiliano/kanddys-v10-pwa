@@ -40,6 +40,7 @@ import { DeliveryPreviewComponent } from './pages/delivery-preview/delivery-prev
 import { PostAuthComponent } from './pages/post-auth/post-auth.component';
 import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-creator.component';
 import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
+import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 
 const routes: Routes = [
   {
@@ -215,6 +216,10 @@ const routes: Routes = [
     path: 'item-creator/:itemId',
     component: ItemCreatorComponent,
   },
+  {
+    path: 'user-dashboard',
+    component: UserDashboardComponent
+  },
 ];
 
 @NgModule({
@@ -259,6 +264,7 @@ const routes: Routes = [
     PostAuthComponent,
     MerchantCreatorComponent,
     ItemCreatorComponent,
+    UserDashboardComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
