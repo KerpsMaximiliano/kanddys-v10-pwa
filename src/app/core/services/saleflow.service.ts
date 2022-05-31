@@ -4,6 +4,7 @@ import { ListParams } from '../types/general.types';
 import { AppService } from './../../app.service';
 import {
   saleflow,
+  saleflowDefault,
   hotSaleflow,
   listItems,
   saleflows,
@@ -21,7 +22,7 @@ import { Item, ItemPackage } from '../models/item';
 
 @Injectable({ providedIn: 'root' })
 export class SaleFlowService {
-  constructor(private graphql: GraphQLWrapper, private app: AppService) {}
+  constructor(private graphql: GraphQLWrapper, private app: AppService) { }
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
     try {
@@ -42,6 +43,19 @@ export class SaleFlowService {
       }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async saleflowDefault(merchantId: string): Promise<SaleFlow> {
+    try {
+      const { saleflowDefault: saleflowDefaultResponse } = await this.graphql.query({
+        query: saleflowDefault,
+        variables: { merchantId },
+        fetchPolicy: 'no-cache'
+      });
+      return saleflowDefaultResponse;
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -95,7 +109,7 @@ export class SaleFlowService {
     return result;
   }
 
-  async addItemToSaleFlow(item: string, id: string) {
+  async addItemToSaleFlow(item: { item: string, customizer?: string, index?: number }, id: string) {
     console.log(id);
     const result = await this.graphql.mutate({
       mutation: addItemToSaleFlow,
