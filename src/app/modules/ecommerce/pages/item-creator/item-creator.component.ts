@@ -285,7 +285,7 @@ export class ItemCreatorComponent implements OnInit {
       },
       linkFooter: {
         text: 'Mira el preview',
-        execute: (params) => {},
+        execute: (params) => { },
         styles: {
           margin: 'auto',
           cursor: 'pointer',
@@ -342,7 +342,7 @@ export class ItemCreatorComponent implements OnInit {
     private route: ActivatedRoute,
     private decimalPipe: DecimalPipe,
     private applicationRef: ApplicationRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
@@ -353,7 +353,8 @@ export class ItemCreatorComponent implements OnInit {
         lockUI();
 
         const myUser = await this.authService.me();
-        this.currentUserId = myUser._id;
+        let myUserId;
+        this.currentUserId = myUser ? myUser._id : null;
 
         const { pricing, images, content, description, merchant } =
           await this.itemService.item(itemId);
@@ -366,6 +367,13 @@ export class ItemCreatorComponent implements OnInit {
             String(pricing)
           );
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+
+          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+          this.formSteps[0].embeddedComponents[0].shouldNotRender = true;
+
+          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+
+
           const formArray = this.formSteps[1].fieldsList[0]
             .fieldControl as FormArray;
           formArray.removeAt(0);
@@ -374,7 +382,7 @@ export class ItemCreatorComponent implements OnInit {
           });
           unlockUI();
         } else {
-          unlockUI();
+          if (itemId) this.router.navigate(['/']);
         }
       } else {
         unlockUI();

@@ -8,7 +8,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of, Subscription } from 'rxjs';
+import { of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
@@ -387,7 +387,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Agrega otro input al FormArray para hacer formularios dinamicos
+   * Remueve un input de un Formarray según un index
    * @param {FormArray} fieldformArray - step index
    */
   removeInputToCurrentFormArray(
