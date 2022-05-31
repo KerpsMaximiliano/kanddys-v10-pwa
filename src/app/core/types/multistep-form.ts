@@ -54,6 +54,7 @@ export interface EmbeddedComponent {
   containerStyles?: any;
   afterIndex?: number;
   beforeIndex?: number;
+  shouldNotRender?: boolean;
 }
 
 export interface PromiseFunction {
