@@ -37,10 +37,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }[] = [];
   inputsItems: Item[] = [];
   packagesId: any = [];
-  packageData: any = [];
+  packageData: {
+    package?: ItemPackage;
+    items?: Item[];
+  }[] = [];
   inputPackage: ItemPackage[] = [];
   sliderPackage: ItemPackage[] = [];
-  swiperPackageOrder: any = [];
   selectedTagsIds: any = [];
   categories: ItemCategory[] = [];
   flowId: string;
@@ -267,9 +269,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.sliderPackage = listPackages;
       await this.itemOfPackage(listPackages);
       this.inputPackage = this.packageData.map((e) => e.package);
-      this.swiperPackageOrder = this.packageData;
-      if (this.inputPackage.length > 0) this.currentItem(0);
-      if (this.inputPackage.length == 0) {
+      if (this.inputPackage.length === 0) {
         const selectedItems =
           orderData?.products?.length > 0
             ? orderData.products.map((subOrder) => subOrder.item)
@@ -362,12 +362,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         else packageItem.isSelected = false;
       });
       let products = [];
-      for (let i = 0; i < this.packageData[index].items.listItems.length; i++) {
+      for (let i = 0; i < this.packageData[index].items.length; i++) {
         products.push({
-          item: this.packageData[index].items.listItems[i]._id,
+          item: this.packageData[index].items[i]._id,
           amount: this.packageData[index].package.packageRules[i].fixedQuantity,
           isScenario:
-            this.packageData[index].items.listItems[i].itemExtra.length > 0,
+            this.packageData[index].items[i].itemExtra.length > 0,
           limitScenario:
             this.packageData[index].package.packageRules[i].maxQuantity,
         });
@@ -464,25 +464,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     }
   }
 
-  currentItem(e) {
-    let isScenario;
-    let scenariosLength;
-
-    for (
-      let i = 0;
-      i < this.swiperPackageOrder[e].items.listItems.length;
-      i++
-    ) {
-      scenariosLength =
-        this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0
-          ? this.swiperPackageOrder[e].items.listItems[i].itemExtra.length
-          : undefined;
-      isScenario =
-        this.swiperPackageOrder[e].items.listItems[i].itemExtra.length > 0;
-    }
-    this.status = 'complete';
-  }
-
   goToPackageDetail(index) {
     this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.sliderPackage[index]._id}`]);
   }
@@ -516,7 +497,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           },
         })
       ).listItems;
-
       let isScenario;
       let scenariosLength;
 
@@ -526,7 +506,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           isScenario = listItems[i].itemExtra.length > 0;
         }
       }
-      this.packageData[index].items = { listItems };
+      this.packageData[index].items = listItems;
+      this.status = 'complete';
       index++;
       unlockUI();
     }

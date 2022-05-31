@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Item, ItemPackage } from 'src/app/core/models/item';
 
 @Component({
   selector: 'app-package-item',
@@ -7,14 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class PackageItemComponent implements OnInit {
 
-    @Input() package: any ={
-        name: '', //Nombre del paquete
-        subtitle: '', //Info extra(si tiene)
-        price: '', //Precio del paquete
-        content: ['', ''] //contenido del paquete
-    };
-    @Input() clickAble: boolean = false;
-
+    @Input() package: ItemPackage;
+    @Input() packageItems: Item;
+    @Input() clickAble: boolean;
     @Output() action = new EventEmitter()
 
   constructor() { }

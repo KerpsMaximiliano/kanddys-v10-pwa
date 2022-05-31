@@ -1,22 +1,18 @@
 <div class="container">
     <div class="body" (click)="actionator($event)" [ngClass]="{'body click-able': clickAble == true}">
-
         <div class="top">
             <div class="wrapper">
-            <label for="Nombre del paquete" class="plan-name">{{package.name}}</label>
-            <ng-container *ngIf="package.subtitle != ''">
-                <label for="Sobre el plan" class="subtitle">{{package.subtitle}}</label>
-            </ng-container>
+                <h3 for="Nombre del paquete" class="plan-name">{{package.name}}</h3>
+                <ng-container *ngIf="package.description">
+                    <span class="subtitle">{{package.description}}</span>
+                </ng-container>
             </div>
-
-            <label for="Precio del plan" class="price">${{package.price}} DOP</label>
+            <h6 for="Precio del plan" class="price">${{package.price}} DOP</h6>
         </div>
-
         <div class="plan-details">
-            <ng-container *ngFor="let info of package.content; let i = index">
-                <label class="content">- {{package.content[i]}}</label>
-            </ng-container>
+            <span class="content" *ngFor="let item of packageItems; index as i">
+                - {{package.packageRules[i].fixedQuantity}} {{item.name}}
+            </span>
         </div>
-        
     </div>
 </div>
