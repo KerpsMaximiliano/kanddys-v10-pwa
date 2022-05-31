@@ -12,6 +12,7 @@ export class MerchantDashboardComponent implements OnInit {
     private auth: AuthService
   ) { }
 
+  tabs: string[]=['items', 'items']
   isLogged: boolean = false;
 
   ngOnInit(): void {
@@ -23,4 +24,17 @@ export class MerchantDashboardComponent implements OnInit {
     })
   }
 
+  whichName(e){
+      switch(e){
+          case 'items':
+          console.log('cambio de pestaña');
+
+          break;
+
+          case 'items':
+          console.log('pestaña2');
+
+          break;
+      }
+  }
 }

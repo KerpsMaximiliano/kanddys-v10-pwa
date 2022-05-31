@@ -63,7 +63,7 @@
             <div class="icon-holder" [ngClass]="{'checked': showTags == true}">
                 <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="26px" width="25px" class="icon" (click)="tagsView()"/>
             </div>
-            <img [src]="imageFolder + '/'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px" class="icon"/>
+            <img [src]="imageFolder + '/camera.svg'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px" class="icon"/>
           </div>
 
       </div>
@@ -75,7 +75,7 @@
         </div>
 
         <div *ngIf="!showTags" class="organized">
-            <div class="arrow-circle"> <img [src]="imageFolder + '/cameraman.png'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
+            <div class="arrow-circle"> <img [src]="imageFolder + '/arrow-down-left.svg'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
             <p class="advice">Organiza todas tus ventas con las etiquetas.</p>
         </div>
       </div>
