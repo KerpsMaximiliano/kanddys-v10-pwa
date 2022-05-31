@@ -21,6 +21,7 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { StatusListComponent } from 'src/app/shared/dialogs/status-list/status-list.component';
+import { ItemStatus } from 'src/app/shared/components/item-status/item-status.component';
 moment.locale('es');
 
 @Component({
@@ -130,7 +131,7 @@ export class OrderInfoComponent implements OnInit {
   existPackage: boolean = false;
   notifications: boolean = true;
   showNotificationButton: boolean;
-  ocrPayments: ItemList[] = [];
+  ocrPayments: ItemStatus[] = [];
   totalPayed: number;
 
   days: string[] = [
@@ -244,10 +245,6 @@ export class OrderInfoComponent implements OnInit {
             this.ocrPayments = [
               {
                 id: data.order.ocr._id,
-                visible: true,
-                image: data.order.ocr.image,
-                eventImage: () => this.openImageModal(data.order.ocr.image),
-                imageSize: 'small',
                 title: '$' + this.price.toLocaleString('en-US'),
                 // subtitle: 'Verificado por '+'AliciaID',
                 description: data.order.ocr.transactionCode
@@ -255,6 +252,8 @@ export class OrderInfoComponent implements OnInit {
                     data.order.ocr.transactionCode.toUpperCase()
                   : '',
                 description2: timeAgo,
+                image: data.order.ocr.image,
+                eventImage: () => this.openImageModal(data.order.ocr.image),
                 status: this.status,
                 statusCallback: () => this.openStatusDialog(),
               },

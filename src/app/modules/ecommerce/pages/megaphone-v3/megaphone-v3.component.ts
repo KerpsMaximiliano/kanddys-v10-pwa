@@ -528,6 +528,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       }
       this.packageData[index].items = { listItems };
       index++;
+      unlockUI();
     }
   }
 }
