@@ -24,6 +24,16 @@
     <div class="form-step" [id]="'step-' + currentStepIndex" *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
       ">
+      <ng-container *ngIf="currentStepObject.pageHeader">
+        <div [ngStyle]="
+          currentStepObject.pageHeader?.styles
+            ? currentStepObject.pageHeader?.styles
+            : null
+        ">
+          {{currentStepObject.pageHeader.text}}
+        </div>
+      </ng-container>
+
       <form [formGroup]="dataModel">
         <ng-container *ngFor="
             let currentField of currentStepObject['fieldsList'];
@@ -45,7 +55,7 @@
                 <app-dynamic-component [component]="currentEmbeddedComponent.component"
                   [componentInputs]="currentEmbeddedComponent.inputs"
                   [componentOutputs]="currentEmbeddedComponent.outputs"
-                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldNotRender">
+                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
                   ></app-dynamic-component>
               </div>
             </ng-container>
@@ -295,7 +305,7 @@
                 <app-dynamic-component [component]="currentEmbeddedComponent.component"
                   [componentInputs]="currentEmbeddedComponent.inputs"
                   [componentOutputs]="currentEmbeddedComponent.outputs"
-                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldNotRender">
+                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
                   ></app-dynamic-component>
               </div>
             </ng-container>
@@ -304,24 +314,26 @@
       </form>
 
       <!-- LINKS OPCIONALES -->
-      <div *ngIf="currentStepObject['optionalLinksTo']" class="optional-links" [ngStyle]="
-          currentStepObject.optionalLinksTo?.styles?.containerStyles
-            ? currentStepObject.optionalLinksTo?.styles?.containerStyles
-            : null
-        ">
-        <span class="title" [ngStyle]="
-            currentStepObject.optionalLinksTo?.styles?.labelStyles
-              ? currentStepObject.optionalLinksTo?.styles?.labelStyles
+      <ng-container *ngIf="currentStepObject['optionalLinksTo']">
+        <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo']" class="optional-links" [ngStyle]="
+            groupOfLinks?.styles?.containerStyles
+              ? groupOfLinks?.styles?.containerStyles
               : null
-          ">Optional:</span>
-        <ng-container *ngFor="let link of currentStepObject['optionalLinksTo'].links">
-          <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
-              currentStepObject.optionalLinksTo?.styles?.fieldStyles
-                ? currentStepObject.optionalLinksTo?.styles?.fieldStyles
+          ">
+          <span class="title" [ngStyle]="
+              groupOfLinks?.styles?.labelStyles
+                ? groupOfLinks?.styles?.labelStyles
                 : null
-            ">{{ link.text }}</span>
-        </ng-container>
-      </div>
+            ">{{groupOfLinks.topLabel || 'Opcional'}}:</span>
+          <ng-container *ngFor="let link of groupOfLinks.links">
+            <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
+                groupOfLinks?.styles?.fieldStyles
+                  ? groupOfLinks?.styles?.fieldStyles
+                  : null
+              ">{{ link.text }}</span>
+          </ng-container>
+        </div>
+      </ng-container>
 
       <!-- FOOTER PARA EL CONTADOR DE PREGUNTAS Y LINKS HACIA OTRAS PÁGINAS -->
       <div class="footer">
