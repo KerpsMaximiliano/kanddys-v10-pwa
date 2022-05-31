@@ -26,29 +26,44 @@
     </div>
     <div>
       <ng-container *ngIf="visualMode; else swiperMode">
-        <div
-          class="package-list"
-          *ngFor="let item of sliderPackage; let i = index"
-        >
-        <app-package-item
-        [package]="item"
-        [clickAble]="true"
-        (click)="goToPackageDetail(i)"
-        ></app-package-item>
-          <!-- <app-saleflow-item
-            [imgURL]="item.images[0]"
-            [price]="item.price"
-            [showPrice]="true"
-            [description]="item.description"
-            [showDescription]="true"
-            [isSelected]="item.isSelected"
-            [priceAlign]="'start'"
-            [type]="2"
+        <ng-container *ngIf="sliderPackage.length && packageData.length === 0">
+          <div
+            class="package-list"
+            *ngFor="let item of sliderPackage; let i = index"
           >
-          </app-saleflow-item> 
-          Lo mantuve para referencia, por favor borrar una vez integrar para no tener codigo sucio xoxoxo
-            -->
-        </div>
+          <app-package-item
+          [package]="item"
+          [clickAble]="true"
+          (click)="goToPackageDetail(i)"
+          ></app-package-item>
+            <!-- <app-saleflow-item
+              [imgURL]="item.images[0]"
+              [price]="item.price"
+              [showPrice]="true"
+              [description]="item.description"
+              [showDescription]="true"
+              [isSelected]="item.isSelected"
+              [priceAlign]="'start'"
+              [type]="2"
+            >
+            </app-saleflow-item> 
+            Lo mantuve para referencia, por favor borrar una vez integrar para no tener codigo sucio xoxoxo
+              -->
+          </div>
+        </ng-container>
+        <ng-container *ngIf="packageData.length">
+          <div
+            class="package-list"
+            *ngFor="let data of packageData; let i = index"
+          >
+            <app-package-item
+            [package]="data.package"
+            [packageItems]="data.items"
+            [clickAble]="true"
+            (click)="goToPackageDetail(i)"
+            ></app-package-item>
+          </div>
+        </ng-container>
       </ng-container>
       <ng-template #swiperMode>
         <app-swiper
@@ -178,7 +193,7 @@
   </div>
   <section
     style="margin-bottom: 73px"
-    *ngIf="itemsByCategory.length === 0 && items.length === 0"
+    *ngIf="itemsByCategory.length === 0 && items.length === 0 && sliderPackage.length === 0"
   >
     <ng-container *ngIf="status === 'loading'">
       <h3 class="no-results">Cargando productos...</h3>

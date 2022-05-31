@@ -1,28 +1,16 @@
 <div class="form-wrapper">
-  <app-helper-header
-    [middleText]="
+  <app-helper-header [middleText]="
       !steps[currentStep].headerTextSide ||
       steps[currentStep].headerTextSide === 'CENTER'
         ? steps[currentStep].headerText
         : null
-    "
-    [searchAble]="false"
-    bgcolor="#ffffff"
-    [basic]="false"
-    position="fixed"
-    [leftIconText]="
+    " [searchAble]="false" bgcolor="#ffffff" [basic]="false" position="fixed" [leftIconText]="
       steps[currentStep].headerTextSide === 'LEFT'
         ? steps[currentStep].headerText
         : null
-    "
-    [empty]="!shouldScrollBackwards"
-    [middleTextFontFamily]="'SfProRegular'"
-    [middleTextFontSize]="'17px'"
-    middleTextColor="#7b7b7b"
-    [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
-    [cartCallback]="steps[currentStep].shoppingCartCallback"
-    [shadow]="false"
-    (onClose)="
+    " [empty]="!shouldScrollBackwards" [middleTextFontFamily]="'SfProRegular'" [middleTextFontSize]="'17px'"
+    middleTextColor="#7b7b7b" [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
+    [cartCallback]="steps[currentStep].shoppingCartCallback" [shadow]="false" (onClose)="
       currentStep > 0 &&
       shouldScrollBackwards &&
       !steps[currentStep].customScrollToStepBackwards
@@ -30,226 +18,168 @@
         : steps[currentStep].customScrollToStepBackwards
         ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
         : null
-    "
-  ></app-helper-header>
+    "></app-helper-header>
 
-  <ng-container
-    *ngFor="let currentStepObject of steps; let currentStepIndex = index"
-  >
-    <div
-      class="form-step"
-      [id]="'step-' + currentStepIndex"
-      *ngIf="
+  <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
+    <div class="form-step" [id]="'step-' + currentStepIndex" *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
-      "
-    >
+      ">
+      <ng-container *ngIf="currentStepObject.pageHeader">
+        <div [ngStyle]="
+          currentStepObject.pageHeader?.styles
+            ? currentStepObject.pageHeader?.styles
+            : null
+        ">
+          {{currentStepObject.pageHeader.text}}
+        </div>
+      </ng-container>
+
       <form [formGroup]="dataModel">
-        <ng-container
-          *ngFor="
+        <ng-container *ngFor="
             let currentField of currentStepObject['fieldsList'];
             let currentFieldIndex = index
-          "
-          [formGroupName]="currentStepIndex + 1"
-        >
+          " [formGroupName]="currentStepIndex + 1">
           <ng-container *ngIf="currentStepObject['embeddedComponents']">
-            <ng-container
-              *ngFor="
+            <ng-container *ngFor="
                 let currentEmbeddedComponent of currentStepObject[
                   'embeddedComponents'
                 ]
-              "
-            >
-              <div
-                *ngIf="
+              ">
+              <div *ngIf="
                   currentEmbeddedComponent.beforeIndex === currentFieldIndex
-                "
-                [ngStyle]="
+                " [ngStyle]="
                   currentEmbeddedComponent.containerStyles
                     ? currentEmbeddedComponent.containerStyles
                     : null
-                "
-              >
-                <app-dynamic-component
-                  [component]="currentEmbeddedComponent.component"
+                ">
+                <app-dynamic-component [component]="currentEmbeddedComponent.component"
                   [componentInputs]="currentEmbeddedComponent.inputs"
                   [componentOutputs]="currentEmbeddedComponent.outputs"
-                ></app-dynamic-component>
+                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
+                  ></app-dynamic-component>
               </div>
             </ng-container>
           </ng-container>
 
           <!-- STANDARD INPUTS LIKE TEXT NUMBER EMAIL PASSWORDS ARE RENDERED HERE     -->
-          <div
-            *ngIf="
+          <div *ngIf="
               ['text', 'number', 'email', 'password'].includes(
                 currentField.inputType
               ) || !currentField.inputType
-            "
-            [ngStyle]="
+            " [ngStyle]="
               currentField.styles.containerStyles
                 ? currentField.styles.containerStyles
                 : null
-            "
-          >
+            ">
             <!-- SINGLE INPUTS GO HERE -->
             <ng-container *ngIf="!currentField.multiple">
-              <span
-                *ngIf="currentField.topLabelAction"
-                class="input-label-top-action"
-                [ngStyle]="
+              <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
                   currentField.styles.topLabelActionStyles
                     ? currentField.styles.topLabelActionStyles
                     : null
-                "
-                (click)="
+                " (click)="
                   currentField.topLabelAction.clickable
                     ? currentField.topLabelAction.callback(stepFunctionParams)
                     : null
-                "
-              >
+                ">
                 {{ currentField.topLabelAction.text }}
               </span>
 
-              <label
-                [for]="currentField.name"
-                class="input-label"
-                [ngStyle]="
+              <label [for]="currentField.name" class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
                     : null
-                "
-              >
+                ">
                 {{ currentField.label }}
               </label>
 
-              <div
-                class="input"
-                *ngIf="currentField.shouldFormatNumber"
-                [ngStyle]="{
+              <div class="input" *ngIf="currentField.shouldFormatNumber" [ngStyle]="{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-start'
-                }"
-              >
+                }">
                 {{ currentField.formattedValue }}
               </div>
 
-              <input
-                [id]="currentField.name"
-                [name]="currentField.name"
-                [formControlName]="currentField.name"
-                [type]="currentField.inputType || 'text'"
-                [min]="
+              <input [id]="currentField.name" [name]="currentField.name" [formControlName]="currentField.name"
+                [type]="currentField.inputType || 'text'" [min]="
                   currentField.inputType === 'number' &&
                   currentField.onlyAllowPositiveNumbers
                     ? 0
                     : null
-                "
-                [placeholder]="currentField.placeholder"
-                [ngClass]="
+                " [placeholder]="currentField.placeholder" [ngClass]="
                   currentField.styles.customClassName
                     ? currentField.styles.customClassName
                     : 'input'
-                "
-                [ngStyle]="
+                " [ngStyle]="
                   currentField.styles.fieldStyles &&
                   !currentField.styles.customClassName
                     ? currentField.styles.fieldStyles
                     : null
-                "
-              />
+                " />
 
-              <span
-                *ngIf="currentField.bottomLabel"
-                class="input-label-bottom"
-                [ngStyle]="
+              <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
                   currentField.styles.bottomLabelStyles
                     ? currentField.styles.bottomLabelStyles
                     : null
-                "
-                (click)="
+                " (click)="
                   currentField.bottomLabel.clickable
                     ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
-                "
-              >
+                ">
                 {{ currentField.bottomLabel.text }}
               </span>
             </ng-container>
 
             <!-- MULTIPLE INPUTS GO HERE -->
-            <div
-              [formArrayName]="currentField.name"
-              *ngIf="currentField.multiple"
-            >
-              <h3
-                class="input-label"
-                [ngStyle]="
+            <div [formArrayName]="currentField.name" *ngIf="currentField.multiple">
+              <h3 class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
                     : null
-                "
-              >
+                ">
                 {{ currentField.label }}
               </h3>
 
-              <ng-container
-                *ngFor="
+              <ng-container *ngFor="
                   let field of currentField.fieldControl.controls;
                   let i = index
-                "
-              >
-                <div
-                  [ngStyle]="{
+                ">
+                <div [ngStyle]="{
                     position: 'relative',
                     width: '100%',
                     margin: '0px'
-                  }"
-                >
-                  <input
-                    [formControlName]="i"
-                    [type]="currentField.inputType || 'text'"
-                    [placeholder]="currentField.placeholder"
-                    class="input"
-                    id="{{ currentField.name }}-{{ i }}"
+                  }">
+                  <input [formControlName]="i" [type]="currentField.inputType || 'text'"
+                    [placeholder]="currentField.placeholder" class="input" id="{{ currentField.name }}-{{ i }}"
                     [ngStyle]="
                       currentField.styles.fieldStyles
                         ? currentField.styles.fieldStyles
                         : null
-                    "
-                    (keypress)="
+                    " (keypress)="
                       onMultipleInputEnterPress(
                         $event,
                         addOneMoreInputToCurrentFormArray,
                         currentField.fieldControl,
                         currentField.name
                       )
-                    "
-                  />
-                  <div
-                    class="close-button"
-                    *ngIf="currentField.fieldControl.length > 1"
-                    (click)="
+                    " />
+                  <div class="close-button" *ngIf="currentField.fieldControl.length > 1" (click)="
                       removeInputToCurrentFormArray(
                         currentField.fieldControl,
                         currentField.name,
                         i
                       )
-                    "
-                  >
+                    ">
                     X
                   </div>
                 </div>
 
-                <span
-                  *ngIf="currentField.bottomLabel"
-                  class="input-label-bottom"
-                  [ngStyle]="
+                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
                     currentField.styles.bottomLabelStyles
                       ? currentField.styles.bottomLabelStyles
                       : null
-                  "
-                >
+                  ">
                   {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
@@ -257,191 +187,126 @@
           </div>
 
           <!-- TEXTAREA GOES HERE -->
-          <div
-            *ngIf="currentField.inputType === 'textarea'"
-            [ngStyle]="
+          <div *ngIf="currentField.inputType === 'textarea'" [ngStyle]="
               currentField.styles.containerStyles
                 ? currentField.styles.containerStyles
                 : null
-            "
-          >
+            ">
             <ng-container *ngIf="!currentField.multiple">
-              <span
-                *ngIf="currentField.topLabelAction"
-                class="input-label-top-action"
-                [ngStyle]="
+              <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
                   currentField.styles.topLabelActionStyles
                     ? currentField.styles.topLabelActionStyles
                     : null
-                "
-                (click)="
+                " (click)="
                   currentField.topLabelAction.clickable
                     ? currentField.topLabelAction.callback(stepFunctionParams)
                     : null
-                "
-              >
+                ">
                 {{ currentField.topLabelAction.text }}
               </span>
 
-              <label
-                [for]="currentField.name"
-                class="input-label"
-                [ngStyle]="
+              <label [for]="currentField.name" class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
                     : null
-                "
-              >
+                ">
                 {{ currentField.label }}
               </label>
 
-              <textarea
-                [id]="currentField.name"
-                [placeholder]="currentField.placeholder"
-                [name]="currentField.name"
-                [formControlName]="currentField.name"
-                [placeholder]="currentField.placeholder"
-                class="textarea"
+              <textarea [id]="currentField.name" [placeholder]="currentField.placeholder" [name]="currentField.name"
+                [formControlName]="currentField.name" [placeholder]="currentField.placeholder" class="textarea"
                 [ngStyle]="
                   currentField.styles.fieldStyles
                     ? currentField.styles.fieldStyles
                     : null
-                "
-              ></textarea>
+                "></textarea>
 
-              <span
-                *ngIf="currentField.bottomLabel"
-                class="input-label-bottom"
-                [ngStyle]="
+              <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
                   currentField.styles.bottomLabelStyles
                     ? currentField.styles.bottomLabelStyles
                     : null
-                "
-                (click)="
+                " (click)="
                   currentField.bottomLabel.clickable
                     ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
-                "
-              >
+                ">
                 {{ currentField.bottomLabel.text }}
               </span>
             </ng-container>
           </div>
 
           <!-- RADIO INPUTS GO HERE -->
-          <div
-            *ngIf="currentField.inputType === 'radio'"
-            class="selector"
-            [ngStyle]="
+          <div *ngIf="currentField.inputType === 'radio'" class="selector" [ngStyle]="
               currentField.styles.containerStyles
                 ? currentField.styles.containerStyles
                 : null
-            "
-          >
-            <label
-              [for]="currentField.name"
-              class="input-label"
-              [ngStyle]="
+            ">
+            <label [for]="currentField.name" class="input-label" [ngStyle]="
                 currentField.styles.labelStyles
                   ? currentField.styles.labelStyles
                   : null
-              "
-              >{{ currentField.label }}</label
-            >
+              ">{{ currentField.label }}</label>
 
             <ng-container *ngFor="let option of currentField.selectionOptions">
-              <label
-                [ngClass]="
+              <label [ngClass]="
                   option === currentField.fieldControl.value
                     ? 'selector-option active'
                     : 'selector-option'
-                "
-                (click)="currentField.fieldControl.setValue(option)"
-              >
-                <input
-                  type="radio"
-                  [value]="option"
-                  [formControlName]="currentField.name"
-                />
+                " (click)="currentField.fieldControl.setValue(option)">
+                <input type="radio" [value]="option" [formControlName]="currentField.name" />
                 <span>{{ option }}</span>
               </label>
             </ng-container>
           </div>
 
           <!-- FILE INPUTS GO HERE -->
-          <div
-            *ngIf="currentField.inputType === 'file'"
-            [ngStyle]="
+          <div *ngIf="currentField.inputType === 'file'" [ngStyle]="
               currentField.styles.containerStyles
                 ? currentField.styles.containerStyles
                 : null
-            "
-          >
-            <span
-              class="input-label"
-              [ngStyle]="
+            ">
+            <span class="input-label" [ngStyle]="
                 currentField.styles.labelStyles
                   ? currentField.styles.labelStyles
                   : null
-              "
-            >
+              ">
               {{ currentField.label }}
             </span>
 
-            <label
-              class="file"
-              [for]="currentField.name"
-              [ngStyle]="applyStylesToImages(currentField)"
-            >
-              <span *ngIf="currentField.fieldControl.value === ''"
-                >Upload/Image</span
-              >
+            <label class="file" [for]="currentField.name" [ngStyle]="applyStylesToImages(currentField)">
+              <span *ngIf="currentField.fieldControl.value === ''">Upload/Image</span>
             </label>
 
-            <div
-              *ngIf="currentField.showImageBottomLabel"
-              class="showImageBottomLabel"
-              [ngStyle]="
+            <div *ngIf="currentField.showImageBottomLabel" class="showImageBottomLabel" [ngStyle]="
                 currentField.styles.bottomLabelStyles
                   ? currentField.styles.bottomLabelStyles
                   : null
-              "
-              (click)="openInputTypeFileSelector(currentField.name)"
-            >
+              " (click)="openInputTypeFileSelector(currentField.name)">
               {{ currentField.showImageBottomLabel }}
             </div>
 
-            <input
-              type="file"
-              [id]="currentField.name"
-              [style.display]="'none'"
-              (change)="loadFile(currentField, $event)"
-            />
+            <input type="file" [id]="currentField.name" [style.display]="'none'"
+              (change)="loadFile(currentField, $event)" />
           </div>
 
           <ng-container *ngIf="currentStepObject['embeddedComponents']">
-            <ng-container
-              *ngFor="
+            <ng-container *ngFor="
                 let currentEmbeddedComponent of currentStepObject[
                   'embeddedComponents'
                 ]
-              "
-            >
-              <div
-                *ngIf="
+              ">
+              <div *ngIf="
                   currentEmbeddedComponent.afterIndex === currentFieldIndex
-                "
-                [ngStyle]="
+                " [ngStyle]="
                   currentEmbeddedComponent.containerStyles
                     ? currentEmbeddedComponent.containerStyles
                     : null
-                "
-              >
-                <app-dynamic-component
-                  [component]="currentEmbeddedComponent.component"
+                ">
+                <app-dynamic-component [component]="currentEmbeddedComponent.component"
                   [componentInputs]="currentEmbeddedComponent.inputs"
                   [componentOutputs]="currentEmbeddedComponent.outputs"
-                ></app-dynamic-component>
+                  [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
+                  ></app-dynamic-component>
               </div>
             </ng-container>
           </ng-container>
@@ -449,101 +314,70 @@
       </form>
 
       <!-- LINKS OPCIONALES -->
-      <div
-        *ngIf="currentStepObject['optionalLinksTo']"
-        class="optional-links"
-        [ngStyle]="
-          currentStepObject.optionalLinksTo?.styles?.containerStyles
-            ? currentStepObject.optionalLinksTo?.styles?.containerStyles
-            : null
-        "
-      >
-        <span
-          class="title"
-          [ngStyle]="
-            currentStepObject.optionalLinksTo?.styles?.labelStyles
-              ? currentStepObject.optionalLinksTo?.styles?.labelStyles
+      <ng-container *ngIf="currentStepObject['optionalLinksTo']">
+        <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo']" class="optional-links" [ngStyle]="
+            groupOfLinks?.styles?.containerStyles
+              ? groupOfLinks?.styles?.containerStyles
               : null
-          "
-          >Optional:</span
-        >
-        <ng-container
-          *ngFor="let link of currentStepObject['optionalLinksTo'].links"
-        >
-          <span
-            class="link"
-            (click)="link.action(stepFunctionParams)"
-            [ngStyle]="
-              currentStepObject.optionalLinksTo?.styles?.fieldStyles
-                ? currentStepObject.optionalLinksTo?.styles?.fieldStyles
+          ">
+          <span class="title" [ngStyle]="
+              groupOfLinks?.styles?.labelStyles
+                ? groupOfLinks?.styles?.labelStyles
                 : null
-            "
-            >{{ link.text }}</span
-          >
-        </ng-container>
-      </div>
+            ">{{groupOfLinks.topLabel || 'Opcional'}}:</span>
+          <ng-container *ngFor="let link of groupOfLinks.links">
+            <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
+                groupOfLinks?.styles?.fieldStyles
+                  ? groupOfLinks?.styles?.fieldStyles
+                  : null
+              ">{{ link.text }}</span>
+          </ng-container>
+        </div>
+      </ng-container>
 
       <!-- FOOTER PARA EL CONTADOR DE PREGUNTAS Y LINKS HACIA OTRAS PÁGINAS -->
       <div class="footer">
-        <span
-          *ngIf="currentStepObject['bottomLeftAction']"
-          class="bottom-left-action"
-          (click)="
+        <span *ngIf="currentStepObject['bottomLeftAction']" class="bottom-left-action" (click)="
             currentStepObject['bottomLeftAction'].execute(stepFunctionParams)
-          "
-        >
+          ">
           {{ currentStepObject["bottomLeftAction"].text }}
         </span>
 
-        <span
-          *ngIf="currentStepObject['linkFooter']"
+        <span *ngIf="currentStepObject['linkFooter']"
           (click)="currentStepObject['linkFooter'].execute(stepFunctionParams)"
-          [ngStyle]="currentStepObject['linkFooter'].styles"
-        >
+          [ngStyle]="currentStepObject['linkFooter'].styles">
           {{ currentStepObject["linkFooter"].text }}
         </span>
 
         <div class="steps" *ngIf="showStepNumbers">
-          <img
-            src="{{ env }}/arrow-down.svg"
-            class="step-icon"
-            alt="questions"
-          />
+          <img src="{{ env }}/arrow-down.svg" class="step-icon" alt="questions" />
           {{ currentStepIndex + 1 }} / {{ steps.length }} PASOS
         </div>
       </div>
     </div>
 
-    <div
-      [ngClass]="{
+    <div [ngClass]="{
         'bottom-separator':
           dataModel.get(currentStepString).status !== 'INVALID',
         'bottom-separator-disabled':
           dataModel.get(currentStepString).status === 'INVALID'
-      }"
-      *ngIf="
+      }" *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
-      "
-    ></div>
+      "></div>
 
     <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
-    <app-sticky-button
-      *ngIf="currentStep === currentStepIndex"
-      [text]="
+    <app-sticky-button *ngIf="currentStep === currentStepIndex" [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStepIndex].stepButtonValidText
           : steps[currentStepIndex].stepButtonInvalidText
-      "
-      [mode]="
+      " [mode]="
         dataModel.get(currentStepString).status !== 'INVALID'
           ? 'fixed'
           : 'disabled-fixed'
-      "
-      (click)="
+      " (click)="
         !steps[currentStepIndex].justExecuteCustomScrollToStep
           ? executeStepDataProcessing()
           : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
-      "
-    ></app-sticky-button>
+      "></app-sticky-button>
   </ng-container>
 </div>
