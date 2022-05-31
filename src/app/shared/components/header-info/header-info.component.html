@@ -12,11 +12,12 @@
             </div>
         </div>
 
-        <div class="names-wrapper">
-            <label class="header-name">{{title}}</label>
+        <div class="names-wrapper" [ngClass]="{simple: simple}">
+            <h2 class="header-name" [ngStyle]="{margin: simple? '6px 0 0 0' : '0 0 6px 0'}">{{title}}</h2>
             <label class="header-desc">{{description}}</label>
-            <label class="header-desc">{{description2}}</label>
+            <h2 class="header-desc" *ngIf="!simple">{{description2}}</h2>
         </div>
+
     </div>
 
     <div class="more-info-button" *ngIf="socials">

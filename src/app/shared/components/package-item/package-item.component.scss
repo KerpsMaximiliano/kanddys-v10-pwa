@@ -5,17 +5,18 @@
         width: 90%;
         min-height: 132px;
         height: fit-content;
-        padding: 10px;
+        padding: 26px 30px 25px 44px;
         display: flex;
         flex-direction: column;
         background-color: rgba(189, 189,189, 17%);
         border-radius: 18px;
         margin: 0 auto;
+        position: relative;
 
         .top{
             display: flex;
             justify-content: space-between;
-            margin: 16px 29px 10px 32px;
+            margin-bottom: 10px;
 
             .wrapper{
                 display: flex;
@@ -27,6 +28,7 @@
                     font-size: 20px;
                     font-weight: bold;
                     color: #000000;
+                    margin: 0;
                 }
 
                 .subtitle{
@@ -42,13 +44,14 @@
                 font-size: 16px;
                 color: #232323;
                 white-space: nowrap;
+                margin: 0;
             }
         }//Fin de top
 
         .plan-details{
             display: flex;
             flex-direction: column;
-            margin: 10px 0 3px 32px;
+            margin-top: 10px;
 
             .content{
                 font-family: 'NeueMontreal';
@@ -59,9 +62,38 @@
                 white-space: break-spaces;
             }
         }//Fin de plan details
+        
+        .cart{
+            border: none;
+            border-radius: 26px;
+            background-color: #FED230;
+            width: 82.64%;
+            height: 52px;
+            font-family: 'RobotoMedium';
+            font-size: 16px;
+            color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            margin-top: 34px;
+            cursor: pointer;
+
+            &.small{
+                width: 40%;
+                padding: 5px;
+                margin-left: auto;
+                margin-right: 5px;
+            }
+        }
+
         &.click-able{
             cursor: pointer;
         }
     }//Fin de body
     
+}
+
+.carrito{
+    filter: invert(12%) sepia(7%) saturate(6579%) hue-rotate(177deg) brightness(30%) contrast(100%);
 }
