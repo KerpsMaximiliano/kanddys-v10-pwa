@@ -28,6 +28,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() income: number;
   // new
   @Input() imgURL: string;
+  @Input() name: string;
   @Input() limitScenarios: number;
   @Input() selectable: boolean;
   @Input() isSelected: boolean;

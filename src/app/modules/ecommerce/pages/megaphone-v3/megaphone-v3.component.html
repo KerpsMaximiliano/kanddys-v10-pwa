@@ -19,11 +19,22 @@
             class="package-list"
             *ngFor="let item of sliderPackage; let i = index"
           >
-          <app-package-item
-          [package]="item"
-          (action)="goToPackageDetail(i)"
-          ></app-package-item>
-           
+            <app-package-item
+            [package]="item"
+            (action)="goToPackageDetail(i)"
+            ></app-package-item>
+            <!-- <app-saleflow-item
+              [imgURL]="item.images"
+              [price]="item.price"
+              [showPrice]="true"
+              [description]="item.description"
+              [showDescription]="true"
+              [isSelected]="item.selected"
+              [priceAlign]="'start'"
+              [type]="2"
+              (click)="goToPackageDetail(i)"
+            >
+            </app-saleflow-item> -->
           </div>
         </ng-container>
         <ng-container *ngIf="packageData.length">
@@ -32,20 +43,12 @@
             *ngFor="let data of packageData; let i = index"
           >
             <app-package-item
-            [package]="data.package"
-            [packageItems]="data.items"
-            (action)="goToPackageDetail(i)"
+              [package]="data.package"
+              [packageItems]="data.items"
+              (action)="goToPackageDetail(i)"
             ></app-package-item>
           </div>
         </ng-container>
-        
-        <div *ngIf="auxiliary">
-            <h2 class="additionals">Adicionales</h2>
-
-            <ng-container *ngFor=" let var1 of packageData; let i = index"></ng-container>
-            <app-package-item
-            ></app-package-item>
-        </div>
       </ng-container>
       <ng-template #swiperMode>
         <app-swiper
@@ -56,10 +59,65 @@
           (toggleEmitter)="toggleSelected('package', $event)"
         ></app-swiper>
       </ng-template>
-   
+  </div>
+  <div class="content" *ngIf="!hasCustomizer && items.length && itemsByCategory.length < 4">
+    <div class="item-list">
+      <ng-container *ngFor="let item of items; index as i">
+        <app-saleflow-item
+          *ngIf="item.showImages"
+          [type]="2"
+          [big]="true"
+          [name]="item.name"
+          [showBox]="item.customizerId ? false : true"
+          [imgURL]="item.images[0]"
+          [isSelected]="item.isSelected"
+          [showSelected]="true"
+          [price]="item.pricing"
+          [showPrice]="item.customizerId ? false : true"
+          priceAlign="start"
+          [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
+          (itemClicked)="onItemClick(i)"
+          (action)="onItemClick(i)"
+        >
+        </app-saleflow-item>
+        <app-package-item
+          *ngIf="!item.showImages"
+          [item]="item"
+          (itemClicked)="onItemClick(i)"
+        ></app-package-item>
+      </ng-container>
+    </div>
+    <div *ngFor="let categoryItems of itemsByCategory; let i = index" style="margin-top: 60px;">
+      <h6 class="category-header">{{ categoryItems.label }}</h6>
+      <div class="item-list">
+        <ng-container *ngFor="let swiperItem of categoryItems.items; index as i">
+          <app-saleflow-item
+            *ngIf="swiperItem.showImages"
+            [type]="2"
+            [big]="true"
+            [name]="swiperItem.name"
+            [showBox]="swiperItem.customizerId ? false : true"
+            [imgURL]="swiperItem.images[0]"
+            [isSelected]="swiperItem.isSelected"
+            [showSelected]="true"
+            [price]="swiperItem.pricing"
+            [showPrice]="swiperItem.customizerId ? false : true"
+            priceAlign="start"
+            [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+            (itemClicked)="onItemClick(0, i)"
+          >
+          </app-saleflow-item>
+          <app-package-item
+            *ngIf="!swiperItem.showImages"
+            [item]="swiperItem"
+            (itemClicked)="onItemClick(i)"
+          ></app-package-item>
+        </ng-container>
+      </div>
+    </div>
   </div>
 
-  <div class="content" *ngIf="itemsByCategory.length > 1">
+  <div class="content" *ngIf="itemsByCategory.length >= 4 || hasCustomizer">
     <div
       *ngFor="let item of itemsByCategory; let i = index"
       [ngStyle]="{ paddingBottom: '67px' }"
@@ -94,7 +152,7 @@
               [showPrice]="swiperItem.customizerId ? false : true"
               priceAlign="start"
               [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
-              (itemClicked)="onItemCategoryClick(i, j)"
+              (itemClicked)="onItemClick(i, j)"
             >
             </app-saleflow-item>
           </div>
@@ -116,7 +174,7 @@
       </div>
     </div>
   </div>
-  <div class="content" *ngIf="itemsByCategory.length === 1">
+  <!-- <div class="content" *ngIf="itemsByCategory.length === 1">
     <div
       class="header-wrapper"
       style="margin-top: 15px;"
@@ -146,12 +204,12 @@
           [showPrice]="swiperItem.customizerId ? false : true"
           priceAlign="start"
           [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
-          (itemClicked)="onItemCategoryClick(0, i)"
+          (itemClicked)="onItemClick(0, i)"
         >
         </app-saleflow-item>
       </ng-container>
     </div>
-  </div>
+  </div> -->
   <section
     style="margin-bottom: 73px"
     *ngIf="itemsByCategory.length === 0 && items.length === 0 && sliderPackage.length === 0"

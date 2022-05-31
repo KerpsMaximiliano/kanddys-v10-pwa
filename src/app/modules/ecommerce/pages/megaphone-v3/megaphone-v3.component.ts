@@ -23,7 +23,6 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./megaphone-v3.component.scss'],
 })
 export class MegaphoneV3Component implements OnInit, OnDestroy {
-  auxiliary: boolean = true;
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   banner: string = '';
@@ -45,7 +44,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantSubheadline: string = '';
   merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
-  isCategories: boolean;
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
@@ -94,48 +92,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const headlines = await this.item.itemCategoryHeadlineByMerchant(
       this.merchantId
     );
-
     if (itemCategoriesList.length === 0) return;
-
-    const filters = headlines.map((headline) => {
-      const options = headline.itemsCategories
-        .map((value) =>
-          itemCategoriesList.find((element) => element._id === value)
-        )
-        .filter((item) => item)
-        .map((filter) => {
-          return {
-            id: filter._id,
-            label: filter.name,
-            type: 'label',
-            selected: false,
-          };
-        });
-
-      return {
-        section: 'categories',
-        title: 'Categorías',
-        subtitle: headline.headline,
-        property: 'category',
-        options,
-      };
-    });
-    this.categories = headlines[0].itemsCategories
-      .map(
-        (value) =>
-          itemCategoriesList.find((element) => element._id === value)
-      )
+    const categories = headlines[0].itemsCategories
+      .map((value) => itemCategoriesList.find((element) => element._id === value))
       .filter((value) => value);
-
-    if (this.items.length > 0 && this.itemsByCategory.length === 0) {
-      this.organizeItems();
-    }
-
-    if (this.categories.length == 0) {
-      this.isCategories = false;
-    } else {
-      this.isCategories = true;
-    }
+    return categories;
   }
 
   organizeItems() {
@@ -209,9 +170,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.merchantId = this.saleflowData.merchant._id;
       this.merchantSocials = this.saleflowData.social;
 
-      await this.getCategories();
+      this.categories = await this.getCategories();
       await this.getMerchant(this.saleflowData.merchant._id);
-
+      // Package fetching
       if (this.saleflowData.packages.length) {
         const listPackages = (
           await this.saleflow.listPackages({
@@ -230,6 +191,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         await this.itemOfPackage(listPackages);
         this.inputPackage = this.packageData.map((e) => e.package);
       }
+      // No packages. Item fetching
       if (!this.saleflowData.packages.length && this.saleflowData.items.length) {
         const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
           item: saleflowItem.item._id,
@@ -358,47 +320,46 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     ]);
   }
 
-  onItemCategoryClick(listIndex: number, itemIndex: number) {
-    const itemData = this.itemsByCategory[listIndex].items[itemIndex];
-    if (itemData) {
-      this.header.categoryId = itemData.category[0]._id;
-      this.header.items = [itemData];
-      if (itemData.customizerId) {
-        this.header.emptyOrderProducts(this.saleflowData._id);
-        this.header.emptyItems(this.saleflowData._id);
-        let itemParams: ItemSubOrderParamsInput[];
-        if (itemData.params.length > 0) {
-          itemParams = [
-            {
-              param: itemData.params[0]._id,
-              paramValue: itemData.params[0].values[0]._id,
-            },
-          ];
-        }
-        const product = {
-          item: itemData._id,
-          customizer: itemData.customizerId,
-          params: itemParams,
-          amount: itemData.customizerId ? undefined : 1,
-          saleflow: this.saleflowData._id,
-          name: itemData.name,
-        };
-        this.header.order = {
-          products: [product],
-        };
-        this.header.storeOrderProduct(this.saleflowData._id, product);
-        this.header.storeItem(this.saleflowData._id, itemData);
-        this.router.navigate([
-          `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
-        ]);
-      } else
-        this.router.navigate([
-          '/ecommerce/item-detail/' +
-            this.header.saleflow._id +
-            '/' +
-            itemData._id,
-        ], {queryParams: { viewtype: 'community' }});
-    }
+  onItemClick(firstIndex: number, secondIndex?: number) {
+    const itemData = secondIndex >= 0 ? this.itemsByCategory[firstIndex].items[secondIndex] : this.items[firstIndex];
+    if (!itemData) return;
+    this.header.categoryId = itemData.category[0]._id;
+    this.header.items = [itemData];
+    if (itemData.customizerId) {
+      this.header.emptyOrderProducts(this.saleflowData._id);
+      this.header.emptyItems(this.saleflowData._id);
+      let itemParams: ItemSubOrderParamsInput[];
+      if (itemData.params.length > 0) {
+        itemParams = [
+          {
+            param: itemData.params[0]._id,
+            paramValue: itemData.params[0].values[0]._id,
+          },
+        ];
+      }
+      const product = {
+        item: itemData._id,
+        customizer: itemData.customizerId,
+        params: itemParams,
+        amount: itemData.customizerId ? undefined : 1,
+        saleflow: this.saleflowData._id,
+        name: itemData.name,
+      };
+      this.header.order = {
+        products: [product],
+      };
+      this.header.storeOrderProduct(this.saleflowData._id, product);
+      this.header.storeItem(this.saleflowData._id, itemData);
+      this.router.navigate([
+        `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
+      ]);
+    } else
+      this.router.navigate([
+        '/ecommerce/item-detail/' +
+          this.header.saleflow._id +
+          '/' +
+          itemData._id,
+      ], {queryParams: { viewtype: 'community' }});
   }
 
   save(index?: number) {

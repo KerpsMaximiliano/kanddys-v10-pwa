@@ -161,6 +161,7 @@ export const listItems = gql`
       quality
       iconImage
       hasExtraPrice
+      showImages
       category {
         _id
         name
