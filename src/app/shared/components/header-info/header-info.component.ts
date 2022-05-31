@@ -10,6 +10,8 @@ import { MerchantInfoComponent } from '../../dialogs/merchant-info/merchant-info
   styleUrls: ['./header-info.component.scss']
 })
 export class HeaderInfoComponent implements OnInit {
+
+  @Input() simple: boolean = false;
   @Input() profileImage: string;
   @Input() starsAmount: string;
   @Input() title: string;

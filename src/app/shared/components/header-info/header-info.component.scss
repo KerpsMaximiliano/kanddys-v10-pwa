@@ -62,7 +62,6 @@
                 font-family: 'RobotoBold';
                 font-size: 25px;
                 color: #202020;
-                margin-bottom: 6px;
             }
 
             .header-desc{
@@ -72,6 +71,11 @@
                 margin-bottom: 3px;
                 color: #141414;
                 opacity: 0.64;
+            }
+
+            &.simple{
+                flex-direction: column-reverse;
+                justify-content: center;                             
             }
         }
     }
