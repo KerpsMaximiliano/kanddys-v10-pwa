@@ -54,7 +54,7 @@ export interface EmbeddedComponent {
   containerStyles?: any;
   afterIndex?: number;
   beforeIndex?: number;
-  shouldNotRender?: boolean;
+  shouldRerender?: boolean;
 }
 
 export interface PromiseFunction {
@@ -69,10 +69,16 @@ export interface ObservableFunction {
 
 export type AsyncFunction = PromiseFunction | ObservableFunction;
 
+interface PageHeader {
+  text: string;
+  styles?: Record<string, string>;
+}
+
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
+  pageHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;
   accessCondition?(...params): boolean;
   stepButtonValidText: string;
@@ -84,7 +90,7 @@ export interface FormStep {
   customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: LinkAction;
   linkFooter?: LinkAction;
-  optionalLinksTo?: OptionalLinks;
+  optionalLinksTo?: Array<OptionalLinks>;
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
   showShoppingCartOnCurrentStep?: boolean;
@@ -99,6 +105,7 @@ export interface LinkAction {
 
 export interface OptionalLinks {
   styles?: FieldStyles;
+  topLabel?: string;
   links: Array<OptionalLink>;
 }
 

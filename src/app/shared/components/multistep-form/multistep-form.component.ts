@@ -13,7 +13,7 @@ import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
-import { FormStep, FormField, AsyncFunction  } from 'src/app/core/types/multistep-form';
+import { FormStep, FormField, AsyncFunction } from 'src/app/core/types/multistep-form';
 
 @Component({
   selector: 'app-multistep-form',
@@ -147,16 +147,18 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           console.log('Whatever goes here');
         },
       },
-      optionalLinksTo: {
-        links: [
-          {
-            text: 'Que la parte de atrás sea una fotografia',
-            action: () => {
-              console.log('Something happened');
+      optionalLinksTo: [
+        {
+          links: [
+            {
+              text: 'Que la parte de atrás sea una fotografia',
+              action: () => {
+                console.log('Something happened');
+              },
             },
-          },
-        ],
-      },
+          ],
+        }
+      ],
       headerText: 'fase 1',
       stepButtonInvalidText: 'Adiciona TU MOBILE',
       stepButtonValidText: 'Verificar mi mobile',
@@ -208,7 +210,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
 
-  constructor(private header: HeaderService) {}
+  constructor(private header: HeaderService) { }
 
   ngOnInit(): void {
     this.stepFunctionParams = {
@@ -427,8 +429,8 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       background:
         currentField.fieldControl.value !== ''
           ? 'url(' +
-            currentField.fieldControl.value +
-            ') no-repeat center center / contain #fff'
+          currentField.fieldControl.value +
+          ') no-repeat center center / contain #fff'
           : null,
       height: '200px',
       minWidth: '250px',
@@ -525,7 +527,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         if (
           this.currentStep + 1 < this.steps.length &&
           window.pageYOffset <=
-            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          nextStepHtmlElement.offsetTop - window.innerHeight &&
           scrollToNextStep
         ) {
           window.scroll(0, nextStepHtmlElement.offsetTop);
@@ -536,7 +538,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         if (
           this.currentStep + 1 < this.steps.length &&
           window.pageYOffset >=
-            nextStepHtmlElement.offsetTop - window.innerHeight &&
+          nextStepHtmlElement.offsetTop - window.innerHeight &&
           !scrollToNextStep
         ) {
           window.scroll(0, nextStepHtmlElement.offsetTop - window.innerHeight);
