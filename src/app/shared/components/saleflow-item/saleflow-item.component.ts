@@ -35,10 +35,12 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showBox: boolean;
   @Input() boxAmount: number;
   @Input() showIcon: boolean;
+  @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
+  @Output() action = new EventEmitter()
   
   env: string = environment.assetsUrl;
 
@@ -51,6 +53,10 @@ export class SaleflowItemComponent implements OnInit {
 
   onClick() {
     this.itemClicked.emit()
+  }
+
+  actionator(event){
+    this.action.emit(event)
   }
 
   constructor(private router: Router) {}
