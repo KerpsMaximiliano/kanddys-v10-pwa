@@ -23,6 +23,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./megaphone-v3.component.scss'],
 })
 export class MegaphoneV3Component implements OnInit, OnDestroy {
+    auxiliary: boolean = true;
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   isLogged: boolean = false;

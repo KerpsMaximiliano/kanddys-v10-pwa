@@ -1,18 +1,34 @@
 <div class="container">
-    <div class="body" (click)="actionator($event)" [ngClass]="{'body click-able': clickAble == true}">
+
+    <div class="body" [ngClass]="{'click-able': clickAble == true}">
         <div class="top">
             <div class="wrapper">
-                <h3 for="Nombre del paquete" class="plan-name">{{package.name}}</h3>
-                <ng-container *ngIf="package.description">
-                    <span class="subtitle">{{package.description}}</span>
+                <h3 class="plan-name">{{package?.name || item?.name}}</h3>
+                <ng-container *ngIf="package?.description">
+                    <span class="subtitle">{{package?.description || item?.description}}</span>
                 </ng-container>
             </div>
-            <h6 for="Precio del plan" class="price">${{package.price}} DOP</h6>
+            <h6 for="Precio del plan" class="price">${{package?.price || item?.pricing}} DOP</h6>
         </div>
         <div class="plan-details">
-            <span class="content" *ngFor="let item of packageItems; index as i">
-                - {{package.packageRules[i].fixedQuantity}} {{item.name}}
-            </span>
+
+            <ng-container *ngIf="package">
+                <span class="content" *ngFor="let item of packageItems; index as i">
+                    - {{package.packageRules[i].fixedQuantity}} {{item.name}}
+                </span>
+            </ng-container>
+
+            <ng-container *ngIf="!package && item">
+                <span class="content" *ngFor="let content of item.content; index as i">
+                    - {{content}}
+                </span>
+            </ng-container>
+
         </div>
+        
+        <button class="cart" (click)="actionator($event)" [ngClass]="{small: buttonSize == 'small'}">
+            ADICIONAR <ng-container *ngIf="buttonSize == 'normal'"> AL </ng-container>
+        <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+        </button>
     </div>
 </div>

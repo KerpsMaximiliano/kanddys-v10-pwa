@@ -149,6 +149,7 @@ export const listItems = gql`
   query listItems($params: PaginationInput) {
     listItems(params: $params) {
       _id
+      content
       name
       pricing
       pricePerUnit

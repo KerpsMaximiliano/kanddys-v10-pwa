@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Item, ItemPackage } from 'src/app/core/models/item';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-package-item',
@@ -8,10 +9,13 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 })
 export class PackageItemComponent implements OnInit {
 
+    @Input() buttonSize: 'normal' | 'small' = 'normal';
     @Input() package: ItemPackage;
     @Input() packageItems: Item;
     @Input() clickAble: boolean;
+    @Input() item: Item;
     @Output() action = new EventEmitter()
+    env: string = environment.assetsUrl;
 
   constructor() { }
 
