@@ -10,6 +10,12 @@ import { FormStep } from 'src/app/core/types/multistep-form';
 import { DecimalPipe } from '@angular/common';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
+const labelStyles = {
+  color: '#7B7B7B',
+  fontFamily: 'RobotoMedium',
+  fontSize: '17px'
+};
+
 @Component({
   selector: 'app-item-creator',
   templateUrl: './item-creator.component.html',
@@ -25,43 +31,6 @@ export class ItemCreatorComponent implements OnInit {
   formSteps: FormStep[] = [
     {
       fieldsList: [
-        {
-          name: 'description',
-          fieldControl: new FormControl(''),
-          label: 'Descripción (Opcional)',
-          bottomLabel: {
-            text: 'Agrega “Lo Incluido” (opcional)',
-            clickable: true,
-            callback: (params) => {
-              params.scrollToStep(1);
-            },
-          },
-          placeholder:
-            'Escriba la breve descripción que estará en la parte superior de la imagen..',
-          inputType: 'textarea',
-          styles: {
-            containerStyles: {
-              marginTop: '121px',
-            },
-            fieldStyles: {
-              backgroundColor: 'white',
-              height: '127px',
-              borderRadius: '10px',
-            },
-            labelStyles: {
-              fontSize: '19px',
-              marginBottom: '17px',
-              fontWeight: '300',
-            },
-            bottomLabelStyles: {
-              color: '#4773D8',
-              marginLeft: '1rem',
-              fontWeight: '200',
-              fontFamily: 'RobotoMedium',
-              fontSize: '16px',
-            },
-          },
-        },
         {
           name: 'price',
           fieldControl: new FormControl('', [
@@ -87,10 +56,10 @@ export class ItemCreatorComponent implements OnInit {
               );
 
               if (formatted === '0') {
-                this.formSteps[0].fieldsList[1].placeholder = '';
+                this.formSteps[0].fieldsList[0].placeholder = '';
               }
 
-              this.formSteps[0].fieldsList[1].formattedValue = '$' + formatted;
+              this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -114,69 +83,65 @@ export class ItemCreatorComponent implements OnInit {
               left: '0px',
               zIndex: '1',
             },
-            labelStyles: {
-              fontSize: '19px',
-              marginBottom: '17px',
-              fontWeight: '300',
-            },
+            labelStyles: labelStyles
           },
         },
-        {
-          name: 'collaborations',
-          fieldControl: new FormControl(''),
-          label: 'Vender más a través de Las Comunidades (opcional):',
-          inputType: 'number',
-          placeholder: 'Pagarás...',
-          formattedValue: '',
-          shouldFormatNumber: true,
-          changeCallbackFunction: (change, params) => {
-            try {
-              const plainNumber = change
-                .split(',')
-                .join('')
-                .split('.')
-                .join('');
-              const formatted = this.decimalPipe.transform(
-                Number(plainNumber),
-                '1.0-2'
-              );
+        // {
+        //   name: 'collaborations',
+        //   fieldControl: new FormControl(''),
+        //   label: 'Vender más a través de Las Comunidades (opcional):',
+        //   inputType: 'number',
+        //   placeholder: 'Pagarás...',
+        //   formattedValue: '',
+        //   shouldFormatNumber: true,
+        //   changeCallbackFunction: (change, params) => {
+        //     try {
+        //       const plainNumber = change
+        //         .split(',')
+        //         .join('')
+        //         .split('.')
+        //         .join('');
+        //       const formatted = this.decimalPipe.transform(
+        //         Number(plainNumber),
+        //         '1.0-2'
+        //       );
 
-              if (formatted === '0') {
-                this.formSteps[0].fieldsList[2].placeholder = '';
-              }
+        //       if (formatted === '0') {
+        //         this.formSteps[0].fieldsList[2].placeholder = '';
+        //       }
 
-              this.formSteps[0].fieldsList[2].formattedValue = '$' + formatted;
-              // this.applicationRef.tick();
-            } catch (error) {
-              console.log(error);
-            }
-          },
-          styles: {
-            containerStyles: {
-              position: 'relative',
-              width: '68.50%',
-              marginTop: '101px',
-            },
-            fieldStyles: {
-              backgroundColor: 'transparent',
-              color: 'transparent',
-              zIndex: '50',
-              position: 'absolute',
-              bottom: '0px',
-              left: '0px',
-            },
-            formattedInputStyles: {
-              bottom: '0px',
-              left: '0px',
-              zIndex: '1',
-            },
-            labelStyles: {
-              fontSize: '19px',
-              marginBottom: '17px',
-              fontWeight: '300',
-            },
-          },
-        },
+        //       this.formSteps[0].fieldsList[2].formattedValue = '$' + formatted;
+        //       // this.applicationRef.tick();
+        //     } catch (error) {
+        //       console.log(error);
+        //     }
+        //   },
+        //   styles: {
+        //     containerStyles: {
+        //       position: 'relative',
+        //       width: '68.50%',
+        //       marginTop: '101px',
+        //     },
+        //     fieldStyles: {
+        //       backgroundColor: 'transparent',
+        //       color: 'transparent',
+        //       zIndex: '50',
+        //       position: 'absolute',
+        //       bottom: '0px',
+        //       left: '0px',
+        //     },
+        //     formattedInputStyles: {
+        //       bottom: '0px',
+        //       left: '0px',
+        //       zIndex: '1',
+        //     },
+        //     labelStyles: {
+        //       fontSize: '19px',
+        //       marginBottom: '17px',
+        //       fontWeight: '300',
+        //     },
+        //   },
+        // },
       ],
       embeddedComponents: [
         {
@@ -187,16 +152,15 @@ export class ItemCreatorComponent implements OnInit {
             multiple: true,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
-            innerLabel: 'Adiciona las imagenes',
+            innerLabel: 'Adiciona las imágenes',
             topLabel: {
-              text: 'Imágenes de tu producto:',
+              text: 'Adiciona las imágenes:',
               styles: {
-                fontFamily: 'Roboto',
-                fontWeight: 'Bold',
-                fontSize: '24px',
+                color: '#7B7B7B',
+                fontFamily: 'RobotoMedium',
+                fontSize: '17px',
                 margin: '0px',
-                marginTop: '50px',
-                marginBottom: '44px',
+                marginBottom: '21px'
               },
             },
             containerStyles: {
@@ -255,7 +219,8 @@ export class ItemCreatorComponent implements OnInit {
             ) {
               await this.itemService.updateItem(
                 {
-                  description: values['1'].description,
+                  name: values['4'].name,
+                  description: values['3'].description,
                   pricing: Number(values['1'].price),
                   images: this.files,
                   content: values['2'].whatsIncluded,
@@ -267,7 +232,8 @@ export class ItemCreatorComponent implements OnInit {
               );
             } else {
               await this.itemService.createPreItem({
-                description: values['1'].description,
+                name: values['4'].name,
+                description: values['3'].description,
                 pricing: Number(values['1'].price),
                 images: this.files,
                 content: values['2'].whatsIncluded,
@@ -283,17 +249,80 @@ export class ItemCreatorComponent implements OnInit {
           return { ok: true };
         },
       },
-      linkFooter: {
-        text: 'Mira el preview',
-        execute: (params) => { },
-        styles: {
-          margin: 'auto',
-          cursor: 'pointer',
-          color: '#4773D8',
-          fontSize: '16px',
-          fontFamily: 'RobotoMedium',
-          marginTop: '102px',
+      optionalLinksTo: [
+        {
+          topLabel: 'Contenido opcional',
+          styles: {
+            containerStyles: {
+              marginTop: '40px',
+              marginBottom: '0px'
+            },
+            fieldStyles: {
+              marginTop: '18px',
+              paddingLeft: '17px'
+            },
+            labelStyles: labelStyles
+          },
+          links: [
+            {
+              text: 'Nombre',
+              action: (params) => {
+                params.scrollToStep(3);
+              }
+            },
+            {
+              text: 'Descripción',
+              action: (params) => {
+                params.scrollToStep(2);
+              }
+            },
+            {
+              text: 'Lo incluido',
+              action: (params) => {
+                params.scrollToStep(1);
+              }
+            },
+          ]
         },
+        {
+          topLabel: 'Asociaciones para vender más',
+          styles: {
+            containerStyles: {
+              marginTop: '60px',
+              marginBottom: '0px'
+            },
+            fieldStyles: {
+              marginTop: '30px',
+              paddingLeft: '17px'
+            },
+            labelStyles: labelStyles
+          },
+          links: [
+            {
+              text: 'List-2-Raise, colaboraciones con organizaciones que recaudan fondos',
+              action: (params) => {
+                params.scrollToStep(4);
+              }
+            },
+            {
+              text: 'HashLink, para vender desde SMS Bots y transmisiones en vivo junto a Influ-Sellers',
+              action: (params) => {
+                params.scrollToStep(5);
+              }
+            },
+          ]
+        }
+      ],
+      pageHeader: {
+        text: 'Sobre lo que venderás',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '50px',
+          marginBottom: '60px',
+        }
       },
       avoidGoingToNextStep: true,
       headerText: '',
@@ -326,6 +355,159 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        params.scrollToStep(0, false);
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0, false);
+      },
+      justExecuteCustomScrollToStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+    },
+    {
+      fieldsList: [
+        {
+          name: 'description',
+          fieldControl: new FormControl(''),
+          label: 'Descripción',
+          placeholder:
+            'Escriba la breve descripción que estará en la parte superior de la imagen..',
+          inputType: 'textarea',
+          styles: {
+            containerStyles: {
+              marginTop: '121px',
+            },
+            fieldStyles: {
+              backgroundColor: 'white',
+              height: '127px',
+              borderRadius: '10px',
+            },
+            labelStyles: {
+              fontSize: '19px',
+              marginBottom: '17px',
+              fontWeight: '300',
+            },
+          },
+        },
+      ],
+      customScrollToStep: (params) => {
+        params.scrollToStep(0, false);
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0, false);
+      },
+      justExecuteCustomScrollToStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+    },
+    {
+      fieldsList: [
+        {
+          name: 'name',
+          fieldControl: new FormControl(''),
+          label: 'Nombre',
+          placeholder:
+            'Escriba el nombre del producto..',
+          styles: {
+            containerStyles: {
+              width: '83.70%',
+              marginTop: '71px',
+            },
+            fieldStyles: {
+              width: '100%',
+              marginTop: '16px',
+            },
+            labelStyles: {
+              fontSize: '24px',
+              fontWeight: '600',
+            },
+          },
+        },
+      ],
+      customScrollToStep: (params) => {
+        params.scrollToStep(0, false);
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0, false);
+      },
+      justExecuteCustomScrollToStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+    },
+    {
+      fieldsList: [
+        {
+          name: 'collaborations',
+          fieldControl: new FormControl(''),
+          label: 'Precio que pagará el colaborador',
+          placeholder:
+            '$ que colaborarás..',
+          inputType: 'number',
+          formattedValue: '',
+          shouldFormatNumber: true,
+          changeCallbackFunction: (change, params) => {
+            try {
+              const plainNumber = change
+                .split(',')
+                .join('')
+                .split('.')
+                .join('');
+              const formatted = this.decimalPipe.transform(
+                Number(plainNumber),
+                '1.0-2'
+              );
+
+              if (formatted === '0') {
+                this.formSteps[4].fieldsList[0].placeholder = '';
+              }
+
+              this.formSteps[4].fieldsList[0].formattedValue = '$' + formatted;
+              // this.applicationRef.tick();
+            } catch (error) {
+              console.log(error);
+            }
+          },
+          styles: {
+            containerStyles: {
+              width: '83.70%',
+              marginTop: '71px',
+              position: 'relative',
+            },
+            fieldStyles: {
+              backgroundColor: 'transparent',
+              color: 'transparent',
+              zIndex: '50',
+              position: 'absolute',
+              bottom: '0px',
+              left: '0px',
+            },
+            labelStyles: labelStyles,
+            formattedInputStyles: {
+              bottom: '0px',
+              left: '0px',
+              zIndex: '1',
+            }
+          },
+        }
+      ],
+      pageHeader: {
+        text: 'Sobre List-2-Raise',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: '900',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '50px',
+          marginBottom: '60px',
+        }
+      },
+      customScrollToStep: (params) => {
+        params.scrollToStep(0, false);
+      },
+      customScrollToStepBackwards: (params) => {
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -362,14 +544,14 @@ export class ItemCreatorComponent implements OnInit {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
 
-          this.formSteps[0].fieldsList[0].fieldControl.setValue(description);
-          this.formSteps[0].fieldsList[1].fieldControl.setValue(
+          this.formSteps[0].fieldsList[0].fieldControl.setValue(
             String(pricing)
           );
+          this.formSteps[2].fieldsList[0].fieldControl.setValue(description);
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-          this.formSteps[0].embeddedComponents[0].shouldNotRender = true;
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
 
