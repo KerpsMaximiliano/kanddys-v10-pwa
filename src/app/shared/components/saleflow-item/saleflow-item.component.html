@@ -1,6 +1,31 @@
-<div class="itemContainer type{{type}}">
+<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big}">
   <div class="marginCard" *ngIf = "type == 1">
-    <div
+        <div
+        class="itemImg"
+        [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
+        (click)="onClick()"
+      ></div>
+
+      <div class="info-area">
+          
+          <div class="flexer">
+              <span class="price">${{price | number}}</span>
+              <img [src]="env + 'closed-eye.svg'" width="17.21px" height="13.67px" *ngIf="showIcon">
+          </div>
+
+          <div class="flexer-middle">
+              <span class="income">Ingreso</span>
+              <span class="income"> ${{income | number}}</span>
+          </div>
+
+          <div class="flexer">
+              <span class="sales">{{quantity}} Ventas</span>
+              <span class="stars">{{index1 | number}} <img [src]="env + '/star.svg'" alt="Estrellas" width="13.75px" height="13.05px" class="star-icon"></span>
+              <span class="total">{{index2 | number}}</span>
+          </div>
+      </div>
+
+    <!-- <div
       class="itemImg"
       [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
       [ngClass]="{
@@ -27,7 +52,7 @@
       style="cursor: pointer;"
     >
       <i class="fas fa-check-circle icon"></i>
-    </div>
+    </div> -->
   </div>
 
   <div *ngIf="type == 2">
@@ -53,21 +78,29 @@
         <i class="fas fa-check-circle icon"></i>
       </div>
     </div>
-    <div class="infoContainer">
-      <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
-        ${{price | number}}
-      </div>
-      <p class="desc" *ngIf="description && showDescription">{{description}}</p>
-      <p class="income" *ngIf="income">${{income | number}} Ingreso</p>
-      <div
-        *ngIf="selectable"
-        (click)="toggleSelect($event)" 
-        [ngClass]="{ selected: isSelected }" 
-        class="checkBox" 
-        style="cursor: pointer;"
-      > 
-        <i class="fas fa-check-circle icon"></i>
-      </div>
+    <div class="infoContainer two">
+
+        <div class="wrapper">
+            <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
+              ${{price | number}}
+            </div>
+            <p class="desc" *ngIf="description && showDescription">{{description}}</p>
+            <p class="income" *ngIf="income">${{income | number}} Ingreso</p>
+            <div
+              *ngIf="selectable"
+              (click)="toggleSelect($event)" 
+              [ngClass]="{ selected: isSelected }" 
+              class="checkBox" 
+              style="cursor: pointer;"
+            > 
+              <i class="fas fa-check-circle icon"></i>
+            </div>
+        </div>
+
+      <button class="cart" (click)="actionator($event)" *ngIf="big">
+        ADICIONAR <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+      </button>
+
     </div>
   </div>
 </div>
