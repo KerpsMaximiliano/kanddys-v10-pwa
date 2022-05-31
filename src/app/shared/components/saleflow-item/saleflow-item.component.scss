@@ -75,6 +75,7 @@
     }//Two of infoContainer
 
     .wrapper{
+        width: 100%;
         display: flex;
         flex-direction: column;
     }//Info container two wrapper
@@ -125,6 +126,10 @@
         margin-left: auto;
         margin-right: 5px;
         cursor: pointer;
+
+        .carrito{
+           filter: invert(12%) sepia(7%) saturate(6579%) hue-rotate(177deg) brightness(30%) contrast(100%)
+        }
     }//Yellow button
     
   }
