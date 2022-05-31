@@ -25,6 +25,7 @@ export const body = `
   email
   image
   bio
+  default
   active
   owner { 
     phone
@@ -44,6 +45,18 @@ export const myMerchants = gql`
 export const merchants = gql`
   query merchants($params: ListParams) {
     merchants(params: $params) { ${body} }
+  }
+`;
+
+export const merchantDefault = gql`
+  query merchantDefault {
+    merchantDefault {
+      _id
+      name 
+      owner {
+        _id
+      }
+    }
   }
 `;
 

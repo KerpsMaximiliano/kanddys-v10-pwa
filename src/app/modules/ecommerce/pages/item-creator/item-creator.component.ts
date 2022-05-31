@@ -9,6 +9,10 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { DecimalPipe } from '@angular/common';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -27,6 +31,9 @@ export class ItemCreatorComponent implements OnInit {
   currentItemId: string = null;
   scrollableForm = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
+  loggedUserDefaultMerchant: Merchant;
+  loggedUserDefaultSaleflow: SaleFlow;
+  loggedIn: boolean = false;
   files: File[] = [];
   formSteps: FormStep[] = [
     {
@@ -67,6 +74,7 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '58.011%',
+              minWidth: '210px',
               marginTop: '102px',
               position: 'relative',
             },
@@ -216,6 +224,7 @@ export class ItemCreatorComponent implements OnInit {
               this.currentUserId &&
               this.merchantOwnerId &&
               this.currentUserId === this.merchantOwnerId
+              && this.currentItemId
             ) {
               await this.itemService.updateItem(
                 {
@@ -231,16 +240,40 @@ export class ItemCreatorComponent implements OnInit {
                 this.currentItemId
               );
             } else {
-              await this.itemService.createPreItem({
-                name: values['4'].name,
-                description: values['3'].description,
-                pricing: Number(values['1'].price),
-                images: this.files,
-                content: values['2'].whatsIncluded,
-                currencies: [],
-                hasExtraPrice: false,
-                purchaseLocations: [],
-              });
+              if (this.loggedIn) {
+                const { createItem } = await this.itemService.createItem({
+                  name: values['4'].name,
+                  description: values['3'].description !== '' ? values['3'].description : null,
+                  pricing: Number(values['1'].price),
+                  images: this.files,
+                  merchant: this.loggedUserDefaultMerchant._id,
+                  content: values['2'].whatsIncluded.length > 0 && !(
+                    values['2'].whatsIncluded.length === 1 &&
+                    values['2'].whatsIncluded[0] === ''
+                  ) ? values['2'].whatsIncluded : null,
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                });
+
+                await this.saleflowSarvice.addItemToSaleFlow({
+                  item: createItem._id
+                }, this.loggedUserDefaultSaleflow._id);
+              } else {
+                await this.itemService.createPreItem({
+                  name: values['4'].name,
+                  description: values['3'].description !== '' ? values['3'].description : null,
+                  pricing: Number(values['1'].price),
+                  images: this.files,
+                  content: values['2'].whatsIncluded.length > 0 && !(
+                    values['2'].whatsIncluded.length === 1 &&
+                    values['2'].whatsIncluded[0] === ''
+                  ) ? values['2'].whatsIncluded : null,
+                  currencies: [],
+                  hasExtraPrice: false,
+                  purchaseLocations: [],
+                });
+              }
             }
           } catch (error) {
             console.log(error);
@@ -523,6 +556,8 @@ export class ItemCreatorComponent implements OnInit {
     private authService: AuthService,
     private route: ActivatedRoute,
     private decimalPipe: DecimalPipe,
+    private merchantService: MerchantsService,
+    private saleflowSarvice: SaleFlowService,
     private applicationRef: ApplicationRef
   ) { }
 
@@ -531,7 +566,11 @@ export class ItemCreatorComponent implements OnInit {
       const { itemId } = routeParams;
       this.currentItemId = itemId;
 
-      if (itemId && localStorage.getItem('session-token')) {
+      if (localStorage.getItem('session-token')) {
+        this.loggedIn = true;
+      }
+
+      if (itemId && this.loggedIn) {
         lockUI();
 
         const myUser = await this.authService.me();
@@ -547,8 +586,9 @@ export class ItemCreatorComponent implements OnInit {
           this.formSteps[0].fieldsList[0].fieldControl.setValue(
             String(pricing)
           );
-          this.formSteps[2].fieldsList[0].fieldControl.setValue(description);
+          this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.defaultImages = images;
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
@@ -559,9 +599,14 @@ export class ItemCreatorComponent implements OnInit {
           const formArray = this.formSteps[1].fieldsList[0]
             .fieldControl as FormArray;
           formArray.removeAt(0);
-          content.forEach((item) => {
-            formArray.push(new FormControl(item));
-          });
+
+          if (content)
+            content.forEach((item) => {
+              formArray.push(new FormControl(item));
+            });
+          else {
+            formArray.push(new FormControl(''));
+          }
           unlockUI();
         } else {
           if (itemId) this.router.navigate(['/']);
@@ -569,8 +614,23 @@ export class ItemCreatorComponent implements OnInit {
       } else {
         unlockUI();
 
-        if (itemId) this.router.navigate(['/']);
+        if (itemId) this.router.navigate(['/'])
+        else {
+          await this.verifyLoggedUserMerchant();
+        }
       }
     });
+  }
+
+  async verifyLoggedUserMerchant() {
+    if (this.loggedIn) {
+      const defaultMerchant = await this.merchantService.merchantDefault();
+      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant._id);
+
+      if (defaultMerchant && defaultSaleflow) {
+        this.loggedUserDefaultMerchant = defaultMerchant;
+        this.loggedUserDefaultSaleflow = defaultSaleflow;
+      }
+    }
   }
 }
