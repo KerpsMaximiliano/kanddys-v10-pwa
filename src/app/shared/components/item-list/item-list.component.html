@@ -114,9 +114,17 @@
                 <img [src]="env + '/person.svg'" alt="" class="person">
             </ng-container>
 
-            <ng-container *ngIf="itemListContent.add_tag">
+            <ng-container *ngIf="itemListContent.add_tag && !itemListContent.tag_function">
                 <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag">
             </ng-container>
+
+            <button 
+              class="icon-button"
+              *ngIf="itemListContent.add_tag && itemListContent.tag_function"
+              (click)="itemListContent.tag_function()"
+            >
+              <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag">
+            </button>
         </div>
         </ng-container>
 

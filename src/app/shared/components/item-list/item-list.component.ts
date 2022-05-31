@@ -30,6 +30,7 @@ export interface ItemList {
   icons_bottom_right_first?: Array<any>;
   merchant_info?: boolean;
   add_tag?: boolean;
+  tag_function?: () => void,
   bar?: boolean;
   barColor?: string;
   barText?: string;

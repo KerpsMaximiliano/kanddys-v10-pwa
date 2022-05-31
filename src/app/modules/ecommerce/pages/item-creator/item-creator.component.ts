@@ -352,8 +352,8 @@ export class ItemCreatorComponent implements OnInit {
       if (itemId && localStorage.getItem('session-token')) {
         lockUI();
 
-        const { _id: myUserId } = await this.authService.me();
-        this.currentUserId = myUserId;
+        const myUser = await this.authService.me();
+        this.currentUserId = myUser._id;
 
         const { pricing, images, content, description, merchant } =
           await this.itemService.item(itemId);
@@ -372,6 +372,8 @@ export class ItemCreatorComponent implements OnInit {
           content.forEach((item) => {
             formArray.push(new FormControl(item));
           });
+          unlockUI();
+        } else {
           unlockUI();
         }
       } else {

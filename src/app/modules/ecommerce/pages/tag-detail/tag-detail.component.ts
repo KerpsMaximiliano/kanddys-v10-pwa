@@ -9,6 +9,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
 import { TagsService } from '../../../../core/services/tags.service';
 import * as moment from 'moment';
+import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 
 @Component({
   selector: 'app-tag-detail',
@@ -29,11 +30,10 @@ export class TagDetailComponent implements OnInit {
   tagID: string = '627d60ff456106f4571b226d'; //627d60ff456106f4571b226d(con mensaje) y 627ebc6fe48bbbfddd6a89a7(sin mensaje)
   transparent: boolean = false;
 
-  ordurs: Array<any> = [{
+  ordurs: ItemList[] = [{
     title: 'DummyOrder',
-    eventTitle: 'event title',
     price: null,
-    description: this.fields,
+    description: this.fields[0],
     image: '',
     eventImage: undefined,
     icon: '',
@@ -62,7 +62,7 @@ export class TagDetailComponent implements OnInit {
     title: 'NombreID',
     eventTitle: undefined,
     price: null,
-    description: this.fields,
+    description: this.fields[0],
     image: '',
     eventImage: undefined,
     icon: '',
@@ -91,7 +91,7 @@ export class TagDetailComponent implements OnInit {
     title: 'NombreID',
     eventTitle: undefined,
     price: null,
-    description: this.fields,
+    description: this.fields[0],
     image: '',
     eventImage: undefined,
     icon: '',
@@ -121,7 +121,7 @@ export class TagDetailComponent implements OnInit {
     eventTitle: undefined,
     subtitle: 'CompradorID',
     price: null,
-    description: this.fields,
+    description: this.fields[1],
     image: '',
     eventImage: undefined,
     icon: '',
