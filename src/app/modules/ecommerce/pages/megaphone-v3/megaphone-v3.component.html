@@ -10,16 +10,9 @@
   </div>
 
   <div
-    style="margin-bottom: 60px"
+    style="margin-bottom: 60px; margin-top: 30px;"
     *ngIf="saleflowData && inputPackage.length > 0 && items.length === 0"
   >
-    <div class="header-wrapper FD" [ngStyle]="{ height: '90px' }">
-      <h6 class="header-text">
-        Paquetes
-      </h6>
-      <img [src]="imageFolder + '/photoCollect.svg'" alt="" class="bpf">
-    </div>
-    <div>
       <ng-container *ngIf="visualMode; else swiperMode">
         <ng-container *ngIf="sliderPackage.length && packageData.length === 0">
           <div
@@ -63,7 +56,6 @@
           (toggleEmitter)="toggleSelected('package', $event)"
         ></app-swiper>
       </ng-template>
-    </div>
    
   </div>
 

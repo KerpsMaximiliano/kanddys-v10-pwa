@@ -8,7 +8,7 @@
                     <span class="subtitle">{{package?.description || item?.description}}</span>
                 </ng-container>
             </div>
-            <h6 for="Precio del plan" class="price">${{package?.price || item?.pricing}} DOP</h6>
+            <p class="price">${{package?.price || item?.pricing | number}} DOP</p>
         </div>
         <div class="plan-details">
 
