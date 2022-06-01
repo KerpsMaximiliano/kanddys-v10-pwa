@@ -26,7 +26,6 @@
                 margin-bottom: 30px;
 
                 .plan-name {
-                    max-width: 90%;
                     font-family: 'NeueMontreal';
                     font-size: 27px;
                     font-weight: bold;
@@ -35,7 +34,6 @@
                 }
 
                 .subtitle {
-                    max-width: 90%;
                     font-family: 'NeueMontreal';
                     font-size: 16px;
                     color: #232323;
@@ -137,14 +135,6 @@
 @media only screen and (max-width: 385px){
  
     .body{
-        padding: 26px 20px 25px 25px !important;
-    }
-
-    .plan-name{
-        max-width: 85% !important;
-    }
-    
-    .subtitle{
-        max-width: 85% !important;
+        padding: 26px 20px 25px 20px !important;
     }
 }
