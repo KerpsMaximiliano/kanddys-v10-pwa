@@ -17,7 +17,7 @@
           [showSelected]="true" [price]="item.pricing" [showPrice]="item.customizerId ? false : true" priceAlign="start"
           [backgroundSize]="item.customizerId ? 'contain' : 'cover'" (itemClicked)="onItemClick(item._id)"
           (action)="onItemClick(item._id)"></app-saleflow-item>
-        <app-package-item [clickAble]="true" *ngIf="!item.showImages" [item]="item" (action)="onItemClick(item._id)">
+        <app-package-item [clickAble]="true" *ngIf="!item.showImages" [item]="item" (action)="onItemClick(item._id, $event)">
         </app-package-item>
       </ng-container>
     </div>
@@ -32,7 +32,7 @@
             [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'" (itemClicked)="onItemClick(swiperItem._id)"
             (action)="onItemClick(swiperItem._id)"></app-saleflow-item>
           <app-package-item [clickAble]="true" *ngIf="!swiperItem.showImages" [item]="swiperItem"
-            (action)="onItemClick(swiperItem._id)"></app-package-item>
+            (action)="onItemClick(swiperItem._id, $event)"></app-package-item>
         </ng-container>
       </div>
     </div>

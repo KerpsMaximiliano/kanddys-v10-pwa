@@ -1,6 +1,6 @@
 <div class="container">
 
-    <div class="body" [ngClass]="{'click-able': clickAble == true}" (click)="clickAble && onClick(item?._id || package?._id)">
+    <div class="body" [ngClass]="{'click-able': clickAble == true}" (click)="clickAble && onClick()">
         <div class="top">
             <div class="wrapper">
                 <h3 class="plan-name">{{package?.name || item?.name}}</h3>
@@ -26,13 +26,13 @@
 
         </div>
 
-        <button class="cart" (click)="onButtonClick(item?._id || package?._id)" [ngClass]="{small: buttonSize == 'small'}"
+        <button class="cart" (click)="onButtonClick()" [ngClass]="{small: buttonSize == 'small'}"
             *ngIf="!item?.isSelected">
             ADICIONAR <ng-container *ngIf="buttonSize == 'normal'"> AL </ng-container>
             <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
         </button>
 
-        <button class="box white" (click)="onButtonClick(item?._id || package?._id)"
+        <button class="box white" (click)="onButtonClick()"
             [ngClass]="{small: buttonSize == 'small'}" *ngIf="item?.isSelected">
             En el Carrito
             <i class="fas fa-check-circle icon"></i>
