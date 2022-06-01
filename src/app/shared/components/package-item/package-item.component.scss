@@ -22,6 +22,7 @@
                 display: flex;
                 flex-wrap: wrap;
                 flex-direction: column;
+                margin-bottom: 30px;
 
                 .plan-name {
                     font-family: 'NeueMontreal';
@@ -63,7 +64,7 @@
                 white-space: break-spaces;
 
                 &:not(:last-of-type) {
-                    margin-bottom: 10px;
+                    margin-bottom: 11.5px;
                 }
             }
         }
