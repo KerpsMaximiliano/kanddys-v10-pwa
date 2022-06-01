@@ -98,7 +98,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   organizeItems() {
-    if(!this.categories || !this.categories.length) return;
+    if (!this.categories || !this.categories.length) return;
     this.categorylessItems = this.items.filter((item) => !item.category.length);
     this.categories.forEach((saleflowCategory) => {
       if (
@@ -313,7 +313,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   onItemClick(id: string) {
     const itemData = this.items.find((item) => item._id === id);
     if (!itemData) return;
-    if(itemData.category.length) this.header.categoryId = itemData.category[0]?._id;
+    if (itemData.category.length) this.header.categoryId = itemData.category[0]?._id;
     this.header.items = [itemData];
     if (itemData.customizerId) {
       this.header.emptyOrderProducts(this.saleflowData._id);
@@ -341,7 +341,15 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.header.storeOrderProduct(this.saleflowData._id, product);
       this.header.storeItem(this.saleflowData._id, itemData);
       this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
-    } else this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`]);
+    } else {
+      this.header.storeOrderProduct(this.saleflowData._id, {
+        item: itemData._id,
+        amount: 1,
+        saleflow: this.saleflowData._id,
+      });
+      this.header.storeItem(this.saleflowData._id, itemData);
+      this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`])
+    };
   }
 
   save(index?: number) {
