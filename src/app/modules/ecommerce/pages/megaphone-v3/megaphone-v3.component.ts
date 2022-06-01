@@ -342,8 +342,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.header.storeItem(this.saleflowData._id, itemData);
       this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
     } else {
-      console.log("bollean", justRedirect);
-
       if(!justRedirect) {
         this.header.storeOrderProduct(this.saleflowData._id, {
           item: itemData._id,
