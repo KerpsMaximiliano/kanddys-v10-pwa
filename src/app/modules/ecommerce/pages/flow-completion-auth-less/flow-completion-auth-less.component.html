@@ -13,7 +13,9 @@
     "
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
-    [orderItems]="true"
+    [cart]="true"
+    [cartCallback]="showCartCallBack"
+    [cartAmount]="itemsAmount"
     (onClose)="goBack()"
   ></app-helper-header>
   <div *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS'">

@@ -24,6 +24,8 @@ import {
   PhoneNumberFormat,
 } from 'ngx-intl-tel-input';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 interface BankDetails {
   status: boolean;
@@ -85,6 +87,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
   shouldAllowPaymentSkipping: boolean = false;
+  showCartCallBack: () => void;
+  itemsAmount: number;
 
   constructor(
     private authService: AuthService,
@@ -97,7 +101,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
-    private saleflow: SaleFlowService
+    private saleflow: SaleFlowService,
+    private dialogService: DialogService,
   ) {}
 
   afterOrderRequest = async (data) => {
@@ -118,6 +123,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       if (!this.merchantInfo) {
         await this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
           this.merchantInfo = this.header.merchantInfo;
+          if(this.merchantInfo?.name.includes('&')) {
+            this.merchantInfo.name = this.merchantInfo?.name.replace('&', 'and');
+          }
         });
       }
       const totalPrice = this.fakeData.subtotals.reduce(
@@ -169,6 +177,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         orderFinished: true,
         products: showProducts,
       };
+      this.itemsAmount = showProducts.length;
+      this.showCartCallBack = () => this.openCart();
 
       if (!this.orderData) {
         this.router.navigate(['/error-screen/?type=item']);
@@ -181,6 +191,15 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.router.navigate(['/ecommerce/error-screen']);
     }
   };
+
+  openCart() {
+    this.dialogService.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: this.dialogProps,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 
   async getOrderData(id: string, preOrder = false) {
     if (preOrder) {
