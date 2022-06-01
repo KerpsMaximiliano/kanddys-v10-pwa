@@ -18,8 +18,9 @@ export class PackageItemComponent implements OnInit {
   @Input() clickAble: boolean;
   @Input() item: Item;
   @Output() action = new EventEmitter();
+  @Output() itemClicked = new EventEmitter();
   saleflowData: SaleFlow;
-  inCart: boolean = false;
+  @Input() inCart: boolean = false;
   env: string = environment.assetsUrl;
 
   constructor(private headerService: HeaderService, private route: ActivatedRoute) { }
@@ -27,6 +28,8 @@ export class PackageItemComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.headerService.fetchSaleflow(params.id);
+      if (this.saleflowData) this.inCart = this.itemInCart(this.item);
+
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
     })
   }
@@ -39,6 +42,8 @@ export class PackageItemComponent implements OnInit {
     });
     this.headerService.storeItem(this.saleflowData._id, item);
     this.inCart = this.itemInCart(item);
+
+    this.itemClicked.emit(item);
   }
 
   itemInCart(itemData: Item) {
@@ -47,8 +52,4 @@ export class PackageItemComponent implements OnInit {
       return productData.some((item) => item._id === itemData._id);
     else return false;
   }
-
-  // actionator(event) {
-  //   this.action.emit(event)
-  // }
 }
