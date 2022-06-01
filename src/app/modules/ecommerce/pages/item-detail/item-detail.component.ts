@@ -67,7 +67,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       this.boxTitle = this.itemData.merchant?.name;
       this.boxText = this.itemData.description || this.itemData.name;
       this.priceLabel = this.itemData.pricing;
-      if(this.itemData.images.length) this.openImageModal(this.itemData.images[0]);
+      if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.fullLink = `${this.saleflowData._id 
         ? `${environment.uri}/ecommerce/item-detail/${this.saleflowData._id}/${params.id}?viewtype=community`

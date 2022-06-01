@@ -1,38 +1,73 @@
 <div style="min-height: 100vh">
   <div class="header-bg">
-    <app-header-info [profileImage]="banner" [title]="merchantName" [description]="merchantSubheadline"
-      [socials]="merchantSocials"></app-header-info>
+    <app-header-info
+      [profileImage]="banner"
+      [title]="merchantName"
+      [description]="merchantSubheadline"
+      [socials]="merchantSocials"
+    ></app-header-info>
   </div>
   <div style="margin-bottom: 60px; margin-top: 30px;" *ngIf="saleflowData && packageData.length && items.length === 0">
     <div class="package-list" *ngFor="let data of packageData; let i = index">
-      <app-package-item [package]="data.package" [packageItems]="data.items" (action)="goToPackageDetail(i)">
-      </app-package-item>
+      <app-package-item
+        [package]="data.package"
+        [packageItems]="data.items"
+        (action)="goToPackageDetail(i)"
+      ></app-package-item>
     </div>
   </div>
   <div class="content" *ngIf="!hasCustomizer && items.length && itemsByCategory.length < 4">
     <div class="item-list" style="margin-bottom: 60px;" *ngIf="categorylessItems.length">
       <ng-container *ngFor="let item of categorylessItems; index as i">
-        <app-saleflow-item *ngIf="item.showImages" [type]="2" [big]="true" [name]="item.name"
-          [showBox]="item.customizerId ? false : true" [imgURL]="item.images[0]" [isSelected]="item.isSelected"
-          [showSelected]="true" [price]="item.pricing" [showPrice]="item.customizerId ? false : true" priceAlign="start"
-          [backgroundSize]="item.customizerId ? 'contain' : 'cover'" (itemClicked)="onItemClick(item._id)"
-          (action)="onItemClick(item._id)"></app-saleflow-item>
-        <app-package-item [clickAble]="true" *ngIf="!item.showImages" [item]="item" (action)="onItemClick(item._id, $event)">
-        </app-package-item>
+        <app-saleflow-item
+          *ngIf="item.showImages"
+          [type]="2"
+          [big]="true"
+          [name]="item.name"
+          [showBox]="item.customizerId ? false : true"
+          [imgURL]="item.images[0]"
+          [isSelected]="item.isSelected"
+          [showSelected]="true" [price]="item.pricing"
+          [showPrice]="item.customizerId ? false : true"
+          priceAlign="start"
+          [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
+          (itemClicked)="onItemClick(item._id)"
+          (action)="onItemClick(item._id)"
+        ></app-saleflow-item>
+        <app-package-item
+          [clickAble]="true"
+          *ngIf="!item.showImages"
+          [item]="item"
+          (action)="onItemClick(item._id, $event)"
+        ></app-package-item>
       </ng-container>
     </div>
     <div *ngFor="let categoryItems of itemsByCategory; let i = index">
       <h6 class="category-header">{{ categoryItems.label }}</h6>
       <div class="item-list">
         <ng-container *ngFor="let swiperItem of categoryItems.items; index as i">
-          <app-saleflow-item *ngIf="swiperItem.showImages" [type]="2" [big]="true" [name]="swiperItem.name"
-            [showBox]="swiperItem.customizerId ? false : true" [imgURL]="swiperItem.images[0]"
-            [isSelected]="swiperItem.isSelected" [showSelected]="true" [price]="swiperItem.pricing"
-            [showPrice]="swiperItem.customizerId ? false : true" priceAlign="start"
-            [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'" (itemClicked)="onItemClick(swiperItem._id)"
-            (action)="onItemClick(swiperItem._id)"></app-saleflow-item>
-          <app-package-item [clickAble]="true" *ngIf="!swiperItem.showImages" [item]="swiperItem"
-            (action)="onItemClick(swiperItem._id, $event)"></app-package-item>
+          <app-saleflow-item
+            *ngIf="swiperItem.showImages"
+            [type]="2"
+            [big]="true"
+            [name]="swiperItem.name"
+            [showBox]="swiperItem.customizerId ? false : true"
+            [imgURL]="swiperItem.images[0]"
+            [isSelected]="swiperItem.isSelected"
+            [showSelected]="true"
+            [price]="swiperItem.pricing"
+            [showPrice]="swiperItem.customizerId ? false : true"
+            priceAlign="start"
+            [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+            (itemClicked)="onItemClick(swiperItem._id)"
+            (action)="onItemClick(swiperItem._id)"
+          ></app-saleflow-item>
+          <app-package-item
+            [clickAble]="true"
+            *ngIf="!swiperItem.showImages"
+            [item]="swiperItem"
+            (action)="onItemClick(swiperItem._id, $event)"
+          ></app-package-item>
         </ng-container>
       </div>
     </div>
@@ -51,11 +86,18 @@
       <div style="padding: 0 1.20rem;">
         <swiper [config]="swiperConfig">
           <div *ngFor="let swiperItem of item.items; let j = index" style="max-width: 227px;">
-            <app-saleflow-item [type]="2" [showBox]="swiperItem.customizerId ? false : true"
-              [imgURL]="swiperItem.images[0]" [isSelected]="swiperItem.isSelected" [showSelected]="true"
-              [price]="swiperItem.pricing" [showPrice]="swiperItem.customizerId ? false : true" priceAlign="start"
+            <app-saleflow-item
+              [type]="2"
+              [showBox]="swiperItem.customizerId ? false : true"
+              [imgURL]="swiperItem.images[0]"
+              [isSelected]="swiperItem.isSelected"
+              [showSelected]="true"
+              [price]="swiperItem.pricing"
+              [showPrice]="swiperItem.customizerId ? false : true"
+              priceAlign="start"
               [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
-              (itemClicked)="onItemClick(swiperItem._id)"></app-saleflow-item>
+              (itemClicked)="onItemClick(swiperItem._id)"
+            ></app-saleflow-item>
           </div>
         </swiper>
       </div>
@@ -123,7 +165,10 @@
 
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">
-    <app-sticky-button [mode]="canOpenCart ? 'basic' : 'disabled'" [size]="canOpenCart ? 'normal' : 'small'" [text]="
+    <app-sticky-button
+      [mode]="canOpenCart ? 'basic' : 'disabled'"
+      [size]="canOpenCart ? 'normal' : 'small'"
+      [text]="
         canOpenCart
           ? 'VER CARRITO DE COMPRAS'
           : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
