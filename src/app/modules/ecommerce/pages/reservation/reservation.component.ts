@@ -98,6 +98,8 @@ export class ReservationComponent implements OnInit {
   timeComponentFrom: string;
   weekDay: string;
   orderData: any;
+  dialogProps: any;
+
   //calendar: 6149f790eb8b911a707523ce
   ngOnInit(): void {
     this.header.disableNav();
@@ -137,6 +139,7 @@ export class ReservationComponent implements OnInit {
       this.weekDay =
         this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
     }
+    this.dialogProps = { orderFinished: true };
     /*this.route.params.subscribe((params) => {
       this.saleflowData._id = params.id;
       console.log(this.saleflowData._id);
