@@ -22,12 +22,11 @@ export class PackageItemComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onClick(id: string) {
-    console.log("clickkasd")
-    this.action.emit(id);
+  onClick() {
+    this.action.emit(true);
   }
 
-  onButtonClick(id: string) {
-    this.action.emit(id);
+  onButtonClick() {
+    this.action.emit(false);
   }
 }
