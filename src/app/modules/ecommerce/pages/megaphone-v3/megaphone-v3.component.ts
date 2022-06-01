@@ -3,7 +3,6 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { environment } from 'src/environments/environment';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -31,6 +30,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     label: string;
     items: Item[];
   }[] = [];
+  categorylessItems: Item[] = [];
   inputsItems: Item[] = [];
   packageData: {
     package?: ItemPackage;
@@ -44,10 +44,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantSubheadline: string = '';
   merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
-  visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
-  imageFolder: string = environment.assetsUrl;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -100,29 +98,22 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   organizeItems() {
-    if (this.categories) {
-      this.categories.forEach((saleflowCategory) => {
-        if (
-          this.items.some((item) =>
+    if(!this.categories || !this.categories.length) return;
+    this.categorylessItems = this.items.filter((item) => !item.category.length);
+    this.categories.forEach((saleflowCategory) => {
+      if (
+        this.items.some((item) =>
+          item.category.some((category) => category.name === saleflowCategory.name)
+        )
+      ) {
+        this.itemsByCategory.push({
+          label: saleflowCategory.name,
+          items: this.items.filter((item) =>
             item.category.some((category) => category.name === saleflowCategory.name)
-          )
-        ) {
-          this.itemsByCategory.push({
-            label: saleflowCategory.name,
-            items: this.items.filter((item) =>
-              item.category.some((category) => category.name === saleflowCategory.name)
-            ),
-          });
-        }
-      });
-    }
-    let renderedSpinners = 0;
-    for (let i = 0; i < this.itemsByCategory.length; i++) {
-      renderedSpinners++;
-      if (renderedSpinners === this.itemsByCategory.length) {
-        unlockUI();
+          ),
+        });
       }
-    }
+    });
   }
 
   // =====================================================

@@ -13,56 +13,34 @@
     style="margin-bottom: 60px; margin-top: 30px;"
     *ngIf="saleflowData && inputPackage.length > 0 && items.length === 0"
   >
-      <ng-container *ngIf="visualMode; else swiperMode">
-        <ng-container *ngIf="sliderPackage.length && packageData.length === 0">
-          <div
-            class="package-list"
-            *ngFor="let item of sliderPackage; let i = index"
-          >
-            <app-package-item
-            [package]="item"
-            (action)="goToPackageDetail(i)"
-            ></app-package-item>
-            <!-- <app-saleflow-item
-              [imgURL]="item.images"
-              [price]="item.price"
-              [showPrice]="true"
-              [description]="item.description"
-              [showDescription]="true"
-              [isSelected]="item.selected"
-              [priceAlign]="'start'"
-              [type]="2"
-              (click)="goToPackageDetail(i)"
-            >
-            </app-saleflow-item> -->
-          </div>
-        </ng-container>
-        <ng-container *ngIf="packageData.length">
-          <div
-            class="package-list"
-            *ngFor="let data of packageData; let i = index"
-          >
-            <app-package-item
-              [package]="data.package"
-              [packageItems]="data.items"
-              (action)="goToPackageDetail(i)"
-            ></app-package-item>
-          </div>
-        </ng-container>
-      </ng-container>
-      <ng-template #swiperMode>
-        <app-swiper
-          [saleFlowTwo]="true"
-          [selectable]="saleflowData?.canBuyMultipleItems"
-          [saleFlowTwoData]="sliderPackage"
-          (slideActive)="save($event)"
-          (toggleEmitter)="toggleSelected('package', $event)"
-        ></app-swiper>
-      </ng-template>
+    <ng-container *ngIf="sliderPackage.length && packageData.length === 0">
+      <div
+        class="package-list"
+        *ngFor="let item of sliderPackage; let i = index"
+      >
+        <app-package-item
+          [package]="item"
+          (action)="goToPackageDetail(i)"
+        ></app-package-item>
+
+      </div>
+    </ng-container>
+    <ng-container *ngIf="packageData.length">
+      <div
+        class="package-list"
+        *ngFor="let data of packageData; let i = index"
+      >
+        <app-package-item
+          [package]="data.package"
+          [packageItems]="data.items"
+          (action)="goToPackageDetail(i)"
+        ></app-package-item>
+      </div>
+    </ng-container>
   </div>
   <div class="content" *ngIf="!hasCustomizer && items.length && itemsByCategory.length < 4">
-    <div class="item-list">
-      <ng-container *ngFor="let item of items; index as i">
+    <div class="item-list" style="margin-bottom: 60px;" *ngIf="categorylessItems.length">
+      <ng-container *ngFor="let item of categorylessItems; index as i">
         <app-saleflow-item
           *ngIf="item.showImages"
           [type]="2"
@@ -87,7 +65,7 @@
         ></app-package-item>
       </ng-container>
     </div>
-    <div *ngFor="let categoryItems of itemsByCategory; let i = index" style="margin-top: 60px;">
+    <div *ngFor="let categoryItems of itemsByCategory; let i = index">
       <h6 class="category-header">{{ categoryItems.label }}</h6>
       <div class="item-list">
         <ng-container *ngFor="let swiperItem of categoryItems.items; index as i">
