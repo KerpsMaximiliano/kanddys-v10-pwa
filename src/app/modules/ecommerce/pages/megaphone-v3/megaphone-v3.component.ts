@@ -310,10 +310,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     ]);
   }
 
-  onItemClick(firstIndex: number, secondIndex?: number) {
-    const itemData = secondIndex >= 0 ? this.itemsByCategory[firstIndex].items[secondIndex] : this.items[firstIndex];
+  onItemClick(id: string) {
+    const itemData = this.items.find((item) => item._id === id);
     if (!itemData) return;
-    this.header.categoryId = itemData.category[0]._id;
+    if(itemData.category.length) this.header.categoryId = itemData.category[0]?._id;
     this.header.items = [itemData];
     if (itemData.customizerId) {
       this.header.emptyOrderProducts(this.saleflowData._id);
@@ -340,16 +340,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       };
       this.header.storeOrderProduct(this.saleflowData._id, product);
       this.header.storeItem(this.saleflowData._id, itemData);
-      this.router.navigate([
-        `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
-      ]);
-    } else
-      this.router.navigate([
-        '/ecommerce/item-detail/' +
-        this.header.saleflow._id +
-        '/' +
-        itemData._id,
-      ], { queryParams: { viewtype: 'community' } });
+      this.router.navigate([`/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`]);
+    } else this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`]);
   }
 
   save(index?: number) {
@@ -383,8 +375,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.sliderPackage[index]._id}`]);
   }
 
-  goToItemDetail(item: Item) {
-    this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${item._id}`]);
+  goToItemDetail(id: string) {
+    this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${id}`]);
   }
 
   showShoppingCartDialog() {

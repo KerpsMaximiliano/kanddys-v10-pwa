@@ -141,7 +141,7 @@
                     [ctaText]="inCart ? 'En Mi Carrito' : 'Agregar al Carrito'"
                     btnColor="#3E782A"
                     [icon]="inCart && env  + '/white-checkmark.svg'"
-                    (click)="saveProduct()"
+                    (click)="onCartClick()"
                 >
                 </app-cta-buttons>
                 <div class="cart" *ngIf="itemCartAmount">
