@@ -25,7 +25,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: DialogService,
     private post: PostsService
-  ) {}
+  ) { }
   //added create-giftcard again because the merge was deleted??????
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
@@ -280,7 +280,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         }
 
         this.router.navigate([
-          'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
+          `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
         ]);
       },
       // customScrollToStepBackwards: (params) => { Esto estaba cuando el primer step era si/no
