@@ -1,29 +1,29 @@
-.container{
+.container {
     background-color: transparent;
 
-    .body{
+    .body {
         width: 90%;
         min-height: 132px;
         height: fit-content;
         padding: 26px 30px 25px 44px;
         display: flex;
         flex-direction: column;
-        background-color: rgba(189, 189,189, 17%);
+        background-color: rgba(189, 189, 189, 17%);
         border-radius: 18px;
         margin: 0 auto;
         position: relative;
 
-        .top{
+        .top {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
 
-            .wrapper{
+            .wrapper {
                 display: flex;
                 flex-wrap: wrap;
                 flex-direction: column;
 
-                .plan-name{
+                .plan-name {
                     font-family: 'NeueMontreal';
                     font-size: 27px;
                     font-weight: bold;
@@ -31,7 +31,7 @@
                     margin: 0;
                 }
 
-                .subtitle{
+                .subtitle {
                     font-family: 'NeueMontreal';
                     font-size: 16px;
                     color: #232323;
@@ -39,20 +39,22 @@
                 }
             }
 
-            .price{
+            .price {
                 font-family: 'NeueMontreal';
                 font-size: 16px;
                 color: #232323;
                 white-space: nowrap;
                 margin: 0;
             }
-        }//Fin de top
+        }
 
-        .plan-details{
+        //Fin de top
+
+        .plan-details {
             display: flex;
             flex-direction: column;
 
-            .content{
+            .content {
                 font-family: 'NeueMontreal';
                 font-size: 16px;
                 color: #232323;
@@ -63,9 +65,11 @@
                     margin-bottom: 10px;
                 }
             }
-        }//Fin de plan details
-        
-        .cart{
+        }
+
+        //Fin de plan details
+
+        .cart {
             border: none;
             border-radius: 26px;
             background-color: #FED230;
@@ -82,7 +86,7 @@
             margin-top: 34px;
             cursor: pointer;
 
-            &.small{
+            &.small {
                 width: 40%;
                 padding: 5px;
                 margin-left: auto;
@@ -90,13 +94,36 @@
             }
         }
 
-        &.click-able{
+        &.click-able {
             cursor: pointer;
         }
-    }//Fin de body
-    
+    }
+
+    //Fin de body
+
 }
 
-.carrito{
+.box {
+    padding: 5px 8px;
+    background-color: #8351FE;
+    color: white;
+    border: none;
+    height: 52px;
+    margin-top: 34px;
+    border-radius: 26px;
+    cursor: pointer;
+    font-family: "RobotoMedium";
+    font-size: 16px;
+    text-transform: uppercase;
+
+    &.white {
+        background-color: #ffffff;
+        color: #4773D8;
+        font-family: "RobotoMedium";
+        box-shadow: 0px 0px 15px 2px #ddd;
+    }
+}
+
+.carrito {
     filter: invert(12%) sepia(7%) saturate(6579%) hue-rotate(177deg) brightness(30%) contrast(100%);
 }
