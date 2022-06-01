@@ -65,7 +65,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private appService: AppService
-  ) {}
+  ) { }
 
   openDialog() {
     //
@@ -136,13 +136,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
+        console.log(e, "Evento de suscripción");
         let productData: Item[] = this.header.getItems(this.saleflowData._id);
         const selectedItems =
           productData?.length
             ? productData.map((item) => item._id)
             : [];
         this.items.forEach((item) => {
-          if(!item.customizerId) item.isSelected = selectedItems.includes(item._id);
+          if (!item.customizerId) item.isSelected = selectedItems.includes(item._id);
         })
         //sub.unsubscribe();
         this.canOpenCart = this.items.some((item) => item.isSelected);
@@ -221,12 +222,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
-          if(!this.items[i].customizerId) this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
+          if (!this.items[i].customizerId) this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
 
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
               this.items[i].fixedQuantity *
-                this.items[i].params[0].values[0].price +
+              this.items[i].params[0].values[0].price +
               this.items[i].pricing;
         }
         if (this.items.every((item) => item.index)) {
@@ -238,7 +239,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.status = 'complete';
         unlockUI();
       }
-      if(!this.saleflowData.packages.length && !this.saleflowData.items.length) {
+      if (!this.saleflowData.packages.length && !this.saleflowData.items.length) {
         this.status = 'complete';
         unlockUI();
       }
@@ -308,14 +309,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   seeCategories(index: number | string) {
-    if(typeof index === 'string') this.router.navigate([
+    if (typeof index === 'string') this.router.navigate([
       `ecommerce/category-items/${this.saleflowData._id}/${index}`,
     ]);
     else this.router.navigate([
-      `ecommerce/category-items/${this.saleflowData._id}/${
-        this.itemsByCategory[index].items[0].category.find(
-          (category) => category.name === this.itemsByCategory[index].label
-        )._id
+      `ecommerce/category-items/${this.saleflowData._id}/${this.itemsByCategory[index].items[0].category.find(
+        (category) => category.name === this.itemsByCategory[index].label
+      )._id
       }`,
     ]);
   }
@@ -356,10 +356,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     } else
       this.router.navigate([
         '/ecommerce/item-detail/' +
-          this.header.saleflow._id +
-          '/' +
-          itemData._id,
-      ], {queryParams: { viewtype: 'community' }});
+        this.header.saleflow._id +
+        '/' +
+        itemData._id,
+      ], { queryParams: { viewtype: 'community' } });
   }
 
   save(index?: number) {
@@ -382,15 +382,19 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.header.order.products[0].saleflow = this.header.saleflow._id;
       this.router.navigate([
         '/ecommerce/item-detail/' +
-          this.header.saleflow._id +
-          '/' +
-          this.items[index]._id,
+        this.header.saleflow._id +
+        '/' +
+        this.items[index]._id,
       ]);
     }
   }
 
   goToPackageDetail(index) {
     this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.sliderPackage[index]._id}`]);
+  }
+
+  goToItemDetail(item: Item) {
+    this.router.navigate([`/ecommerce/item-detail/${this.saleflowData._id}/${item._id}`]);
   }
 
   showShoppingCartDialog() {
@@ -422,7 +426,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           },
         })
       ).listItems;
-      
+
       this.packageData[index].items = listItems;
       this.status = 'complete';
       index++;
