@@ -32,7 +32,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private dialog: DialogService,
     private location: Location,
     private appService: AppService,
-    private saleflow: SaleFlowService
+    private saleflowService: SaleFlowService
   ) {}
   boxTitle: string = '';
   boxText: string = '';
@@ -109,7 +109,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         headerButton: 'Ver mas productos',
         headerCallback: () => this.back(),
         footerCallback: () => {
-          this.saleflow.saleflow(this.saleflowData._id, true).then(data =>{
+          this.saleflowService.saleflow(this.saleflowData._id, true).then(data =>{
             for (let i = 0; i < data.saleflow.items.length; i++) {
               if (data.saleflow.items[i].item._id === this.itemData._id) {
                 if (data.saleflow.items[i].customizer) {
@@ -149,6 +149,18 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  onCartClick() {
+    if(this.inCart) {
+      this.saveProduct();
+    } else {
+      if(!this.saleflowData.canBuyMultipleItems) {
+        this.header.emptyOrderProducts(this.saleflowData._id);
+        this.header.emptyItems(this.saleflowData._id);
+      }
+      this.saveProduct();
+    }
   }
 
   saveProduct() {
