@@ -28,13 +28,13 @@ export class PackageItemComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.headerService.fetchSaleflow(params.id);
-      if (this.saleflowData) this.inCart = this.itemInCart(this.item);
+      if (this.saleflowData) this.inCart = this.itemInCart(this.item || this.package);
 
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
     })
   }
 
-  addToCart(item: Item) {
+  addToCart(item: Item | ItemPackage, isPackage: ItemPackage | null) {
     this.headerService.storeOrderProduct(this.saleflowData._id, {
       item: item._id,
       amount: 1,
@@ -43,10 +43,14 @@ export class PackageItemComponent implements OnInit {
     this.headerService.storeItem(this.saleflowData._id, item);
     this.inCart = this.itemInCart(item);
 
-    this.itemClicked.emit(item);
+    if (!isPackage) {
+      this.itemClicked.emit(item);
+    } else {
+      this.action.emit(item);
+    }
   }
 
-  itemInCart(itemData: Item) {
+  itemInCart(itemData: Item | ItemPackage) {
     const productData = this.headerService.getItems(this.saleflowData._id);
     if (productData && productData.length > 0)
       return productData.some((item) => item._id === itemData._id);
