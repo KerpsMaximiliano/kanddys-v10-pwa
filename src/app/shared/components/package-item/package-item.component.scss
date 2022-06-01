@@ -57,7 +57,7 @@
                 font-family: 'NeueMontreal';
                 font-size: 16px;
                 color: #232323;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
                 max-width: 75%;
                 white-space: break-spaces;
             }
@@ -78,6 +78,7 @@
             margin: 0 auto;
             margin-top: 34px;
             cursor: pointer;
+            letter-spacing: 1.5px;
 
             &.small{
                 width: 40%;
