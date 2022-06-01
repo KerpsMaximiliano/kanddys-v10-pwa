@@ -23,13 +23,8 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./megaphone-v3.component.scss'],
 })
 export class MegaphoneV3Component implements OnInit, OnDestroy {
-    auxiliary: boolean = true;
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
-  isLogged: boolean = false;
-  done: boolean = false;
-  category: any;
-  loadingSwiper: boolean = false;
   banner: string = '';
   items: Item[] = [];
   itemsByCategory: {
@@ -37,27 +32,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     items: Item[];
   }[] = [];
   inputsItems: Item[] = [];
-  packagesId: any = [];
   packageData: {
     package?: ItemPackage;
     items?: Item[];
   }[] = [];
   inputPackage: ItemPackage[] = [];
   sliderPackage: ItemPackage[] = [];
-  selectedTagsIds: any = [];
   categories: ItemCategory[] = [];
-  flowId: string;
   merchantId: string;
   merchantName: string = '';
   merchantSubheadline: string = '';
   merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
-  merchantLabel: string = ''; //Asignado en ngOnInit
-  labelValues: any = [];
-  filters: Array<any> = ['Mar', 'Mie', 'Jue', 'Vie'];
-  isCategories: boolean;
-  imageRoute: string = `${environment.assetsUrl}/share-outline.png`;
-  renderedSwippers: number = 0;
   visualMode: boolean = true;
   canOpenCart: boolean;
   deleteEvent: Subscription;
@@ -106,51 +92,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     const headlines = await this.item.itemCategoryHeadlineByMerchant(
       this.merchantId
     );
-
     if (itemCategoriesList.length === 0) return;
-
-    const filters = headlines.map((headline) => {
-      const options = headline.itemsCategories
-        .map((value) =>
-          itemCategoriesList.find((element) => element._id === value)
-        )
-        .filter((item) => item)
-        .map((filter) => {
-          return {
-            id: filter._id,
-            label: filter.name,
-            type: 'label',
-            selected: false,
-          };
-        });
-
-      return {
-        section: 'categories',
-        title: 'Categorías',
-        subtitle: headline.headline,
-        property: 'category',
-        options,
-      };
-    });
-    this.categories = headlines[0].itemsCategories
-      .map(
-        (value) =>
-          itemCategoriesList.find((element) => element._id === value)
-      )
+    const categories = headlines[0].itemsCategories
+      .map((value) => itemCategoriesList.find((element) => element._id === value))
       .filter((value) => value);
-    this.filters = filters;
-
-    if (this.items.length > 0 && this.itemsByCategory.length === 0) {
-      this.organizeItems();
-    }
-
-    if (this.categories.length == 0) {
-      this.isCategories = false;
-    } else {
-      this.isCategories = true;
-    }
-
-    this.done = true;
+    return categories;
   }
 
   organizeItems() {
@@ -199,7 +145,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           if(!item.customizerId) item.isSelected = selectedItems.includes(item._id);
         })
         //sub.unsubscribe();
-        this.canOpenCart = this.inputsItems.some((item) => item.isSelected);
+        this.canOpenCart = this.items.some((item) => item.isSelected);
       });
   }
 
@@ -209,7 +155,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   executeProcessesAfterLoading() {
     this.route.params.subscribe(async (params) => {
-      this.flowId = params.id;
       this.status = 'loading';
       lockUI();
 
@@ -225,56 +170,35 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.merchantId = this.saleflowData.merchant._id;
       this.merchantSocials = this.saleflowData.social;
 
-      await this.getCategories();
+      this.categories = await this.getCategories();
       await this.getMerchant(this.saleflowData.merchant._id);
-
-      let saleflowItems: {
-        item: string;
-        customizer: string;
-        index: number;
-      }[] = [];
-
-      if (this.saleflowData.items.length !== 0) {
-        this.merchantLabel = 'Alegrías de esta semana';
-        for (let i = 0; i < this.saleflowData.items.length; i++) {
-          saleflowItems.push({
-            item: this.saleflowData.items[i].item._id,
-            customizer: this.saleflowData.items[i].customizer?._id,
-            index: this.saleflowData.items[i].index,
-          });
-        }
-        if (saleflowItems.some((item) => item.customizer))
-          this.hasCustomizer = true;
-      }
-      if (this.saleflowData.packages.length !== 0) {
-        this.merchantLabel = 'Planes mas comprados';
-        for (let i = 0; i < this.saleflowData.packages.length; i++) {
-          this.packagesId.push(this.saleflowData.packages[i]._id);
-        }
-      }
-
-      const listPackages = (
-        await this.saleflow.listPackages({
-          findBy: {
-            _id: {
-              __in: ([] = this.packagesId),
+      // Package fetching
+      if (this.saleflowData.packages.length) {
+        const listPackages = (
+          await this.saleflow.listPackages({
+            findBy: {
+              _id: {
+                __in: ([] = this.saleflowData.packages.map((itemPackage) => itemPackage._id)),
+              },
             },
-          },
-        })
-      ).listItemPackage;
-      for (let i = 0; i < listPackages.length; i++) {
-        listPackages[i].isSelected =
-          orderData?.itemPackage === listPackages[i]._id;
+          })
+        ).listItemPackage;
+        listPackages.forEach((itemPackage) => {
+          itemPackage.isSelected = orderData?.itemPackage === itemPackage._id;
+        });
+        this.inputPackage = listPackages;
+        this.sliderPackage = listPackages;
+        await this.itemOfPackage(listPackages);
+        this.inputPackage = this.packageData.map((e) => e.package);
       }
-      this.inputPackage = listPackages;
-      this.sliderPackage = listPackages;
-      await this.itemOfPackage(listPackages);
-      this.inputPackage = this.packageData.map((e) => e.package);
-      if (this.inputPackage.length === 0) {
-        const selectedItems =
-          orderData?.products?.length > 0
-            ? orderData.products.map((subOrder) => subOrder.item)
-            : [];
+      // No packages. Item fetching
+      if (!this.saleflowData.packages.length && this.saleflowData.items.length) {
+        const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
+          item: saleflowItem.item._id,
+          customizer: saleflowItem.customizer?._id,
+          index: saleflowItem.index,
+        }))
+        if (saleflowItems.some((item) => item.customizer)) this.hasCustomizer = true;
         const items = await this.saleflow.listItems({
           findBy: {
             _id: {
@@ -285,11 +209,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             limit: 60,
           },
         });
-
+        const selectedItems =
+          orderData?.products?.length
+            ? orderData.products.map((subOrder) => subOrder.item)
+            : [];
         this.items = items.listItems;
-
         this.canOpenCart = orderData?.products?.length > 0;
-        this.inputsItems = this.items;
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
@@ -303,7 +228,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
               this.items[i].fixedQuantity *
                 this.items[i].params[0].values[0].price +
               this.items[i].pricing;
-          this.labelValues.push({ id: i, status: false });
         }
         if (this.items.every((item) => item.index)) {
           this.items = this.items.sort((a, b) =>
@@ -314,9 +238,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.status = 'complete';
         unlockUI();
       }
-      this.authService.me().then((data) => {
-        this.isLogged = data != undefined;
-      });
+      if(!this.saleflowData.packages.length && !this.saleflowData.items.length) {
+        this.status = 'complete';
+        unlockUI();
+      }
     });
     if (this.header.customizerData) this.header.customizerData = null;
   }
@@ -346,14 +271,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           });
           this.header.storeItem(this.saleflowData._id, itemData);
         } else {
-          this.inputsItems[index].isSelected =
-            !this.inputsItems[index].isSelected;
+          this.items[index].isSelected =
+            !this.items[index].isSelected;
           this.header.storeOrderProduct(this.saleflowData._id, {
-            item: this.inputsItems[index]._id,
+            item: this.items[index]._id,
             amount: 1,
             saleflow: this.saleflowData._id,
           });
-          this.header.storeItem(this.saleflowData._id, this.inputsItems[index]);
+          this.header.storeItem(this.saleflowData._id, this.items[index]);
         }
       }
     } else if (type === 'package') {
@@ -395,47 +320,46 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     ]);
   }
 
-  onItemCategoryClick(listIndex: number, itemIndex: number) {
-    const itemData = this.itemsByCategory[listIndex].items[itemIndex];
-    if (itemData) {
-      this.header.categoryId = itemData.category[0]._id;
-      this.header.items = [itemData];
-      if (itemData.customizerId) {
-        this.header.emptyOrderProducts(this.saleflowData._id);
-        this.header.emptyItems(this.saleflowData._id);
-        let itemParams: ItemSubOrderParamsInput[];
-        if (itemData.params.length > 0) {
-          itemParams = [
-            {
-              param: itemData.params[0]._id,
-              paramValue: itemData.params[0].values[0]._id,
-            },
-          ];
-        }
-        const product = {
-          item: itemData._id,
-          customizer: itemData.customizerId,
-          params: itemParams,
-          amount: itemData.customizerId ? undefined : 1,
-          saleflow: this.saleflowData._id,
-          name: itemData.name,
-        };
-        this.header.order = {
-          products: [product],
-        };
-        this.header.storeOrderProduct(this.saleflowData._id, product);
-        this.header.storeItem(this.saleflowData._id, itemData);
-        this.router.navigate([
-          `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
-        ]);
-      } else
-        this.router.navigate([
-          '/ecommerce/item-detail/' +
-            this.header.saleflow._id +
-            '/' +
-            itemData._id,
-        ], {queryParams: { viewtype: 'community' }});
-    }
+  onItemClick(firstIndex: number, secondIndex?: number) {
+    const itemData = secondIndex >= 0 ? this.itemsByCategory[firstIndex].items[secondIndex] : this.items[firstIndex];
+    if (!itemData) return;
+    this.header.categoryId = itemData.category[0]._id;
+    this.header.items = [itemData];
+    if (itemData.customizerId) {
+      this.header.emptyOrderProducts(this.saleflowData._id);
+      this.header.emptyItems(this.saleflowData._id);
+      let itemParams: ItemSubOrderParamsInput[];
+      if (itemData.params.length > 0) {
+        itemParams = [
+          {
+            param: itemData.params[0]._id,
+            paramValue: itemData.params[0].values[0]._id,
+          },
+        ];
+      }
+      const product = {
+        item: itemData._id,
+        customizer: itemData.customizerId,
+        params: itemParams,
+        amount: itemData.customizerId ? undefined : 1,
+        saleflow: this.saleflowData._id,
+        name: itemData.name,
+      };
+      this.header.order = {
+        products: [product],
+      };
+      this.header.storeOrderProduct(this.saleflowData._id, product);
+      this.header.storeItem(this.saleflowData._id, itemData);
+      this.router.navigate([
+        `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
+      ]);
+    } else
+      this.router.navigate([
+        '/ecommerce/item-detail/' +
+          this.header.saleflow._id +
+          '/' +
+          itemData._id,
+      ], {queryParams: { viewtype: 'community' }});
   }
 
   save(index?: number) {
@@ -445,8 +369,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     let order;
     if (this.inputPackage.length === 0) {
       products.push({
-        item: this.inputsItems[index]._id,
-        name: this.inputsItems[index].name,
+        item: this.items[index]._id,
+        name: this.items[index].name,
         amount: 1,
       });
 
@@ -460,7 +384,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         '/ecommerce/item-detail/' +
           this.header.saleflow._id +
           '/' +
-          this.inputsItems[index]._id,
+          this.items[index]._id,
       ]);
     }
   }
@@ -498,15 +422,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           },
         })
       ).listItems;
-      let isScenario;
-      let scenariosLength;
-
-      if (index === 0 && this.inputPackage.length > 0) {
-        for (let i = 0; i < listItems.length; i++) {
-          // scenariosLength = listItems[i].itemExtra.length > 0? listItems[i].itemExtra.length:undefined; //
-          isScenario = listItems[i].itemExtra.length > 0;
-        }
-      }
+      
       this.packageData[index].items = listItems;
       this.status = 'complete';
       index++;

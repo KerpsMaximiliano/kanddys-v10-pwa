@@ -8,7 +8,7 @@
                     <span class="subtitle">{{package?.description || item?.description}}</span>
                 </ng-container>
             </div>
-            <h6 for="Precio del plan" class="price">${{package?.price || item?.pricing}} DOP</h6>
+            <p class="price">${{package?.price || item?.pricing | number}} DOP</p>
         </div>
         <div class="plan-details">
 
@@ -25,10 +25,16 @@
             </ng-container>
 
         </div>
-        
-        <button class="cart" (click)="actionator($event)" [ngClass]="{small: buttonSize == 'small'}">
+
+        <button class="cart" (click)="addToCart(item)" [ngClass]="{small: buttonSize == 'small'}" *ngIf="!inCart">
             ADICIONAR <ng-container *ngIf="buttonSize == 'normal'"> AL </ng-container>
-        <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+            <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
         </button>
+
+        <button class="box white" (click)="addToCart(item)" [ngClass]="{small: buttonSize == 'small'}" *ngIf="inCart">
+            En el Carrito
+            <i class="fas fa-check-circle icon"></i>
+        </button>
+
     </div>
 </div>

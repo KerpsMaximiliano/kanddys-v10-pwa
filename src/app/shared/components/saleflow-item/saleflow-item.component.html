@@ -73,34 +73,34 @@
       <div *ngIf="showIcon" class="image-icon right" (click)="onIconClick()">
         <img [src]="env + '/closed-eye.svg'" alt="hide-item">
       </div>
-      <div *ngIf="showSelected && isSelected" class="box white middle" (click)="onBottomBoxClick()">
+      <div *ngIf="showSelected && isSelected && !big" class="box white middle" (click)="onBottomBoxClick()">
         En el Carrito
         <i class="fas fa-check-circle icon"></i>
       </div>
     </div>
     <div class="infoContainer two">
-
-        <div class="wrapper">
-            <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
-              ${{price | number}}
-            </div>
-            <p class="desc" *ngIf="description && showDescription">{{description}}</p>
-            <p class="income" *ngIf="income">${{income | number}} Ingreso</p>
-            <div
-              *ngIf="selectable"
-              (click)="toggleSelect($event)" 
-              [ngClass]="{ selected: isSelected }" 
-              class="checkBox" 
-              style="cursor: pointer;"
-            > 
-              <i class="fas fa-check-circle icon"></i>
-            </div>
-        </div>
-
-      <button class="cart" (click)="actionator($event)" *ngIf="big">
-        ADICIONAR <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+      <div class="wrapper">
+          <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
+            ${{price | number}}
+          </div>
+          <p class="desc" *ngIf="big && name" style="font-size: 15px;">{{name}}</p>
+          <p class="desc" *ngIf="description && showDescription">{{description}}</p>
+          <p class="income" *ngIf="income">${{income | number}} Ingreso</p>
+          <div
+            *ngIf="selectable"
+            (click)="toggleSelect($event)" 
+            [ngClass]="{ selected: isSelected }" 
+            class="checkBox" 
+            style="cursor: pointer;"
+          > 
+            <i class="fas fa-check-circle icon"></i>
+          </div>
+      </div>
+      <button class="cart" [ngClass]="{'white': isSelected}" (click)="actionator($event)" *ngIf="big">
+        {{isSelected ? 'EN EL CARRITO' : 'ADICIONAR'}}
+        <img *ngIf="!isSelected" [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+        <i *ngIf="isSelected" class="fas fa-check-circle icon"></i>
       </button>
-
     </div>
   </div>
 </div>

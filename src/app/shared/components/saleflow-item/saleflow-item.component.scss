@@ -36,6 +36,7 @@
           color: #4773D8;
           font-family: "RobotoMedium";
           font-size: 13px;
+          box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 15%);
         }
       }
 
@@ -75,9 +76,9 @@
     }//Two of infoContainer
 
     .wrapper{
-        width: 100%;
-        display: flex;
-        flex-direction: column;
+      width:100%;
+      display: flex;
+      flex-direction: column;
     }//Info container two wrapper
 
     .price{
@@ -110,27 +111,32 @@
     }
 
     .cart{
-        width: 40%;
-        max-width: 174px;
-        height: 52px;
-        border: none;
-        border-radius: 26px;
-        background-color: #FED230;
-        font-family: 'RobotoMedium';
-        font-size: 16px;
-        color: #000000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 5px;
-        margin-left: auto;
-        margin-right: 5px;
-        cursor: pointer;
+      border: none;
+      border-radius: 26px;
+      background-color: #FED230;
+      font-family: 'RobotoMedium';
+      font-size: 16px;
+      color: #000000;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 14px 20px;
+      margin-left: auto;
+      margin-right: 5px;
+      cursor: pointer;
 
-        .carrito{
-           filter: invert(12%) sepia(7%) saturate(6579%) hue-rotate(177deg) brightness(30%) contrast(100%)
-        }
-    }//Yellow button
+      img {
+        filter: brightness(0) saturate(100%) invert(11%) sepia(12%) saturate(3277%) hue-rotate(174deg) brightness(99%) contrast(100%);
+      }
+
+      &.white {
+        background-color: #ffffff;
+        color: #4773D8;
+        font-family: "RobotoMedium";
+        box-shadow: 0px 4px 10px #ddd;
+        white-space: nowrap;
+      }
+    }
     
   }
 

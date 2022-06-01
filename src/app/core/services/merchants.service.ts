@@ -11,6 +11,7 @@ import {
   merchants,
   addMerchant,
   createMerchant,
+  merchantDefault,
   hotMerchant,
   hotMerchants,
   itemsByMerchant,
@@ -24,7 +25,7 @@ import { EmployeeContract, Merchant } from './../models/merchant';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper) { }
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {
@@ -34,7 +35,7 @@ export class MerchantsService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        if(!merchantResult) return;
+        if (!merchantResult) return;
         return new Merchant(merchantResult.merchant);
       } else {
         const merchantResult = await this.graphql.query({
@@ -42,7 +43,7 @@ export class MerchantsService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
-        if(!merchantResult) return;
+        if (!merchantResult) return;
         return new Merchant(merchantResult.merchant);
       }
     } catch (error) {
@@ -134,6 +135,19 @@ export class MerchantsService {
     });
     return (result || []).map((r: any) => new Merchant(r));
   }
+
+  async merchantDefault(): Promise<Merchant> {
+    try {
+      const { merchantDefault: merchantDefaultResponse } = await this.graphql.query({
+        query: merchantDefault,
+        fetchPolicy: 'no-cache',
+      });
+      return new Merchant(merchantDefaultResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   async createMerchant(input): Promise<{ createMerchant: Merchant }> {
     console.log(input);
