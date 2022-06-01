@@ -136,7 +136,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        console.log(e, "Evento de suscripción");
         let productData: Item[] = this.header.getItems(this.saleflowData._id);
         const selectedItems =
           productData?.length

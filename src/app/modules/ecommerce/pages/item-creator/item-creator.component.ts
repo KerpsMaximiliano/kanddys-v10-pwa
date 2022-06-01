@@ -246,7 +246,7 @@ export class ItemCreatorComponent implements OnInit {
                   description: values['3'].description !== '' ? values['3'].description : null,
                   pricing: Number(values['1'].price),
                   images: this.files,
-                  merchant: this.loggedUserDefaultMerchant._id,
+                  merchant: this.loggedUserDefaultMerchant._id ? this.loggedUserDefaultMerchant._id : null,
                   content: values['2'].whatsIncluded.length > 0 && !(
                     values['2'].whatsIncluded.length === 1 &&
                     values['2'].whatsIncluded[0] === ''
