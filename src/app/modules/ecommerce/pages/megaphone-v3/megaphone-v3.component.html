@@ -47,7 +47,7 @@
           (action)="onItemClick(i)">
         </app-saleflow-item>
         <app-package-item *ngIf="!item.showImages" [item]="item" [inCart]="item.isSelected"
-          (itemClicked)="saleflowData?._id !== '62963cdd1f8e415f0315f34b' ? onItemClick(i) :goToItemDetail($event)">
+          (itemClicked)="goToItemDetail($event)">
         </app-package-item>
       </ng-container>
     </div>

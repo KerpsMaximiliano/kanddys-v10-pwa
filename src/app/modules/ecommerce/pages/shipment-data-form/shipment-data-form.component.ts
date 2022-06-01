@@ -119,7 +119,7 @@ export class ShipmentDataFormComponent implements OnInit {
     private header: HeaderService,
     private router: Router,
     private dialog: DialogService
-  ) {}
+  ) { }
 
   getStoredDeliveryLocation() {
     const saleflowData =
@@ -167,7 +167,7 @@ export class ShipmentDataFormComponent implements OnInit {
 
               const pickupLocation = this.header.saleflow.module.delivery
                 ? this.header.saleflow.module.delivery.pickUpLocations[0]
-                    .nickName
+                  .nickName
                 : this.header.storedDeliveryLocation;
               const deliveryData = {
                 nickName: pickupLocation,
@@ -278,8 +278,11 @@ export class ShipmentDataFormComponent implements OnInit {
           if (
             this.header.order?.products &&
             this.header.order?.products?.length > 0
-          )
-            this.header.order.products[0].deliveryLocation = deliveryData;
+          ) {
+            this.header.order.products.forEach(product => {
+              product.deliveryLocation = deliveryData;
+            });
+          }
           this.header.storeLocation(
             this.header.getSaleflow()._id,
             deliveryData
