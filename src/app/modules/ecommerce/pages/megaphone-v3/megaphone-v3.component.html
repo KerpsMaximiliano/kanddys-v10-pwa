@@ -36,6 +36,7 @@
           (action)="onItemClick(item._id)"
         ></app-saleflow-item>
         <app-package-item
+          [clickAble]="true"
           *ngIf="!item.showImages"
           [item]="item"
           (action)="onItemClick(item._id)">

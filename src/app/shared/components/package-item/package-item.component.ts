@@ -23,7 +23,8 @@ export class PackageItemComponent implements OnInit {
   ngOnInit(): void {}
 
   onClick(id: string) {
-    this.itemClicked.emit(id);
+    console.log("clickkasd")
+    this.action.emit(id);
   }
 
   onButtonClick(id: string) {
