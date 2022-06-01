@@ -409,7 +409,7 @@ export class ItemCreatorComponent implements OnInit {
           inputType: 'textarea',
           styles: {
             containerStyles: {
-              marginTop: '121px',
+              marginTop: '71px',
             },
             fieldStyles: {
               backgroundColor: 'white',
@@ -417,9 +417,10 @@ export class ItemCreatorComponent implements OnInit {
               borderRadius: '10px',
             },
             labelStyles: {
-              fontSize: '19px',
+              fontSize: '24px',
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
               marginBottom: '17px',
-              fontWeight: '300',
             },
           },
         },
@@ -506,7 +507,6 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '83.70%',
-              marginTop: '71px',
               position: 'relative',
             },
             fieldStyles: {
@@ -530,7 +530,7 @@ export class ItemCreatorComponent implements OnInit {
         text: 'Sobre List-2-Raise',
         styles: {
           fontFamily: 'Roboto',
-          fontWeight: '900',
+          fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '50px',
