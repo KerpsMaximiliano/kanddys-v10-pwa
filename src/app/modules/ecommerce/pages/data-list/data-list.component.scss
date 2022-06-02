@@ -40,9 +40,9 @@ nav {
 }
 
 .tag-container {
-  margin: 0 32px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .addButton {
@@ -51,4 +51,13 @@ nav {
   color: #4773D8;
   text-align: center;
   cursor: pointer;
+}
+
+@media only screen and (max-width: 415px){
+
+    .tag-container {
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
 }
