@@ -156,12 +156,14 @@
 
     .info-area{
         margin-top: 3px;
-        padding: 0 8px 8px 8px;
+        padding: 0 8px 15px 8px;
 
         .flexer{
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: baseline;
+            position: relative;
+            margin-bottom: 2.5px;
 
             .price{
                 font-family: 'SfProBold';
@@ -174,32 +176,36 @@
                 font-family: 'RobotoMedium';
                 font-size: 14px;
                 color: #4773D8;
+                position: absolute;
+                left: 0;
             }
 
             .total{
                 font-family: 'RobotoMedium';
                 font-size: 14px;
                 color: #4773D8; 
+                position: absolute;
+                right: -1px;
             }
 
             .stars{
                 font-family: 'RobotoBlack';
                 font-size: 12px;
                 color: #8351FE;
+                position: absolute;
+                left: 50%;
 
                 .star-icon{
                     filter: invert(47%) sepia(85%) saturate(5683%) hue-rotate(243deg) brightness(102%) contrast(99%);
                 }
             }
             
-            .eyed{
-                filter: invert(48%) sepia(17%) saturate(0%) hue-rotate(187deg) brightness(97%) contrast(88%);
-            }
         }
 
         .flexer-middle{
             display: flex;
             align-items: center;
+            margin-bottom: 2.5px;
 
             .income{
                 font-family: 'RobotoRegular';
