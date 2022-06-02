@@ -1,32 +1,28 @@
 <div class="container">
-    <div class="audio" *ngIf="mode == 'audio'">
-        <label for="Audio" class="audio-title">AUDIO</label>
-
-        <button class='button-play' (click)="action()"><svg xmlns="http://www.w3.org/2000/svg" width="30.842" height="29.236" viewBox="0 0 30.842 29.236">
-            <path id="Polígono_2" data-name="Polígono 2" d="M12.161,0,24.322,19.276H0Z" transform="matrix(-0.848, -0.53, 0.53, -0.848, 20.627, 29.236)" fill="#a1a1a1"/>
-          </svg>
-        </button>
-
-        <div class="bar">
-        <div class="circulito"></div>
-        </div>
-        <div class="labels"> 
-            <label for="Inicio">0:00</label>
-
-            <label for="Final">{{duration}}</label>
-        </div>
-    </div>
-
-    <div *ngIf="mode == 'poster'" class="poster">
-
-        <label for="Titulo" class="poster-title">{{posterTitle}}</label>
-
-        <img [src]="image" alt="IMAGE IS MISSING" class="title-image">
-
-    </div>
-
-    <div *ngIf="mode == 'text'" class="text">
-        <div *ngIf="textTitle"> <label class="text-title">{{textTitle}}</label> </div>
-        <p class="inner-text">{{textPost}}</p>
-    </div>
+	<div class="audio" *ngIf="mode == 'audio'">
+		<h3 class="audio-title">AUDIO</h3>
+		<!-- <button class='button-play' (click)="action()">
+			<img [src]="env + '/play.svg'" alt="play">
+		</button>
+		<div class="bar">
+			<div class="circulito"></div>
+		</div>
+		<div class="labels">
+			<span >0:00</span>
+			<span >{{duration}}</span>
+		</div> -->
+		<audio *ngIf="audioBlobUrl" controls>
+			<source [src]="audioBlobUrl" type="audio/mp3">
+			Your browser does not support the audio element.
+		</audio>
+	</div>
+	<div *ngIf="mode == 'poster'" class="poster">
+		<h3 class="poster-title">{{posterTitle}}</h3>
+		<img *ngIf="image" [src]="image" alt="post-image" class="title-image">
+		<div *ngIf="!image" class="placeholder"></div>
+	</div>
+	<div *ngIf="mode == 'text'" class="text">
+		<h3 *ngIf="textTitle" class="text-title">{{textTitle}}</h3>
+		<p class="inner-text">{{textPost}}</p>
+	</div>
 </div>

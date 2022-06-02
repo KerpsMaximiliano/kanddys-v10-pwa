@@ -1,53 +1,135 @@
-.container{
-    width: 100%;
-    min-height: 100vh;
+button {
+	all: unset;
+}
+.post-list {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+.container {
+	width: 100%;
+	min-height: 100vh;
 
-    .topbar{ 
-        width: 100%;
-        height: 52px;
-        box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 15%);
-        margin-bottom: 23px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+	.topbar {
+		width: 100%;
+		height: 52px;
+		box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 15%);
+		margin-bottom: 23px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: #ffffff;
 
-        .cancel{
-            font-family: 'RobotoRegular';
-            font-size: 17px;
-            color: #4773D8;
-            margin-left: 26px;
-            cursor: pointer;
-        }
+		.cancel {
+			font-family: "RobotoRegular";
+			font-size: 17px;
+			color: #4773d8;
+			margin-left: 26px;
+			cursor: pointer;
+		}
 
-        .right{
-            font-family: 'RobotoRegular';
-            font-size: 17px;
-            color: #4773D8;
-            margin-right: 23px;
-            cursor: pointer;
-        }
-    }
+		.right {
+			font-family: "RobotoRegular";
+			font-size: 17px;
+			color: #4773d8;
+			margin-right: 23px;
+			cursor: pointer;
+		}
+	}
 
-    .icon-edit{
-        display: flex;
+	.icon-edit {
+		display: flex;
+		width: 100%;
+		justify-content: space-evenly;
 
-        .editor{
-            width: 100%;
-        }
-    }
+		.edit-element {
+			padding-top: 20px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
 
-    .fixed-area{
-        position: fixed;
-        bottom: 0;
-        background-color: rgba(161, 161, 161, 5%);
-        width: 100%;
-        max-width: 500px;
-        padding: 25px 0;
+			.icon {
+				cursor: pointer;
+			}
+		}
+	}
 
-        .icons{
-            display: flex;
-            justify-content: space-evenly;
-            margin: 0 54px 0 54px;
-        }
-    }
+}
+.fixed-area {
+	position: sticky;
+	bottom: 0;
+	background-color: #FBFBFB;
+	width: 100%;
+	max-width: 500px;
+	padding: 25px 0;
+
+	.icons {
+		display: flex;
+		justify-content: space-evenly;
+		margin: 0 54px 0 54px;
+	}
+}
+
+.edit-mode {
+	padding: 30px;
+
+	.post-message {
+		label {
+			font-family: "RobotoLight";
+			font-size: 19px;
+		}
+		textarea {
+			box-shadow: rgb(221 221 221) 0px 4px 5px 0px inset;
+			color: rgb(11, 31, 56);
+			width: 100%;
+			font-family: RobotoMedium;
+			height: 164px;
+			padding: 23px;
+			resize: none;
+			font-size: 20px;
+			border-radius: 10px;
+			background-color: rgb(255, 255, 255);
+			margin-top: 18px;
+		}
+	}
+
+	.post-image {
+		padding: 26px 40px;
+		border: 1px solid rgba(161, 161, 161, 43%);
+		text-align: center;
+		border-radius: 9px;
+
+		h3 {
+			font-family: "SfProBold";
+			font-size: 17px;
+			color: #474747;
+			text-transform: uppercase;
+		}
+
+		p {
+			font-family: "NeueMontreal";
+			font-size: 17px;
+			color: #38373B;
+		}
+
+		.input-container {
+			height: 200px;
+			width: 250px;
+			margin-bottom: 1px;
+		}
+		
+		.d-none {
+			display: none;
+		}
+			
+		.file {
+			border-radius: 10px;
+			height: 300px;
+			width: 240px;
+			box-shadow: 0px 4px 10px #ddd;
+			display: flex;
+			margin: auto;
+			cursor: pointer;
+		}
+	}
 }
