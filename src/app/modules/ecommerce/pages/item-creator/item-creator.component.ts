@@ -85,6 +85,7 @@ export class ItemCreatorComponent implements OnInit {
               position: 'absolute',
               bottom: '0px',
               left: '0px',
+              boxShadow: 'none',
             },
             formattedInputStyles: {
               bottom: '0px',
@@ -246,7 +247,7 @@ export class ItemCreatorComponent implements OnInit {
                   description: values['3'].description !== '' ? values['3'].description : null,
                   pricing: Number(values['1'].price),
                   images: this.files,
-                  merchant: this.loggedUserDefaultMerchant._id ? this.loggedUserDefaultMerchant._id : null,
+                  merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
                   content: values['2'].whatsIncluded.length > 0 && !(
                     values['2'].whatsIncluded.length === 1 &&
                     values['2'].whatsIncluded[0] === ''
@@ -516,6 +517,7 @@ export class ItemCreatorComponent implements OnInit {
               position: 'absolute',
               bottom: '0px',
               left: '0px',
+              boxShadow: 'none'
             },
             labelStyles: labelStyles,
             formattedInputStyles: {
