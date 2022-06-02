@@ -60,6 +60,7 @@ export class Item extends Model<Item> {
   quality: string;
   iconImage: string;
   hasExtraPrice: boolean;
+  showImages: boolean;
   status: 'draft' | 'disabled' | 'active';
 
   customizerId?: string;

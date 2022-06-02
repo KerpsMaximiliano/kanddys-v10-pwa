@@ -119,6 +119,7 @@ export const item = gql`
       content
       hasSelection
       status
+      showImages
       calendar {
         _id
       }

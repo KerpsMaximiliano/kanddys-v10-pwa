@@ -42,9 +42,6 @@ export const getReservation = gql`
       createdAt
       status
       expiration
-      merchant{
-        _id
-      }
       calendar{
         _id
       }

@@ -47,7 +47,7 @@ export class HelperHeaderComponent implements OnInit {
   wallet: boolean = false;
   walletBalance: number;
   @Input() searchLabel: string = 'label';
-  cartAmount: number;
+  @Input() cartAmount: number;
 
   //OUTPUTS
   @Output() data = new EventEmitter<string>();

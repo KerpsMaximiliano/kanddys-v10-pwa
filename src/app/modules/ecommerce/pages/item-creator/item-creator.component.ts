@@ -34,6 +34,7 @@ export class ItemCreatorComponent implements OnInit {
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
+  hasToken: boolean = false;
   files: File[] = [];
   formSteps: FormStep[] = [
     {
@@ -85,6 +86,7 @@ export class ItemCreatorComponent implements OnInit {
               position: 'absolute',
               bottom: '0px',
               left: '0px',
+              boxShadow: 'none',
             },
             formattedInputStyles: {
               bottom: '0px',
@@ -246,7 +248,7 @@ export class ItemCreatorComponent implements OnInit {
                   description: values['3'].description !== '' ? values['3'].description : null,
                   pricing: Number(values['1'].price),
                   images: this.files,
-                  merchant: this.loggedUserDefaultMerchant._id ? this.loggedUserDefaultMerchant._id : null,
+                  merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
                   content: values['2'].whatsIncluded.length > 0 && !(
                     values['2'].whatsIncluded.length === 1 &&
                     values['2'].whatsIncluded[0] === ''
@@ -516,6 +518,7 @@ export class ItemCreatorComponent implements OnInit {
               position: 'absolute',
               bottom: '0px',
               left: '0px',
+              boxShadow: 'none'
             },
             labelStyles: labelStyles,
             formattedInputStyles: {
@@ -567,49 +570,53 @@ export class ItemCreatorComponent implements OnInit {
       this.currentItemId = itemId;
 
       if (localStorage.getItem('session-token')) {
+        this.hasToken = true;
+
         this.loggedIn = true;
       }
 
-      if (itemId && this.loggedIn) {
+      if (itemId && this.hasToken) {
         lockUI();
 
         const myUser = await this.authService.me();
-        let myUserId;
-        this.currentUserId = myUser ? myUser._id : null;
 
-        const { pricing, images, content, description, merchant } =
-          await this.itemService.item(itemId);
+        if (myUser) {
+          this.currentUserId = myUser ? myUser._id : null;
 
-        if (this.currentUserId === merchant.owner._id) {
-          this.merchantOwnerId = merchant.owner._id;
+          const { pricing, images, content, description, merchant } =
+            await this.itemService.item(itemId);
 
-          this.formSteps[0].fieldsList[0].fieldControl.setValue(
-            String(pricing)
-          );
-          this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
-          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-          this.defaultImages = images;
+          if (this.currentUserId === merchant.owner._id) {
+            this.merchantOwnerId = merchant.owner._id;
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+            this.formSteps[0].fieldsList[0].fieldControl.setValue(
+              String(pricing)
+            );
+            this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
+            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+            this.defaultImages = images;
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+            this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
 
 
-          const formArray = this.formSteps[1].fieldsList[0]
-            .fieldControl as FormArray;
-          formArray.removeAt(0);
+            const formArray = this.formSteps[1].fieldsList[0]
+              .fieldControl as FormArray;
+            formArray.removeAt(0);
 
-          if (content)
-            content.forEach((item) => {
-              formArray.push(new FormControl(item));
-            });
-          else {
-            formArray.push(new FormControl(''));
+            if (content)
+              content.forEach((item) => {
+                formArray.push(new FormControl(item));
+              });
+            else {
+              formArray.push(new FormControl(''));
+            }
+            unlockUI();
+          } else {
+            if (itemId) this.router.navigate(['/']);
           }
-          unlockUI();
-        } else {
-          if (itemId) this.router.navigate(['/']);
         }
       } else {
         unlockUI();
