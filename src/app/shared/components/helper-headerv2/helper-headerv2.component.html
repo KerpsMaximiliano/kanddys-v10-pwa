@@ -44,9 +44,10 @@
         <div class="options">
             <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a>
             <div class="wrapper">
-                <label for="ID" class="bill bold-text">{{billId}}</label>
-                <label for="Costo" class="bold-text">{{leftText}}</label>
-                <label for="Costo" class="bold-text">{{rightText}}</label>
+                <span class="bold-text" *ngIf="itemId" [style.margin-left]="'6%'">{{itemId}}</span>
+                <span class="bill bold-text">{{billId}}</span>
+                <span class="bold-text">{{leftText}}</span>
+                <span class="bold-text">{{rightText}}</span>
             </div>
         </div>
     </ng-container>

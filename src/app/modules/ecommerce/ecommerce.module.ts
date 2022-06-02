@@ -30,7 +30,7 @@ import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 import { AuthClassicComponent } from './pages/auth-classic/auth-classic.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
-import { TagsListComponent } from './pages/tags-list/tags-list.component';
+import { DataListComponent } from './pages/data-list/data-list.component';
 import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merchant-dashboardv2.component';
 import { ContainerFormComponent } from './pages/container-form/container-form.component';
 import { PostCreatorComponent } from './pages/post-creator/post-creator.component';
@@ -41,6 +41,7 @@ import { PostAuthComponent } from './pages/post-auth/post-auth.component';
 import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-creator.component';
 import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
+import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.component';
 
 const routes: Routes = [
   {
@@ -173,8 +174,8 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'tags-list/:orderId',
-    component: TagsListComponent,
+    path: 'data-list', /* /:orderId */
+    component: DataListComponent,
   },
   {
     path: 'merchant-dashboardv2',
@@ -220,6 +221,10 @@ const routes: Routes = [
     path: 'user-dashboard',
     component: UserDashboardComponent
   },
+  {
+    path: 'item-gallery',
+    component: ItemGalleryComponent
+  },
 ];
 
 @NgModule({
@@ -254,7 +259,7 @@ const routes: Routes = [
     TagsEditComponent,
     AuthClassicComponent,
     PaymentsComponent,
-    TagsListComponent,
+    DataListComponent,
     MerchantDashboardv2Component,
     ContainerFormComponent,
     PostCreatorComponent,
@@ -265,6 +270,7 @@ const routes: Routes = [
     MerchantCreatorComponent,
     ItemCreatorComponent,
     UserDashboardComponent,
+    ItemGalleryComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
