@@ -24,10 +24,12 @@
         <h5 class="my-sales">Facturas de mis Compras</h5>
   
             <div class="images-wrapper">
-              <div class="icon-holder" [ngClass]="{'checked': showTags == true}">
-                  <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="26px" width="25px" class="icon" (click)="tagsView()"/>
-              </div>
-              <img [src]="imageFolder + '/camera.svg'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px" class="icon"/>
+                <div class="icon-holder" [ngClass]="{'checked': showTags}">
+                    <img [src]="env + '/Etiquetas_vacias.svg'" height="24px" width="26px" class="icon" (click)="showTags = !showTags"/>
+                </div>
+                <div class="icon-holder">
+                    <img [src]="env + '/camera.svg'" height="24px" width="33px" class="icon"/>
+                </div>
             </div>
   
         </div>
@@ -39,7 +41,7 @@
           </div>
   
           <div *ngIf="!showTags" class="organized">
-              <div class="arrow-circle"> <img [src]="imageFolder + '/arrow-down-left.svg'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
+              <div class="arrow-circle"> <img [src]="env + '/arrow-down-left.svg'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
               <p class="advice">Organiza tus compras regulares con las etiquetas.</p>
           </div>
         </div>
@@ -47,11 +49,11 @@
         
         <ng-container *ngIf="showTags" >
             <div class="tags-area">
-                <ng-container *ngFor="let tag of testTags; let i = index">
-                    <app-tags-square
-                    [gains]="''"
-                    ></app-tags-square>
-                </ng-container>
+                <app-tags-square
+                    *ngFor="let tag of tags; let i = index"
+                    [tagText]="tag.name"
+                    [number]="tag.counter"
+                ></app-tags-square>
             </div>
         </ng-container>
     

@@ -17,7 +17,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 22px 27px 0 27px;
+        margin: 22px 13px 0 27px;
 
         .my-sales{
             font-family: 'SfProMedium';
@@ -33,10 +33,9 @@
 
             .icon-holder{
                 cursor: pointer;
-
+                padding: 8px 14px;
+                
                 &.checked{
-                    padding: 3px 0px;
-                    width: 59px;
                     border-radius: 47px;
                     background-color: #40772F;
                     display: flex;
@@ -47,10 +46,6 @@
                         cursor: pointer;
                         filter: invert(99%) sepia(1%) saturate(0%) hue-rotate(65deg) brightness(170%) contrast(100%);
                     }
-                }
-                &.icon{
-                    cursor: pointer;
-                    filter: invert(35%) sepia(76%) saturate(387%) hue-rotate(61deg) brightness(93%) contrast(87%);
                 }
             }
 
@@ -112,13 +107,11 @@
     }
 
     .tags-area{
-        display: flex;
-        flex-wrap: wrap;
-        column-gap: 11px;
-        row-gap: 13px;
-        margin-left: 12%;
-        margin-top: 36px;
-        margin-bottom: 41px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 1fr;
+        gap: 10px;
+        margin: 34px auto 46px;
     }
 }
 

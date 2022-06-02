@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Tag } from 'src/app/core/models/tags';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -15,7 +17,9 @@ export class UserDashboardComponent implements OnInit {
     showTags: boolean = false;
     tiendas: boolean= false;
     testTags: Array<any> = [' ', ' ', ' ', ' '];
+    tags: Tag[] = [];
     fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
+    env: string = environment.assetsUrl;
 
     ordurs: Array<any> = [{
         title: 'DummyOrder',
@@ -135,18 +139,19 @@ export class UserDashboardComponent implements OnInit {
     ];
     
 
-  constructor() {
-    this.imageFolder = environment.assetsUrl;
-   }
+  constructor(
+    private tagsService: TagsService,
+  ) {}
 
   ngOnInit(): void {
+    this.getTags();
   }
 
-  tagsView(){
-    this.showTags = !this.showTags;
+  async getTags() {
+    this.tags = await this.tagsService.tagsByUser();
   }
 
-  wichName(e) {
+  wichName(e: string) {
     switch (e){
       case 'Regalos':
       console.log('Compradores'); 
