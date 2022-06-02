@@ -7,11 +7,11 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 
 @Component({
-  selector: 'app-tags-list',
-  templateUrl: './tags-list.component.html',
-  styleUrls: ['./tags-list.component.scss']
+  selector: 'app-data-list',
+  templateUrl: './data-list.component.html',
+  styleUrls: ['./data-list.component.scss']
 })
-export class TagsListComponent implements OnInit {
+export class DataListComponent implements OnInit {
   keyword: string = '';
   tagList: Tag[] = [];
   filteredTagList: Tag[] = [];
@@ -28,7 +28,7 @@ export class TagsListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.merchantId = this.headerService.merchantInfo?._id;
+    /* this.merchantId = this.headerService.merchantInfo?._id;
     if(!this.merchantId) return this.redirect();
     this.route.params.subscribe(async (params) => {
       if(!params.orderId) return this.redirect();
@@ -43,7 +43,7 @@ export class TagsListComponent implements OnInit {
       })
       this.tagList = tags;
       this.filteredTagList = tags;
-    })
+    }) */
   }
 
   redirect() {
