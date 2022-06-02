@@ -22,7 +22,8 @@ interface PostContent {
 export class PostEditComponent implements OnInit {
   env: string = environment.assetsUrl;
   inPreview: boolean = true;
-  isEditing: PostContent;
+  currentContent: PostContent;
+  isEditing: boolean;
   editText: string;
   imageField: string | ArrayBuffer = '';
   image: File;
@@ -41,35 +42,35 @@ export class PostEditComponent implements OnInit {
 
   edit(index: number) {
     if(this.content[index].type === 'audio') this.openRecorder();
-    this.isEditing = this.content[index];
+    if(this.content[index].type === 'text') this.editText = this.content[index].text;
+    if(this.content[index].type === 'poster') this.imageField = this.content[index].imageUrl
+    this.isEditing = true;
+    this.currentContent = this.content[index];
   }
 
   add(type: 'audio' | 'poster' | 'text') {
-    let content: PostContent = { type };
-    if(type === 'text') {
-      if(this.content.some((post) => post.type === 'text')) return;
-      content.text = '';
+    if(type === 'text' && this.content.some((post) => post.type === 'text')) return;
+    this.currentContent = { type };
+    if(type === 'audio') this.save();
+  }
+
+  save() {
+    if(this.editText) this.currentContent.text = this.editText;
+    if(this.audio) this.currentContent.audio = this.audio;
+    if(this.image) {
+      this.currentContent.poster = this.image;
+      this.currentContent.imageUrl = this.imageField;
     }
-    if(type === 'audio') content.audio = this.audio;
-    this.content.push(content);
-    if(type !== 'audio') this.edit(this.content.length - 1)
+    if(!this.isEditing) this.content.push(this.currentContent);
+    this.cancel();
   }
 
   cancel() {
     this.isEditing = null;
+    this.currentContent = null;
     this.editText = null;
     this.image = null;
     this.imageField = null;
-  }
-
-  save() {
-    if(this.editText) this.isEditing.text = this.editText;
-    if(this.audio) this.isEditing.audio = this.audio;
-    if(this.image) {
-      this.isEditing.poster = this.image;
-      this.isEditing.imageUrl = this.imageField;
-    }
-    this.cancel();
   }
 
   sanitize(image: string | ArrayBuffer) {
@@ -107,21 +108,18 @@ export class PostEditComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-    const sub: Subscription = this.recordRTCService.getRecordedAudioBlob().subscribe((data) => {
-      this.audio = data.blob;
-    });
     const dialogSub = dialogref.events
       .pipe(filter((e) => e.type === 'result'))
       .subscribe((e) => {
-        if(e.data === 'save') {
-          if(!this.isEditing) this.add('audio');
+        if(e.data) {
+          this.audio = e.data;
+          if(!this.currentContent) this.add('audio');
           else this.save();
         }
         this.audio = null;
-        this.isEditing = null;
+        this.currentContent = null;
         this.recordRTCService.abortRecording();
         dialogSub.unsubscribe();
-        sub.unsubscribe();
       });
   }
 

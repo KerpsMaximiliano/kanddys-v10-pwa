@@ -1,10 +1,10 @@
-<div class="container" [ngStyle]="{backgroundColor: isEditing ? '#F6F6F6' : '#FFFFFF'}">
+<div class="container" [ngStyle]="{backgroundColor: currentContent ? '#F6F6F6' : '#FFFFFF'}">
 	<div class="topbar">
 		<a class="cancel" (click)="cancel()">Cancel</a>
-		<button (click)="save()" class="right" *ngIf="isEditing && (editText || image)">Salvar</button>
-		<a class="right" *ngIf="!isEditing">Preview</a>
+		<button (click)="save()" class="right" *ngIf="currentContent && (editText || image)">Salvar</button>
+		<a class="right" *ngIf="!currentContent">Preview</a>
 	</div>
-	<div class="post-list" *ngIf="!isEditing">
+	<div class="post-list" *ngIf="!currentContent">
 		<div class="icon-edit" *ngFor="let item of content; index as i">
 			<div class="edit-element">
 				<button (click)="edit(i)"><img class="icon" [src]="env + '/pencil_line.svg'" alt="edit"></button>
@@ -20,8 +20,8 @@
 			</div>
 		</div>
 	</div>
-	<div *ngIf="isEditing" class="edit-mode">
-		<div *ngIf="isEditing.type === 'text'" class="post-message">
+	<div *ngIf="currentContent" class="edit-mode">
+		<div *ngIf="currentContent.type === 'text'" class="post-message">
 			<label for="post-message">Adiciona el texto:</label>
 			<textarea
 				class="textarea"
@@ -31,7 +31,7 @@
 				[(ngModel)]="editText"
 			></textarea>
 		</div>
-		<div *ngIf="isEditing.type === 'poster'" class="post-image">
+		<div *ngIf="currentContent.type === 'poster'" class="post-image">
 			<h3 class="image-title">Titulo del poster (opcional)</h3>
 			<input
         id="post-image"
@@ -49,7 +49,7 @@
 		</div>
 	</div>
 </div>
-<div class="fixed-area" *ngIf="!isEditing">
+<div class="fixed-area" *ngIf="!currentContent">
 	<div class="icons">
 		<app-cta-buttons
 			[ctaText]="'Audio'"
