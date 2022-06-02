@@ -42,6 +42,7 @@ import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-crea
 import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.component';
+import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 
 const routes: Routes = [
   {
@@ -174,7 +175,7 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'data-list', /* /:orderId */
+    path: 'data-list/:orderId',
     component: DataListComponent,
   },
   {
@@ -225,6 +226,7 @@ const routes: Routes = [
     path: 'item-gallery',
     component: ItemGalleryComponent
   },
+ 
 ];
 
 @NgModule({
@@ -271,6 +273,7 @@ const routes: Routes = [
     ItemCreatorComponent,
     UserDashboardComponent,
     ItemGalleryComponent,
+    NewItemDisplayComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
