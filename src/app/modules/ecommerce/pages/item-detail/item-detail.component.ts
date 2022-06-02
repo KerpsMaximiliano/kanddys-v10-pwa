@@ -115,7 +115,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
                 if (data.saleflow.items[i].customizer) {
                   this.router.navigate([`ecommerce/provider-store/${this.saleflowData._id}/${this.itemData._id}`])
                 }else{
-                  this.router.navigate(['/ecommerce/create-giftcard']);
+                  if (this.saleflowData.module.post) this.router.navigate(['/ecommerce/create-giftcard']);
+                  else this.router.navigate(['/ecommerce/shipment-data-form']);
                 }
               }
             }
