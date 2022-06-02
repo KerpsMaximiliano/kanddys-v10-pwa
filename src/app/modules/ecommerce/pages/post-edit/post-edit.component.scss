@@ -38,19 +38,24 @@ button {
 	}
 
 	.icon-edit {
-		display: flex;
-		width: 100%;
-		justify-content: space-evenly;
+		display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
 
 		.edit-element {
 			padding-top: 20px;
 			display: flex;
 			flex-direction: column;
 			gap: 20px;
+			text-align: center;
+			grid-column: span 2 / span 2;
 
 			.icon {
 				cursor: pointer;
 			}
+		}
+
+		.editor {
+			grid-column: span 9 / span 9;
 		}
 	}
 

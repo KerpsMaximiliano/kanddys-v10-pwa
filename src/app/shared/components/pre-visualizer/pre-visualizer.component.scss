@@ -4,6 +4,10 @@
 	text-align: center;
 	padding: 26px 30px 20px;
 
+	audio {
+		width: 100%;
+	}
+
 	.audio-title {
 		margin: 0;
 		margin-bottom: 16px;
@@ -72,13 +76,12 @@
 	}
 
 	.title-image {
-		height: 320px;
+		width: 100%;
 		border-radius: 9px;
 	}
 }
 
 .text {
-	max-width: 340px;
 	border-radius: 9px;
 	border: 1px solid rgba(161, 161, 161, 43%);
 	padding: 30px 33px 24px 40px;
