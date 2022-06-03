@@ -111,11 +111,11 @@
       <ng-container *ngIf="itemListContent.merchant_info || itemListContent.add_tag">
         <div class="info-right-icons">
             <ng-container *ngIf="itemListContent.merchant_info">
-                <img [src]="env + '/person.svg'" alt="" class="person">
+                <img [src]="env + '/person.svg'" alt="" class="person" [ngStyle]="{filter: palette}">
             </ng-container>
 
             <ng-container *ngIf="itemListContent.add_tag && !itemListContent.tag_function">
-                <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag">
+                <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag" [ngStyle]="{filter: palette}">
             </ng-container>
 
             <button 
@@ -123,7 +123,7 @@
               *ngIf="itemListContent.add_tag && itemListContent.tag_function"
               (click)="itemListContent.tag_function()"
             >
-              <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag">
+              <img [src]="env + '/Etiqueta_lapiz.svg'" alt="" class="tag" [ngStyle]="{filter: palette}">
             </button>
         </div>
         </ng-container>
@@ -169,7 +169,7 @@
             </div>
           </div>
         </ng-container>
-        <p *ngIf="itemListContent.text_right" class="tags-counter">
+        <p *ngIf="itemListContent.text_right" class="tags-counter" [ngStyle]="{color: textColor}">
           {{ itemListContent.text_right }}
         </p>
         <ng-container

@@ -1,0 +1,54 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [navtext]="''"
+    [returnAble]="true"
+    [whatsapp]="false"
+    [shopcart]="false"
+    ></app-helper-headerv2>
+
+    <div class="item-info" *ngIf="item" >
+
+        <div *ngIf="item.description" class="description">
+            <h2 class="title-name" *ngIf="item?.name; else placeholder">{{item?.name}}</h2>
+            <ng-template #placeholder> <span class="title-placeholder">Descripcion</span></ng-template>
+
+            <p class="desc-text">{{item.description}}</p>
+
+            <hr *ngIf="!item.images" class="divider">
+        </div>
+
+        <div *ngIf="item.name && !item.description && !item.images">
+            <div class="grey-box">
+                <h3 class="title">{{item.name}}</h3>
+            </div>
+        </div>
+
+        <div *ngIf="item.images" class="itemImg">
+            <div 
+            [ngStyle]="{ 'background-image': 'url(' + item?.images + ')', 'background-size': 'cover' }"
+             style="width: 100%; height: 450px;"></div>
+        </div>
+
+        <div class="no-description" *ngIf="item.name && !item.description && item.images">
+            <h3 class="title">{{item.name}}</h3>
+        </div>
+
+        <div *ngIf="item.pricing" class="item-price">
+            <span class="vale">vale</span>
+            <span class="price">${{item.pricing}}</span>
+        </div>
+
+        <div class="content" *ngIf="item.content">
+           <hr class="divider">
+
+           <span class="includes">Incluye:</span>
+
+           <ng-container *ngFor="let content of item.content; index as i">
+               <span class="list-content">- {{content}}</span>
+           </ng-container> 
+
+        </div>
+    </div>
+
+</div>
