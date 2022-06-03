@@ -6,28 +6,37 @@
     </div>
 
     <div class="visualizer-area">
+        <div style="width: 80%; margin: 0 auto">
         <app-pre-visualizer
         [mode]="'text'"
         ></app-pre-visualizer>
+        </div>
 
         <hr class="separate">
 
+        <div style="width: 80%; margin: 0 auto">
         <app-pre-visualizer
         [mode]="'audio'"
         ></app-pre-visualizer>
+        </div>
 
         <hr class="separate">
 
+        <div style="width: 80%; margin: 0 auto">
         <app-pre-visualizer
         [mode]="'poster'"
         ></app-pre-visualizer>
+        </div>
+        
     </div>
 
     <div class="gallery">
 
         <label for="Titulo" class="gallery-title">Galeria {{nameId}} </label>
 
-        <img [src]="" alt="IMAGE IS MISSING" class="gallery-image">
+        <div class="gallery-images"> 
+            <ng-container *ngFor="let image of images"><img [src]="" alt="Imagen del collage" class="image-collage"></ng-container>
+        </div>
 
     </div>
 
