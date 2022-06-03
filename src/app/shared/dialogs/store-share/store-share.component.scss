@@ -1,0 +1,68 @@
+.container{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    margin-bottom: 52px;
+    background-color: transparent;
+
+    .body{
+        width: 86%;
+        padding: 30px 0 17px;
+        border-radius: 18px;
+        background-color: #FFFFFF;
+
+        .title{
+            font-family: 'RobotoBold';
+            font-size: 29px;
+            color: #0B1F38;
+            margin: 0 19px 28px;
+        }
+
+        .function{
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 0 26.5px 20.5px 19px ;
+
+            .text{
+                font-family: 'RobotoRegular';
+                font-size: 20px;
+                color: #4773D8;
+                cursor: pointer;
+            }
+
+            .icon{
+                cursor: pointer;
+                filter: invert(42%) sepia(28%) saturate(3255%) hue-rotate(206deg) brightness(90%) contrast(86%);
+            }
+        }
+
+        .separator{
+            width: 100%;
+            height: 2px;
+            margin: 0 0 26.5px;
+            border: none;
+            background-color: rgb(112, 112, 112, 16%);
+        }
+    }
+
+    .cancel{
+        width: 86%;
+        height: 72px;
+        background-color: #FFFFFF;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'RobotoMedium';
+        font-size: 20px;
+        color: #4773D8;
+        text-transform: uppercase;
+        margin-top: 11.5px;
+        border: none;
+        border-radius: 18px;
+        cursor: pointer;
+    }
+}
+
