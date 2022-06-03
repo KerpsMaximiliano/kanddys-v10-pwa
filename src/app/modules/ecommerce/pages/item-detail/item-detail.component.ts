@@ -79,8 +79,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params)=>{
         this.viewtype = params.viewtype;
         if (this.viewtype === 'merchant') this.viewtype = 'merchant'
-        else if( this.viewtype === 'preview') this.viewtype = 'preview'
-        else if (this.viewtype === 'community' || !this.viewtype) this.viewtype = 'community'   
+        else if( this.viewtype === 'preview'  || !this.viewtype) this.viewtype = 'preview'
+        else if (this.viewtype === 'community') this.viewtype = 'community'   
     });
 
     this.deleteEvent = this.appService.events
