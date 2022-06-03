@@ -1,4 +1,6 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -8,14 +10,23 @@ import { environment } from 'src/environments/environment';
 })
 export class PostPreviewComponent implements OnInit {
 
-    imageFolder : string;
-    nameId: string = 'NameID';
+  env: string = environment.assetsUrl;
+  nameId: string = 'NameID';
+  images: string[] = ['','','','','','','','',''];
 
-  constructor() { 
-      this.imageFolder = environment.assetsUrl;
+  constructor(
+    private postService: PostsService,
+    private location: Location
+  ) {
   }
 
   ngOnInit(): void {
   }
+
+
+  goBack() {
+    this.location.back();
+  }
+
 
 }

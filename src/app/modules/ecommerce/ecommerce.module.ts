@@ -200,6 +200,10 @@ const routes: Routes = [
     component: PostEditComponent,
   },
   {
+    path: 'post-edit/:postId',
+    component: PostEditComponent,
+  },
+  {
     path: 'delivery-preview',
     component: DeliveryPreviewComponent,
   },

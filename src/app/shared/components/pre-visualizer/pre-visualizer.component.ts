@@ -12,7 +12,7 @@ export class PreVisualizerComponent implements OnInit {
   @Input() mode: 'audio' | 'poster' | 'text';
   @Input() image: string;
   @Input() posterTitle: string = 'Titulo del Poster';
-  @Input() audio: Blob;
+  @Input() audio: Blob | string;
   audioBlobUrl: SafeUrl;
   @Input() textTitle: string;
   @Input() textPost: string = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita';
@@ -25,7 +25,10 @@ export class PreVisualizerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if(this.audio) this.audioBlobUrl = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(this.audio));
+    if(this.audio) {
+      const source = typeof this.audio === 'string' ? this.audio : URL.createObjectURL(this.audio);
+      this.audioBlobUrl = this.sanitizer.bypassSecurityTrustUrl(source);
+    }
   }
 
   action() {

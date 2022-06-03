@@ -370,7 +370,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           };
 
           try {
-            let postResult = await this.post.creationPost(postInput);
+            let postResult = await this.post.createPost(postInput);
 
             const { createPost } = postResult;
             const { _id: postId } = createPost;
@@ -555,7 +555,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     //     };
 
     //     try {
-    //       let postResult = await this.post.creationPost(postInput);
+    //       let postResult = await this.post.createPost(postInput);
 
     //       const { createPost } = postResult;
     //       const { _id: postId } = createPost;

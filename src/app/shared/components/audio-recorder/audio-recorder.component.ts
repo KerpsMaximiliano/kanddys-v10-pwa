@@ -80,6 +80,6 @@ export class AudioRecorderComponent implements OnInit {
   }
 
   save() {
-    this.ref.close(this.audioBlob);
+    this.ref.close({ blob: this.audioBlob, title: this.audioName });
   }
 }
