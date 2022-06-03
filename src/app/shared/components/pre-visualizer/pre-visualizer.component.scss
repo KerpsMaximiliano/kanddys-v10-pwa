@@ -3,6 +3,9 @@
 	border: 1px solid rgba(161, 161, 161, 43%);
 	text-align: center;
 	padding: 26px 30px 20px;
+    max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
 
 	audio {
 		width: 100%;
@@ -57,7 +60,10 @@
 	border-radius: 9px;
 	border: 1px solid rgba(161, 161, 161, 43%);
 	padding: 0px 50px 50px 50px;
-	
+	max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
+
 	.placeholder {
 		width: 240px;
 		height: 320px;
@@ -85,6 +91,9 @@
 	border-radius: 9px;
 	border: 1px solid rgba(161, 161, 161, 43%);
 	padding: 30px 33px 24px 40px;
+    max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
 
 	.text-title {
 		font-family: "SfProBold";
