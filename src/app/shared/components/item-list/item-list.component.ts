@@ -81,13 +81,18 @@ export class ItemListComponent implements OnInit {
     phone: '',
   };
 
+  @Input('color') color: 'blue' | 'green' = 'blue' ;
   @Input('marginTop') marginTop = '62px';
   @Input('marginBottom') marginBottom = '0px';
+  palette: string ;
+  textColor: string;
   env: string = environment.assetsUrl;
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setColor(this.color);
+  }
 
   formatPrice(price: string = '') {
     return `${price}`.replace(',', '.').replace('.', ',');
@@ -97,5 +102,21 @@ export class ItemListComponent implements OnInit {
     this.router.navigate([
       `/ecommerce/leadword-view/${this.itemListContent.title}`,
     ]);
+  }
+  
+  setColor(color){
+    switch(color){
+        case 'blue':
+        this.palette = 'invert(45%) sepia(25%) saturate(1380%) hue-rotate(184deg) brightness(94%) contrast(98%)'
+        this.textColor = '#4773D8'
+
+        break;
+
+        case 'green':
+        this.palette = 'invert(39%) sepia(50%) saturate(543%) hue-rotate(61deg) brightness(90%) contrast(89%)'
+        this.textColor = '#40772F'
+
+        break;
+    }
   }
 }
