@@ -65,12 +65,23 @@
             text-transform: uppercase;
         }
 
-        .gallery-image{
+        .gallery-images{
             width: 70.19%;
             height: 297px;
             margin: 0 auto;
-            background-color: #707070;
             border-radius: 9px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            row-gap: 16.4px;
+            column-gap: 12.1px;
+
+            .image-collage{
+                width: auto;
+                height: auto;
+                border-radius: 8px;
+                background-color: #707070;
+            }
         }
     }
 }

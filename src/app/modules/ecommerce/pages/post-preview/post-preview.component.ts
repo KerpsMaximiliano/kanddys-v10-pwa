@@ -10,6 +10,7 @@ export class PostPreviewComponent implements OnInit {
 
     imageFolder : string;
     nameId: string = 'NameID';
+    images: Array<string> = ['', '', '', '', '', '', '', '', ''];
 
   constructor() { 
       this.imageFolder = environment.assetsUrl;
