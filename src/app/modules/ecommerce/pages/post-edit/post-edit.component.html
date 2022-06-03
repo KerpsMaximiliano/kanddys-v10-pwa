@@ -1,61 +1,73 @@
-<div class="container">
-    <div class="topbar">
-        <label for="Cancelar" class="cancel">Cancel</label>
-
-        <ng-container *ngIf="inPreview == true; else editing">
-            <label for="Opcion salvar" class="right">Salvar</label>
-        </ng-container>
-
-        <ng-template #editing>
-            <label for="Opcion preview" class="right">Preview</label>
-        </ng-template>
-    </div>
-
-    <div class="icon-edit">
-        <div style="margin-left: 17px; margin-top: 40px; cursor: pointer;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="29.25" viewBox="0 0 31.5 29.25">
-            <g id="Grupo_69365" data-name="Grupo 69365" transform="translate(-17 -166)">
-              <g id="edit" transform="translate(14.75 163.75)">
-                <path id="Trazado_28500" data-name="Trazado 28500" d="M2.25,29.25h31.5V31.5H2.25Z" fill="#4773d8"/>
-                <path id="Trazado_28501" data-name="Trazado 28501" d="M28.575,10.125a2.175,2.175,0,0,0,0-3.15l-4.05-4.05a2.175,2.175,0,0,0-3.15,0L4.5,19.8V27h7.2ZM22.95,4.5,27,8.55l-3.375,3.375-4.05-4.05ZM6.75,24.75V20.7L18,9.45l4.05,4.05L10.8,24.75Z" fill="#4773d8"/>
-              </g>
-            </g>
-          </svg>
-          </div>
-          
-        <!-- <img [src]="imageFolder + image" alt="here's an image :)"> -->
-
-        <div class="editor">
-        <app-pre-visualizer
-        [mode]="mode"
-        ></app-pre-visualizer>
-        </div>
-    </div>
-
-    <div class="fixed-area">
-        <div class="icons">
-            <app-cta-buttons
-            [ctaText]="'Audio'"
-            [btnColor]="'#FC2727'"
-            [icon]="imageFolder + '/mic.svg'"
-            >
-            </app-cta-buttons>
-            
-            <app-cta-buttons
-            [ctaText]="'Imagen'"
-            [btnColor]="'#40772F'"
-            [icon]="imageFolder + '/image.svg'"
-            >
-            </app-cta-buttons>
-            
-            <app-cta-buttons
-            [ctaText]="'Texto'"
-            [btnColor]="'#4773D8'"
-            [icon]="imageFolder + '/text.svg'"
-            >
-            </app-cta-buttons>
-        </div>
-    </div>
+<div class="container" [ngStyle]="{backgroundColor: currentContent ? '#F6F6F6' : '#FFFFFF'}">
+	<div class="topbar">
+		<a class="cancel" (click)="cancel()">Cancel</a>
+		<button (click)="save()" class="right" *ngIf="currentContent && (editText || image)">Salvar</button>
+		<a class="right" *ngIf="!currentContent">Preview</a>
+	</div>
+	<div class="post-list" *ngIf="!currentContent">
+		<div class="icon-edit" *ngFor="let item of content; index as i">
+			<div class="edit-element">
+				<button (click)="edit(i)"><img class="icon" [src]="env + '/pencil_line.svg'" alt="edit"></button>
+				<button><img class="icon" *ngIf="true" [src]="env + '/move.svg'" alt="move"></button>
+			</div>
+			<div class="editor">
+				<app-pre-visualizer
+					[mode]="item.type"
+					[textPost]="item?.text"
+					[image]="item?.imageUrl"
+					[audio]="item?.audio"
+				></app-pre-visualizer>
+			</div>
+		</div>
+	</div>
+	<div *ngIf="currentContent" class="edit-mode">
+		<div *ngIf="currentContent.type === 'text'" class="post-message">
+			<label for="post-message">Adiciona el texto:</label>
+			<textarea
+				class="textarea"
+				name="post-message"
+				id="post-message"
+				placeholder="Escribe..."
+				[(ngModel)]="editText"
+			></textarea>
+		</div>
+		<div *ngIf="currentContent.type === 'poster'" class="post-image">
+			<h3 class="image-title">Titulo del poster (opcional)</h3>
+			<input
+        id="post-image"
+        (change)="fileProgress($event)"
+        type="file"
+        class="d-none"
+      />
+			<label
+        [style.background]="imageField ? sanitize(imageField) : '#82F18D'"
+        for="post-image"
+        class="file"
+      >
+      </label>
+			<p>Comentario de la imagen (opcional)</p>
+		</div>
+	</div>
 </div>
-
-
+<div class="fixed-area" *ngIf="!currentContent">
+	<div class="icons">
+		<app-cta-buttons
+			[ctaText]="'Audio'"
+			[btnColor]="'#FC2727'"
+			[icon]="env + '/mic.svg'"
+			(click)="openRecorder()"
+		></app-cta-buttons>
+		<app-cta-buttons
+			[ctaText]="'Poster'"
+			[btnColor]="'#40772F'"
+			[icon]="env + '/image.svg'"
+			(click)="add('poster')"
+		></app-cta-buttons>
+		<app-cta-buttons
+			[ctaText]="'Texto'"
+			[btnColor]="'#4773D8'"
+			[icon]="env + '/text.svg'"
+			(click)="add('text')"
+		></app-cta-buttons>
+	</div>
+</div>

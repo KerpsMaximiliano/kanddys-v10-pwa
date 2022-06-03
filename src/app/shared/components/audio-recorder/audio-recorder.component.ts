@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
 @Component({
   selector: 'app-audio-recorder',
@@ -8,6 +9,7 @@ import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
   styleUrls: ['./audio-recorder.component.scss']
 })
 export class AudioRecorderComponent implements OnInit {
+  @Input() isDialog: boolean;
   @Input() canRecord: boolean;
   @Input() audioBlob: Blob;
   audioBlobUrl: SafeUrl;
@@ -18,6 +20,7 @@ export class AudioRecorderComponent implements OnInit {
   constructor(
     private RecordRTCService: RecordRTCService,
     private sanitizer: DomSanitizer,
+    private ref: DialogRef,
   ) {
     this.RecordRTCService.getRecordedTime().subscribe((time) => {
       this.recordedTime = time;
@@ -72,4 +75,11 @@ export class AudioRecorderComponent implements OnInit {
     document.body.removeChild(anchor);
   }
 
+  close() {
+    this.ref.close();
+  }
+
+  save() {
+    this.ref.close(this.audioBlob);
+  }
 }

@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment'
 })
 export class TagsSquareComponent implements OnInit {
 
-  @Input() number: number = 154;
-  @Input() gains: string = '1, 154.23'
-  @Input() tagText: string[] = ['Tag ID', 'Tag ID'];
+  @Input() number: number;
+  @Input() gains: number;
+  @Input() tagText: string;
   imageFolder: string;
     
   constructor() { 

@@ -7,7 +7,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class PageComponentTabsComponent implements OnInit {
   @Input() tabsOptions: string[];
-  activeTag: number = 0;
+  @Input() activeTag: number = 0;
   @Output() changeValue = new EventEmitter<string>();
   mouseDown = false;
   startX: any;

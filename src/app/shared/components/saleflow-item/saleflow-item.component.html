@@ -12,11 +12,8 @@
               <span class="price">${{price | number}}</span>
               <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
           </div>
-
-          <div class="flexer-middle">
-              <span class="income" *ngIf="income">Ingreso </span>
-              <span class="income" *ngIf="income"> ${{income | number}}</span>
-          </div>
+          
+          <span class="income" *ngIf="income">Ingreso ${{income | number}} </span>
 
           <div class="flexer">
               <span class="sales" *ngIf="quantity">{{quantity}} Ventas</span>

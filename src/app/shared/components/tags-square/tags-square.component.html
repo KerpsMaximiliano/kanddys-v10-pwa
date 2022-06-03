@@ -1,11 +1,9 @@
 <div class="container">
     <div class="body">
         <div class="wrapper">
-        <label for="Number" class="number amount">{{number}}</label>
-        <ng-container *ngIf="gains"> <label for="Number" class="number">${{gains}}</label> </ng-container>
+        <span for="Number" class="number amount">{{number}}</span>
+        <ng-container *ngIf="gains"> <span for="Number" class="number">${{gains}}</span> </ng-container>
         </div>
-        <ng-container *ngFor="let texts of tagText; index as i">
-            <label for="Text" class="text">{{tagText[i]}}</label>
-        </ng-container>
+        <p for="Text" class="text">{{tagText}}</p>
     </div>
 </div>

@@ -1,10 +1,14 @@
+<div class="navbar" *ngIf="isDialog">
+  <button class="nav-btn" (click)="close()">Cancel</button>
+  <button class="nav-btn" *ngIf="!isAudioRecording && audioBlobUrl" (click)="save()">Salvar</button>
+</div>
 <div class="audio-container">
   <audio *ngIf="!isAudioRecording && audioBlobUrl" controls>
     <source [src]="audioBlobUrl" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
   <span *ngIf="isAudioRecording">{{recordedTime}}</span>
-  <button *ngIf="canRecord" (click)="isAudioRecording ? stopRecordingAudio() : startRecordingAudio()">
+  <button class="playback-buttons" *ngIf="canRecord" (click)="isAudioRecording ? stopRecordingAudio() : startRecordingAudio()">
     <span class="start" *ngIf="!isAudioRecording"></span>
     <span class="stop" *ngIf="isAudioRecording"></span>
   </button>

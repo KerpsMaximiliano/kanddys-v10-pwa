@@ -1,4 +1,22 @@
 button {
+  all: unset;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 15px 25px 15px 30px;
+  box-shadow: 0px 7px 10px 0px #e3e2ee;
+  margin-bottom: 10px;
+
+  .nav-btn {
+    color: #4773D8;
+    font-size: 17px;
+    font-family: "RobotoRegular";
+    cursor: pointer;
+  }
+}
+.playback-buttons {
   border-radius: 50%;
   border: 1px solid #707070;
   width: 52px;
