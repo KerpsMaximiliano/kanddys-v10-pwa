@@ -33,31 +33,7 @@
     </ng-container> 
   </p>
   <div class="tag-container">
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-   <!--  <app-info-card
+    <app-info-card
         *ngFor="let tag of filteredTagList"
         (click)="onTagClick(tag)"
         type="tag"
@@ -65,6 +41,6 @@
         [toptext]="tag.counter"
         [isSelectable]="true"
         [selected]="tag.notifyMerchantOrder"
-      ></app-info-card> -->
+      ></app-info-card>
   </div>
 </div>

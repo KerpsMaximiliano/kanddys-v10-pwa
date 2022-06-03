@@ -226,7 +226,10 @@ const routes: Routes = [
     path: 'item-gallery',
     component: ItemGalleryComponent
   },
- 
+  {
+    path:'item-display',
+    component: NewItemDisplayComponent
+  }
 ];
 
 @NgModule({

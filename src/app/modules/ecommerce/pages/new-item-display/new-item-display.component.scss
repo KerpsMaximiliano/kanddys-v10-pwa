@@ -1,0 +1,121 @@
+.container{
+    width: 100%;
+    min-height: 100vh;
+    background-color: #FFFFFF;
+
+    .item-info{
+        display: flex;
+        flex-direction: column;
+
+        .description{
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            background-color: #FFFFFF;
+            padding: 23px 0 0;
+
+            .title-name{
+                font-family: 'RobotoBold';
+                font-size: 22px;
+                color: #2E2E2E;
+                margin: 0 32px 10px;
+            }
+            .title-placeholder{
+                font-family: 'SfProRegular';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin: 0 32px;
+            }
+            .desc-text{
+                font-family: 'SfProRegular';
+                font-size: 17px;
+                color: #0B1F38;
+                margin: 0 32px 32px;
+            }
+        }
+
+        .grey-box{
+            width: 90%;
+            height: 250px;
+            border-radius: 18px;
+            background-color: rgba(189, 189, 189, 17%);
+            padding: 39px 20px 0 44px;
+            margin: 25px auto 19px;
+
+            .title{
+                font-family: 'NeueMontreal';
+                font-size: 27px;
+                font-weight: bold;
+                color: #000000;
+                margin: 0;
+            }
+        }
+
+        .itemImg{
+            width: 100%;
+            min-height: 290px;
+            box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 12%);
+        }
+
+        .no-description{
+            width: 100%;
+
+            .title{
+                font-family: 'RobotoBold';
+                font-size: 22px;
+                color: #2E2E2E;
+                margin: 17.1px 32px 7px;
+            }
+        }
+
+        .item-price{
+            display: flex;
+            flex-direction: column;
+            margin: 19px 32px 0px;
+
+            .vale{
+                font-family: 'SfProRegular';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin-top: 13px;
+            }
+
+            .price{
+                font-family: 'SfProBold';
+                font-size: 28px;
+                color: #3F3F3F;
+                margin-bottom: 34px;
+            }
+        }
+
+        .content{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            .includes{
+                font-family: 'SfProRegular';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin: 32px 32px 0;
+            }
+
+            .list-content{
+                font-family: 'SfProBold';
+                font-size: 28px;
+                color: #3F3F3F;
+                margin: 0 32px 6px;
+            }
+        }
+
+    }
+}
+
+.divider{
+    width: 100%;
+    border: none;
+    height: 6px;
+    background-color: #F5F5F5;
+    margin: 0;
+}
