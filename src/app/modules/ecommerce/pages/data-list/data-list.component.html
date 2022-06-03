@@ -7,6 +7,7 @@
     [itemId]="'chps n tips'"
     [leftText]="'ingreso $2,020.00'"
     [rightText]="'44 ventas'"
+    (returnEvent)="back()"
     ></app-helper-headerv2>
 
   <div class="input">
@@ -33,31 +34,7 @@
     </ng-container> 
   </p>
   <div class="tag-container">
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-      <app-info-card
-      type="tag"
-      [bottomtext]="'Filtros'"
-      [toptext]="'32'"
-      [isSelectable]="true"
-      ></app-info-card>
-   <!--  <app-info-card
+    <app-info-card
         *ngFor="let tag of filteredTagList"
         (click)="onTagClick(tag)"
         type="tag"
@@ -65,6 +42,6 @@
         [toptext]="tag.counter"
         [isSelectable]="true"
         [selected]="tag.notifyMerchantOrder"
-      ></app-info-card> -->
+      ></app-info-card>
   </div>
 </div>

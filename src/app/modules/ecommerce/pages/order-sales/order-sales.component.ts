@@ -244,25 +244,8 @@ export class OrderSalesComponent implements OnInit {
            text_style: true,
            phone: order.user.phone,
            add_tag: true,
-           tag_function: () => this.router.navigate([`ecommerce/tags-list/${order._id}`]),
-           //icons_image_bool: true,
-          //  icons_bottom_right_first: order.tags.length > 0
-          //   ? [{ 
-          //     icon: this.imageFolder + '/Etiquetas_rellenas.svg',
-          //     type: 'img',
-          //     size: '26',
-          //     function: () => this.tagFunction()
-          //  }] 
-          //  : null,
-          //  icons_bottom_right: order.tags.length === 0
-          //  ? [{ 
-          //     icon: this.imageFolder + '/Etiqueta_lapiz.svg',
-          //     type: 'img',
-          //     size: '26',
-          //     function: () => this.tagFunction()
-          //    }]
-          //   : null,
-         })
+           tag_function: () => this.router.navigate([`ecommerce/data-list/${order._id}`], { queryParams: { viewtype: 'merchant' } }),
+         });
        })
      })
    }

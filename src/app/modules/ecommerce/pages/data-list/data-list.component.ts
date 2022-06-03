@@ -17,6 +17,7 @@ export class DataListComponent implements OnInit {
   filteredTagList: Tag[] = [];
   merchantId: string;
   orderId: string;
+  viewtype: 'merchant' | 'user';
 
   constructor(
     private tagsService: TagsService,
@@ -28,8 +29,15 @@ export class DataListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    /* this.merchantId = this.headerService.merchantInfo?._id;
-    if(!this.merchantId) return this.redirect();
+    this.route.queryParams.subscribe((queries) => {
+      if(queries.viewtype === 'merchant') this.viewtype = 'merchant';
+      else if(queries.viewtype === 'user') this.viewtype = 'user';
+      else return this.redirect();
+    })
+    if(this.viewtype === 'merchant') {
+      this.merchantId = this.headerService.merchantInfo?._id;
+      if(!this.merchantId) return this.redirect();
+    }
     this.route.params.subscribe(async (params) => {
       if(!params.orderId) return this.redirect();
       const order = (await this.orderService.order(params.orderId))?.order;
@@ -39,11 +47,14 @@ export class DataListComponent implements OnInit {
       if(!user) return this.redirect();
       const tags = await this.tagsService.tagsByUser();
       tags.forEach((tag) => {
-        if(order.tags.includes(tag._id)) tag.notifyMerchantOrder = true;
+        if(order.tags.includes(tag._id)) {
+          if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+          if(this.viewtype === 'user') tag.notifyUserOrder = true;
+        }
       })
       this.tagList = tags;
       this.filteredTagList = tags;
-    }) */
+    })
   }
 
   redirect() {
@@ -53,41 +64,65 @@ export class DataListComponent implements OnInit {
   }
 
   onTagClick(tag: Tag) {
-    // console.log('=========================================')
-    if(tag.notifyMerchantOrder) {
-      tag.counter--;
-      this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.orderId)
-        .then((value) => {
-          // console.log(value);
-          // console.log(tag._id)
-          // console.log(value.removeTagsInOrder.tags)
-          // console.log(value.removeTagsInOrder.tags.includes(tag._id));
-          console.log('removed successfully!')
-        })
-        .catch((error) => {
-          console.log(error);
-          tag.counter++;
-        });
+    if(this.viewtype === 'merchant') {
+      if(tag.notifyMerchantOrder) {
+        tag.counter--;
+        this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.orderId)
+          .then((value) => {
+            console.log('removed successfully!')
+          })
+          .catch((error) => {
+            console.log(error);
+            tag.counter++;
+          });
+      }
+      else {
+        tag.counter++;
+        this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.orderId)
+          .then((value) => {
+            console.log('added successfully!')
+          })
+          .catch((error) => {
+            console.log(error);
+            tag.counter--;
+          }); 
+      }
+      tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
     }
-    else {
-      tag.counter++;
-      this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.orderId)
-        .then((value) => {
-          // console.log(tag._id)
-          // console.log(value.addTagsInOrder.tags)
-          // console.log(value.addTagsInOrder.tags.includes(tag._id));
-          console.log('added successfully!')
-        })
-        .catch((error) => {
-          console.log(error);
-          tag.counter--;
-        }); 
+    if(this.viewtype === 'user') {
+      // if(tag.notifyUserOrder) {
+      //   tag.counter--;
+      //   this.tagsService.removeTagsInUserOrder(tag._id, this.orderId)
+      //   .then((value) => {
+      //     console.log(value);
+      //     console.log('removed successfully!')
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //     tag.counter++;
+      //   });
+      // } else {
+      //   tag.counter++;
+      //   this.tagsService.addTagsInUserOrder(this.merchantId, tag._id, this.orderId)
+      //     .then((value) => {
+      //       console.log(value);
+      //       console.log('added successfully!')
+      //     })
+      //     .catch((error) => {
+      //       console.log(error);
+      //       tag.counter--;
+      //     }); 
+      // }
     }
-    tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
   }
 
   searchKeyword() {
     this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
+  }
+
+  back() {
+    const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/'+this.merchantId : 'user-dashboard/tiendas'}`
+    this.router.navigate([route]);
   }
 
 }

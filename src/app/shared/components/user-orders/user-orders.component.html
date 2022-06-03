@@ -1,0 +1,59 @@
+<div class="compradores">
+  <div class="sales">
+    <h5 class="my-sales">Facturas de mis Compras</h5>
+    <div class="images-wrapper">
+      <div class="icon-holder" [ngClass]="{'checked': showTags}">
+        <img
+          [src]="env + '/Etiquetas_vacias.svg'"
+          height="24px"
+          width="26px"
+          class="icon"
+          (click)="showTags = !showTags"
+        />
+      </div>
+      <div class="icon-holder">
+        <img
+          [src]="env + '/camera.svg'"
+          height="24px"
+          width="33px"
+          class="icon"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="totals">
+    <div class="incomes">
+      <p class="total-income">${{totalIncome}} DOP</p>
+      <p class="total-income">{{totalSales}} Ventas</p>
+    </div>
+    <div *ngIf="!showTags" class="organized">
+      <div class="arrow-circle">
+        <img
+          [src]="env + '/arrow-down-left.svg'"
+          width="10px"
+          height="10px"
+          alt="F L E C H I T A"
+          class="arrow"
+        />
+      </div>
+      <p class="advice">Organiza tus compras regulares con las etiquetas.</p>
+    </div>
+  </div>
+  <ng-container *ngIf="showTags">
+    <div class="tags-area">
+      <app-tags-square
+        *ngFor="let tag of tags; let i = index"
+        [tagText]="tag.name"
+        [number]="tag.counter"
+      ></app-tags-square>
+    </div>
+  </ng-container>
+</div>
+<div class="last-sales">
+  <h5 class="latest">Últimas Facturas de mis Compras:</h5>
+  <app-item-list
+    *ngFor="let order of orderList"
+    [itemListContent]="order"
+    [marginTop]="'20px'"
+  ></app-item-list>
+</div>

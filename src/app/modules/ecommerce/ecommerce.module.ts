@@ -42,6 +42,7 @@ import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-crea
 import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.component';
+import { UserOrdersComponent } from 'src/app/shared/components/user-orders/user-orders.component';
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 
 const routes: Routes = [
@@ -220,7 +221,13 @@ const routes: Routes = [
   },
   {
     path: 'user-dashboard',
-    component: UserDashboardComponent
+    component: UserDashboardComponent,
+    children: [
+      {
+        path: 'tiendas',
+        component: UserOrdersComponent,
+      },
+    ],
   },
   {
     path: 'item-gallery',

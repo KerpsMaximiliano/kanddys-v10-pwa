@@ -5,83 +5,12 @@
     [leftText]="'Mi Tienda'"
     [rightText]="'List 2raise'"
     ></app-helper-headerv2>
-
     <app-header-info
-    [title]="'Merchant ID'"
-    [description]="'description placeholder'"
-    [description2]="'description placeholder'"
+        [title]="userData?.name"
     ></app-header-info>
-
     <app-page-component-tabs
-    [tabsOptions]="tabs"
-    (changeValue)="wichName($event)"
+        [tabsOptions]="tabs"
+        (changeValue)="wichName($event)"
     ></app-page-component-tabs>
-
-    <div class="compradores">
-      
-        <ng-container *ngIf="tiendas; else comingSoon">
-        <div class="sales">
-        <h5 class="my-sales">Facturas de mis Compras</h5>
-  
-            <div class="images-wrapper">
-                <div class="icon-holder" [ngClass]="{'checked': showTags}">
-                    <img [src]="env + '/Etiquetas_vacias.svg'" height="24px" width="26px" class="icon" (click)="showTags = !showTags"/>
-                </div>
-                <div class="icon-holder">
-                    <img [src]="env + '/camera.svg'" height="24px" width="33px" class="icon"/>
-                </div>
-            </div>
-  
-        </div>
-  
-        <div class="totals">
-          <div class="incomes">
-              <label for="Ganancias totales" class="total-income">${{totalIncome}} DOP</label>
-              <label for="Ventas Realizadas" class="total-income">{{totalSales}} Ventas</label>
-          </div>
-  
-          <div *ngIf="!showTags" class="organized">
-              <div class="arrow-circle"> <img [src]="env + '/arrow-down-left.svg'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
-              <p class="advice">Organiza tus compras regulares con las etiquetas.</p>
-          </div>
-        </div>
-  
-        
-        <ng-container *ngIf="showTags" >
-            <div class="tags-area">
-                <app-tags-square
-                    *ngFor="let tag of tags; let i = index"
-                    [tagText]="tag.name"
-                    [number]="tag.counter"
-                ></app-tags-square>
-            </div>
-        </ng-container>
-    
-        </ng-container>
-        
-        <ng-template #comingSoon>
-            <h2 class="coming"> COMING SOON!   :0</h2>
-        </ng-template>
-                
-    </div>
-
-    <div class="last-sales">
-        <h5 class="latest">Últimas Facturas de mis Compras:</h5> 
-        
-        <ng-container *ngIf="tiendas; else comingSoon">
-
-            <ng-container *ngFor="let order of ordurs">
-               <app-item-list
-               [itemListContent]="order" [marginTop]="'20px'"
-               ></app-item-list>
-            </ng-container>
-
-        </ng-container>
-
-        <ng-template #comingSoon>
-            <h2 class="coming"> COMING SOON!   :0</h2>
-        </ng-template>
-
-    </div>
-
+    <router-outlet></router-outlet>
 </div>
