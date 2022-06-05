@@ -14,6 +14,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 import { FormStep, FormField, AsyncFunction } from 'src/app/core/types/multistep-form';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-multistep-form',
@@ -30,7 +35,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           name: 'phoneNumber',
           fieldControl: new FormControl('', Validators.required),
           label: 'Con cuál número de WhatsApp harás esta orden?',
-          inputType: 'number',
+          inputType: 'phone',
           placeholder: 'Mi # de WhatsApp es..',
           styles: {
             containerStyles: {
@@ -210,6 +215,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
 
   constructor(private header: HeaderService) { }
 
