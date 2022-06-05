@@ -321,11 +321,11 @@
               ? groupOfLinks?.styles?.containerStyles
               : null
           ">
-          <span class="title" [ngStyle]="
+          <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
               groupOfLinks?.styles?.labelStyles
                 ? groupOfLinks?.styles?.labelStyles
                 : null
-            ">{{groupOfLinks.topLabel || 'Opcional'}}:</span>
+            ">{{groupOfLinks.topLabel}}:</span>
           <ng-container *ngFor="let link of groupOfLinks.links">
             <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
                 groupOfLinks?.styles?.fieldStyles

@@ -149,6 +149,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       },
       optionalLinksTo: [
         {
+          topLabel: 'Opcional',
           links: [
             {
               text: 'Que la parte de atrás sea una fotografia',
