@@ -30,7 +30,7 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 interface BankDetails {
   status: boolean;
   value: string;
-  description: string[];
+  description: any;
 }
 
 @Component({
@@ -335,15 +335,19 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
     this.banks = data.ExchangeData.bank;
 
+    console.log(this.banks);
+
     let wallets = [];
     for (let i = 0; i < data.ExchangeData.bank.length; i++) {
       wallets.push(
-        this.wallet.paymentReceiver(
+        await this.wallet.paymentReceiver(
           data.ExchangeData.bank[i].paymentReceiver._id
         )
       );
     }
+
     Promise.all(wallets).then((values) => {
+      console.log(values);
       let descriptions = data.ExchangeData.bank.map((value) => {
         return {
           owner: value.ownerAccount,
@@ -358,19 +362,20 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           bankdata: descriptions,
         };
       });
+      console.log(payments);
       this.bankOptions = payments.map((value, index) => {
         this.banks[index].name = this.titlecasePipe.transform(
           value.paymenteceiver.name
         );
         return {
-          value: this.titlecasePipe.transform(value.paymenteceiver.name),
+          value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
           status: true,
-          description: [
-            `Tipo de cuenta: ${value.bankdata[0].type}`,
-            `${value.bankdata[0].owner}`,
-            `Cuenta: ${value.bankdata[0].account}`,
-            `RNC: ${value.bankdata[0].routingNumber}`,
-          ],
+          description: {
+            typeAccount: value.bankdata[0].type,
+            owner: value.bankdata[0].owner,
+            account: value.bankdata[0].account,
+            routingNumber: value.bankdata[0].routingNumber
+          },
         };
       });
     });
