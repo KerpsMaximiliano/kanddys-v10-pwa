@@ -54,7 +54,11 @@
 
     <ng-container *ngIf=" mode == '2raise'">
         <div class="raise">
-            <div class="mi-tienda"> <label class="text">{{leftText}}</label></div>
+            <ng-container *ngIf="inMall">
+                <span class="text">Mall</span>
+                <span class="text">Compras</span>
+            </ng-container>
+            <div class="mi-tienda"> <label class="text" [style.color]="bgColor">{{leftText}}</label></div>
 
             <div class="holder">
                 <img [src]="env + '/star.svg'" alt="No image :c" class="star">

@@ -17,6 +17,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() returnAble: boolean = true;
     @Input() plus: boolean = false;
     @Input() upload: boolean = false;
+    @Input() inMall: boolean = false;
     @Input() line: boolean = true;
     @Input() leftText: string = 'Ir A Mis Datos Personales';
     @Input() rightText: string = 'Ir A Los Datos Mi Tienda';
