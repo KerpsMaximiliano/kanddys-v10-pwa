@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
+import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -78,16 +79,12 @@ export class MerchantsService {
     return response;
   }
 
-  async ordersByMerchant(merchant: any, pagination?: any): Promise<{ ordersByMerchant: ItemOrder[] }> {
-    console.log(merchant);
-
+  async ordersByMerchant(merchant: string, pagination?: PaginationInput): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
       query: ordersByMerchant,
       variables: { pagination, merchant },
       fetchPolicy: 'no-cache',
     });
-    console.log(response);
-
     return response;
   }
 

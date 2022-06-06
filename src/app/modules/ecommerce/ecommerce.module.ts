@@ -154,7 +154,7 @@ const routes: Routes = [
     component: ReservationComponent,
   },
   {
-    path: 'merchant-dashboard',
+    path: 'merchant-dashboard/:merchantId',
     component: MerchantDashboardComponent,
   },
   {
