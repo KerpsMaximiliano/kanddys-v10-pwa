@@ -2,14 +2,26 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   post,
-  creationPost,
+  createPost,
   getPostByPassword,
   slidesByPost,
   assignPostToCode,
   createCommentInPost,
   commentsByPost,
+  updatePost,
 } from '../graphql/posts.gql';
-import { PostInput } from '../models/post';
+import { Post, PostInput } from '../models/post';
+
+export interface PostContent {
+  type: 'audio' | 'poster' | 'text';
+  audio?: {
+    blob: Blob | string,
+    title?: string;
+  };
+  poster?: File,
+  imageUrl?: string | ArrayBuffer;
+  text?: string
+}
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +29,23 @@ import { PostInput } from '../models/post';
 export class PostsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async creationPost(input: PostInput): Promise<{createPost: { _id: string }}> {
+  post: PostInput;
+  content: PostContent;
+
+  async createPost(input: PostInput): Promise<{createPost: { _id: string }}> {
     let value = await this.graphql.mutate({
-      mutation: creationPost,
+      mutation: createPost,
       variables: { input },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+    return value;
+  }
+
+  async updatePost(input: PostInput, id: string): Promise<{updatePost: { _id: string }}> {
+    let value = await this.graphql.mutate({
+      mutation: updatePost,
+      variables: { input, id },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -38,7 +63,7 @@ export class PostsService {
     return value;
   }
 
-  async getPost(id: any) {
+  async getPost(id: string): Promise<{ post: Post }> {
     let value = await this.graphql.query({
       query: post,
       variables: { id },

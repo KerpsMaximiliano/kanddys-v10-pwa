@@ -1,19 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { PostContent, PostsService } from 'src/app/core/services/posts.service';
 import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
 import { environment } from 'src/environments/environment';
 
-interface PostContent {
-  type: 'audio' | 'poster' | 'text';
-  audio?: Blob,
-  poster?: File,
-  imageUrl?: string | ArrayBuffer;
-  text?: string
-}
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
@@ -21,23 +17,67 @@ interface PostContent {
 })
 export class PostEditComponent implements OnInit {
   env: string = environment.assetsUrl;
-  inPreview: boolean = true;
   currentContent: PostContent;
   isEditing: boolean;
   editText: string;
   imageField: string | ArrayBuffer = '';
   image: File;
-  audio: Blob;
+  audio: {
+    blob: Blob;
+    title: string;
+  }
   error: string;
   content: PostContent[] = [];
+  postId: string;
+  previewMode: boolean;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
     private dialogService: DialogService,
     private recordRTCService: RecordRTCService,
+    private postService: PostsService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      if(!params.postId) return;
+      this.postService.getPost(params.postId).then(async (data) => {
+        const { author, message, multimedia } = data.post;
+        const user = await this.authService.me();
+        if (!user) return this.redirect();
+        if(user._id !== author?._id) return this.redirect();
+        this.postId = params.postId;
+        if(message) this.content.push({
+          type: 'text',
+          text: message
+        });
+        multimedia.forEach((value) => {
+          // Check if is image
+          let content: PostContent;
+          if(value.match(/\.(jpeg|jpg|gif|png)$/) != null)
+            content = {
+              type: 'poster',
+              imageUrl: value
+            };
+          // Check if is audio
+          if(value.match(/\.(3gp|flac|mpg|mpeg|mp3|mp4|m4a|oga|ogg|wav|webm)$/) != null)
+            content = {
+              type: 'audio',
+              audio: { blob: value }
+            };
+          this.content.push(content);
+        });
+      })
+    })
+  }
+
+  redirect() {
+    this.router.navigate([`ecommerce/error-screen/`], {
+      queryParams: { type: 'item' },
+    });
   }
 
   edit(index: number) {
@@ -49,7 +89,6 @@ export class PostEditComponent implements OnInit {
   }
 
   add(type: 'audio' | 'poster' | 'text') {
-    if(type === 'text' && this.content.some((post) => post.type === 'text')) return;
     this.currentContent = { type };
     if(type === 'audio') this.save();
   }
@@ -61,16 +100,26 @@ export class PostEditComponent implements OnInit {
       this.currentContent.poster = this.image;
       this.currentContent.imageUrl = this.imageField;
     }
-    if(!this.isEditing) this.content.push(this.currentContent);
+    if(!this.isEditing) {
+      this.content.push(this.currentContent);
+    }
+    this.postService.post = {
+      message: this.content.find((content) => content.type === 'text')?.text,
+      multimedia: this.content
+        .filter((content) => content.type === 'poster' || content.type === 'audio')
+        .map((content) => content?.poster || new File([content.audio.blob], content.audio.title || 'audio.mp3', {type: (<Blob>content.audio.blob)?.type}))
+    }
     this.cancel();
   }
 
   cancel() {
+    if(this.previewMode) return this.previewMode = false;
     this.isEditing = null;
     this.currentContent = null;
     this.editText = null;
     this.image = null;
     this.imageField = null;
+    this.audio = null;
   }
 
   sanitize(image: string | ArrayBuffer) {
@@ -121,6 +170,24 @@ export class PostEditComponent implements OnInit {
         this.recordRTCService.abortRecording();
         dialogSub.unsubscribe();
       });
+  }
+
+  async createOrUpdatePost() {
+    if(this.postId) {
+      try {
+        const query = this.postService.updatePost(this.postService.post, this.postId);
+        lockUI(query.then((value) => {
+          console.log(value)
+        }))
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      const query = this.postService.createPost(this.postService.post);
+      lockUI(query.then((value) => {
+        console.log(value)
+      }))
+    }
   }
 
 }

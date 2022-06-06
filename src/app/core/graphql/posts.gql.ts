@@ -2,13 +2,21 @@ import gql from 'graphql-tag';
 
 
     
-export const creationPost = gql`
-mutation creationPost($input:PostInput!){
+export const createPost = gql`
+mutation createPost($input:PostInput!){
     createPost(input:$input){
         _id,
         password
     } 
 }
+`;
+
+export const updatePost = gql`
+  mutation updatePost($input:PostInput!, $id: ObjectID!){
+    updatePost(input:$input, id: $id){
+      _id
+    } 
+  }
 `;
 
 export const getPostByPassword = gql`
@@ -31,6 +39,9 @@ query post($id:ObjectID!){
   post(id:$id
   ){
  _id,
+ author {
+   _id
+ }
  message,
  from,
  multimedia,

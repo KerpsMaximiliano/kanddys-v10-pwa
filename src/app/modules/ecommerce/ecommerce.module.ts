@@ -44,6 +44,8 @@ import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.co
 import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.component';
 import { UserOrdersComponent } from 'src/app/shared/components/user-orders/user-orders.component';
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
+import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
+import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
 
 const routes: Routes = [
   {
@@ -200,6 +202,10 @@ const routes: Routes = [
     component: PostEditComponent,
   },
   {
+    path: 'post-edit/:postId',
+    component: PostEditComponent,
+  },
+  {
     path: 'delivery-preview',
     component: DeliveryPreviewComponent,
   },
@@ -234,8 +240,16 @@ const routes: Routes = [
     component: ItemGalleryComponent
   },
   {
-    path:'item-display',
+    path: 'item-display',
     component: NewItemDisplayComponent
+  },
+  {
+    path: 'bank-registration',
+    component: BankRegistrationComponent
+  },
+  {
+    path: 'new-item-contact-info',
+    component: NewItemContactInfoComponent
   }
 ];
 
@@ -284,7 +298,9 @@ const routes: Routes = [
     UserDashboardComponent,
     ItemGalleryComponent,
     NewItemDisplayComponent,
+    BankRegistrationComponent,
+    NewItemContactInfoComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
-export class EcommerceModule {}
+export class EcommerceModule { }

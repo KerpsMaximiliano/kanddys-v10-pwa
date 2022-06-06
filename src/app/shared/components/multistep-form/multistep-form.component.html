@@ -236,6 +236,56 @@
             </ng-container>
           </div>
 
+          <!-- PHONE INPUTS GO HERE -->
+          <div *ngIf="currentField.inputType === 'phone'" [ngStyle]="
+          currentField.styles.containerStyles
+            ? currentField.styles.containerStyles
+            : null
+        ">
+            <ng-container *ngIf="!currentField.multiple">
+              <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
+              currentField.styles.topLabelActionStyles
+                ? currentField.styles.topLabelActionStyles
+                : null
+            " (click)="
+              currentField.topLabelAction.clickable
+                ? currentField.topLabelAction.callback(stepFunctionParams)
+                : null
+            ">
+                {{ currentField.topLabelAction.text }}
+              </span>
+
+              <label [for]="currentField.name" class="input-label" [ngStyle]="
+              currentField.styles.labelStyles
+                ? currentField.styles.labelStyles
+                : null
+            ">
+                {{ currentField.label }}
+              </label>
+
+              <ngx-intl-tel-input [cssClass]="'custom'" [preferredCountries]="preferredCountries"
+                [enableAutoCountrySelect]="true" [enablePlaceholder]="true" [searchCountryFlag]="true"
+                [searchCountryField]="[
+                SearchCountryField.Iso2,
+                SearchCountryField.Name
+              ]" [selectFirstCountry]="false" [selectedCountryISO]="CountryISO.UnitedStates" maxLength="15"
+                [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.International"
+                name="phone" [formControl]="currentField.fieldControl"></ngx-intl-tel-input>
+
+              <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
+              currentField.styles.bottomLabelStyles
+                ? currentField.styles.bottomLabelStyles
+                : null
+            " (click)="
+              currentField.bottomLabel.clickable
+                ? currentField.bottomLabel.callback(stepFunctionParams)
+                : null
+            ">
+                {{ currentField.bottomLabel.text }}
+              </span>
+            </ng-container>
+          </div>
+
           <!-- RADIO INPUTS GO HERE -->
           <div *ngIf="currentField.inputType === 'radio'" class="selector" [ngStyle]="
               currentField.styles.containerStyles
@@ -321,11 +371,11 @@
               ? groupOfLinks?.styles?.containerStyles
               : null
           ">
-          <span class="title" [ngStyle]="
+          <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
               groupOfLinks?.styles?.labelStyles
                 ? groupOfLinks?.styles?.labelStyles
                 : null
-            ">{{groupOfLinks.topLabel || 'Opcional'}}:</span>
+            ">{{groupOfLinks.topLabel}}:</span>
           <ng-container *ngFor="let link of groupOfLinks.links">
             <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
                 groupOfLinks?.styles?.fieldStyles

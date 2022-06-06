@@ -22,6 +22,7 @@ import { ItemList } from 'src/app/shared/components/item-list/item-list.componen
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { StatusListComponent } from 'src/app/shared/dialogs/status-list/status-list.component';
 import { ItemStatus } from 'src/app/shared/components/item-status/item-status.component';
+import { Post } from 'src/app/core/models/post';
 moment.locale('es');
 
 @Component({
@@ -89,9 +90,9 @@ export class OrderInfoComponent implements OnInit {
   merchantName: string;
   dateString: string;
   name: string;
-  dateId: any;
+  dateId: string;
   delivery: string;
-  message: any;
+  message: Post;
   createdAt: string;
   items: Array<ItemSubOrder>;
   itemsExtra = [];
@@ -147,10 +148,9 @@ export class OrderInfoComponent implements OnInit {
   providerData: any = {};
   saleFlowId: string;
   headline: string;
-  saleFlow: any;
   currentMessage: string;
   showHeader: boolean;
-  date: any;
+  date: string;
   fotodavitte: boolean = false;
   customizerDetails: { name: string; value: string }[] = [];
   isValidMessage: boolean = false;

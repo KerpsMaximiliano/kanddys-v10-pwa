@@ -1,21 +1,35 @@
 <div class="container" [ngStyle]="{backgroundColor: currentContent ? '#F6F6F6' : '#FFFFFF'}">
 	<div class="topbar">
-		<a class="cancel" (click)="cancel()">Cancel</a>
+		<a class="cancel" (click)="cancel()">{{previewMode ? 'Editar' :  'Cancel'}}</a>
 		<button (click)="save()" class="right" *ngIf="currentContent && (editText || image)">Salvar</button>
-		<a class="right" *ngIf="!currentContent">Preview</a>
+		<!-- <a class="right" *ngIf="!currentContent && content.length" routerLink="/ecommerce/post-preview">Preview</a> -->
+		<button
+			class="right"
+			*ngIf="!previewMode && !currentContent && content.length"
+			(click)="previewMode = true"
+		>
+			Preview
+		</button>
+		<button
+			class="right"
+			*ngIf="previewMode"
+			(click)="createOrUpdatePost()"
+		>
+			Compartelo
+		</button>
 	</div>
 	<div class="post-list" *ngIf="!currentContent">
 		<div class="icon-edit" *ngFor="let item of content; index as i">
-			<div class="edit-element">
+			<div class="edit-element" *ngIf="!previewMode">
 				<button (click)="edit(i)"><img class="icon" [src]="env + '/pencil_line.svg'" alt="edit"></button>
-				<button><img class="icon" *ngIf="true" [src]="env + '/move.svg'" alt="move"></button>
+				<button><img class="icon" *ngIf="postId" [src]="env + '/move.svg'" alt="move"></button>
 			</div>
-			<div class="editor">
+			<div class="editor" [ngStyle]="{'grid-column': previewMode ? '2 / span 10' : 'span 9'}">
 				<app-pre-visualizer
 					[mode]="item.type"
 					[textPost]="item?.text"
 					[image]="item?.imageUrl"
-					[audio]="item?.audio"
+					[audio]="item?.audio?.blob"
 				></app-pre-visualizer>
 			</div>
 		</div>
@@ -49,7 +63,7 @@
 		</div>
 	</div>
 </div>
-<div class="fixed-area" *ngIf="!currentContent">
+<div class="fixed-area" *ngIf="!currentContent && !previewMode">
 	<div class="icons">
 		<app-cta-buttons
 			[ctaText]="'Audio'"
@@ -71,3 +85,9 @@
 		></app-cta-buttons>
 	</div>
 </div>
+<app-sticky-button
+	*ngIf="previewMode"
+	[mode]="'basic'"
+	[text]="'COMPARTELO'"
+	(click)="createOrUpdatePost()"
+></app-sticky-button>
