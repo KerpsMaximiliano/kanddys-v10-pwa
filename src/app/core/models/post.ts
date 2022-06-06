@@ -35,9 +35,11 @@ export class IlustrationInput {
 
 export class SlideInput {
     media: File;
-    ilustration: IlustrationInput
+    ilustration?: IlustrationInput
+    title?: string;
     text: string;
     index: number;
+    type: 'audio' | 'poster' | 'text';
 }
 
 export class Post extends Model<Post> {
@@ -79,4 +81,28 @@ export class PostInput {
     expiration?: string;
     password?: string;
     type?: string;
+}
+
+export class Slide extends Model<Slide> {
+    media: string;
+    ilustration: Ilustration;
+    title: string;
+    text: string;
+    post: Post
+    index: number;
+    expireAt: Date;
+    isMediaText: boolean;
+    type: 'audio' | 'poster' | 'text';
+}
+
+export class Ilustration extends Model<Ilustration> {
+    name: string;
+    type: number;
+    line1: string;
+    line2: string;
+    showDecoration: boolean;
+    background: string;
+    backgroundTextType: number;
+    borderRadius: boolean;
+    text: string;
 }

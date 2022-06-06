@@ -9,10 +9,12 @@ import {
   createCommentInPost,
   commentsByPost,
   updatePost,
+  updateSlide,
 } from '../graphql/posts.gql';
-import { Post, PostInput } from '../models/post';
+import { Post, PostInput, Slide, SlideInput } from '../models/post';
 
 export interface PostContent {
+  _id?: string;
   type: 'audio' | 'poster' | 'text';
   audio?: {
     blob: Blob | string,
@@ -52,6 +54,16 @@ export class PostsService {
     return value;
   }
 
+  async updateSlide(input: SlideInput, id: string) {
+    let value = await this.graphql.mutate({
+      mutation: updateSlide,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+    return value;
+  }
+
   async getPostByPassword(password: any) {
     let value = await this.graphql.query({
       query: getPostByPassword,
@@ -74,15 +86,15 @@ export class PostsService {
     return value;
   }
 
-  async slidesByPost(postId: any) {
+  async slidesByPost(postId: string): Promise<Slide[]> {
     let value = await this.graphql.query({
       query: slidesByPost,
       variables: { postId },
       fetchPolicy: 'no-cache',
     });
 
-    // console.log(value);
-    return value;
+    if(!value || value?.errors) return undefined;
+    return value.slidesbyPost;
   }
 
   async assignPostToCode(code, postId) {

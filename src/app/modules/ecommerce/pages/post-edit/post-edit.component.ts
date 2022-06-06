@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { PostContent, PostsService } from 'src/app/core/services/posts.service';
 import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
@@ -45,36 +45,27 @@ export class PostEditComponent implements OnInit {
     this.route.params.subscribe((params) => {
       if(!params.postId) return;
       this.postService.getPost(params.postId).then(async (data) => {
-        const { author, message, multimedia } = data.post;
+        lockUI();
+        const { author } = data.post;
         const user = await this.authService.me();
         if (!user) return this.redirect();
         if(user._id !== author?._id) return this.redirect();
         this.postId = params.postId;
-        if(message) this.content.push({
-          type: 'text',
-          text: message
-        });
-        multimedia.forEach((value) => {
-          // Check if is image
-          let content: PostContent;
-          if(value.match(/\.(jpeg|jpg|gif|png)$/) != null)
-            content = {
-              type: 'poster',
-              imageUrl: value
-            };
-          // Check if is audio
-          if(value.match(/\.(3gp|flac|mpg|mpeg|mp3|mp4|m4a|oga|ogg|wav|webm)$/) != null)
-            content = {
-              type: 'audio',
-              audio: { blob: value }
-            };
-          this.content.push(content);
-        });
-      })
-    })
+        const slideData = await this.postService.slidesByPost(params.postId);
+        this.content = slideData.map((slide) => ({
+          _id: slide._id,
+          type: slide.type,
+          text: slide.text,
+          imageUrl: slide.media?.match(/\.(jpeg|jpg|gif|png)$/) != null ? slide.media : null,
+          audio: slide.media?.match(/\.(3gp|flac|mpg|mpeg|mp3|mp4|m4a|oga|ogg|wav|webm)$/) != null ? { blob: slide.media } : null,
+        }));
+        unlockUI();
+      });
+    });
   }
 
   redirect() {
+    unlockUI();
     this.router.navigate([`ecommerce/error-screen/`], {
       queryParams: { type: 'item' },
     });
@@ -104,10 +95,12 @@ export class PostEditComponent implements OnInit {
       this.content.push(this.currentContent);
     }
     this.postService.post = {
-      message: this.content.find((content) => content.type === 'text')?.text,
-      multimedia: this.content
-        .filter((content) => content.type === 'poster' || content.type === 'audio')
-        .map((content) => content?.poster || new File([content.audio.blob], content.audio.title || 'audio.mp3', {type: (<Blob>content.audio.blob)?.type}))
+      slides: this.content.map((content, index) => ({
+        text: content.text,
+        type: content.type,
+        index: index,
+        media: content.poster || (content.audio && new File([content.audio.blob], content.audio.title || 'audio.mp3', {type: (<Blob>content.audio.blob)?.type})),
+      }))
     }
     this.cancel();
   }
@@ -175,10 +168,17 @@ export class PostEditComponent implements OnInit {
   async createOrUpdatePost() {
     if(this.postId) {
       try {
-        const query = this.postService.updatePost(this.postService.post, this.postId);
-        lockUI(query.then((value) => {
-          console.log(value)
-        }))
+        this.content.forEach((content, index) => {
+          const query = this.postService.updateSlide({
+            text: content.text,
+            type: content.type,
+            index: index,
+            media: content.poster || (content.audio && new File([content.audio.blob], content.audio.title || 'audio.mp3', {type: (<Blob>content.audio.blob)?.type})),
+          }, content._id);
+          lockUI(query.then((value) => {
+            console.log(value)
+          }));
+        });
       } catch (error) {
         console.log(error)
       }
