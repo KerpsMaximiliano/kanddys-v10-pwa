@@ -278,6 +278,12 @@ export const ordersByUser = gql`
   }
 `;
 
+export const ordersTotal = gql`
+  query ordersTotal($status: [String!]!, $orders: [ObjectID!]) {
+    ordersTotal(status: $status, orders: $orders)
+  }
+`;
+
 export const payOrder = gql`
   mutation payOrder(
     $ocr: OCRInput

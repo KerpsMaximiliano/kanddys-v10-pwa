@@ -12,6 +12,7 @@ import {
   ordersByUser,
   toggleUserNotifications,
   updateTagsInOrder,
+  ordersTotal,
 } from '../graphql/order.gql';
 import { ItemOrder, ItemOrderInput, OCRInput } from '../models/order';
 @Injectable({
@@ -71,6 +72,20 @@ export class OrderService {
         fetchPolicy: 'no-cache',
       });
       return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersTotal(status: string[], orders?: string[]): Promise<{ total: number, length: number }> {
+    try {
+      const response = await this.graphql.query({
+        query: ordersTotal,
+        variables: { status, orders },
+        fetchPolicy: 'no-cache',
+      });
+      if(!response || response?.errors) return undefined;
+      return response.ordersTotal;
     } catch (e) {
       console.log(e);
     }

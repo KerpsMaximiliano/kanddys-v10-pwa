@@ -90,29 +90,30 @@ export class DataListComponent implements OnInit {
       tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
     }
     if(this.viewtype === 'user') {
-      // if(tag.notifyUserOrder) {
-      //   tag.counter--;
-      //   this.tagsService.removeTagsInUserOrder(tag._id, this.orderId)
-      //   .then((value) => {
-      //     console.log(value);
-      //     console.log('removed successfully!')
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //     tag.counter++;
-      //   });
-      // } else {
-      //   tag.counter++;
-      //   this.tagsService.addTagsInUserOrder(this.merchantId, tag._id, this.orderId)
-      //     .then((value) => {
-      //       console.log(value);
-      //       console.log('added successfully!')
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //       tag.counter--;
-      //     }); 
-      // }
+      if(tag.notifyUserOrder) {
+        tag.counter--;
+        this.tagsService.removeTagsInUserOrder(tag._id, this.orderId)
+        .then((value) => {
+          console.log(value);
+          console.log('removed successfully!')
+        })
+        .catch((error) => {
+          console.log(error);
+          tag.counter++;
+        });
+      } else {
+        tag.counter++;
+        this.tagsService.addTagsInUserOrder(tag._id, this.orderId)
+          .then((value) => {
+            console.log(value);
+            console.log('added successfully!')
+          })
+          .catch((error) => {
+            console.log(error);
+            tag.counter--;
+          }); 
+      }
+      tag.notifyUserOrder = !tag.notifyUserOrder;
     }
   }
 

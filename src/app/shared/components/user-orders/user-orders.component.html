@@ -23,8 +23,8 @@
   </div>
   <div class="totals">
     <div class="incomes">
-      <p class="total-income">${{totalIncome}} DOP</p>
-      <p class="total-income">{{totalSales}} Ventas</p>
+      <p class="total-income">${{totalIncome | number: "1.0-2" }} DOP</p>
+      <p class="total-income">{{totalSales | number}} Ventas</p>
     </div>
     <div *ngIf="!showTags" class="organized">
       <div class="arrow-circle">
