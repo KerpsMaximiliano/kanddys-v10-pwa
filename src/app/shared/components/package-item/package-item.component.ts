@@ -11,7 +11,7 @@ export class PackageItemComponent implements OnInit {
 
   @Input() buttonSize: 'normal' | 'small' = 'normal';
   @Input() package: ItemPackage;
-  @Input() packageItems: Item;
+  @Input() packageItems: Item[];
   @Input() clickAble: boolean;
   @Input() item: Item;
   @Output() action = new EventEmitter();
