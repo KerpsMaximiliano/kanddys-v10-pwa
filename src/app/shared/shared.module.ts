@@ -81,6 +81,7 @@ import { AudioRecorderComponent } from './components/audio-recorder/audio-record
 import { UserOrdersComponent } from './components/user-orders/user-orders.component';
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { ShareLinksComponent } from './dialogs/share-links/share-links.component';
+import { BubbleButtonComponent } from './components/bubble-button/bubble-button.component';
 
 const imports = [
   CommonModule,
@@ -159,6 +160,7 @@ const declarations = [
   UserOrdersComponent,
   StoreShareComponent,
   ShareLinksComponent,
+  BubbleButtonComponent,
 ];
 
 @NgModule({

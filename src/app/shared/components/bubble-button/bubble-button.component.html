@@ -1,0 +1,54 @@
+<div class="container">
+    <div [ngSwitch]="mode">
+        <div *ngSwitchCase="'single'" class="single"> <!-- 1 boton -->
+            <div>
+                <button class="mini-button" [style.background-color]="palette" *ngIf="mini">
+                    <img [src]="env + miniIcon" alt="Botón superior izquierdo para agregar bookmarks" [ngStyle]="{filter: filterColor}" *ngIf="miniIcon" width="22px" height="22px">
+                </button>
+
+                <button class="bubble" [style.background-color]="palette">
+                    <p class="text" [style.color]="fontColor" *ngIf="text">{{text}}</p>
+                    <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon" width="22px" height="22px">
+                </button>
+            </div>
+        </div>
+
+        <div *ngSwitchCase="'triple'" class="triple"> <!-- 3 botones -->
+
+            <button class="bubble tripleb" [style.background-color]="palette">
+                <p class="text" [style.color]="fontColor" *ngIf="text">{{text}}</p>
+                <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon" width="22px" height="22px">
+            </button>
+
+            <div style="display: flex; align-items:baseline">
+                <button class="bubble tripleb" [style.background-color]="palette" style="margin-right: 20px;">
+                    <p class="text" [style.color]="fontColor" *ngIf="text2">{{text2}}</p>
+                    <img [src]="env + icon2" alt="Botón derecho" [ngStyle]="{filter: filterColor}" *ngIf="icon2" width="22px" height="22px" >
+                </button>
+
+                <button class="bubble" [style.background-color]="palette" style="margin-right: 20px;">
+                    <p class="text" [style.color]="fontColor" *ngIf="text3">{{text3}}</p>
+                    <img [src]="env + icon3" alt="Botón derecho pequeño" [ngStyle]="{filter: filterColor}" *ngIf="icon3" width="22px" height="22px">
+                </button>
+            </div>
+        </div>
+
+        <div *ngSwitchDefault="'double'" class="double"> <!-- 2 botones -->
+            <div>
+                <button class="mini-button" [style.background-color]="palette" *ngIf="mini">
+                    <img [src]="env + miniIcon" alt="Botón superior izquierdo para agregar bookmarks" [ngStyle]="{filter: filterColor}" *ngIf="miniIcon" width="22px" height="22px">
+                </button>
+
+                <button class="bubble" [style.background-color]="palette">
+                    <p class="text" [style.color]="fontColor" *ngIf="text2">{{text2}}</p>
+                    <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon" width="22px" height="22px">
+                </button>
+            </div>
+
+            <button class="bubble" [style.background-color]="palette" style="margin-right: 20px;">
+                <p class="text" [style.color]="fontColor" *ngIf="text2">{{text2}}</p>
+                <img [src]="env + icon2" alt="Botón derecho" [ngStyle]="{filter: filterColor}" *ngIf="icon2" width="22px" height="22px">
+            </button>
+        </div>
+    </div>
+</div>
