@@ -26,7 +26,7 @@
   border: none;
   color: #0b1f38;
   box-shadow: 0px 7px 25px -18px inset;
-      
+
   &:focus {
     border: 1px solid #31a4f9;
   }
@@ -80,6 +80,7 @@
 }
 
 .selector-option {
+  position: relative;
   padding: 10px;
   width: 100%;
   padding-left: 20px;
@@ -88,10 +89,30 @@
   font-size: 19px;
   border-radius: 10px;
   cursor: pointer;
+
+  .background {
+    background-color: #82f18d;
+    border-radius: 5px;
+    height: 85%;
+    margin-top: -7.5px;
+    width: 19px;
+    position: absolute;
+    z-index: 500;
+    transition: width 1s ease-out;
+  }
+
+  span {
+    position: relative;
+    z-index: 900;
+    margin-left: 37px;
+    display: inline-block;
+  }
 }
 
 .selector-option.active {
-  background-color: #82f18d;
+  .background {
+    width: 100%;
+  }
 }
 
 .file {

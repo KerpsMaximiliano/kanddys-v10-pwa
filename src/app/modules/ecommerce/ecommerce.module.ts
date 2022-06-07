@@ -46,6 +46,7 @@ import { UserOrdersComponent } from 'src/app/shared/components/user-orders/user-
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
 import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
+import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 
 const routes: Routes = [
   {
@@ -250,6 +251,10 @@ const routes: Routes = [
   {
     path: 'new-item-contact-info',
     component: NewItemContactInfoComponent
+  },
+  {
+    path: 'll-studio-order-form',
+    component: LlStudioOrderFormComponent
   }
 ];
 
@@ -300,6 +305,7 @@ const routes: Routes = [
     NewItemDisplayComponent,
     BankRegistrationComponent,
     NewItemContactInfoComponent,
+    LlStudioOrderFormComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
