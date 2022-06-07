@@ -1,8 +1,9 @@
-<div class="body">
+<div class="body" [ngStyle]="customStyles?.wrapper">
 
-    <div class="profile-name">
-        <div class="profile-purple">
-            <img *ngIf="profileImage else placeholder" [src]="env + profileImage" alt="profile-image" class="image-profile">
+    <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
+        <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
+            <img *ngIf="profileImage else placeholder" [src]="env + profileImage" alt="profile-image"
+                class="image-profile">
             <ng-template #placeholder>
                 <div class="placeholder"></div>
             </ng-template>
@@ -12,10 +13,25 @@
             </div>
         </div>
 
-        <div class="names-wrapper" [ngClass]="{simple: simple}">
-            <h2 class="header-name">{{simple ? description : title}}</h2>
-            <p class="header-desc">{{simple ? title : description}}</p>
-            <p class="header-desc" *ngIf="!simple">{{description2}}</p>
+        <div class="names-wrapper" [ngClass]="{simple: simple}" [ngStyle]="customStyles?.infoWrapper">
+            <ng-container *ngIf="!reverseInfoOrder">
+                <h2 class="header-name" [ngStyle]="customStyles?.title">
+                    {{simple ? description : title}}
+                </h2>
+                <p class="header-desc" [ngStyle]="customStyles?.subtitle">
+                    {{simple ? title : description}}
+                </p>
+            </ng-container>
+
+            <ng-container *ngIf="reverseInfoOrder">
+                <p class="header-desc" [ngStyle]="customStyles?.subtitle">
+                    {{simple ? description : title}}
+                </p>
+                <h2 class="header-name" [ngStyle]="customStyles?.title">
+                    {{simple ? title : description}}
+                </h2>
+            </ng-container>
+            <p class="header-desc" *ngIf="!simple && description2">{{description2}}</p>
         </div>
 
     </div>
@@ -25,6 +41,6 @@
             <img [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
         </span>
     </div>
-      
+
     <!-- <img [src]="imageFolder + " alt=""> -->
 </div>

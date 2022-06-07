@@ -18,11 +18,13 @@ export class HeaderInfoComponent implements OnInit {
   @Input() description: string;
   @Input() description2: string;
   @Input() socials: SocialMediaModel[];
+  @Input() customStyles: Record<string, Record<string, string>> = null;
+  @Input() reverseInfoOrder: boolean = false;
   env: string = environment.assetsUrl;
 
   constructor(
     private dialogService: DialogService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
   }

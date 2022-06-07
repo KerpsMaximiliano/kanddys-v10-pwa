@@ -1,5 +1,5 @@
 <div class="form-wrapper">
-  <app-helper-header [middleText]="
+  <app-helper-header *ngIf="!steps[currentStep].hideHeader" [middleText]="
       !steps[currentStep].headerTextSide ||
       steps[currentStep].headerTextSide === 'CENTER'
         ? steps[currentStep].headerText
@@ -21,7 +21,9 @@
     "></app-helper-header>
 
   <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
-    <div class="form-step" [id]="'step-' + currentStepIndex" *ngIf="
+    <div class="form-step" [ngStyle]="!steps[currentStep].hideHeader ? {
+      paddingTop: '60px'
+    } : steps[currentStep].styles ? steps[currentStep].styles : null" [id]="'step-' + currentStepIndex" *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
       ">
       <ng-container *ngIf="currentStepObject.pageHeader">
@@ -91,6 +93,14 @@
                     : null
                 ">
                 {{ currentField.label }}
+              </label>
+
+              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+              currentField.styles.subLabelStyles
+                ? currentField.styles.subLabelStyles
+                : null
+              ">
+                {{ currentField.sublabel }}
               </label>
 
               <div class="input" *ngIf="currentField.shouldFormatNumber" [ngStyle]="{
@@ -214,6 +224,14 @@
                 {{ currentField.label }}
               </label>
 
+              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                ">
+                {{ currentField.sublabel }}
+              </label>
+
               <textarea [id]="currentField.name" [placeholder]="currentField.placeholder" [name]="currentField.name"
                 [formControlName]="currentField.name" [placeholder]="currentField.placeholder" class="textarea"
                 [ngStyle]="
@@ -263,6 +281,14 @@
                 {{ currentField.label }}
               </label>
 
+              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+              currentField.styles.subLabelStyles
+                ? currentField.styles.subLabelStyles
+                : null
+              ">
+                {{ currentField.sublabel }}
+              </label>
+
               <ngx-intl-tel-input [cssClass]="'custom'" [preferredCountries]="preferredCountries"
                 [enableAutoCountrySelect]="true" [enablePlaceholder]="true" [searchCountryFlag]="true"
                 [searchCountryField]="[
@@ -298,12 +324,26 @@
                   : null
               ">{{ currentField.label }}</label>
 
+            <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+              currentField.styles.subLabelStyles
+                ? currentField.styles.subLabelStyles
+                : null
+              ">
+              {{ currentField.sublabel }}
+            </label>
+
+
             <ng-container *ngFor="let option of currentField.selectionOptions">
               <label [ngClass]="
                   option === currentField.fieldControl.value
                     ? 'selector-option active'
                     : 'selector-option'
+                " [ngStyle]="
+                  currentField.styles.fieldStyles
+                  ? currentField.styles.fieldStyles
+                  : null
                 " (click)="currentField.fieldControl.setValue(option)">
+                <div class="background"></div>
                 <input type="radio" [value]="option" [formControlName]="currentField.name" />
                 <span>{{ option }}</span>
               </label>
@@ -324,8 +364,16 @@
               {{ currentField.label }}
             </span>
 
+            <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+            currentField.styles.subLabelStyles
+              ? currentField.styles.subLabelStyles
+              : null
+            ">
+              {{ currentField.sublabel }}
+            </label>
+
             <label class="file" [for]="currentField.name" [ngStyle]="applyStylesToImages(currentField)">
-              <span *ngIf="currentField.fieldControl.value === ''">Upload/Image</span>
+              <span *ngIf="currentField.fieldControl.value === ''">Upload / Image</span>
             </label>
 
             <div *ngIf="currentField.showImageBottomLabel" class="showImageBottomLabel" [ngStyle]="
