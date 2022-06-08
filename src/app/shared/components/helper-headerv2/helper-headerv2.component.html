@@ -28,15 +28,15 @@
 
     <ng-container *ngIf="mode == 'double'">
         <div class="double-text">
-            <label class="text bold-text">{{leftText}}</label>
+            <span class="text bold-text">{{leftText}}</span>
             <div *ngIf="line"><hr class="linea"/></div>
-            <label class="text bold-text">{{rightText}}</label>
+            <span class="text bold-text">{{rightText}}</span>
         </div>
     </ng-container>
 
     <ng-container *ngIf="mode == 'center'">
         <div class="double-text">
-            <label class="text light-text">{{navtext}}</label>
+            <span class="text light-text">{{navtext}}</span>
         </div>
     </ng-container>
 
@@ -58,11 +58,11 @@
                 <span class="text">Mall</span>
                 <span class="text">Compras</span>
             </ng-container>
-            <div class="mi-tienda"> <label class="text" [style.color]="bgColor">{{leftText}}</label></div>
+            <div class="mi-tienda"> <span class="text" [style.color]="bgColor">{{leftText}}</span></div>
 
             <div class="holder">
                 <img [src]="env + '/star.svg'" alt="No image :c" class="star">
-                <label for="List2raise">{{rightText}}</label>
+                <span for="List2raise">{{rightText}}</span>
             </div>
         </div>
     </ng-container>
