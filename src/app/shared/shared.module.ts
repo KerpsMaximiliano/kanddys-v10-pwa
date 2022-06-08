@@ -83,6 +83,7 @@ import { UserOrdersComponent } from './components/user-orders/user-orders.compon
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { ShareLinksComponent } from './dialogs/share-links/share-links.component';
 import { BubbleButtonComponent } from './components/bubble-button/bubble-button.component';
+import { HeaderInfoAdminComponent } from './components/header-info-admin/header-info-admin.component';
 
 const imports = [
   CommonModule,
@@ -163,6 +164,7 @@ const declarations = [
   StoreShareComponent,
   ShareLinksComponent,
   BubbleButtonComponent,
+  HeaderInfoAdminComponent,
 ];
 
 @NgModule({
