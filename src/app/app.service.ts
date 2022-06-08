@@ -9,8 +9,8 @@ import * as ons from 'onsenui';
 import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 
-import { HeaderInfo } from './shared/sections/header/header.component';
-import { NavLink } from './shared/sections/navbar/navbar.component';
+// import { HeaderInfo } from './shared/sections/header/header.component';
+// import { NavLink } from './shared/sections/navbar/navbar.component';
 
 export type AppEventType =
   | 'auth'
@@ -32,8 +32,8 @@ export class AppService {
   block: boolean;
   navend: BehaviorSubject<ActivatedRouteSnapshot>;
   events: EventEmitter<AppEvent> = new EventEmitter();
-  nav: NavLink[] = [];
-  header: HeaderInfo = {};
+  // nav: NavLink[] = [];
+  // header: HeaderInfo = {};
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 

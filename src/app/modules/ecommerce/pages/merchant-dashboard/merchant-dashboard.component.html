@@ -1,24 +1,17 @@
 <div class="container">
     <div class="const-components">
-
     <app-helper-headerv2
-    [mode]="'2raise'"
-    [leftText]="'Mi Tienda'"
-    [rightText]="'List2raise'"
+        [mode]="'2raise'"
+        [leftText]="'Mi Tienda'"
+        [rightText]="'List2raise'"
     ></app-helper-headerv2>
-
     <app-header-info
-    [title]="'MerchantID'"
-    [description]="'Vendido a Armando Paredes'"
-    [description2]="'En fechaID HoraID'"
+        [title]="myMerchant?.name"
     ></app-header-info>
-
     <app-page-component-tabs
-    [tabsOptions]="tabs"
-    (changeValue)="whichName($event)"
+        [tabsOptions]="tabs"
+        (changeValue)="whichName($event)"
     ></app-page-component-tabs>
-
     </div>
-
     <router-outlet></router-outlet>
 </div>

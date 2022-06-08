@@ -56,6 +56,23 @@ export const removeTagsInOrder = gql`
         }
     }
 `
+export const addTagsInUserOrder = gql`
+    mutation addTagsInUserOrder( $tagId: ObjectID!, $orderId: ObjectID!){
+        addTagsInUserOrder( tagId: $tagId, orderId: $orderId){
+        _id
+        tags
+        }
+    }
+`
+
+export const removeTagsInUserOrder = gql`
+    mutation removeTagsInUserOrder( $tagId: ObjectID!, $orderId: ObjectID!){
+        removeTagsInUserOrder( tagId: $tagId, orderId: $orderId){
+        _id
+        tags
+        }
+    }
+`
 
 export const addTagContainersPublic = gql`
     mutation addTagContainersPublic($input: TagContainersInput!, $tagId: ObjectID!) {

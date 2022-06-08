@@ -173,8 +173,8 @@ export class AuthService {
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
         this.router.navigateByUrl('/home');
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
         window.location.reload();
       }
       return result.success;
@@ -192,8 +192,8 @@ export class AuthService {
       }
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
         window.location.reload();
       }
       return result.success;
@@ -209,8 +209,8 @@ export class AuthService {
       if (result.success) {
         this.session?.revoke();
         this.session = undefined;
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
       }
       return result.success;
     } catch (e) {

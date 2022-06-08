@@ -15,8 +15,8 @@ import { OrderService } from 'src/app/core/services/order.service';
 })
 export class UserOrdersComponent implements OnInit {
   env: string = environment.assetsUrl;
-  totalIncome: number = 147154.00;
-  totalSales: number = 154;
+  totalIncome: number;
+  totalSales: number;
   tags: Tag[] = [];
   orders: ItemOrder[] = [];
   orderList: ItemList[] = [];
@@ -32,6 +32,7 @@ export class UserOrdersComponent implements OnInit {
   ngOnInit(): void {
     this.getTags();
     this.getOrders();
+    this.getOrdersTotal();
   }
 
   async getTags() {
@@ -74,4 +75,10 @@ export class UserOrdersComponent implements OnInit {
     });
   }
 
+  async getOrdersTotal() {
+    const result = await this.orderService.ordersTotal(['to confirm', 'completed']);
+    if(!result) throw new Error('Error al obtener los resultados de las ordenes');
+    this.totalIncome = result.total;
+    this.totalSales = result.length;
+  }
 }

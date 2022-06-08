@@ -1,6 +1,3 @@
-import { PartnerReceiptsComponent } from './pages/partner-receipts/partner-receipts.component';
-import { InvitationComponent } from './pages/invitation/invitation.component';
-import { HomeComponent } from './pages/home/home.component';
 import { NgxPrintModule } from 'ngx-print';
 import { ActionsDialog } from './dialogs/actions/actions.dialog';
 import { CommonModule } from '@angular/common';
@@ -29,12 +26,6 @@ import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TitlebarComponent } from './components/titlebar/titlebar.component';
 import { AuthDialog } from './dialogs/auth/auth.dialog';
-import { LongPressDirective } from './directives/long-press.directive';
-import { MakeTriggerComponent } from './pages/make-trigger/make-trigger.component';
-import { HeaderComponent } from './sections/header/header.component';
-import { NavHeaderComponent } from './sections/nav-header/nav-header.component';
-import { NavbarComponent } from './sections/navbar/navbar.component';
-import { ScopeMenuComponent } from './sections/scope-menu/scope-menu.component';
 import { FormDialog } from './dialogs/form/form.dialog';
 import { ContactButtonsComponent } from './components/contact-buttons/contact-buttons.component';
 import { SaleflowItemComponent } from './components/saleflow-item/saleflow-item.component';
@@ -45,7 +36,6 @@ import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import { AnswerSelectorComponent } from './components/answer-selector/answer-selector.component';
 import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
 import { LeadwordListComponent } from './components/leadword-list/leadword-list.component';
-import { ResourceListComponent } from './components/resource-list/resource-list.component';
 import { GiftMessageComponent } from './components/gift-message/gift-message.component';
 import { ImageInputComponent } from './components/image-input/image-input.component';
 import { ItemCardAmountAndPriceComponent } from './components/item-card-amount-and-price/item-card-amount-and-price.component';
@@ -65,7 +55,6 @@ import { ActivitiesOptionComponent } from './components/activities-option/activi
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { DynamicComponentComponent } from './components/dynamic-component/dynamic-component.component';
 import { InfoCardComponent } from './components/info-card/info-card.component';
-import { ListComponent } from './components/list/list.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 import { CustomFieldsComponent } from './dialogs/custom-fields/custom-fields.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
@@ -110,29 +99,21 @@ const imports = [
 const declarations = [
   // Pages
   CalendarComponent,
-  HomeComponent,
-  InvitationComponent,
   ItemListComponent,
   CustomFieldsComponent,
-  PartnerReceiptsComponent,
   // ...
-  LongPressDirective,
   AuthDialog,
   FormDialog,
   ActionsDialog,
-  HeaderComponent,
-  NavHeaderComponent,
   CardComponent,
   TitlebarComponent,
   CommunityPreviewComponent,
   FilterbarComponent,
   SearchbarComponent,
-  ResourceListComponent,
   ContactButtonsComponent,
   SaleflowItemComponent,
   SearchHashtagComponent,
   WarningStepsComponent,
-  NavbarComponent,
   LeadwordListComponent,
   GiftMessageComponent,
   ItemCardAmountAndPriceComponent,
@@ -141,11 +122,9 @@ const declarations = [
   ImageInputComponent,
   AnswerSelectorComponent,
   HelperHeaderComponent,
-  ScopeMenuComponent,
   ButtonComponent,
   TabsComponent,
   TabComponent,
-  MakeTriggerComponent,
   QrDialog,
   TriggerDialog,
   ItemGridComponent,
@@ -160,7 +139,6 @@ const declarations = [
   ErrorMessageComponent,
   DynamicComponentComponent,
   InfoCardComponent,
-  ListComponent,
   InformationBoxComponent,
   ImageViewComponent,
   HeaderButtonComponent,

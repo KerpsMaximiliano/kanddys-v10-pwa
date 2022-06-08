@@ -7,6 +7,7 @@ export interface FieldStyles {
   containerStyles?: any;
   topLabelActionStyles?: any;
   labelStyles?: any;
+  subLabelStyles?: any;
   formattedInputStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
@@ -30,6 +31,7 @@ export interface FormField {
     callback?: (...params) => any | Promise<any>;
   };
   label: string;
+  sublabel?: string;
   bottomLabel?: {
     text: string;
     clickable?: boolean;
@@ -76,7 +78,7 @@ interface PageHeader {
 
 export interface FormStep {
   fieldsList: Array<FormField>;
-  headerText: string;
+  headerText?: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   pageHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;
@@ -95,6 +97,8 @@ export interface FormStep {
   justExecuteCustomScrollToStep?: boolean;
   showShoppingCartOnCurrentStep?: boolean;
   shoppingCartCallback?(...params): any;
+  hideHeader?: boolean;
+  styles?: Record<string, string>;
 }
 
 export interface LinkAction {

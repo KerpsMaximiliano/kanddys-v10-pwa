@@ -35,7 +35,12 @@
 
             .icon{
                 cursor: pointer;
-                filter: invert(42%) sepia(28%) saturate(3255%) hue-rotate(206deg) brightness(90%) contrast(86%);
+                &.blue {
+                    filter: invert(42%) sepia(28%) saturate(3255%) hue-rotate(206deg) brightness(90%) contrast(86%);
+                }
+                &.red {
+                    filter: invert(36%) sepia(72%) saturate(7485%) hue-rotate(348deg) brightness(102%) contrast(98%);
+                }
             }
         }
 

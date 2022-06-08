@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { lockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -21,10 +22,10 @@ export class UserDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.authService.me().then((user) => {
+    lockUI(this.authService.me().then((user) => {
       if (!user) return this.redirect();
       this.userData = user;
-    });
+    }));
   }
 
   redirect() {

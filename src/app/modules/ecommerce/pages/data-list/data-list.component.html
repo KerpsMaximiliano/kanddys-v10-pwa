@@ -41,7 +41,7 @@
         [bottomtext]="tag.name"
         [toptext]="tag.counter"
         [isSelectable]="true"
-        [selected]="tag.notifyMerchantOrder"
+        [selected]="tag.notifyMerchantOrder || tag.notifyUserOrder"
       ></app-info-card>
   </div>
 </div>

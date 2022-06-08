@@ -5,13 +5,14 @@
         width: 90%;
         min-height: 132px;
         height: fit-content;
-        padding: 26px 30px 25px 44px;
+        padding: 30px 30px 25px 44px;
         display: flex;
         flex-direction: column;
         background-color: rgba(189, 189, 189, 17%);
         border-radius: 18px;
         margin: 0 auto;
         position: relative;
+        // box-shadow: 0 .2rem 0.5rem rgba(0,0,0,0.20) !important;
 
         .top {
             display: flex;

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderComponent } from './header.component';
+import { LlStudioOrderFormComponent } from './ll-studio-order-form.component';
 
-describe('HeaderComponent', () => {
-  let component: HeaderComponent;
-  let fixture: ComponentFixture<HeaderComponent>;
+describe('LlStudioOrderFormComponent', () => {
+  let component: LlStudioOrderFormComponent;
+  let fixture: ComponentFixture<LlStudioOrderFormComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderComponent ]
+      declarations: [ LlStudioOrderFormComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HeaderComponent);
+    fixture = TestBed.createComponent(LlStudioOrderFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

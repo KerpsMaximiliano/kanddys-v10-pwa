@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 })
 export class PreVisualizerComponent implements OnInit {
   @Input() mode: 'audio' | 'poster' | 'text';
-  @Input() image: string;
+  @Input() image: string | ArrayBuffer;
   @Input() posterTitle: string = 'Titulo del Poster';
   @Input() audio: Blob | string;
   audioBlobUrl: SafeUrl;

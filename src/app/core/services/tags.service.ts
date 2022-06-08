@@ -6,6 +6,8 @@ import {
     tagsByUser,
     addTagsInOrder,
     removeTagsInOrder,
+    addTagsInUserOrder,
+    removeTagsInUserOrder,
     tag,
     addTagContainersPublic
  } from '../graphql/tags.gql'
@@ -94,6 +96,32 @@ export class TagsService {
          } catch (e) {
             return e;
          }
+    }
+
+    async addTagsInUserOrder(tagId: string, orderId: string){
+        try{
+           const result = await this.graphql.mutate({
+               mutation: addTagsInUserOrder,
+               variables:{tagId, orderId},
+           })
+           if (!result || result?.errors) return undefined;
+           return result;
+        } catch (e) {
+           console.log(e);
+        }
+    }
+
+    async removeTagsInUserOrder(tagId: string, orderId: string){
+        try{
+           const result = await this.graphql.mutate({
+               mutation: removeTagsInUserOrder,
+               variables:{tagId, orderId},
+           })
+           if (!result || result?.errors) return undefined;
+           return result;
+        } catch (e) {
+           console.log(e);
+        }
     }
 
     async tag(tagId: string){
