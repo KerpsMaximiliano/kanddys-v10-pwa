@@ -241,7 +241,7 @@ const routes: Routes = [
     component: ItemGalleryComponent
   },
   {
-    path: 'item-display',
+    path: 'item-display/:itemId',
     component: NewItemDisplayComponent
   },
   {

@@ -66,9 +66,7 @@ export class PostEditComponent implements OnInit {
 
   redirect() {
     unlockUI();
-    this.router.navigate([`ecommerce/error-screen/`], {
-      queryParams: { type: 'item' },
-    });
+    this.router.navigate([`ecommerce/error-screen/`]);
   }
 
   edit(index: number) {

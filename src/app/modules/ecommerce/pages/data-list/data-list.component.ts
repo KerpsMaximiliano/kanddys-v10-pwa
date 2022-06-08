@@ -58,9 +58,7 @@ export class DataListComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/error-screen/`], {
-      queryParams: { type: 'item' },
-    });
+    this.router.navigate([`ecommerce/error-screen/`]);
   }
 
   onTagClick(tag: Tag) {
