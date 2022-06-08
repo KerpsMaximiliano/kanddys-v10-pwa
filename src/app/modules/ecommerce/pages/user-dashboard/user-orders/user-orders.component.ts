@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
 import { environment } from 'src/environments/environment';
-import { ItemList } from '../item-list/item-list.component';
+import { ItemList } from '../../../../../shared/components/item-list/item-list.component';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { TagsService } from 'src/app/core/services/tags.service';

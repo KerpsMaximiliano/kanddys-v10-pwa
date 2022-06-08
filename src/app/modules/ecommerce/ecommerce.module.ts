@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
-import { CustomItemDetailComponent } from './pages/custom-item-detail/custom-item-detail.component';
+import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
 import { ErrorScreenComponent } from './components/error-screen/error-screen.component';
 import { MegaphoneV3Component } from './pages/megaphone-v3/megaphone-v3.component';
 import { OrderInfoComponent } from './pages/order-info/order-info.component';
@@ -13,8 +13,8 @@ import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { FlowCompletionComponent } from './pages/flow-completion/flow-completion.component';
 import { FlowCompletionAuthLessComponent } from './pages/flow-completion-auth-less/flow-completion-auth-less.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
-import { CustomizerRedirectComponent } from 'src/app/shared/components/customizer-redirect/customizer-redirect.component';
-import { UserInfoComponent } from './pages/user-info/user-info.component';
+import { CustomizerRedirectComponent } from './pages/provider-store/customizer-redirect/customizer-redirect.component';
+import { UserInfoComponent } from './pages/provider-store/user-info/user-info.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
 import { TestComponent } from './pages/test/test.component';
 import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
@@ -42,11 +42,14 @@ import { MerchantCreatorComponent } from './pages/merchant-creator/merchant-crea
 import { ItemCreatorComponent } from './pages/item-creator/item-creator.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.component';
-import { UserOrdersComponent } from 'src/app/shared/components/user-orders/user-orders.component';
+import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
 import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
+import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
+import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
+import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
 
 const routes: Routes = [
   {
@@ -237,6 +240,20 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'mall-dashboard',
+    component: MallDashboardComponent,
+    children: [
+      {
+        path: 'gifts',
+        component: MallGiftsComponent,
+      },
+      {
+        path: 'stores',
+        component: MallStoresComponent,
+      },
+    ],
+  },
+  {
     path: 'item-gallery',
     component: ItemGalleryComponent
   },
@@ -306,6 +323,9 @@ const routes: Routes = [
     BankRegistrationComponent,
     NewItemContactInfoComponent,
     LlStudioOrderFormComponent,
+    MallDashboardComponent,
+    MallGiftsComponent,
+    MallStoresComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

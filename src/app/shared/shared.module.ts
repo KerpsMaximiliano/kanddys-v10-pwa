@@ -79,7 +79,6 @@ import { PackageItemComponent } from './components/package-item/package-item.com
 import { StatusListComponent } from './dialogs/status-list/status-list.component';
 import { ItemStatusComponent } from './components/item-status/item-status.component';
 import { AudioRecorderComponent } from './components/audio-recorder/audio-recorder.component';
-import { UserOrdersComponent } from './components/user-orders/user-orders.component';
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { ShareLinksComponent } from './dialogs/share-links/share-links.component';
 import { BubbleButtonComponent } from './components/bubble-button/bubble-button.component';
@@ -160,7 +159,6 @@ const declarations = [
   StatusListComponent,
   ItemStatusComponent,
   AudioRecorderComponent,
-  UserOrdersComponent,
   StoreShareComponent,
   ShareLinksComponent,
   BubbleButtonComponent,

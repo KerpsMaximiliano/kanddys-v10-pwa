@@ -1,0 +1,32 @@
+<div class="categories-list">
+  <div *ngFor="let category of categories" class="category-item">
+    {{category.name}}
+  </div>
+</div>
+<div class="itemGrid" style="margin-top: 30px;">
+  <ng-container *ngFor="let item of items; index as i">
+    <app-saleflow-item
+      [type]=2
+      [boxAmount]="0"
+      [showBox]="false"
+      [isSelected]="item.isSelected"
+      [showSelected]="true"
+      [income]="123456.55"
+      [price]="item.pricing"
+      [imgURL]="item.images ? item.images[0] : ''"
+      [showPrice]="item.customizerId ? false : true"
+      [priceAlign]="'start'"
+    >
+    </app-saleflow-item>
+  </ng-container>
+</div>
+<app-bubble-button
+	[text]="'TIENDA'"
+	[text2]="'VISTA'"
+	[solo]="false"
+></app-bubble-button>
+<app-sticky-button
+	[bgColor]="'#2874AD'"
+	text="toca donde prefieras"
+	mode="fixed"
+></app-sticky-button>
