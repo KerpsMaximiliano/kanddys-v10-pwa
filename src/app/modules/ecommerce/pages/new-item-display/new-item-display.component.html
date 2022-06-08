@@ -5,6 +5,7 @@
     [returnAble]="true"
     [whatsapp]="false"
     [shopcart]="false"
+    [bgColor]="'#2874AD'"
     ></app-helper-headerv2>
 
     <div class="item-info" *ngIf="item" >
@@ -51,4 +52,14 @@
         </div>
     </div>
 
+    <app-bubble-button
+    [text]="'TIENDA'"
+    [text2]="'VISTA'"
+    [solo]="false"
+    ></app-bubble-button>
+    <app-sticky-button
+    [bgColor]="'#2874AD'"
+    [text]="'Empieza a Venderlo'"
+    [mode]="'basic'"
+    ></app-sticky-button>
 </div>

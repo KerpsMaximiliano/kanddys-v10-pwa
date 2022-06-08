@@ -19,13 +19,13 @@ export class BubbleButtonComponent implements OnInit {
     @Input() text: string;
     @Input() text2: string;
     @Input() text3: string;
+    @Input() solo: boolean = true;
     @Input() mini: boolean;
 
     //EventEmitters
     @Output() leftAction: EventEmitter<any> = new EventEmitter();
     @Output() rightAction: EventEmitter<any> = new EventEmitter();
     @Output() miniAction: EventEmitter<any> = new EventEmitter();
-    @Output() floatingAction: EventEmitter<any> = new EventEmitter();
 
     //valores utilizados
     palette: string;
@@ -67,11 +67,7 @@ export class BubbleButtonComponent implements OnInit {
 
   miniButton() {
     this.miniAction.emit();
-    console.log('boton derecho pequeño');
+    console.log('boton pequeño agregado');
   }
 
-  floatingButton() {
-    this.floatingAction.emit();
-    console.log('boton pequeño superior izquierdo');
-  }
 }
