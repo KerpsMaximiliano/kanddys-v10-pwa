@@ -1,0 +1,90 @@
+.container{
+    width: 100%;
+    min-height: 111px;
+    height: fit-content;
+    padding: 25px 20px 13px 25px;
+    display: flex;
+    justify-content: space-between;
+
+    .tag-area{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        min-height: 115px;
+        height: fit-content;
+        border-radius: 10px;
+        padding: 16px 13px 19px 20px;
+        box-shadow: 0px 3px 6px 3px rgb(0 0 0 / 12%);
+        margin-bottom: 31px;
+
+        .texts{
+            display: flex;
+            flex-direction: column;
+            margin-right: 26px;
+
+            .title{
+                font-family: 'RobotoMedium';
+                font-size: 19px;
+                color: #2874AD;
+                font-weight: 500;
+                margin: 0;
+                margin-top: 7px;
+                margin-bottom: 7px;
+            }
+
+            .text-ws{   
+                font-family: 'RobotoItalic';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin: 0;
+            }
+        }
+        
+        .on-off-icon{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .on-off{
+                font-family: 'RobotoMedium';
+                font-size: 22px;
+                color: #40772F;
+                text-align: center;
+                margin: 0;
+                margin-top: 5px;
+            }
+        }
+    }
+
+    .data-container{
+        display: flex;
+        align-items: flex-start;
+
+        .icon{
+            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(95%) contrast(77%);
+            width: 20px;
+            height: 21px;
+            margin-right: 7px;
+        }
+
+        .text{
+            font-family: 'SfProMedium';
+            font-size: 17px;
+            color: #2874AD;
+            margin: 0;
+            margin-bottom: 17px;
+            text-align: left;
+        }
+    }
+
+    .merchant-area{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 17px;
+
+        .icon{
+            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(95%) contrast(77%);
+            cursor: pointer;
+        }
+    }
+}
