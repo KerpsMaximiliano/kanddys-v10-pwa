@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { NgxFormsModule } from '@mukuve/ngx-forms';
 import { QRCodeModule } from 'angularx-qrcode';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import {
   FacebookLoginProvider,
   GoogleLoginProvider,
@@ -94,6 +95,7 @@ const imports = [
   SwiperModule,
   TextFieldModule,
   NgxIntlTelInputModule,
+  ClipboardModule,
 ];
 const declarations = [
   // Pages

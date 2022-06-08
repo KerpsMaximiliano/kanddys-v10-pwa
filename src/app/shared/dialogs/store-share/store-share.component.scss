@@ -1,4 +1,6 @@
 .container{
+    width: 86%;
+    margin: auto;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -7,8 +9,8 @@
     margin-bottom: 52px;
     background-color: transparent;
 
-    .body{
-        width: 86%;
+    .dialog-card {
+        width: 100%;
         padding: 30px 0 17px;
         border-radius: 18px;
         background-color: #FFFFFF;
@@ -17,24 +19,28 @@
             font-family: 'RobotoBold';
             font-size: 29px;
             color: #0B1F38;
-            margin: 0 19px 28px;
+            margin: 20px;
         }
 
         .function{
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            margin: 0 26.5px 20.5px 19px ;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+
+            &:not(:last-of-type) {
+                border-bottom: solid 1px rgb(112, 112, 112, 16%);
+            }
 
             .text{
                 font-family: 'RobotoRegular';
                 font-size: 20px;
                 color: #4773D8;
-                cursor: pointer;
+                
             }
 
             .icon{
-                cursor: pointer;
                 &.blue {
                     filter: invert(42%) sepia(28%) saturate(3255%) hue-rotate(206deg) brightness(90%) contrast(86%);
                 }
@@ -42,25 +48,18 @@
                     filter: invert(36%) sepia(72%) saturate(7485%) hue-rotate(348deg) brightness(102%) contrast(98%);
                 }
             }
-        }
 
-        .separator{
-            width: 100%;
-            height: 2px;
-            margin: 0 0 26.5px;
-            border: none;
-            background-color: rgb(112, 112, 112, 16%);
+            &:hover {
+                background-color: #eeeeee;
+            }
         }
     }
 
     .cancel{
-        width: 86%;
-        height: 72px;
+        width: 100%;
+        padding: 24px;
         background-color: #FFFFFF;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'RobotoMedium';
+        font-family: "RobotoMedium";
         font-size: 20px;
         color: #4773D8;
         text-transform: uppercase;

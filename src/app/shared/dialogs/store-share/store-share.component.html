@@ -1,34 +1,37 @@
 <div class="container">
-    <div class="body">
+    <div class="dialog-card">
         <h2 class="title">Mi Tienda</h2>
 
-        <div class="function">
+        <div class="function" [cdkCopyToClipboard]="link" (click)="close()">
             <span class="text">Copia el link</span>
             <img [src]="env + '/upload.svg'" alt="" width="20px" height="26px" class="icon red">
         </div>
 
-        <hr class="separator">
-
-        <div class="function">
+        <div class="function" (click)="share()">
             <span class="text">Comparte el link</span>
             <img [src]="env + '/upload.svg'" alt="" width="20px" height="26px" class="icon blue">
         </div>
 
-        <hr class="separator">
-
-        <div class="function">
-            <span class="text">Descarga el qrCode</span>
+        <qrcode
+            [style.margin-left]="'-10px'"
+            #qrcode
+            [qrdata]="link"
+            [elementType]="'img'"
+            [width]="120"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#0B1F38"
+            style="display: none;"
+        ></qrcode>
+        <div class="function" (click)="downloadQr()">
+            <span class="text" >Descarga el qrCode</span>
             <img [src]="env + '/qr-code.svg'" alt="codigo Q R para compartir" width="30px" height="30px" class="icon">
         </div>
 
-        <hr class="separator">
-
-        <div class="function">
+        <div class="function" *ngIf="func" (click)="func()">
             <span class="text">Ir a la tienda</span>
             <img [src]="env + '/qr-code.svg'" alt="URL de la tienda" width="30px" height="30px" class="icon red">
         </div>
     </div>
-
-    <button class="cancel">Cancel</button>
-
+    <button class="cancel" (click)="close()">Cancel</button>
 </div>
