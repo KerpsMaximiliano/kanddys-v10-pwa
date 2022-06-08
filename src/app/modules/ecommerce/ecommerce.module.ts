@@ -318,6 +318,7 @@ const routes: Routes = [
     MerchantCreatorComponent,
     ItemCreatorComponent,
     UserDashboardComponent,
+    UserOrdersComponent,
     ItemGalleryComponent,
     NewItemDisplayComponent,
     BankRegistrationComponent,
