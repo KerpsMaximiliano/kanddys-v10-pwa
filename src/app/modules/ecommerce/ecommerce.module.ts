@@ -269,6 +269,10 @@ const routes: Routes = [
     component: NewItemDisplayComponent
   },
   {
+    path: 'item-display',
+    component: NewItemDisplayComponent
+  },
+  {
     path: 'bank-registration',
     component: BankRegistrationComponent
   },

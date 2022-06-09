@@ -1,5 +1,7 @@
 <div class="form-wrapper">
-  <app-helper-header *ngIf="!steps[currentStep].hideHeader" [middleText]="
+  <app-helper-header
+    *ngIf="!steps[currentStep].hideHeader && (!steps[currentStep].headerMode || steps[currentStep].headerMode === 'v1')"
+    [middleText]="
       !steps[currentStep].headerTextSide ||
       steps[currentStep].headerTextSide === 'CENTER'
         ? steps[currentStep].headerText
@@ -8,9 +10,9 @@
       steps[currentStep].headerTextSide === 'LEFT'
         ? steps[currentStep].headerText
         : null
-    " [empty]="!shouldScrollBackwards" [middleTextFontFamily]="'SfProRegular'" [middleTextFontSize]="'17px'"
-    middleTextColor="#7b7b7b" [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
-    [cartCallback]="steps[currentStep].shoppingCartCallback" [shadow]="false" (onClose)="
+    " [middleTextFontFamily]="'SfProRegular'" [middleTextFontSize]="'17px'" middleTextColor="#7b7b7b"
+    [cart]="steps[currentStep].showShoppingCartOnCurrentStep" [cartCallback]="steps[currentStep].shoppingCartCallback"
+    [shadow]="false" (onClose)="
       currentStep > 0 &&
       shouldScrollBackwards &&
       !steps[currentStep].customScrollToStepBackwards
@@ -19,6 +21,20 @@
         ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
         : null
     "></app-helper-header>
+
+  <app-helper-headerv2 [mode]="'options'" [fixed]="true"
+    *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" [returnAble]="true" [billId]="''"
+    [itemId]="!steps[currentStep].headerTextSide ||
+    steps[currentStep].headerTextSide === 'CENTER'
+      ? steps[currentStep].headerText
+      : null" [leftText]="''" [rightText]="''" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
+    shouldScrollBackwards &&
+    !steps[currentStep].customScrollToStepBackwards
+      ? scrollToStep(this.currentStep - 1, false)
+      : steps[currentStep].customScrollToStepBackwards
+      ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+      : null" [bgColor]="'#2874ad'">
+  </app-helper-headerv2>
 
   <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
     <div class="form-step" [ngStyle]="!steps[currentStep].hideHeader ? {
@@ -465,11 +481,12 @@
       "></div>
 
     <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
-    <app-sticky-button *ngIf="currentStep === currentStepIndex" [text]="
+    <app-sticky-button *ngIf="
+      currentStep === currentStepIndex" [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStepIndex].stepButtonValidText
           : steps[currentStepIndex].stepButtonInvalidText
-      " [mode]="
+      " [bgColor]="steps[currentStep].footerConfig?.bgColor" [mode]="
         dataModel.get(currentStepString).status !== 'INVALID'
           ? 'fixed'
           : 'disabled-fixed'
@@ -477,6 +494,25 @@
         !steps[currentStepIndex].justExecuteCustomScrollToStep
           ? executeStepDataProcessing()
           : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
-      "></app-sticky-button>
+      "
+      [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
+      [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null">
+    </app-sticky-button>
+
+    <app-bubble-button *ngIf="
+      currentStep === currentStepIndex && 
+      steps[currentStep].footerConfig?.bubbleConfig
+      " [icon]="'/arrow-left.svg'" [text2]="'VISTA'" (leftAction)="currentStep > 0 && shouldScrollBackwards &&
+      !steps[currentStep].customScrollToStepBackwards
+        ? scrollToStep(this.currentStep - 1, false)
+        : steps[currentStep].customScrollToStepBackwards
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+        : null"
+      (rightAction)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null"
+      [mode]="dataModel.get(currentStepString).status !== 'INVALID' ?
+          steps[currentStep].footerConfig.bubbleConfig.validStep.mode :
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.mode
+        " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53">
+    </app-bubble-button>
   </ng-container>
 </div>

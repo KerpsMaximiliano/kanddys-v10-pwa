@@ -15,6 +15,8 @@ export class StickyButtonComponent implements OnInit {
   @Input() link: string = 'linktest.com';
   @Input() icon: string;
   @Input() bgColor: string = "#27a2ff";
+  @Input() height: string = null;  
+  @Input() fontSize: string = null;  
   @Input() size: 'small' | 'normal' = "normal";
 
   private ngNavigatorShareService: NgNavigatorShareService;
