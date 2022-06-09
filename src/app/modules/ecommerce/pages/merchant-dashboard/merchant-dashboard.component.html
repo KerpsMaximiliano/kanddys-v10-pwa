@@ -1,6 +1,17 @@
 <div class="container">
     <div class="const-components">
-    <app-helper-headerv2
+        <div class="me">
+            <img [src]="env + '/person.svg'" alt="Persona, ver mi perfil" class="icon">
+            <p class="text">Yo</p>
+        </div>
+        <div class="mall">
+            <img [src]="env + '/store.svg'" alt="Tienda, haz click para ir a Mall" calss="icon">
+            <p class="text">Mall</p>
+        </div>
+        <div class="my-store">
+            <p class="text">MI TIENDA</p>
+        </div>
+    <!-- <app-helper-headerv2
         [mode]="'2raise'"
         [leftText]="'Mi Tienda'"
         [rightText]="'List2raise'"
@@ -11,7 +22,7 @@
     <app-page-component-tabs
         [tabsOptions]="tabs"
         (changeValue)="whichName($event)"
-    ></app-page-component-tabs>
+    ></app-page-component-tabs> -->
     </div>
     <router-outlet></router-outlet>
 </div>

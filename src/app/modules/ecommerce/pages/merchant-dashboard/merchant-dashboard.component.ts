@@ -6,6 +6,7 @@ import { ItemOrder } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-merchant-dashboard',
@@ -25,9 +26,10 @@ export class MerchantDashboardComponent implements OnInit {
   userData: User;
   myMerchant: Merchant;
   orders: ItemOrder[];
+  env: string = environment.assetsUrl;
 
   ngOnInit(): void {
-    this.route.params.subscribe(async (params) => {
+    /* this.route.params.subscribe(async (params) => {
       lockUI();
       const user = await this.authService.me();
       if (!user) return this.redirect();
@@ -38,7 +40,7 @@ export class MerchantDashboardComponent implements OnInit {
       if(!this.myMerchant) return this.redirect();
       this.orders = (await this.merchantService.ordersByMerchant(this.myMerchant._id, {options: { limit: 100 }}))?.ordersByMerchant;
       unlockUI();
-    });
+    }); */
     
   }
 
