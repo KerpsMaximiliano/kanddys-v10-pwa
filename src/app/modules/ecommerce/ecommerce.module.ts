@@ -161,11 +161,11 @@ const routes: Routes = [
   {
     path: 'merchant-dashboard/:merchantId',
     component: MerchantDashboardComponent,
-    children:[
-        {
-           path: 'my-store',
-           component: MyStoreComponent,
-        },
+    children:[    
+      {
+        path: 'my-store',
+        component: MyStoreComponent,
+      },
     ],
   },
   {
@@ -279,7 +279,7 @@ const routes: Routes = [
   {
     path: 'll-studio-order-form',
     component: LlStudioOrderFormComponent
-  }
+  },
 ];
 
 @NgModule({

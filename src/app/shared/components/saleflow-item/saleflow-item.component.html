@@ -13,7 +13,7 @@
               <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
           </div>
           
-          <span class="income" *ngIf="income">Ingreso ${{income | number}} </span>
+          <p class="income" *ngIf="income">Ingreso ${{income | number}} </p>
 
           <div class="flexer">
               <span class="sales" *ngIf="quantity">{{quantity}} Ventas</span>

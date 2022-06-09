@@ -11,12 +11,21 @@
         icon: '/star.svg',
         text: '144 En Colaboraciones'
     }]"
-    [click]="true"
     [merchant]="true"
     ></app-header-info-admin>
 
     <div class="category">
         <div class="tab-area">
+
+            <div class="left">
+                <div class="item-tab">
+                    <p class="text-tab"> 48 items</p>
+                    <img [src]="env + '/.svg'" alt="" class="eye">
+                </div>
+
+                <img [src]="env + '/closed-eye.svg'" alt="" class="closed">
+            </div>
+
             <div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
                 <img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: tapped}">
                 <p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
@@ -30,7 +39,20 @@
                 ></app-tags-square>
             </div>
         </ng-container>
-     </div>
+
+    </div>
+
+    <div class="items-area">
+        <app-saleflow-item
+        *ngFor="let items of saleflowList; index as i"
+        [imgURL]="items.image"
+        [price]="items.price"
+        [income]="items.income"
+        [quantity]="items.quantity"
+        [index2]="items.index2"
+        [showIcon]="true"
+        ></app-saleflow-item>
+    </div>
      
     <app-bubble-button
     [text]="'&#60;'"
@@ -41,5 +63,6 @@
     [mode]="'disabled-fixed'"
     [text]="'TOCA DONDE PREFIERAS'"
     [size]="'small'"
+    [bgColor]="'#AFAFAF'"
     ></app-sticky-button>
 </div>
