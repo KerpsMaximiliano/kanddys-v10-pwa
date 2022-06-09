@@ -6,13 +6,14 @@ import { ImageInputComponent } from 'src/app/shared/components/image-input/image
 import { InfoButtonComponent } from 'src/app/shared/components/info-button/info-button.component';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { FormStep } from 'src/app/core/types/multistep-form';
+import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { DecimalPipe } from '@angular/common';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -35,7 +36,68 @@ export class ItemCreatorComponent implements OnInit {
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
   hasToken: boolean = false;
+  shouldScrollBackwards: boolean = true;
   files: File[] = [];
+
+  footerConfig: FooterOptions = {
+    bubbleConfig: {
+      validStep: {
+        mode: 'double',
+        function: (params) => {
+          console.log(this);
+          console.log('ABRIENDO DIALOG');
+          console.log(params);
+
+          this.headerService.storeNewItemTemporarily({
+            name: params.dataModel.value['4']['name'],
+            pricing: params.dataModel.value['1']['price'],
+            description: params.dataModel.value['3']['description'],
+            content: params.dataModel.value['2']['whatsIncluded'],
+            images: this.defaultImages.length > 1 ? this.defaultImages : null
+          }, this.router.url);
+
+          this.router.navigate(['/ecommerce/item-display']);
+
+          // localStorage.setItem("newItem-temp", JSON.stringify({
+          //   name: params.dataModel.value['4']['name'],
+          //   pricing: params.dataModel.value['1']['price'],
+          //   description: params.dataModel.value['3']['description'],
+          //   content: params.dataModel.value['2']['whatsIncluded'],
+          //   images: this.defaultImages.length > 1 ? this.defaultImages : null
+          // }));
+
+          // params.dialog.open(NewItemDisplayComponent, {
+          //   type: 'flat-action-sheet',
+          //   props: {
+          //     item: {
+          //       name: params.dataModel.value['4']['name'],
+          //       pricing: params.dataModel.value['1']['price'],
+          //       description: params.dataModel.value['3']['description'],
+          //       content: params.dataModel.value['2']['whatsIncluded'],
+          //       images: this.defaultImages.length > 1 ? this.defaultImages : null
+          //     },
+          //     openedAsADialog: true
+          //   },
+          //   customClass: 'app-dialog',
+          //   flags: ['no-header'],
+          // });
+        }
+      },
+      invalidStep: {
+        mode: 'single'
+      }
+    },
+    bgColor: '#2874AD',
+    enabledStyles: {
+      height: '49px',
+      fontSize: '17px',
+    },
+    disabledStyles: {
+      height: '30px',
+      fontSize: '17px',
+    },
+  }
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -318,34 +380,6 @@ export class ItemCreatorComponent implements OnInit {
               }
             },
           ]
-        },
-        {
-          topLabel: 'Asociaciones para vender más',
-          styles: {
-            containerStyles: {
-              marginTop: '60px',
-              marginBottom: '0px'
-            },
-            fieldStyles: {
-              marginTop: '30px',
-              paddingLeft: '17px'
-            },
-            labelStyles: labelStyles
-          },
-          links: [
-            {
-              text: 'List-2-Raise, colaboraciones con organizaciones que recaudan fondos',
-              action: (params) => {
-                params.scrollToStep(4);
-              }
-            },
-            {
-              text: 'HashLink, para vender desde SMS Bots y transmisiones en vivo junto a Influ-Sellers',
-              action: (params) => {
-                params.scrollToStep(5);
-              }
-            },
-          ]
         }
       ],
       pageHeader: {
@@ -363,6 +397,10 @@ export class ItemCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      }
     },
     {
       fieldsList: [
@@ -399,6 +437,10 @@ export class ItemCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      }
     },
     {
       fieldsList: [
@@ -437,6 +479,10 @@ export class ItemCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      }
     },
     {
       fieldsList: [
@@ -472,6 +518,10 @@ export class ItemCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      }
     },
     {
       fieldsList: [
@@ -550,6 +600,10 @@ export class ItemCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      }
     },
   ];
 
@@ -561,6 +615,7 @@ export class ItemCreatorComponent implements OnInit {
     private decimalPipe: DecimalPipe,
     private merchantService: MerchantsService,
     private saleflowSarvice: SaleFlowService,
+    private headerService: HeaderService,
     private applicationRef: ApplicationRef
   ) { }
 
@@ -573,6 +628,52 @@ export class ItemCreatorComponent implements OnInit {
         this.hasToken = true;
 
         this.loggedIn = true;
+      }
+
+      if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
+        const { description, name, images, pricing, content } = this.headerService.newTempItem;
+
+        this.formSteps[0].fieldsList[0].fieldControl.setValue(
+          String(pricing)
+        );
+
+        const plainNumber = String(pricing)
+          .split(',')
+          .join('')
+          .split('.')
+          .join('');
+        const formatted = this.decimalPipe.transform(
+          Number(plainNumber),
+          '1.0-2'
+        );
+
+        if (formatted === '0') {
+          this.formSteps[0].fieldsList[0].placeholder = '';
+        }
+
+        this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+
+        this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+        this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
+        this.formSteps[3].fieldsList[0].fieldControl.setValue(name || '');
+        this.defaultImages = images;
+
+        const formArray = this.formSteps[1].fieldsList[0]
+          .fieldControl as FormArray;
+        formArray.removeAt(0);
+
+        if (content)
+          content.forEach((item) => {
+            formArray.push(new FormControl(item));
+          });
+        else {
+          formArray.push(new FormControl(''));
+        }
+
+        //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+        this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+
+        this.headerService.removeTempNewItem();
       }
 
       if (itemId && this.hasToken) {

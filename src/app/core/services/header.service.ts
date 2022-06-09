@@ -118,6 +118,8 @@ export class HeaderService {
   disableGiftMessageTextarea: boolean = false;
   createdOrderWithDelivery: boolean = false;
   createdOrderWithoutDelivery: boolean = false;
+  newTempItem: Item;
+  newTempItemRoute: string = null;
 
   public session: Session;
   constructor(
@@ -504,6 +506,17 @@ export class HeaderService {
   deleteSaleflowOrder(saleflow: string) {
     localStorage.removeItem(saleflow);
   }
+
+  storeNewItemTemporarily(item: any, prevRoute: string) {
+    this.newTempItem = item;
+    this.newTempItemRoute = prevRoute;
+  }
+
+  removeTempNewItem() {
+    this.newTempItem = null;
+    this.newTempItemRoute = null;
+  }
+
 
   createPreOrder = () => {
     const saleflow = this.saleflow || this.getSaleflow();

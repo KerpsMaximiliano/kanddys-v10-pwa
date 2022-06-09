@@ -19,6 +19,7 @@ export class BubbleButtonComponent implements OnInit {
   @Input() text: string;
   @Input() text2: string;
   @Input() text3: string;
+  @Input() bubblesMarginBottom: number = 20;
   @Input() solo: boolean = true;
   @Input() mini: boolean;
 

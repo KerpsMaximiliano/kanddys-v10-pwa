@@ -14,6 +14,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
 import { FormStep, FormField, AsyncFunction } from 'src/app/core/types/multistep-form';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   SearchCountryField,
   CountryISO,
@@ -209,7 +210,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   @Input() scrollableForm: boolean = false;
   @Input() disableSmoothScroll: boolean = true;
   @Input() showStepNumbers: boolean = true;
-  shouldScrollBackwards: boolean = true;
+  @Input() shouldScrollBackwards: boolean = true;
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
@@ -220,7 +221,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
 
-  constructor(private header: HeaderService) { }
+  constructor(private header: HeaderService, private dialog: DialogService) { }
 
   ngOnInit(): void {
     this.stepFunctionParams = {
@@ -235,6 +236,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       scrollToStep: this.scrollToStep,
       executeStepDataProcessing: this.executeStepDataProcessing,
       scrollableForm: this.scrollableForm,
+      dialog: this.dialog
     };
 
     this.initController();
@@ -627,6 +629,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       scrollToStep: this.scrollToStep,
       executeStepDataProcessing: this.executeStepDataProcessing,
       scrollableForm: this.scrollableForm,
+      dialog: this.dialog
     };
 
     this.stepFunctionParams = stepFunctionParams;
