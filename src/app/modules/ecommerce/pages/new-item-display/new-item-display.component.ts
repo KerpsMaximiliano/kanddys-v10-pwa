@@ -5,6 +5,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-new-item-display',
@@ -13,7 +14,7 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 })
 export class NewItemDisplayComponent implements OnInit {
   @Input() item: Item;
-  shouldRedirectTo: string = null;
+  shouldRedirectToPreviousPage: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,19 +22,22 @@ export class NewItemDisplayComponent implements OnInit {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private headerService: HeaderService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       if (params.itemId) {
         this.item = await this.itemsService.item(params.itemId);
+        this.shouldRedirectToPreviousPage = true;
         if (!this.item) return this.redirect();
-      } else {
-        if (this.headerService.newTempItem) {
-          this.item = this.headerService.newTempItem;
-          this.shouldRedirectTo = this.headerService.newTempItemRoute;
-        }
       }
+      //  else {
+      //   if (this.headerService.newTempItem) {
+      //     this.item = this.headerService.newTempItem;
+      //     this.shouldRedirectTo = this.headerService.newTempItemRoute;
+      //   }
+      // }
     })
   }
 
@@ -49,12 +53,12 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   redirect() {
-    if (!this.shouldRedirectTo) {
+    if (!this.shouldRedirectToPreviousPage) {
       this.router.navigate([`ecommerce/error-screen/`], {
         queryParams: { type: 'item' },
       });
     } else {
-      this.router.navigate([this.shouldRedirectTo]);
+      this.location.back();
     }
   }
 
