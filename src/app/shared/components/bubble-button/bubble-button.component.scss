@@ -39,6 +39,16 @@
     }
 }
 
+.single,
+.double,
+.triple {
+    pointer-events: none;
+}
+
+button {
+    pointer-events: all;
+}
+
 .bubble{
     width: 60px;
     height: 60px;
