@@ -11,6 +11,7 @@ export class HeaderInfoAdminComponent implements OnInit {
   @Input() data: Array<any> = [{
     icon: '',
     text: '',
+    filter:'',
     func: () => { this.event.emit(); console.log('OCURRIENDO') }
   }];
 

@@ -51,6 +51,7 @@ import { MyStoreComponent } from './pages/my-store/my-store.component';
 import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
 import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
+import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
 
 const routes: Routes = [
   {
@@ -284,6 +285,10 @@ const routes: Routes = [
     path: 'll-studio-order-form',
     component: LlStudioOrderFormComponent
   },
+  {
+    path: 'category-items-admin',
+    component: CategoryItemsAdminComponent
+  },
 ];
 
 @NgModule({
@@ -339,6 +344,7 @@ const routes: Routes = [
     MallDashboardComponent,
     MallGiftsComponent,
     MallStoresComponent,
+    CategoryItemsAdminComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

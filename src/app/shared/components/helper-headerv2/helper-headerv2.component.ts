@@ -24,6 +24,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() billId: string;
     @Input() itemId: string;
     @Input() fixed: boolean = false;
+    @Input() color: string = '#FFFFFF';
     @Output() returnEvent = new EventEmitter()
     env: string = environment.assetsUrl;
 

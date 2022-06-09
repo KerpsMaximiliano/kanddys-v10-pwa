@@ -20,6 +20,7 @@
 				<button *ngIf="element.func" (click)="element.func()">
 					<img
 						*ngIf="element.icon"
+                        [ngStyle]="{'filter': (element.filter === 'no')? 'none': ''}"
 						[src]="env + element.icon"
 						alt="Haz click aqui para mas"
 						class="icon"
@@ -31,6 +32,7 @@
 				<ng-container *ngIf="!element.func">
 					<img
 						*ngIf="element.icon"
+                        [ngStyle]="{'filter': element.filter === 'no'? 'none': ''}"
 						[src]="env + element.icon"
 						alt="Haz click aqui para mas"
 						class="icon"
