@@ -40,8 +40,7 @@ export class MerchantDashboardComponent implements OnInit {
       if(!this.myMerchant) return this.redirect();
       this.orders = (await this.merchantService.ordersByMerchant(this.myMerchant._id, {options: { limit: 100 }}))?.ordersByMerchant;
       unlockUI();
-    }); 
-    
+    });  
   }
 
   redirect() {

@@ -11,6 +11,31 @@ export class MyStoreComponent implements OnInit {
   env: string = environment.assetsUrl;
   tapped: boolean = false;
   tagsData: Array<any> = [ '', '', '', ''];
+  saleflowList: Array<any> = [{
+    price: 0.00,
+    image: ['https://i.imgur.com/SufVLiV.jpeg'],
+    income: '0.00',
+    quantity: '0',
+    index2: '0'
+}, {
+    price: 1.00,
+    image: ['https://i.imgur.com/SufVLiV.jpeg'],
+    income: '0.00',
+    quantity: '0',
+    index2: '0'
+}, {
+    price: 2.00,
+    image: ['https://i.imgur.com/SufVLiV.jpeg'],
+    income: '0.00',
+    quantity: '0',
+    index2: '0'
+}, {
+    price: 3.00,
+    image: ['https://i.imgur.com/SufVLiV.jpeg'],
+    income: '0.00',
+    quantity: '0',
+    index2: '0'
+}]; //DATA DUMMY
   constructor() { }
 
   ngOnInit(): void {
