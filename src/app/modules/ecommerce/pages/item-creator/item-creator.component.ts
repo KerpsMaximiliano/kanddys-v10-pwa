@@ -65,6 +65,8 @@ export class ItemCreatorComponent implements OnInit {
               },
               this.currentItemId
             );
+
+            this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
           } else {
             if (this.loggedIn) {
               const { createItem } = await this.itemService.createItem({
@@ -82,9 +84,14 @@ export class ItemCreatorComponent implements OnInit {
                 purchaseLocations: [],
               });
 
-              await this.saleflowSarvice.addItemToSaleFlow({
-                item: createItem._id
-              }, this.loggedUserDefaultSaleflow._id);
+
+              if ('_id' in createItem) {
+                await this.saleflowSarvice.addItemToSaleFlow({
+                  item: createItem._id
+                }, this.loggedUserDefaultSaleflow._id);
+
+                this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
+              }
             } else {
               const { createPreItem } = await this.itemService.createPreItem({
                 name: values['4'].name,
