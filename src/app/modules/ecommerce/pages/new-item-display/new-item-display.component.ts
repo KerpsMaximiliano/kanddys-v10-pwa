@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Item, ItemPackage } from 'src/app/core/models/item';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-new-item-display',
@@ -8,16 +12,37 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 })
 export class NewItemDisplayComponent implements OnInit {
 
-    item: Item /* = {
-        name: 'Sample',
-        images: ['https://i.imgur.com/SufVLiV.jpeg'],
-        description: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Temporibus vel aspernatur numquam at, delectus nam ullam facere reprehenderit consectetur neque veniam. Voluptatibus possimus, quia nihil consectetur excepturi eaque laborum aliquid?' ,
-        pricing: 500,
-        content: ['papitas', 'pizza', 'ensalada cesar']
-    }; */ //ESTA EL ITEM DE SAMPLE
-  constructor() { }
+  item: Item;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private itemsService: ItemsService,
+    private dialogService: DialogService,
+  ) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(async (params) => {
+      this.item = await this.itemsService.item(params.itemId);
+      if(!this.item) return this.redirect();
+    })
+  }
+
+  openImageModal(imageSourceURL: string) {
+    this.dialogService.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  redirect() {
+    this.router.navigate([`ecommerce/error-screen/`], {
+      queryParams: { type: 'item' },
+    });
   }
 
 }

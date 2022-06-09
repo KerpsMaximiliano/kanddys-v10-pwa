@@ -20,6 +20,10 @@
       font-family: "RobotoMedium";
       cursor: pointer;
 
+      &:hover {
+        color: #759df8;
+      }
+
       &:last-child {
         margin-right: 16px;
       }

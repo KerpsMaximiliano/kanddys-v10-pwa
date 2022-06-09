@@ -11,13 +11,12 @@ export class HeaderInfoAdminComponent implements OnInit {
   @Input() data: Array<any> = [{
     icon: '',
     text: '',
-    event: () => {this.event.emit(); console.log('OCURRIENDO')}
-    }];
-    
+    func: () => { this.event.emit(); console.log('OCURRIENDO') }
+  }];
+
   @Output() event: EventEmitter<any> = new EventEmitter;
   @Input() whatsApp: boolean = false;
   @Input() merchant: boolean = false;
-  @Input() click: boolean = false;
   on: boolean = false;
   env: string = environment.assetsUrl;
   constructor() { }
@@ -25,7 +24,7 @@ export class HeaderInfoAdminComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  turnOn(){
-      this.on = !this.on;
+  turnOn() {
+    this.on = !this.on;
   }
 }

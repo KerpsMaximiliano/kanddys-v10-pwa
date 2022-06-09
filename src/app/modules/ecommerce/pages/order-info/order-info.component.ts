@@ -473,7 +473,7 @@ export class OrderInfoComponent implements OnInit {
           }
         } else {
           this.router.navigate([`ecommerce/error-screen/`], {
-            queryParams: { type: 'item' },
+            queryParams: { type: 'order' },
           });
         }
       });

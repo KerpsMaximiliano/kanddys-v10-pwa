@@ -4,7 +4,7 @@ import { filter } from 'rxjs/operators';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { WarningStepsComponent } from '../../../../shared/dialogs/warning-steps/warning-steps.component';
+import { WarningStepsComponent } from '../../../../../shared/dialogs/warning-steps/warning-steps.component';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
