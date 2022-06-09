@@ -9,57 +9,33 @@
         background-color: #2874AD;
         display: flex;
         align-items: center;
+        padding: 0 24px;
+        gap: 30px;
 
-        .me{
+        .nav-item {
             display: flex;
+            color: #E9E371;
+            cursor: pointer;
+            font-family: 'SfProMedium';
+            font-size: 17px;
+            gap: 5px;
             align-items: center;
-            margin-left: 25px;
-            margin-right: 40px;
-            .icon{
-                width: 13.11px;
-                height: 17.09px;
-                margin-right: 5.5px;
+
+            .icon {
+                width: 13px;
+                height: 17px;
                 filter: invert(93%) sepia(77%) saturate(487%) hue-rotate(350deg) brightness(155%) contrast(94%);
             }
-            .text{
-                font-family: 'SfProMedium';
-                font-size: 17px;
-                color: #E9E371;
-                margin: 0;
-            }
-        }
 
-        .mall{
-            display: flex;
-            align-items: center;
-            margin-right: 27.8px;
-
-            .icon{
-                width: 13.11px;
-                height: 17.09px;
-                margin-right: 5.5px;
-            }
-            .text{
-                font-family: 'SfProMedium';
-                font-size: 17px;
-                color: #E9E371;
-                margin: 0;
-            }
-        }
-
-        .my-store{
-            width: 106px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #E9E371;
-
-            .text{
-                font-family: 'SfProMedium';
-                font-size: 17px;
+            &.active {
+                height: 100%;
+                padding: 0 16px;
+                background-color: #E9E371;
                 color: #2874AD;
-                margin: 0;
+
+                img {
+                    filter: brightness(0) saturate(100%) invert(41%) sepia(9%) saturate(4311%) hue-rotate(165deg) brightness(92%) contrast(84%);
+                }
             }
         }
     }

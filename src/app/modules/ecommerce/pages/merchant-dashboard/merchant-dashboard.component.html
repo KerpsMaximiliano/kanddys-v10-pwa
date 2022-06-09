@@ -1,22 +1,17 @@
 <div class="container">
     <div class="const-components">
-        <div class="me">
+        <a class="nav-item">
             <img [src]="env + '/person.svg'" alt="Persona, ver mi perfil" class="icon">
-            <p class="text">Yo</p>
-        </div>
-        <div class="mall">
-            <img [src]="env + '/store.svg'" alt="Tienda, haz click para ir a Mall" calss="icon">
-            <p class="text">Mall</p>
-        </div>
-        <div class="my-store">
-            <p class="text">MI TIENDA</p>
-        </div>
-    <!-- <app-helper-headerv2
-        [mode]="'2raise'"
-        [leftText]="'Mi Tienda'"
-        [rightText]="'List2raise'"
-    ></app-helper-headerv2>
-    <app-header-info
+            <span>Yo</span>
+        </a>
+        <a class="nav-item">
+            <img [src]="env + '/store.svg'" alt="Tienda, haz click para ir a Mall">
+            <span>Mall</span>
+        </a>
+        <a class="nav-item active">
+            <span>MI TIENDA</span>
+        </a>
+    <!-- <app-header-info
         [title]="myMerchant?.name"
     ></app-header-info>
     <app-page-component-tabs
