@@ -63,27 +63,13 @@
 		</div>
 	</div>
 </div>
-<div class="fixed-area" *ngIf="!currentContent && !previewMode">
-	<div class="icons">
-		<app-cta-buttons
-			[ctaText]="'Audio'"
-			[btnColor]="'#FC2727'"
-			[icon]="env + '/mic.svg'"
-			(click)="openRecorder()"
-		></app-cta-buttons>
-		<app-cta-buttons
-			[ctaText]="'Poster'"
-			[btnColor]="'#40772F'"
-			[icon]="env + '/image.svg'"
-			(click)="add('poster')"
-		></app-cta-buttons>
-		<app-cta-buttons
-			[ctaText]="'Texto'"
-			[btnColor]="'#4773D8'"
-			[icon]="env + '/text.svg'"
-			(click)="add('text')"
-		></app-cta-buttons>
-	</div>
+<div
+	*ngIf="!currentContent && !previewMode"
+	class="buttons-container"
+>
+	<app-post-edit-buttons
+		(buttonClicked)="onButtonClick($event)"
+	></app-post-edit-buttons>
 </div>
 <app-sticky-button
 	*ngIf="previewMode"

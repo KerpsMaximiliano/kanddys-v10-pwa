@@ -383,7 +383,7 @@ export class ItemCreatorComponent implements OnInit {
         }
       ],
       pageHeader: {
-        text: 'Sobre lo que venderás',
+        text: 'Lo que vendes',
         styles: {
           fontFamily: 'Roboto',
           fontWeight: 'bold',
