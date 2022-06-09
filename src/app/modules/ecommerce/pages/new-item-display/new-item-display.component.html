@@ -2,6 +2,42 @@
 	<app-helper-headerv2 [mode]="'basic'" [navtext]="item?.images?.length && ''" [returnAble]="true"
 		[whatsapp]="false" [shopcart]="false" [bgColor]="'#2874AD'" (returnEvent)="redirect()">
 	</app-helper-headerv2>
+
+	<!-- Info que ve el admin (merchant) del producto -->
+	<app-header-info-admin
+         [data]="[{
+            text: {
+				content: '$147,154 DOP total ingresado',
+				color: '#2874AD'
+			}
+         },
+         {
+             text: {
+				content: '1,457 ventas',
+				color: '#2874AD'
+			 }
+         }]"
+    ></app-header-info-admin>
+
+	<div class="category">
+		<div class="tab-area">
+			<div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
+				<img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: tapped}">
+				<p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
+			</div>
+		</div>
+		
+		<ng-container *ngIf="tapped">
+			<div class="tags-area" *ngIf="tagsData">
+				<app-tags-square
+				*ngFor="let item of tagsData; index as i"
+				></app-tags-square>
+			</div>
+		</ng-container>
+	 </div>
+
+	<!-- Fin de la info que ve el admin -->
+
 	<div class="item-info" *ngIf="item">
 		<div *ngIf="item.description" class="description">
 			<h2 class="title-name" *ngIf="item.name">

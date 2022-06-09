@@ -10,7 +10,10 @@ export class HeaderInfoAdminComponent implements OnInit {
 
   @Input() data: Array<any> = [{
     icon: '',
-    text: '',
+    text: {
+      content: '',
+      color: ''
+    },
     func: () => { this.event.emit(); console.log('OCURRIENDO') }
   }];
 

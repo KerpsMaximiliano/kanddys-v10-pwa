@@ -24,8 +24,8 @@
 						alt="Haz click aqui para mas"
 						class="icon"
 					>
-					<p class="text">
-						{{element.text}}
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
 					</p>
 				</button>
 				<ng-container *ngIf="!element.func">
@@ -35,8 +35,8 @@
 						alt="Haz click aqui para mas"
 						class="icon"
 					>
-					<p class="text">
-						{{element.text}}
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
 					</p>
 				</ng-container>
 			</div>

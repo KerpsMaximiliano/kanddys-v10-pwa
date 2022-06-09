@@ -117,6 +117,56 @@
 			}
 		}
 	}
+
+	.category{
+        width: 100%;
+
+        .tab-area{
+            width: 100%;
+            height: 46px;
+            background-color: rgba( 40, 116, 173, 0.22);
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            margin-bottom: 31px;
+
+            .tab{
+                width: 32.07%;
+                max-width: 137px;
+                height: 36.7px;
+                background-color: transparent;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-right: 17.3px;
+
+                .tab-text{
+                    font-family: 'SfProMedium';
+                    font-size: 17px;
+                }
+
+                .icon{
+                    margin-right: 5px;
+                }
+            }
+        }
+        
+        .tags-area{
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0px 0 40px;
+            row-gap: 14px;
+            column-gap: 13px;
+            -moz-column-gap: 13px;
+        }
+            
+    }
+}
+
+.colored{
+    background-color: #2874AD !important;
+    border-radius: 4px !important;
 }
 
 .divider {
