@@ -30,20 +30,34 @@
                 [upload]="false"
                 (returnEvent)="back()"
             ></app-helper-headerv2>
-            <!-- <div class="box-container">
-                <div class="l-wrapper">
-                    <span class="box-title">Tienda que vende: {{boxTitle}}</span>
-                    <p class="box-paragraph" *ngIf="boxText">{{boxText}}</p>
-                </div>
-
-                <div class="rwrapper">
-                    <a target="_blank" [href]="whatsappLink" *ngIf="itemData && itemData.merchant.owner.phone && whatsappLink">
-                        <img class="ws-grey" [src]="env + '/whatsapp_blanco.svg'" width="21px" height="21px" alt="">
-                    </a>
-                    <img [src]="env + '/upload.svg'" alt="" width="19.19px" height="25px" style="cursor: pointer;" (click)="copyLink()" *ngIf="fullLink">
-                </div>
-            </div> -->
          </ng-container>
+
+         <app-header-info-admin
+         [data]="[{
+            text: '$147,154 DOP total ingresado'
+         },
+         {
+             text: '1,457 ventas'
+         }]"
+         ></app-header-info-admin>
+
+         <div class="category">
+            <div class="tab-area">
+                <div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
+                    <img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: tapped}">
+                    <p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
+                </div>
+            </div>
+            
+            <ng-container *ngIf="tapped">
+                <div class="tags-area" *ngIf="tagsData">
+                    <app-tags-square
+                    *ngFor="let item of tagsData; index as i"
+                    ></app-tags-square>
+                </div>
+            </ng-container>
+         </div>
+
         <div class="fullScreenSwiper">
             <div class="shadowWrapper">
                 <swiper [config]="swiperConfig">
