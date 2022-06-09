@@ -57,8 +57,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     freeMode: true,
     spaceBetween: 5,
   };
-  tapped: boolean = false;
-  tagsData: Array<any> = [ '', '', '', ''];
+  // tapped: boolean = false;
+  // tagsData: Array<any> = [ '', '', '', ''];
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -206,7 +206,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     await notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
   }
 
-  tapping(){
-      this.tapped = !this.tapped;
-  }
+  // tapping(){
+  //     this.tapped = !this.tapped;
+  // }
 }

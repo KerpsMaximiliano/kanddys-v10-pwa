@@ -43,44 +43,83 @@ export class ItemCreatorComponent implements OnInit {
     bubbleConfig: {
       validStep: {
         mode: 'double',
-        function: (params) => {
-          console.log(this);
-          console.log('ABRIENDO DIALOG');
-          console.log(params);
+        function: async (params) => {
+          const values = params.dataModel.value;
 
-          this.headerService.storeNewItemTemporarily({
-            name: params.dataModel.value['4']['name'],
-            pricing: params.dataModel.value['1']['price'],
-            description: params.dataModel.value['3']['description'],
-            content: params.dataModel.value['2']['whatsIncluded'],
-            images: this.defaultImages.length > 1 ? this.defaultImages : null
-          }, this.router.url);
+          if (
+            this.currentUserId &&
+            this.merchantOwnerId &&
+            this.currentUserId === this.merchantOwnerId
+            && this.currentItemId
+          ) {
+            await this.itemService.updateItem(
+              {
+                name: values['4'].name,
+                description: values['3'].description,
+                pricing: Number(values['1'].price),
+                images: this.files,
+                content: values['2'].whatsIncluded,
+                currencies: [],
+                hasExtraPrice: false,
+                purchaseLocations: [],
+              },
+              this.currentItemId
+            );
 
-          this.router.navigate(['/ecommerce/item-display']);
+            this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
+          } else {
+            if (this.loggedIn) {
+              const { createItem } = await this.itemService.createItem({
+                name: values['4'].name,
+                description: values['3'].description !== '' ? values['3'].description : null,
+                pricing: Number(values['1'].price),
+                images: this.files,
+                merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
+                content: values['2'].whatsIncluded.length > 0 && !(
+                  values['2'].whatsIncluded.length === 1 &&
+                  values['2'].whatsIncluded[0] === ''
+                ) ? values['2'].whatsIncluded : null,
+                currencies: [],
+                hasExtraPrice: false,
+                purchaseLocations: [],
+              });
 
-          // localStorage.setItem("newItem-temp", JSON.stringify({
+
+              if ('_id' in createItem) {
+                await this.saleflowSarvice.addItemToSaleFlow({
+                  item: createItem._id
+                }, this.loggedUserDefaultSaleflow._id);
+
+                this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
+              }
+            } else {
+              const { createPreItem } = await this.itemService.createPreItem({
+                name: values['4'].name,
+                description: values['3'].description !== '' ? values['3'].description : null,
+                pricing: Number(values['1'].price),
+                images: this.files,
+                content: values['2'].whatsIncluded.length > 0 && !(
+                  values['2'].whatsIncluded.length === 1 &&
+                  values['2'].whatsIncluded[0] === ''
+                ) ? values['2'].whatsIncluded : null,
+                currencies: [],
+                hasExtraPrice: false,
+                purchaseLocations: [],
+              });
+
+              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+            }
+          }
+
+          // this.headerService.storeNewItemTemporarily({
           //   name: params.dataModel.value['4']['name'],
           //   pricing: params.dataModel.value['1']['price'],
           //   description: params.dataModel.value['3']['description'],
           //   content: params.dataModel.value['2']['whatsIncluded'],
           //   images: this.defaultImages.length > 1 ? this.defaultImages : null
-          // }));
+          // }, this.router.url);
 
-          // params.dialog.open(NewItemDisplayComponent, {
-          //   type: 'flat-action-sheet',
-          //   props: {
-          //     item: {
-          //       name: params.dataModel.value['4']['name'],
-          //       pricing: params.dataModel.value['1']['price'],
-          //       description: params.dataModel.value['3']['description'],
-          //       content: params.dataModel.value['2']['whatsIncluded'],
-          //       images: this.defaultImages.length > 1 ? this.defaultImages : null
-          //     },
-          //     openedAsADialog: true
-          //   },
-          //   customClass: 'app-dialog',
-          //   flags: ['no-header'],
-          // });
+          // this.router.navigate(['/ecommerce/item-display']);
         }
       },
       invalidStep: {

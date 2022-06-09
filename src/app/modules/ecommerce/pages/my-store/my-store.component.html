@@ -2,14 +2,23 @@
     <app-header-info-admin
     [data]="[{
         icon: '/folder-details.svg',
-        text: 'Mis Compradores'
+        text: {
+            content: 'Mis Compradores',
+            color: ''
+        }
     },
     {
-        text:'RD$ 147,154.00 Total en Ventas'
+        text: {
+            content: 'RD$ 147,154.00 Total en Ventas',
+            color: ''
+        }
     },
     {
         icon: '/star.svg',
-        text: '144 En Colaboraciones'
+        text: {
+            content: '144 En Colaboraciones',
+            color: ''
+        }
     }]"
     [merchant]="true"
     ></app-header-info-admin>
