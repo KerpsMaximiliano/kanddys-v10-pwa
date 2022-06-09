@@ -76,6 +76,27 @@ interface PageHeader {
   styles?: Record<string, string>;
 }
 
+export interface FooterOptions {
+  bubbleConfig?: {
+    validStep: {
+      mode: 'single' | 'double' | 'triple';
+      function(...params): Promise<any> | any;
+    },
+    invalidStep: {
+      mode: 'single' | 'double' | 'triple';
+    }
+  },
+  bgColor?: string;
+  enabledStyles?: {
+    fontSize?: string;
+    height?: string;
+  },
+  disabledStyles?: {
+    fontSize?: string;
+    height?: string;
+  },
+}
+
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText?: string;
@@ -98,6 +119,8 @@ export interface FormStep {
   showShoppingCartOnCurrentStep?: boolean;
   shoppingCartCallback?(...params): any;
   hideHeader?: boolean;
+  headerMode?: 'v1' | 'v2';
+  footerConfig?: FooterOptions;
   styles?: Record<string, string>;
 }
 

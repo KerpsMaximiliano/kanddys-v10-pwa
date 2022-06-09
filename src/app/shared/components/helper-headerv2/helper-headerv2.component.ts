@@ -23,6 +23,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() rightText: string = 'Ir A Los Datos Mi Tienda';
     @Input() billId: string;
     @Input() itemId: string;
+    @Input() fixed: boolean = false;
     @Output() returnEvent = new EventEmitter()
     env: string = environment.assetsUrl;
 

@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -30,6 +31,7 @@ export class PostEditComponent implements OnInit {
   content: PostContent[] = [];
   postId: string;
   previewMode: boolean;
+  comesFromOrder: boolean;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -39,9 +41,13 @@ export class PostEditComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((queries) => {
+      if(queries.viewtype === 'order') this.comesFromOrder = true;
+    })
     this.route.params.subscribe((params) => {
       if(!params.postId) return;
       this.postService.getPost(params.postId).then(async (data) => {
@@ -104,6 +110,7 @@ export class PostEditComponent implements OnInit {
   }
 
   cancel() {
+    if(!this.previewMode && this.comesFromOrder) this.location.back();
     if(this.previewMode) return this.previewMode = false;
     this.isEditing = null;
     this.currentContent = null;
@@ -186,6 +193,11 @@ export class PostEditComponent implements OnInit {
         console.log(value)
       }))
     }
+  }
+
+  onButtonClick(button: 'audio' | 'text' | 'poster') {
+    if(button === 'audio') return this.openRecorder();
+    this.add(button);
   }
 
 }

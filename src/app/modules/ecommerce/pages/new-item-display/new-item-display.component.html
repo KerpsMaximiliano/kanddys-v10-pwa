@@ -1,12 +1,7 @@
 <div class="container">
-	<app-helper-headerv2
-		[mode]="'basic'"
-		[navtext]="item?.images?.length && item?.name"
-		[returnAble]="true"
-		[whatsapp]="false"
-		[shopcart]="false"
-		[bgColor]="'#2874AD'"
-	></app-helper-headerv2>
+	<app-helper-headerv2 [mode]="'basic'" [navtext]="item?.images?.length && ''" [returnAble]="true"
+		[whatsapp]="false" [shopcart]="false" [bgColor]="'#2874AD'" (returnEvent)="redirect()">
+	</app-helper-headerv2>
 	<div class="item-info" *ngIf="item">
 		<div *ngIf="item.description" class="description">
 			<h2 class="title-name" *ngIf="item.name">
@@ -22,11 +17,9 @@
 				<h3 class="title">{{item.name}}</h3>
 			</div>
 		</div>
-		
-		<button  *ngIf="item.images" class="itemImg" (click)="openImageModal(item.images[0])">
-			<div
-				[ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"
-			></div>
+
+		<button *ngIf="item.images" class="itemImg" (click)="openImageModal(item.images[0])">
+			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
 		</button>
 
 		<!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
@@ -41,30 +34,22 @@
 		<ng-container *ngIf="item.content?.length">
 			<hr class="divider">
 			<div class="content">
-	
+
 				<span class="includes">Incluye:</span>
-	
+
 				<ul>
-					<li  *ngFor="let content of item.content; index as i" class="list-content">
+					<li *ngFor="let content of item.content; index as i" class="list-content">
 						- {{content}}
 					</li>
 				</ul>
 				<!-- <ng-container *ngFor="let content of item.content; index as i">
 					<span class="list-content">- {{content}}</span>
 				</ng-container> -->
-	
+
 			</div>
 		</ng-container>
 	</div>
 
 </div>
-<app-bubble-button
-	[text]="'TIENDA'"
-	[text2]="'VISTA'"
-	[solo]="false"
-></app-bubble-button>
-<app-sticky-button
-	[bgColor]="'#2874AD'"
-	[text]="'Empieza a Venderlo'"
-	mode="fixed"
-></app-sticky-button>
+<app-bubble-button [text]="'TIENDA'" [text2]="'VISTA'" [solo]="false"></app-bubble-button>
+<app-sticky-button [bgColor]="'#2874AD'" [text]="'Empieza a Venderlo'" mode="fixed"></app-sticky-button>

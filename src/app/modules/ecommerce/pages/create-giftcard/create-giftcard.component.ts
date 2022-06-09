@@ -6,6 +6,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { of } from 'rxjs';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-buttons/post-edit-buttons.component';
 
 const lightLabelStyles = {
   fontFamily: 'Roboto',
@@ -137,71 +138,92 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   removeScrollBlockerBefore: any;
   scrollableForm = false;
   formSteps = [
-    // {
-    //   fieldsList: [
-    //     {
-    //       name: 'writeMessage',
-    //       fieldControl: new FormControl('', Validators.required),
-    //       selectionOptions: ['Si', 'No'],
-    //       changeCallbackFunction: (change, params) => {
-    //         this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
-    //           emitEvent: false,
-    //         });
+    {
+      fieldsList: [
+        {
+          name: 'writeMessage',
+          fieldControl: new FormControl('', Validators.required),
+          selectionOptions: 
+            [
+              'Sin mensaje y sin tarjetita',
+              'Recibes la tarjetita vacía y escribes tu el mensajito',
+              'Nosotros escribiremos el mensaje en una tarjetita',
+              'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
+            ],
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
+              emitEvent: false,
+            });
 
-    //         this.formSteps[0].stepProcessingFunction(params);
-    //         if (change === 'Si') {
-    //           params.scrollToStep(1);
-    //         }
-    //       },
-    //       label: '¿Te interesa escribirle un mensajito de regalo?',
-    //       inputType: 'radio',
-    //       styles: {
-    //         containerStyles: {
-    //           marginTop: '114px',
-    //         },
-    //       },
-    //     },
-    //   ],
-    //   bottomLeftAction: {
-    //     text: 'Ver items facturados',
-    //     execute: () => {
-    //       this.showShoppingCartDialog();
-    //     },
-    //   },
-    //   stepProcessingFunction: (params) => {
-    //     this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-    //     this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
+            this.formSteps[0].stepProcessingFunction(params);
+            if (change === 'Nosotros escribiremos el mensaje en una tarjetita') {
+              params.scrollToStep(1);
+            }
+            if(change === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
+              this.router.navigate(['ecommerce/post-edit'], {
+                queryParams: { viewtype: "order" }
+              });
+            }
+          },
+          label: '¿Que tipo de mensajito de regalo prefieres?',
+          inputType: 'radio',
+          styles: {
+            containerStyles: {
+              marginTop: '58px',
+            },
+            fieldStyles: {
+              marginTop: '50px'
+            },
+          },
+        },
+      ],
+      stepProcessingFunction: (params) => {
+        this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+        this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
 
-    //     if (params.scrollableForm) {
-    //       setTimeout(() => {
-    //         params.blockScrollBeforeCurrentStep();
-    //         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
-    //         this.removeScrollBlockerBefore =
-    //           params.unblockScrollBeforeCurrentStep;
-    //       }, 500);
-    //     }
+        if (params.scrollableForm) {
+          setTimeout(() => {
+            params.blockScrollBeforeCurrentStep();
+            this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
+            this.removeScrollBlockerBefore =
+              params.unblockScrollBeforeCurrentStep;
+          }, 500);
+        }
 
-    //     if (params.dataModel.value['1'].writeMessage === 'Si')
-    //       return { ok: true };
-    //     else if (params.dataModel.value['1'].writeMessage === 'No') {
-    //       this.storeEmptyMessageAndGoToShipmentDataForm(params);
-    //       return { ok: false };
-    //     }
-    //   },
-    //   customScrollToStepBackwards: (params) => {
-    //     if (this.scrollableForm) {
-    //       params.unblockScrollPastCurrentStep();
-    //       params.unblockScrollBeforeCurrentStep();
-    //     }
+        if (params.dataModel.value['1'].writeMessage === 'Nosotros escribiremos el mensaje en una tarjetita')
+          return { ok: true };
+        else if (params.dataModel.value['1'].writeMessage === 'Sin mensaje y sin tarjetita') {
+          this.storeEmptyMessageAndGoToShipmentDataForm(params);
+          return { ok: false };
+        }
+        else if (params.dataModel.value['1'].writeMessage === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
+          return { ok: false };
+        }
+      },
+      embeddedComponents: [
+        {
+          component: PostEditButtonsComponent,
+          afterIndex: 0,
+        },
+      ],
+      customScrollToStepBackwards: (params) => {
+        if (this.scrollableForm) {
+          params.unblockScrollPastCurrentStep();
+          params.unblockScrollBeforeCurrentStep();
+        }
 
-    //     this.router.navigate([
-    //       'ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb',
-    //     ]);
-    //   },
-    //   headerText: 'INFORMACIÓN DE LA ORDEN',
-    //   stepButtonInvalidText: 'SELECCIONA',
-    //   stepButtonValidText: 'CONTINUAR',
-    // },
+        this.router.navigate([
+          `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+        ]);
+      },
+      showShoppingCartOnCurrentStep: true,
+      shoppingCartCallback: () => {
+        this.showShoppingCartDialog();
+      },
+      headerText: 'INFORMACIÓN DE LA ORDEN',
+      stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
+      stepButtonValidText: 'CONTINUAR',
+    },
     {
       fieldsList: [
         {
@@ -279,9 +301,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollBeforeCurrentStep();
         }
 
-        this.router.navigate([
-          `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
-        ]);
+        // this.router.navigate([
+        //   `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+        // ]);
+        this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
+          emitEvent: false,
+        });
+
+        params.scrollToStep(0, false);
       },
       // customScrollToStepBackwards: (params) => { Esto estaba cuando el primer step era si/no
       //   this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
