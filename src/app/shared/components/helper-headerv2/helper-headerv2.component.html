@@ -12,10 +12,9 @@
                 <div class="right-area">
                     <!-- ICONOS -->
                     <div *ngIf="whatsapp"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
-                            alt="" style="cursor: pointer; margin-right: 23px"></div>
-                    <div *ngIf="shopcart">
-
+                            alt="" style="cursor: pointer; margin-right: 23px">
                     </div>
+
                     <ng-container *ngIf="shopcart">
                         <app-cart-button [cartAmount]="cartAmount" [shopCartCallback]="shopCartCallback">
                         </app-cart-button>
@@ -40,7 +39,10 @@
 
         <ng-container *ngIf="mode == 'center'">
             <div class="double-text">
-                <span class="text light-text">{{navtext}}</span>
+                <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
+                    [style.color]="color"></i>
+                </a>
+                <p class="light-text" [style.color]="color">{{navtext}}</p>
             </div>
         </ng-container>
 

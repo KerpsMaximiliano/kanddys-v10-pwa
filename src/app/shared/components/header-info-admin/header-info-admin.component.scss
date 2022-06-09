@@ -72,7 +72,7 @@
         }
 
         .icon{
-            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(95%) contrast(77%);
+            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(65%) contrast(77%);
             width: 20px;
             height: 21px;
             margin-right: 7px;
@@ -83,6 +83,7 @@
             font-size: 17px;
             margin: 0;
             text-align: left;
+            color: #2874AD;
         }
     }
 
@@ -92,7 +93,7 @@
         margin-bottom: 17px;
 
         .icon{
-            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(95%) contrast(77%);
+            filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(65%) contrast(77%);
             cursor: pointer;
         }
     }

@@ -60,19 +60,10 @@ button {
 	}
 
 }
-.fixed-area {
+.buttons-container {
+	background-color: #FBFBFB;
 	position: sticky;
 	bottom: 0;
-	background-color: #FBFBFB;
-	width: 100%;
-	max-width: 500px;
-	padding: 25px 0;
-
-	.icons {
-		display: flex;
-		justify-content: space-evenly;
-		margin: 0 54px 0 54px;
-	}
 }
 
 .edit-mode {

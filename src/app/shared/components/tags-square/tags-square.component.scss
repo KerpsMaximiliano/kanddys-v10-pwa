@@ -10,32 +10,32 @@
     border-radius: 10px;
     display: flex;
     flex-direction: column;
+    padding: 6px 9px;
     box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 16%);
     cursor: pointer;
 }
 
 .wrapper{
+    width: 100%;
     position: relative;
     display: flex;
-    justify-content: center;
-    margin: 6px 0 11px 0;
+    margin-bottom: 11px;
 
     .number{
         font-family: 'RobotoMedium';
         font-size: 17px;
-        color: #40772F;
+        margin: 0;
     }
 
     .amount{
-        position: absolute;
-        left: 9px;
+        position: static;
+        margin: 0;
+        margin-right: 30%;
     }
 }
 
 .text{
-    margin: 0 auto;
     font-family: 'RobotoMedium';
     font-size: 19px;
-    color: #7B7B7B;
-    margin-bottom: 3px;
+    margin-bottom: 1px !important;
 }

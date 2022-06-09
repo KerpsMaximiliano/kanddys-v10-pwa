@@ -14,6 +14,7 @@ export class HeaderInfoAdminComponent implements OnInit {
       content: '',
       color: ''
     },
+    filter:'',
     func: () => { this.event.emit(); console.log('OCURRIENDO') }
   }];
 
