@@ -59,6 +59,17 @@
     .data-container{
         display: flex;
         align-items: flex-start;
+        margin-bottom: 17px;
+
+        button {
+            all: unset;
+            color: #2874AD;
+            cursor: pointer;
+
+            &:hover {
+                color: #2693e7;
+            }
+        }
 
         .icon{
             filter: invert(37%) sepia(10%) saturate(6768%) hue-rotate(175deg) brightness(95%) contrast(77%);
@@ -70,9 +81,7 @@
         .text{
             font-family: 'SfProMedium';
             font-size: 17px;
-            color: #2874AD;
             margin: 0;
-            margin-bottom: 17px;
             text-align: left;
         }
     }
