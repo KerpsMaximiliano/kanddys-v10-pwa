@@ -22,6 +22,7 @@ export class BubbleButtonComponent implements OnInit {
   @Input() bubblesMarginBottom: number = 20;
   @Input() solo: boolean = true;
   @Input() mini: boolean;
+  @Input() return: boolean = false;
 
   //EventEmitters
   @Output() leftAction: EventEmitter<any> = new EventEmitter();
