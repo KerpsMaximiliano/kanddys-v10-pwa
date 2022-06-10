@@ -49,7 +49,7 @@ export class RedirectionsComponent implements OnInit {
     lockUI();
 
     this.route.queryParams.subscribe(async (params) => {
-      const { token, destinationRoute } = params;
+      const { token, destinationRoute, ...rest } = params;
 
       try {
         const { analizeMagicLink: session } =
@@ -59,6 +59,10 @@ export class RedirectionsComponent implements OnInit {
 
         redirectURL.url = destinationRoute;
         redirectURL.queryParams = { token };
+
+        Object.keys(rest).forEach(key => {
+          redirectURL.queryParams[key] = rest[key];
+        })
 
         unlockUI();
 

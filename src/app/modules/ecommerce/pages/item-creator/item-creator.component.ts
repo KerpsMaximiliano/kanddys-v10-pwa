@@ -772,7 +772,7 @@ export class ItemCreatorComponent implements OnInit {
   async verifyLoggedUserMerchant() {
     if (this.loggedIn) {
       const defaultMerchant = await this.merchantService.merchantDefault();
-      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant._id);
+      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
 
       if (defaultMerchant && defaultSaleflow) {
         this.loggedUserDefaultMerchant = defaultMerchant;
