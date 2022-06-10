@@ -69,6 +69,7 @@ export class ItemCreatorComponent implements OnInit {
             this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
           } else {
             if (this.loggedIn) {
+              console.log(this.loggedUserDefaultMerchant);
               const { createItem } = await this.itemService.createItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -362,8 +363,10 @@ export class ItemCreatorComponent implements OnInit {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
+
+                if ('_id' in createItem) this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
               } else {
-                await this.itemService.createPreItem({
+                const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
                   pricing: Number(values['1'].price),
@@ -376,6 +379,8 @@ export class ItemCreatorComponent implements OnInit {
                   hasExtraPrice: false,
                   purchaseLocations: [],
                 });
+
+                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
               }
             }
           } catch (error) {
@@ -664,9 +669,8 @@ export class ItemCreatorComponent implements OnInit {
       this.currentItemId = itemId;
 
       if (localStorage.getItem('session-token')) {
-        this.authService.me().then(data => {
-          if (data) this.loggedIn = true;
-        });
+        const data = await this.authService.me()
+        if (data) this.loggedIn = true;
       }
 
       if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
@@ -769,6 +773,7 @@ export class ItemCreatorComponent implements OnInit {
     if (this.loggedIn) {
       const defaultMerchant = await this.merchantService.merchantDefault();
       const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+
 
       if (defaultMerchant && defaultSaleflow) {
         this.loggedUserDefaultMerchant = defaultMerchant;
