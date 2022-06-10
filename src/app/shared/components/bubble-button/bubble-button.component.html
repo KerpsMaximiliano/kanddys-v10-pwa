@@ -9,7 +9,8 @@
                 </button>
 
                 <button class="bubble" [style.background-color]="palette" (click)="leftButton()">
-                    <p class="text" [style.color]="fontColor" *ngIf="text">{{text}}</p>
+                    <a> <i class="fas fa-chevron-left" [style.color]="fontColor" *ngIf="return"></i> </a>
+                    <p class="text" [style.color]="fontColor" *ngIf="text && !return">{{text}}</p>
                     <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon"
                         width="22px" height="22px">
                 </button>
@@ -20,7 +21,8 @@
             <!-- 3 botones -->
 
             <button class="bubble tripleb" [style.background-color]="palette" (click)="leftButton()">
-                <p class="text" [style.color]="fontColor" *ngIf="text">{{text}}</p>
+                <a> <i class="fas fa-chevron-left" [style.color]="fontColor" *ngIf="return"></i> </a>
+                <p class="text" [style.color]="fontColor" *ngIf="text && !return">{{text}}</p>
                 <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon"
                     width="22px" height="22px">
             </button>
@@ -51,7 +53,8 @@
                 </button>
 
                 <button class="bubble" [style.background-color]="palette" (click)="leftButton()">
-                    <p class="text" [style.color]="fontColor" *ngIf="text">{{text}}</p>
+                    <a> <i class="fas fa-chevron-left" [style.color]="fontColor" *ngIf="return"></i> </a>
+                    <p class="text" [style.color]="fontColor" *ngIf="text && !return">{{text}}</p>
                     <img [src]="env + icon" alt="Botón izquierdo" [ngStyle]="{filter: filterColor}" *ngIf="icon"
                         width="18px" height="18px">
                 </button>

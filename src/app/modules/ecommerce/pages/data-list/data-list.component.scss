@@ -16,6 +16,13 @@ nav {
   font-family: "SfProRegular";
   font-size: 14px;
   color: #7B7B7B;
+
+  .matches{
+      font-family: 'RobotoBold';
+      font-size: 17px;
+      color: #7B7B7B;
+      margin-left: 49%;
+  }
 }
 
 .input {
@@ -51,6 +58,12 @@ nav {
   color: #4773D8;
   text-align: center;
   cursor: pointer;
+}
+
+.categories{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    row-gap: 12px;
+    justify-items: center;
 }
 
 @media only screen and (max-width: 415px){

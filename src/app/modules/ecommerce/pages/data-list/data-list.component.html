@@ -1,7 +1,9 @@
 <div style="min-height: 100vh;">
 
     <app-helper-headerv2
-    [mode]="'options'"
+    [mode]="categories? 'edit':'options'"
+    [navtext]="'Nueva Categoria A Productnameid'"
+    [color]="categories? '#E9E371' : ''"
     [returnAble]="true"
     [billId]="'405D $26'"
     [itemId]="'chps n tips'"
@@ -20,9 +22,11 @@
       placeholder="Nombre de la categoria"
     />
   </div>
+  
   <p class="label">
     <ng-container *ngIf="!keyword">RECIENTES</ng-container>
-    <ng-container *ngIf="keyword">
+    
+    <ng-container *ngIf="keyword && !categories">
       <ng-container *ngIf="filteredTagList.length > 0 else noTags">
         RESULTADOS PARECIDOS
       </ng-container>
@@ -32,8 +36,20 @@
         </div>
       </ng-template>
     </ng-container> 
+
+    <span class="matches" *ngIf="matches && categories">{{matches.length}} mas coinciden</span>
+    <ng-container *ngIf="keyword && categories">
+        <ng-container *ngIf="filteredCategories.length == 0">
+              <div class="addButton" [routerLink]="['/ecommerce/tags-edit']">
+                  Crear este nueva categoria y añadir el item
+              </div>
+          </ng-container>
+    </ng-container>
   </p>
-  <div class="tag-container">
+
+  <div class="tag-container" [ngClass]="{'categories': categories}">
+
+    <ng-container *ngIf="!categories">
     <app-info-card
         *ngFor="let tag of filteredTagList"
         (click)="onTagClick(tag)"
@@ -43,5 +59,31 @@
         [isSelectable]="true"
         [selected]="tag.notifyMerchantOrder || tag.notifyUserOrder"
       ></app-info-card>
+    </ng-container>
+
+    <ng-container *ngIf="categories">
+        <app-tags-square
+        *ngFor="let category of categoriesList"
+        [reverse]="true"
+        [position]="'left'"
+        [color]="'#2874AD'"
+        [textColor]="'#2874AD'"
+        [tagText]="'CategoriaId'"
+        [number]="'44 ventas'"
+        [bColor]="'#FFFFFF'"
+        ></app-tags-square>
+    </ng-container>
+
   </div>
+
+  <!-- <app-bubble-button
+    [mode]="'single'""
+  ></app-bubble-button>
+  
+  <app-sticky-button
+  [mode]="'basic'"
+  [text]="'SALVA EL ITEM EN categoriaID'"
+  ></app-sticky-button> 
+
+    -->
 </div>
