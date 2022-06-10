@@ -142,4 +142,48 @@
         }
     }
 
+    .edit{
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .return-holder{
+            position: absolute;
+            left: 25px;
+            cursor: pointer;
+        }
+
+        .itf{
+            display: flex;
+            align-items: center;
+
+            .icon{
+                width: 18px; 
+                height: 15px;
+                margin-right: 7.3px;
+            }
+
+            .bold-text{
+                font-family: 'SfProBold';
+                font-size: 21px;
+                margin: 0;
+            }
+        }
+
+        .edit-button{
+            all: unset;
+            position: absolute;
+            right: 19px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFFFFF;
+            font-family: 'SfProMedium';
+            font-size: 14px;
+            cursor: pointer;
+        }
+    }
+
 }
