@@ -17,6 +17,8 @@ export class NewItemDisplayComponent implements OnInit {
   @Input() item: Item;
   shouldRedirectToPreviousPage: boolean = false;
 
+  isOwner: boolean = true;
+
   tagsData: Array<any> = [ '', '', '', ''];
 
   tapped: boolean = false;
