@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment'
 export class TagsSquareComponent implements OnInit {
 
   @Input() number: number;
-  @Input() gains: number;
+  @Input() gains: string;
   @Input() tagText: string;
   @Input() color: string = '#40772F';
   @Input() textColor: string = '#7B7B7B';

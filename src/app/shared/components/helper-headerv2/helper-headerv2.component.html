@@ -80,10 +80,10 @@
                     [style.color]="color"></i>
                 </a>
                 <div class="itf">
-                    <img [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" [ngStyle]="{'filter': filter}">
+                    <img *ngIf="icon" [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" [ngStyle]="{'filter': filter}">
                     <h1 class="bold-text" [style.color]="color">{{navtext}}</h1>
                 </div>
-                <button class="edit-button">EDIT</button>
+                <button class="edit-button" *ngIf="edit"> <span *ngIf="batch">BATCH</span> EDIT</button>
             </div>
         </ng-container>
 

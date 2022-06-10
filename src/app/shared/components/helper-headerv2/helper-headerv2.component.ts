@@ -25,6 +25,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() itemId: string;
     @Input() fixed: boolean = false;
     @Input() edit: boolean = false;
+    @Input() batch: boolean = false;
     @Input() color: string = '#FFFFFF';
     @Input() icon: string;
     @Input() filter: string = 'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)';
