@@ -47,7 +47,7 @@ import { NewItemDisplayComponent } from './pages/new-item-display/new-item-displ
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
 import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
-import { MyStoreComponent } from './pages/my-store/my-store.component';
+import { MyStoreComponent } from './pages/merchant-dashboard/my-store/my-store.component';
 import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
 import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';

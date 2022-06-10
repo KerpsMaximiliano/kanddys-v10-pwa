@@ -1,8 +1,8 @@
 <div class="itemContainer type{{type}}" [ngClass]="{'big-size': big}">
   <div class="marginCard" *ngIf = "type == 1">
-        <div
+      <div
         class="itemImg"
-        [ngStyle]="{ 'background-image': 'url(' + imgURL + ')', 'background-size': backgroundSize }"
+        [ngStyle]="{ 'background-image': imgURL && 'url(' + imgURL + ')', 'background-size': backgroundSize }"
         (click)="onClick()"
       ></div>
 
@@ -13,12 +13,12 @@
               <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
           </div>
           
-          <p class="income" *ngIf="income">Ingreso ${{income | number}} </p>
+          <p class="income" *ngIf="income >= 0">Ingreso ${{income | number}} </p>
 
           <div class="flexer">
-              <span class="sales" *ngIf="quantity">{{quantity}} Ventas</span>
-              <span class="stars" *ngIf="index1">{{index1 | number}} <img [src]="env + '/star.svg'" alt="Estrellas" width="13.75px" height="13.05px" class="star-icon"></span>
-              <span class="total" *ngIf="index2">{{index2 | number}} <img [src]="env + '/page_print.svg'" width="9px" height="9px" class="list-icon"></span>
+              <span class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</span>
+              <span class="stars" *ngIf="index1 >= 0">{{index1 | number}} <img [src]="env + '/star.svg'" alt="Estrellas" width="13.75px" height="13.05px" class="star-icon"></span>
+              <span class="total" *ngIf="index2 >= 0">{{index2 | number}} <img [src]="env + '/page_print.svg'" width="9px" height="9px" class="list-icon"></span>
           </div>
       </div>
 
