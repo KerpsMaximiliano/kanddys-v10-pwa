@@ -38,7 +38,7 @@ export class NewItemDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
   user: User;
   canCreateBank: boolean;
-  saleflow: SaleFlow;
+  saleflow: SaleFlow = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -112,6 +112,7 @@ export class NewItemDisplayComponent implements OnInit {
                   });
 
                   const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                  this.saleflow = defaultSaleflow;
 
                   this.saleflowSarvice.createSaleFlowModule({
                     saleflow: createdSaleflow._id
@@ -142,6 +143,7 @@ export class NewItemDisplayComponent implements OnInit {
                     });
 
                     const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                    this.saleflow = defaultSaleflow;
 
                     this.saleflowSarvice.createSaleFlowModule({
                       saleflow: createdSaleflow._id
@@ -153,6 +155,7 @@ export class NewItemDisplayComponent implements OnInit {
                     this.newMerchant = true;
                   } else {
                     const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
+                    this.saleflow = defaultSaleflow;
 
                     await this.saleflowSarvice.addItemToSaleFlow({
                       item: params.itemId
@@ -160,6 +163,8 @@ export class NewItemDisplayComponent implements OnInit {
                     this.newMerchant = true;
                   }
                 } else {
+                  this.saleflow = defaultSaleflow;
+                  
                   await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
@@ -239,9 +244,9 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   async checkBanks() {
-    if(!this.loggedIn) return;
+    if (!this.loggedIn) return;
     const wallet = await this.walletService.exchangeDataByUser(this.user._id);
-    if(!wallet) this.canCreateBank = true;
+    if (!wallet) this.canCreateBank = true;
   }
 
   goToAuth() {
@@ -254,7 +259,7 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   goToBanksForm() {
-    if(this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
+    if (this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
   }
 
   openImageModal(imageSourceURL: string) {
