@@ -14,11 +14,13 @@ import {
   listPackages,
   updateSaleflow,
   createSaleflow,
+  createSaleFlowModule,
+  updateSaleFlowModule,
 } from './../graphql/saleflow.gql';
 import { itemCategoriesList } from './../graphql/items.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
-import { PaginationInput, SaleFlow } from '../models/saleflow';
+import { PaginationInput, SaleFlow, SaleFlowModule, SaleFlowModuleInput } from '../models/saleflow';
 import { Item, ItemPackage } from '../models/item';
 
 @Injectable({ providedIn: 'root' })
@@ -150,6 +152,24 @@ export class SaleFlowService {
     });
     if (!result || result?.errors) return undefined;
     console.log(result);
+    return result;
+  }
+
+  async createSaleFlowModule(input: SaleFlowModuleInput): Promise<SaleFlowModule> {
+    const result = await this.graphql.mutate({
+      mutation: createSaleFlowModule,
+      variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async updateSaleFlowModule(input: SaleFlowModuleInput, id: string): Promise<SaleFlowModule> {
+    const result = await this.graphql.mutate({
+      mutation: updateSaleFlowModule,
+      variables: { input, id },
+    });
+    if (!result || result?.errors) return undefined;
     return result;
   }
 }

@@ -152,6 +152,21 @@ export const createSaleflow = gql`
   }
 `;
 
+export const createSaleFlowModule = gql`
+  mutation createSaleFlowModule($input: SaleFlowModuleInput!) {
+    createSaleFlowModule(input: $input) {
+      _id
+    }
+  }
+`;
+export const updateSaleFlowModule = gql`
+  mutation updateSaleFlowModule($input: SaleFlowModuleInput!, $id: ObjectID!) {
+    updateSaleFlowModule(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const addLocation = gql`
   mutation addLocation($input: DeliveryLocationInput!) {
     addLocation(input: $input) {

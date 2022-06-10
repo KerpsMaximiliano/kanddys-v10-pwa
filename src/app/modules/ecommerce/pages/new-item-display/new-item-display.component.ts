@@ -10,6 +10,9 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { WalletService } from 'src/app/core/services/wallet.service';
+import { User } from 'src/app/core/models/user';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-new-item-display',
@@ -30,6 +33,9 @@ export class NewItemDisplayComponent implements OnInit {
   tapped: boolean = false;
 
   env: string = environment.assetsUrl;
+  user: User;
+  canCreateBank: boolean;
+  saleflow: SaleFlow;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +46,7 @@ export class NewItemDisplayComponent implements OnInit {
     private merchantService: MerchantsService,
     private itemService: ItemsService,
     private saleflowSarvice: SaleFlowService,
+    private walletService: WalletService,
     private headerService: HeaderService,
     private location: Location
   ) { }
@@ -62,9 +69,10 @@ export class NewItemDisplayComponent implements OnInit {
           }
 
           if (this.hasToken) {
-            const myUser = await this.authService.me();
+            this.user = await this.authService.me();
 
-            if (myUser) this.loggedIn = true;
+            if (this.user) this.loggedIn = true;
+            this.checkBanks();
           }
         }
 
@@ -102,6 +110,10 @@ export class NewItemDisplayComponent implements OnInit {
 
                   const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
 
+                  this.saleflowSarvice.createSaleFlowModule({
+                    saleflow: createdSaleflow._id
+                  });
+
                   const result = await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
@@ -127,6 +139,10 @@ export class NewItemDisplayComponent implements OnInit {
                     });
 
                     const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+
+                    this.saleflowSarvice.createSaleFlowModule({
+                      saleflow: createdSaleflow._id
+                    });
 
                     await this.saleflowSarvice.addItemToSaleFlow({
                       item: params.itemId
@@ -166,6 +182,10 @@ export class NewItemDisplayComponent implements OnInit {
                 });
 
                 const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+
+                this.saleflowSarvice.createSaleFlowModule({
+                  saleflow: createdSaleflow._id
+                });
 
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
@@ -212,8 +232,18 @@ export class NewItemDisplayComponent implements OnInit {
     })
   }
 
+  async checkBanks() {
+    if(!this.loggedIn) return;
+    const wallet = await this.walletService.exchangeDataByUser(this.user._id);
+    if(!wallet) this.canCreateBank = true;
+  }
+
   goToAuth() {
     this.router.navigate([`/ecommerce/new-item-contact-info/${this.item._id}`]);
+  }
+
+  goToBankCreation() {
+    if(this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
   }
 
   openImageModal(imageSourceURL: string) {

@@ -274,7 +274,7 @@ const routes: Routes = [
     component: NewItemDisplayComponent
   },
   {
-    path: 'bank-registration',
+    path: 'bank-registration/:saleflowId',
     component: BankRegistrationComponent
   },
   {
