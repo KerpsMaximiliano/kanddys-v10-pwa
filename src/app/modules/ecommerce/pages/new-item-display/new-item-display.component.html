@@ -1,6 +1,6 @@
 <div class="container">
-	<app-helper-headerv2 [mode]="'basic'" [navtext]="item?.images?.length && ''" [returnAble]="true"
-		[whatsapp]="false" [shopcart]="false" [bgColor]="'#2874AD'" (returnEvent)="redirect()">
+	<app-helper-headerv2 [mode]="'basic'" [navtext]="item?.images?.length && ''" [returnAble]="true" [whatsapp]="false"
+		[shopcart]="false" [bgColor]="'#2874AD'" (returnEvent)="redirect()">
 	</app-helper-headerv2>
 
 	<!-- Info que ve el admin (merchant) del producto -->
@@ -90,4 +90,5 @@
 
 </div>
 <app-bubble-button [text]="'TIENDA'" [text2]="'VISTA'" [solo]="false"></app-bubble-button>
-<app-sticky-button [bgColor]="'#2874AD'" [text]="'Empieza a Venderlo'" mode="fixed"></app-sticky-button>
+<app-sticky-button [bgColor]="'#2874AD'" [text]="'Empieza a Venderlo'" mode="fixed"
+	(click)="!loggedIn ? goToAuth() : null"></app-sticky-button>

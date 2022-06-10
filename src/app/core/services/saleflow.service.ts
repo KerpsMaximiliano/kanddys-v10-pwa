@@ -5,6 +5,7 @@ import { AppService } from './../../app.service';
 import {
   saleflow,
   saleflowDefault,
+  setDefaultSaleflow,
   hotSaleflow,
   listItems,
   saleflows,
@@ -122,6 +123,18 @@ export class SaleFlowService {
     const result = await this.graphql.mutate({
       mutation: createSaleflow,
       variables: { input },
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result);
+    return result;
+  }
+
+  async setDefaultSaleflow(merchantId: string, id: string): Promise<{ saleflowSetDefault: SaleFlow }> {
+    const result = await this.graphql.mutate({
+      mutation: setDefaultSaleflow,
+      variables: { merchantId, id },
+      fetchPolicy: 'no-cache',
     });
 
     if (!result || result?.errors) return undefined;

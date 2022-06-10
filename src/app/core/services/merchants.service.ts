@@ -13,6 +13,7 @@ import {
   addMerchant,
   createMerchant,
   merchantDefault,
+  setDefaultMerchant,
   hotMerchant,
   hotMerchants,
   itemsByMerchant,
@@ -143,6 +144,18 @@ export class MerchantsService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async setDefaultMerchant(id: string): Promise<{ merchantSetDefault: Merchant }> {
+    const result = await this.graphql.mutate({
+      mutation: setDefaultMerchant,
+      variables: { id },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    console.log(result);
+    return result;
   }
 
 

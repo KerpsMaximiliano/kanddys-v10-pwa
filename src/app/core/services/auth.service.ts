@@ -56,7 +56,7 @@ export class AuthService {
         variables: { emailOrPhone },
       });
       return result?.exists as boolean;
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -158,7 +158,7 @@ export class AuthService {
       const result = await this.graphql.mutate({ mutation, variables });
       session = new Session(result?.session, use);
       if (use) this.session = session;
-    } catch (e) {}
+    } catch (e) { }
     this.app.events.emit({ type: 'auth', data: this.session });
     return session;
   }
@@ -262,7 +262,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async updateMe(input: any) {
@@ -287,7 +287,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async generateOTP(emailOrPhone: String) {
@@ -298,14 +298,19 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
-  public async generateMagicLink(emailOrPhone: String) {
+  public async generateMagicLink(
+    phoneNumber: string,
+    redirectionRoute: string,
+    redirectionRouteId: string,
+    entity: string
+  ) {
     try {
       const response = await this.graphql.mutate({
         mutation: generateMagicLink,
-        variables: { emailOrPhone },
+        variables: { phoneNumber, redirectionRoute, redirectionRouteId, entity },
       });
 
       return response;
@@ -322,6 +327,6 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 }

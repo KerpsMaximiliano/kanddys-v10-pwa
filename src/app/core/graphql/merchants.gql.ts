@@ -60,6 +60,15 @@ export const merchantDefault = gql`
   }
 `;
 
+export const setDefaultMerchant = gql`
+  mutation merchantSetDefault($id: ObjectID!) {
+    merchantSetDefault(id: $id) {
+      _id
+      name
+    }
+  }
+`;
+
 export const hotMerchants = gql`
   query merchants($params: ListParams) {
     merchants(params: $params) {
