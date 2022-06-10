@@ -3,22 +3,31 @@
     [mode]="'center'"
     [whatsapp]="false"
     [shopcart]="false"
-    [navtext]="'Categoriaid'"
+    [navtext]="category?.name"
     [color]="'#E9E371'"
     ></app-helper-headerv2>
 
     <app-header-info-admin
     [data]="[{
         icon: '/folder-details.svg',
-        text: 'Mis Compradores',
+        text: {
+            content: 'Mis Compradores',
+            color: '#2874AD'
+        },
         filter: 'no'
     },
     {
-        text:'RD$ 147,154.00 Total en Ventas'
+        text: {
+            content: 'RD$ '+ordersTotal?.total.toLocaleString('es-MX')+' Total en Ventas',
+            color: '#2874AD'
+        }
     },
     {
         icon: '/star.svg',
-        text: '144 En Colaboraciones'
+        text: {
+            content: '144 En Colaboraciones',
+            color: '#2874AD'
+        }
     }]"
     [merchant]="true"
     ></app-header-info-admin>
@@ -26,20 +35,20 @@
     <div class="tab-area">
         <div class="left">
             <div class="item-tab">
-                <p class="text-tab">items</p>
+                <p class="text-tab">Items</p>
             </div>
         </div>
     </div>
 
     <div class="items-area" >
         <app-saleflow-item
-        *ngFor="let items of saleflowList; index as i"
-        [imgURL]="items.image"
-        [price]="items.price"
-        [income]="items.income"
-        [quantity]="items.quantity"
-        [index2]="items.index2"
-        [showIcon]="true"
+            *ngFor="let item of items; index as i"
+            [imgURL]="item.images[0]"
+            [price]="item.pricing"
+            [income]="0"
+            [quantity]="0"
+            [index2]="0"
+            [showIcon]="true"
         ></app-saleflow-item>
     </div>
      

@@ -101,13 +101,14 @@ export class ItemsService {
     } catch (e) {}
   }
 
-  async itemsByCategory(saleflowID: string, params: any, categoryID: string): Promise<Item[]> {
+  async itemsByCategory(categoryID: string, params?: PaginationInput, saleflowID?: string): Promise<Item[]> {
     try {
       const response = await this.graphql.query({
         query: itemsByCategory,
-        variables: { saleflowID, params, categoryID },
+        variables: { categoryID, params, saleflowID },
         fetchPolicy: 'no-cache',
       });
+      if(!response || response?.errors) return undefined;
       return response.itemsByCategory;
     } catch (e) {
       console.log(e);

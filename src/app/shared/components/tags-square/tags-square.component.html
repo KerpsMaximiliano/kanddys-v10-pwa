@@ -1,6 +1,6 @@
 <div class="container">
-    <div class="body">
-        <div class="wrapper" [ngStyle]="{'justify-content': (position==='left')||(number)? 'flex-start' : (position ==='right'? 'flex-end':'center')}">
+    <div class="body" [ngStyle]="{'justify-content': (position==='left')||(number)? 'flex-start' : (position ==='right'? 'flex-end':'center')}">
+        <div class="wrapper">
             <p for="Number" class="number amount" *ngIf="number" [style.color]="color">{{number}}</p>
             <p for="Number" class="number" *ngIf="gains" [style.color]="color">${{gains}}</p>
         </div>

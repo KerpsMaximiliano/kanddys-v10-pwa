@@ -286,7 +286,7 @@ const routes: Routes = [
     component: LlStudioOrderFormComponent
   },
   {
-    path: 'category-items-admin',
+    path: 'category-items-admin/:categoryId',
     component: CategoryItemsAdminComponent
   },
 ];
