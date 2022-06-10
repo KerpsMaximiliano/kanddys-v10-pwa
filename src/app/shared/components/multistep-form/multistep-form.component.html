@@ -47,7 +47,11 @@
           currentStepObject.pageHeader?.styles
             ? currentStepObject.pageHeader?.styles
             : null
-        ">
+        " (click)="
+            currentStepObject.pageHeader.callback ? 
+              currentStepObject.pageHeader.callback(stepFunctionParams) : 
+              null
+          ">
           {{currentStepObject.pageHeader.text}}
         </div>
       </ng-container>
@@ -326,6 +330,38 @@
                 {{ currentField.bottomLabel.text }}
               </span>
             </ng-container>
+          </div>
+
+          <!-- SELECT INPUTS GO HERE -->
+          <div *ngIf="currentField.inputType === 'select'" class="dropdown" [ngStyle]="
+            currentField.styles.containerStyles
+              ? currentField.styles.containerStyles
+              : null
+          ">
+            <label [for]="currentField.name" class="input-label" [ngStyle]="
+              currentField.styles.labelStyles
+                ? currentField.styles.labelStyles
+                : null
+            ">{{ currentField.label }}</label>
+
+            <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+              currentField.styles.subLabelStyles
+                ? currentField.styles.subLabelStyles
+                : null
+            ">
+              {{ currentField.sublabel }}
+            </label>
+
+            <select [formControlName]="currentField.name" class="input select" [ngStyle]="currentField.styles.fieldStyles
+                    ? currentField.styles.fieldStyles
+                    : null">
+              <option *ngFor="let option of currentField.selectionOptions" [value]="option">{{option}}
+              </option>
+            </select>
+            
+            <div class="arrow-icon">
+              <img src="{{ env }}/arrow-left.svg" alt="arrow down">
+            </div>
           </div>
 
           <!-- RADIO INPUTS GO HERE -->

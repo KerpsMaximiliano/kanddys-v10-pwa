@@ -10,6 +10,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { Merchant } from 'src/app/core/models/merchant';
 
 @Component({
   selector: 'app-new-item-display',
@@ -22,6 +23,8 @@ export class NewItemDisplayComponent implements OnInit {
   loggedIn: boolean = false;
   hasToken: boolean = false;
   isPreItem: boolean = false;
+  newMerchant: boolean = false;
+  defaultMerchant: Merchant = null;
 
   isOwner: boolean = true;
 
@@ -102,11 +105,11 @@ export class NewItemDisplayComponent implements OnInit {
 
                   const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
 
-                  const result = await this.saleflowSarvice.addItemToSaleFlow({
+                  await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
 
-                  this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                  this.newMerchant = true;
                 }
               } else {
                 const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
@@ -131,27 +134,26 @@ export class NewItemDisplayComponent implements OnInit {
                     await this.saleflowSarvice.addItemToSaleFlow({
                       item: params.itemId
                     }, defaultSaleflow._id);
-
-                    this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-
+                    this.newMerchant = true;
                   } else {
                     const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
 
                     await this.saleflowSarvice.addItemToSaleFlow({
                       item: params.itemId
                     }, defaultSaleflow._id);
-
-                    this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                    this.newMerchant = true;
                   }
                 } else {
                   await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
 
-                  this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                  this.newMerchant = true;
                 }
               }
             } else {
+              this.defaultMerchant = defaultMerchant;
+
               if (this.isPreItem)
                 await this.itemService.authItem(defaultMerchant._id, params.itemId);
 
@@ -184,6 +186,10 @@ export class NewItemDisplayComponent implements OnInit {
               // const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);        
             }
           }
+        } else {
+          const defaultMerchant = await this.merchantService.merchantDefault();
+
+          if (defaultMerchant) this.defaultMerchant = defaultMerchant;
         }
 
         // if (params.itemId && !magicLinkToken) {
@@ -214,6 +220,15 @@ export class NewItemDisplayComponent implements OnInit {
 
   goToAuth() {
     this.router.navigate([`/ecommerce/new-item-contact-info/${this.item._id}`]);
+  }
+
+  goToMerchantStore() {
+    if (this.defaultMerchant)
+      this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+  }
+
+  goToBanksForm() {
+    this.router.navigate([`/ecommerce/bank-registration`]);
   }
 
   openImageModal(imageSourceURL: string) {

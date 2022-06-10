@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-item-contact-info',
@@ -98,6 +98,9 @@ export class NewItemContactInfoComponent implements OnInit {
           }
         }
       },
+      customScrollToStepBackwards: (params) => {
+        this.router.navigate([`ecommerce/item-display/${this.itemId}`])
+      },
       headerText: "INFORMACIÓN NECESARIA",
       stepButtonValidText: "RECIBE UN LINK PARA CONFIRMAR LOS ACCESOS",
       stepButtonInvalidText: "ESCRIBE LOS CONTACTOS CON ACCESO DE ADMIN",
@@ -112,6 +115,7 @@ export class NewItemContactInfoComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
+    private router: Router
   ) {
     this.route.params.subscribe(async (params) => {
       if (params.itemId) {
