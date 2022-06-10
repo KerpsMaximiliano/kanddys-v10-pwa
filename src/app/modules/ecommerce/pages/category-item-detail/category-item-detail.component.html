@@ -1,0 +1,38 @@
+<div class="container">
+
+    <app-helper-headerv2
+    [mode]="'edit'"
+    [edit]="false"
+    [navtext]="'Categorias DE PRODUCTOID'"
+    [icon]="'/expand-categories.svg'"
+    [color]="'#E9E371'"
+    ></app-helper-headerv2>
+
+    <div class="img-area">
+        <img [src]="imgUrl" alt="Imagen del producto a vender" class="img">
+    </div>  
+
+    <div class="categories">
+        <app-tags-square
+        *ngFor="let item of categoryList"
+        [reverse]="true"
+        [tagText]="'CategoriaId'"
+        [position]="'left'"
+        [number]="'44 ventas'"
+        [color]="'#2874AD'"
+        [textColor]="'#2874AD'"
+        ></app-tags-square>
+    </div>
+
+    <app-bubble-button
+    [text]="''"
+    [text2]="'NEW ITEM'"
+    [icon2]="'/expand-categories.svg'"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [size]="'small'"
+    [text]="'MIRA LAS CATEGORIAS DEL ITEM'"
+    ></app-sticky-button>
+</div>

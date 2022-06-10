@@ -52,6 +52,7 @@ import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.co
 import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
+import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 
 const routes: Routes = [
   {
@@ -289,6 +290,10 @@ const routes: Routes = [
     path: 'category-items-admin',
     component: CategoryItemsAdminComponent
   },
+  {
+    path: 'category-item-detail',
+    component: CategoryItemDetailComponent
+  }
 ];
 
 @NgModule({
@@ -345,6 +350,7 @@ const routes: Routes = [
     MallGiftsComponent,
     MallStoresComponent,
     CategoryItemsAdminComponent,
+    CategoryItemDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
