@@ -15,6 +15,7 @@ export class TagsSquareComponent implements OnInit {
   @Input() textColor: string = '#7B7B7B';
   @Input() bColor: string;
   @Input() position: 'center' | 'left'| 'right' = 'center';
+  @Input() reverse: boolean= false;
   imageFolder: string;
     
   constructor() { 
