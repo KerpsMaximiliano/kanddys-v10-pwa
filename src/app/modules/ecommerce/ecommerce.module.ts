@@ -278,7 +278,7 @@ const routes: Routes = [
     component: BankRegistrationComponent
   },
   {
-    path: 'new-item-contact-info',
+    path: 'new-item-contact-info/:itemId',
     component: NewItemContactInfoComponent
   },
   {

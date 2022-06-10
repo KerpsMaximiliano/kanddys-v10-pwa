@@ -10,7 +10,7 @@
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    padding: 6px 9px;
+    padding: 18px 23px 10px;
     box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 16%);
     cursor: pointer;
 }
@@ -38,4 +38,9 @@
     font-family: 'RobotoMedium';
     font-size: 19px;
     margin-bottom: 1px !important;
+}
+
+.revert{
+    margin: 0;
+    margin-bottom: 12px !important;
 }

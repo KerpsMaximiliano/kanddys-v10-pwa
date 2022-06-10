@@ -158,6 +158,18 @@ export const item = gql`
   }
 `;
 
+export const authItem = gql`
+  mutation authItem($merchantId: ObjectID!, $id: ObjectID!) {
+    authItem(merchantId: $merchantId, id: $id) {
+      _id
+      merchant {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 export const itemPackageByMerchant = gql`
   query itemPackageByMerchant($merchant: ObjectID!) {
     itemPackageByMerchant(merchant: $merchant) {

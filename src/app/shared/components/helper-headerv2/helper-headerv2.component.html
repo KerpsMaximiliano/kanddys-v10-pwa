@@ -49,12 +49,12 @@
         <ng-container *ngIf=" mode == 'options'">
             <div class="options">
                 <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
-                        [style.color]="'#FFFFFF'"></i></a>
+                        [style.color]="color"></i></a>
                 <div class="wrapper">
-                    <span class="bold-text" *ngIf="itemId" [style.margin-left]="'6%'">{{itemId}}</span>
-                    <span class="bill bold-text">{{billId}}</span>
-                    <span class="bold-text">{{leftText}}</span>
-                    <span class="bold-text">{{rightText}}</span>
+                    <span class="bold-text" *ngIf="itemId" [style.margin-left]="'6%'" >{{itemId}}</span>
+                    <span class="bill bold-text" >{{billId}}</span>
+                    <span class="bold-text" >{{leftText}}</span>
+                    <span class="bold-text" >{{rightText}}</span>
                 </div>
             </div>
         </ng-container>
@@ -73,5 +73,19 @@
                 </div>
             </div>
         </ng-container>
+
+        <ng-container *ngIf="mode == 'edit'" >
+            <div class="edit" >
+                <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
+                    [style.color]="color"></i>
+                </a>
+                <div class="itf">
+                    <img [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" [ngStyle]="{'filter': filter}">
+                    <h1 class="bold-text" [style.color]="color">{{navtext}}</h1>
+                </div>
+                <button class="edit-button">EDIT</button>
+            </div>
+        </ng-container>
+
     </div>
 </div>

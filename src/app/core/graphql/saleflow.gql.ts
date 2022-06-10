@@ -78,6 +78,19 @@ export const saleflowDefault = gql`
   }
 `;
 
+export const setDefaultSaleflow = gql`
+  mutation saleflowSetDefault($merchantId: ObjectID!, $id: ObjectID!) {
+    saleflowSetDefault(merchantId: $merchantId, id: $id) {
+      _id
+      name
+      merchant {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 export const hotSaleflow = gql`
   query saleflow($id: ObjectID!) {
     saleflow(id: $id) {
