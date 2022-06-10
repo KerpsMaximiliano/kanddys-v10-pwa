@@ -13,6 +13,7 @@ export class TagsSquareComponent implements OnInit {
   @Input() tagText: string;
   @Input() color: string = '#40772F';
   @Input() textColor: string = '#7B7B7B';
+  @Input() bColor: string;
   @Input() position: 'center' | 'left'| 'right' = 'center';
   imageFolder: string;
     
