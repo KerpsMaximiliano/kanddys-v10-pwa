@@ -159,13 +159,13 @@ export class CategoryItemsComponent implements OnInit {
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
       items = await this.item.itemsByCategory(
-        this.saleflowData._id,
+        params.categoryId,
         {
           options: {
             limit: 100,
           },
         },
-        params.categoryId
+        this.saleflowData._id
       );
       const bestSellersIds = await this.item.bestSellersByMerchant(
         15,

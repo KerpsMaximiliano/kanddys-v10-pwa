@@ -102,23 +102,6 @@ export const createExchangeData = gql`
   mutation createExchangeData($input: ExchangeDataInput!) {
     ExchangeData: createExchangeData(input: $input) {
       _id
-      bank {
-        paymentReceiver {
-          name
-          image
-        }
-        isActive
-        account
-        routingNumber
-      }
-      electronicPayment {
-        paymentReceiver {
-          name
-          image
-        }
-        isActive
-        email
-      }
     }
   }
 `;

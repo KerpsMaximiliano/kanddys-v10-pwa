@@ -231,6 +231,7 @@ export class ShipmentDataFormComponent implements OnInit {
               fontSize: '17px',
               fontStyle: 'italic',
               cursor: 'pointer',
+              marginBottom: '33px'
             },
             labelStyles: {
               marginTop: '34px',

@@ -70,6 +70,7 @@ export const itemsByMerchant = gql`
       }
       featuredImage
       pricing
+      status
     }
   }
 `;
@@ -152,6 +153,18 @@ export const item = gql`
           _id
           phone
         }
+      }
+    }
+  }
+`;
+
+export const authItem = gql`
+  mutation authItem($merchantId: ObjectID!, $id: ObjectID!) {
+    authItem(merchantId: $merchantId, id: $id) {
+      _id
+      merchant {
+        _id
+        name
       }
     }
   }

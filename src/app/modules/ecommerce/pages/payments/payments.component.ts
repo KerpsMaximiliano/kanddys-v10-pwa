@@ -320,15 +320,15 @@ export class PaymentsComponent implements OnInit {
     );
     const validPhone = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
 
-    if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
-      const executedSuccessfully = await this.authService.generateMagicLink(
-        '1' + this.inputData
-      );
+    // if (validEmail.test(this.inputData) || validPhone.test(this.inputData)) {
+    //   const executedSuccessfully = await this.authService.generateMagicLink(
+    //     '1' + this.inputData
+    //   );
 
-      if (executedSuccessfully) {
-        console.log('Email o whatsapp enviado correctamente');
-      }
-    }
+    //   if (executedSuccessfully) {
+    //     console.log('Email o whatsapp enviado correctamente');
+    //   }
+    // }
   }
 
   createOrSkipOrder() {

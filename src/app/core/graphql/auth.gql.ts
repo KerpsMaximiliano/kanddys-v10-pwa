@@ -50,8 +50,18 @@ export const refresh = gql`
 `;
 
 export const generateMagicLink = gql`
-  mutation generateMagicLink($emailOrPhone: String!) {
-    generateMagicLink(emailOrPhone: $emailOrPhone)
+  mutation generateMagicLink(
+    $phoneNumber: String!,
+    $redirectionRoute: String!,
+    $redirectionRouteId: String!,
+    $entity: String!    
+  ) {
+    generateMagicLink(
+      phoneNumber: $phoneNumber, 
+      redirectionRoute: $redirectionRoute, 
+      redirectionRouteId: $redirectionRouteId, 
+      entity: $entity
+    )
   }
 `;
 
@@ -60,6 +70,7 @@ export const analizeMagicLink = gql`
     analizeMagicLink(token: $token) {
       _id
       user {
+        _id
         email
         phone
       }

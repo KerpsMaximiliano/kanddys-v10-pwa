@@ -10,7 +10,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 })
 export class SaleflowItemComponent implements OnInit {
   @Input() price: number;
-  @Input() quantity: string;
+  @Input() quantity: number;
   @Input() priceAlign: string = 'center';
   @Input() shaded: boolean = false;
   @Input() borderRadius: boolean = true;

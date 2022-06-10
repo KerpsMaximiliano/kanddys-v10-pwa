@@ -35,8 +35,8 @@ export class ItemCreatorComponent implements OnInit {
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
-  hasToken: boolean = false;
-  shouldScrollBackwards: boolean = true;
+  user: any;
+  shouldScrollBackwards: boolean = false;
   files: File[] = [];
 
   footerConfig: FooterOptions = {
@@ -69,6 +69,7 @@ export class ItemCreatorComponent implements OnInit {
             this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
           } else {
             if (this.loggedIn) {
+              console.log(this.loggedUserDefaultMerchant);
               const { createItem } = await this.itemService.createItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -90,7 +91,9 @@ export class ItemCreatorComponent implements OnInit {
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
-                this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
+                this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
+
+                // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
             } else {
               const { createPreItem } = await this.itemService.createPreItem({
@@ -362,8 +365,10 @@ export class ItemCreatorComponent implements OnInit {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
+
+                if ('_id' in createItem) this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
               } else {
-                await this.itemService.createPreItem({
+                const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
                   pricing: Number(values['1'].price),
@@ -376,6 +381,8 @@ export class ItemCreatorComponent implements OnInit {
                   hasExtraPrice: false,
                   purchaseLocations: [],
                 });
+
+                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
               }
             }
           } catch (error) {
@@ -403,18 +410,21 @@ export class ItemCreatorComponent implements OnInit {
             {
               text: 'Nombre',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(3);
               }
             },
             {
               text: 'Descripción',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(2);
               }
             },
             {
               text: 'Lo incluido',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(1);
               }
             },
@@ -467,9 +477,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -509,9 +521,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -548,9 +562,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -630,9 +646,11 @@ export class ItemCreatorComponent implements OnInit {
         }
       },
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -664,9 +682,8 @@ export class ItemCreatorComponent implements OnInit {
       this.currentItemId = itemId;
 
       if (localStorage.getItem('session-token')) {
-        this.hasToken = true;
-
-        this.loggedIn = true;
+        const data = await this.authService.me()
+        if (data) this.loggedIn = true;
       }
 
       if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
@@ -715,48 +732,44 @@ export class ItemCreatorComponent implements OnInit {
         this.headerService.removeTempNewItem();
       }
 
-      if (itemId && this.hasToken) {
+      if (itemId && this.loggedIn) {
         lockUI();
 
-        const myUser = await this.authService.me();
+        this.currentUserId = this.user._id;
 
-        if (myUser) {
-          this.currentUserId = myUser ? myUser._id : null;
+        const { pricing, images, content, description, merchant } =
+          await this.itemService.item(itemId);
 
-          const { pricing, images, content, description, merchant } =
-            await this.itemService.item(itemId);
+        if (this.currentUserId === merchant.owner._id) {
+          this.merchantOwnerId = merchant.owner._id;
 
-          if (this.currentUserId === merchant.owner._id) {
-            this.merchantOwnerId = merchant.owner._id;
+          this.formSteps[0].fieldsList[0].fieldControl.setValue(
+            String(pricing)
+          );
+          this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.defaultImages = images;
 
-            this.formSteps[0].fieldsList[0].fieldControl.setValue(
-              String(pricing)
-            );
-            this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
-            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-            this.defaultImages = images;
+          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
 
-            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-            this.formSteps[0].embeddedComponents[0].shouldRerender = true;
-
-            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
 
 
-            const formArray = this.formSteps[1].fieldsList[0]
-              .fieldControl as FormArray;
-            formArray.removeAt(0);
+          const formArray = this.formSteps[1].fieldsList[0]
+            .fieldControl as FormArray;
+          formArray.removeAt(0);
 
-            if (content)
-              content.forEach((item) => {
-                formArray.push(new FormControl(item));
-              });
-            else {
-              formArray.push(new FormControl(''));
-            }
-            unlockUI();
-          } else {
-            if (itemId) this.router.navigate(['/']);
+          if (content)
+            content.forEach((item) => {
+              formArray.push(new FormControl(item));
+            });
+          else {
+            formArray.push(new FormControl(''));
           }
+          unlockUI();
+        } else {
+          if (itemId) this.router.navigate(['/']);
         }
       } else {
         unlockUI();
@@ -772,7 +785,8 @@ export class ItemCreatorComponent implements OnInit {
   async verifyLoggedUserMerchant() {
     if (this.loggedIn) {
       const defaultMerchant = await this.merchantService.merchantDefault();
-      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant._id);
+      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+
 
       if (defaultMerchant && defaultSaleflow) {
         this.loggedUserDefaultMerchant = defaultMerchant;

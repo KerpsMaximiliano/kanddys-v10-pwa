@@ -77,7 +77,15 @@ export class OrderService {
     }
   }
 
-  async ordersTotal(status: string[], orders?: string[]): Promise<{ total: number, length: number }> {
+  async ordersTotal(status: 
+    (| 'cancelled'
+    | 'started'
+    | 'verifying'
+    | 'in progress'
+    | 'to confirm'
+    | 'completed'
+    | 'error'
+    | 'draft')[], orders?: string[]): Promise<{ total: number, length: number }> {
     try {
       const response = await this.graphql.query({
         query: ordersTotal,

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormStep } from 'src/app/core/types/multistep-form';
+import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
+
 @Component({
   selector: 'app-new-item-contact-info',
   templateUrl: './new-item-contact-info.component.html',
@@ -8,6 +11,41 @@ import { FormControl, Validators } from '@angular/forms';
 })
 export class NewItemContactInfoComponent implements OnInit {
   scrollableForm: boolean = false;
+  itemId: string;
+
+  footerConfig: FooterOptions = {
+    bubbleConfig: {
+      validStep: {
+        mode: 'double',
+        function: async (params) => {
+          console.log(params);
+
+          // this.headerService.storeNewItemTemporarily({
+          //   name: params.dataModel.value['4']['name'],
+          //   pricing: params.dataModel.value['1']['price'],
+          //   description: params.dataModel.value['3']['description'],
+          //   content: params.dataModel.value['2']['whatsIncluded'],
+          //   images: this.defaultImages.length > 1 ? this.defaultImages : null
+          // }, this.router.url);
+
+          // this.router.navigate(['/ecommerce/item-display']);
+        }
+      },
+      invalidStep: {
+        mode: 'single'
+      }
+    },
+    bgColor: '#2874AD',
+    enabledStyles: {
+      height: '49px',
+      fontSize: '17px',
+    },
+    disabledStyles: {
+      height: '30px',
+      fontSize: '17px',
+    },
+  }
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -45,14 +83,46 @@ export class NewItemContactInfoComponent implements OnInit {
           },
         }
       ],
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const phoneNumber = params.dataModel.get('1').value.phoneNumber.e164Number.split('+')[1];
+
+            await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem');
+
+            return { ok: true };
+          } catch (error) {
+            console.log(error);
+            return { ok: false };
+          }
+        }
+      },
+      customScrollToStepBackwards: (params) => {
+        this.router.navigate([`ecommerce/item-display/${this.itemId}`])
+      },
       headerText: "INFORMACIÓN NECESARIA",
       stepButtonValidText: "RECIBE UN LINK PARA CONFIRMAR LOS ACCESOS",
       stepButtonInvalidText: "ESCRIBE LOS CONTACTOS CON ACCESO DE ADMIN",
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      },
       avoidGoingToNextStep: true,
     }
-  ]
+  ];
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.route.params.subscribe(async (params) => {
+      if (params.itemId) {
+        this.itemId = params.itemId;
+      }
+    })
+  }
 
   ngOnInit(): void {
   }

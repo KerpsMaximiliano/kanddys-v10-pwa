@@ -78,6 +78,19 @@ export const saleflowDefault = gql`
   }
 `;
 
+export const setDefaultSaleflow = gql`
+  mutation saleflowSetDefault($merchantId: ObjectID!, $id: ObjectID!) {
+    saleflowSetDefault(merchantId: $merchantId, id: $id) {
+      _id
+      name
+      merchant {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 export const hotSaleflow = gql`
   query saleflow($id: ObjectID!) {
     saleflow(id: $id) {
@@ -134,6 +147,21 @@ export const addItemToSaleFlow = gql`
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const createSaleFlowModule = gql`
+  mutation createSaleFlowModule($input: SaleFlowModuleInput!) {
+    createSaleFlowModule(input: $input) {
+      _id
+    }
+  }
+`;
+export const updateSaleFlowModule = gql`
+  mutation updateSaleFlowModule($input: SaleFlowModuleInput!, $id: ObjectID!) {
+    updateSaleFlowModule(input: $input, id: $id) {
       _id
     }
   }

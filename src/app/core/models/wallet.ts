@@ -28,3 +28,23 @@ export class Bank extends Model<Bank> {
 
     name?: string;
 }
+
+export class ElectronicPaymentInput {
+    paymentReceiver: string;
+    isActive?: boolean;
+    email: string;
+}
+
+export class BankInput {
+    paymentReceiver: string;
+    typeAccount: string;
+    ownerAccount: string;
+    isActive: boolean;
+    account: string;
+    routingNumber: number;
+}
+
+export class ExchangeDataInput {
+    electronicPayment?: ElectronicPaymentInput[];
+    bank: BankInput[];
+}

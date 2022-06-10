@@ -95,3 +95,21 @@ export class PaginationInput {
   findBy?: any;
   filter?: any;
 }
+
+export class SaleflowModuleConfigInput {
+  calendar?: string;
+  post?: boolean;
+  deliveryLocation?: boolean;
+  pickUpLocations?: DeliveryLocationInput[];
+  moduleOrder?: number;
+  paymentModule?: string;
+}
+
+export class SaleFlowModuleInput {
+  saleflow?: string;
+  appointment?: SaleflowModuleConfigInput;
+  post?: SaleflowModuleConfigInput;
+  delivery?: SaleflowModuleConfigInput;
+  paymentMethod?: SaleflowModuleConfigInput;
+  isSkip?: boolean;
+}

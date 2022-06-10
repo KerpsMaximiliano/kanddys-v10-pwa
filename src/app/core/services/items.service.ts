@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   item,
+  authItem,
   items,
   itemCategoriesList,
   createItem,
@@ -30,7 +31,7 @@ import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper) { }
 
   async item(id: string): Promise<Item> {
     const result = await this.graphql.query({
@@ -38,7 +39,7 @@ export class ItemsService {
       variables: { id },
       fetchPolicy: 'no-cache',
     });
-    if(!result) return;
+    if (!result) return;
     return result.item;
   }
 
@@ -78,7 +79,17 @@ export class ItemsService {
     return response;
   }
 
-  async itemsByMerchant(id: string) {
+  async authItem(merchantId: string, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: authItem,
+      variables: { merchantId, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async itemsByMerchant(id: string): Promise<{ itemsByMerchant: Item[] }> {
     try {
       const response = await this.graphql.query({
         query: itemsByMerchant,
@@ -98,16 +109,17 @@ export class ItemsService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
-  async itemsByCategory(saleflowID: string, params: any, categoryID: string): Promise<Item[]> {
+  async itemsByCategory(categoryID: string, params?: PaginationInput, saleflowID?: string): Promise<Item[]> {
     try {
       const response = await this.graphql.query({
         query: itemsByCategory,
-        variables: { saleflowID, params, categoryID },
+        variables: { categoryID, params, saleflowID },
         fetchPolicy: 'no-cache',
       });
+      if(!response || response?.errors) return undefined;
       return response.itemsByCategory;
     } catch (e) {
       console.log(e);
@@ -178,7 +190,7 @@ export class ItemsService {
       console.log(e);
     }
   }
-  
+
   // Agregar categoria
   async createItemCategory(input: any) {
     const result = await this.graphql.mutate({
@@ -202,7 +214,7 @@ export class ItemsService {
     console.log(result);
     return result;
   }
-  
+
   async itemCategoryHeadlineByMerchant(merchant: string): Promise<ItemCategoryHeadline[]> {
     try {
       const response = await this.graphql.query({
