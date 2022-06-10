@@ -32,6 +32,7 @@ export class NewItemContactInfoComponent implements OnInit {
         }
       },
       invalidStep: {
+        dontShow: true,
         mode: 'single'
       }
     },

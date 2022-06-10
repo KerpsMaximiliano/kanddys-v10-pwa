@@ -126,6 +126,7 @@ export class ItemCreatorComponent implements OnInit {
         }
       },
       invalidStep: {
+        dontShow: true,
         mode: 'single'
       }
     },
