@@ -410,18 +410,21 @@ export class ItemCreatorComponent implements OnInit {
             {
               text: 'Nombre',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(3);
               }
             },
             {
               text: 'Descripción',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(2);
               }
             },
             {
               text: 'Lo incluido',
               action: (params) => {
+                this.shouldScrollBackwards = true;
                 params.scrollToStep(1);
               }
             },
@@ -474,9 +477,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -516,9 +521,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -555,9 +562,11 @@ export class ItemCreatorComponent implements OnInit {
         },
       ],
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -637,9 +646,11 @@ export class ItemCreatorComponent implements OnInit {
         }
       },
       customScrollToStep: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
+        this.shouldScrollBackwards = false;
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
