@@ -402,7 +402,8 @@ export class ItemCreatorComponent implements OnInit {
             },
             fieldStyles: {
               marginTop: '18px',
-              paddingLeft: '17px'
+              paddingLeft: '17px',
+              width: 'fit-content'
             },
             labelStyles: labelStyles
           },
