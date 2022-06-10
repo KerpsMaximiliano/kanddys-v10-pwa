@@ -1,8 +1,8 @@
 <div class="container">
     <div class="body" [ngStyle]="{'background-color': bColor? bColor : '#FFFFFF', 'flex-direction': reverse? 'column-reverse' : ''}">
         <div class="wrapper" [ngStyle]="{'justify-content': (position==='left')||(number)? 'flex-start' : (position ==='right'? 'flex-end':'center')}">
-            <p for="Number" class="number amount" *ngIf="number" [style.color]="color">{{number}}</p>
-            <p for="Number" class="number" *ngIf="gains" [style.color]="color">${{gains}}</p>
+            <p class="number amount" *ngIf="number" [style.color]="color">{{number}}</p>
+            <p class="number" *ngIf="gains" [style.color]="color">${{gains}}</p>
         </div>
         <p for="Text" class="text" 
         [ngStyle]="{'margin': (position === 'left')? '0': (position === 'right'? '0 0 0 auto' : '0 auto')}"
