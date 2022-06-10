@@ -5,8 +5,7 @@
 
 	<!-- Info que ve el admin (merchant) del producto -->
 	<ng-container *ngIf="isOwner">
-		<app-header-info-admin
-			[data]="[{
+		<app-header-info-admin [data]="[{
 				text: {
 					content: '$147,154 DOP total ingresado',
 					color: '#2874AD'
@@ -17,25 +16,23 @@
 					content: '1,457 ventas',
 					color: '#2874AD'
 				}
-			}]"
-		></app-header-info-admin>
+			}]"></app-header-info-admin>
 
 		<div class="category">
 			<div class="tab-area">
 				<div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
-					<img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: tapped}">
+					<img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px"
+						height="15px" class="icon" [ngClass]="{yellow: tapped}">
 					<p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
 				</div>
 			</div>
-			
+
 			<ng-container *ngIf="tapped">
 				<div class="tags-area" *ngIf="tagsData">
-					<app-tags-square
-					*ngFor="let item of tagsData; index as i"
-					></app-tags-square>
+					<app-tags-square *ngFor="let item of tagsData; index as i"></app-tags-square>
 				</div>
 			</ng-container>
-	 	</div>
+		</div>
 	</ng-container>
 
 	<!-- Fin de la info que ve el admin -->
@@ -90,5 +87,7 @@
 
 </div>
 <app-bubble-button [text]="'TIENDA'" [text2]="'VISTA'" [solo]="false"></app-bubble-button>
-<app-sticky-button [bgColor]="'#2874AD'" [text]="'Empieza a Venderlo'" mode="fixed"
-	(click)="!loggedIn ? goToAuth() : canCreateBank && goToBankCreation()"></app-sticky-button>
+<app-sticky-button [bgColor]="'#2874AD'" [text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
+	mode="fixed"
+	(click)="!loggedIn && !newMerchant? goToAuth() : (newMerchant && canCreateBank) ? goToBanksForm() : loggedIn && defaultMerchant ? goToMerchantStore() : null">
+</app-sticky-button>

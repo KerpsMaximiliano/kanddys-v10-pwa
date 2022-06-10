@@ -74,6 +74,7 @@ export type AsyncFunction = PromiseFunction | ObservableFunction;
 interface PageHeader {
   text: string;
   styles?: Record<string, string>;
+  callback?: (...params) => any;
 }
 
 export interface FooterOptions {

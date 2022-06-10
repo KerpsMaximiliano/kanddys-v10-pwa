@@ -8,7 +8,10 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
-import { FormStep } from 'src/app/core/types/multistep-form';
+import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
+import { Merchant } from 'src/app/core/models/merchant';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 const labelStyles = {
   fontFamily: "SfProLight",
@@ -35,6 +38,30 @@ const fieldContainerStyles = {
 })
 export class BankRegistrationComponent implements OnInit {
   scrollableForm: boolean = false;
+  defaultMerchant: Merchant = null;
+
+  footerConfig: FooterOptions = {
+    bubbleConfig: {
+      validStep: {
+        mode: 'single',
+        function: async (params) => {
+        }
+      },
+      invalidStep: {
+        mode: 'single'
+      }
+    },
+    bgColor: '#2874AD',
+    enabledStyles: {
+      height: '49px',
+      fontSize: '17px',
+    },
+    disabledStyles: {
+      height: '30px',
+      fontSize: '17px',
+    },
+  }
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -42,12 +69,57 @@ export class BankRegistrationComponent implements OnInit {
           name: 'bankName',
           fieldControl: new FormControl('', Validators.required),
           label: 'NOMBRE DEL BANCO',
+          inputType: 'select',
+          selectionOptions: ["banco 1", "banco 2"],
           placeholder: '',
           styles: {
-            labelStyles,
+            labelStyles: {
+              ...labelStyles,
+              marginTop: '33px'
+            },
             fieldStyles,
+            topLabelActionStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '37px',
+              marginBottom: '47px',
+            },
             containerStyles: fieldContainerStyles
-          }
+          },
+          topLabelAction: {
+            text: '¿En cuál Banco Dominicano te harán la transferencia de los pagos?',
+            clickable: true,
+          },
+        },
+        {
+          name: 'accountType',
+          fieldControl: new FormControl('', Validators.required),
+          label: 'TIPO DE CUENTA',
+          inputType: 'select',
+          selectionOptions: ["corriente", "ahorro"],
+          placeholder: '',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginTop: '33px'
+            },
+            fieldStyles,
+            topLabelActionStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '37px',
+              marginBottom: '47px',
+            },
+            containerStyles: fieldContainerStyles
+          },
+          topLabelAction: {
+            text: '¿En cuál Banco Dominicano te harán la transferencia de los pagos?',
+            clickable: true,
+          },
         },
         {
           name: 'accountNumber',
@@ -104,20 +176,31 @@ export class BankRegistrationComponent implements OnInit {
           ]
         },
       ],
-      headerText: "INFORMACIÓN NECESARIA",
+      headerText: "",
       pageHeader: {
-        text: "¿En cuál Banco Dominicano te harán la transferencia de los pagos?",
+        text: "Ingresaré los datos bancarios después",
         styles: {
+          color: '#27A2FF',
           fontFamily: 'Roboto',
-          fontWeight: 'bold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '48px',
-        }
+          fontSize: '17px',
+          cursor: 'pointer',
+          marginTop: '31px'
+        },
+        callback: async (params) => {
+          this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+        },
       },
       stepButtonValidText: "SALVA ESTA CUENTA PARA RECIBIR LOS PAGOS",
       stepButtonInvalidText: "LLENA LOS CAMPOS PARA CONTINUAR",
       avoidGoingToNextStep: true,
+      customScrollToStepBackwards: (params) => {
+        this.location.back();
+      },
+      justExecuteCustomScrollToStep: true,
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      },
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
@@ -159,10 +242,14 @@ export class BankRegistrationComponent implements OnInit {
     private saleflowService: SaleFlowService,
     private merchantsService: MerchantsService,
     private route: ActivatedRoute,
+    private location: Location,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
+      this.defaultMerchant = await this.merchantsService.merchantDefault();
+      if (!this.defaultMerchant) this.router.navigate(["/"]);
       this.saleflow = (await this.saleflowService.saleflow(params.saleflowId))?.saleflow;
       if(!this.saleflow) throw new Error('No se encontró un saleflow');
       this.user = await this.authService.me();
