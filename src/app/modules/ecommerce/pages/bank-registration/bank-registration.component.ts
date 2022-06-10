@@ -39,6 +39,10 @@ const fieldContainerStyles = {
 export class BankRegistrationComponent implements OnInit {
   scrollableForm: boolean = false;
   defaultMerchant: Merchant = null;
+  user: User;
+  exchangeData: ExchangeData;
+  paymentReceivers: PaymentReceiver[];
+  saleflow: SaleFlow;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -70,7 +74,7 @@ export class BankRegistrationComponent implements OnInit {
           fieldControl: new FormControl('', Validators.required),
           label: 'NOMBRE DEL BANCO',
           inputType: 'select',
-          selectionOptions: ["banco 1", "banco 2"],
+          selectionOptions: [],
           placeholder: '',
           styles: {
             labelStyles: {
@@ -196,7 +200,6 @@ export class BankRegistrationComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         this.location.back();
       },
-      justExecuteCustomScrollToStep: true,
       headerMode: 'v2',
       footerConfig: {
         ...this.footerConfig,
@@ -204,20 +207,27 @@ export class BankRegistrationComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
-          const { accountNumber, bankName, owner, socialID } = params.dataModel.value['1'];
+          const { 
+            accountNumber,
+            accountType,
+            bankName,
+            owner,
+            socialID
+          } = params.dataModel.value['1'];
           if(
             !accountNumber ||
+            !accountType ||
             !bankName ||
             !owner ||
             !socialID
           ) return;
           const exchangeDataResult = await this.walletService.createExchangeData({
             bank: [{
-              paymentReceiver: this.paymentReceivers[0]._id,
+              paymentReceiver: this.paymentReceivers.find((receiver) => receiver.name ===  bankName)._id,
               account: accountNumber, 
               ownerAccount: owner,
               routingNumber: parseInt(socialID),
-              typeAccount: 'asd',
+              typeAccount: accountType,
               isActive: true
             }],
           });
@@ -230,11 +240,6 @@ export class BankRegistrationComponent implements OnInit {
       },
     }
   ];
-
-  user: User;
-  exchangeData: ExchangeData;
-  paymentReceivers: PaymentReceiver[];
-  saleflow: SaleFlow;
 
   constructor(
     private walletService: WalletService,
@@ -261,6 +266,7 @@ export class BankRegistrationComponent implements OnInit {
       this.exchangeData = await this.walletService.exchangeDataByUser(this.user._id);
       if(this.exchangeData) throw new Error('Ya tienes exchange data, no puedes crear uno nuevo');
       this.paymentReceivers = await this.walletService.paymentReceivers({});
+      this.formSteps[0].fieldsList[0].selectionOptions = this.paymentReceivers.map((receiver) => receiver.name);
     })
     
   }
