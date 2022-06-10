@@ -36,7 +36,7 @@ export class ItemCreatorComponent implements OnInit {
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
   user: any;
-  shouldScrollBackwards: boolean = true;
+  shouldScrollBackwards: boolean = false;
   files: File[] = [];
 
   footerConfig: FooterOptions = {
