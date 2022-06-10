@@ -80,10 +80,12 @@ interface PageHeader {
 export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
+      dontShow?: boolean;
       mode: 'single' | 'double' | 'triple';
       function(...params): Promise<any> | any;
     },
     invalidStep: {
+      dontShow?: boolean;
       mode: 'single' | 'double' | 'triple';
     }
   },
