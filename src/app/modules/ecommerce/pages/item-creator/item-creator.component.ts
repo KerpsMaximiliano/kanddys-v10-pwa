@@ -91,7 +91,9 @@ export class ItemCreatorComponent implements OnInit {
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
-                this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
+                this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
+
+                // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
             } else {
               const { createPreItem } = await this.itemService.createPreItem({

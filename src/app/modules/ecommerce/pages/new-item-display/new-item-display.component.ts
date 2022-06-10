@@ -25,7 +25,7 @@ export class NewItemDisplayComponent implements OnInit {
 
   isOwner: boolean = true;
 
-  tagsData: Array<any> = [ '', '', '', ''];
+  tagsData: Array<any> = ['', '', '', ''];
 
   tapped: boolean = false;
 
@@ -106,6 +106,7 @@ export class NewItemDisplayComponent implements OnInit {
                     item: params.itemId
                   }, defaultSaleflow._id);
 
+                  this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
                 }
               } else {
                 const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
@@ -131,17 +132,23 @@ export class NewItemDisplayComponent implements OnInit {
                       item: params.itemId
                     }, defaultSaleflow._id);
 
+                    this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+
                   } else {
                     const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
 
                     await this.saleflowSarvice.addItemToSaleFlow({
                       item: params.itemId
                     }, defaultSaleflow._id);
+
+                    this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
                   }
                 } else {
                   await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
+
+                  this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
                 }
               }
             } else {
@@ -160,14 +167,18 @@ export class NewItemDisplayComponent implements OnInit {
 
                 const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
 
-                const result = await this.saleflowSarvice.addItemToSaleFlow({
+                await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
+
+                this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
 
               } else {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
+
+                this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
               }
 
               // const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);        
@@ -226,7 +237,7 @@ export class NewItemDisplayComponent implements OnInit {
     }
   }
 
-  tapping(){
+  tapping() {
     this.tapped = !this.tapped;
   }
 
