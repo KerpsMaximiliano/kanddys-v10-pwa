@@ -4,7 +4,7 @@
 	</app-helper-headerv2>
 
 	<!-- Info que ve el admin (merchant) del producto -->
-	<app-header-info-admin
+	<!-- <app-header-info-admin
          [data]="[{
             text: {
 				content: '$147,154 DOP total ingresado',
@@ -34,16 +34,16 @@
 				></app-tags-square>
 			</div>
 		</ng-container>
-	 </div>
+	 </div> -->
 
 	<!-- Fin de la info que ve el admin -->
 
 	<div class="item-info" *ngIf="item">
-		<div *ngIf="item.description" class="description">
-			<h2 class="title-name" *ngIf="item.name">
+		<div class="description">
+			<h2 class="title-name" *ngIf="item.name && item.images.length">
 				{{item.name}}
 			</h2>
-			<p>{{item.description}}</p>
+			<p *ngIf="item.description">{{item.description}}</p>
 
 			<hr *ngIf="!item.images && (item.name || item.pricing)" class="divider">
 		</div>
@@ -54,7 +54,7 @@
 			</div>
 		</div>
 
-		<button *ngIf="item.images" class="itemImg" (click)="openImageModal(item.images[0])">
+		<button *ngIf="item.images.length" class="itemImg" (click)="openImageModal(item.images[0])">
 			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
 		</button>
 
