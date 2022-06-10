@@ -46,7 +46,7 @@
         </div>
         
         <ng-container *ngIf="showCategories">
-            <div class="tags-area" *ngIf="tagsData">
+            <div class="tags-area" *ngIf="categories && categories.length">
                 <app-tags-square
                     *ngFor="let item of categories; index as i"
                     [tagText]="item.name"
