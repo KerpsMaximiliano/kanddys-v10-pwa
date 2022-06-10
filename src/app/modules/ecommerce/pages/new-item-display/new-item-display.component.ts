@@ -8,6 +8,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 
 @Component({
@@ -21,6 +22,14 @@ export class NewItemDisplayComponent implements OnInit {
   loggedIn: boolean = false;
   hasToken: boolean = false;
   isPreItem: boolean = false;
+
+  isOwner: boolean = true;
+
+  tagsData: Array<any> = [ '', '', '', ''];
+
+  tapped: boolean = false;
+
+  env: string = environment.assetsUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -215,6 +224,10 @@ export class NewItemDisplayComponent implements OnInit {
     } else {
       this.location.back();
     }
+  }
+
+  tapping(){
+    this.tapped = !this.tapped;
   }
 
 }

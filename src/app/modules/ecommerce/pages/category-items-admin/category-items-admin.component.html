@@ -1,0 +1,57 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'center'"
+    [whatsapp]="false"
+    [shopcart]="false"
+    [navtext]="'Categoriaid'"
+    [color]="'#E9E371'"
+    ></app-helper-headerv2>
+
+    <app-header-info-admin
+    [data]="[{
+        icon: '/folder-details.svg',
+        text: 'Mis Compradores',
+        filter: 'no'
+    },
+    {
+        text:'RD$ 147,154.00 Total en Ventas'
+    },
+    {
+        icon: '/star.svg',
+        text: '144 En Colaboraciones'
+    }]"
+    [merchant]="true"
+    ></app-header-info-admin>
+
+    <div class="tab-area">
+        <div class="left">
+            <div class="item-tab">
+                <p class="text-tab">items</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="items-area" >
+        <app-saleflow-item
+        *ngFor="let items of saleflowList; index as i"
+        [imgURL]="items.image"
+        [price]="items.price"
+        [income]="items.income"
+        [quantity]="items.quantity"
+        [index2]="items.index2"
+        [showIcon]="true"
+        ></app-saleflow-item>
+    </div>
+     
+    <app-bubble-button
+    [text]="'&#60;'"
+    [text2]="'NEW ITEM'"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [text]="'TOCA DONDE PREFIERAS'"
+    [size]="'small'"
+    [bgColor]="'#AFAFAF'"
+    ></app-sticky-button>
+</div>

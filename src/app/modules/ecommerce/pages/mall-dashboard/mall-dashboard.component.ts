@@ -8,16 +8,24 @@ import { Component, OnInit } from '@angular/core';
 export class MallDashboardComponent implements OnInit {
   headerButtons = [
     {
-      text: "Compradores",
-      func: () => this.redirect(),
-
-    },
-    {
-      text: `$147,154.00 DOP Total vendido`,
+      text: {
+        content: "Compradores",
+        color: ''
+      },
       func: () => this.redirect(),
     },
     {
-      text: "144 En Colaboraciones",
+      text: {
+        content: `$147,154.00 DOP Total vendido`,
+        color: ''
+      },
+      func: () => this.redirect(),
+    },
+    {
+      text: {
+        content: "144 En Colaboraciones",
+        color: ''
+      },
       func: () => this.redirect(),
     },
   ];

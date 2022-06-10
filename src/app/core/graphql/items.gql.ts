@@ -70,6 +70,7 @@ export const itemsByMerchant = gql`
       }
       featuredImage
       pricing
+      status
     }
   }
 `;

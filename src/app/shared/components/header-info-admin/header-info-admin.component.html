@@ -20,23 +20,25 @@
 				<button *ngIf="element.func" (click)="element.func()">
 					<img
 						*ngIf="element.icon"
+                        [ngStyle]="{'filter': (element.filter === 'no')? 'none': ''}"
 						[src]="env + element.icon"
 						alt="Haz click aqui para mas"
 						class="icon"
 					>
-					<p class="text">
-						{{element.text}}
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
 					</p>
 				</button>
 				<ng-container *ngIf="!element.func">
 					<img
 						*ngIf="element.icon"
+                        [ngStyle]="{'filter': element.filter === 'no'? 'none': ''}"
 						[src]="env + element.icon"
 						alt="Haz click aqui para mas"
 						class="icon"
 					>
-					<p class="text">
-						{{element.text}}
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
 					</p>
 				</ng-container>
 			</div>

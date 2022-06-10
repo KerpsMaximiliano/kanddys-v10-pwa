@@ -89,7 +89,7 @@ export class ItemsService {
     return result;
   }
 
-  async itemsByMerchant(id: string) {
+  async itemsByMerchant(id: string): Promise<{ itemsByMerchant: Item[] }> {
     try {
       const response = await this.graphql.query({
         query: itemsByMerchant,
