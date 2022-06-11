@@ -88,7 +88,13 @@ export class NewItemDisplayComponent implements OnInit {
           if (session.token && session.user.phone && mode === 'new-item') {
             localStorage.setItem('session-token', session.token);
 
-            const defaultMerchant = await this.merchantService.merchantDefault();
+            let defaultMerchant = null;
+
+            try {
+              defaultMerchant = await this.merchantService.merchantDefault();
+            } catch (error) {
+              console.log(error);
+            }
 
             if (!defaultMerchant) {
               const merchants = await this.merchantService.myMerchants();
@@ -166,7 +172,7 @@ export class NewItemDisplayComponent implements OnInit {
                   }
                 } else {
                   this.saleflow = defaultSaleflow;
-                  
+
                   await this.saleflowSarvice.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
@@ -176,7 +182,7 @@ export class NewItemDisplayComponent implements OnInit {
               }
             } else {
               this.defaultMerchant = defaultMerchant;
-              if(this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
+              if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
 
               if (this.isPreItem)
                 await this.itemService.authItem(defaultMerchant._id, params.itemId);
@@ -218,7 +224,7 @@ export class NewItemDisplayComponent implements OnInit {
           const defaultMerchant = await this.merchantService.merchantDefault();
 
           if (defaultMerchant) this.defaultMerchant = defaultMerchant;
-          if(this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
+          if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
         }
 
         // if (params.itemId && !magicLinkToken) {
