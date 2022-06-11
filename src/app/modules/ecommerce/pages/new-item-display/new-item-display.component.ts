@@ -27,9 +27,10 @@ export class NewItemDisplayComponent implements OnInit {
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
+  isClientView: boolean = false;
   defaultMerchant: Merchant = null;
 
-  isOwner: boolean = true;
+  isOwner: boolean = false;
 
   tagsData: Array<any> = ['', '', '', ''];
 
@@ -285,6 +286,10 @@ export class NewItemDisplayComponent implements OnInit {
 
   tapping() {
     this.tapped = !this.tapped;
+  }
+
+  toggleView() {
+    this.isClientView = !this.isClientView;
   }
 
 }
