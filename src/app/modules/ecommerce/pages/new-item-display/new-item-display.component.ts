@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Item, ItemPackage } from 'src/app/core/models/item';
+import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -34,8 +34,8 @@ export class NewItemDisplayComponent implements OnInit {
 
   tagsData: Array<any> = ['', '', '', ''];
 
+  categories: ItemCategory[] = [];
   tapped: boolean = false;
-
   env: string = environment.assetsUrl;
   user: User;
   canCreateBank: boolean;
@@ -62,11 +62,12 @@ export class NewItemDisplayComponent implements OnInit {
 
         if (params.itemId) {
           this.item = await this.itemsService.item(params.itemId);
+          if (!this.item) return this.redirect();
           if (this.item && !this.item.merchant) this.isPreItem = true;
 
           this.shouldRedirectToPreviousPage = true;
 
-          if (!this.item) return this.redirect();
+          this.categories = this.item.category;
 
           if (localStorage.getItem('session-token')) {
             this.hasToken = true;
@@ -175,6 +176,7 @@ export class NewItemDisplayComponent implements OnInit {
               }
             } else {
               this.defaultMerchant = defaultMerchant;
+              if(this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
 
               if (this.isPreItem)
                 await this.itemService.authItem(defaultMerchant._id, params.itemId);
@@ -216,6 +218,7 @@ export class NewItemDisplayComponent implements OnInit {
           const defaultMerchant = await this.merchantService.merchantDefault();
 
           if (defaultMerchant) this.defaultMerchant = defaultMerchant;
+          if(this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
         }
 
         // if (params.itemId && !magicLinkToken) {

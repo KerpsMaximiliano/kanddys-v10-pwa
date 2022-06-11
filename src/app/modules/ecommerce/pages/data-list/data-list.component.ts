@@ -18,6 +18,10 @@ export class DataListComponent implements OnInit {
   merchantId: string;
   orderId: string;
   viewtype: 'merchant' | 'user';
+  categories: boolean = true;
+  categoriesList: string[];
+  filteredCategories: string[];
+  matches: string[];
 
   constructor(
     private tagsService: TagsService,

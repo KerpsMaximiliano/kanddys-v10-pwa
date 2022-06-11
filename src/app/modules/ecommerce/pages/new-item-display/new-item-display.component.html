@@ -21,15 +21,27 @@
 		<div class="category">
 			<div class="tab-area">
 				<div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
-					<img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px"
-						height="15px" class="icon" [ngClass]="{yellow: tapped}">
+					<img
+						[src]="env + '/expand-categories.svg'"
+						alt="Lista para expandir categorías"
+						width="18px"
+						height="15px"
+						class="icon"
+					>
 					<p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
 				</div>
 			</div>
 
 			<ng-container *ngIf="tapped">
-				<div class="tags-area" *ngIf="tagsData">
-					<app-tags-square *ngFor="let item of tagsData; index as i"></app-tags-square>
+				<div class="tags-area" *ngIf="categories">
+					<app-tags-square *ngFor="let item of categories; index as i"
+						[tagText]="item.name"
+						gains="44 Ventas"
+						[reverse]="true"
+						color="#2874AD"
+						textColor="#2874AD"
+						position="left"
+					></app-tags-square>
 				</div>
 			</ng-container>
 		</div>

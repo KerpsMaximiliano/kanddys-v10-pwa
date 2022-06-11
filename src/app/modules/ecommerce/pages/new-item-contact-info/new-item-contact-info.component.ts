@@ -32,6 +32,7 @@ export class NewItemContactInfoComponent implements OnInit {
         }
       },
       invalidStep: {
+        dontShow: true,
         mode: 'single'
       }
     },
@@ -101,7 +102,7 @@ export class NewItemContactInfoComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         this.router.navigate([`ecommerce/item-display/${this.itemId}`])
       },
-      headerText: "INFORMACIÓN NECESARIA",
+      headerText: "",
       stepButtonValidText: "RECIBE UN LINK PARA CONFIRMAR LOS ACCESOS",
       stepButtonInvalidText: "ESCRIBE LOS CONTACTOS CON ACCESO DE ADMIN",
       headerMode: 'v2',
