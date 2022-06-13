@@ -9,19 +9,24 @@ import { environment } from 'src/environments/environment';
 export class BubbleButtonComponent implements OnInit {
 
   //Inputs
-  @Input() mode: 'single' | 'double' | 'triple';
+  @Input() mode: 'single' | 'double' | 'triple' = 'double';
   @Input() color: 'yellow' | 'blue' = 'yellow';
-  @Input() marginBottom: string = '20px';
   @Input() icon: string;
   @Input() icon2: string;
   @Input() icon3: string;
   @Input() miniIcon: string;
+  @Input() miniIcon2: string;
   @Input() text: string;
   @Input() text2: string;
   @Input() text3: string;
   @Input() bubblesMarginBottom: number = 20;
   @Input() solo: boolean = true;
+  @Input() left: boolean = true;
+  @Input() right: boolean = true;
   @Input() mini: boolean;
+  @Input() minir: boolean;
+  @Input() minis: boolean;
+  @Input() big: boolean;
   @Input() return: boolean = false;
 
   //EventEmitters
