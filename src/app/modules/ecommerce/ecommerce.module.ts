@@ -54,6 +54,7 @@ import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-sto
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
+import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 
 const routes: Routes = [
   {
@@ -298,7 +299,11 @@ const routes: Routes = [
   {
     path: 'sale-detail',
     component: SaleDetailComponent
-  }
+  },
+  {
+    path: 'item-sales-detail',
+    component: ItemSalesDetailComponent
+  },
 ];
 
 @NgModule({
@@ -357,6 +362,7 @@ const routes: Routes = [
     CategoryItemsAdminComponent,
     CategoryItemDetailComponent,
     SaleDetailComponent,
+    ItemSalesDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
