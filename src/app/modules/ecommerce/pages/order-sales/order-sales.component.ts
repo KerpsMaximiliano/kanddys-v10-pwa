@@ -21,10 +21,8 @@ import { ItemList } from 'src/app/shared/components/item-list/item-list.componen
   styleUrls: ['./order-sales.component.scss']
 })
 export class OrderSalesComponent implements OnInit {
-
-  imageFolder: string;
-  fields: Array<string> = ["CUSTOM FIELD 1", "CUSTOM FIELD 2", "CUSTOM FIELD 3"];
-  tabsOptions = ['Compradores','Items'];
+  env: string = environment.assetsUrl;
+  tabsOptions = ['Todos','Etiqueta ID'];
   testTags: Array<any> = [' ', ' ', ' ', ' ', ' '];
   inSearch: boolean = false;
   isLogged: boolean = true;
@@ -40,7 +38,8 @@ export class OrderSalesComponent implements OnInit {
   auxNumbers: any= [''];
   totalIncome: string = '147,154.00';
   totalSales: string = '154';
-  showTags: boolean = false;  
+  showTags: boolean = false;
+  active: boolean = true;
 
   options: Array<any> = [
     {label: "Sales", selected: true},
@@ -48,7 +47,44 @@ export class OrderSalesComponent implements OnInit {
   ] //Parte de un componente comentado 1/4/2022
   selectedOption: number = 0
 
-  orders: Array<ItemList> = [];
+  orders: Array<ItemList> = [
+  {
+    visible: true,
+    id: 'adsadasdasdsa',
+    image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+    title: '$9000',
+    subtitle: 'Custom Field',
+    text_left: 'Hace 2 dias' ,
+    text_right: '4 etiqueta(s)',
+    text_style: true,
+    phone: '534534534534675',
+    add_tag: true,
+  },
+  {
+    visible: true,
+    id: 'adsadasdasdsa',
+    image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+    title: '$9000',
+    subtitle: 'Custom Field',
+    text_left: 'Hace 2 dias' ,
+    text_right: '4 etiqueta(s)',
+    text_style: true,
+    phone: '534534534534675',
+    add_tag: true,
+  },
+  {
+    visible: true,
+    id: 'adsadasdasdsa',
+    image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+    title: '$9000',
+    subtitle: 'Custom Field',
+    text_left: 'Hace 2 dias' ,
+    text_right: '4 etiqueta(s)',
+    text_style: true,
+    phone: '534534534534675',
+    add_tag: true,
+  },
+];
 
   ordersTags: any = [];
 
@@ -63,8 +99,6 @@ export class OrderSalesComponent implements OnInit {
     private headerSevice: HeaderService,
     private authService: AuthService,
     private app: AppService,) {
-        
-    this.imageFolder = environment.assetsUrl;
   }
   
   ngOnInit(): void {
