@@ -6,7 +6,7 @@
                 <div class="left-area">
                     <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
                             [style.color]="color ? color : '#FFFFFF'"></i></a>
-                    <ng-container *ngIf="navtext"><span class="return">{{navtext}}</span></ng-container>
+                    <ng-container *ngIf="navtext"><span class="return" [style.color]="color ? color : '#FFFFFF'">{{navtext}}</span></ng-container>
                 </div>
 
                 <div class="right-area">
@@ -19,9 +19,25 @@
                         <app-cart-button [cartAmount]="cartAmount" [shopCartCallback]="shopCartCallback">
                         </app-cart-button>
                     </ng-container>
-                    <div *ngIf="plus"><span class="plus">+</span></div>
+
+                    <img *ngIf="search" [src]="env + '/search.svg'" alt="Imagen de una lupa" (click)="searchTrigger($event)" height="20px" width="20px" class="search" 
+                    [ngStyle]="{'margin-right': rmargin? rmargin :'20px', 'margin-left': '20px', cursor: 'pointer'}"/>
+
+                    <div class="dot-trio" *ngIf="dots" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}">
+                        <div class="dot"> </div>
+                        <div class="dot"> </div>
+                        <div class="dot"> </div>
+                    </div>
+
+                    <button class="edit-button" *ngIf="edit || batch" [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}">
+                         <span *ngIf="batch">BATCH</span> EDIT
+                    </button>
+
+                    <div *ngIf="plus"><span class="plus" [ngStyle]="{'font-family': fontFamily? fontFamily : '', 'font-size': fontSize? fontSize : '', cursor: 'pointer'}">+</span></div>
+
                     <div *ngIf="upload"><img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px"
-                            width="15px" alt="" style="cursor: pointer;"></div>
+                            width="15px" alt="" style="cursor: pointer;">
+                    </div>
                 </div>
             </div>
         </ng-container>
@@ -68,7 +84,7 @@
                 <div class="mi-tienda"> <span class="text" [style.color]="bgColor">{{leftText}}</span></div>
 
                 <div class="holder">
-                    <img [src]="env + '/star.svg'" alt="No image :c" class="star">
+                    <img [src]="env + '/star.svg'" alt="Imagen de una estrella" class="star">
                     <span for="List2raise">{{rightText}}</span>
                 </div>
             </div>
@@ -83,7 +99,8 @@
                     <img *ngIf="icon" [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" [ngStyle]="{'filter': filter}">
                     <h1 class="bold-text" [style.color]="color">{{navtext}}</h1>
                 </div>
-                <button class="edit-button" *ngIf="edit"> <span *ngIf="batch">BATCH</span> EDIT</button>
+                <button class="edit-button" *ngIf="edit || batch"> <span *ngIf="batch">BATCH</span> EDIT</button>
+                <div *ngIf="plus"><span class="plus">+</span></div>
             </div>
         </ng-container>
 
