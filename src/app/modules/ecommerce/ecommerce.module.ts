@@ -53,6 +53,7 @@ import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
+import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 
 const routes: Routes = [
   {
@@ -293,6 +294,10 @@ const routes: Routes = [
   {
     path: 'category-item-detail',
     component: CategoryItemDetailComponent
+  },
+  {
+    path: 'sale-detail',
+    component: SaleDetailComponent
   }
 ];
 
@@ -351,6 +356,7 @@ const routes: Routes = [
     MallStoresComponent,
     CategoryItemsAdminComponent,
     CategoryItemDetailComponent,
+    SaleDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

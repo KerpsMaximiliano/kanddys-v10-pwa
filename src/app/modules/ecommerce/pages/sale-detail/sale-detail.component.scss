@@ -1,0 +1,35 @@
+.container {
+    width: 100%;
+	min-height: 100vh;
+	background-color: #ffffff;
+
+    .header {
+        text-align: center;
+        padding: 30px;
+        .header-img {
+            border-radius: 50%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-color: #A1A1A1;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            margin: 0 auto;
+            width: 120px;
+            height: 120px;
+        }
+        p {
+            font-family: 'RobotoBold';
+            color: #202020;
+            font-size: 25px;
+        }
+    }
+    .categories {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        column-gap: 13px;
+        row-gap: 11px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        align-content: flex-start;
+    }
+}
