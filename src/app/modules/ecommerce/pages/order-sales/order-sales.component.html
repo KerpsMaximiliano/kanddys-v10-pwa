@@ -1,117 +1,105 @@
 <div class="container">
-
-    <ng-container *ngIf="!inSearch">
-        <app-helper-headerv2
-        [mode]="'2raise'"
-        [billId]="'20220125N145'"
-        [leftText]="'Mi Tienda'"
-        [rightText]="'List2raise'"
-        [whatsapp]="false"
-        [shopcart]="false"
-        [line]="false"
-        ></app-helper-headerv2>
-    </ng-container> 
-
-    <ng-container *ngIf="inSearch">
-        <app-helper-headerv2
-        [mode]="'options'"
-        [billId]="'20220125N145'"
-        [leftText]="'amountId'"
-        [rightText]="'CompradorId'"
-        [whatsapp]="false"
-        [shopcart]="false"
-        [line]="false"
-        ></app-helper-headerv2>
-     </ng-container> 
-
-    <ng-container *ngIf="inSearch">
+	<!-- <ng-container *ngIf="inSearch">
 
         <div class="search-area">
             <input type="text" class="search-bar" placeholder="Buscar.." (keyup)="searchNumber($event)" />
         </div>
 
-        <ng-container  *ngFor = "let order of orders; index as i">
+        <ng-container *ngFor="let order of orders; index as i">
 
-            <div class="order" *ngIf="order.phone == auxNumbers"> <!--*ngIf = "order.visible == true || search.value == ''"-->
+            <div class="order" *ngIf="order.phone == auxNumbers">
                 <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
             </div>
 
         </ng-container>
 
-    </ng-container>
+    </ng-container> -->
 
-    <ng-container *ngIf="!inSearch">
-    <app-header-info
-    [starsAmount]="'25'"
-    [title]="'Tienda Name'"
-    [description]="'Vendió a Armando Paredes'"
-    [description2]="'en FechaID HoraID'"
-    ></app-header-info>
+	<ng-container *ngIf="!inSearch">
+		<app-helper-headerv2
+		[navtext]="'Ventas'"
+		[search]="true"
+		[dots]="true"
+		[batch]="true"
+		[plus]="true"
+		[whatsapp]="false"
+		[shopcart]="false"
+		color="#E9E371"
+		mode="basic"
+		></app-helper-headerv2>
+		<app-page-component-tabs [tabsOptions]="tabsOptions" (changeValue)="wichName($event)"></app-page-component-tabs>
 
-    <app-page-component-tabs
-    [tabsOptions]="tabsOptions"
-    (changeValue)="wichName($event)"
-  ></app-page-component-tabs>
+		<div class="compradores">
+			<button class="notif-button" [ngClass]="{'active': active}">
+				<div class="content">
+					<span>Mensaje que se recibe al etiquetar</span>
+					<p>Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..</p>
+				</div>
+				<div class="icon-section" *ngIf="active">
+					<img [src]="env + '/whatsapp_verde.svg'" width="30" height="30" alt="activate">
+					<span>ON</span>
+				</div>
+			</button>
 
-  <div class="compradores">
-      
-      <div class="sales">
-      <label for="Ventas" class="my-sales">Mis Ventas:</label>
+			<!-- <div class="sales">
+				<span for="Ventas" class="my-sales">Mis Ventas:</span>
 
-          <div class="images-wrapper">
-            <img alt="" [src]="imageFolder + '/search.svg'" height="24px" width="24px" style="cursor: pointer; margin-right: 21px" (click)="searchToggling()" class="icon"/>
-            <div class="icon-holder" [ngClass]="{'checked': showTags == true}">
-                <img [src]="imageFolder + '/Etiquetas_vacias.svg'" height="26px" width="25px" class="icon" (click)="tagsView()"/>
-            </div>
-            <img [src]="imageFolder + '/camera.svg'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px" class="icon"/>
-          </div>
+				<div class="images-wrapper">
+					<img alt="" [src]="env + '/search.svg'" height="24px" width="24px"
+						style="cursor: pointer; margin-right: 21px" (click)="searchToggling()" class="icon" />
+					<div class="icon-holder" [ngClass]="{'checked': showTags == true}">
+						<img [src]="env + '/Etiquetas_vacias.svg'" height="26px" width="25px" class="icon"
+							(click)="tagsView()" />
+					</div>
+					<img [src]="env + '/camera.svg'" height="33px" width="24px" style="cursor: pointer; margin-left: 21px"
+						class="icon" />
+				</div>
 
-      </div>
+			</div> -->
 
-      <div class="totals">
-        <div class="incomes">
-            <label for="Ganancias totales" class="total-income">${{totalIncome}} DOP</label>
-            <label for="Ventas Realizadas" class="total-income">{{totalSales}} Ventas</label>
-        </div>
+			<!-- <div class="totals">
+				<div class="incomes">
+					<span class="total-income">${{totalIncome}} DOP</span>
+					<span class="total-income">{{totalSales}} Ventas</span>
+				</div>
 
-        <div *ngIf="!showTags" class="organized">
-            <div class="arrow-circle"> <img [src]="imageFolder + '/arrow-down-left.svg'" width="10px" height="10px" alt="F L E C H I T A" class="arrow"> </div>
-            <p class="advice">Organiza todas tus ventas con las etiquetas.</p>
-        </div>
-      </div>
+				<div *ngIf="!showTags" class="organized">
+					<div class="arrow-circle"> <img [src]="env + '/arrow-down-left.svg'" width="10px" height="10px"
+							alt="F L E C H I T A" class="arrow"> </div>
+					<p class="advice">Organiza todas tus ventas con las etiquetas.</p>
+				</div>
+			</div> -->
 
-      <div *ngIf="!showTags" class="last-sales">
-       <label class="latest">Últimas Ventas:</label> 
-      </div>
+			<!-- <div *ngIf="!showTags" class="last-sales">
+				<label class="latest">Últimas Ventas:</label>
+			</div> -->
 
-      <ng-container *ngIf="showTags" >
-        <div class="tags-area">
-            <ng-container *ngFor="let tag of testTags; let i = index">
-                <app-tags-square></app-tags-square>
-            </ng-container>
-        </div>
-    </ng-container>
+			<ng-container *ngIf="showTags">
+				<div class="tags-area">
+					<ng-container *ngFor="let tag of testTags; let i = index">
+						<app-tags-square></app-tags-square>
+					</ng-container>
+				</div>
+			</ng-container>
 
-  </div>
-</ng-container>
-
-    <ng-container *ngIf="!inSearch">   
-
-    <div *ngIf = "isLogged == true">
-
-        <div class="orderSection">
-
-            <ng-container  *ngFor = "let order of orders; index as i">
-
-                <div class="order" *ngIf = "order.visible == true || search.value == ''">
-                    <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
-                </div>
-
-            </ng-container>
-
-        </div>
-
-    </div>
-    </ng-container>
-    
+		</div>
+	</ng-container>
+	<div class="orderSection">
+		<ng-container *ngFor="let order of orders; index as i">
+			<div class="order" *ngIf="order.visible == true || search.value == ''">
+					<app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
+			</div>
+		</ng-container>
+	</div>
 </div>
+<app-bubble-button
+	mode="double"
+	color="blue"
+	icon="/arrow-left.svg"
+	[icon2]="'/upload.svg'"
+></app-bubble-button>
+<app-sticky-button
+	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"
+	[mode]="'disabled'"
+	size="small"
+></app-sticky-button>
