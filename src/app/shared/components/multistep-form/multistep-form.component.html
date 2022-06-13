@@ -543,7 +543,7 @@
           !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow :
           !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow
       )
-      " [icon]="'/arrow-left.svg'" [text2]="'VISTA'" (leftAction)="currentStep > 0 && shouldScrollBackwards &&
+      " [left]="true" [right]="true" [icon]="'/arrow-left.svg'" [text2]="'VISTA'" (leftAction)="currentStep > 0 && shouldScrollBackwards &&
       !steps[currentStep].customScrollToStepBackwards
         ? scrollToStep(this.currentStep - 1, false)
         : steps[currentStep].customScrollToStepBackwards
