@@ -358,7 +358,7 @@
               <option *ngFor="let option of currentField.selectionOptions" [value]="option">{{option}}
               </option>
             </select>
-            
+
             <div class="arrow-icon">
               <img src="{{ env }}/arrow-left.svg" alt="arrow down">
             </div>
@@ -538,6 +538,11 @@
     <app-bubble-button *ngIf="
       currentStep === currentStepIndex && 
       steps[currentStep].footerConfig?.bubbleConfig
+      && (
+        dataModel.get(currentStepString).status !== 'INVALID' ?
+          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow :
+          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow
+      )
       " [icon]="'/arrow-left.svg'" [text2]="'VISTA'" (leftAction)="currentStep > 0 && shouldScrollBackwards &&
       !steps[currentStep].customScrollToStepBackwards
         ? scrollToStep(this.currentStep - 1, false)
