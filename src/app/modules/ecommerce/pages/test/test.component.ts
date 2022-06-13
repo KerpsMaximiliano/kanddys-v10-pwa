@@ -28,11 +28,11 @@ export class TestComponent implements OnInit {
     //   customClass: 'app-dialog',
     //   flags: ['no-header'],
     // });
-    this.dialog.open(CollaborationsComponent, {
-      type: 'flat-action-sheet',
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
+    // this.dialog.open(CollaborationsComponent, {
+    //   type: 'flat-action-sheet',
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
     // +++++++ Para verificar la task 958
     const options: StoreShareOption[] = [
       {
