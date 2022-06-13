@@ -17,6 +17,7 @@ export class TagsSquareComponent implements OnInit {
   @Input() position: 'center' | 'left'| 'right' = 'center';
   @Input() centered: boolean = false;
   @Input() reverse: boolean= false;
+  @Input() size: string = "191px";
   imageFolder: string;
     
   constructor() { 
