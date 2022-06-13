@@ -1,0 +1,35 @@
+<div class="container">
+
+    <!-- Top bar -->
+    <app-helper-headerv2 [mode]="'edit'" [navtext]="'Hola mundo'" [returnAble]="true" [whatsapp]="false"
+		[shopcart]="false" [bgColor]="'#2874AD'" [color]="'#E9E371'" [edit]="true" (returnEvent)="redirect()">
+	</app-helper-headerv2>
+
+    <!-- Header (info) -->
+    <div class="header">
+        <div class="header-img" [ngStyle]="{ 'background-image': 'url(' + backgroundImg + ')' }" *ngIf="backgroundImg"></div>
+        <div class="header-img" *ngIf="!backgroundImg"></div>
+        <p>VentaID</p>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories">
+        <app-tags-square
+        *ngFor="let category of categories"
+        [reverse]="true"
+        [tagText]="category.name"
+        [position]="'left'"
+        [number]="category.sales + ' ventas'"
+        [color]="'#2874AD'"
+        [textColor]="'#2874AD'"
+        [centered]="true"
+        ></app-tags-square>
+    </div>
+
+    <!-- Bottom buttons -->
+    <app-bubble-button [icon]="env + '/arrow-left.svg'" [text2]="'NEW'" [icon2]="env + '/expand-categories.svg'" [solo]="false"></app-bubble-button>
+    <!-- <app-bubble-button [mode]="'single'" [icon]="env + '/arrow-left.svg'"></app-bubble-button> -->
+	<app-sticky-button [text]="'LOREM IPSUM DOLOR SIT AMET'"
+		[mode]="'disabled-fixed'">
+	</app-sticky-button>
+</div>
