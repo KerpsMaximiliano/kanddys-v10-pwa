@@ -9,7 +9,6 @@ import { environment } from 'src/environments/environment';
 export class BubbleButtonComponent implements OnInit {
 
   //Inputs
-  @Input() mode: 'single' | 'double' | 'triple' = 'double';
   @Input() color: 'yellow' | 'blue' = 'yellow';
   @Input() icon: string;
   @Input() icon2: string;
