@@ -48,10 +48,10 @@ export class UserDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    /* lockUI(this.authService.me().then((user) => {
+    lockUI(this.authService.me().then((user) => {
       if (!user) return this.redirect();
       this.userData = user;
-    })); */
+    })); 
   }
 
   redirect() {
