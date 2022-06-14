@@ -84,6 +84,7 @@ import { ShareLinksComponent } from './dialogs/share-links/share-links.component
 import { BubbleButtonComponent } from './components/bubble-button/bubble-button.component';
 import { HeaderInfoAdminComponent } from './components/header-info-admin/header-info-admin.component';
 import { PostEditButtonsComponent } from './components/post-edit-buttons/post-edit-buttons.component';
+import { UserActionsComponent } from './components/user-actions/user-actions.component';
 
 const imports = [
   CommonModule,
@@ -165,6 +166,7 @@ const declarations = [
   BubbleButtonComponent,
   HeaderInfoAdminComponent,
   PostEditButtonsComponent,
+  UserActionsComponent,
 ];
 
 @NgModule({
