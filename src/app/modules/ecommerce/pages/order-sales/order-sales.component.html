@@ -85,13 +85,18 @@
 		</ng-container>
 	</div>
 </div>
+
 <app-bubble-button
-	[left]="true"
-	[right]="true"
+	[position]="'left'"
+    [return]="true"
 	color="blue"
-	icon="/arrow-left.svg"
-	[icon2]="'/upload.svg'"
 ></app-bubble-button>
+
+<app-bubble-button
+	[position]="'right'"
+	[icon]="'/upload.svg'"
+></app-bubble-button>
+
 <app-sticky-button
 	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"
 	[mode]="'disabled'"
