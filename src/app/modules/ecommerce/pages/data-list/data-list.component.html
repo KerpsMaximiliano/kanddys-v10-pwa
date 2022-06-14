@@ -1,9 +1,9 @@
 <div style="min-height: 100vh;">
 
     <app-helper-headerv2
-    [mode]="categories? 'edit':'options'"
-    [navtext]="'Nueva Categoria A Productnameid'"
-    [color]="categories? '#E9E371' : ''"
+    [mode]="mode === 'category' ? 'edit':'options'"
+    [navtext]="item && ('Nueva Categoria A '+item.name)"
+    [color]="mode === 'category' ? '#E9E371' : ''"
     [returnAble]="true"
     [billId]="'405D $26'"
     [itemId]="'chps n tips'"
@@ -26,30 +26,29 @@
   <p class="label">
     <ng-container *ngIf="!keyword">RECIENTES</ng-container>
     
-    <ng-container *ngIf="keyword && !categories">
-      <ng-container *ngIf="filteredTagList.length > 0 else noTags">
-        RESULTADOS PARECIDOS
+    <ng-container *ngIf="keyword">
+      <ng-container *ngIf="mode === 'tag'">
+        <ng-container *ngIf="filteredTagList.length > 0 else noTags">
+          RESULTADOS PARECIDOS
+        </ng-container>
+        <ng-template #noTags>
+          <a class="addButton" [routerLink]="['/ecommerce/tags-edit']">
+            Añadir Nuevo Tag
+          </a>
+        </ng-template>
       </ng-container>
-      <ng-template #noTags>
-        <div class="addButton" [routerLink]="['/ecommerce/tags-edit']">
-          Añadir Nuevo Tag
-        </div>
-      </ng-template>
+      <span class="matches" *ngIf="mode === 'category' && filteredCategories.length > 0">{{filteredCategories.length}} mas coinciden</span>
     </ng-container> 
+  </p> 
+  <div style="text-align: center;" *ngIf="keyword && mode === 'category' && filteredCategories.length == 0">
+    <button class="addButton" (click)="addCategory()">
+      Crear este nueva categoria y añadir el item
+    </button>
+  </div>
 
-    <span class="matches" *ngIf="matches && categories">{{matches.length}} mas coinciden</span>
-    <ng-container *ngIf="keyword && categories">
-        <ng-container *ngIf="filteredCategories.length == 0">
-              <div class="addButton" [routerLink]="['/ecommerce/tags-edit']">
-                  Crear este nueva categoria y añadir el item
-              </div>
-          </ng-container>
-    </ng-container>
-  </p>
+  <div class="tag-container" [ngClass]="{'categories': mode === 'category'}">
 
-  <div class="tag-container" [ngClass]="{'categories': categories}">
-
-    <ng-container *ngIf="!categories">
+    <ng-container *ngIf="mode === 'tag'">
     <app-info-card
         *ngFor="let tag of filteredTagList"
         (click)="onTagClick(tag)"
@@ -61,16 +60,17 @@
       ></app-info-card>
     </ng-container>
 
-    <ng-container *ngIf="categories">
+    <ng-container *ngIf="mode === 'category'">
         <app-tags-square
-        *ngFor="let category of categoriesList"
-        [reverse]="true"
-        [position]="'left'"
-        [color]="'#2874AD'"
-        [textColor]="'#2874AD'"
-        [tagText]="'CategoriaId'"
-        [number]="'44 ventas'"
-        [bColor]="'#FFFFFF'"
+          *ngFor="let category of filteredCategories"
+          (click)="onCategoryClick(category)"
+          [reverse]="true"
+          [position]="'left'"
+          [tagText]="category.name"
+          [number]="'44 ventas'"
+          [color]="category.isSelected ? '#E9E371' : '#2874AD'"
+          [textColor]="category.isSelected ? '#E9E371' : '#2874AD'"
+          [bColor]="category.isSelected ? '#2874AD' : '#FFFFFF'"
         ></app-tags-square>
     </ng-container>
 

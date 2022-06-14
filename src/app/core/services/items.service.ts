@@ -25,7 +25,7 @@ import {
   itemExtras,
   updateItem
 } from '../graphql/items.gql';
-import { Item, ItemCategory, ItemCategoryHeadline, ItemInput, ItemPackage } from '../models/item';
+import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
@@ -192,15 +192,14 @@ export class ItemsService {
   }
 
   // Agregar categoria
-  async createItemCategory(input: any) {
+  async createItemCategory(input: ItemCategoryInput): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
       variables: { input },
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
-    return result;
+    return result.createItemCategory;
   }
 
   // Eliminar Categoria

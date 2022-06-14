@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Item, ItemCategory } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 
@@ -16,16 +18,43 @@ export class DataListComponent implements OnInit {
   tagList: Tag[] = [];
   filteredTagList: Tag[] = [];
   merchantId: string;
-  orderId: string;
+  id: string;
   viewtype: 'merchant' | 'user';
-  categories: boolean = true;
-  categoriesList: string[];
-  filteredCategories: string[];
+  mode: 'tag' | 'category' = 'category';
+  item: Item;
+  categoriesList: ItemCategory[] = [
+    {
+      _id: 'gdfgdfgf',
+      createdAt: 'hfghfghfg',
+      name: "gdfgdfgfd",
+      updatedAt: 'gdfgdf',
+    },
+    {
+      _id: 'gdfgdfgf',
+      createdAt: 'hfghfghfg',
+      name: "gdfgdfgfd",
+      updatedAt: 'gdfgdf',
+    },
+    {
+      _id: 'gdfgdfgf',
+      createdAt: 'hfghfghfg',
+      name: "gdfgdfgfd",
+      updatedAt: 'gdfgdf',
+    },
+    {
+      _id: 'gdfgdfgf',
+      createdAt: 'hfghfghfg',
+      name: "gdfgdfgfd",
+      updatedAt: 'gdfgdf',
+    },
+  ];
+  filteredCategories: ItemCategory[] = [];
   matches: string[];
 
   constructor(
     private tagsService: TagsService,
     private orderService: OrderService,
+    private itemsService: ItemsService,
     private route: ActivatedRoute,
     private auth: AuthService,
     private headerService: HeaderService,
@@ -37,27 +66,59 @@ export class DataListComponent implements OnInit {
       if(queries.viewtype === 'merchant') this.viewtype = 'merchant';
       else if(queries.viewtype === 'user') this.viewtype = 'user';
       else return this.redirect();
+      if(queries.mode === 'tag') this.mode = 'tag';
+      else if(queries.mode === 'category') this.mode = 'category';
+      else return this.redirect();
     })
     if(this.viewtype === 'merchant') {
       this.merchantId = this.headerService.merchantInfo?._id;
       if(!this.merchantId) return this.redirect();
     }
     this.route.params.subscribe(async (params) => {
-      if(!params.orderId) return this.redirect();
-      const order = (await this.orderService.order(params.orderId))?.order;
-      if(!order) return this.redirect();
-      this.orderId = order._id;
-      const user = await this.auth.me();
-      if(!user) return this.redirect();
-      const tags = await this.tagsService.tagsByUser();
-      tags.forEach((tag) => {
-        if(order.tags.includes(tag._id)) {
-          if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
-          if(this.viewtype === 'user') tag.notifyUserOrder = true;
+      if(this.mode === 'tag') {
+        // const order = (await this.orderService.order(params.id))?.order;
+        // if(!order) return this.redirect();
+        // this.id = order._id;
+        // const user = await this.auth.me();
+        // if(!user) return this.redirect();
+        try {
+          const [data, user] = await Promise.all([
+            this.orderService.order(params.id),
+            this.auth.me()
+          ]);
+          if(!data || !data.order || !user) return this.redirect();
+          const tags = await this.tagsService.tagsByUser();
+          tags.forEach((tag) => {
+            if(data.order.tags.includes(tag._id)) {
+              if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+              if(this.viewtype === 'user') tag.notifyUserOrder = true;
+            }
+          })
+          this.tagList = tags;
+          this.filteredTagList = tags;
+        } catch (error) {
+          console.log(error);
+          return this.redirect();
         }
-      })
-      this.tagList = tags;
-      this.filteredTagList = tags;
+      }
+      if(this.mode === 'category') {
+        const [item, data] = await Promise.all([
+          this.itemsService.item(params.id),
+          this.itemsService.itemCategories(this.merchantId, {
+            options: {
+              limit: 100,
+            },
+          })
+        ]);
+        if(!item || !data || !data) return this.redirect();
+        this.item = item;
+        const itemCategories = item.category.map((category) => category._id);
+        data.itemCategoriesList.forEach((category) => {
+          category.isSelected = itemCategories.includes(category._id);
+        })
+        this.categoriesList = data.itemCategoriesList;
+        this.filteredCategories = data.itemCategoriesList;
+      }
     })
   }
 
@@ -66,10 +127,11 @@ export class DataListComponent implements OnInit {
   }
 
   onTagClick(tag: Tag) {
+    if(this.mode !== 'tag') return;
     if(this.viewtype === 'merchant') {
       if(tag.notifyMerchantOrder) {
         tag.counter--;
-        this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.orderId)
+        this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.id)
           .then((value) => {
             console.log('removed successfully!')
           })
@@ -80,7 +142,7 @@ export class DataListComponent implements OnInit {
       }
       else {
         tag.counter++;
-        this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.orderId)
+        this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.id)
           .then((value) => {
             console.log('added successfully!')
           })
@@ -94,7 +156,7 @@ export class DataListComponent implements OnInit {
     if(this.viewtype === 'user') {
       if(tag.notifyUserOrder) {
         tag.counter--;
-        this.tagsService.removeTagsInUserOrder(tag._id, this.orderId)
+        this.tagsService.removeTagsInUserOrder(tag._id, this.id)
         .then((value) => {
           console.log(value);
           console.log('removed successfully!')
@@ -105,7 +167,7 @@ export class DataListComponent implements OnInit {
         });
       } else {
         tag.counter++;
-        this.tagsService.addTagsInUserOrder(tag._id, this.orderId)
+        this.tagsService.addTagsInUserOrder(tag._id, this.id)
           .then((value) => {
             console.log(value);
             console.log('added successfully!')
@@ -119,8 +181,43 @@ export class DataListComponent implements OnInit {
     }
   }
 
+  onCategoryClick(category: ItemCategory) {
+    if(this.mode !== 'category') return;
+    const categories = this.item.category.map((category) => category._id);
+    if(category.isSelected) {
+      const index = categories.indexOf(category._id);
+      categories.splice(index, 1);
+      category.isSelected = false;
+      const catIndex = this.item.category.findIndex((itemCategory) => itemCategory._id === category._id);
+      this.item.category.splice(catIndex, 1);
+    } else {
+      categories.push(category._id);
+      this.item.category.push(category);
+      category.isSelected = true;
+    }
+    this.itemsService.updateItem({
+      category: categories
+    }, this.item._id);
+  }
+
+  async addCategory() {
+    const category = await this.itemsService.createItemCategory({
+      merchant: this.merchantId,
+      name: this.keyword
+    });
+    if(!category) throw new Error('Hubo un error al crear la categoría');
+    const categories = this.item.category.map((category) => category._id);
+    categories.push(category._id);
+    await this.itemsService.updateItem({
+      category: categories
+    }, this.item._id);
+  }
+
   searchKeyword() {
-    this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
+    if(this.mode === 'tag')
+      this.filteredTagList = this.tagList.filter((tag) => tag.name.toLowerCase().includes(this.keyword.toLowerCase()));
+    if(this.mode === 'category')
+      this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
   }
 
   back() {

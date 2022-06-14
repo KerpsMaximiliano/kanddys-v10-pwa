@@ -160,4 +160,11 @@ export class ItemInput {
   quality?: String
   toPromotion?: boolean;
   status?: 'draft' | 'disabled' | 'active';
-  }
+}
+
+export class ItemCategoryInput {
+  merchant: string;
+  name: string;
+  description?: string;
+  image?: string;
+}

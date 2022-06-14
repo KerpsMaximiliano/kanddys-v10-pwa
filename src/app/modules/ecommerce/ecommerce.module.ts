@@ -194,7 +194,7 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'data-list/:orderId',
+    path: 'data-list/:id',
     component: DataListComponent,
   },
   {
