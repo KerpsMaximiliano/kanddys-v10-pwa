@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { FormControl, Validators } from '@angular/forms';
+import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
 import { DecimalPipe } from '@angular/common';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -15,6 +17,7 @@ const commonContainerStyles = {
 })
 export class LlStudioOrderFormComponent implements OnInit {
   scrollableForm = false;
+  reservation: string = null;
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -23,7 +26,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           label: 'Sobre tu orden *',
           sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
           inputType: 'textarea',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl('sdqsdqdwqd', Validators.required),
           placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
           styles: {
             containerStyles: {
@@ -381,8 +384,51 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
         },
       ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      fieldsList: [
+        {
+          fieldControl: new FormControl('', Validators.required),
+          name: 'reservation',
+          label: '',
+          styles: {
+            containerStyles: {
+              display: 'none'
+            }
+          }
+        }
+      ],
+      embeddedComponents: [
+        {
+          afterIndex: 0,
+          component: ReservationOrderlessComponent,
+          inputs:
+          {
+            calendarId: "62a7e8dabc94801413a541f5"
+          },
+          outputs: [
+            {
+              name: 'onReservation',
+              callback: (reservationMessage) => {
+                this.reservation = reservationMessage;
+                this.formSteps[2].fieldsList[0].fieldControl.setValue(this.reservation);
+              },
+            }
+          ]
+        }
+      ],
+      stepProcessingFunction: () => {
+        if (this.reservation) return { ok: true };
+
+        return { ok: false };
+      },
+      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
       headerText: '',
@@ -467,6 +513,33 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
         },
       ],
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          const data = {
+            details: this.formSteps[0].fieldsList[0].fieldControl.value,
+            // referenceImage: this.formSteps[0].fieldsList[1].fieldControl.value,
+            phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.value,
+            fullname: this.formSteps[1].fieldsList[1].fieldControl.value,
+            totalAmount: this.formSteps[1].fieldsList[2].fieldControl.value,
+            paymentMethod: this.formSteps[1].fieldsList[3].fieldControl.value,
+            // proofOfPayment: this.formSteps[1].fieldsList[4].fieldControl.value,
+            fromWhereAreYouPaying: this.formSteps[1].fieldsList[5].fieldControl.value,
+            dateConfirmation: this.formSteps[1].fieldsList[6].fieldControl.value,
+            // reservation: this.formSteps[2].fieldsList[0].fieldControl.value,
+            'about-delivery': this.formSteps[2].fieldsList[0].fieldControl.value,
+            whereToDeliver: this.formSteps[3].fieldsList[0].fieldControl.value,
+          }
+
+          const result = await this.merchantsService.uploadDataToClientsAirtable(
+            "62a83c2ff3aade0f8c0ed713",
+            "Con luis",
+            data
+          );
+
+          console.log(result);
+        },
+      },
       stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
       stepButtonValidText: 'ENVIAR LA ORDEN POR WHATSAPP'
     }
@@ -474,6 +547,7 @@ export class LlStudioOrderFormComponent implements OnInit {
 
   constructor(
     private decimalPipe: DecimalPipe,
+    private merchantsService: MerchantsService
   ) { }
 
   ngOnInit(): void {

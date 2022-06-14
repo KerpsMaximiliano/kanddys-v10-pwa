@@ -235,3 +235,17 @@ export const tagsByMerchant = gql`
     }
   }
 `;
+
+export const uploadDataToClientsAirtable = gql`
+  mutation uploadDataToClientsAirtable(
+    $merchantId: ObjectID!,
+    $databaseName: String!,
+    $data: JSON!
+  ) {
+    uploadDataToClientsAirtable(
+      merchantId: $merchantId,
+      databaseName: $databaseName,
+      data: $data
+    )
+  }
+`;

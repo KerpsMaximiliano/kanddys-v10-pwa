@@ -5,7 +5,7 @@ export const environment = {
   api: {
     // url: 'https://api.rewardcharly.com',
     //url: 'http://165.227.28.4:3000',
-    url: 'https://api.kanddys.com',
+    url: 'http://localhost:3500/graphql',
     key: 'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
   },
   APIREST:"https://appointments.kanddys.com/v1",

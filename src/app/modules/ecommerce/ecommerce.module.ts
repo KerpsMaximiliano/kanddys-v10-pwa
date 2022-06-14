@@ -21,6 +21,7 @@ import { AdminOptionsComponent } from './pages/admin-options/admin-options.compo
 import { SalesInfoComponent } from './pages/sales-info/sales-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
+import { ReservationOrderlessComponent } from './pages/reservations-orderless/reservations-orderless.component';
 import { MerchantDashboardComponent } from './pages/merchant-dashboard/merchant-dashboard.component';
 import { MyItemsComponent } from './pages/my-items/my-items.component';
 import { LandingComponent } from './pages/landing/landing.component';
@@ -163,7 +164,7 @@ const routes: Routes = [
   {
     path: 'merchant-dashboard/:merchantId',
     component: MerchantDashboardComponent,
-    children:[    
+    children: [
       {
         path: 'my-store',
         component: MyStoreComponent,
@@ -319,6 +320,7 @@ const routes: Routes = [
     SalesInfoComponent,
     PackageDetailComponent,
     ReservationComponent,
+    ReservationOrderlessComponent,
     MerchantDashboardComponent,
     MyItemsComponent,
     LandingComponent,
