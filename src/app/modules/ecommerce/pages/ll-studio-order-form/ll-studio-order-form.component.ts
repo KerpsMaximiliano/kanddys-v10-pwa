@@ -4,6 +4,7 @@ import { HeaderInfoComponent } from 'src/app/shared/components/header-info/heade
 import { FormControl, Validators } from '@angular/forms';
 import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
 import { DecimalPipe } from '@angular/common';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 const commonContainerStyles = {
@@ -164,6 +165,16 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
           },
         },
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'fullname',
           fieldControl: new FormControl('', Validators.required),
@@ -171,7 +182,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'Mi nombre y apellido es..',
           styles: {
             containerStyles: {
-              marginTop: '85px',
+              marginTop: '44px',
             },
             labelStyles: {
               fontFamily: 'Roboto',
@@ -181,7 +192,17 @@ export class LlStudioOrderFormComponent implements OnInit {
               marginBottom: '24px',
             }
           },
-        },
+        }
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'totalAmount',
           formattedValue: '',
@@ -204,10 +225,10 @@ export class LlStudioOrderFormComponent implements OnInit {
               );
 
               if (formatted === '0') {
-                this.formSteps[1].fieldsList[2].placeholder = '';
+                this.formSteps[3].fieldsList[0].placeholder = '';
               }
 
-              this.formSteps[1].fieldsList[2].formattedValue = '$' + formatted;
+              this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -229,7 +250,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               fontWeight: 500
             },
             containerStyles: {
-              marginTop: '85px',
+              marginTop: '44px',
               position: 'relative'
             },
             fieldStyles: {
@@ -253,7 +274,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[3].fieldControl.setValue(change, {
+            this.formSteps[3].fieldsList[0].fieldControl.setValue(change, {
               emitEvent: false,
             });
           },
@@ -305,12 +326,22 @@ export class LlStudioOrderFormComponent implements OnInit {
             }
           },
         },
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'fromWhereAreYouPaying',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Instagram @llstudiord', 'WhatsApp 809-871-8288', 'WhatsApp 809-508-3344', 'Correo Electrónico'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[5].fieldControl.setValue(change, {
+            this.formSteps[4].fieldsList[0].fieldControl.setValue(change, {
               emitEvent: false,
             });
           },
@@ -319,7 +350,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '59px',
+              marginTop: '44px',
             },
             fieldStyles: {
               paddingLeft: '0px'
@@ -340,18 +371,28 @@ export class LlStudioOrderFormComponent implements OnInit {
               fontWeight: 500
             },
           },
-        },
+        }
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'dateConfirmation',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[6].fieldControl.setValue(change, {
+            this.formSteps[5].fieldsList[0].fieldControl.setValue(change, {
               emitEvent: false,
             });
 
             if (change === 'Si') {
-              params.scrollToStep(2);
+              params.scrollToStep(6);
             }
           },
           label: 'Hemos acordado y confirmado una fecha y hora de entrega? (*)',
@@ -362,7 +403,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '59px',
+              marginTop: '44px',
             },
             fieldStyles: {
               paddingLeft: '0px'
@@ -416,7 +457,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               name: 'onReservation',
               callback: (reservationMessage) => {
                 this.reservation = reservationMessage;
-                this.formSteps[2].fieldsList[0].fieldControl.setValue(this.reservation);
+                this.formSteps[6].fieldsList[0].fieldControl.setValue(this.reservation);
               },
             }
           ]
@@ -456,7 +497,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           styles: {
             containerStyles: {
-              marginTop: '40px',
+              marginTop: '44px',
             },
             labelStyles: {
               fontSize: '24px',
@@ -516,28 +557,41 @@ export class LlStudioOrderFormComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
-          const data = {
-            details: this.formSteps[0].fieldsList[0].fieldControl.value,
-            // referenceImage: this.formSteps[0].fieldsList[1].fieldControl.value,
-            phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.value,
-            fullname: this.formSteps[1].fieldsList[1].fieldControl.value,
-            totalAmount: this.formSteps[1].fieldsList[2].fieldControl.value,
-            paymentMethod: this.formSteps[1].fieldsList[3].fieldControl.value,
-            // proofOfPayment: this.formSteps[1].fieldsList[4].fieldControl.value,
-            fromWhereAreYouPaying: this.formSteps[1].fieldsList[5].fieldControl.value,
-            dateConfirmation: this.formSteps[1].fieldsList[6].fieldControl.value,
-            // reservation: this.formSteps[2].fieldsList[0].fieldControl.value,
-            'about-delivery': this.formSteps[2].fieldsList[0].fieldControl.value,
-            whereToDeliver: this.formSteps[3].fieldsList[0].fieldControl.value,
+          try {
+            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
+              [
+                base64ToFile(this.formSteps[0].fieldsList[1].fieldControl.value),
+                base64ToFile(this.formSteps[3].fieldsList[2].fieldControl.value),
+              ]
+            );
+
+            const data = {
+              details: this.formSteps[0].fieldsList[0].fieldControl.value,
+              referenceImage: fileRoutes[0],
+              phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.value,
+              fullname: this.formSteps[2].fieldsList[0].fieldControl.value,
+              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.value,
+              paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.value,
+              proofOfPayment: fileRoutes[1],
+              fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.value,
+              dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.value,
+              reservation: this.formSteps[6].fieldsList[0].fieldControl.value,
+              'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.value,
+              whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
+            }
+
+            const result = await this.merchantsService.uploadDataToClientsAirtable(
+              "6295da0a1f8e415f0315edbf",
+              "Con luis",
+              data
+            );
+
+            return { ok: true };
+          } catch (error) {
+            console.log(error);
+
+            return { ok: false };
           }
-
-          const result = await this.merchantsService.uploadDataToClientsAirtable(
-            "62a83c2ff3aade0f8c0ed713",
-            "Con luis",
-            data
-          );
-
-          console.log(result);
         },
       },
       stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
