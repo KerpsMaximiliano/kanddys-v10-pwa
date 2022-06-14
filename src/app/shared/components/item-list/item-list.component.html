@@ -137,8 +137,8 @@
       <p *ngIf="itemListContent.text_left">{{ itemListContent.text_left }}</p>
 
       <div class="middle-list-text" *ngIf="itemListContent.text_middle">
-        <label for="Monto total pagado" class="total-amount">{{itemListContent.text_middle}}</label>
-        <label class="stars">{{itemListContent.bonus}} <img [src]="env + '/star.svg'" class="starty" style="fill-opacity: #7B7B7B;"></label>
+        <span class="total-amount">{{itemListContent.text_middle}}</span>
+        <span class="stars" *ngIf="itemListContent.bonus">{{itemListContent.bonus}} <img [src]="env + '/star.svg'" class="starty" style="fill-opacity: #7B7B7B;"></span>
       </div>
 
       <div class="right-text-icon" *ngIf="

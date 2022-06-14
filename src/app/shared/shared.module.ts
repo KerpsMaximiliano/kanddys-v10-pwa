@@ -85,6 +85,7 @@ import { BubbleButtonComponent } from './components/bubble-button/bubble-button.
 import { HeaderInfoAdminComponent } from './components/header-info-admin/header-info-admin.component';
 import { PostEditButtonsComponent } from './components/post-edit-buttons/post-edit-buttons.component';
 import { UserActionsComponent } from './components/user-actions/user-actions.component';
+import { NotificationToggleComponent } from './components/notification-toggle/notification-toggle.component';
 
 const imports = [
   CommonModule,
@@ -167,6 +168,7 @@ const declarations = [
   HeaderInfoAdminComponent,
   PostEditButtonsComponent,
   UserActionsComponent,
+  NotificationToggleComponent,
 ];
 
 @NgModule({
