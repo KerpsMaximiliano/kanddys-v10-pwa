@@ -1,0 +1,63 @@
+.body{
+    width: 88%;
+    max-width: 440px;
+    height: fit-content;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    margin: 0 auto;
+    padding: 10px 17px;
+    box-shadow: 0px 3px 6px 3px rgb(0 0 0 / 5%);
+    
+    .title{
+        font-family: 'RobotoBold';
+        font-size: 17px;
+        color: #202020;
+        margin: 16px 0 26px 4px;
+    }
+
+    .questions{
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-left: 4px;
+
+        .question{
+            font-family: 'SfProLight';
+            font-size: 15px;
+            color: #4F4F4F;
+            max-width: 71.2%;
+        }
+
+        .plus{
+            font-family: 'SfProMedium';
+            font-size: 17px;
+            color: #2874AD;
+            cursor: pointer;
+        }
+ 
+    }
+
+    .answer{
+        font-family: 'SfProLight';
+        font-size: 15px;
+        color: #4F4F4F;
+        max-width: 71.2%;
+        margin-left: 4px;
+        margin-bottom: 12.45px;
+    }
+           
+    .linea{
+        all: unset;
+        width: 104%;
+        height: 2px;
+        margin: 20px 0 8px;
+        background-color: rgba(112, 112, 112, 19%);
+    }
+    
+}
+
+.visible{
+    height: auto;
+} //Esto es para darle al answer animacion
