@@ -1,4 +1,41 @@
 <div class="container">
+    <div class="const-components">
+        <a class="nav-item active">
+            <img [src]="env + '/person.svg'" alt="Persona, ver mi perfil" class="icon">
+            <span>Yo</span>
+        </a>
+        <a class="nav-item">
+            <img [src]="env + '/store.svg'" alt="Tienda, haz click para ir a Mall">
+            <span>Mall</span>
+        </a>
+    </div>
+
+    <button class="main-button">ADICIONA LA INFO DE CONTACTO</button>
+
+    <app-user-actions
+    [title]="'Opcional'"
+    [content]="content"
+    ></app-user-actions>
+
+    <app-bubble-button
+    [left]="true"
+    [right]="true"
+    [mini]="true"
+    [minir]="true"
+    [color]="'blue'"
+    [icon]="'/printer.svg'"
+    [icon2]="'/upload.svg'"
+    [miniIcon]="'/pencil_line.svg'"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [size]="'small'"
+    [text]="'TOCA DONDE PREFIERAS'"
+    ></app-sticky-button>
+</div>
+
+<!-- 
     <app-helper-headerv2
     [bgColor]="'#40772F'"
     [mode]="'2raise'"
@@ -12,5 +49,5 @@
         [tabsOptions]="tabs"
         (changeValue)="wichName($event)"
     ></app-page-component-tabs>
-    <router-outlet></router-outlet>
-</div>
+    <router-outlet></router-outlet> 
+-->
