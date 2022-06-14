@@ -7,8 +7,6 @@
     z-index: 1001;
 }
 
-
-
 button {
     pointer-events: all;
 }
@@ -29,12 +27,17 @@ button {
 }
     
 .right{
-    right: 0px;
+    right: 20px;
+    left: auto;
+}
+
+.rightxl{
+    right: 95px;
     left: auto;
 }
 
 .left{
-    left: 0px;
+    left: 20px;
     right: auto;
 }
 
@@ -43,49 +46,27 @@ button {
     height: 72px !important;
 }
 
-.mini-button-left{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
+.mini{
+    height: 50px !important;
+    width: 50px !important;
     top: auto;
     bottom: 85px;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
     left: 15px;
-    cursor: pointer;
 }
 
-.mini-button-right{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
+.minir{
+    width: 50px !important;
+    height: 50px !important;
     top: auto;
     bottom: 85px;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
     right: 15px;
-    cursor: pointer;
 }
 
-.mini-button-side{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
+.minis{
+    width: 50px !important;
+    height: 50px !important;
     top: auto;
-    bottom: 20px;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50%;
     right: 20px;
-    cursor: pointer;
 }
 
 .text{

@@ -10,28 +10,15 @@ export class BubbleButtonComponent implements OnInit {
 
   //Inputs
   @Input() color: 'yellow' | 'blue' = 'yellow';
+  @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minir' | 'minis' | 'big';
   @Input() icon: string;
-  @Input() icon2: string;
-  @Input() icon3: string;
-  @Input() miniIcon: string;
-  @Input() miniIcon2: string;
   @Input() text: string;
-  @Input() text2: string;
-  @Input() text3: string;
   @Input() bubblesMarginBottom: number = 20;
   @Input() solo: boolean = true;
-  @Input() left: boolean;
-  @Input() right: boolean;
-  @Input() mini: boolean;
-  @Input() minir: boolean;
-  @Input() minis: boolean;
-  @Input() big: boolean;
   @Input() return: boolean = false;
 
   //EventEmitters
   @Output() leftAction: EventEmitter<any> = new EventEmitter();
-  @Output() rightAction: EventEmitter<any> = new EventEmitter();
-  @Output() miniAction: EventEmitter<any> = new EventEmitter();
 
   //valores utilizados
   palette: string;
@@ -64,16 +51,6 @@ export class BubbleButtonComponent implements OnInit {
   leftButton() {
     this.leftAction.emit();
     console.log('boton izquierdo');
-  }
-
-  rightButton() {
-    this.rightAction.emit();
-    console.log('boton derecho');
-  }
-
-  miniButton() {
-    this.miniAction.emit();
-    console.log('boton pequeño agregado');
   }
 
 }
