@@ -9,7 +9,10 @@
             <span>Mall</span>
         </a>
     </div>
-
+    <button *ngIf="merchantData" class="merchant-info-btn">
+        <h6>Mi tienda</h6>
+        <span>{{items?.length}} item / ${{ordersTotal?.total | number}} in / {{users?.length}} compradores</span>
+    </button>
     <button class="main-button">ADICIONA LA INFO DE CONTACTO</button>
 
     <app-user-actions

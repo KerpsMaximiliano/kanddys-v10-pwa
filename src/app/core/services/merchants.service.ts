@@ -4,6 +4,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
+import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -22,6 +23,7 @@ import {
   createEmployeeContract,
   employeeContractByMerchant,
   tagsByMerchant,
+  usersOrderMerchant,
 } from './../graphql/merchants.gql';
 import { EmployeeContract, Merchant } from './../models/merchant';
 
@@ -100,6 +102,16 @@ export class MerchantsService {
     console.log(response);
 
     return response;
+  }
+
+  async usersOrderMerchant(merchantId: string): Promise<User[]> {
+    const response = await this.graphql.query({
+      query: usersOrderMerchant,
+      variables: { merchantId },
+      fetchPolicy: 'no-cache',
+    });
+    if(!response || response?.errors) return undefined;
+    return response.usersOrderMerchant;
   }
 
   async merchants(

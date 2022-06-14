@@ -52,3 +52,30 @@
         }
     }
 }
+
+.merchant-info-btn {
+    all: unset;
+    width: 100%;
+    background-color: #F6F6F6;
+    font-family: "SfProMedium";
+    font-size: 17px;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 24px;
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #ebebeb;
+    }
+
+    h6 {
+        color:#174B72;
+        font-weight: 100;
+        margin: 0;
+    }
+
+    span {
+        color:#2874AD;
+    }
+}
