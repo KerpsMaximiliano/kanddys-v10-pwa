@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 export class SaleDetailComponent implements OnInit {
 
   env: string = environment.assetsUrl;
-  backgroundImg: string = "";
+  backgroundImg: string = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/user-default.png";
   categories: any = [
     {
       name: "Category 1",

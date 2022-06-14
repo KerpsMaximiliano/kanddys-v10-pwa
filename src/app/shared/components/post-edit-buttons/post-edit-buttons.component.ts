@@ -8,14 +8,14 @@ import { environment } from 'src/environments/environment';
 })
 export class PostEditButtonsComponent implements OnInit {
   env: string = environment.assetsUrl;
-  @Output() buttonClicked: EventEmitter<string> = new EventEmitter();
+  @Output() buttonClicked: EventEmitter<'audio' | 'text' | 'poster'> = new EventEmitter();
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  onClick(button: string) {
+  onClick(button: 'audio' | 'text' | 'poster') {
     this.buttonClicked.emit(button);
   }
 

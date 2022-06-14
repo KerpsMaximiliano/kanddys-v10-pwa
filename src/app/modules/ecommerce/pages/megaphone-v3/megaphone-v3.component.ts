@@ -16,6 +16,8 @@ import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
 import { SwiperOptions } from 'swiper';
 import { Merchant } from 'src/app/core/models/merchant';
+import { environment } from 'src/environments/environment';
+import { copyText } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -48,6 +50,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   canOpenCart: boolean;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+  viewtype: 'preview' | 'merchant';
+  env: string = environment.assetsUrl;
+  url: string = environment.uri;
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -239,6 +244,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         unlockUI();
       }
     });
+    this.route.queryParams.subscribe( (queries) => {
+      if(queries.viewtype === 'preview') this.viewtype = 'preview';
+    });
     if (this.header.customizerData) this.header.customizerData = null;
   }
 
@@ -429,5 +437,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       index++;
       unlockUI();
     }
+  }
+
+  async shareStore() {
+    await copyText(`${this.url}/ecommerce/megaphone-v3/${this.saleflowData._id}`);
   }
 }
