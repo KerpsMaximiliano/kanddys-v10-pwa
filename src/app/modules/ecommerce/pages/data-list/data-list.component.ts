@@ -114,12 +114,13 @@ export class DataListComponent implements OnInit {
       else return this.redirect();
     })
     if(this.viewtype === 'merchant') {
-      this.merchantId = this.headerService.merchantInfo?._id;
+      // this.merchantId = this.headerService.merchantInfo?._id;
+      this.merchantId = "616a13a527bcf7b8ba3ac312";
       if(!this.merchantId) return this.redirect();
     }
     this.route.params.subscribe(async (params) => {
+      if(!params.id) this.dummyView = true;
       if(this.mode === 'tag') {
-        if(!params.id) this.dummyView = true;
         if(!this.dummyView) {
           // const order = (await this.orderService.order(params.id))?.order;
           // if(!order) return this.redirect();
@@ -150,22 +151,26 @@ export class DataListComponent implements OnInit {
         }
       }
       if(this.mode === 'category') {
-        const [item, data] = await Promise.all([
-          this.itemsService.item(params.id),
-          this.itemsService.itemCategories(this.merchantId, {
-            options: {
-              limit: 100,
-            },
+        if (!this.dummyView) {
+          const [item, data] = await Promise.all([
+            this.itemsService.item(params.id),
+            this.itemsService.itemCategories(this.merchantId, {
+              options: {
+                limit: 100,
+              },
+            })
+          ]);
+          if(!item || !data || !data) return this.redirect();
+          this.item = item;
+          const itemCategories = item.category.map((category) => category._id);
+          data.itemCategoriesList.forEach((category) => {
+            category.isSelected = itemCategories.includes(category._id);
           })
-        ]);
-        if(!item || !data || !data) return this.redirect();
-        this.item = item;
-        const itemCategories = item.category.map((category) => category._id);
-        data.itemCategoriesList.forEach((category) => {
-          category.isSelected = itemCategories.includes(category._id);
-        })
-        this.categoriesList = data.itemCategoriesList;
-        this.filteredCategories = data.itemCategoriesList;
+          this.categoriesList = data.itemCategoriesList;
+          this.filteredCategories = data.itemCategoriesList;
+        } else {
+          this.filteredCategories = this.categoriesList;
+        }
       }
     })
   }
