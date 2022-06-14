@@ -18,7 +18,7 @@ export class Tag extends Model<Tag> {
   name: string;
   notify: boolean;
   user: string;
-  containers: TagContainers[];
+  containers?: TagContainers[];
   notifyUserOrder: boolean;
   notifyMerchantOrder: boolean;
 }

@@ -22,6 +22,49 @@ export class DataListComponent implements OnInit {
   categoriesList: string[];
   filteredCategories: string[];
   matches: string[];
+  dummyView: boolean = false;
+  dummyFilteredTagList: any[] = [];
+  dummyTags: any[] = [
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    },
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    },
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    }
+  ]
 
   constructor(
     private tagsService: TagsService,
@@ -43,21 +86,25 @@ export class DataListComponent implements OnInit {
       if(!this.merchantId) return this.redirect();
     }
     this.route.params.subscribe(async (params) => {
-      if(!params.orderId) return this.redirect();
-      const order = (await this.orderService.order(params.orderId))?.order;
-      if(!order) return this.redirect();
-      this.orderId = order._id;
-      const user = await this.auth.me();
-      if(!user) return this.redirect();
-      const tags = await this.tagsService.tagsByUser();
-      tags.forEach((tag) => {
-        if(order.tags.includes(tag._id)) {
-          if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
-          if(this.viewtype === 'user') tag.notifyUserOrder = true;
-        }
-      })
-      this.tagList = tags;
-      this.filteredTagList = tags;
+      if(!params.orderId) this.dummyView = true;
+      if(!this.dummyView) {
+        const order = (await this.orderService.order(params.orderId))?.order;
+        if(!order) return this.redirect();
+        this.orderId = order._id;
+        const user = await this.auth.me();
+        if(!user) return this.redirect();
+        const tags = await this.tagsService.tagsByUser();
+        tags.forEach((tag) => {
+          if(order.tags.includes(tag._id)) {
+            if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+            if(this.viewtype === 'user') tag.notifyUserOrder = true;
+          }
+        })
+        this.tagList = tags;
+        this.filteredTagList = tags;
+      } else {
+        this.dummyFilteredTagList = this.dummyTags;
+      }
     })
   }
 
@@ -120,7 +167,8 @@ export class DataListComponent implements OnInit {
   }
 
   searchKeyword() {
-    this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
+    if (!this.dummyView) this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
+    else this.dummyFilteredTagList = this.dummyTags.filter((tag) => tag.name.includes(this.keyword));
   }
 
   back() {
