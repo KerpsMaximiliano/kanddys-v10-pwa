@@ -120,14 +120,10 @@
 </div>
 
 <ng-container *ngIf="!isClientView">
-	<app-bubble-button
-		[left]="true"
-		[right]="true"
-		[text]="'TIENDA'"
-		[text2]="'VISTA'"
-		[solo]="false"
-		(click)="toggleView()"
-	></app-bubble-button>
+	<app-bubble-button [position]="'left'" [text]="'TIENDA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
+
+	<app-bubble-button [position]="'right'" [text]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
+
 	<app-sticky-button
 		[bgColor]="'#2874AD'"
 		[text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
@@ -137,16 +133,17 @@
 </ng-container>
 
 <ng-container *ngIf="isClientView">
-	<app-bubble-button
-		[left]="true"
-		[right]="true"
-		[icon]="env + '/arrow-left.svg'"
-		[icon2]="env + '/upload.svg'"
-		(click)="toggleView()"
-	></app-bubble-button>
+    
+	<app-bubble-button [position]="'left'" [return]="true" (click)="toggleView()"></app-bubble-button>
+	<app-bubble-button [position]="'right'" [icon]="'/upload.svg'"  (click)="toggleView()"></app-bubble-button>
+	<app-sticky-button [text]="'SUBE LA FOTO DE LA COMPRA'"
+		[mode]="'disabled'">
+	</app-sticky-button>
+
 	<app-sticky-button
 		[text]="'SUBE LA FOTO DE LA COMPRA'"
 		[mode]="'disabled'"
 		size="small"
 	></app-sticky-button>
+
 </ng-container>

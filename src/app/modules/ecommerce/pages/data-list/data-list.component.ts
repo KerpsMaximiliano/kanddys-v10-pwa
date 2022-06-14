@@ -50,6 +50,49 @@ export class DataListComponent implements OnInit {
   ];
   filteredCategories: ItemCategory[] = [];
   matches: string[];
+  dummyView: boolean = false;
+  dummyFilteredTagList: any[] = [];
+  dummyTags: any[] = [
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    },
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    },
+    {
+      _id: "123456789",
+      user: "123546789",
+      updatedAt: "2022-06-14T01:48:10.049Z",
+      counter: 5,
+      containers: [],
+      name: "Tag pro",
+      createdAt: "2022-06-14T01:48:10.049Z",
+      messageNotify: "Hola mami",
+      notify: false,
+      notifyMerchantOrder: false,
+      notifyUserOrder: false
+    }
+  ]
 
   constructor(
     private tagsService: TagsService,
@@ -76,29 +119,34 @@ export class DataListComponent implements OnInit {
     }
     this.route.params.subscribe(async (params) => {
       if(this.mode === 'tag') {
-        // const order = (await this.orderService.order(params.id))?.order;
-        // if(!order) return this.redirect();
-        // this.id = order._id;
-        // const user = await this.auth.me();
-        // if(!user) return this.redirect();
-        try {
-          const [data, user] = await Promise.all([
-            this.orderService.order(params.id),
-            this.auth.me()
-          ]);
-          if(!data || !data.order || !user) return this.redirect();
-          const tags = await this.tagsService.tagsByUser();
-          tags.forEach((tag) => {
-            if(data.order.tags.includes(tag._id)) {
-              if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
-              if(this.viewtype === 'user') tag.notifyUserOrder = true;
-            }
-          })
-          this.tagList = tags;
-          this.filteredTagList = tags;
-        } catch (error) {
-          console.log(error);
-          return this.redirect();
+        if(!params.id) this.dummyView = true;
+        if(!this.dummyView) {
+          // const order = (await this.orderService.order(params.id))?.order;
+          // if(!order) return this.redirect();
+          // this.id = order._id;
+          // const user = await this.auth.me();
+          // if(!user) return this.redirect();
+          try {
+            const [data, user] = await Promise.all([
+              this.orderService.order(params.id),
+              this.auth.me()
+            ]);
+            if(!data || !data.order || !user) return this.redirect();
+            const tags = await this.tagsService.tagsByUser();
+            tags.forEach((tag) => {
+              if(data.order.tags.includes(tag._id)) {
+                if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+                if(this.viewtype === 'user') tag.notifyUserOrder = true;
+              }
+            })
+            this.tagList = tags;
+            this.filteredTagList = tags;
+          } catch (error) {
+            console.log(error);
+            return this.redirect();
+          }
+        } else {
+          this.dummyFilteredTagList = this.dummyTags;
         }
       }
       if(this.mode === 'category') {
@@ -214,8 +262,10 @@ export class DataListComponent implements OnInit {
   }
 
   searchKeyword() {
-    if(this.mode === 'tag')
-      this.filteredTagList = this.tagList.filter((tag) => tag.name.toLowerCase().includes(this.keyword.toLowerCase()));
+    if(this.mode === 'tag') {
+      if (!this.dummyView) this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
+      else this.dummyFilteredTagList = this.dummyTags.filter((tag) => tag.name.includes(this.keyword));
+    }
     if(this.mode === 'category')
       this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
   }

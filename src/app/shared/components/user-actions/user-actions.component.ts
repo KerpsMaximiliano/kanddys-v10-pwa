@@ -1,5 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+export interface Content{
+    question: string,
+    icon?: {
+        src: string,
+        alt?: string
+    },
+    line?: boolean,
+    callback?: () => void;
+}
+
 @Component({
   selector: 'app-user-actions',
   templateUrl: './user-actions.component.html',
@@ -8,23 +18,16 @@ import { Component, OnInit, Input } from '@angular/core';
 export class UserActionsComponent implements OnInit {
 
     @Input() title: string;
-    @Input() content: Array<any> = [{
-        question: '',
-        answer: '',
-        icon: {
-            src:'',
-            alt: ''
-        },
-        hidden: false,
-        line: true,
-        }];
+    @Input() content: Content[] = [];
+
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  showContent(){
-    this.content[0].hidden = !this.content[0].hidden;
+  inputFunc(callback: () => void){
+    callback();
+    console.log('Accion del callback');
   }
 
 }

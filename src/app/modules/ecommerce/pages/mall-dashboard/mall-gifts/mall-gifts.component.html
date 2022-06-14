@@ -20,13 +20,19 @@
     </app-saleflow-item>
   </ng-container>
 </div>
+
 <app-bubble-button
-    [left]="true"
-    [right]="true"
+    [position]="'left'"
 	[text]="'TIENDA'"
-	[text2]="'VISTA'"
 	[solo]="false"
 ></app-bubble-button>
+
+<app-bubble-button
+    [position]="'right'"
+	[text]="'VISTA'"
+	[solo]="false"
+></app-bubble-button>
+
 <app-sticky-button
 	[bgColor]="'#2874AD'"
 	text="toca donde prefieras"
