@@ -14,6 +14,32 @@ export class UserDashboardComponent implements OnInit {
   tabs: string[] = ['Regalos', 'Tiendas', 'Eventos', 'NFTs'];
   userData: User;
   env: string = environment.assetsUrl;
+  content: Array<any> = [
+    {
+    question: 'Preguntas automatizadas a tu WhatsApp para facilitar el primer contacto.',
+    answer: 'Esto es una muestra de prueba',
+    hidden: false,
+    line: true
+    },
+    {
+    question: 'Patrocinio',
+    answer: 'Si',
+    hidden: false,
+    line: true
+    },
+    {
+    question: 'Data de analisis',
+    answer: '',
+    hidden: false,
+    line: true
+    },
+    {
+    question: 'Vende Online o por WhatsApp',
+    answer: '',
+    hidden: false,
+    line: false
+    }
+    ];
 
   constructor(
     private router: Router,

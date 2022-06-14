@@ -16,7 +16,7 @@
                 (click)="rightButton()" *ngIf="right">
                 <p class="text" [style.color]="fontColor" *ngIf="text2">{{text2}}</p>
                 <img [src]="env + icon2" alt="Botón derecho" [ngStyle]="{filter: filterColor}" *ngIf="icon2"
-                width="18px" height="18px">
+                width="20px" height="20px">
     </button>
 
     <button class="mini-button-right" [style.background-color]="palette" *ngIf="minir" (click)="miniButton()" [ngStyle]="{'margin-bottom': big? '10px': ''}">
@@ -26,7 +26,7 @@
 
     <button class="mini-button-side" [style.background-color]="palette" *ngIf="minis" (click)="miniButton()">
                 <p class="text" [style.color]="fontColor" *ngIf="text3">{{text3}}</p>
-                <img [src]="env + miniIcon2" alt="Botón superior izquierdo para agregar bookmarks"
+                <img [src]="env + icon3" alt="Botón superior izquierdo para agregar bookmarks"
                 [ngStyle]="{filter: filterColor}" *ngIf="miniIcon2" width="22px" height="22px">
     </button>
 
