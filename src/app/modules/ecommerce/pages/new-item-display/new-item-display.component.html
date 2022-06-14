@@ -1,7 +1,14 @@
 <div class="container">
-	<app-helper-headerv2 [mode]="'basic'" [navtext]="item?.images?.length && ''" [returnAble]="true" [whatsapp]="false"
-		[shopcart]="false" [bgColor]="isClientView ? '#E9E371' : '#2874AD'" [color]="isClientView ? '#2874AD' : '#FFFFFF'" (returnEvent)="redirect()">
-	</app-helper-headerv2>
+	<app-helper-headerv2
+		[mode]="'basic'"
+		[navtext]="'MITIENDAID'"
+		[returnAble]="false"
+		[whatsapp]="true"
+		[cartAmount]="1"
+		[bgColor]="isClientView ? '#E9E371' : '#2874AD'"
+		[color]="isClientView ? '#2874AD' : '#FFFFFF'"
+		(returnEvent)="redirect()"
+	></app-helper-headerv2>
 
 	<!-- Info que ve el admin (merchant) del producto -->
 	<ng-container *ngIf="isOwner">
@@ -51,40 +58,40 @@
 
 	<div class="item-info" *ngIf="item">
 		<div class="description" *ngIf="item.description">
-			<h2 class="title-name" *ngIf="item.name && item.images.length && !isClientView">
+			<h2 class="title-name" *ngIf="item.name && item.images?.length">
 				{{item.name}}
 			</h2>
 			<p>{{item.description}}</p>
 
-			<hr *ngIf="!item.images && (item.name || item.pricing)" class="divider">
+			<!-- <hr *ngIf="!item.images && (item.name || item.pricing)" class="divider"> -->
 		</div>
 
-		<div *ngIf="item.name && (!item.images || !item.images.length)">
+		<div *ngIf="item.name && (!item.images || !item.images?.length)">
 			<div class="grey-box">
 				<h3 class="title">{{item.name}}</h3>
 			</div>
 		</div>
 
-		<button *ngIf="item.images.length" class="itemImg" (click)="openImageModal(item.images[0])">
+		<button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
 			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
 		</button>
 
-		<!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
+		<div class="no-description" *ngIf="item.name && !item.description && item.images">
 			<h3 class="title">{{item.name}}</h3>
-		</div> -->
+		</div>
 
-		<div *ngIf="item.pricing && !isClientView" class="item-price">
+		<div *ngIf="item.pricing" class="item-price">
 			<span class="vale">Vale</span>
 			<h4 class="price">${{item.pricing | number}}</h4>
 		</div>
 
-		<div class="flex-box" *ngIf="isClientView">
+		<!-- <div class="flex-box" *ngIf="isClientView">
 			<h3 class="title">{{ item.name }}</h3>
 			<div>
 				<p class="gray-label">RD$ {{ item.pricing | number }}</p>
 				<p class="gray-label">Ganas 14★</p>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="client-submit-area" *ngIf="isClientView">
 			<button class="add-to-cart">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
@@ -113,16 +120,33 @@
 </div>
 
 <ng-container *ngIf="!isClientView">
-	<app-bubble-button [left]="true" [right]="true" [text]="'TIENDA'" [text2]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
-	<app-sticky-button [bgColor]="'#2874AD'" [text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
+	<app-bubble-button
+		[left]="true"
+		[right]="true"
+		[text]="'TIENDA'"
+		[text2]="'VISTA'"
+		[solo]="false"
+		(click)="toggleView()"
+	></app-bubble-button>
+	<app-sticky-button
+		[bgColor]="'#2874AD'"
+		[text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
 		mode="fixed"
 		(click)="!loggedIn && !newMerchant? goToAuth() : (newMerchant && canCreateBank) ? goToBanksForm() : loggedIn && defaultMerchant ? goToMerchantStore() : null">
 	</app-sticky-button>
 </ng-container>
 
 <ng-container *ngIf="isClientView">
-	<app-bubble-button [left]="true" [icon]="env + '/arrow-left.svg'" (click)="toggleView()"></app-bubble-button>
-	<app-sticky-button [text]="'SUBE LA FOTO DE LA COMPRA'"
-		[mode]="'disabled'">
-	</app-sticky-button>
+	<app-bubble-button
+		[left]="true"
+		[right]="true"
+		[icon]="env + '/arrow-left.svg'"
+		[icon2]="env + '/upload.svg'"
+		(click)="toggleView()"
+	></app-bubble-button>
+	<app-sticky-button
+		[text]="'SUBE LA FOTO DE LA COMPRA'"
+		[mode]="'disabled'"
+		size="small"
+	></app-sticky-button>
 </ng-container>
