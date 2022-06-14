@@ -19,7 +19,7 @@ export class BubbleButtonComponent implements OnInit {
   @Input() text2: string;
   @Input() text3: string;
   @Input() bubblesMarginBottom: number = 20;
-  @Input() solo: boolean;
+  @Input() solo: boolean = true;
   @Input() left: boolean;
   @Input() right: boolean;
   @Input() mini: boolean;
@@ -56,7 +56,7 @@ export class BubbleButtonComponent implements OnInit {
       case 'blue':
         this.palette = '#2874AD';
         this.fontColor = '#FFFFFF';
-        this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(175%) contrast(100%)';
+        this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
         break;
     }
   }
