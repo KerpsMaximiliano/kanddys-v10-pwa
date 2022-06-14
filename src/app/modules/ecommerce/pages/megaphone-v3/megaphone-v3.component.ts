@@ -18,6 +18,7 @@ import { SwiperOptions } from 'swiper';
 import { Merchant } from 'src/app/core/models/merchant';
 import { environment } from 'src/environments/environment';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -68,7 +69,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     private item: ItemsService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private appService: AppService
+    private appService: AppService,
+    private location: Location
   ) { }
 
   openDialog() {
@@ -441,5 +443,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   async shareStore() {
     await copyText(`${this.url}/ecommerce/megaphone-v3/${this.saleflowData._id}`);
+  }
+
+  back() {
+    this.location.back()
   }
 }
