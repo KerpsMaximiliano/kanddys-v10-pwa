@@ -55,6 +55,7 @@ import { CategoryItemsAdminComponent } from './pages/category-items-admin/catego
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
+import { UserItemsComponent } from './pages/user-items/user-items.component';
 
 const routes: Routes = [
   {
@@ -304,6 +305,10 @@ const routes: Routes = [
     path: 'item-sales-detail',
     component: ItemSalesDetailComponent
   },
+  {
+    path: 'user-items',
+    component: UserItemsComponent
+  },
 ];
 
 @NgModule({
@@ -363,6 +368,7 @@ const routes: Routes = [
     CategoryItemDetailComponent,
     SaleDetailComponent,
     ItemSalesDetailComponent,
+    UserItemsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
