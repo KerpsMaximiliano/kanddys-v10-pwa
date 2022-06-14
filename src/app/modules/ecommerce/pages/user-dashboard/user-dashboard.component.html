@@ -18,14 +18,26 @@
     ></app-user-actions>
 
     <app-bubble-button
-    [left]="true"
-    [right]="true"
-    [mini]="true"
-    [minir]="true"
+    [position]="'left'"
     [color]="'blue'"
     [icon]="'/printer.svg'"
-    [icon2]="'/upload.svg'"
-    [miniIcon]="'/pencil_line.svg'"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'right'"
+    [color]="'blue'"
+    [icon]="'/upload.svg'"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'mini'"
+    [color]="'blue'"
+    [icon]="'/pencil_line.svg'"
+    ></app-bubble-button>
+    
+    <app-bubble-button
+    [position]="'minir'"
+    [color]="'blue'"
     ></app-bubble-button>
 
     <app-sticky-button
