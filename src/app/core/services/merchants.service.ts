@@ -4,6 +4,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
+import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
 import {
   merchant,
@@ -22,6 +23,9 @@ import {
   createEmployeeContract,
   employeeContractByMerchant,
   tagsByMerchant,
+  uploadDataToClientsAirtable,
+  uploadAirtableAttachments,
+  usersOrderMerchant
 } from './../graphql/merchants.gql';
 import { EmployeeContract, Merchant } from './../models/merchant';
 
@@ -100,6 +104,16 @@ export class MerchantsService {
     console.log(response);
 
     return response;
+  }
+
+  async usersOrderMerchant(merchantId: string): Promise<User[]> {
+    const response = await this.graphql.query({
+      query: usersOrderMerchant,
+      variables: { merchantId },
+      fetchPolicy: 'no-cache',
+    });
+    if(!response || response?.errors) return undefined;
+    return response.usersOrderMerchant;
   }
 
   async merchants(
@@ -215,6 +229,45 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     console.log(result);
     return result;
+  }
+
+  async uploadAirtableAttachments(
+    files: any
+  ): Promise<Array<String>> {
+    try {
+      const { uploadAirtableAttachments: result } = await this.graphql.mutate({
+        mutation: uploadAirtableAttachments,
+        variables: { files },
+        fetchPolicy: 'no-cache',
+        context: { useMultipart: true }
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async uploadDataToClientsAirtable(
+    merchantId: string,
+    databaseName: string,
+    data: Record<string, any>
+  ): Promise<boolean> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: uploadDataToClientsAirtable,
+        variables: { merchantId, databaseName, data },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async tagsByMerchant(merchantId: any, input?: any) {

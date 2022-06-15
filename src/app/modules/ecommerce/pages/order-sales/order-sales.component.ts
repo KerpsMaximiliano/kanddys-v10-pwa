@@ -278,7 +278,7 @@ export class OrderSalesComponent implements OnInit {
            text_style: true,
            phone: order.user.phone,
            add_tag: true,
-           tag_function: () => this.router.navigate([`ecommerce/data-list/${order._id}`], { queryParams: { viewtype: 'merchant' } }),
+           tag_function: () => this.router.navigate([`ecommerce/data-list/${order._id}`], { queryParams: { viewtype: 'merchant', mode: 'tag' } }),
          });
        })
      })

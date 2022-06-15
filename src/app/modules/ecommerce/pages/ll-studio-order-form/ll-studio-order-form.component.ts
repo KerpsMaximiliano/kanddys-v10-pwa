@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { FormControl, Validators } from '@angular/forms';
+import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
 import { DecimalPipe } from '@angular/common';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ActivatedRoute } from '@angular/router';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -15,6 +19,12 @@ const commonContainerStyles = {
 })
 export class LlStudioOrderFormComponent implements OnInit {
   scrollableForm = false;
+  reservation: {
+    data: Record<string, any>,
+    message: string;
+  } = null;
+  merchantId: string = null;
+  databaseName: string = null;
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -23,7 +33,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           label: 'Sobre tu orden *',
           sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
           inputType: 'textarea',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: new FormControl('sdqsdqdwqd', Validators.required),
           placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
           styles: {
             containerStyles: {
@@ -161,6 +171,16 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
           },
         },
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'fullname',
           fieldControl: new FormControl('', Validators.required),
@@ -168,7 +188,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'Mi nombre y apellido es..',
           styles: {
             containerStyles: {
-              marginTop: '85px',
+              marginTop: '44px',
             },
             labelStyles: {
               fontFamily: 'Roboto',
@@ -178,7 +198,17 @@ export class LlStudioOrderFormComponent implements OnInit {
               marginBottom: '24px',
             }
           },
-        },
+        }
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'totalAmount',
           formattedValue: '',
@@ -201,10 +231,10 @@ export class LlStudioOrderFormComponent implements OnInit {
               );
 
               if (formatted === '0') {
-                this.formSteps[1].fieldsList[2].placeholder = '';
+                this.formSteps[3].fieldsList[0].placeholder = '';
               }
 
-              this.formSteps[1].fieldsList[2].formattedValue = '$' + formatted;
+              this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -226,7 +256,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               fontWeight: 500
             },
             containerStyles: {
-              marginTop: '85px',
+              marginTop: '44px',
               position: 'relative'
             },
             fieldStyles: {
@@ -250,7 +280,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[3].fieldControl.setValue(change, {
+            this.formSteps[3].fieldsList[1].fieldControl.setValue(change, {
               emitEvent: false,
             });
           },
@@ -302,12 +332,22 @@ export class LlStudioOrderFormComponent implements OnInit {
             }
           },
         },
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'fromWhereAreYouPaying',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Instagram @llstudiord', 'WhatsApp 809-871-8288', 'WhatsApp 809-508-3344', 'Correo Electrónico'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[5].fieldControl.setValue(change, {
+            this.formSteps[4].fieldsList[0].fieldControl.setValue(change, {
               emitEvent: false,
             });
           },
@@ -316,7 +356,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '59px',
+              marginTop: '44px',
             },
             fieldStyles: {
               paddingLeft: '0px'
@@ -337,19 +377,30 @@ export class LlStudioOrderFormComponent implements OnInit {
               fontWeight: 500
             },
           },
-        },
+        }
+      ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'dateConfirmation',
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[1].fieldsList[6].fieldControl.setValue(change, {
+            this.formSteps[5].fieldsList[0].fieldControl.setValue(change, {
               emitEvent: false,
             });
 
             if (change === 'Si') {
-              params.scrollToStep(2);
-            }
+              params.scrollToStep(6);
+            } else
+              params.scrollToStep(7);
           },
           label: 'Hemos acordado y confirmado una fecha y hora de entrega? (*)',
           sublabel: `
@@ -359,7 +410,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '59px',
+              marginTop: '44px',
             },
             fieldStyles: {
               paddingLeft: '0px'
@@ -381,8 +432,51 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
         },
       ],
+      stepProcessingFunction: () => {
+        return { ok: true }
+      },
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
+    },
+    {
+      fieldsList: [
+        {
+          fieldControl: new FormControl('', Validators.required),
+          name: 'reservation',
+          label: '',
+          styles: {
+            containerStyles: {
+              display: 'none'
+            }
+          }
+        }
+      ],
+      embeddedComponents: [
+        {
+          afterIndex: 0,
+          component: ReservationOrderlessComponent,
+          inputs:
+          {
+            calendarId: "62a7e8dabc94801413a541f5"
+          },
+          outputs: [
+            {
+              name: 'onReservation',
+              callback: (reservationOutput) => {
+                this.reservation = reservationOutput;
+                this.formSteps[6].fieldsList[0].fieldControl.setValue(reservationOutput.message);
+              },
+            }
+          ]
+        }
+      ],
+      stepProcessingFunction: () => {
+        if (this.reservation) return { ok: true };
+
+        return { ok: false };
+      },
+      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
       headerText: '',
@@ -410,7 +504,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           styles: {
             containerStyles: {
-              marginTop: '40px',
+              marginTop: '44px',
             },
             labelStyles: {
               fontSize: '24px',
@@ -467,6 +561,52 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
         },
       ],
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
+              [
+                base64ToFile(this.formSteps[0].fieldsList[1].fieldControl.value),
+                base64ToFile(this.formSteps[3].fieldsList[2].fieldControl.value),
+              ]
+            );
+
+            const data = {
+              details: this.formSteps[0].fieldsList[0].fieldControl.value,
+              referenceImage: fileRoutes[0],
+              phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.value,
+              fullname: this.formSteps[2].fieldsList[0].fieldControl.value,
+              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.value,
+              paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.value,
+              proofOfPayment: fileRoutes[1],
+              fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.value,
+              dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.value,
+              reservation: new Date(
+                this.reservation.data.dateInfo,
+                this.reservation.data.monthNumber,
+                this.reservation.data.day,
+                this.reservation.data.hourNumber,
+                this.reservation.data.minutesNumber
+              ).toISOString(),
+              'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.value,
+              whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
+            }
+
+            await this.merchantsService.uploadDataToClientsAirtable(
+              this.merchantId,
+              this.databaseName,
+              data
+            );
+
+            return { ok: true };
+          } catch (error) {
+            console.log(error);
+
+            return { ok: false };
+          }
+        },
+      },
       stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
       stepButtonValidText: 'ENVIAR LA ORDEN POR WHATSAPP'
     }
@@ -474,9 +614,17 @@ export class LlStudioOrderFormComponent implements OnInit {
 
   constructor(
     private decimalPipe: DecimalPipe,
+    private merchantsService: MerchantsService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      const { merchantId, databaseName } = params;
+
+      this.merchantId = merchantId;
+      this.databaseName = databaseName;
+    })
   }
 
 }

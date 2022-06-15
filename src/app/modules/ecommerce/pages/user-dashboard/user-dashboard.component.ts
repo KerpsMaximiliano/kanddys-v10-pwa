@@ -3,7 +3,12 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
-import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Merchant } from 'src/app/core/models/merchant';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { Item } from 'src/app/core/models/item';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -11,9 +16,17 @@ import { lockUI } from 'src/app/core/helpers/ui.helpers';
   styleUrls: ['./user-dashboard.component.scss']
 })
 export class UserDashboardComponent implements OnInit {
+  env: string = environment.assetsUrl;
   tabs: string[] = ['Regalos', 'Tiendas', 'Eventos', 'NFTs'];
   userData: User;
-  env: string = environment.assetsUrl;
+  merchantData: Merchant;
+  items: Item[] = [];
+  ordersTotal: {
+    total: number;
+    length: number;
+  };
+  users: User[] = [];
+
   content: Array<any> = [
     {
     question: 'Preguntas automatizadas a tu WhatsApp para facilitar el primer contacto.',
@@ -44,14 +57,29 @@ export class UserDashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private merchantsService: MerchantsService,
+    private itemsService: ItemsService,
+    private orderService: OrderService,
     private route: ActivatedRoute,
   ) { }
 
-  ngOnInit(): void {
-    /* lockUI(this.authService.me().then((user) => {
-      if (!user) return this.redirect();
-      this.userData = user;
-    })); */
+  async ngOnInit(): Promise<void> {
+    lockUI();
+    const user = await this.authService.me();
+    unlockUI();
+    if (!user) return this.redirect();
+    this.userData = user;
+    this.merchantData = await this.merchantsService.merchantDefault();
+    if(this.merchantData) {
+      const [items, total, users] = await Promise.all([
+        this.itemsService.itemsByMerchant(this.merchantData._id),
+        this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchantData._id),
+        this.merchantsService.usersOrderMerchant(this.merchantData._id)
+      ]);
+      this.items = items?.itemsByMerchant;
+      this. ordersTotal = total;
+      this.users = users;
+    }
   }
 
   redirect() {

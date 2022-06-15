@@ -1,15 +1,18 @@
 <div class="container">
     <div class="const-components">
         <a class="nav-item active">
-            <img [src]="env + '/person.svg'" alt="Persona, ver mi perfil" class="icon">
+            <img [src]="env + '/person.svg'" width="13" height="17" alt="Persona, ver mi perfil" class="icon">
             <span>Yo</span>
         </a>
         <a class="nav-item">
-            <img [src]="env + '/store.svg'" alt="Tienda, haz click para ir a Mall">
+            <img [src]="env + '/store.svg'" width="19" height="16" alt="Tienda, haz click para ir a Mall" class="icon">
             <span>Mall</span>
         </a>
     </div>
-
+    <button *ngIf="merchantData" class="merchant-info-btn">
+        <h6>Mi tienda</h6>
+        <span>{{items?.length}} item / ${{ordersTotal?.total | number}} in / {{users?.length}} compradores</span>
+    </button>
     <button class="main-button">ADICIONA LA INFO DE CONTACTO</button>
 
     <app-user-actions

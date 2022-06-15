@@ -53,11 +53,16 @@ nav {
 }
 
 .addButton {
+  all: unset;
   font-family: "SfProSemiBold";
   font-size: 17px;
   color: #4773D8;
   text-align: center;
   cursor: pointer;
+
+  &:hover {
+    color: #7d9fee;
+  }
 }
 
 .categories{
