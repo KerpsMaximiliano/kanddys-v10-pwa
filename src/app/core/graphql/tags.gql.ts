@@ -37,7 +37,16 @@ export const tagsByUser = gql`
 			notifyMerchantOrder
     }
   }
-`
+`;
+
+export const tagsByMerchant = gql`
+    query tagsByMerchant($merchantId: ObjectID!) {
+        tagsByMerchant(merchantId: $merchantId)
+    }
+`;
+
+
+
 
 export const addTagsInOrder = gql`
     mutation addTagsInOrder( $merchantId: ObjectID!, $tagId: ObjectID!, $orderId: ObjectID!){
