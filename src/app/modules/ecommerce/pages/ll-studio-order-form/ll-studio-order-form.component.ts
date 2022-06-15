@@ -6,6 +6,7 @@ import { ReservationOrderlessComponent } from '../reservations-orderless/reserva
 import { DecimalPipe } from '@angular/common';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ActivatedRoute } from '@angular/router';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -22,6 +23,8 @@ export class LlStudioOrderFormComponent implements OnInit {
     data: Record<string, any>,
     message: string;
   } = null;
+  merchantId: string = null;
+  databaseName: string = null;
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -590,9 +593,9 @@ export class LlStudioOrderFormComponent implements OnInit {
               whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
             }
 
-            const result = await this.merchantsService.uploadDataToClientsAirtable(
-              "6295da0a1f8e415f0315edbf",
-              "Con luis",
+            await this.merchantsService.uploadDataToClientsAirtable(
+              this.merchantId,
+              this.databaseName,
               data
             );
 
@@ -611,10 +614,17 @@ export class LlStudioOrderFormComponent implements OnInit {
 
   constructor(
     private decimalPipe: DecimalPipe,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      const { merchantId, databaseName } = params;
+
+      this.merchantId = merchantId;
+      this.databaseName = databaseName;
+    })
   }
 
 }

@@ -24,7 +24,7 @@ import {
   employeeContractByMerchant,
   tagsByMerchant,
   uploadDataToClientsAirtable,
-  uploadAirtableAttachments
+  uploadAirtableAttachments,
   usersOrderMerchant
 } from './../graphql/merchants.gql';
 import { EmployeeContract, Merchant } from './../models/merchant';
