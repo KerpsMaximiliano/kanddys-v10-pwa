@@ -19,7 +19,7 @@
       [(ngModel)]="keyword"
       type="text"
       id="search"
-      placeholder="Nombre de la categoria"
+      [placeholder]="'Nombre de' + (mode === 'tag' ? 'l tag' : ' la categoria')"
     />
   </div>
   
@@ -75,10 +75,8 @@
     </ng-container>
 
   </div>
-
-    <app-sticky-button
-    [mode]="'basic'"
-    [text]="'SALVA EL ITEM EN categoriaID'"
-    ></app-sticky-button>
-    
 </div>
+<!-- <app-sticky-button
+[mode]="'basic'"
+[text]="'SALVA EL ITEM EN categoriaID'"
+></app-sticky-button> -->

@@ -221,18 +221,8 @@ export const employeeContractByMerchant = gql`
 `;
 
 export const tagsByMerchant = gql`
-  query tagsByMerchant($input: PaginationInput, $merchantId: ObjectID!) {
-    tagsByMerchant(input: $input, merchantId: $merchantId) {
-      results {
-        _id
-        name
-        counter
-      }
-      page
-      limit
-      totalPages
-      totalResults
-    }
+  query tagsByMerchant($merchantId: ObjectID!) {
+    tagsByMerchant(merchantId: $merchantId)
   }
 `;
 

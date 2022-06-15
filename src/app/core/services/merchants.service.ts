@@ -4,6 +4,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
 import { PaginationInput } from '../models/saleflow';
+import { Tag } from '../models/tags';
 import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
 import {
@@ -270,16 +271,13 @@ export class MerchantsService {
     }
   }
 
-  async tagsByMerchant(merchantId: any, input?: any) {
-    console.log(merchantId);
-
+  async tagsByMerchant(merchantId: string): Promise<{ tagsByMerchant: { orders: number, tags: Tag }[] }> {
     const response = await this.graphql.query({
       query: tagsByMerchant,
-      variables: { input, merchantId },
+      variables: { merchantId },
       fetchPolicy: 'no-cache',
     });
-    console.log(response);
-
+    if(!response || response?.errors) return undefined;
     return response;
   }
 }

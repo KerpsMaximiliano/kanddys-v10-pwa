@@ -124,7 +124,6 @@ export class DataListComponent implements OnInit {
         if(!this.dummyView) {
           // const order = (await this.orderService.order(params.id))?.order;
           // if(!order) return this.redirect();
-          // this.id = order._id;
           // const user = await this.auth.me();
           // if(!user) return this.redirect();
           try {
@@ -133,6 +132,7 @@ export class DataListComponent implements OnInit {
               this.auth.me()
             ]);
             if(!data || !data.order || !user) return this.redirect();
+            this.id = data.order._id;
             const tags = await this.tagsService.tagsByUser();
             tags.forEach((tag) => {
               if(data.order.tags.includes(tag._id)) {
@@ -264,6 +264,11 @@ export class DataListComponent implements OnInit {
     await this.itemsService.updateItem({
       category: categories
     }, this.item._id);
+    category.isSelected = true;
+    this.categoriesList.push(category);
+    this.filteredCategories.push(category);
+    this.keyword = '';
+    this.searchKeyword();
   }
 
   searchKeyword() {
