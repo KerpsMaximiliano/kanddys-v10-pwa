@@ -1,0 +1,36 @@
+<div class="container">
+    <app-helper-headerv2
+    [whatsapp]="false"
+    [shopcart]="false"
+    [returnAble]="true"
+    [batch]="true"
+    [plus]="true"
+    navtext="Mis Compradores"
+    ></app-helper-headerv2>
+
+    <div class="tab-area">
+        <ng-container *ngFor="let item of tabs; index as i">
+            <div class="tab" [ngClass]="{'active' : active}"></div>
+        </ng-container>
+    </div>
+
+    <app-notification-toggle
+    ></app-notification-toggle>
+
+    <app-bubble-button
+    [position]="'left'"
+    [return]="true"
+    color= "blue"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'left'"
+    [icon]="'/upload.svg'"
+    color= "blue"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [text]="totals + '/' + '$'+earning + '/' + sales + 'ventas'"
+    ></app-sticky-button>
+</div>
