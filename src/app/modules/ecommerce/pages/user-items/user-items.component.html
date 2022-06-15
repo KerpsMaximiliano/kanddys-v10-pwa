@@ -19,7 +19,7 @@
     },
     {
       text: {
-        content: 'RD$ ' + (ordersTotal ? ordersTotal.total : '0 ') + 'Total en Ventas',
+        content: 'RD$ ' + (ordersTotal ? ordersTotal.total : '0') + ' Total en Ventas',
         color: '#2874AD'
       }
     }
@@ -57,7 +57,8 @@
     + ' / ' + '$' 
     + (ordersTotal ? ordersTotal.total : '0') 
     + ' / ' 
-    + (users ? users.length : '0') + ' COMPRADORES'"
+    + (users ? users.length : '0') + ' COMPRADORES'
+  "
 	[mode]="'disabled-fixed'"
 	size="small"
 ></app-sticky-button>
