@@ -541,9 +541,9 @@
       steps[currentStep].footerConfig?.bubbleConfig
       && (
         dataModel.get(currentStepString).status !== 'INVALID' ?
-          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow || steps[currentStep].footerConfig.bubbleConfig.validStep.left
+          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.left
       :
-          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow || steps[currentStep].footerConfig.bubbleConfig.invalidStep.left
+          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left
       )
       " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53" [position]="'left'"
       [text]="
@@ -566,10 +566,9 @@
           steps[currentStep].footerConfig?.bubbleConfig
           && (
             dataModel.get(currentStepString).status !== 'INVALID' ?
-              !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow || steps[currentStep].footerConfig.bubbleConfig.validStep.right :
-              !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow || steps[currentStep].footerConfig.bubbleConfig.invalidStep.right
+              !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.right :
+              !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right
           )
-          && steps[currentStep].footerConfig.bubbleConfig.validStep.right
           " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53"
       [position]="'right'" [text]="
         dataModel.get(currentStepString).status !== 'INVALID' ?
