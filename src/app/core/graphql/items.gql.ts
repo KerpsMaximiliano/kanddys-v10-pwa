@@ -304,6 +304,7 @@ export const createItemCategory = gql`
       merchant {
         _id
       }
+      _id
       name
     }
   }

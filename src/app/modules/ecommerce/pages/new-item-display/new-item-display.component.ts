@@ -27,7 +27,7 @@ export class NewItemDisplayComponent implements OnInit {
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
-  isClientView: boolean = false;
+  isClientView: boolean = true;
   defaultMerchant: Merchant = null;
 
   isOwner: boolean = false;
@@ -64,6 +64,10 @@ export class NewItemDisplayComponent implements OnInit {
           this.item = await this.itemsService.item(params.itemId);
           if (!this.item) return this.redirect();
           if (this.item && !this.item.merchant) this.isPreItem = true;
+
+          // this.item.images = null;
+          // this.item.description = null;
+          this.item.content = ["fdsdfsdf", "ggggggggg"]
 
           this.shouldRedirectToPreviousPage = true;
 

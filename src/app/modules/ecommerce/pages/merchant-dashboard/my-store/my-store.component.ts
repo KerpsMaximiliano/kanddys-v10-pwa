@@ -42,7 +42,7 @@ export class MyStoreComponent implements OnInit {
       const merchantOrders = (await this.merchantsService.ordersByMerchant(params.merchantId))?.ordersByMerchant;
       if(merchantOrders && merchantOrders.length) {
         const ordersId = merchantOrders.map((order) => order._id)
-        this.ordersTotal = await this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], ordersId);
+        this.ordersTotal = await this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], params.merchantId, ordersId);
       }
       this.categories = (
         await this.itemsService.itemCategories(params.merchantId, {

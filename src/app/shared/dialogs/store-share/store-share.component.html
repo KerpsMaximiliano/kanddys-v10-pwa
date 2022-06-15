@@ -1,8 +1,42 @@
 <div class="container">
     <div class="dialog-card">
-        <h2 class="title">Mi Tienda</h2>
-
-        <div class="function" [cdkCopyToClipboard]="link" (click)="close()">
+        <h2 class="title">{{title}}</h2>
+        <ng-container *ngFor="let option of options">
+            <qrcode
+                *ngIf="option.mode === 'qr'"
+                [style.margin-left]="'-10px'"
+                #qrcode
+                [qrdata]="option.link"
+                [elementType]="'img'"
+                [width]="120"
+                [errorCorrectionLevel]="'M'"
+                [allowEmptyString]="true"
+                colorDark="#0B1F38"
+                style="display: none;"
+            ></qrcode>
+            <button
+                class="function"
+                (click)="
+                    option.mode === 'share' ? share(option.link) :
+                    option.mode === 'clipboard' ? copyLink(option.link) :
+                    option.mode === 'qr' ? downloadQr() :
+                    option.func && inputFunc(option.func)
+                "
+            >
+                <span class="text">{{option.text}}</span>
+                <!-- <img [src]="env + '/upload.svg'" alt="" width="20px" height="26px" class="icon red"> -->
+                <img
+                    *ngIf="option.icon"
+                    class="icon"
+                    [src]="env + option.icon.src"
+                    [alt]="option.icon.alt"
+                    [width]="option.icon.size?.width"
+                    [height]="option.icon.size?.height"
+                    [ngStyle]="{filter: option.icon.color && option.icon.color}"
+                >
+            </button>
+        </ng-container>
+        <!-- <div class="function" [cdkCopyToClipboard]="link" (click)="close()">
             <span class="text">Copia el link</span>
             <img [src]="env + '/upload.svg'" alt="" width="20px" height="26px" class="icon red">
         </div>
@@ -31,7 +65,7 @@
         <div class="function" *ngIf="func" (click)="func()">
             <span class="text">Ir a la tienda</span>
             <img [src]="env + '/qr-code.svg'" alt="URL de la tienda" width="30px" height="30px" class="icon red">
-        </div>
+        </div> -->
     </div>
     <button class="cancel" (click)="close()">Cancel</button>
 </div>

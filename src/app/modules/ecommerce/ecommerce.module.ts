@@ -54,6 +54,9 @@ import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
+import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
+import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
+import { UserItemsComponent } from './pages/user-items/user-items.component';
 
 const routes: Routes = [
   {
@@ -192,7 +195,11 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'data-list/:orderId',
+    path: 'data-list',
+    component: DataListComponent,
+  },
+  {
+    path: 'data-list/:id',
     component: DataListComponent,
   },
   {
@@ -294,7 +301,19 @@ const routes: Routes = [
   {
     path: 'category-item-detail',
     component: CategoryItemDetailComponent
-  }
+  },
+  {
+    path: 'sale-detail',
+    component: SaleDetailComponent
+  },
+  {
+    path: 'item-sales-detail',
+    component: ItemSalesDetailComponent
+  },
+  {
+    path: 'user-items',
+    component: UserItemsComponent
+  },
 ];
 
 @NgModule({
@@ -353,6 +372,9 @@ const routes: Routes = [
     MallStoresComponent,
     CategoryItemsAdminComponent,
     CategoryItemDetailComponent,
+    SaleDetailComponent,
+    ItemSalesDetailComponent,
+    UserItemsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

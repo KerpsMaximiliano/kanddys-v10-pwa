@@ -19,7 +19,7 @@
 			.title-name{
 			    font-family: 'RobotoBold';
 			    font-size: 22px;
-			    color: #2E2E2E;
+			    color: #174B72;
 			    margin: 0;
 					margin-bottom: 10px;
 			}
@@ -60,7 +60,7 @@
 				background-position: center;
 				background-repeat: no-repeat;
 				width: 100%;
-				height: 450px;
+				height: 296px;
 			}
 		}
 
@@ -70,7 +70,7 @@
 			.title {
 				font-family: "RobotoBold";
 				font-size: 22px;
-				color: #2e2e2e;
+				color: #174B72;
 				margin: 17.1px 32px 7px;
 			}
 		}
@@ -194,10 +194,11 @@
 		background-color: #FED230;
 		border-radius: 25px;
 		color: #174B72;
-		width: 60%;
+		width: 70%;
 		border: 0;
 		font-size: 16px;
 		text-transform: uppercase;
+		cursor: pointer;
 		img {
 			filter: brightness(0) saturate(100%) invert(20%) sepia(98%) saturate(606%) hue-rotate(169deg) brightness(96%) contrast(91%);
 			width: 25px;

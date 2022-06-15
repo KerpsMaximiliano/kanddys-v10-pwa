@@ -1,0 +1,59 @@
+<div class="container">
+  <app-helper-headerv2
+    [navtext]="'Tienda Sin nombre'"
+    mode="basic"
+    color="#2874AD"
+    bgColor="#E9E371"
+    [plus]="true"
+    [whatsapp]="false"
+    [shopcart]="false"
+  ></app-helper-headerv2>
+  <app-header-info-admin
+    [data]="[
+    {
+      icon: '/folder-details.svg',
+      text: {
+          content: 'Mis Compradores',
+          color: '#2874AD'
+      }
+    },
+    {
+      text: {
+        content: 'RD$ 147,154,00 Total en Ventas',
+        color: '#2874AD'
+      }
+    }
+  ]"
+  ></app-header-info-admin>
+  <app-page-component-tabs
+   [tabsOptions]="['Todos','CategoryID','CategoryID','CategoryID']"
+  ></app-page-component-tabs>
+  <div class="itemGrid" style="margin-top: 30px;">
+    <app-saleflow-item
+      *ngFor="let item of items; index as i"
+      [imgURL]="item.images[0]"
+      [price]="item.pricing"
+      [income]="0"
+      [quantity]="0"
+      [index2]="0"
+      [showIcon]="true"
+    ></app-saleflow-item>
+  </div>
+</div>
+<app-bubble-button
+  [solo]="true"
+  position="left"
+	color="blue"
+	icon="/arrow-left.svg"
+></app-bubble-button>
+<app-bubble-button
+  [solo]="true"
+  position="right"
+	color="blue"
+	[icon]="'/upload.svg'"
+></app-bubble-button>
+<app-sticky-button
+	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"
+	[mode]="'disabled'"
+	size="small"
+></app-sticky-button>

@@ -23,10 +23,13 @@
         }
 
         .function{
+            all: unset;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
             cursor: pointer;
 
             &:not(:last-of-type) {

@@ -9,25 +9,16 @@ import { environment } from 'src/environments/environment';
 export class BubbleButtonComponent implements OnInit {
 
   //Inputs
-  @Input() mode: 'single' | 'double' | 'triple';
   @Input() color: 'yellow' | 'blue' = 'yellow';
-  @Input() marginBottom: string = '20px';
+  @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minir' | 'minis' | 'big';
   @Input() icon: string;
-  @Input() icon2: string;
-  @Input() icon3: string;
-  @Input() miniIcon: string;
   @Input() text: string;
-  @Input() text2: string;
-  @Input() text3: string;
   @Input() bubblesMarginBottom: number = 20;
   @Input() solo: boolean = true;
-  @Input() mini: boolean;
   @Input() return: boolean = false;
 
   //EventEmitters
   @Output() leftAction: EventEmitter<any> = new EventEmitter();
-  @Output() rightAction: EventEmitter<any> = new EventEmitter();
-  @Output() miniAction: EventEmitter<any> = new EventEmitter();
 
   //valores utilizados
   palette: string;
@@ -52,7 +43,7 @@ export class BubbleButtonComponent implements OnInit {
       case 'blue':
         this.palette = '#2874AD';
         this.fontColor = '#FFFFFF';
-        this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(175%) contrast(100%)';
+        this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
         break;
     }
   }
@@ -60,16 +51,6 @@ export class BubbleButtonComponent implements OnInit {
   leftButton() {
     this.leftAction.emit();
     console.log('boton izquierdo');
-  }
-
-  rightButton() {
-    this.rightAction.emit();
-    console.log('boton derecho');
-  }
-
-  miniButton() {
-    this.miniAction.emit();
-    console.log('boton pequeño agregado');
   }
 
 }
