@@ -1,60 +1,59 @@
 <div class="container">
 
-    <div class="bruteforce">
-        <img [src]="imageFolder + '/Etiquetas_vacias.svg'" width="23px" height="21px" class="bruteimg"/>
-        <app-helper-header
-        [bgcolor]="'#FFFFFF'"
-        [middleText]="tagName"
-        [middleTextColor]="'#7B7B7B'"
-        [middleTextFontSize]="'17px'"
-        [middleTextFontFamily]="'SfProRegular'"
-        [options]="true"
-        [searchAble]="false"
-        ></app-helper-header>
-    </div>
-    
-        <div class="ws-container">
+    <app-helper-headerv2
+    [mode]="'edit'"
+    [fontSize2]="'21px'"
+    [returnAble]="true"
+    [batch]="true"
+    [color]="'#E9E371'"
+    navtext="Etiqueta Name"
+    ></app-helper-headerv2>
 
-        <ng-container *ngIf="!transparent">
-            <div class="tws-area"> <!--letsChange es temporal-->
-                <img alt="" [src]="imageFolder + '/whatsapp_verde.svg'" height="30.36px" width="30.06px" style="cursor: pointer;"/>
-                <p class="inner-tp">Adicionar notificación al taguear la orden/venta.</p>
+    <app-header-info-admin
+    [data]="data"
+    [whatsApp]="true"
+    ></app-header-info-admin>
+
+    <div class="tab-area" #elemt
+    (mousedown)="startDragging($event, false, elemt)"
+    (mouseup)="stopDragging($event, false)"
+    (mouseleave)="stopDragging($event, false)"
+    (mousemove)="moveEvent($event, elemt)">
+        <ng-container *ngFor="let item of tabs; index as i">
+            <div class="tab" [ngClass]="{'active' : active === i}" (click)="changeTab(i)">
+                {{item}} 
             </div>
         </ng-container>
-
-        <ng-container *ngIf="transparent">
-            <div class="fws-area"> <!--letsChange es temporal-->
-                <img alt="" [src]="imageFolder + '/whatsapp_blanco.svg'" height="30.36px" width="30.06px" style="cursor: pointer;"/>
-                <p class="inner-fp">{{tagMessage}}</p>
-            </div>
-        </ng-container>
-
     </div>
     
-    <div > <!--*ngIf = "isLogged == true"-->
+    <ng-container *ngFor=" let items of ordurs; index as i">
+      <div class="list-area">
+        <app-item-list
+        [marginTop]="'4.5px'"
+        [color]="'blue'"
+        [itemListContent]="items"
+        ></app-item-list>
+      </div>
+    </ng-container>
+    
 
-        <div class="orderSection">
+    <app-bubble-button
+    [position]="'left'"
+    [return]="true"
+    color= "yellow"
+    ></app-bubble-button>
 
-            <div class="total-option">
-                <label for="Total" class="total-sales">$4,775 Vendido</label>
-                <div class="dot-trio" (click)="openDialog()">
-                    <div class="dot"> </div>
-                    <div class="dot"> </div>
-                    <div class="dot"> </div>
-                </div>
-            </div>
+    <app-bubble-button
+    [position]="'right'"
+    text="NEW COM"
+    color= "yellow"
+    ></app-bubble-button>
 
-            <ng-container  *ngFor = "let order of ordurs; index as i">
-
-                <div class="order" > <!--*ngIf = "order.visible == true || search.value == ''"-->
-                    <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
-                </div>
-
-            </ng-container>
-
-        </div>
-
-    </div>
+    <app-sticky-button
+    [size]="'small'"
+    [mode]="'disabled-fixed'"
+    [text]="'TOCA DONDE PREFIERAS'"
+    ></app-sticky-button>
     
     
 </div>
