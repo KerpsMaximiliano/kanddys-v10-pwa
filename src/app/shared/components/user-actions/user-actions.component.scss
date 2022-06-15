@@ -34,7 +34,13 @@
             font-family: 'SfProMedium';
             font-size: 17px;
             color: #2874AD;
+            padding: 5px 10px;
             cursor: pointer;
+            border-radius: 99px;
+
+            &:hover {
+                background-color: #e4e4e4;
+            }
         }
  
     }

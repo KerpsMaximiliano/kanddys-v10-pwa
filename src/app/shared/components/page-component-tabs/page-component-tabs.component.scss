@@ -11,6 +11,7 @@
     z-index: 999;
   
     .tab {
+      all: unset;
       flex-basis: content;
       margin-left: 16px;
       color: #4773d8;
