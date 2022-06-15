@@ -291,7 +291,7 @@ const routes: Routes = [
     component: NewItemContactInfoComponent
   },
   {
-    path: 'll-studio-order-form',
+    path: 'll-studio-order-form/:merchantId/:databaseName',
     component: LlStudioOrderFormComponent
   },
   {

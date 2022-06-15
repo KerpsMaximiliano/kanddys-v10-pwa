@@ -333,17 +333,22 @@ export class ReservationOrderlessComponent implements OnInit {
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
     let month;
+    let monthNumber;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
         month = this.calendar.allFullMonths[i].name;
+        monthNumber = this.calendar.allFullMonths[i].id;
       }
     }
     this.datePreview = {
-      day: day,
-      month: month,
+      day,
+      month,
+      monthNumber,
       hour: this.formatHour3(
         reservation.date.from as string
       ),
+      hourNumber: this.formatHour5(reservation.date.from).hour,
+      minutesNumber: this.formatHour5(reservation.date.from).minutes,
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[
@@ -353,9 +358,13 @@ export class ReservationOrderlessComponent implements OnInit {
         reservation.date.until as string
       ),
     };
+
     this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatHour4(this.num(this.datePreview.hour).toString() + ":" + "45")} ${this.datePreview.hour.slice(-2)}`;
 
-    this.onReservation.emit(this.reservationMessage);
+    this.onReservation.emit({
+      message: this.reservationMessage,
+      data: this.datePreview
+    });
 
     // Logic for default date
     if (!this.dateComponentFrom)
@@ -476,6 +485,13 @@ export class ReservationOrderlessComponent implements OnInit {
 
   formatHour4(hour: string) {
     return moment(hour, 'h:mm').format('h:mm');
+  }
+
+  formatHour5(hour: string) {
+    let date = moment(hour);
+    let hourNew = Number(date.format('h'));
+    let minutes = Number(date.format('mm'));
+    return { hour: hourNew, minutes };
   }
 
   getId(id, slide) {
@@ -764,7 +780,7 @@ export class ReservationOrderlessComponent implements OnInit {
       from: '',
     };
   }
-  
+
   back() {
     this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`]);
   }
