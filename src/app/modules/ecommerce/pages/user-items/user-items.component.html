@@ -19,7 +19,7 @@
     },
     {
       text: {
-        content: 'RD$ 147,154,00 Total en Ventas',
+        content: 'RD$ ' + (ordersTotal ? ordersTotal.total : '0 ') + 'Total en Ventas',
         color: '#2874AD'
       }
     }
@@ -53,7 +53,12 @@
 	[icon]="'/upload.svg'"
 ></app-bubble-button>
 <app-sticky-button
-	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"
-	[mode]="'disabled'"
+	[text]="
+    (ordersTotal ? ordersTotal.length : '0') 
+    + ' / ' + '$' 
+    + (ordersTotal ? ordersTotal.total : '0') 
+    + ' / ' 
+    + (users ? users.length : '0') + ' COMPRADORES'"
+	[mode]="'disabled-fixed'"
 	size="small"
 ></app-sticky-button>
