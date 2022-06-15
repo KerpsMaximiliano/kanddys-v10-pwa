@@ -299,7 +299,7 @@ const routes: Routes = [
     component: CategoryItemsAdminComponent
   },
   {
-    path: 'category-item-detail',
+    path: 'category-item-detail/:itemId',
     component: CategoryItemDetailComponent
   },
   {

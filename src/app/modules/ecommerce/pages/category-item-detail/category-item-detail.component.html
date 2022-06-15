@@ -1,44 +1,26 @@
 <div class="container">
 
-    <app-helper-headerv2
-    [mode]="'edit'"
-    [edit]="true"
-    [navtext]="'Categorias DE PRODUCTOID'"
-    [icon]="'/expand-categories.svg'"
-    [color]="'#E9E371'"
-    ></app-helper-headerv2>
+    <app-helper-headerv2 [mode]="'edit'" [edit]="true"
+        [navtext]="!item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name" [icon]="'/expand-categories.svg'"
+        [color]="'#E9E371'"></app-helper-headerv2>
 
-    <div class="img-area">
-        <img [src]="imgUrl" alt="Imagen del producto a vender" class="img">
-    </div>  
-
-    <div class="categories">
-        <app-tags-square
-        *ngFor="let item of categoryList"
-        [reverse]="true"
-        [tagText]="'CategoriaId'"
-        [position]="'left'"
-        [number]="'44 ventas'"
-        [color]="'#2874AD'"
-        [textColor]="'#2874AD'"
-        ></app-tags-square>
+    <div class="img-area" *ngIf="item && item.images.length > 0">
+        <img [src]="item.images[0]" alt="Imagen del producto a vender" class="img">
     </div>
 
-    <app-bubble-button
-    [position]="'left'"
-    [text]="''"
-    icon="/arrow-left.svg"
-    ></app-bubble-button>
+    <div class="categories">
+        <app-tags-square *ngFor="let merchantCategory of merchantCategories" [reverse]="true"
+            [tagText]="merchantCategory.name" [position]="'left'" [number]="'44 ventas'"
+            [bColor]="itemCategories[merchantCategory._id] ? '#2874ad' : '#fff'"
+            [color]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'"
+            [textColor]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'">
+        </app-tags-square>
+    </div>
 
-    <app-bubble-button
-    [position]="'right'"
-    text="NEXT"
-    [icon]="'/expand-categories.svg'"
-    ></app-bubble-button>
+    <app-bubble-button [position]="'left'" [text]="''" icon="/arrow-left.svg"></app-bubble-button>
 
-    <app-sticky-button
-    [mode]="'disabled-fixed'"
-    [size]="'small'"
-    [text]="'MIRA LAS CATEGORIAS DEL ITEM'"
-    ></app-sticky-button>
+    <app-bubble-button [position]="'right'" text="NEXT" [icon]="'/expand-categories.svg'"></app-bubble-button>
+
+    <app-sticky-button [mode]="'disabled-fixed'" [size]="'small'" [text]="'MIRA LAS CATEGORIAS DEL ITEM'">
+    </app-sticky-button>
 </div>
