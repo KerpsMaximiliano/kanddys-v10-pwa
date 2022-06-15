@@ -10,6 +10,7 @@
 
     <div class="categories">
         <app-tags-square *ngFor="let merchantCategory of merchantCategories" [reverse]="true"
+            (click)="addOrRemoveCategory(merchantCategory, itemCategories[merchantCategory._id])"
             [tagText]="merchantCategory.name" [position]="'left'" [number]="'44 ventas'"
             [bColor]="itemCategories[merchantCategory._id] ? '#2874ad' : '#fff'"
             [color]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'"

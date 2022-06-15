@@ -50,12 +50,31 @@ export class CategoryItemDetailComponent implements OnInit {
 
         const { itemCategoriesList } = await this.itemsService.itemCategories(merchantDefault._id, { options: { limit: 1000 } });
         this.merchantCategories = itemCategoriesList;
-
-        console.log(this.item, itemCategoriesList);
       } else {
         this.router.navigate(['/']);
       }
     })
+  }
+
+  async addOrRemoveCategory(category: ItemCategory, isCategoryAssociatedToThisItem: boolean) {
+    let newItemCategories;
+
+    if (isCategoryAssociatedToThisItem) {
+      newItemCategories = Object.keys(this.itemCategories).filter(itemId => itemId !== category._id);
+
+      Object.keys(this.itemCategories).forEach(itemCategory => {
+        if (!newItemCategories.includes(itemCategory)) delete this.itemCategories[itemCategory];
+      })
+    } else {
+      newItemCategories = Object.keys(this.itemCategories);
+      newItemCategories.push(category._id);
+
+      this.itemCategories[category._id] = true;
+    }
+
+    await this.itemsService.updateItem({
+      category: newItemCategories
+    }, this.item._id);
   }
 
 }
