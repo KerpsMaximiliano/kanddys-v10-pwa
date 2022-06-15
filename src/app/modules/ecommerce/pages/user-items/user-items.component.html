@@ -41,7 +41,6 @@
   </div>
 </div>
 <app-bubble-button
-  [solo]="true"
   position="left"
 	color="blue"
 	icon="/arrow-left.svg"
@@ -58,7 +57,8 @@
     + ' / ' + '$' 
     + (ordersTotal ? ordersTotal.total : '0') 
     + ' / ' 
-    + (users ? users.length : '0') + ' COMPRADORES'"
+    + (users ? users.length : '0') + ' COMPRADORES'
+  "
 	[mode]="'disabled-fixed'"
 	size="small"
 ></app-sticky-button>

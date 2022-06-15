@@ -163,6 +163,7 @@
   </section>
 </div>
 
+
 <app-bubble-button
   position="left"
   [icon]="env + '/arrow-left.svg'"
@@ -178,6 +179,7 @@
   [solo]="false" *ngIf="viewtype == 'preview'"
   (click)="shareStore()"
 ></app-bubble-button>
+
 
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">

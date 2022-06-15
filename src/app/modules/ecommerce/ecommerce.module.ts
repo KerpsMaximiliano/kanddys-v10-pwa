@@ -57,6 +57,7 @@ import { CategoryItemDetailComponent } from './pages/category-item-detail/catego
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
+import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
 
 const routes: Routes = [
   {
@@ -195,10 +196,6 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'data-list',
-    component: DataListComponent,
-  },
-  {
     path: 'data-list/:id',
     component: DataListComponent,
   },
@@ -299,11 +296,11 @@ const routes: Routes = [
     component: CategoryItemsAdminComponent
   },
   {
-    path: 'category-item-detail',
+    path: 'category-item-detail/:itemId',
     component: CategoryItemDetailComponent
   },
   {
-    path: 'sale-detail',
+    path: 'sale-detail/:orderId',
     component: SaleDetailComponent
   },
   {
@@ -313,6 +310,10 @@ const routes: Routes = [
   {
     path: 'user-items',
     component: UserItemsComponent
+  },
+  {
+    path: 'my-customers',
+    component: MyCustomersComponent
   },
 ];
 
@@ -375,6 +376,7 @@ const routes: Routes = [
     SaleDetailComponent,
     ItemSalesDetailComponent,
     UserItemsComponent,
+    MyCustomersComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
