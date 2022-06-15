@@ -163,7 +163,8 @@
   </section>
 </div>
 
-<app-bubble-button [left]="true" [right]="true" [icon]="env + '/arrow-left.svg'" [icon2]="env + '/upload.svg'" [color]="'blue'" [solo]="false" *ngIf="viewtype == 'preview'"></app-bubble-button>
+<app-bubble-button [position]="'left'" [icon]="env + '/arrow-left.svg'" [color]="'blue'" [solo]="false" *ngIf="viewtype == 'preview'"></app-bubble-button>
+<app-bubble-button [position]="'right'" [icon]="env + '/upload.svg'" [color]="'blue'" [solo]="false" *ngIf="viewtype == 'preview'"></app-bubble-button>
 
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">

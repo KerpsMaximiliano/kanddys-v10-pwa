@@ -41,16 +41,15 @@
   </div>
 </div>
 <app-bubble-button
-  [solo]="true"
-  [left]="true"
+    [position]="'left'"
 	color="blue"
 	icon="/arrow-left.svg"
 ></app-bubble-button>
 <app-bubble-button
+  [position]="'right'"
   [solo]="true"
-  [right]="true"
-	color="blue"
-	[icon2]="'/upload.svg'"
+  color="blue"
+  [icon]="'/upload.svg'"
 ></app-bubble-button>
 <app-sticky-button
 	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"

@@ -56,6 +56,7 @@ import { CategoryItemDetailComponent } from './pages/category-item-detail/catego
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
+import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
 
 const routes: Routes = [
   {
@@ -194,7 +195,7 @@ const routes: Routes = [
     component: TagsEditComponent,
   },
   {
-    path: 'data-list/:orderId',
+    path: 'data-list',
     component: DataListComponent,
   },
   {
@@ -309,6 +310,10 @@ const routes: Routes = [
     path: 'user-items',
     component: UserItemsComponent
   },
+  {
+    path: 'my-customers',
+    component: MyCustomersComponent
+  },
 ];
 
 @NgModule({
@@ -369,6 +374,7 @@ const routes: Routes = [
     SaleDetailComponent,
     ItemSalesDetailComponent,
     UserItemsComponent,
+    MyCustomersComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
