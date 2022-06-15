@@ -6,7 +6,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { ActivatedRoute, Data, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
+import { Item, ItemCategory, ItemCategoryHeadline, ItemPackage } from 'src/app/core/models/item';
 import { SaleFlow, SocialMediaModel } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AppService } from 'src/app/app.service';
@@ -15,6 +15,10 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { Subscription } from 'rxjs';
 import { SwiperOptions } from 'swiper';
+import { Merchant } from 'src/app/core/models/merchant';
+import { environment } from 'src/environments/environment';
+import { copyText } from 'src/app/core/helpers/strings.helpers';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -47,6 +51,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   canOpenCart: boolean;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+  viewtype: 'preview' | 'merchant';
+  env: string = environment.assetsUrl;
+  url: string = environment.uri;
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -62,36 +69,22 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     private item: ItemsService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private appService: AppService
+    private appService: AppService,
+    private location: Location
   ) { }
 
   openDialog() {
     //
   }
 
-  async getMerchant(id: string) {
-    try {
-      const merchant = await this.merchant.merchant(id);
-      this.header.merchantInfo = merchant;
-      localStorage.setItem('merchantInfo', JSON.stringify(merchant));
-    } catch (error) {
-      console.log(error);
-    }
+  setMerchant(merchant: Merchant) {
+    this.header.merchantInfo = merchant;
+    localStorage.setItem('merchantInfo', JSON.stringify(merchant));
   }
 
-  async getCategories() {
-    const itemCategoriesList = (
-      await this.item.itemCategories(this.merchantId, {
-        options: {
-          limit: 20,
-        },
-      })
-    ).itemCategoriesList;
-    const headlines = await this.item.itemCategoryHeadlineByMerchant(
-      this.merchantId
-    );
+  getCategories(itemCategoriesList: ItemCategory[], headlines: ItemCategoryHeadline) {
     if (itemCategoriesList.length === 0) return;
-    const categories = headlines[0].itemsCategories
+    const categories = headlines.itemsCategories
       .map((value) => itemCategoriesList.find((element) => element._id === value))
       .filter((value) => value);
     return categories;
@@ -161,8 +154,27 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.merchantId = this.saleflowData.merchant._id;
       this.merchantSocials = this.saleflowData.social;
 
-      this.categories = await this.getCategories();
-      await this.getMerchant(this.saleflowData.merchant._id);
+      const [itemCategories, headlines, merchant] = await Promise.all([
+        this.item.itemCategories(this.merchantId, {
+          options: {
+            limit: 20,
+          },
+        }),
+        this.item.itemCategoryHeadlineByMerchant(this.merchantId),
+        this.merchant.merchant(this.merchantId),
+        // this.saleflowData.packages.length 
+        //   ? this.saleflow.listPackages({
+        //     findBy: {
+        //       _id: {
+        //         __in: ([] = this.saleflowData.packages.map((itemPackage) => itemPackage._id)),
+        //       },
+        //     },
+        //   })
+        //   : 
+      ]);
+
+      this.categories = this.getCategories(itemCategories.itemCategoriesList, headlines[0]);
+      this.setMerchant(merchant);
       // Package fetching
       if (this.saleflowData.packages.length) {
         const listPackages = (
@@ -233,6 +245,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.status = 'complete';
         unlockUI();
       }
+    });
+    this.route.queryParams.subscribe( (queries) => {
+      if(queries.viewtype === 'preview') this.viewtype = 'preview';
     });
     if (this.header.customizerData) this.header.customizerData = null;
   }
@@ -424,5 +439,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       index++;
       unlockUI();
     }
+  }
+
+  async shareStore() {
+    await copyText(`${this.url}/ecommerce/megaphone-v3/${this.saleflowData._id}`);
+  }
+
+  back() {
+    this.location.back()
   }
 }

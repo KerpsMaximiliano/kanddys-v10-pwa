@@ -259,3 +259,11 @@ export const uploadDataToClientsAirtable = gql`
     )
   }
 `;
+
+export const usersOrderMerchant = gql`
+  query usersOrderMerchant($merchantId: ObjectID!) {
+    usersOrderMerchant(merchantId: $merchantId) {
+      _id
+    }
+  }
+`;

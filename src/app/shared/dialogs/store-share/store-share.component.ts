@@ -1,7 +1,24 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
+
+export interface StoreShareOption {
+  text: string;
+  icon?: {
+    src: string;
+    alt?: string;
+    color?: string;
+    size: {
+      width: number;
+      height: number;
+    };
+  };
+  func?: () => void;
+  link?: string;
+  mode?: 'clipboard' | 'share' | 'func' | 'qr';
+}
 
 @Component({
   selector: 'app-store-share',
@@ -11,15 +28,17 @@ import { environment } from 'src/environments/environment';
 export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
-  @Input() link: string;
-  @Input() func: () => void;
+  @Input() title: string;
+  @Input() options: StoreShareOption[] = [];
 
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
-    private ref: DialogRef
+    private clipboard: Clipboard,
+    private ref: DialogRef,
   ) { }
 
   ngOnInit(): void {
+    if(!this.options?.length) throw new Error('Ingresa opciones para mostrar')
   }
 
   downloadQr() {
@@ -57,13 +76,17 @@ export class StoreShareComponent implements OnInit {
     return new Blob([uInt8Array], { type: imageType });
   }
 
-  async share() {
+  copyLink(link: string) {
+    this.clipboard.copy(link);
+    this.close();
+  }
+
+  async share(link: string) {
     this.close();
     await this.ngNavigatorShareService
       .share({
-        title: 'Gift a Box',
-        text: '¡Ordena ya tus servilletas!',
-        url: this.link,
+        title: '',
+        url: link,
       })
       .then((response) => {
         console.log(response);
@@ -75,6 +98,11 @@ export class StoreShareComponent implements OnInit {
 
   close() {
     this.ref.close();
+  }
+
+  inputFunc(callback: () => void) {
+    callback();
+    this.close();
   }
 
 }

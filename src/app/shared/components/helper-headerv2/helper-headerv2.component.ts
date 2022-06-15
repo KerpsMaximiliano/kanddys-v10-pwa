@@ -26,10 +26,17 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fixed: boolean = false;
     @Input() edit: boolean = false;
     @Input() batch: boolean = false;
+    @Input() search: boolean = false;
+    @Input() dots: boolean = false;
     @Input() color: string = '#FFFFFF';
     @Input() icon: string;
+    @Input() fontFamily: string = 'SfProBold';
+    @Input() fontSize: string = '35px';
+    @Input() rmargin: string;
     @Input() filter: string = 'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)';
-    @Output() returnEvent = new EventEmitter()
+    @Output() returnEvent = new EventEmitter();
+    @Output() searchEvent = new EventEmitter();
+    @Output() dotEvent = new EventEmitter();
     env: string = environment.assetsUrl;
 
   constructor() {}
@@ -44,4 +51,13 @@ export class HelperHeaderv2Component implements OnInit {
   return(event){
     this.returnEvent.emit(event)
   }
+
+  searchTrigger(event){
+    this.searchEvent.emit(event);
+  }
+
+  dotAction(event){
+    this.dotEvent.emit(event)
+  }
+
 }

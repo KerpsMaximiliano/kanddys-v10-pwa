@@ -25,10 +25,15 @@
     </div>
 
     <app-bubble-button
+    [position]="'left'"
     [text]="''"
-    [text2]="'NEW'"
     icon="/arrow-left.svg"
-    [icon2]="'/expand-categories.svg'"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'right'"
+    text="NEXT"
+    [icon]="'/expand-categories.svg'"
     ></app-bubble-button>
 
     <app-sticky-button

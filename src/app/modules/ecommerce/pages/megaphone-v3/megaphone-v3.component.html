@@ -163,6 +163,22 @@
   </section>
 </div>
 
+<app-bubble-button
+  position="left"
+  [icon]="env + '/arrow-left.svg'"
+  [color]="'blue'"
+  [solo]="false"
+  *ngIf="viewtype == 'preview'"
+  (click)="back()"
+></app-bubble-button>
+<app-bubble-button
+  position="right"
+  [icon]="env + '/upload.svg'"
+  [color]="'blue'"
+  [solo]="false" *ngIf="viewtype == 'preview'"
+  (click)="shareStore()"
+></app-bubble-button>
+
 <ng-container *ngIf="saleflowData">
   <ng-container *ngIf="!hasCustomizer; else noCTA">
     <app-sticky-button

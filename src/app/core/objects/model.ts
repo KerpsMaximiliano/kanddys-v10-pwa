@@ -11,13 +11,13 @@ export class Model<This extends object = any> {
     Object.assign(this, props);
   }
 
-  toCard(): CardData {
-    return {
-      title: `${this.constructor.name} ${this._id}`,
-      content: `${this.createdAt}`,
-      metadata: {
-        recordId: this._id,
-      },
-    };
-  }
+  // toCard(): CardData {
+  //   return {
+  //     title: `${this.constructor.name} ${this._id}`,
+  //     content: `${this.createdAt}`,
+  //     metadata: {
+  //       recordId: this._id,
+  //     },
+  //   };
+  // }
 }
