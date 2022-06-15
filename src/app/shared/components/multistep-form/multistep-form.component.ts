@@ -211,6 +211,8 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   @Input() disableSmoothScroll: boolean = true;
   @Input() showStepNumbers: boolean = true;
   @Input() shouldScrollBackwards: boolean = true;
+  shouldAddMultipleInput = false;
+  timeoutId: any = null;
   currentStep: number = 0;
   currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
@@ -425,10 +427,16 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     event: any,
     callback: (...params) => void,
     fieldformArray: FormArray,
-    fieldName: string
+    fieldName: string,
+    index
   ) {
-    if (event.key === 'Enter') {
-      callback(fieldformArray, fieldName);
+    if ((index + 1) === fieldformArray.length) {
+      if (this.timeoutId)
+        clearTimeout(this.timeoutId);
+
+      this.timeoutId = setTimeout(() => {
+        callback(fieldformArray, fieldName);
+      }, 1000);
     }
   }
 
