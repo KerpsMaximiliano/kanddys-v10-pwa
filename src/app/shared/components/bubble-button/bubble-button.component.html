@@ -10,7 +10,7 @@
      'minis': position === 'minis', 
      'big': position === 'big'
     }">
-        <a> <i class="fas fa-chevron-left" [style.color]="fontColor" *ngIf="return"></i> </a>
+        <a> <i class="fas fa-chevron-left" [style.color]="fontColor" style="font-size: 22px;" *ngIf="return"></i> </a>
         <p class="text" [style.color]="fontColor" *ngIf="text && !return">{{text}}</p>
          <img [src]="env + icon" alt="La imagen es variable, pedimos disculpas por inconvenientes ocacionados" [ngStyle]="{filter: filterColor}" *ngIf="icon"
           width="22px" height="22px">
