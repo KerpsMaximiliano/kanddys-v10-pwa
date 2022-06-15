@@ -2,7 +2,7 @@
 
     <app-helper-headerv2 [mode]="'edit'" [edit]="true"
         [navtext]="!item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name" [icon]="'/expand-categories.svg'"
-        [color]="'#E9E371'"></app-helper-headerv2>
+        [color]="'#E9E371'" [filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"></app-helper-headerv2>
 
     <div class="img-area" *ngIf="item && item.images.length > 0">
         <img [src]="item.images[0]" alt="Imagen del producto a vender" class="img">

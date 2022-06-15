@@ -6,13 +6,19 @@
                 <div class="left-area">
                     <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
                             [style.color]="color ? color : '#FFFFFF'"></i></a>
-                    <ng-container *ngIf="navtext"><span class="return" [style.color]="color ? color : '#FFFFFF'" [style.font-size]="fontSize2">{{navtext}}</span></ng-container>
+                    <ng-container *ngIf="navtext">
+                    <span class="return" [ngStyle]="
+                    {
+                      'font-size': fontSize2? fontSize2 : '',
+                      'font-family': fontFamily? fontFamily : '',
+                      'color': color? color : ''
+                    }" >{{navtext}}</span> </ng-container>
                 </div>
 
                 <div class="right-area">
                     <!-- ICONOS -->
                     <div *ngIf="whatsapp"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
-                            alt="" style="cursor: pointer; margin-right: 23px">
+                            alt="" style="cursor: pointer; margin-right: 23px" [ngStyle]="{'filter': filter? filter : 'none'}">
                     </div>
 
                     <ng-container *ngIf="shopcart">
@@ -21,7 +27,12 @@
                     </ng-container>
 
                     <img *ngIf="search" [src]="env + '/search.svg'" alt="Imagen de una lupa" (click)="searchTrigger($event)" height="20px" width="20px" class="search" 
-                    [ngStyle]="{'margin-right': rmargin? rmargin :'20px', 'margin-left': '20px', cursor: 'pointer'}"/>
+                    [ngStyle]="{
+                        'margin-right': rmargin? rmargin :'20px',
+                        'margin-left': '20px',
+                        cursor: 'pointer',
+                        'filter': filter? filter : 'none'
+                    }"/>
 
                     <div class="dot-trio" *ngIf="dots" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}">
                         <div class="dot"> </div>
@@ -33,10 +44,15 @@
                          <span *ngIf="batch">BATCH</span> EDIT
                     </button>
 
-                    <div *ngIf="plus"><span class="plus" [ngStyle]="{'font-family': fontFamily? fontFamily : '', 'font-size': fontSize? fontSize : '', cursor: 'pointer'}">+</span></div>
+                    <div *ngIf="plus"><span class="plus" [ngStyle]="
+                        {
+                         'font-family': fontFamily2? fontFamily2 : '',
+                         cursor: 'pointer'
+                        }"
+                        >+</span></div>
 
-                    <div *ngIf="upload"><img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px"
-                            width="15px" alt="" style="cursor: pointer;">
+                    <div *ngIf="upload">
+                        <img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;" [ngStyle]="{'filter': filter? filter : 'none'}">
                     </div>
                 </div>
             </div>
@@ -45,11 +61,24 @@
 
         <ng-container *ngIf="mode == 'double'">
             <div class="double-text">
-                <span class="text bold-text">{{leftText}}</span>
+                <span class="text bold-text" [ngStyle]="
+                {
+                  'font-size': fontSize2? fontSize2 : '',
+                  'font-family': fontFamily? fontFamily : '',
+                  'color': color? color : ''
+                }">{{leftText}}</span>
+
                 <div *ngIf="line">
                     <hr class="linea" />
                 </div>
-                <span class="text bold-text">{{rightText}}</span>
+
+                <span class="text bold-text" [ngStyle]="
+                {
+                  'font-size': fontSize2? fontSize2 : '',
+                  'font-family': fontFamily? fontFamily : '',
+                  'color': color? color : ''
+                }">{{rightText}}</span>
+
             </div>
         </ng-container>
 
@@ -58,7 +87,11 @@
                 <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
                     [style.color]="color"></i>
                 </a>
-                <p class="light-text" [style.color]="color">{{navtext}}</p>
+                <p class="light-text" [ngStyle]="
+                {'font-size': fontSize2? fontSize2 : '', 
+                'color': color? color : '', 
+                'font-family': fontFamily? fontFamily : ''
+                }">{{navtext}}</p>
             </div>
         </ng-container>
 
@@ -84,7 +117,7 @@
                 <div class="mi-tienda"> <span class="text" [style.color]="bgColor">{{leftText}}</span></div>
 
                 <div class="holder">
-                    <img [src]="env + '/star.svg'" alt="Imagen de una estrella" class="star">
+                    <img [src]="env + '/star.svg'" alt="Imagen de una estrella" class="star" [ngStyle]="{'filter': filter? filter : 'none'}">
                     <span for="List2raise">{{rightText}}</span>
                 </div>
             </div>
@@ -96,11 +129,23 @@
                     [style.color]="color"></i>
                 </a>
                 <div class="itf">
-                    <img *ngIf="icon" [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" [ngStyle]="{'filter': filter}">
-                    <h1 class="bold-text" [style.color]="color">{{navtext}}</h1>
+                    <img *ngIf="icon" [src]="env + icon" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" 
+                    [ngStyle]="{'filter': filter? filter : 'none'}">
+                    
+                    <h1 class="bold-text" [ngStyle]="{
+                        'font-size': fontSize2? fontSize2 : '',
+                        'font-family': fontFamily? fontFamily : '',
+                        'color': color? color : ''
+                        }">{{navtext}}</h1>
                 </div>
                 <button class="edit-button" *ngIf="edit || batch"> <span *ngIf="batch">BATCH</span> EDIT</button>
-                <div *ngIf="plus"><span class="plus">+</span></div>
+                <div *ngIf="plus"><span class="plus"
+                    [ngStyle]="
+                    {
+                      'font-family': fontFamily2? fontFamily2 : '',
+                      cursor: 'pointer'
+                    }"
+                    >+</span></div>
             </div>
         </ng-container>
 
