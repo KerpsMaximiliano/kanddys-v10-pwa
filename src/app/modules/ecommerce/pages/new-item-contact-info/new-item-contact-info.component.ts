@@ -16,7 +16,7 @@ export class NewItemContactInfoComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'double',
+        left: { icon: '/arrow-left.svg' },
         function: async (params) => {
           console.log(params);
 
@@ -33,7 +33,6 @@ export class NewItemContactInfoComponent implements OnInit {
       },
       invalidStep: {
         dontShow: true,
-        mode: 'single'
       }
     },
     bgColor: '#2874AD',

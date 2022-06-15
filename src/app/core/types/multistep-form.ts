@@ -81,12 +81,18 @@ export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
       dontShow?: boolean;
-      mode: 'single' | 'double' | 'triple';
+      left?: { text?: string; icon?: string };
+      right?: { text?: string; icon?: string };
+      miniLeft?: { text?: string; icon?: string };
+      miniRight?: { text?: string; icon?: string };
       function(...params): Promise<any> | any;
     },
     invalidStep: {
       dontShow?: boolean;
-      mode: 'single' | 'double' | 'triple';
+      left?: { text?: string; icon?: string };
+      right?: { text?: string; icon?: string };
+      miniLeft?: { text?: string; icon?: string };
+      miniRight?: { text?: string; icon?: string };
     }
   },
   bgColor?: string;

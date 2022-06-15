@@ -42,7 +42,7 @@ export class ItemCreatorComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'double',
+        right: { text: 'VISTA' },
         function: async (params) => {
           const values = params.dataModel.value;
 
@@ -127,7 +127,7 @@ export class ItemCreatorComponent implements OnInit {
       },
       invalidStep: {
         dontShow: true,
-        mode: 'single'
+        right: { text: 'VISTA' },
       }
     },
     bgColor: '#2874AD',
