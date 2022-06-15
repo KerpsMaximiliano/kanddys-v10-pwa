@@ -6,7 +6,7 @@
                 <div class="left-area">
                     <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
                             [style.color]="color ? color : '#FFFFFF'"></i></a>
-                    <ng-container *ngIf="navtext"><span class="return" [style.color]="color ? color : '#FFFFFF'">{{navtext}}</span></ng-container>
+                    <ng-container *ngIf="navtext"><span class="return" [style.color]="color ? color : '#FFFFFF'" [style.font-size]="fontSize2">{{navtext}}</span></ng-container>
                 </div>
 
                 <div class="right-area">
