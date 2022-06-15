@@ -274,7 +274,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           fieldControl: new FormControl('', Validators.required),
           selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[3].fieldsList[0].fieldControl.setValue(change, {
+            this.formSteps[3].fieldsList[1].fieldControl.setValue(change, {
               emitEvent: false,
             });
           },
@@ -393,7 +393,8 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             if (change === 'Si') {
               params.scrollToStep(6);
-            }
+            } else
+              params.scrollToStep(7);
           },
           label: 'Hemos acordado y confirmado una fecha y hora de entrega? (*)',
           sublabel: `
