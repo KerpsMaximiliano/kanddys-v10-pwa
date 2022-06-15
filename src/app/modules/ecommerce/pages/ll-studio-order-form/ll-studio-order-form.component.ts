@@ -18,7 +18,10 @@ const commonContainerStyles = {
 })
 export class LlStudioOrderFormComponent implements OnInit {
   scrollableForm = false;
-  reservation: string = null;
+  reservation: {
+    data: Record<string, any>,
+    message: string;
+  } = null;
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -456,9 +459,9 @@ export class LlStudioOrderFormComponent implements OnInit {
           outputs: [
             {
               name: 'onReservation',
-              callback: (reservationMessage) => {
-                this.reservation = reservationMessage;
-                this.formSteps[6].fieldsList[0].fieldControl.setValue(this.reservation);
+              callback: (reservationOutput) => {
+                this.reservation = reservationOutput;
+                this.formSteps[6].fieldsList[0].fieldControl.setValue(reservationOutput.message);
               },
             }
           ]
@@ -576,7 +579,13 @@ export class LlStudioOrderFormComponent implements OnInit {
               proofOfPayment: fileRoutes[1],
               fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.value,
               dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.value,
-              reservation: this.formSteps[6].fieldsList[0].fieldControl.value,
+              reservation: new Date(
+                this.reservation.data.dateInfo,
+                this.reservation.data.monthNumber,
+                this.reservation.data.day,
+                this.reservation.data.hourNumber,
+                this.reservation.data.minutesNumber
+              ).toISOString(),
               'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.value,
               whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
             }
