@@ -23,7 +23,9 @@ import {
   createEmployeeContract,
   employeeContractByMerchant,
   tagsByMerchant,
-  usersOrderMerchant,
+  uploadDataToClientsAirtable,
+  uploadAirtableAttachments
+  usersOrderMerchant
 } from './../graphql/merchants.gql';
 import { EmployeeContract, Merchant } from './../models/merchant';
 
@@ -227,6 +229,45 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     console.log(result);
     return result;
+  }
+
+  async uploadAirtableAttachments(
+    files: any
+  ): Promise<Array<String>> {
+    try {
+      const { uploadAirtableAttachments: result } = await this.graphql.mutate({
+        mutation: uploadAirtableAttachments,
+        variables: { files },
+        fetchPolicy: 'no-cache',
+        context: { useMultipart: true }
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async uploadDataToClientsAirtable(
+    merchantId: string,
+    databaseName: string,
+    data: Record<string, any>
+  ): Promise<boolean> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: uploadDataToClientsAirtable,
+        variables: { merchantId, databaseName, data },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async tagsByMerchant(merchantId: any, input?: any) {

@@ -236,6 +236,30 @@ export const tagsByMerchant = gql`
   }
 `;
 
+export const uploadAirtableAttachments = gql`
+  mutation uploadAirtableAttachments(
+    $files: [Upload!]!
+  ) {
+    uploadAirtableAttachments(
+      files: $files
+    )
+  }
+`;
+
+export const uploadDataToClientsAirtable = gql`
+  mutation uploadDataToClientsAirtable(
+    $merchantId: ObjectID!,
+    $databaseName: String!,
+    $data: JSON!
+  ) {
+    uploadDataToClientsAirtable(
+      merchantId: $merchantId,
+      databaseName: $databaseName,
+      data: $data
+    )
+  }
+`;
+
 export const usersOrderMerchant = gql`
   query usersOrderMerchant($merchantId: ObjectID!) {
     usersOrderMerchant(merchantId: $merchantId) {
