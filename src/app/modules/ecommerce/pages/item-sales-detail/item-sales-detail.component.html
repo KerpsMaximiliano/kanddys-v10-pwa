@@ -1,6 +1,6 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-    navtext="PRODUCTOID"
+    navtext="{{ itemData?.name.toUpperCase() }}"
     mode="center"
     color="#E9E371"
     [whatsapp]="false"
@@ -22,13 +22,19 @@
   </div>
   <app-page-component-tabs
     [tabsOptions]="tabs"
+    (changeValue)="tabTrigger($event)"
   ></app-page-component-tabs>
   <app-notification-toggle
     [active]="true"
   ></app-notification-toggle>
   <div class="orderSection">
-    <ng-container *ngFor="let order of orders; index as i">
-      <div class="order">
+    <ng-container  *ngIf="currentTab == 'Compradores'">
+      <div class="order" *ngFor="let buyer of buyersList; index as i">
+          <app-item-list [itemListContent]="buyer" [marginTop]="'0px'"></app-item-list>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="currentTab == 'Ventas'">
+      <div class="order" *ngFor="let order of ordersList; index as i">
           <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
       </div>
     </ng-container>
