@@ -6,7 +6,10 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { TagsService } from 'src/app/core/services/tags.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-data-list',
@@ -50,6 +53,7 @@ export class DataListComponent implements OnInit {
   ];
   filteredCategories: ItemCategory[] = [];
   matches: string[];
+  createMode: boolean = false;
   dummyView: boolean = false;
   dummyFilteredTagList: any[] = [];
   dummyTags: any[] = [
@@ -102,75 +106,83 @@ export class DataListComponent implements OnInit {
     private auth: AuthService,
     private headerService: HeaderService,
     private router: Router,
+    private dialog: DialogService
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queries) => {
-      if(queries.viewtype === 'merchant') this.viewtype = 'merchant';
-      else if(queries.viewtype === 'user') this.viewtype = 'user';
+      if (queries.viewtype === 'merchant') this.viewtype = 'merchant';
+      else if (queries.viewtype === 'user') this.viewtype = 'user';
       else return this.redirect();
-      if(queries.mode === 'tag') this.mode = 'tag';
-      else if(queries.mode === 'category') this.mode = 'category';
+      if (queries.mode === 'tag') this.mode = 'tag';
+      else if (queries.mode === 'category') this.mode = 'category';
       else return this.redirect();
     })
-    if(this.viewtype === 'merchant') {
+    if (this.viewtype === 'merchant') {
       this.merchantId = this.headerService.merchantInfo?._id;
+      // this.merchantId = "62ab42ee5c298435f993da96";
+
+      console.log(this.merchantId);
       // this.merchantId = "616a13a527bcf7b8ba3ac312";
-      if(!this.merchantId) return this.redirect();
+      if (!this.merchantId) return this.redirect();
     }
     this.route.params.subscribe(async (params) => {
-      if(!params.id) this.dummyView = true;
-      if(this.mode === 'tag') {
-        if(!this.dummyView) {
-          // const order = (await this.orderService.order(params.id))?.order;
-          // if(!order) return this.redirect();
-          // const user = await this.auth.me();
-          // if(!user) return this.redirect();
-          try {
-            const [data, user] = await Promise.all([
-              this.orderService.order(params.id),
-              this.auth.me()
-            ]);
-            if(!data || !data.order || !user) return this.redirect();
-            this.id = data.order._id;
-            const tags = await this.tagsService.tagsByUser();
-            tags.forEach((tag) => {
-              if(data.order.tags.includes(tag._id)) {
-                if(this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
-                if(this.viewtype === 'user') tag.notifyUserOrder = true;
-              }
-            })
-            this.tagList = tags;
-            this.filteredTagList = tags;
-          } catch (error) {
-            console.log(error);
-            return this.redirect();
+      if (params.id) {
+        if (this.mode === 'tag') {
+          if (!this.dummyView) {
+            // const order = (await this.orderService.order(params.id))?.order;
+            // if(!order) return this.redirect();
+            // const user = await this.auth.me();
+            // if(!user) return this.redirect();
+            try {
+              const [data, user] = await Promise.all([
+                this.orderService.order(params.id),
+                this.auth.me()
+              ]);
+              if (!data || !data.order || !user) return this.redirect();
+              this.id = data.order._id;
+              const tags = await this.tagsService.tagsByUser();
+              tags.forEach((tag) => {
+                if (data.order.tags.includes(tag._id)) {
+                  if (this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+                  if (this.viewtype === 'user') tag.notifyUserOrder = true;
+                }
+              })
+              this.tagList = tags;
+              this.filteredTagList = tags;
+            } catch (error) {
+              console.log(error);
+              return this.redirect();
+            }
+          } else {
+            this.dummyFilteredTagList = this.dummyTags;
           }
-        } else {
-          this.dummyFilteredTagList = this.dummyTags;
         }
-      }
-      if(this.mode === 'category') {
-        if (!this.dummyView) {
-          const [item, data] = await Promise.all([
-            this.itemsService.item(params.id),
-            this.itemsService.itemCategories(this.merchantId, {
-              options: {
-                limit: 100,
-              },
+        if (this.mode === 'category') {
+          if (!this.dummyView) {
+            const [item, data] = await Promise.all([
+              this.itemsService.item(params.id),
+              this.itemsService.itemCategories(this.merchantId, {
+                options: {
+                  limit: 100,
+                },
+              })
+            ]);
+            if (!item || !data || !data) return this.redirect();
+            this.item = item;
+            const itemCategories = item.category.map((category) => category._id);
+            data.itemCategoriesList.forEach((category) => {
+              category.isSelected = itemCategories.includes(category._id);
             })
-          ]);
-          if(!item || !data || !data) return this.redirect();
-          this.item = item;
-          const itemCategories = item.category.map((category) => category._id);
-          data.itemCategoriesList.forEach((category) => {
-            category.isSelected = itemCategories.includes(category._id);
-          })
-          this.categoriesList = data.itemCategoriesList;
-          this.filteredCategories = data.itemCategoriesList;
-        } else {
-          this.filteredCategories = this.categoriesList;
+            this.categoriesList = data.itemCategoriesList;
+            this.filteredCategories = data.itemCategoriesList;
+          } else {
+            this.filteredCategories = this.categoriesList;
+          }
         }
+      } else {
+        // this.dummyView = true;
+        this.createMode = true;
       }
     })
   }
@@ -180,9 +192,9 @@ export class DataListComponent implements OnInit {
   }
 
   onTagClick(tag: Tag) {
-    if(this.mode !== 'tag') return;
-    if(this.viewtype === 'merchant') {
-      if(tag.notifyMerchantOrder) {
+    if (this.mode !== 'tag') return;
+    if (this.viewtype === 'merchant') {
+      if (tag.notifyMerchantOrder) {
         tag.counter--;
         this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.id)
           .then((value) => {
@@ -202,22 +214,22 @@ export class DataListComponent implements OnInit {
           .catch((error) => {
             console.log(error);
             tag.counter--;
-          }); 
+          });
       }
       tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
     }
-    if(this.viewtype === 'user') {
-      if(tag.notifyUserOrder) {
+    if (this.viewtype === 'user') {
+      if (tag.notifyUserOrder) {
         tag.counter--;
         this.tagsService.removeTagsInUserOrder(tag._id, this.id)
-        .then((value) => {
-          console.log(value);
-          console.log('removed successfully!')
-        })
-        .catch((error) => {
-          console.log(error);
-          tag.counter++;
-        });
+          .then((value) => {
+            console.log(value);
+            console.log('removed successfully!')
+          })
+          .catch((error) => {
+            console.log(error);
+            tag.counter++;
+          });
       } else {
         tag.counter++;
         this.tagsService.addTagsInUserOrder(tag._id, this.id)
@@ -228,16 +240,16 @@ export class DataListComponent implements OnInit {
           .catch((error) => {
             console.log(error);
             tag.counter--;
-          }); 
+          });
       }
       tag.notifyUserOrder = !tag.notifyUserOrder;
     }
   }
 
   onCategoryClick(category: ItemCategory) {
-    if(this.mode !== 'category') return;
+    if (this.mode !== 'category') return;
     const categories = this.item.category.map((category) => category._id);
-    if(category.isSelected) {
+    if (category.isSelected) {
       const index = categories.indexOf(category._id);
       categories.splice(index, 1);
       category.isSelected = false;
@@ -258,30 +270,44 @@ export class DataListComponent implements OnInit {
       merchant: this.merchantId,
       name: this.keyword
     });
-    if(!category) throw new Error('Hubo un error al crear la categoría');
-    const categories = this.item.category.map((category) => category._id);
-    categories.push(category._id);
-    await this.itemsService.updateItem({
-      category: categories
-    }, this.item._id);
-    category.isSelected = true;
-    this.categoriesList.push(category);
-    this.filteredCategories.push(category);
-    this.keyword = '';
-    this.searchKeyword();
+    if (!category) throw new Error('Hubo un error al crear la categoría');
+
+    if (this.createMode && category) {
+      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          message: "Se ha creado la categoria"
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    }
+
+    if (!this.createMode) {
+      const categories = this.item.category.map((category) => category._id);
+      categories.push(category._id);
+      await this.itemsService.updateItem({
+        category: categories
+      }, this.item._id);
+      category.isSelected = true;
+      this.categoriesList.push(category);
+      this.filteredCategories.push(category);
+      this.keyword = '';
+      this.searchKeyword();
+    }
   }
 
   searchKeyword() {
-    if(this.mode === 'tag') {
+    if (this.mode === 'tag') {
       if (!this.dummyView) this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
       else this.dummyFilteredTagList = this.dummyTags.filter((tag) => tag.name.includes(this.keyword));
     }
-    if(this.mode === 'category')
+    if (this.mode === 'category')
       this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
   }
 
   back() {
-    const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/'+this.merchantId : 'user-dashboard/tiendas'}`
+    const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/' + this.merchantId : 'user-dashboard/tiendas'}`
     this.router.navigate([route]);
   }
 
