@@ -208,6 +208,7 @@ export class OrderSalesComponent implements OnInit {
   }
 
   openDialog() {
+    console.log("Abriendo");
     this.dialog.open(CustomFieldsComponent, {
       type: 'flat-action-sheet',
       customClass: 'app-dialog',
