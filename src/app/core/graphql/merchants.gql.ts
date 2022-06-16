@@ -254,6 +254,10 @@ export const usersOrderMerchant = gql`
   query usersOrderMerchant($merchantId: ObjectID!) {
     usersOrderMerchant(merchantId: $merchantId) {
       _id
+      name
+      phone
+      email
+      tags
     }
   }
 `;

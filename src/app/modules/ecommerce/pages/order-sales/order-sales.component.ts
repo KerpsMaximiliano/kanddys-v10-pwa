@@ -16,6 +16,10 @@ import { Tag } from 'src/app/core/models/tags';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ItemOrder } from 'src/app/core/models/order';
 
+interface CustomItemList extends ItemList {
+  tags?: string[]
+};
+
 @Component({
   selector: 'app-order-sales',
   templateUrl: './order-sales.component.html',
@@ -33,7 +37,7 @@ export class OrderSalesComponent implements OnInit {
   active: boolean = true;
   selectedOption: number = 0
   allOrders: ItemOrder[] = [];
-  orders: Array<ItemList> = [
+  orders: Array<CustomItemList> = [
     {
       visible: true,
       id: 'adsadasdasdsa',

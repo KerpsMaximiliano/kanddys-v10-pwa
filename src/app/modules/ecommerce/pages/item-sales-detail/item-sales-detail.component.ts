@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import * as moment from 'moment';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { Item } from 'src/app/core/models/item';
+import { ItemOrder } from 'src/app/core/models/order';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
@@ -18,8 +26,8 @@ export class ItemSalesDetailComponent implements OnInit {
     freeMode: true,
     spaceBetween: 5,
   };
-  tabs: string[] = ["44 Compradores", "1,457 Ventas"];
-  orders: ItemList[] = [
+  tabs: string[] = ["0 Compradores", "0 Ventas"];
+  dummyOrders: ItemList[] = [
     {
       visible: true,
       id: 'adsadasdasdsa',
@@ -62,13 +70,47 @@ export class ItemSalesDetailComponent implements OnInit {
     },
   ];
 
+  ordersList: ItemList[];
+  buyersList: ItemList[];
+
+  ordersByItem: ItemOrder[];
+  buyersByItem: User[];
+  currentTab: 'Compradores' | 'Ventas';
+  isLogged: boolean = false;
+
   constructor(
     private dialog: DialogService,
     private itemService: ItemsService,
+    private ordersService: OrderService,
+    private usersService: UsersService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.itemData = await this.itemService.item("628d47985d291213549ccb50");
+    // this.itemData = await this.itemService.item("628d47985d291213549ccb50");
+
+    await this.authService.me().then(data => {
+      if (data && data != undefined) this.isLogged = true;
+    });
+
+    if (this.isLogged) {
+      this.route.params.subscribe(async routeParams => {
+        if (routeParams.itemId) {
+          const itemId = routeParams.itemId;
+          await Promise.all([
+            this.getItem(itemId),
+            this.getOrdersByItem(itemId),
+            this.getBuyersByItem(itemId)
+          ]);
+          this.filterData();
+          this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
+        } else this.redirect();
+      });
+    } else {
+      this.redirect();
+    }
   }
 
   openImageModal(imageSourceURL: string) {
@@ -82,4 +124,63 @@ export class ItemSalesDetailComponent implements OnInit {
     });
   }
 
+  async getItem(itemID: string) {
+    try {
+      this.itemData = await this.itemService.item(itemID);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getOrdersByItem(itemID: string) {
+    try {
+      this.ordersByItem = (await this.ordersService.ordersByItem(itemID)).ordersByItem; 
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getBuyersByItem(itemID: string) {
+    try {
+      this.buyersByItem = (await this.usersService.buyersByItem(itemID)).buyersByItem;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  filterData() {
+   this.ordersList = this.ordersByItem.map(order => ({
+    visible: true,
+    id: order._id,
+    // image: order.items[0].item?.images[0],
+    title: formatID(order.dateId),
+    text_left: `${moment().diff(order.createdAt, "days")}`,
+    text_middle: `${order.subtotals[0].amount}`,
+    description: 'Custom Field 1',
+    description2: 'Custom Field 2',
+   }));
+
+   this.buyersList = this.buyersByItem.map(buyer => ( {
+    visible: true,
+    id: buyer._id,
+    image: buyer.image,
+    title: buyer.name || buyer.phone || buyer.email,
+    text_left: `${moment().diff(buyer.createdAt, "days")}`,
+    description: 'Custom Field 1',
+    description2: 'Custom Field 2',
+   }));
+  }
+
+  tabTrigger(e) {
+    if ((String(e)).includes('Compradores')) 
+      this.currentTab = 'Compradores';
+    else if ((String(e)).includes('Ventas')) 
+      this.currentTab = 'Ventas';
+  }
+
+  redirect() {
+    console.log("Redirección");
+    this.router.navigate(['/']);
+  }
+ 
 }

@@ -42,7 +42,8 @@ export class ItemCreatorComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'double',
+        dontShow: true,
+        right: { text: 'VISTA' },
         function: async (params) => {
           const values = params.dataModel.value;
 
@@ -127,7 +128,7 @@ export class ItemCreatorComponent implements OnInit {
       },
       invalidStep: {
         dontShow: true,
-        mode: 'single'
+        right: { text: 'VISTA' },
       }
     },
     bgColor: '#2874AD',
@@ -146,10 +147,13 @@ export class ItemCreatorComponent implements OnInit {
       fieldsList: [
         {
           name: 'price',
-          fieldControl: new FormControl('', [
-            Validators.required,
-            Validators.min(0),
-          ]),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', [
+              Validators.required,
+              Validators.min(0),
+            ])
+          },
           onlyAllowPositiveNumbers: true,
           label: 'Precio que te pagarán:',
           inputType: 'number',
@@ -383,7 +387,8 @@ export class ItemCreatorComponent implements OnInit {
                   purchaseLocations: [],
                 });
 
-                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+                // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`]);
               }
             }
           } catch (error) {
@@ -458,7 +463,10 @@ export class ItemCreatorComponent implements OnInit {
         {
           name: 'whatsIncluded',
           multiple: true,
-          fieldControl: new FormArray([new FormControl('')]),
+          fieldControl: {
+            type: 'multiple',
+            control: new FormArray([new FormControl('')])
+          },
           label: 'Adicione lo incluido:',
           inputType: 'text',
           placeholder: 'Escribe...',
@@ -499,7 +507,10 @@ export class ItemCreatorComponent implements OnInit {
       fieldsList: [
         {
           name: 'description',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: 'Descripción',
           placeholder:
             'Escriba la breve descripción que estará en la parte superior de la imagen..',
@@ -543,7 +554,10 @@ export class ItemCreatorComponent implements OnInit {
       fieldsList: [
         {
           name: 'name',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: 'Nombre',
           placeholder:
             'Escriba el nombre del producto..',
@@ -584,7 +598,10 @@ export class ItemCreatorComponent implements OnInit {
       fieldsList: [
         {
           name: 'collaborations',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: 'Precio que pagará el colaborador',
           placeholder:
             '$ que colaborarás..',
@@ -691,7 +708,7 @@ export class ItemCreatorComponent implements OnInit {
       if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
         const { description, name, images, pricing, content } = this.headerService.newTempItem;
 
-        this.formSteps[0].fieldsList[0].fieldControl.setValue(
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
 
@@ -712,12 +729,12 @@ export class ItemCreatorComponent implements OnInit {
         this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
 
         this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-        this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
-        this.formSteps[3].fieldsList[0].fieldControl.setValue(name || '');
+        this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
+        this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
 
         const formArray = this.formSteps[1].fieldsList[0]
-          .fieldControl as FormArray;
+          .fieldControl.control as FormArray;
         formArray.removeAt(0);
 
         if (content)
@@ -745,10 +762,10 @@ export class ItemCreatorComponent implements OnInit {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
 
-          this.formSteps[0].fieldsList[0].fieldControl.setValue(
+          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
             String(pricing)
           );
-          this.formSteps[2].fieldsList[0].fieldControl.setValue(description || '');
+          this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
 
@@ -759,7 +776,7 @@ export class ItemCreatorComponent implements OnInit {
 
 
           const formArray = this.formSteps[1].fieldsList[0]
-            .fieldControl as FormArray;
+            .fieldControl.control as FormArray;
           formArray.removeAt(0);
 
           if (content)

@@ -5,6 +5,7 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
 import { CollaborationsComponent } from 'src/app/shared/dialogs/collaborations/collaborations.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -12,9 +13,9 @@ import { StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-  constructor(private dialog: DialogService) {}
+  constructor(private dialog: DialogService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {
@@ -34,57 +35,65 @@ export class TestComponent implements OnInit {
     //   flags: ['no-header'],
     // });
     // +++++++ Para verificar la task 958
-    const options: StoreShareOption[] = [
-      {
-        text: 'asd test',
-        mode: 'clipboard',
-        link: 'dasdasdasdsa',
-        icon: {
-          src: '/upload.svg',
-          size: {
-            width: 20,
-            height: 26
-          }
-        }
-      },
-      {
-        text: 'now sharing!',
-        mode: 'share',
-        link: 'this is the linkj to share',
-        icon: {
-          src: '/upload.svg',
-          size: {
-            width: 20,
-            height: 26
-          }
-        }
-      },
-      {
-        text: 'qr thing',
-        mode: 'qr',
-        link: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        icon: {
-          src: '/qr-code.svg',
-          size: {
-            width: 30,
-            height: 30
-          }
-        }
-      },
-      {
-        text: 'xd',
-        func: () => console.log('uwu'),
-      }
-    ];
-    this.dialog.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
+    // const options: StoreShareOption[] = [
+    //   {
+    //     text: 'asd test',
+    //     mode: 'clipboard',
+    //     link: 'dasdasdasdsa',
+    //     icon: {
+    //       src: '/upload.svg',
+    //       size: {
+    //         width: 20,
+    //         height: 26
+    //       }
+    //     }
+    //   },
+    //   {
+    //     text: 'now sharing!',
+    //     mode: 'share',
+    //     link: 'this is the linkj to share',
+    //     icon: {
+    //       src: '/upload.svg',
+    //       size: {
+    //         width: 20,
+    //         height: 26
+    //       }
+    //     }
+    //   },
+    //   {
+    //     text: 'qr thing',
+    //     mode: 'qr',
+    //     link: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    //     icon: {
+    //       src: '/qr-code.svg',
+    //       size: {
+    //         width: 30,
+    //         height: 30
+    //       }
+    //     }
+    //   },
+    //   {
+    //     text: 'xd',
+    //     func: () => console.log('uwu'),
+    //   }
+    // ];
+    // this.dialog.open(StoreShareComponent, {
+    //   type: 'fullscreen-translucent',
+    //   props: {
+    //     title: 'test!!!',
+    //     options
+    //   },
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
+    // ------- Para verificar la task 958
+    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+      type: 'centralized-fullscreen',
       props: {
-        title: 'test!!!',
-        options
+        icon: 'check-circle.svg'
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-    // ------- Para verificar la task 958
   }
 }

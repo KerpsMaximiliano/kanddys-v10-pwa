@@ -16,7 +16,7 @@ export class NewItemContactInfoComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'double',
+        left: { icon: '/arrow-left.svg' },
         function: async (params) => {
           console.log(params);
 
@@ -33,7 +33,6 @@ export class NewItemContactInfoComponent implements OnInit {
       },
       invalidStep: {
         dontShow: true,
-        mode: 'single'
       }
     },
     bgColor: '#2874AD',
@@ -52,7 +51,10 @@ export class NewItemContactInfoComponent implements OnInit {
       fieldsList: [
         {
           name: 'phoneNumber',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: '¿En cuál o cuáles # de WhatsApp recibirás las notificaciones de las ordenes?',
           inputType: 'phone',
           styles: {

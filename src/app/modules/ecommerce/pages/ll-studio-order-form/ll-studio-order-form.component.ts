@@ -6,11 +6,17 @@ import { ReservationOrderlessComponent } from '../reservations-orderless/reserva
 import { DecimalPipe } from '@angular/common';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router'
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
 }
+
+const footerConfig = {
+  bgColor: '#2874AD'
+};
 
 @Component({
   selector: 'app-ll-studio-order-form',
@@ -25,6 +31,8 @@ export class LlStudioOrderFormComponent implements OnInit {
   } = null;
   merchantId: string = null;
   databaseName: string = null;
+  choosedReservation: boolean = false;
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -33,7 +41,10 @@ export class LlStudioOrderFormComponent implements OnInit {
           label: 'Sobre tu orden *',
           sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
           inputType: 'textarea',
-          fieldControl: new FormControl('sdqsdqdwqd', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
           styles: {
             containerStyles: {
@@ -56,7 +67,10 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
         {
           name: 'referenceImage',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Foto de Referencia',
           sublabel: 'Adjuntar foto de referencia de su orden.',
           inputType: 'file',
@@ -133,6 +147,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
+      footerConfig,
       stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
@@ -141,7 +156,10 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'phoneNumber',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: '¿Donde recibirás las notificaciones de esta orden??',
           inputType: 'phone',
           styles: {
@@ -175,6 +193,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
+      footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
     },
@@ -183,7 +202,10 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'fullname',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Al nombre de quién estás creando esta orden?',
           placeholder: 'Mi nombre y apellido es..',
           styles: {
@@ -203,6 +225,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
+      footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
     },
@@ -212,7 +235,10 @@ export class LlStudioOrderFormComponent implements OnInit {
         {
           name: 'totalAmount',
           formattedValue: '',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           shouldFormatNumber: true,
           label: 'Monto total de Compra:',
           sublabel: 'Si no estas segur(x) puedes dejarlo en blanco.',
@@ -277,10 +303,13 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
         {
           name: 'paymentMethod',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[3].fieldsList[1].fieldControl.setValue(change, {
+            this.formSteps[3].fieldsList[1].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
           },
@@ -303,7 +332,10 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
         {
           name: 'proofOfPayment',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Comprobante de Pago',
           sublabel: 'Anexar el comprobante de su pago',
           inputType: 'file',
@@ -336,18 +368,22 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      footerConfig,
+      stepButtonInvalidText: 'ESCRIBE DATOS DEL PAGO',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
       headerText: '',
       fieldsList: [
         {
           name: 'fromWhereAreYouPaying',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           selectionOptions: ['Instagram @llstudiord', 'WhatsApp 809-871-8288', 'WhatsApp 809-508-3344', 'Correo Electrónico'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[4].fieldsList[0].fieldControl.setValue(change, {
+            this.formSteps[4].fieldsList[0].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
           },
@@ -382,25 +418,34 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      footerConfig,
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'ENVIANOS TU ORDEN POR WHATSAPP'
     },
     {
       headerText: '',
       fieldsList: [
         {
           name: 'dateConfirmation',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[5].fieldsList[0].fieldControl.setValue(change, {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
 
             if (change === 'Si') {
               params.scrollToStep(6);
-            } else
+              this.choosedReservation = true;
+            } else {
+              this.formSteps[6].fieldsList[0].fieldControl.control.setValue('');
+              this.reservation = null;
+              this.choosedReservation = false;
               params.scrollToStep(7);
+            }
           },
           label: 'Hemos acordado y confirmado una fecha y hora de entrega? (*)',
           sublabel: `
@@ -435,13 +480,17 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      footerConfig,
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
       fieldsList: [
         {
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           name: 'reservation',
           label: '',
           styles: {
@@ -463,8 +512,9 @@ export class LlStudioOrderFormComponent implements OnInit {
             {
               name: 'onReservation',
               callback: (reservationOutput) => {
+                console.log(reservationOutput);
                 this.reservation = reservationOutput;
-                this.formSteps[6].fieldsList[0].fieldControl.setValue(reservationOutput.message);
+                this.formSteps[6].fieldsList[0].fieldControl.control.setValue(reservationOutput.message);
               },
             }
           ]
@@ -475,6 +525,7 @@ export class LlStudioOrderFormComponent implements OnInit {
 
         return { ok: false };
       },
+      footerConfig,
       stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
@@ -485,7 +536,10 @@ export class LlStudioOrderFormComponent implements OnInit {
           name: 'about-delivery',
           label: 'Sobre la entrega (*)',
           sublabel: 'Si no has realizado el pago de tu delivery o envío, favor cominicarte con nosotros para hacerlo',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           selectionOptions: [
             'Pick Up en Tienda (Por Citas)',
             'Delivery Zona Metropolitana (A partir de $200 DOP)',
@@ -524,11 +578,18 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
         }
       ],
+      customScrollToStepBackwards: (params) => {
+        if (!this.choosedReservation)
+          params.scrollToStep(5, false);
+        else
+          params.scrollToStep(6, false);
+      },
       stepProcessingFunction: () => {
         return { ok: true }
       },
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      footerConfig,
+      stepButtonInvalidText: 'TOCA PARA RESPONDER',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
       fieldsList: [
@@ -537,7 +598,10 @@ export class LlStudioOrderFormComponent implements OnInit {
           label: '¿Dónde entregaremos?',
           sublabel: 'Indicar sólamente si aplica. El delivery en Santo Domingo sólo aplica a la zona metropolitana y varia de RD$200 a RD$350 aproximadamente. El envio al interior se hace via courrier, a partir de RD$300.',
           inputType: 'textarea',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           placeholder: 'Escriba la Calle, número, (nombre del edificio).',
           styles: {
             containerStyles: {
@@ -567,46 +631,67 @@ export class LlStudioOrderFormComponent implements OnInit {
           try {
             const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
               [
-                base64ToFile(this.formSteps[0].fieldsList[1].fieldControl.value),
-                base64ToFile(this.formSteps[3].fieldsList[2].fieldControl.value),
+                base64ToFile(this.formSteps[0].fieldsList[1].fieldControl.control.value),
+                base64ToFile(this.formSteps[3].fieldsList[2].fieldControl.control.value),
               ]
             );
 
             const data = {
-              details: this.formSteps[0].fieldsList[0].fieldControl.value,
+              details: this.formSteps[0].fieldsList[0].fieldControl.control.value,
               referenceImage: fileRoutes[0],
-              phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.value,
-              fullname: this.formSteps[2].fieldsList[0].fieldControl.value,
-              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.value,
-              paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.value,
+              phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.control.value,
+              fullname: this.formSteps[2].fieldsList[0].fieldControl.control.value,
+              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.control.value,
+              paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.control.value,
               proofOfPayment: fileRoutes[1],
-              fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.value,
-              dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.value,
-              reservation: new Date(
+              fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.control.value,
+              dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.control.value,
+              reservation: this.reservation ? new Date(
                 this.reservation.data.dateInfo,
                 this.reservation.data.monthNumber,
                 this.reservation.data.day,
                 this.reservation.data.hourNumber,
                 this.reservation.data.minutesNumber
-              ).toISOString(),
-              'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.value,
-              whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
+              ).toISOString() : '',
+              'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.control.value,
+              whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.control.value,
             }
 
-            await this.merchantsService.uploadDataToClientsAirtable(
+            const success = await this.merchantsService.uploadDataToClientsAirtable(
               this.merchantId,
               this.databaseName,
               data
             );
 
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                message: success ? null : 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
             return { ok: true };
           } catch (error) {
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'sadFace.svg',
+                message: 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
             console.log(error);
 
             return { ok: false };
           }
         },
       },
+      footerConfig,
       stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
       stepButtonValidText: 'ENVIAR LA ORDEN POR WHATSAPP'
     }
@@ -615,7 +700,8 @@ export class LlStudioOrderFormComponent implements OnInit {
   constructor(
     private decimalPipe: DecimalPipe,
     private merchantsService: MerchantsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: DialogService
   ) { }
 
   ngOnInit(): void {

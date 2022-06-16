@@ -309,3 +309,22 @@ export const updateTagsInOrder = gql`
     }
   }
 `;
+
+export const ordersByItem = gql`
+  query ordersByItem($itemId: ObjectID!) {
+    ordersByItem(itemId: $itemId) {
+      _id
+      items {
+        item {
+          name
+          images
+        }
+      }
+      subtotals {
+        amount
+      }
+      dateId
+      createdAt
+    }
+  }
+`;

@@ -1,0 +1,21 @@
+.form-dialog {
+    maX-width: 400px;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: white;
+
+    h2 {
+        font-size: clamp(16px, 5vw, 1.5rem);
+        font-family: Roboto;
+        font-weight: 500;
+    }
+
+    .icon {
+        margin: auto;
+        width: fit-content;
+
+        img {
+            width: clamp(30px, 14vw, 90px);
+        }
+    }
+}

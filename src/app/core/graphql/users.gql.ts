@@ -26,3 +26,15 @@ export const user = gql`
     }
   }
 `;
+
+export const buyersByItem = gql`
+  query buyersByItem($itemId: ObjectID!) {
+    buyersByItem(itemId: $itemId) {
+      _id
+      image
+      phone
+      email
+      name
+    }
+  }
+`;

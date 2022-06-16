@@ -13,10 +13,20 @@ export interface FieldStyles {
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
+export interface SingleControl {
+  type: 'single',
+  control: FormControl;
+}
+
+export interface MultipleControl {
+  type: 'multiple',
+  control: FormArray;  
+}
+
 export interface FormField {
   name: string;
   styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
+  fieldControl: SingleControl | MultipleControl;
   onlyAllowPositiveNumbers?: boolean;
   formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
@@ -81,12 +91,18 @@ export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
       dontShow?: boolean;
-      mode: 'single' | 'double' | 'triple';
+      left?: { text?: string; icon?: string };
+      right?: { text?: string; icon?: string };
+      miniLeft?: { text?: string; icon?: string };
+      miniRight?: { text?: string; icon?: string };
       function(...params): Promise<any> | any;
     },
     invalidStep: {
       dontShow?: boolean;
-      mode: 'single' | 'double' | 'triple';
+      left?: { text?: string; icon?: string };
+      right?: { text?: string; icon?: string };
+      miniLeft?: { text?: string; icon?: string };
+      miniRight?: { text?: string; icon?: string };
     }
   },
   bgColor?: string;

@@ -22,7 +22,7 @@ export class SaleDetailComponent implements OnInit {
   loggedIn: boolean = false;
   env: string = environment.assetsUrl;
   backgroundImg: string = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/user-default.png";
-  tags: Record<string, any> = null;
+  tags: any;
   orderTags: Record<string, boolean> = {};
 
   constructor(
