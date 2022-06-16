@@ -17,7 +17,7 @@
 		</div>
 		<div class="orderSection">
 			<ng-container *ngFor="let order of orders; index as i">
-				<div class="order" *ngIf="order.phone.includes(auxNumbers)">
+				<div class="order" *ngIf="order.phone == auxNumbers">
 					<app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
 				</div>
 			</ng-container>
@@ -31,7 +31,7 @@
 		[search]="true"
 		(searchEvent)="searchToggle()"
 		[dots]="true"
-		(dotAction)="openDialog()"
+		(dotEvent)="openDialog()"
 		[batch]="true"
 		[plus]="true"
 		[whatsapp]="false"
