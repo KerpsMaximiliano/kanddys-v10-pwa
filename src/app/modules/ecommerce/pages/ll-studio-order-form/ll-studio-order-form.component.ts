@@ -6,7 +6,9 @@ import { ReservationOrderlessComponent } from '../reservations-orderless/reserva
 import { DecimalPipe } from '@angular/common';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router'
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -33,7 +35,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           label: 'Sobre tu orden *',
           sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
           inputType: 'textarea',
-          fieldControl: new FormControl('sdqsdqdwqd', Validators.required),
+          fieldControl: new FormControl('', Validators.required),
           placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
           styles: {
             containerStyles: {
@@ -399,8 +401,11 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             if (change === 'Si') {
               params.scrollToStep(6);
-            } else
+            } else {
+              this.formSteps[6].fieldsList[0].fieldControl.setValue('');
+              this.reservation = null;
               params.scrollToStep(7);
+            }
           },
           label: 'Hemos acordado y confirmado una fecha y hora de entrega? (*)',
           sublabel: `
@@ -582,25 +587,45 @@ export class LlStudioOrderFormComponent implements OnInit {
               proofOfPayment: fileRoutes[1],
               fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.value,
               dateConfirmation: this.formSteps[5].fieldsList[0].fieldControl.value,
-              reservation: new Date(
+              reservation: this.reservation ? new Date(
                 this.reservation.data.dateInfo,
                 this.reservation.data.monthNumber,
                 this.reservation.data.day,
                 this.reservation.data.hourNumber,
                 this.reservation.data.minutesNumber
-              ).toISOString(),
+              ).toISOString() : '',
               'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.value,
               whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.value,
             }
 
-            await this.merchantsService.uploadDataToClientsAirtable(
+            const success = await this.merchantsService.uploadDataToClientsAirtable(
               this.merchantId,
               this.databaseName,
               data
             );
 
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                message: success ? null : 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
             return { ok: true };
           } catch (error) {
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'sadFace.svg',
+                message: 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
             console.log(error);
 
             return { ok: false };
@@ -615,7 +640,8 @@ export class LlStudioOrderFormComponent implements OnInit {
   constructor(
     private decimalPipe: DecimalPipe,
     private merchantsService: MerchantsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: DialogService
   ) { }
 
   ngOnInit(): void {
