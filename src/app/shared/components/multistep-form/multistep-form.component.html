@@ -163,7 +163,7 @@
             </ng-container>
 
             <!-- MULTIPLE INPUTS GO HERE -->
-            <div [formArrayName]="currentField.name" *ngIf="currentField.multiple">
+            <div [formArrayName]="currentField.name" *ngIf="currentField.fieldControl.type === 'multiple'">
               <h3 class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
@@ -173,7 +173,7 @@
               </h3>
 
               <ng-container *ngFor="
-                  let field of currentField.fieldControl.controls;
+                  let field of currentField.fieldControl.control.controls;
                   let i = index
                 ">
                 <div [ngStyle]="{
@@ -191,14 +191,14 @@
                       onMultipleInputEnterPress(
                         $event,
                         addOneMoreInputToCurrentFormArray,
-                        currentField.fieldControl,
+                        currentField.fieldControl.control,
                         currentField.name,
                         i
                       )
                     " />
-                  <div class="close-button" *ngIf="currentField.fieldControl.length > 1" (click)="
+                  <div class="close-button" *ngIf="currentField.fieldControl.control.length > 1" (click)="
                       removeInputToCurrentFormArray(
-                        currentField.fieldControl,
+                        currentField.fieldControl.control,
                         currentField.name,
                         i
                       )
@@ -281,7 +281,7 @@
             ? currentField.styles.containerStyles
             : null
         ">
-            <ng-container *ngIf="!currentField.multiple">
+            <ng-container *ngIf="currentField.fieldControl.type !== 'multiple'">
               <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
               currentField.styles.topLabelActionStyles
                 ? currentField.styles.topLabelActionStyles
@@ -317,7 +317,7 @@
                 SearchCountryField.Name
               ]" [selectFirstCountry]="false" [selectedCountryISO]="CountryISO.UnitedStates" maxLength="15"
                 [phoneValidation]="true" [separateDialCode]="true" [numberFormat]="PhoneNumberFormat.International"
-                name="phone" [formControl]="currentField.fieldControl"></ngx-intl-tel-input>
+                name="phone" [formControl]="currentField.fieldControl.control"></ngx-intl-tel-input>
 
               <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
               currentField.styles.bottomLabelStyles
@@ -388,14 +388,14 @@
 
             <ng-container *ngFor="let option of currentField.selectionOptions">
               <label [ngClass]="
-                  option === currentField.fieldControl.value
+                  option === currentField.fieldControl.control.value
                     ? 'selector-option active'
                     : 'selector-option'
                 " [ngStyle]="
                   currentField.styles.fieldStyles
                   ? currentField.styles.fieldStyles
                   : null
-                " (click)="currentField.fieldControl.setValue(option)">
+                " (click)="currentField.fieldControl.control.setValue(option)">
                 <div class="background"></div>
                 <input type="radio" [value]="option" [formControlName]="currentField.name" />
                 <span>{{ option }}</span>
@@ -426,7 +426,7 @@
             </label>
 
             <label class="file" [for]="currentField.name" [ngStyle]="applyStylesToImages(currentField)">
-              <span *ngIf="currentField.fieldControl.value === ''">Upload / Image</span>
+              <span *ngIf="currentField.fieldControl.control.value === ''">Upload / Image</span>
             </label>
 
             <div *ngIf="currentField.showImageBottomLabel" class="showImageBottomLabel" [ngStyle]="

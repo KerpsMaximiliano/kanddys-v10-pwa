@@ -15,98 +15,7 @@ import { InformationBoxComponent } from 'src/app/shared/components/information-b
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-
-interface FieldStyles {
-  fieldStyles?: any;
-  containerStyles?: any;
-  topLabelActionStyles?: any;
-  labelStyles?: any;
-  bottomLabelStyles?: any;
-  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
-}
-
-interface FormField {
-  name: string;
-  styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
-  changeCallbackFunction?(...params): any;
-  changeFunctionSubscription?: Subscription;
-  selectionOptions?: Array<string>;
-  enabledOnInit?: 'ENABLED' | 'DISABLED';
-  validators?: Array<any>;
-  description?: string;
-  topLabelAction?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  label: string;
-  bottomLabel?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  placeholder?: string;
-  inputType?: string;
-  showImageBottomLabel?: string;
-  multiple?: boolean;
-}
-
-interface EmbeddedComponentOutput {
-  name: string;
-  callback(params: any): any;
-}
-
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  outputs?: Array<EmbeddedComponentOutput>;
-  containerStyles?: any;
-  afterIndex: number;
-}
-
-interface PromiseFunction {
-  type: 'promise';
-  function(params): Promise<any>;
-}
-
-interface ObservableFunction {
-  type: 'observable';
-  function(params): Observable<any>;
-}
-
-type AsyncFunction = PromiseFunction | ObservableFunction;
-
-interface FormStep {
-  fieldsList: Array<FormField>;
-  headerText: string;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?: AsyncFunction;
-  stepProcessingFunction?(...params): any;
-  customScrollToStep?(...params): any;
-  customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  optionalLinksTo?: OptionalLinks;
-  stepResult?: any;
-}
-
-interface BottomLeftAction {
-  text: string;
-  execute(params): any;
-}
-
-interface OptionalLinks {
-  styles?: FieldStyles;
-  links: Array<OptionalLink>;
-}
-
-interface OptionalLink {
-  text: string;
-  action(params): any;
-}
+import { FormStep } from 'src/app/core/types/multistep-form';
 
 @Component({
   selector: 'app-shipment-data-form',
@@ -138,10 +47,13 @@ export class ShipmentDataFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'street',
-          fieldControl: new FormControl(
-            this.getStoredDeliveryLocation() || '',
-            Validators.required
-          ),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(
+              this.getStoredDeliveryLocation() || '',
+              Validators.required
+            )
+          },
           label: 'Dónde entregaremos?',
           inputType: 'textarea',
           enabledOnInit: !this.header.disableGiftMessageTextarea

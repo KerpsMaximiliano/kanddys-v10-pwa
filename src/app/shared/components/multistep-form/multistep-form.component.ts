@@ -34,7 +34,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       fieldsList: [
         {
           name: 'phoneNumber',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Con cuál número de WhatsApp harás esta orden?',
           inputType: 'phone',
           placeholder: 'Mi # de WhatsApp es..',
@@ -53,7 +56,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         },
         {
           name: 'address',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Dirección?',
           inputType: 'textarea',
           placeholder: 'Calle, número(nombre del edificio)',
@@ -76,7 +82,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         // },
         {
           name: 'imageExample',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: 'Sube una imagen',
           inputType: 'file',
           placeholder: 'sube una imagen',
@@ -174,7 +183,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       fieldsList: [
         {
           name: 'receivedCode',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'Escriba el código que recibió:',
           inputType: 'number',
           placeholder: 'El código que recibí en WhatsApp fue..',
@@ -187,7 +199,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         {
           name: 'favoriteColors',
           multiple: true,
-          fieldControl: new FormArray([new FormControl('')]),
+          fieldControl: {
+            type: 'multiple',
+            control: new FormArray([new FormControl('')])
+          },
           label: 'Color favorito',
           inputType: 'text',
           placeholder: 'Mi color favorito es es..',
@@ -268,7 +283,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
 
       step.fieldsList.forEach((field) => {
         if (!currentStepFormGroup.get(field.name))
-          currentStepFormGroup.addControl(field.name, field.fieldControl);
+          currentStepFormGroup.addControl(field.name, field.fieldControl.control);
 
         if (field.enabledOnInit === 'DISABLED') {
           currentStepFormGroup.get(field.name).disable();
@@ -278,7 +293,7 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         //trigger code execution on every input change
         if (field.changeCallbackFunction) {
           field.changeFunctionSubscription =
-            field.fieldControl.valueChanges.subscribe((change) => {
+            field.fieldControl.control.valueChanges.subscribe((change) => {
               field.changeCallbackFunction(change, this.stepFunctionParams);
             });
         }
@@ -409,14 +424,14 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   removeInputToCurrentFormArray(
     fieldformArray: FormArray,
     fieldName: string,
-    fieldIndex: string
+    fieldIndex: number
   ): void {
     let newIndexToFocus: string =
-      fieldformArray.length - 1 === Number(fieldIndex)
-        ? String(Number(fieldIndex) - 1)
-        : fieldIndex;
+      fieldformArray.length - 1 === fieldIndex
+        ? String(fieldIndex - 1)
+        : String(fieldIndex);
 
-    fieldformArray.removeAt(Number(fieldIndex));
+    fieldformArray.removeAt(fieldIndex);
 
     setTimeout(() => {
       document.getElementById(fieldName + '-' + newIndexToFocus).focus();
@@ -447,9 +462,9 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   applyStylesToImages(currentField: any) {
     let styles = {
       background:
-        currentField.fieldControl.value !== ''
+        currentField.fieldControl.control.value !== ''
           ? 'url(' +
-          currentField.fieldControl.value +
+          currentField.fieldControl.control.value +
           ') no-repeat center center / contain #fff'
           : null,
       height: '200px',

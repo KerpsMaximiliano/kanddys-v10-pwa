@@ -51,7 +51,10 @@ export class NewItemContactInfoComponent implements OnInit {
       fieldsList: [
         {
           name: 'phoneNumber',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: '¿En cuál o cuáles # de WhatsApp recibirás las notificaciones de las ordenes?',
           inputType: 'phone',
           styles: {

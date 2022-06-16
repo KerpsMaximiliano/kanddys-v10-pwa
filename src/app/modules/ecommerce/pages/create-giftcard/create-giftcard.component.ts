@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-buttons/post-edit-buttons.component';
+import { FormStep } from 'src/app/core/types/multistep-form';
 
 const lightLabelStyles = {
   fontFamily: 'Roboto',
@@ -95,17 +96,17 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       this.addedScrollBlockerBefore = true;
     }
 
-    this.formSteps[3].fieldsList[0].fieldControl.setValue(
-      this.formSteps[1].fieldsList[0].fieldControl.value
+    this.formSteps[3].fieldsList[0].fieldControl.control.setValue(
+      this.formSteps[1].fieldsList[0].fieldControl.control.value
     );
-    this.formSteps[3].fieldsList[1].fieldControl.setValue(
-      this.formSteps[1].fieldsList[1].fieldControl.value
+    this.formSteps[3].fieldsList[1].fieldControl.control.setValue(
+      this.formSteps[1].fieldsList[1].fieldControl.control.value
     );
-    this.formSteps[3].fieldsList[2].fieldControl.setValue(
-      this.formSteps[1].fieldsList[2].fieldControl.value
+    this.formSteps[3].fieldsList[2].fieldControl.control.setValue(
+      this.formSteps[1].fieldsList[2].fieldControl.control.value
     );
-    this.formSteps[3].fieldsList[3].fieldControl.setValue(
-      this.formSteps[2].fieldsList[0].fieldControl.value
+    this.formSteps[3].fieldsList[3].fieldControl.control.setValue(
+      this.formSteps[2].fieldsList[0].fieldControl.control.value
     );
 
     return { ok: true };
@@ -137,13 +138,16 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   scrollBlockerBefore: any;
   removeScrollBlockerBefore: any;
   scrollableForm = false;
-  formSteps = [
+  formSteps: FormStep[] = [
     {
       fieldsList: [
         {
           name: 'writeMessage',
-          fieldControl: new FormControl('', Validators.required),
-          selectionOptions: 
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          selectionOptions:
             [
               'Sin mensaje y sin tarjetita',
               'Recibes la tarjetita vacía y escribes tu el mensajito',
@@ -151,7 +155,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
             ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[0].fieldsList[0].fieldControl.setValue(change, {
+            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
 
@@ -159,7 +163,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             if (change === 'Nosotros escribiremos el mensaje en una tarjetita') {
               params.scrollToStep(1);
             }
-            if(change === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
+            if (change === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
               this.router.navigate(['ecommerce/post-edit'], {
                 queryParams: { viewtype: "order" }
               });
@@ -204,6 +208,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         {
           component: PostEditButtonsComponent,
           afterIndex: 0,
+          inputs: []
         },
       ],
       customScrollToStepBackwards: (params) => {
@@ -228,7 +233,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       fieldsList: [
         {
           name: 'receiver',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: '¿Para quién es?',
           placeholder: 'Type...',
           topLabelAction: {
@@ -257,7 +265,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
         {
           name: 'sender',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: '¿De parte de quién o quienes?',
           placeholder: 'Type...',
           styles: {
@@ -270,7 +281,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
         {
           name: 'message',
-          fieldControl: new FormControl(''),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
           label: '¿Que mensaje escribiremos?',
           inputType: 'textarea',
           placeholder: 'Type your message here...',
@@ -304,7 +318,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         // this.router.navigate([
         //   `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
         // ]);
-        this.formSteps[0].fieldsList[0].fieldControl.setValue('', {
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue('', {
           emitEvent: false,
         });
 

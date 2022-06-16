@@ -71,7 +71,10 @@ export class BankRegistrationComponent implements OnInit {
       fieldsList: [
         {
           name: 'bankName',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'NOMBRE DEL BANCO',
           inputType: 'select',
           selectionOptions: [],
@@ -99,7 +102,10 @@ export class BankRegistrationComponent implements OnInit {
         },
         {
           name: 'accountType',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'TIPO DE CUENTA',
           inputType: 'select',
           selectionOptions: ["corriente", "ahorro"],
@@ -127,7 +133,10 @@ export class BankRegistrationComponent implements OnInit {
         },
         {
           name: 'accountNumber',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'NÚMERO DE CUENTA',
           inputType: 'number',
           placeholder: '',
@@ -139,7 +148,10 @@ export class BankRegistrationComponent implements OnInit {
         },
         {
           name: 'owner',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'TITULAR',
           placeholder: '',
           styles: {
@@ -150,7 +162,10 @@ export class BankRegistrationComponent implements OnInit {
         },
         {
           name: 'socialID',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
           label: 'DOC. DE IDENTIDAD',
           inputType: 'number',
           placeholder: '',
