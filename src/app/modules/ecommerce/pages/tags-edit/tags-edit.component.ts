@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TagsService } from '../../../../core/services/tags.service';
+import { ActivatedRoute } from '@angular/router';
 // import { HeaderService } from '../../../../core/services/header.service';
 // import { OrderService } from '../../../../core/services/order.service';
 
@@ -10,67 +11,72 @@ import { TagsService } from '../../../../core/services/tags.service';
 })
 export class TagsEditComponent implements OnInit {
 
-  tagID: string = '627c2923de1eaaddc6ef0c9d';
+  tagID: string = null;
   messageValue: string = '';
   tagValue: string = '';
   notifyable: boolean = false;
 
   constructor(
-      private tagsService: TagsService,
+    private tagsService: TagsService,
+    private route: ActivatedRoute
     //   private headerService: HeaderService,
     //   private order: OrderService,
   ) { }
 
   ngOnInit(): void {
-      if (this.tagID.length > 0){ 
-        this.tagsService.tag(this.tagID).then(async (data) =>{
+    if (this.tagID && this.tagID.length > 0) {
+      this.tagsService.tag(this.tagID).then(async (data) => {
         this.messageValue = data.tag.messageNotify;
         this.tagValue = data.tag.name;
 
         console.log(this.messageValue);
         console.log(this.tagValue);
-        }); 
+      });
     } else {
-        console.log('No llegamos');
-    }  
+      this.route.queryParams.subscribe(queryParams => {
+        const { tagName } = queryParams;
+
+        this.tagValue = tagName;
+      })
+    }
   }
 
-  writeTag(event){
-      this.tagValue = event.target.value;
+  writeTag(event) {
+    this.tagValue = event.target.value;
     //   console.log(this.tagValue);
   }
 
-  writeMessage(event){
-      this.messageValue = event.target.value;
+  writeMessage(event) {
+    this.messageValue = event.target.value;
     //   console.log(this.messageValue);
   }
 
-  sendTag(){
+  sendTag() {
     this.checkNotifyAble();
 
     const data = {
-        name: this.tagValue,
-        messageNotify: this.messageValue,
-        notify: this.notifyable
+      name: this.tagValue,
+      messageNotify: this.messageValue,
+      notify: this.notifyable
     }
 
-    if(this.tagID.length < 1){
-        this.tagsService.createTag(data);
-        console.log('Create')
-      }else { 
-          console.log(this.tagID)
-          this.tagsService.updateTag(data, this.tagID);
-          console.log('Update')
-          console.log(data, this.tagID)  
-        }
+    if (!this.tagID || this.tagID.length < 1) {
+      this.tagsService.createTag(data);
+      console.log('Create')
+    } else {
+      console.log(this.tagID)
+      this.tagsService.updateTag(data, this.tagID);
+      console.log('Update')
+      console.log(data, this.tagID)
+    }
   }
 
-  checkNotifyAble(){
-    if(this.messageValue.length > 0) {
-        this.notifyable = true;
+  checkNotifyAble() {
+    if (this.messageValue.length > 0) {
+      this.notifyable = true;
     } else {
-        this.notifyable = false;
-      }
+      this.notifyable = false;
+    }
     console.log(this.notifyable)
   }
 

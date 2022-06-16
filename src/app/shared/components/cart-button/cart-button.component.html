@@ -3,6 +3,7 @@
       [src]="env + '/carrito_blanco.svg'" 
       alt="toggle-cart" 
       [ngClass]="{'blue': color === 'blue'}"
+      [ngStyle]="{filter: filter ? filter : 'none'}"
   >
   <span *ngIf="cartAmount">{{cartAmount}}</span>
 </div>
