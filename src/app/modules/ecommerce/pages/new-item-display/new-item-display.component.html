@@ -3,10 +3,14 @@
 		[mode]="'basic'"
 		[navtext]="'MITIENDAID'"
 		[returnAble]="false"
-		[whatsapp]="true"
+		[whatsapp]="!providerView"
+		[shopcart]="!providerView"
 		[cartAmount]="1"
-		[bgColor]="isClientView ? '#E9E371' : '#2874AD'"
-		[color]="isClientView ? '#2874AD' : '#FFFFFF'"
+		cartColor="blue"
+		fontSize2="21px"
+		filter="brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)"
+		[bgColor]="providerView ? '#2874AD' : '#E9E371'"
+		[color]="providerView ? '#FFFFFF' : '#2874AD'"
 		(returnEvent)="redirect()"
 	></app-helper-headerv2>
 
@@ -85,7 +89,7 @@
 			<h4 class="price">${{item.pricing | number}}</h4>
 		</div>
 
-		<!-- <div class="flex-box" *ngIf="isClientView">
+		<!-- <div class="flex-box" *ngIf="providerView">
 			<h3 class="title">{{ item.name }}</h3>
 			<div>
 				<p class="gray-label">RD$ {{ item.pricing | number }}</p>
@@ -93,46 +97,64 @@
 			</div>
 		</div> -->
 
-		<div class="client-submit-area" *ngIf="isClientView">
-			<button class="add-to-cart">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
-			<img src="{{ env }}/bookmark-plus.svg" alt="">
+		<div class="client-submit-area">
+			<ng-container *ngIf="!providerView">
+				<button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
+				<img src="{{ env }}/bookmark-plus.svg" alt="">
+			</ng-container>
+			<ng-container *ngIf="providerView">
+				<button class="action-btn" [ngClass]="{'yellow': item.status === 'active', 'blue': item.status === 'disabled'}" (click)="toggleActivateItem()">
+					<ng-container *ngIf="item.status === 'active'">ACTIVO Y EN VENTA</ng-container>
+					<ng-container *ngIf="item.status === 'disabled'">EMPEZAR A VENDERLO</ng-container>
+				</button>
+				<a class="side-btn" [routerLink]="['/ecommerce/category-item-detail',item._id]">
+					<img src="{{ env }}/categories-list.svg" width="30" height="30" alt="">
+					<span [ngClass]="{'plus': !item.category.length}">{{item.category.length ? item.category.length : '+'}}</span>
+				</a>
+			</ng-container>
 		</div>
 
 		<ng-container *ngIf="item.content?.length">
 			<hr class="divider">
 			<div class="content">
-
 				<span class="includes">Incluye:</span>
-
 				<ul>
 					<li *ngFor="let content of item.content; index as i" class="list-content">
 						- {{content}}
 					</li>
 				</ul>
-				<!-- <ng-container *ngFor="let content of item.content; index as i">
-					<span class="list-content">- {{content}}</span>
-				</ng-container> -->
-
 			</div>
 		</ng-container>
 	</div>
 
 </div>
 
-<ng-container *ngIf="!isClientView">
-	<app-bubble-button [position]="'left'" [text]="'TIENDA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
-
-	<app-bubble-button [position]="'right'" [text]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
-
-	<app-sticky-button
-		[bgColor]="'#2874AD'"
-		[text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
-		mode="fixed"
-		(click)="!loggedIn && !newMerchant? goToAuth() : (newMerchant && canCreateBank) ? goToBanksForm() : loggedIn && defaultMerchant ? goToMerchantStore() : null">
-	</app-sticky-button>
+<ng-container *ngIf="providerView">
+	<ng-container *ngIf="mode === 'new-item'">
+		<app-bubble-button [position]="'left'" [text]="'TIENDA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
+		<app-bubble-button [position]="'right'" [text]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
+		<app-sticky-button
+			[bgColor]="'#2874AD'"
+			[text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
+			mode="fixed"
+			(click)="!loggedIn && !newMerchant? goToAuth() : (newMerchant && canCreateBank) ? goToBanksForm() : loggedIn && defaultMerchant ? goToMerchantStore() : null">
+		</app-sticky-button>
+	</ng-container>
+	<ng-container *ngIf="mode === 'edit'">
+		<app-bubble-button [position]="'left'" [icon]="env + '/arrow-left.svg'" [solo]="false" [routerLink]="['/ecommerce/user-items']"></app-bubble-button>
+		<app-bubble-button [position]="'right'" [icon]="env + '/upload.svg'" [solo]="false" (click)="openShareDialog()"></app-bubble-button>
+		<app-sticky-button
+			*ngIf="totalByItem && buyersByItem"
+			[bgColor]="'#2874AD'"
+			[text]="totalByItem?.itemInOrder + ' VENTAS / $' + totalByItem?.total + ' IN / ' + buyersByItem?.length + ' COMPRADORES'"
+			mode="fixed"
+			size="small"
+			color="#E9E371"
+		></app-sticky-button>
+	</ng-container>
 </ng-container>
 
-<ng-container *ngIf="isClientView">
+<ng-container *ngIf="!providerView">
 	<app-bubble-button [position]="'left'" [return]="true" (click)="toggleView()"></app-bubble-button>
 	<app-bubble-button [position]="'right'" [icon]="'/upload.svg'"  (click)="toggleView()"></app-bubble-button>
 	<app-sticky-button

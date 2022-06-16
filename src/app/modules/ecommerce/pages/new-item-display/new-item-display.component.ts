@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -14,6 +14,8 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 import { User } from 'src/app/core/models/user';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
+import { UsersService } from 'src/app/core/services/users.service';
+import { StoreShareComponent, StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-new-item-display',
@@ -21,16 +23,18 @@ import { Merchant } from 'src/app/core/models/merchant';
   styleUrls: ['./new-item-display.component.scss']
 })
 export class NewItemDisplayComponent implements OnInit {
-  @Input() item: Item;
+  item: Item;
   shouldRedirectToPreviousPage: boolean = false;
   loggedIn: boolean = false;
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
-  isClientView: boolean = true;
+  providerView: boolean;
+  mode: 'new-item' | 'edit';
   defaultMerchant: Merchant = null;
-
-  isOwner: boolean = false;
+  buyersByItem: User[];
+  totalByItem: any;
+  isOwner: boolean;
 
   tagsData: Array<any> = ['', '', '', ''];
 
@@ -48,9 +52,9 @@ export class NewItemDisplayComponent implements OnInit {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private merchantService: MerchantsService,
-    private itemService: ItemsService,
     private saleflowSarvice: SaleFlowService,
     private walletService: WalletService,
+    private usersService: UsersService,
     private headerService: HeaderService,
     private location: Location
   ) { }
@@ -59,12 +63,11 @@ export class NewItemDisplayComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       this.route.queryParams.subscribe(async queryParams => {
         const { token: magicLinkToken, mode } = queryParams;
-
+        this.mode = mode;
         if (params.itemId) {
           this.item = await this.itemsService.item(params.itemId);
           if (!this.item) return this.redirect();
           if (this.item && !this.item.merchant) this.isPreItem = true;
-
           // this.item.images = null;
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
@@ -112,7 +115,7 @@ export class NewItemDisplayComponent implements OnInit {
                 const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
 
                 if (this.isPreItem)
-                  await this.itemService.authItem(defaultMerchant._id, params.itemId);
+                  await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
                 const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
 
@@ -140,7 +143,7 @@ export class NewItemDisplayComponent implements OnInit {
                 const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
 
                 if (this.isPreItem)
-                  await this.itemService.authItem(defaultMerchant._id, params.itemId);
+                  await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
                 const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
 
@@ -189,7 +192,7 @@ export class NewItemDisplayComponent implements OnInit {
               if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
 
               if (this.isPreItem)
-                await this.itemService.authItem(defaultMerchant._id, params.itemId);
+                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
               const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
 
@@ -225,10 +228,18 @@ export class NewItemDisplayComponent implements OnInit {
             }
           }
         } else {
-          const defaultMerchant = await this.merchantService.merchantDefault();
+          this.defaultMerchant = await this.merchantService.merchantDefault();
+          if(!this.defaultMerchant) return;
+          if (this.defaultMerchant._id === this.item?.merchant?._id) {
+            this.isOwner = true;
+            this.providerView = true;
 
-          if (defaultMerchant) this.defaultMerchant = defaultMerchant;
-          if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
+            await Promise.all([
+              this.getTotalByItem(this.item._id),
+              this.getBuyersByItem(this.item._id),
+              this.getSaleflow(),
+            ]);
+          }
         }
 
         // if (params.itemId && !magicLinkToken) {
@@ -263,6 +274,30 @@ export class NewItemDisplayComponent implements OnInit {
     if (!wallet) this.canCreateBank = true;
   }
 
+  async getSaleflow() {
+    try {
+      this.saleflow = await this.saleflowSarvice.saleflowDefault(this.defaultMerchant._id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getTotalByItem(itemID: string) {
+    try {
+      this.totalByItem = (await this.itemsService.totalByItem(this.defaultMerchant._id, [itemID]))[0];
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getBuyersByItem(itemID: string) {
+    try {
+      this.buyersByItem = (await this.usersService.buyersByItem(itemID))?.buyersByItem;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   goToAuth() {
     this.router.navigate([`/ecommerce/new-item-contact-info/${this.item._id}`]);
   }
@@ -274,6 +309,47 @@ export class NewItemDisplayComponent implements OnInit {
 
   goToBanksForm() {
     if (this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
+  }
+
+  toggleActivateItem() {
+    this.itemsService.updateItem({
+      status: this.item.status === 'disabled' ? 'active' : 'disabled'
+    }, this.item._id).catch((error) => {
+      console.log(error);
+      this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+    })
+    this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+  }
+
+  openShareDialog() {
+    const options: StoreShareOption[] = [
+      {
+        text: 'Copia el link',
+        mode: 'clipboard',
+        link: `http://localhost:4200/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+      },
+      {
+        text: 'Comparte el link',
+        mode: 'share',
+        link: `http://localhost:4200/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+        icon: {
+          src: '/upload.svg',
+          size: {
+            width: 20,
+            height: 26
+          }
+        }
+      },
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Mi item',
+        options
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   openImageModal(imageSourceURL: string) {
@@ -302,7 +378,7 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   toggleView() {
-    this.isClientView = !this.isClientView;
+    this.providerView = !this.providerView;
   }
 
 }

@@ -350,6 +350,9 @@ export class ItemCreatorComponent implements OnInit {
                 },
                 this.currentItemId
               );
+
+              this.headerService.flowRoute = this.router.url;
+              this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
             } else {
               if (this.loggedIn) {
                 const { createItem } = await this.itemService.createItem({
@@ -371,7 +374,12 @@ export class ItemCreatorComponent implements OnInit {
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
-                if ('_id' in createItem) this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
+
+                if ('_id' in createItem) {
+                  this.headerService.flowRoute = this.router.url;
+
+                  this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
+                }
               } else {
                 const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
@@ -388,7 +396,10 @@ export class ItemCreatorComponent implements OnInit {
                 });
 
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`]);
+                if ('_id' in createPreItem) {
+                  this.headerService.flowRoute = this.router.url;
+                  this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`])
+                };
               }
             }
           } catch (error) {

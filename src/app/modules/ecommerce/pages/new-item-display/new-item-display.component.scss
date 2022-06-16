@@ -187,11 +187,10 @@
 	justify-content: center;
 	align-items: center;
 	margin-bottom: 20px;
-	.add-to-cart {
+	.action-btn {
 		font-family: "RobotoMedium";
 		padding: 14px 25px;
 		margin-right: 20px;
-		background-color: #FED230;
 		border-radius: 25px;
 		color: #174B72;
 		width: 70%;
@@ -199,12 +198,57 @@
 		font-size: 16px;
 		text-transform: uppercase;
 		cursor: pointer;
+		display: flex;
+    justify-content: center;
+    align-items: center;
+	
+		&.yellow {
+			background-color: #FED230;
+
+			&:hover {
+				background-color: #fdd852;
+			}
+		}
+
+		&.blue {
+			background-color: #59C0EC;
+
+			&:hover {
+				background-color: #72cff7;
+			}
+		}
 		img {
 			filter: brightness(0) saturate(100%) invert(20%) sepia(98%) saturate(606%) hue-rotate(169deg) brightness(96%) contrast(91%);
 			width: 25px;
 			height: 16px;
 		}
-	}	
+	}
+	.side-btn {
+		all: unset;
+    padding: 10px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+		position: relative;
+
+		&:hover {
+			background-color: rgb(240, 240, 240);
+		}
+
+		span {
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			color: #2874AD;
+			font-family: "RobotoMedium";
+			font-size: 16px;
+
+			&.plus {
+				font-size: 24px;
+				font-family: "SfProBold";
+				right: 5px;
+			}
+		}
+	}
 }
 
 .flex-box {
