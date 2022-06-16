@@ -15,6 +15,7 @@ import { ItemList } from 'src/app/shared/components/item-list/item-list.componen
 import { Tag } from 'src/app/core/models/tags';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ItemOrder } from 'src/app/core/models/order';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 interface CustomItemList extends ItemList {
   tags?: string[]
@@ -161,7 +162,7 @@ export class OrderSalesComponent implements OnInit {
         id: order._id,
         image: order.items[0].item.images[0],
         eventImage: () => this.goToOderinfo(order._id),
-        title: order.dateId,
+        title: formatID(order.dateId),
         eventTitle: () => this.goToOderinfo(order._id),
         subtitle: order.user.name,
         text_middle: '$' + order.subtotals[0].amount.toLocaleString('es-MX'),
