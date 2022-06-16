@@ -15,7 +15,8 @@
       text: {
           content: 'Mis Compradores',
           color: '#2874AD'
-      }
+      },
+      filter: 'no'
     },
     {
       text: {
@@ -37,6 +38,7 @@
       [quantity]="0"
       [index2]="0"
       [showIcon]="true"
+      (action)="redirect(i)"
     ></app-saleflow-item>
   </div>
 </div>
