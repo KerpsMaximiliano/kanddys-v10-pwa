@@ -27,6 +27,8 @@ export class LlStudioOrderFormComponent implements OnInit {
   } = null;
   merchantId: string = null;
   databaseName: string = null;
+  choosedReservation: boolean = false;
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -401,9 +403,11 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             if (change === 'Si') {
               params.scrollToStep(6);
+              this.choosedReservation = true;
             } else {
               this.formSteps[6].fieldsList[0].fieldControl.setValue('');
               this.reservation = null;
+              this.choosedReservation = false;
               params.scrollToStep(7);
             }
           },
@@ -468,6 +472,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             {
               name: 'onReservation',
               callback: (reservationOutput) => {
+                console.log(reservationOutput);
                 this.reservation = reservationOutput;
                 this.formSteps[6].fieldsList[0].fieldControl.setValue(reservationOutput.message);
               },
@@ -529,6 +534,12 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
         }
       ],
+      customScrollToStepBackwards: (params) => {
+        if (!this.choosedReservation)
+          params.scrollToStep(5, false);
+        else
+          params.scrollToStep(6, false);
+      },
       stepProcessingFunction: () => {
         return { ok: true }
       },
