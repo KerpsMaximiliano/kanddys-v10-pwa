@@ -3,6 +3,7 @@ import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-new-item-contact-info',
@@ -18,17 +19,6 @@ export class NewItemContactInfoComponent implements OnInit {
       validStep: {
         left: { icon: '/arrow-left.svg' },
         function: async (params) => {
-          console.log(params);
-
-          // this.headerService.storeNewItemTemporarily({
-          //   name: params.dataModel.value['4']['name'],
-          //   pricing: params.dataModel.value['1']['price'],
-          //   description: params.dataModel.value['3']['description'],
-          //   content: params.dataModel.value['2']['whatsIncluded'],
-          //   images: this.defaultImages.length > 1 ? this.defaultImages : null
-          // }, this.router.url);
-
-          // this.router.navigate(['/ecommerce/item-display']);
         }
       },
       invalidStep: {
@@ -102,7 +92,9 @@ export class NewItemContactInfoComponent implements OnInit {
         }
       },
       customScrollToStepBackwards: (params) => {
-        this.router.navigate([`ecommerce/item-display/${this.itemId}`])
+        console.log("FLOW ROUTE", this.headerService.flowRoute);
+        if (this.headerService.flowRoute)
+          this.router.navigate([this.headerService.flowRoute]);
       },
       headerText: "",
       stepButtonValidText: "RECIBE UN LINK PARA CONFIRMAR LOS ACCESOS",
@@ -118,7 +110,8 @@ export class NewItemContactInfoComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private headerService: HeaderService
   ) {
     this.route.params.subscribe(async (params) => {
       if (params.itemId) {
