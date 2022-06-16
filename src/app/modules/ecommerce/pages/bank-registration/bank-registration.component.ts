@@ -12,6 +12,7 @@ import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 const labelStyles = {
   fontFamily: "SfProLight",
@@ -236,6 +237,7 @@ export class BankRegistrationComponent implements OnInit {
             !owner ||
             !socialID
           ) return;
+          lockUI();
           const exchangeDataResult = await this.walletService.createExchangeData({
             bank: [{
               paymentReceiver: this.paymentReceivers.find((receiver) => receiver.name === bankName)._id,
@@ -251,6 +253,8 @@ export class BankRegistrationComponent implements OnInit {
               paymentModule: exchangeDataResult._id
             }
           }, this.saleflow.module._id);
+          unlockUI();
+          this.location.back();
         },
       },
     }

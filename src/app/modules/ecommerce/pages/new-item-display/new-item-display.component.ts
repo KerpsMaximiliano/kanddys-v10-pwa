@@ -16,6 +16,7 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { UsersService } from 'src/app/core/services/users.service';
 import { StoreShareComponent, StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-new-item-display',
@@ -65,6 +66,7 @@ export class NewItemDisplayComponent implements OnInit {
         const { token: magicLinkToken, mode } = queryParams;
         this.mode = mode;
         if (params.itemId) {
+          lockUI();
           this.item = await this.itemsService.item(params.itemId);
           if (!this.item) return this.redirect();
           if (this.item && !this.item.merchant) this.isPreItem = true;
@@ -187,6 +189,7 @@ export class NewItemDisplayComponent implements OnInit {
                   this.newMerchant = true;
                 }
               }
+              unlockUI();
             } else {
               this.defaultMerchant = defaultMerchant;
               if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
@@ -213,14 +216,14 @@ export class NewItemDisplayComponent implements OnInit {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
-
+                unlockUI();
                 this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
 
               } else {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
-
+                unlockUI();
                 this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
               }
 
@@ -229,16 +232,20 @@ export class NewItemDisplayComponent implements OnInit {
           }
         } else {
           this.defaultMerchant = await this.merchantService.merchantDefault();
-          if(!this.defaultMerchant) return;
+          if(!this.defaultMerchant) return unlockUI();;
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;
-            this.providerView = true;
 
-            await Promise.all([
-              this.getTotalByItem(this.item._id),
-              this.getBuyersByItem(this.item._id),
-              this.getSaleflow(),
-            ]);
+            if(this.mode === 'edit') {
+              this.providerView = true;
+  
+              await Promise.all([
+                this.getTotalByItem(this.item._id),
+                this.getBuyersByItem(this.item._id),
+                this.getSaleflow(),
+              ]);
+            }
+            unlockUI();
           }
         }
 
@@ -364,6 +371,7 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   redirect() {
+    unlockUI();
     if (!this.shouldRedirectToPreviousPage) {
       this.router.navigate([`ecommerce/error-screen/`], {
         queryParams: { type: 'item' },

@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
@@ -86,7 +87,8 @@ export class ItemSalesDetailComponent implements OnInit {
     private usersService: UsersService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -99,22 +101,17 @@ export class ItemSalesDetailComponent implements OnInit {
       };
     });
 
-    if (this.isLogged) {
-      this.route.params.subscribe(async routeParams => {
-        if (routeParams.itemId) {
-          const itemId = routeParams.itemId;
-          await Promise.all([
-            this.getItem(itemId),
-            this.getOrdersByItem(itemId),
-            this.getBuyersByItem(itemId)
-          ]);
-          this.filterData();
-          this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
-        } else this.redirect();
-      });
-    } else {
-      this.redirect();
-    }
+    if(!this.isLogged) return this.redirect();
+    this.route.params.subscribe(async routeParams => {
+      const itemId = routeParams.itemId;
+      await Promise.all([
+        this.getItem(itemId),
+        this.getOrdersByItem(itemId),
+        this.getBuyersByItem(itemId)
+      ]);
+      this.filterData();
+      this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
+    });
   }
 
   openImageModal(imageSourceURL: string) {
@@ -186,6 +183,10 @@ export class ItemSalesDetailComponent implements OnInit {
   redirect(customRoute?: string) {
     if(customRoute == "error") this.router.navigate(['/ecommerce/error-screen']);
     else this.router.navigate(['/']);
+  }
+
+  back() {
+    this.location.back();
   }
  
 }

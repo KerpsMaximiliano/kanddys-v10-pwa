@@ -1,27 +1,35 @@
 <div class="container">
 
-    <app-helper-headerv2 [mode]="'edit'" [edit]="true"
-        [navtext]="!item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name" [icon]="'/expand-categories.svg'"
-        [color]="'#E9E371'" [filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"></app-helper-headerv2>
+	<app-helper-headerv2
+		[mode]="'edit'"
+		[edit]="true"
+		[navtext]="!item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name"
+		[icon]="'/expand-categories.svg'"
+		[color]="'#E9E371'"
+		[filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"
+		(returnEvent)="redirect()"
+	></app-helper-headerv2>
 
-    <div class="img-area" *ngIf="item && item.images.length > 0">
-        <img [src]="item.images[0]" alt="Imagen del producto a vender" class="img">
-    </div>
+	<div *ngIf="item?.images?.length" class="itemImg">
+		<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
+	</div>
 
-    <div class="categories">
-        <app-tags-square *ngFor="let merchantCategory of merchantCategories" [reverse]="true"
-            (click)="addOrRemoveCategory(merchantCategory, itemCategories[merchantCategory._id])"
-            [tagText]="merchantCategory.name" [position]="'left'" [number]="'44 ventas'"
-            [bColor]="itemCategories[merchantCategory._id] ? '#2874ad' : '#fff'"
-            [color]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'"
-            [textColor]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'">
-        </app-tags-square>
-    </div>
+	<div class="categories">
+		<app-tags-square
+			*ngFor="let merchantCategory of merchantCategories"
+			[reverse]="true"
+			(click)="addOrRemoveCategory(merchantCategory, itemCategories[merchantCategory._id])"
+			[tagText]="merchantCategory.name"
+			[position]="'left'"
+			[number]="'44 ventas'"
+			[bColor]="itemCategories[merchantCategory._id] ? '#2874ad' : '#fff'"
+			[color]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'"
+			[textColor]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'">
+		</app-tags-square>
+	</div>
 
 </div>
 <app-bubble-button [position]="'left'" [text]="''" icon="/arrow-left.svg"></app-bubble-button>
-
 <app-bubble-button [position]="'right'" text="NEXT" [icon]="'/expand-categories.svg'"></app-bubble-button>
-
 <app-sticky-button [mode]="'disabled'" [size]="'small'" [text]="'MIRA LAS CATEGORIAS DEL ITEM'">
 </app-sticky-button>

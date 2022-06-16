@@ -6,6 +6,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from 'src/app/core/models/item';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-category-item-detail',
@@ -27,7 +28,8 @@ export class CategoryItemDetailComponent implements OnInit {
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private location: Location,
   ) { }
 
   async ngOnInit() {
@@ -75,6 +77,10 @@ export class CategoryItemDetailComponent implements OnInit {
     await this.itemsService.updateItem({
       category: newItemCategories
     }, this.item._id);
+  }
+
+  redirect() {
+    this.location.back();
   }
 
 }
