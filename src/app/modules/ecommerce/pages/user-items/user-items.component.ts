@@ -70,8 +70,8 @@ export class UserItemsComponent implements OnInit {
     }
   }
 
-  redirect() {
-    this.router.navigate(['/']);
+  redirect(i) {
+    this.router.navigate(['/ecommerce/category-item-detail/' + this.items[i]._id]);
   }
 
 }
