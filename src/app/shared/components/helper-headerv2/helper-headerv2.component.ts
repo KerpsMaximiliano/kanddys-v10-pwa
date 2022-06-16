@@ -30,10 +30,12 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() dots: boolean = false;
     @Input() color: string = '#FFFFFF';
     @Input() icon: string;
-    @Input() fontFamily: string = 'SfProBold';
+    @Input() fontFamily: string ;
+    @Input() fontFamily2: string ;
     @Input() fontSize: string = '35px';
+    @Input() fontSize2: string;
     @Input() rmargin: string;
-    @Input() filter: string = 'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)';
+    @Input() filter: string;
     @Output() returnEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
     @Output() dotEvent = new EventEmitter();

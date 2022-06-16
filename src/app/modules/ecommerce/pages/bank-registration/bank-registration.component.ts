@@ -47,12 +47,12 @@ export class BankRegistrationComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'single',
+        left: { icon: '/arrow-left.svg' },
         function: async (params) => {
         }
       },
       invalidStep: {
-        mode: 'single'
+        left: { icon: '/arrow-left.svg' },
       }
     },
     bgColor: '#2874AD',
@@ -207,14 +207,14 @@ export class BankRegistrationComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
-          const { 
+          const {
             accountNumber,
             accountType,
             bankName,
             owner,
             socialID
           } = params.dataModel.value['1'];
-          if(
+          if (
             !accountNumber ||
             !accountType ||
             !bankName ||
@@ -223,8 +223,8 @@ export class BankRegistrationComponent implements OnInit {
           ) return;
           const exchangeDataResult = await this.walletService.createExchangeData({
             bank: [{
-              paymentReceiver: this.paymentReceivers.find((receiver) => receiver.name ===  bankName)._id,
-              account: accountNumber, 
+              paymentReceiver: this.paymentReceivers.find((receiver) => receiver.name === bankName)._id,
+              account: accountNumber,
               ownerAccount: owner,
               routingNumber: parseInt(socialID),
               typeAccount: accountType,
@@ -256,19 +256,19 @@ export class BankRegistrationComponent implements OnInit {
       this.defaultMerchant = await this.merchantsService.merchantDefault();
       if (!this.defaultMerchant) this.router.navigate(["/"]);
       this.saleflow = (await this.saleflowService.saleflow(params.saleflowId))?.saleflow;
-      if(!this.saleflow) throw new Error('No se encontró un saleflow');
+      if (!this.saleflow) throw new Error('No se encontró un saleflow');
       this.user = await this.authService.me();
       if (!this.user) throw new Error('Debes iniciar sesión para continuar');
       const merchantList = await this.merchantsService.myMerchants();
-      if(!merchantList.some(
+      if (!merchantList.some(
         (merchant) => merchant._id === this.saleflow.merchant._id)
       ) throw new Error('No eres el merchant dueño de este saleflow');
       this.exchangeData = await this.walletService.exchangeDataByUser(this.user._id);
-      if(this.exchangeData) throw new Error('Ya tienes exchange data, no puedes crear uno nuevo');
+      if (this.exchangeData) throw new Error('Ya tienes exchange data, no puedes crear uno nuevo');
       this.paymentReceivers = await this.walletService.paymentReceivers({});
       this.formSteps[0].fieldsList[0].selectionOptions = this.paymentReceivers.map((receiver) => receiver.name);
     })
-    
+
   }
 
 }

@@ -42,7 +42,8 @@ export class ItemCreatorComponent implements OnInit {
   footerConfig: FooterOptions = {
     bubbleConfig: {
       validStep: {
-        mode: 'double',
+        dontShow: true,
+        right: { text: 'VISTA' },
         function: async (params) => {
           const values = params.dataModel.value;
 
@@ -127,7 +128,7 @@ export class ItemCreatorComponent implements OnInit {
       },
       invalidStep: {
         dontShow: true,
-        mode: 'single'
+        right: { text: 'VISTA' },
       }
     },
     bgColor: '#2874AD',
@@ -383,7 +384,8 @@ export class ItemCreatorComponent implements OnInit {
                   purchaseLocations: [],
                 });
 
-                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+                // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+                if ('_id' in createPreItem) this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`]);
               }
             }
           } catch (error) {

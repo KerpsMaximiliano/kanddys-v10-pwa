@@ -30,6 +30,18 @@ export class TagDetailComponent implements OnInit {
   tagID: string = '627d60ff456106f4571b226d'; //627d60ff456106f4571b226d(con mensaje) y 627ebc6fe48bbbfddd6a89a7(sin mensaje)
   transparent: boolean = false;
 
+  totals: number = 144;
+  earning: number = 25265555;
+  sales: number = 85;
+  tabs: string[] = ['154 Compradores'];
+  active: number = 0;
+  data: any[] = [{
+    text: {
+        content: 'RD$ 147.154,00 Total en Ventas',
+        color: '#2874AD'
+    }
+  }];
+
   ordurs: ItemList[] = [{
     title: 'DummyOrder',
     price: null,
@@ -324,6 +336,35 @@ export class TagDetailComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  //Tabs y su desplazamiento
+  mouseDown = false;
+  startX: any;
+  scrollLeft: any;
+
+  changeTab(i: number){
+    this.active = i;
+  }
+
+  startDragging(e, flag, el) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  stopDragging(e, flag) {
+    this.mouseDown = false;
+  }
+
+  moveEvent(e, el) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 
 }

@@ -19,7 +19,7 @@
     },
     {
       text: {
-        content: 'RD$ ' + (ordersTotal ? ordersTotal.total : '0') + ' Total en Ventas',
+        content: 'RD$ ' + (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0 ') + ' Total en Ventas',
         color: '#2874AD'
       }
     }

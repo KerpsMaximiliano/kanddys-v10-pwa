@@ -541,20 +541,45 @@
       steps[currentStep].footerConfig?.bubbleConfig
       && (
         dataModel.get(currentStepString).status !== 'INVALID' ?
-          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow :
-          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow
+          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.left
+      :
+          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left
       )
-      " [left]="true" [right]="true" [icon]="'/arrow-left.svg'" [text2]="'VISTA'" (leftAction)="currentStep > 0 && shouldScrollBackwards &&
-      !steps[currentStep].customScrollToStepBackwards
-        ? scrollToStep(this.currentStep - 1, false)
-        : steps[currentStep].customScrollToStepBackwards
-        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
-        : null"
-      (rightAction)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null"
-      [mode]="dataModel.get(currentStepString).status !== 'INVALID' ?
-          steps[currentStep].footerConfig.bubbleConfig.validStep.mode :
-          steps[currentStep].footerConfig.bubbleConfig.invalidStep.mode
-        " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53">
+      " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53" [position]="'left'"
+      [text]="
+        dataModel.get(currentStepString).status !== 'INVALID' ?
+          steps[currentStep].footerConfig.bubbleConfig.validStep.left && steps[currentStep].footerConfig.bubbleConfig.validStep.left.text :
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.left && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.text
+        " [icon]="
+          dataModel.get(currentStepString).status !== 'INVALID' ?
+            steps[currentStep].footerConfig.bubbleConfig.validStep.left && steps[currentStep].footerConfig.bubbleConfig.validStep.left.icon :
+            steps[currentStep].footerConfig.bubbleConfig.invalidStep.left && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.icon
+        " [solo]="false" (click)="currentStep > 0 && shouldScrollBackwards &&
+        !steps[currentStep].customScrollToStepBackwards
+          ? scrollToStep(this.currentStep - 1, false)
+          : steps[currentStep].customScrollToStepBackwards
+          ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+          : null"></app-bubble-button>
+
+    <app-bubble-button *ngIf="
+          currentStep === currentStepIndex && 
+          steps[currentStep].footerConfig?.bubbleConfig
+          && (
+            dataModel.get(currentStepString).status !== 'INVALID' ?
+              !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.right :
+              !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right
+          )
+          " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53"
+      [position]="'right'" [text]="
+        dataModel.get(currentStepString).status !== 'INVALID' ?
+          steps[currentStep].footerConfig.bubbleConfig.validStep.right && steps[currentStep].footerConfig.bubbleConfig.validStep.right.text :
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.text
+        " [icon]="
+        dataModel.get(currentStepString).status !== 'INVALID' ?
+          steps[currentStep].footerConfig.bubbleConfig.validStep.right && steps[currentStep].footerConfig.bubbleConfig.validStep.right.icon :
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.icon
+        " [solo]="false"
+      (click)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null">
     </app-bubble-button>
   </ng-container>
 </div>

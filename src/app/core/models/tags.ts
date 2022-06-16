@@ -24,7 +24,7 @@ export class Tag extends Model<Tag> {
 }
 
 export class TagInput {
-  messageNotify: string;
-  name: string;
-  notify: boolean;
+  messageNotify?: string;
+  name?: string;
+  notify?: boolean;
 }

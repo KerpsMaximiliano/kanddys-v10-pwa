@@ -15,124 +15,6 @@
 	background-color: #f6f6f6;
 	display: flex;
 	flex-direction: column;
-
-	.sales {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin: 22px 27px 0 27px;
-
-		.my-sales {
-			font-family: "SfProMedium";
-			font-size: 20px;
-			color: #313131;
-		}
-
-		.images-wrapper {
-			display: flex;
-			align-items: center;
-			width: 130px;
-
-			.icon-holder {
-				cursor: pointer;
-
-				&.checked {
-					padding: 3px 0px;
-					width: 59px;
-					border-radius: 47px;
-					background-color: #4773d8;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-
-					.icon {
-						cursor: pointer;
-						filter: invert(99%) sepia(1%) saturate(0%) hue-rotate(65deg) brightness(170%) contrast(100%);
-					}
-				}
-				&.icon {
-					cursor: pointer;
-					filter: invert(56%) sepia(81%) saturate(5167%) hue-rotate(209deg) brightness(93%) contrast(82%);
-				}
-			}
-
-			.icon {
-				filter: invert(56%) sepia(81%) saturate(5167%) hue-rotate(209deg) brightness(93%) contrast(82%);
-			}
-		}
-	}
-
-	.totals {
-		display: flex;
-		justify-content: space-between;
-		margin: 0px 27px;
-
-		.incomes {
-			display: flex;
-			flex-direction: column;
-			margin-top: 18px;
-
-			.total-income {
-				font-family: "SfProMedium";
-				font-size: 17px;
-				color: #7b7b7b;
-				margin-bottom: 9px;
-			}
-		}
-
-		.organized {
-			display: flex;
-			flex-direction: column;
-			margin-top: 9px;
-			position: relative;
-
-			.arrow-circle {
-				position: absolute;
-				right: 4%;
-				width: 25px;
-				height: 25px;
-				border-radius: 50%;
-				background-color: #dd9204;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-
-				.arrow {
-					transform: rotate(-45deg);
-				}
-			}
-
-			.advice {
-				font-family: "NeueMontreal";
-				font-size: 16px;
-				color: #b17608;
-				text-align: right;
-				margin: 30px 0 0 0;
-				max-width: 213px;
-			}
-		}
-	}
-
-	.last-sales {
-		display: flex;
-		margin-left: 22px;
-
-		.latest {
-			margin-top: 38px;
-			font-family: "SfProMedium";
-			font-size: 20px;
-			color: #313131;
-		}
-	}
-
-	.tags-area {
-		display: flex;
-		flex-wrap: wrap;
-		column-gap: 11px;
-		row-gap: 13px;
-		margin-left: 12%;
-		margin-top: 36px;
-	}
 }
 
 .search-area {
@@ -140,6 +22,7 @@
 	height: 126px;
 	display: flex;
 	justify-content: center;
+	background-color: #F6F6F6;
 
 	.search-bar {
 		width: 90%;
@@ -160,61 +43,6 @@
 	}
 }
 
-.optionsBar {
-	width: 100%;
-	height: 56px;
-	background-color: rgb(39, 162, 255, 0.22);
-	display: flex;
-	padding: 0 19px;
-	column-gap: 25px;
-	align-items: flex-end;
-}
-
-.option {
-	padding: 7.5px 0 5.5px 0;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	font-family: "RobotoMedium";
-	font-size: 16px;
-	color: #4773d8;
-	background: transparent;
-	transition: 0.2s;
-
-	&.selected {
-		padding: 7.5px 16px 5.5px 25px;
-		background-color: #4773d8;
-		color: #ffffff;
-	}
-}
-
-.tag-container {
-	width: 100%;
-	height: 194px;
-	background-color: #f6f6f6;
-
-	.tag-search {
-		margin: 0 20.5px 0 19px;
-		padding-top: 21px;
-		display: flex;
-		justify-content: space-between;
-
-		.tagged {
-			margin-top: 23px;
-			margin-left: 7px;
-			font-family: "RobotoRegular";
-			font-size: 17px;
-			color: #7b7b7b;
-		}
-	}
-
-	.tags-swiper {
-		margin: 18px 0 33px 19px;
-		display: flex;
-		column-gap: 12px;
-		overflow-x: scroll !important;
-	}
-}
-
 .orderSection {
 	background-color: transparent;
 	display: flex;
@@ -226,134 +54,62 @@
 		border-bottom: 1px solid rgba(112, 112, 112, 0.13);
 
 		&:first-child {
-			padding-top: 10px;
-		}
-	}
-
-	.total-option {
-		width: 100%;
-		margin-top: 25px;
-		margin-bottom: 28px;
-		padding-left: 19px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.total-sales {
-		font-family: "RobotoBold";
-		font-size: 20px;
-		color: #7b7b7b;
-	}
-
-	.dot-trio {
-		width: 23px;
-		height: 5px;
-		margin-top: 3px;
-		display: flex;
-		justify-content: space-evenly;
-		cursor: pointer;
-
-		.dot {
-			width: 5px;
-			height: 5px;
-			border-radius: 50%;
-			background-color: #27a2fc;
-			margin-bottom: 3px;
+			padding-top: 15px;
 		}
 	}
 }
 
-.fieldContainer {
-	margin-top: 40px;
-	padding: 20px 0;
+.page-components-tabs {
+	height: 46px;
+	background-color: #C7E3F8;
 	width: 100%;
+	overflow-x: scroll;
 	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
-	gap: 20px;
-	overflow: scroll;
-	overflow-y: hidden;
-	font-family: "RobotoMedium";
-	font-size: 15px;
-	text-transform: uppercase;
-	color: #27a2ff;
-}
+	align-items: flex-end;
+	position: -webkit-sticky; /* Safari */
+	position: sticky;
+	top: 0;
+	z-index: 999;
 
-.filterSection {
-	margin-top: 30px;
-	margin-bottom: 46px;
-}
-@media (max-width: 427px) {
-	// .orderSection{
-	//     margin-top: 50px;
-	// }
-	.optionsBar {
-		height: 49px;
-		column-gap: 22px;
-	}
+	.tab {
+		all: unset;
+		flex-basis: content;
+		margin-left: 16px;
+		color: #4773d8;
+		white-space: nowrap;
+		padding: 5px 17px;
+		font-size: 16px;
+		font-family: "RobotoMedium";
+		cursor: pointer;
+		display: flex;
+    gap: 6px;
+    align-items: center;
 
-	.option {
-		padding: 6.5px 0 4.5px 0;
-		font-size: 14px;
+		img {
+			filter: invert(47%) sepia(22%) saturate(2059%) hue-rotate(188deg) brightness(88%) contrast(91%);
+		}
 
-		&.selected {
-			padding: 6.5px 14px 4.5px 22px;
+		&:hover {
+			color: #759df8;
+		}
+
+		&:last-child {
+			margin-right: 16px;
+		}
+
+		&.active {
+			border-radius: 16px 16px 0px 0px;
+			color: #ffffff;
+			background: linear-gradient(130deg, #31a4f9, #1d58db);
+
+			img {
+				filter: none;
+			}
 		}
 	}
-}
-@media (max-width: 374px) {
-	// .orderSection{
-	//     margin-top: 40px;
-	// }
 
-	.optionsBar {
-		height: 42px;
-		column-gap: 19px;
-	}
-
-	.option {
-		padding: 5.5px 0 3.5px 0;
-		font-size: 12px;
-
-		&.selected {
-			padding: 5.5px 12px 3.5px 19px;
-		}
-	}
-}
-
-@media only screen and (min-width: 365px) and (max-width: 390px) {
-	.topbar {
-		.left-side {
-			font-size: 13px !important;
-		}
-
-		.right-side {
-			font-size: 13px !important;
-		}
-	}
-}
-
-@media only screen and (max-width: 364px) {
-	.topbar {
-		.left-side {
-			font-size: 12px !important;
-		}
-
-		.right-side {
-			font-size: 12px !important;
-		}
-	}
-}
-
-@media only screen and (max-width: 338px) {
-	.topbar {
-		.left-side {
-			font-size: 11px !important;
-		}
-
-		.right-side {
-			font-size: 11px !important;
-		}
+	&::-webkit-scrollbar {
+		background: transparent;
+		height: 0px;
 	}
 }
