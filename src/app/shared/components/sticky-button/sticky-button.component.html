@@ -1,30 +1,48 @@
 <div class="container" *ngIf="mode == 'basic'">
-  <button class="button" [ngClass]="{ 'with-icon': icon }" [style.background-color]="bgColor"
-    [ngClass]="{'small': size === 'small'}">
+  <button
+    class="button"
+    [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+    [style.background-color]="bgColor"
+  >
     {{ text }}
     <img *ngIf="icon" [src]="icon" [alt]="icon">
   </button>
 </div>
 
 <div class="container" *ngIf="mode == 'disabled'">
-  <button disabled="true" class="disabled" [ngClass]="{'small': size === 'small'}" [ngStyle]="(fontSize || height) ? {
-    fontSize: fontSize,
-    height: height
-  } : null">{{ text }}</button>
+  <button
+    disabled="true"
+    class="disabled"
+    [ngClass]="{'small': size === 'small'}"
+    [ngStyle]="(fontSize || height) ? {
+      fontSize: fontSize,
+      height: height
+    } : null"
+  >
+    {{ text }}
+  </button>
 </div>
 
 <div class="fixed-container" *ngIf="mode == 'disabled-fixed'">
-  <button disabled="true" class="disabled" [ngStyle]="(fontSize || height) ? {
-    fontSize: fontSize,
-    height: height
-  } : null">{{ text }}</button>
+  <button
+    disabled="true"
+    class="disabled"
+    [ngClass]="{'small': size === 'small'}"
+    [ngStyle]="(fontSize || height) ? {
+      fontSize: fontSize,
+      height: height
+    } : null">
+      {{ text }}
+  </button>
 </div>
 
 <div class="fixed-container" *ngIf="mode == 'fixed'">
-  <button class="button" [ngClass]="{ 'with-icon': icon }" [style.backgroundColor]="bgColor" [ngStyle]="fontSize || height ? {
-    fontSize: fontSize,
-    height: height
-  } : null">
+  <button
+    class="button"
+    [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+    [style.backgroundColor]="bgColor"
+    [ngStyle]="{fontSize: fontSize ? fontSize : null, height: height ? height : null, color: color ? color : null}"
+  >
     {{ text }}
     <img *ngIf="icon" [src]="icon" [alt]="icon">
     {{ auxText }}

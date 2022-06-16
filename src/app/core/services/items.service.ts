@@ -22,6 +22,7 @@ import {
   itemCategoryHeadlineByMerchant,
   itemsByCategory,
   bestSellersByMerchant,
+  totalByItem,
   itemExtras,
   updateItem
 } from '../graphql/items.gql';
@@ -134,6 +135,20 @@ export class ItemsService {
         fetchPolicy: 'no-cache',
       });
       return response.bestSellersByMerchant;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async totalByItem(merchantId: string, itemId?: string[]): Promise<{item: Item, itemInOrder: number, total: number}[]> {
+    try {
+      const response = await this.graphql.query({
+        query: totalByItem,
+        variables: { merchantId, itemId },
+        fetchPolicy: 'no-cache',
+      });
+      if(!response || response?.errors) return undefined;
+      return response.totalByItem;
     } catch (e) {
       console.log(e);
     }

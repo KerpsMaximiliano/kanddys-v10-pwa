@@ -89,6 +89,12 @@ export const bestSellersByMerchant = gql`
   }
 `;
 
+export const totalByItem = gql`
+  query totalByItem($itemId: [ObjectID!], $merchantId: ObjectID!) {
+    totalByItem(itemId: $itemId, merchantId: $merchantId)
+  }
+`;
+
 export const itemExtraByMerchant = gql`
   query itemExtraByMerchant($merchantId: ObjectID!) {
     itemExtraByMerchant(merchantId: $merchantId) {

@@ -63,6 +63,12 @@
     z-index: 1000;
     position: fixed;
     white-space: break-spaces;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
+    }
   }
 }
 
@@ -87,6 +93,12 @@
     .svg {
       margin: 0 12px;
       cursor: pointer;
+    }
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
     }
   }
 

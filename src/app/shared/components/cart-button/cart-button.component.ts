@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class CartButtonComponent implements OnInit {
   @Input() cartAmount: number;
   @Input() color: 'blue';
+  @Input() filter: string;
   @Input() shopCartCallback: () => void;
   env: string = environment.assetsUrl;
 

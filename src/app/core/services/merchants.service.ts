@@ -151,11 +151,12 @@ export class MerchantsService {
 
   async merchantDefault(): Promise<Merchant> {
     try {
-      const { merchantDefault: merchantDefaultResponse } = await this.graphql.query({
+      const response = await this.graphql.query({
         query: merchantDefault,
         fetchPolicy: 'no-cache',
       });
-      return new Merchant(merchantDefaultResponse);
+      if(!response || response?.errors) return undefined;
+      return new Merchant(response.merchantDefault);
     } catch (error) {
       console.log(error);
     }
