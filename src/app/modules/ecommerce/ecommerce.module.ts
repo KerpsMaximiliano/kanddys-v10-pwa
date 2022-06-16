@@ -304,7 +304,7 @@ const routes: Routes = [
     component: SaleDetailComponent
   },
   {
-    path: 'item-sales-detail',
+    path: 'item-sales-detail/:itemId',
     component: ItemSalesDetailComponent
   },
   {

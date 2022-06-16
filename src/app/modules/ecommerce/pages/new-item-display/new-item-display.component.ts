@@ -66,8 +66,8 @@ export class NewItemDisplayComponent implements OnInit {
           if (this.item && !this.item.merchant) this.isPreItem = true;
 
           // this.item.images = null;
-          // this.item.description = null;
-          this.item.content = ["fdsdfsdf", "ggggggggg"]
+          // this.item.description = 'gdfgdfgdf';
+          // this.item.content = ["fdsdfsdf", "ggggggggg"]
 
           this.shouldRedirectToPreviousPage = true;
 

@@ -133,17 +133,11 @@
 </ng-container>
 
 <ng-container *ngIf="isClientView">
-    
 	<app-bubble-button [position]="'left'" [return]="true" (click)="toggleView()"></app-bubble-button>
 	<app-bubble-button [position]="'right'" [icon]="'/upload.svg'"  (click)="toggleView()"></app-bubble-button>
-	<app-sticky-button [text]="'SUBE LA FOTO DE LA COMPRA'"
-		[mode]="'disabled'">
-	</app-sticky-button>
-
 	<app-sticky-button
-		[text]="'SUBE LA FOTO DE LA COMPRA'"
+		[text]="'TOCA DONDE PREFIERAS'"
 		[mode]="'disabled'"
 		size="small"
 	></app-sticky-button>
-
 </ng-container>

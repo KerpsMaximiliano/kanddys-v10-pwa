@@ -13,6 +13,7 @@ import {
   toggleUserNotifications,
   updateTagsInOrder,
   ordersTotal,
+  ordersByItem
 } from '../graphql/order.gql';
 import { ItemOrder, ItemOrderInput, OCRInput } from '../models/order';
 @Injectable({
@@ -173,6 +174,19 @@ export class OrderService {
       mutation: updateTagsInOrder,
       variables: { orderId, tags, merchantId },
     });
+
+    if (!result || result?.errors) return undefined;
+
+    console.log(result);
+    return result;
+  }
+
+  async ordersByItem(itemId: string): Promise<{ ordersByItem: ItemOrder[] }> {
+    const result = await this.graphql.query({
+      query: ordersByItem,
+      variables: { itemId },
+      fetchPolicy: 'no-cache'
+    })
 
     if (!result || result?.errors) return undefined;
 

@@ -18,3 +18,13 @@ export function isEmail(str: string): boolean {
   const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regex.test(String(str).toLocaleLowerCase());
 }
+
+// String formatter for the dateId field of the ItemOrder model
+export function formatID(dateId: string): string {
+  const splits = dateId.split('/');
+  const year = splits[2].substring(0, 4);
+  const number = splits[2].substring(4);
+  const month = splits[0];
+  const day = splits[1];
+  return `#${year}${month}${day}${number}`;
+}

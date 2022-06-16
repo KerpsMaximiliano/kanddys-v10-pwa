@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Router } from '@angular/router';
 import { User } from 'src/app/core/models/user';
+import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 
 @Component({
   selector: 'app-my-customers',
@@ -25,7 +26,7 @@ export class MyCustomersComponent implements OnInit {
   loggedIn: boolean = false;
   customers: User[] = [];
 
-  itemLists: Array<any> = [
+  itemLists: ItemList[] = [
     {
       title: 'CompradorID',
       description: 'Custom Fields1',
@@ -140,10 +141,12 @@ export class MyCustomersComponent implements OnInit {
       barColor: 'transparent',
     }
   ]; //Esto es Dummy data
+
   constructor(
     private merchantsService: MerchantsService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   async ngOnInit() {
