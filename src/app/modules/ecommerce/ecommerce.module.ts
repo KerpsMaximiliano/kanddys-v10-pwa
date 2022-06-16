@@ -200,6 +200,10 @@ const routes: Routes = [
     component: DataListComponent,
   },
   {
+    path: 'data-list',
+    component: DataListComponent,
+  },
+  {
     path: 'merchant-dashboardv2',
     component: MerchantDashboardv2Component,
   },
