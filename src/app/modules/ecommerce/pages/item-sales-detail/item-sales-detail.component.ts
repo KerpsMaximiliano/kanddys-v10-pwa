@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
@@ -75,8 +76,10 @@ export class ItemSalesDetailComponent implements OnInit {
 
   ordersByItem: ItemOrder[];
   buyersByItem: User[];
-  currentTab: 'Compradores' | 'Ventas';
+  currentTab: 'Compradores' | 'Ventas' = 'Compradores';
+  currentUser: User;
   isLogged: boolean = false;
+  canShowItems: boolean = false;
 
   constructor(
     private dialog: DialogService,
@@ -85,32 +88,32 @@ export class ItemSalesDetailComponent implements OnInit {
     private usersService: UsersService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private location: Location,
   ) { }
 
   async ngOnInit(): Promise<void> {
     // this.itemData = await this.itemService.item("628d47985d291213549ccb50");
 
     await this.authService.me().then(data => {
-      if (data && data != undefined) this.isLogged = true;
+      if (data && data != undefined) {
+        this.isLogged = true;
+        this.currentUser = data;
+      };
     });
 
-    if (this.isLogged) {
-      this.route.params.subscribe(async routeParams => {
-        if (routeParams.itemId) {
-          const itemId = routeParams.itemId;
-          await Promise.all([
-            this.getItem(itemId),
-            this.getOrdersByItem(itemId),
-            this.getBuyersByItem(itemId)
-          ]);
-          this.filterData();
-          this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
-        } else this.redirect();
-      });
-    } else {
-      this.redirect();
-    }
+    if(!this.isLogged) return this.redirect();
+    this.route.params.subscribe(async routeParams => {
+      const itemId = routeParams.itemId;
+      await Promise.all([
+        this.getItem(itemId),
+        this.getOrdersByItem(itemId),
+        this.getBuyersByItem(itemId)
+      ]);
+      this.canShowItems = true;
+      this.filterData();
+      this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
+    });
   }
 
   openImageModal(imageSourceURL: string) {
@@ -127,6 +130,7 @@ export class ItemSalesDetailComponent implements OnInit {
   async getItem(itemID: string) {
     try {
       this.itemData = await this.itemService.item(itemID);
+      if (this.itemData.merchant.owner._id !== this.currentUser._id) this.redirect("error");
     } catch (error) {
       console.log(error);
     }
@@ -178,9 +182,13 @@ export class ItemSalesDetailComponent implements OnInit {
       this.currentTab = 'Ventas';
   }
 
-  redirect() {
-    console.log("Redirección");
-    this.router.navigate(['/']);
+  redirect(customRoute?: string) {
+    if(customRoute == "error") this.router.navigate(['/ecommerce/error-screen']);
+    else this.router.navigate(['/']);
+  }
+
+  back() {
+    this.location.back();
   }
  
 }

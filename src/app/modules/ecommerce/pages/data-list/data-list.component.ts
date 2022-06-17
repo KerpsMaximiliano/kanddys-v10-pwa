@@ -119,8 +119,8 @@ export class DataListComponent implements OnInit {
       else return this.redirect();
     })
     if (this.viewtype === 'merchant') {
-      this.merchantId = this.headerService.merchantInfo?._id;
-      // this.merchantId = "62ab42ee5c298435f993da96";
+      // this.merchantId = this.headerService.merchantInfo?._id;
+      this.merchantId = "62ab42ee5c298435f993da96";
 
       console.log(this.merchantId);
       // this.merchantId = "616a13a527bcf7b8ba3ac312";
@@ -183,6 +183,21 @@ export class DataListComponent implements OnInit {
       } else {
         // this.dummyView = true;
         this.createMode = true;
+
+        if (this.mode === 'tag') {
+          try {
+            const user = await this.auth.me();
+            if (!user) return this.redirect();
+            const tags = await this.tagsService.tagsByUser();
+            this.tagList = tags;
+            this.filteredTagList = tags;
+          } catch (error) {
+            console.log(error);
+            return this.redirect();
+          }
+        } else if (this.mode === 'category') {
+          await this.getCategories();
+        }
       }
     })
   }
@@ -281,6 +296,9 @@ export class DataListComponent implements OnInit {
         customClass: 'app-dialog',
         flags: ['no-header'],
       });
+
+      this.keyword = "";
+      await this.getCategories();
     }
 
     if (!this.createMode) {
@@ -304,6 +322,22 @@ export class DataListComponent implements OnInit {
     }
     if (this.mode === 'category')
       this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
+  }
+
+  async getCategories() {
+    try {
+      const data = await this.itemsService.itemCategories(this.merchantId, {
+        options: {
+          limit: 100,
+        },
+      });
+
+      this.categoriesList = data.itemCategoriesList;
+      this.filteredCategories = data.itemCategoriesList;
+    } catch (error) {
+      console.log(error);
+      return this.redirect();
+    }
   }
 
   back() {

@@ -10,6 +10,8 @@ import { TagsService } from 'src/app/core/services/tags.service';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Merchant } from 'src/app/core/models/merchant';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { User } from 'src/app/core/models/user';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-sale-detail',
@@ -20,12 +22,12 @@ export class SaleDetailComponent implements OnInit {
 
   order: ItemOrder = null;
   merchant: Merchant = null;
-  loggedIn: boolean = false;
   env: string = environment.assetsUrl;
   backgroundImg: string = "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/user-default.png";
   tags: any;
   orderId: string = null;
   orderTags: Record<string, boolean> = {};
+  user: User;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,47 +44,44 @@ export class SaleDetailComponent implements OnInit {
     this.route.params.subscribe(async routeParams => {
       try {
         const { orderId } = routeParams;
-
+        lockUI();
         if (localStorage.getItem('session-token')) {
-          const data = await this.authService.me()
-          if (data) this.loggedIn = true;
+          this.user = await this.authService.me()
         }
 
-        if (this.loggedIn) {
-          const { order } = await this.ordersService.order(orderId);
+        if(!this.user) return this.errorScreen();
 
-          if (!order)
-            this.router.navigate([`ecommerce/error-screen/`]);
+        const data = await this.ordersService.order(orderId);
 
-          this.order = order;
-          this.orderId = formatID(order.dateId);
+        if (!data || !data.order) return this.errorScreen();
 
-          this.order.tags.forEach(tag => {
-            this.orderTags[tag] = true;
-          });
+        this.order = data.order;
+        this.orderId = formatID(data.order.dateId);
 
-          const merchantDefault = await this.merchantsService.merchantDefault();
-          if (!merchantDefault) this.router.navigate([`ecommerce/error-screen/`]);
+        this.order.tags.forEach(tag => {
+          this.orderTags[tag] = true;
+        });
 
-          this.merchant = merchantDefault;
+        const merchantDefault = await this.merchantsService.merchantDefault();
+        if (!merchantDefault) return this.errorScreen();
 
-          let merchantFound = false;
-          this.order.merchants.forEach(merchant => {
-            if (merchant._id === merchantDefault._id) merchantFound = true;
-          })
+        this.merchant = merchantDefault;
 
-          if (!merchantFound) this.router.navigate(['/']);
+        let merchantFound = false;
+        this.order.merchants.forEach(merchant => {
+          if (merchant._id === merchantDefault._id) merchantFound = true;
+        })
 
-          const { tagsByMerchant } = await this.tagsService.tagsByMerchant(merchantDefault._id);
-          this.tags = tagsByMerchant;
+        if (!merchantFound) this.router.navigate(['/']);
 
-          console.log(this.tags, "result");
-        } else {
-          this.router.navigate(['ecommerce/user-dashboard']);
-        }
+        const { tagsByMerchant } = await this.tagsService.tagsByMerchant(merchantDefault._id);
+        this.tags = tagsByMerchant;
+
+        unlockUI();
+        console.log(this.tags, "result");
       } catch (error) {
         console.log(error);
-        this.router.navigate([`ecommerce/error-screen/`]);
+        return this.errorScreen();
       }
     });
   }
@@ -121,9 +120,13 @@ export class SaleDetailComponent implements OnInit {
     }
   }
 
-  redirect() {
+  errorScreen() {
+    unlockUI();
+    this.router.navigate([`ecommerce/error-screen/`]);
+  }
 
-    this.location.back();
+  redirect() {
+    this.router.navigate([`ecommerce/order-sales/${this.merchant._id}`]);
   }
 
 }

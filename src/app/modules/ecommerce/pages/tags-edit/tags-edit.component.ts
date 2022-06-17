@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TagsService } from '../../../../core/services/tags.service';
 import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 // import { HeaderService } from '../../../../core/services/header.service';
 // import { OrderService } from '../../../../core/services/order.service';
 
@@ -18,7 +19,8 @@ export class TagsEditComponent implements OnInit {
 
   constructor(
     private tagsService: TagsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
     //   private headerService: HeaderService,
     //   private order: OrderService,
   ) { }
@@ -63,6 +65,8 @@ export class TagsEditComponent implements OnInit {
     if (!this.tagID || this.tagID.length < 1) {
       this.tagsService.createTag(data);
       console.log('Create')
+
+      this.location.back();
     } else {
       console.log(this.tagID)
       this.tagsService.updateTag(data, this.tagID);

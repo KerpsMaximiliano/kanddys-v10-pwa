@@ -1,8 +1,8 @@
 <div class="container">
   <app-helper-headerv2
-    [navtext]="'Tienda Sin nombre'"
     [fontFamily]="'SfProBold'"
     [fontSize2]="'21px'"
+    [navtext]="merchant ? merchant.name : 'Tienda Sin nombre'"
     mode="basic"
     color="#2874AD"
     bgColor="#E9E371"

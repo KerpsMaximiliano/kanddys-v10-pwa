@@ -15,6 +15,8 @@ import { ItemList } from 'src/app/shared/components/item-list/item-list.componen
 import { Tag } from 'src/app/core/models/tags';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ItemOrder } from 'src/app/core/models/order';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 interface CustomItemList extends ItemList {
   tags?: string[]
@@ -38,66 +40,18 @@ export class OrderSalesComponent implements OnInit {
   selectedOption: number = 0
   allOrders: ItemOrder[] = [];
   orders: Array<CustomItemList> = [
-    {
-      visible: true,
-      id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
-      title: '$9000',
-      subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias',
-      text_right: '4 etiqueta(s)',
-      text_style: true,
-      phone: '534534534534675',
-      add_tag: true,
-    },
-    {
-      visible: true,
-      id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
-      title: '$9000',
-      subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias',
-      text_right: '4 etiqueta(s)',
-      text_style: true,
-      phone: '534534534534675',
-      add_tag: true,
-    },
-    {
-      visible: true,
-      id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
-      title: '$9000',
-      subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias',
-      text_right: '4 etiqueta(s)',
-      text_style: true,
-      phone: '534534534534675',
-      add_tag: true,
-    },
-    {
-      visible: true,
-      id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
-      title: '$9000',
-      subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias',
-      text_right: '4 etiqueta(s)',
-      text_style: true,
-      phone: '534534534534675',
-      add_tag: true,
-    },
-    {
-      visible: true,
-      id: 'adsadasdasdsa',
-      image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
-      title: '$9000',
-      subtitle: 'Custom Field',
-      text_left: 'Hace 2 dias',
-      text_right: '4 etiqueta(s)',
-      text_style: true,
-      phone: '534534534534675',
-      add_tag: true,
-    },
+    // {
+    //   visible: true,
+    //   id: 'adsadasdasdsa',
+    //   image: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1648833244956.png',
+    //   title: 'Order ID',
+    //   subtitle: 'Custom Field',
+    //   text_left: 'Hace 2 dias',
+    //   text_right: '4 etiqueta(s)',
+    //   text_style: true,
+    //   phone: '534534534534675',
+    //   add_tag: true,
+    // },
   ];
 
 
@@ -117,10 +71,11 @@ export class OrderSalesComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       this.merchantID = params.id
     });
+    lockUI();
     const user = await this.authService.me();
-    if(!user) return;
-    if (this.merchantID) this.getMerchants();
-    else console.log('Aqui iria a usuarios, pero no') //this.getOrdersByUser();
+    if(!user) return this.errorScreen();
+    await this.getMerchants();
+    unlockUI();
   }
 
   async getTagsOptions() {
@@ -130,10 +85,10 @@ export class OrderSalesComponent implements OnInit {
 
   async getMerchants() {
     const merchants = await this.merchantService.myMerchants({});
-    if(!merchants.length) return
+    if(!merchants.length) return this.errorScreen();
     let merchant = merchants.find(element => element._id === this.merchantID)
     this.headerSevice.merchantInfo = merchant;
-    if(!merchant) return;
+    if(!merchant) return this.errorScreen();
     await Promise.all([
       this.getOrdersByMerchant(),
       this.getTagsOptions()
@@ -147,7 +102,7 @@ export class OrderSalesComponent implements OnInit {
           limit: 100,
           sortBy: 'createdAt:asc'
         },
-      })).ordersByMerchant;
+      }))?.ordersByMerchant;
     if(!orders) return;
     this.allOrders = orders;
     this.orders = orders.map((order) => {
@@ -161,7 +116,7 @@ export class OrderSalesComponent implements OnInit {
         id: order._id,
         image: order.items[0].item.images[0],
         eventImage: () => this.goToOderinfo(order._id),
-        title: order.dateId,
+        title: formatID(order.dateId),
         eventTitle: () => this.goToOderinfo(order._id),
         subtitle: order.user.name,
         text_middle: '$' + order.subtotals[0].amount.toLocaleString('es-MX'),
@@ -200,7 +155,7 @@ export class OrderSalesComponent implements OnInit {
   }
 
   goToOderinfo(orderID: string) {
-    this.router.navigate([`ecommerce/order-info/${orderID}`]);
+    this.router.navigate([`ecommerce/sale-detail/${orderID}`]);
   }
 
   searchToggle() {
@@ -229,6 +184,11 @@ export class OrderSalesComponent implements OnInit {
 
   showAll() {
     this.activeTag = null;
+  }
+
+  errorScreen() {
+    unlockUI();
+    this.router.navigate([`ecommerce/error-screen/`]);
   }
 
   activeTag: number;

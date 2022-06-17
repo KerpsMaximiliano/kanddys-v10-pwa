@@ -29,7 +29,7 @@
     </div>
 
     <!-- Bottom buttons -->
-    <app-bubble-button [position]="'left'" [return]="true" [solo]="false"></app-bubble-button>
+    <app-bubble-button [position]="'left'" [return]="true" [solo]="false" (click)="redirect()"></app-bubble-button>
     <app-bubble-button [position]="'right'" [text]="'NEW'" [icon]="env + '/expand-categories.svg'" [solo]="false">
     </app-bubble-button>
     <app-sticky-button [text]="'LOREM IPSUM DOLOR SIT AMET'" [mode]="'disabled-fixed'">

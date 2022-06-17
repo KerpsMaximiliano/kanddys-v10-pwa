@@ -34,16 +34,20 @@
                         'margin-right': rmargin? rmargin :'20px',
                         'margin-left': '20px',
                         cursor: 'pointer',
-                        'filter': filter? filter : 'none'
+                        'filter': filter? filter : 'invert(100%) sepia(0%) saturate(7485%) hue-rotate(150deg) brightness(186%) contrast(101%)'
                     }"/>
 
-                    <div class="dot-trio" *ngIf="dots" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}">
+                    <!-- 
+                        Older styles:
+                        [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}
+                    -->
+                    <div class="dot-trio" *ngIf="dots" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'0'}">
                         <div class="dot"> </div>
                         <div class="dot"> </div>
                         <div class="dot"> </div>
                     </div>
 
-                    <button class="edit-button" *ngIf="edit || batch" [ngStyle]="{'margin-right': rmargin? rmargin :'20px'}">
+                    <button class="edit-button" *ngIf="edit || batch" [ngStyle]="{'margin-right': rmargin ? rmargin :'20px'}">
                          <span *ngIf="batch">BATCH</span> EDIT
                     </button>
 

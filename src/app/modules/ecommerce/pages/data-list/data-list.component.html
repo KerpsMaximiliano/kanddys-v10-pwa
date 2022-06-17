@@ -52,20 +52,47 @@
 
   </div>
 
-  <div *ngIf="createMode && keyword" [ngStyle]="{
-    display: 'flex',
-    justifyContent: 'center'
-  }">
-    <ng-container *ngIf="mode === 'tag' else categoryMode">
-      <a class="addButton" [routerLink]="['/ecommerce/tags-edit']" [queryParams]="{tagName: keyword}">
-        Añadir Nuevo Tag
-      </a>
+  <div *ngIf="createMode">
+    <ng-container>
+      <div class="label">
+        <ng-container>{{mode === 'tag' ? 'Tags' : 'Categorias'}}</ng-container>
+      </div>
+
+      <div *ngIf="mode === 'tag' else categoryMode">
+        <div [ngStyle]="{ margin: '0 38px 21px'}">
+          <a class="addButton" *ngIf="keyword && filteredTagList.length === 0" [routerLink]="['/ecommerce/tags-edit']"
+            [queryParams]="{tagName: keyword}">
+            Añadir Nuevo Tag
+          </a>
+        </div>
+      </div>
+
+      <ng-template #categoryMode>
+        <div [ngStyle]="{ margin: '0 38px 21px'}">
+          <button class="addButton" *ngIf="keyword && filteredCategories.length === 0" (click)="addCategory()">
+            Crear esta nueva categoria
+          </button>
+        </div>
+      </ng-template>
+
+      <div class="tag-container" [ngClass]="{'categories': mode === 'category'}">
+
+        <ng-container *ngIf="mode === 'tag'">
+          <app-info-card *ngFor="let tag of filteredTagList" (click)="!createMode ? onTagClick(tag) : null" type="tag"
+            [bottomtext]="tag.name" [toptext]="tag.counter" [isSelectable]="true"
+            [selected]="tag.notifyMerchantOrder || tag.notifyUserOrder">
+          </app-info-card>
+        </ng-container>
+
+        <ng-container *ngIf="mode === 'category'">
+          <app-tags-square *ngFor="let category of filteredCategories"
+            (click)="!createMode ? onCategoryClick(category) : null" [reverse]="true" [position]="'left'"
+            [tagText]="category.name" [number]="'44 ventas'" [color]="category.isSelected ? '#E9E371' : '#2874AD'"
+            [textColor]="category.isSelected ? '#E9E371' : '#2874AD'"
+            [bColor]="category.isSelected ? '#2874AD' : '#FFFFFF'"></app-tags-square>
+        </ng-container>
+      </div>
     </ng-container>
-    <ng-template #categoryMode>
-      <button class="addButton" (click)="addCategory()">
-        Crear esta nueva categoria
-      </button>
-    </ng-template>
   </div>
 </div>
 <!-- <app-sticky-button

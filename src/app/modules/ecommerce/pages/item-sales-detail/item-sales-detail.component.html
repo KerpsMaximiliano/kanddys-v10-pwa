@@ -7,6 +7,7 @@
     [shopcart]="false"
     fontFamily="SfProBold"
     fontSize="21px"
+    (returnEvent)="back()"
   ></app-helper-headerv2>
   <div class="fullScreenSwiper" *ngIf="itemData?.images.length">
     <div class="shadowWrapper">

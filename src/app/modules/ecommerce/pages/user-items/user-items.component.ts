@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -20,6 +21,7 @@ export class UserItemsComponent implements OnInit {
     length: number;
   };
   users: User[];
+  merchant: Merchant;
 
   constructor(
     private itemsService: ItemsService,
@@ -37,13 +39,25 @@ export class UserItemsComponent implements OnInit {
     });
 
     // TODO: Replace this with a header service  call to get the merchant ID
-    const merchantID = "616a13a527bcf7b8ba3ac312";
-    
+    // const merchantID = "616a13a527bcf7b8ba3ac312";
+
+    await this.getMerchant();
+
     await Promise.all([
-      this.getOrderTotal(merchantID),
-      this.getMerchantBuyers(merchantID),
-      this.getItems(merchantID)
+      this.getOrderTotal(this.merchant._id),
+      this.getMerchantBuyers(this.merchant._id),
+      this.getItems(this.merchant._id)
     ]);
+  }
+
+  async getMerchant() {
+    try {
+      this.merchant = await this.merchantsService.merchantDefault();
+      console.log("MERCHANT");
+      console.log(this.merchant);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getOrderTotal(merchantID: string) {

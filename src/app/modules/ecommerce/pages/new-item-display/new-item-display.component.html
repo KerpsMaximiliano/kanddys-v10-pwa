@@ -1,7 +1,7 @@
 <div class="container">
 	<app-helper-headerv2
 		[mode]="'basic'"
-		[navtext]="'MITIENDAID'"
+		[navtext]="item?.merchant?.name"
 		[returnAble]="false"
 		[whatsapp]="!providerView"
 		[shopcart]="!providerView"
@@ -150,6 +150,7 @@
 			mode="fixed"
 			size="small"
 			color="#E9E371"
+			[routerLink]="['/ecommerce/item-sales-detail', item._id]"
 		></app-sticky-button>
 	</ng-container>
 </ng-container>
