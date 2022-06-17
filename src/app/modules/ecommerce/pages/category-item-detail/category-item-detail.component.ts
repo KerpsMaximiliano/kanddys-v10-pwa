@@ -83,4 +83,7 @@ export class CategoryItemDetailComponent implements OnInit {
     this.location.back();
   }
 
+  toData(){
+    this.router.navigate([`ecommerce/data-list/${this.item._id}`],{ queryParams: {viewtype: "merchant", mode: "category"} });
+  }
 }

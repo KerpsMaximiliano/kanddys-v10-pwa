@@ -30,6 +30,6 @@
 
 </div>
 <app-bubble-button [position]="'left'" [text]="''" icon="/arrow-left.svg"></app-bubble-button>
-<app-bubble-button [position]="'right'" text="NEXT" [icon]="'/expand-categories.svg'"></app-bubble-button>
+<app-bubble-button [position]="'right'" text="NEW" [icon]="'/expand-categories.svg'" (click)="toData()"></app-bubble-button>
 <app-sticky-button [mode]="'disabled'" [size]="'small'" [text]="'MIRA LAS CATEGORIAS DEL ITEM'">
 </app-sticky-button>
