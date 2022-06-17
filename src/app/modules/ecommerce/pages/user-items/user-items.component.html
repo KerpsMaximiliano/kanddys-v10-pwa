@@ -1,9 +1,12 @@
 <div class="container">
   <app-helper-headerv2
+    [fontFamily]="'SfProBold'"
+    [fontSize2]="'21px'"
     [navtext]="merchant ? merchant.name : 'Tienda Sin nombre'"
     mode="basic"
     color="#2874AD"
     bgColor="#E9E371"
+    [icon]="'/person.svg'"
     [plus]="true"
     [whatsapp]="false"
     color="#2874AD"
@@ -44,6 +47,15 @@
     ></app-saleflow-item>
   </div>
 </div>
+
+<app-bubble-button
+[position]="'mini'"
+[color]="'blue'"
+[fontSize]="'19px'"
+[text]="'$'"
+[icon]="'/person.svg'"
+[flexD]="'row'"
+></app-bubble-button>
 <app-bubble-button
   position="left"
 	color="blue"
