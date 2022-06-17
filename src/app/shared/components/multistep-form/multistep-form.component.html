@@ -129,7 +129,7 @@
                   justifyContent: 'flex-start',
                   backgroundColor: 'white'
                 }" [ngClass]="{inputFocused: currentField.focused, input: true}">
-                
+
                 <span *ngFor="let letter of currentField.formattedValue.split(''); let i = index">
                   {{ letter }}
                 </span>
@@ -146,7 +146,7 @@
                     ? 0
                     : null
                 " [placeholder]="currentField.placeholder"
-                [ngClass]="{input: true, formatCurrency: true, focused: currentField.focused}"
+                [ngClass]="{input: true, formatCurrency: currentField.inputType === 'number' && currentField.shouldFormatNumber, focused: currentField.focused}"
                 (focus)="currentField.focused = true" (blur)="currentField.focused = false" [ngStyle]="
                   currentField.styles.fieldStyles &&
                   !currentField.styles.customClassName
@@ -192,7 +192,7 @@
                       currentField.styles.fieldStyles
                         ? currentField.styles.fieldStyles
                         : null
-                    " (keypress)="
+                    " (keyup)="
                       onMultipleInputEnterPress(
                         $event,
                         addOneMoreInputToCurrentFormArray,
