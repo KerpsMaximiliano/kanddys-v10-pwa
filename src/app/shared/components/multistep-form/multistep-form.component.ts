@@ -453,6 +453,9 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         callback(fieldformArray, fieldName);
       }, 1000);
     }
+
+    if (event.key === 'Backspace' && this.timeoutId)
+      clearTimeout(this.timeoutId);
   }
 
   /**
