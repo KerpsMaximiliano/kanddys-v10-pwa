@@ -36,6 +36,12 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fontSize2: string;
     @Input() rmargin: string;
     @Input() filter: string;
+    @Input() navtest: any = {
+        text: '',
+        fontFamily: '',
+        fontSize: '',
+        color: this.color
+        };
     @Output() returnEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
     @Output() dotEvent = new EventEmitter();
