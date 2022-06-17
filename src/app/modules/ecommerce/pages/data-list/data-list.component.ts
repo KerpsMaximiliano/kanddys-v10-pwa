@@ -196,19 +196,7 @@ export class DataListComponent implements OnInit {
             return this.redirect();
           }
         } else if (this.mode === 'category') {
-          try {
-            const data = await this.itemsService.itemCategories(this.merchantId, {
-              options: {
-                limit: 100,
-              },
-            });
-
-            this.categoriesList = data.itemCategoriesList;
-            this.filteredCategories = data.itemCategoriesList;
-          } catch (error) {
-            console.log(error);
-            return this.redirect();
-          }
+          await this.getCategories();
         }
       }
     })
@@ -308,6 +296,9 @@ export class DataListComponent implements OnInit {
         customClass: 'app-dialog',
         flags: ['no-header'],
       });
+
+      this.keyword = "";
+      await this.getCategories();
     }
 
     if (!this.createMode) {
@@ -331,6 +322,22 @@ export class DataListComponent implements OnInit {
     }
     if (this.mode === 'category')
       this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
+  }
+
+  async getCategories() {
+    try {
+      const data = await this.itemsService.itemCategories(this.merchantId, {
+        options: {
+          limit: 100,
+        },
+      });
+
+      this.categoriesList = data.itemCategoriesList;
+      this.filteredCategories = data.itemCategoriesList;
+    } catch (error) {
+      console.log(error);
+      return this.redirect();
+    }
   }
 
   back() {
