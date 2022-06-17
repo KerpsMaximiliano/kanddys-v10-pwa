@@ -19,150 +19,124 @@
          </ng-container>
 
          <ng-container *ngIf="viewtype == 'community'">
+            <div style="position: sticky; top: 0; z-index: 2;">
             <app-helper-headerv2
                 [mode]="'basic'"
-                [navtext]="'Volver'"
-                [shopcart]="true"
-                [shopCartCallback]="showCartCallBack"
-                [cartAmount]="itemCartAmount"
-                [whatsapp]="false"
-                [plus]="false"
-                [upload]="false"
+		        [navtext]="'MITIENDAID'"
+		        [returnAble]="false"
+		        [whatsapp]="true"
+		        [shopcart]="true"
+		        [cartAmount]="1"
+		        cartColor="blue"
+		        fontSize2="21px"
+		        [bgColor]="'#E9E371'"
+		        [color]="'#2874AD'"
+                filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"
                 (returnEvent)="back()"
             ></app-helper-headerv2>
+            </div>
          </ng-container>
-
-         <!-- <app-header-info-admin
-         [data]="[{
-            text: '$147,154 DOP total ingresado'
-         },
-         {
-             text: '1,457 ventas'
-         }]"
-         ></app-header-info-admin>
-
-         <div class="category">
-            <div class="tab-area">
-                <div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
-                    <img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: tapped}">
-                    <p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
+     
+        
+        <div class="item-info" *ngIf="itemData">
+            <div class="description" *ngIf="itemData.description">
+                <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
+                    {{itemData.name}}
+                </h2>
+                <p>{{itemData.description}}</p>
+    
+            </div>
+    
+            <div *ngIf="itemData.name && (!itemData.images || !itemData.images?.length)">
+                <div class="grey-box">
+                    <h3 class="title">{{itemData.name}}</h3>
                 </div>
             </div>
-            
-            <ng-container *ngIf="tapped">
-                <div class="tags-area" *ngIf="tagsData">
-                    <app-tags-square
-                    *ngFor="let item of tagsData; index as i"
-                    ></app-tags-square>
+    
+            <div class="fullScreenSwiper" *ngIf="itemData.images?.length">
+                <div class="shadowWrapper">
+                    <swiper [config]="swiperConfig">
+                    <div
+                        *ngFor="let item of itemData.images; let i = index"
+                        (click)="openImageModal(item)"
+                        class="item"
+                        [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+                    ></div>
+                  </swiper>
+                </div>
+            </div>
+    
+            <div class="no-description" *ngIf="itemData.name && !itemData.description && itemData.images">
+                <h3 class="title">{{itemData.name}}</h3>
+            </div>
+    
+            <div *ngIf="itemData.pricing" class="item-price">
+                <span class="vale">Vale</span>
+                <h4 class="price">${{itemData.pricing | number}}</h4>
+            </div>
+    
+            <div class="client-submit-area">
+                    <button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
+                    <img src="{{ env }}/bookmark-plus.svg" alt="">
+            </div>
+    
+            <ng-container *ngIf="itemData.content?.length">
+                <hr class="divider">
+                <div class="content">
+                    <span class="includes">Incluye:</span>
+                    <ul>
+                        <li *ngFor="let content of itemData.content; index as i" class="list-content">
+                            - {{content}}
+                        </li>
+                    </ul>
                 </div>
             </ng-container>
-         </div> -->
-
-        <div class="fullScreenSwiper">
-            <div class="shadowWrapper">
-                <swiper [config]="swiperConfig">
-                <div
-                    *ngFor="let item of itemData.images; let i = index"
-                    (click)="openImageModal(item)"
-                    class="item"
-                    [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-                ></div>
-              </swiper>
-            </div>
-        </div>
-        <div class="desc-area">
-            <div class="left-area">
-                <p class="price" *ngIf="itemData?.name" style="padding-bottom: 30px;">{{itemData.name}}</p>
-                <span class="value">Vale</span>
-                <label for="Precio producto" class="price">${{ priceLabel | number: "1.0-2" }}</label>
-                <!-- <div class="ptext">
-                    <label class="earn">Ganas 58 <img class="star" [src]="env + '/star.svg'"></label> 
-                    <div *ngIf="myStore && viewtype == 'merchant'"><span class="con-text"> y recaudas fondos </span></div>
-                    <div *ngIf="viewtype == 'preview'"><span class="con-text"> se colabora ${{preamount}} </span></div>
-                    <div *ngIf="viewtype === 'community'"><span class="con-text"> y recaudamos ${{preamount}}</span></div>
-                </div> -->
-            </div>
-
-            <!-- <div class="right-area">
-               <ng-container *ngIf="viewtype == 'merchant'"><img class="upload-icon" [src]="env + '/upload.svg' " alt=""  style="cursor: pointer;" height="25px" width="19px"></ng-container>
-                <img class="info-icon" [src]="env + '/info.svg' " alt=""  style="cursor: pointer; margin-left: 5px" height="20px" width="5px">
-            </div> -->
-        </div>
-        <div class="wrapper">
-            <div class="included" *ngIf="itemData?.content?.length > 0">
-                <div class="title">
-                    Incluido:
-                </div>
-                <ng-container *ngFor="let item of itemData.content">
-                    <div class="item">
-                        {{item}}
-                    </div>
-                </ng-container>
-            </div>
         </div>
 
-				<ng-container *ngIf="viewtype == 'merchant'">
-					<div class="cta-area">
-							<app-cta-buttons
-									[ctaText]="'Añadelo A Mi Lista'"
-									[btnColor]="'#40772F'"
-							>
-							</app-cta-buttons>
-	
-							<app-cta-buttons
-									[ctaText]="'Recauda Fondos'"
-									[btnColor]="'#8351FE'"
-							>
-							</app-cta-buttons>
-	
-							<app-cta-buttons
-									[ctaText]="
-										(itemData?.status === 'disabled' && 'Empieza a venderlo') ||
-										(itemData?.status === 'active' && 'En Venta')
-									"
-									[btnColor]="
-										(itemData?.status === 'disabled' && '#4773D8') ||
-										(itemData?.status === 'active' && '#4FE95F')
-									"
-									[icon]="
-										(itemData?.status === 'disabled' && env + '/closed-eye.svg') ||
-										(itemData?.status === 'active' && env + '/open-eye.svg')
-									"
-									(click)="toggleActivateItem()"
-							>
-							</app-cta-buttons>
-					</div>
-			</ng-container>
+
+		<ng-container *ngIf="viewtype == 'merchant'">
+			<div class="cta-area">
+				<app-cta-buttons
+						[ctaText]="'Añadelo A Mi Lista'"
+						[btnColor]="'#40772F'"
+				>
+				</app-cta-buttons>
+				<app-cta-buttons
+						[ctaText]="'Recauda Fondos'"
+						[btnColor]="'#8351FE'"
+				>
+				</app-cta-buttons>
+				<app-cta-buttons
+						[ctaText]="
+							(itemData?.status === 'disabled' && 'Empieza a venderlo') ||
+							(itemData?.status === 'active' && 'En Venta')
+						"
+						[btnColor]="
+							(itemData?.status === 'disabled' && '#4773D8') ||
+							(itemData?.status === 'active' && '#4FE95F')
+						"
+						[icon]="
+							(itemData?.status === 'disabled' && env + '/closed-eye.svg') ||
+							(itemData?.status === 'active' && env + '/open-eye.svg')
+						"
+						(click)="toggleActivateItem()"
+				>
+				</app-cta-buttons>
+			</div>
+		</ng-container>
 
         <ng-container *ngIf="viewtype == 'community' ">
-            <div class="cta-area">
-                <!-- <app-cta-buttons
-                    [ctaText]="'Añadelo A Mi Lista'"
-                    [btnColor]="'#40772F'"
-                >
-                </app-cta-buttons>
-    
-                <app-cta-buttons
-                    [ctaText]="'Recauda Fondos'"
-                    [btnColor]="'#8351FE'"
-                >
-                </app-cta-buttons> -->
-    
-                <app-cta-buttons
-                    [ctaText]="inCart ? 'En Mi Carrito' : 'Agregar al Carrito'"
-                    btnColor="#3E782A"
-                    [icon]="inCart && env  + '/white-checkmark.svg'"
-                    (click)="onCartClick()"
-                >
-                </app-cta-buttons>
-                <div class="cart" *ngIf="itemCartAmount">
-                    <app-cart-button
-                        [cartAmount]="itemCartAmount"
-                        [shopCartCallback]="showCartCallBack"
-                        color="blue"
-                    ></app-cart-button>
-                </div>
-            </div>
+
+            <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button>
+            <app-bubble-button [position]="'left'" [return]="true" (click)="back()" [color]="'blue'"></app-bubble-button>
+	        <app-bubble-button [position]="'minir'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
+	        <app-bubble-button [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'"></app-bubble-button>
+
+	        <app-sticky-button
+		    [text]="'GUARDA Y RECAUDA FONDOS'"
+		    [mode]="'disabled-fixed'"
+		    size="small"
+	        ></app-sticky-button>
         </ng-container>
 
         <ng-container *ngIf="viewtype == 'preview'">

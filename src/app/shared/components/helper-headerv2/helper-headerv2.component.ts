@@ -36,7 +36,14 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fontSize2: string;
     @Input() rmargin: string;
     @Input() filter: string;
+    @Input() navtest: any = {
+        text: '',
+        fontFamily: '',
+        fontSize: '',
+        color: this.color
+        };
     @Output() returnEvent = new EventEmitter();
+    @Output() plusEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
     @Output() dotEvent = new EventEmitter();
     env: string = environment.assetsUrl;
@@ -60,6 +67,12 @@ export class HelperHeaderv2Component implements OnInit {
 
   dotAction(event){
     this.dotEvent.emit(event)
+  }
+
+  triggerEvent(button: 'plus', value?: any) {
+    switch(button) {
+      case 'plus': this.plusEvent.emit(); break;
+    }
   }
 
 }
