@@ -10,8 +10,8 @@ export class PageComponentTabsComponent implements OnInit {
   @Input() activeTag: number = 0;
   @Output() changeValue = new EventEmitter<string>();
   mouseDown = false;
-  startX: any;
-  scrollLeft: any;
+  startX: number;
+  scrollLeft: number;
 
   constructor() {}
 

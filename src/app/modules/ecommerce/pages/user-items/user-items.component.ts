@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Item } from 'src/app/core/models/item';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Item, ItemCategory } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
@@ -18,8 +19,9 @@ import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/stor
   styleUrls: ['./user-items.component.scss']
 })
 export class UserItemsComponent implements OnInit {
+  tabOptions: string[] = [];
   items: Item[] = [];
-  // merchantID: string;
+  filteredItems: Item[] = [];
   ordersTotal: {
     total: number;
     length: number;
@@ -27,6 +29,7 @@ export class UserItemsComponent implements OnInit {
   users: User[];
   merchant: Merchant;
   saleflow: SaleFlow;
+  categories: ItemCategory[];
 
   constructor(
     private itemsService: ItemsService,
@@ -39,10 +42,9 @@ export class UserItemsComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-
+    lockUI();
     await this.authService.me().then(data => {
-      if (!data || data === undefined) this.redirect;
-      console.log(data)
+      if (!data || data === undefined) this.errorScreen();
     });
 
     // TODO: Replace this with a header service  call to get the merchant ID
@@ -55,14 +57,14 @@ export class UserItemsComponent implements OnInit {
       this.getMerchantBuyers(this.merchant._id),
       this.getItems(this.merchant._id),
       this.getSaleflow(this.merchant._id),
+      this.getCategories(this.merchant._id),
     ]);
+    unlockUI();
   }
 
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
-      console.log("MERCHANT");
-      console.log(this.merchant);
     } catch (error) {
       console.log(error);
     }
@@ -86,7 +88,21 @@ export class UserItemsComponent implements OnInit {
 
   async getItems(merchantID: string) {
     try {
-      this.items = (await this.itemsService.itemsByMerchant(merchantID)).itemsByMerchant;
+      const items = (await this.itemsService.itemsByMerchant(merchantID)).itemsByMerchant;
+      this.items = items;
+      this.filteredItems = items;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getCategories(merchantID: string) {
+    try {
+      this.categories = (await this.itemsService.itemCategories(merchantID, {
+        options: {
+          limit: 100,
+        },
+      }))?.itemCategoriesList;
     } catch (error) {
       console.log(error);
     }
@@ -196,7 +212,47 @@ export class UserItemsComponent implements OnInit {
   }
 
   redirect(i) {
+    unlockUI();
     this.router.navigate(['/ecommerce/category-item-detail/' + this.items[i]._id]);
+  }
+
+  errorScreen() {
+    unlockUI();
+    this.router.navigate([`ecommerce/error-screen/`]);
+  }
+
+  activeCategory: number;
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+  showAll() {
+    this.activeCategory = null;
+    this.filteredItems = [...this.items];
+  }
+
+  changeTab(index: number) {
+    this.activeCategory = index;
+    this.filteredItems = this.items.filter((item) => item.category?.some((category) => category._id === this.categories[this.activeCategory]._id));
+  }
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 
 }

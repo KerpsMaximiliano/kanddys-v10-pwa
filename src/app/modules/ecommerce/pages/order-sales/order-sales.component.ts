@@ -80,7 +80,6 @@ export class OrderSalesComponent implements OnInit {
 
   async getTagsOptions() {
     this.tags = (await this.merchantService.tagsByMerchant(this.merchantID))?.tagsByMerchant;
-    if(!this.tags) return;
   }
 
   async getMerchants() {
@@ -193,8 +192,8 @@ export class OrderSalesComponent implements OnInit {
 
   activeTag: number;
   mouseDown: boolean;
-  startX: any;
-  scrollLeft: any;
+  startX: number;
+  scrollLeft: number;
   changeTab(index: number) {
     this.activeTag = index;
     this.active = this.tags[index].tags.notify;
