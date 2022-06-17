@@ -68,6 +68,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
+    console.log(this.itemCartAmount);
     if (productData && productData.length > 0) {
       this.inCart = productData.some((item) => item._id === this.itemData._id);
     } else this.inCart = false;

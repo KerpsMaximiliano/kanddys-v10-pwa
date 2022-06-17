@@ -68,8 +68,8 @@
         </div>
         <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button>
         <app-bubble-button (click)="back()" [position]="'left'" [return]="true" [color]="'blue'"></app-bubble-button>
-        <app-bubble-button (click)="openShareDialog()" [position]="'minir'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
-        <app-bubble-button (click)="showItems()" [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'"></app-bubble-button>
+        <app-bubble-button (click)="openShareDialog()" [position]="(itemCartAmount > 0) ? 'minir' : 'right'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
+        <app-bubble-button (click)="showItems()" [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'" *ngIf="itemCartAmount > 0"></app-bubble-button>
         <app-sticky-button
         [text]="'GUARDA Y RECAUDA FONDOS'"
         [mode]="'disabled-fixed'"
