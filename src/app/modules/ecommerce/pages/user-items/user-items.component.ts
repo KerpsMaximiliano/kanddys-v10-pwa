@@ -60,7 +60,7 @@ export class UserItemsComponent implements OnInit {
       this.getSaleflow(this.merchant._id),
       this.getCategories(this.merchant._id),
     ]);
-    this.hasSalesData = true;
+    if (this.ordersTotal.total || (this.users != undefined)) this.hasSalesData = true;
     unlockUI();
   }
 
