@@ -4,7 +4,6 @@ import { CustomFieldsComponent } from 'src/app/shared/dialogs/custom-fields/cust
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { CollaborationsComponent } from 'src/app/shared/dialogs/collaborations/collaborations.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 @Component({

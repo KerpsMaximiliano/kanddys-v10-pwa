@@ -6,7 +6,9 @@
     bgColor="#E9E371"
     [plus]="true"
     [whatsapp]="false"
+    color="#2874AD"
     [shopcart]="false"
+    (plusEvent)="openCreateNew()"
   ></app-helper-headerv2>
   <app-header-info-admin
     [data]="[
@@ -52,6 +54,7 @@
   position="right"
 	color="blue"
 	[icon]="'/upload.svg'"
+  (click)="openShare()"
 ></app-bubble-button>
 <app-sticky-button
 	[text]="

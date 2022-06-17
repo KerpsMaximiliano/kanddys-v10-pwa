@@ -4,20 +4,28 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
 
-export interface StoreShareOption {
+interface IconSize {
+  width: number;
+  height: number;
+}
+interface StoreShareIcon {
+  src: string;
+  alt?: string;
+  color?: string;
+  size: IconSize;
+}
+
+interface StoreShareOption {
   text: string;
-  icon?: {
-    src: string;
-    alt?: string;
-    color?: string;
-    size: {
-      width: number;
-      height: number;
-    };
-  };
+  icon?: StoreShareIcon;
   func?: () => void;
   link?: string;
   mode?: 'clipboard' | 'share' | 'func' | 'qr';
+}
+
+export interface StoreShareList {
+  title: string;
+  options: StoreShareOption[];
 }
 
 @Component({
@@ -28,8 +36,7 @@ export interface StoreShareOption {
 export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
-  @Input() title: string;
-  @Input() options: StoreShareOption[] = [];
+  @Input() list: StoreShareList[] = [];
 
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
@@ -38,7 +45,7 @@ export class StoreShareComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if(!this.options?.length) throw new Error('Ingresa opciones para mostrar')
+    if(!this.list || !this.list.length) throw new Error('Ingresa opciones para mostrar')
   }
 
   downloadQr() {

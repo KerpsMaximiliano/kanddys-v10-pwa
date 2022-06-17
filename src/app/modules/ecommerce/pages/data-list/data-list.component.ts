@@ -10,6 +10,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-data-list',
@@ -106,7 +107,8 @@ export class DataListComponent implements OnInit {
     private auth: AuthService,
     private headerService: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private location: Location,
+    private dialog: DialogService,
   ) { }
 
   ngOnInit(): void {
@@ -341,8 +343,9 @@ export class DataListComponent implements OnInit {
   }
 
   back() {
-    const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/' + this.merchantId : 'user-dashboard/tiendas'}`
-    this.router.navigate([route]);
+    // const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/' + this.merchantId : 'user-dashboard/tiendas'}`
+    // this.router.navigate([route]);
+    this.location.back();
   }
 
 }

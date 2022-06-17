@@ -2,11 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-user-items',
@@ -22,12 +26,15 @@ export class UserItemsComponent implements OnInit {
   };
   users: User[];
   merchant: Merchant;
+  saleflow: SaleFlow;
 
   constructor(
     private itemsService: ItemsService,
     private ordersService: OrderService,
     private merchantsService: MerchantsService,
+    private saleflowService: SaleFlowService,
     private authService: AuthService,
+    private dialogService: DialogService,
     private router: Router
   ) { }
 
@@ -46,7 +53,8 @@ export class UserItemsComponent implements OnInit {
     await Promise.all([
       this.getOrderTotal(this.merchant._id),
       this.getMerchantBuyers(this.merchant._id),
-      this.getItems(this.merchant._id)
+      this.getItems(this.merchant._id),
+      this.getSaleflow(this.merchant._id),
     ]);
   }
 
@@ -82,6 +90,109 @@ export class UserItemsComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getSaleflow(merchantID: string) {
+    try {
+      this.saleflow = await this.saleflowService.saleflowDefault(merchantID);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  openCreateNew() {
+    const list: StoreShareList[] = [
+      {
+        title:  'Crear Nuevo(a)',
+        options: [
+          {
+            text: 'Item',
+            mode: 'func',
+            func: () => this.router.navigate(['/ecommerce/item-creator']),
+          },
+          {
+            text: 'Categoria',
+            mode: 'func',
+            func: () => {
+              this.router.navigate(['/ecommerce/data-list'], {
+                queryParams: { mode: 'category', viewtype: 'merchant' }
+              })
+            },
+          },
+        ]
+      }
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  openShare() {
+    const list: StoreShareList[] = [
+      // {
+      //   title:  'Mi Contacto',
+      //   options: [
+      //     {
+      //       text: 'Copia el link',
+      //       mode: 'clipboard',
+      //       link: 'fsdfdsfsdf',
+      //     },
+      //     {
+      //       text: 'Comparte el link',
+      //       mode: 'share',
+      //       link: 'hfghfgh',
+      //     },
+      //     {
+      //       text: 'Descarga el qrCode',
+      //       mode: 'qr',
+      //       link: 'hfghfgh',
+      //     },
+      //     {
+      //       text: 'Vista del Comprador',
+      //       mode: 'func',
+      //       func: () => console.log('test'),
+      //     },
+      //   ]
+      // },
+      {
+        title:  'Mi Contacto',
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          },
+          {
+            text: 'Descarga el qrCode',
+            mode: 'qr',
+            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          },
+          {
+            text: 'Vista del Comprador',
+            mode: 'func',
+            func: () => this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflow._id}`]),
+          },
+        ]
+      },
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   redirect(i) {
