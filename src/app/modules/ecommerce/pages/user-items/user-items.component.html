@@ -43,7 +43,8 @@
       [quantity]="0"
       [index2]="0"
       [showIcon]="true"
-      (action)="redirect(i)"
+      (itemClicked)="editItem(i)"
+      (action)="goToCategoryItemDetail(i)"
     ></app-saleflow-item>
   </div>
 </div>
@@ -76,6 +77,7 @@
     + ' / ' 
     + (users ? users.length : '0') + ' COMPRADORES'
   "
-	[mode]="'disabled-fixed'"
+	[mode]="hasSalesData ? 'fixed' : 'disabled-fixed'"
 	size="small"
+  (click)="goToSales()"
 ></app-sticky-button>

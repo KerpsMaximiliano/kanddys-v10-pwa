@@ -27,6 +27,7 @@ export class UserItemsComponent implements OnInit {
   users: User[];
   merchant: Merchant;
   saleflow: SaleFlow;
+  hasSalesData: boolean = false;
 
   constructor(
     private itemsService: ItemsService,
@@ -41,7 +42,7 @@ export class UserItemsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
 
     await this.authService.me().then(data => {
-      if (!data || data === undefined) this.redirect;
+      if (!data || data === undefined) this.redirect();
       console.log(data)
     });
 
@@ -56,6 +57,7 @@ export class UserItemsComponent implements OnInit {
       this.getItems(this.merchant._id),
       this.getSaleflow(this.merchant._id),
     ]);
+    this.hasSalesData = true;
   }
 
   async getMerchant() {
@@ -195,8 +197,22 @@ export class UserItemsComponent implements OnInit {
     });
   }
 
-  redirect(i) {
-    this.router.navigate(['/ecommerce/category-item-detail/' + this.items[i]._id]);
+  redirect() {
+    this.router.navigate([`/`]);
+  }
+
+  editItem(i) {
+    this.router.navigate([`/ecommerce/item-display/${this.items[i]._id}`], {
+      queryParams: { mode: 'edit' }
+    })
+  }
+
+  goToCategoryItemDetail(i) {
+    this.router.navigate([`/ecommerce/category-item-detail/${this.items[i]._id}`]);
+  }
+
+  goToSales() {
+    this.router.navigate([`/ecommerce/order-sales/${this.merchant._id}`]);
   }
 
 }
