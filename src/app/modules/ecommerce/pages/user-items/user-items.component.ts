@@ -29,6 +29,7 @@ export class UserItemsComponent implements OnInit {
   users: User[];
   merchant: Merchant;
   saleflow: SaleFlow;
+  hasSalesData: boolean = false;
   categories: ItemCategory[];
 
   constructor(
@@ -59,6 +60,7 @@ export class UserItemsComponent implements OnInit {
       this.getSaleflow(this.merchant._id),
       this.getCategories(this.merchant._id),
     ]);
+    this.hasSalesData = true;
     unlockUI();
   }
 
@@ -211,14 +213,23 @@ export class UserItemsComponent implements OnInit {
     });
   }
 
-  redirect(i) {
-    unlockUI();
-    this.router.navigate(['/ecommerce/category-item-detail/' + this.items[i]._id]);
-  }
-
   errorScreen() {
     unlockUI();
     this.router.navigate([`ecommerce/error-screen/`]);
+  }
+
+  editItem(i) {
+    this.router.navigate([`/ecommerce/item-display/${this.items[i]._id}`], {
+      queryParams: { mode: 'edit' }
+    })
+  }
+
+  goToCategoryItemDetail(i) {
+    this.router.navigate([`/ecommerce/category-item-detail/${this.items[i]._id}`]);
+  }
+
+  goToSales() {
+    this.router.navigate([`/ecommerce/order-sales/${this.merchant._id}`]);
   }
 
   activeCategory: number;

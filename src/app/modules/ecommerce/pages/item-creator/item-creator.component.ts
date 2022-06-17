@@ -153,7 +153,7 @@ export class ItemCreatorComponent implements OnInit {
           name: 'price',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', [
+            control: new FormControl(0, [
               Validators.required,
               Validators.min(0),
             ])
@@ -161,26 +161,58 @@ export class ItemCreatorComponent implements OnInit {
           onlyAllowPositiveNumbers: true,
           label: 'Precio que te pagarán:',
           inputType: 'number',
-          formattedValue: '',
+          customCursorIndex: this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ).length + 1,
+          formattedValue: '$' + this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ),
           shouldFormatNumber: true,
+          focused: false,
           placeholder: 'Precio...',
           changeCallbackFunction: (change, params) => {
             try {
               const plainNumber = change
                 .split(',')
-                .join('')
-                .split('.')
                 .join('');
-              const formatted = this.decimalPipe.transform(
-                Number(plainNumber),
-                '1.0-2'
-              );
 
-              if (formatted === '0') {
-                this.formSteps[0].fieldsList[0].placeholder = '';
+              if (plainNumber[0] === '0') {
+                const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                  Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                  '1.2'
+                ) : this.decimalPipe.transform(
+                  Number('0.' + (
+                    plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                      plainNumber.slice(1)
+                  )),
+                  '1.2'
+                );
+
+                if (formatted === '0') {
+                  this.formSteps[0].fieldsList[0].placeholder = '';
+                }
+
+                this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+              } else {
+                const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                  Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                  '1.2'
+                ) : this.decimalPipe.transform(
+                  Number('0.' + (
+                    plainNumber.length === 1 ? '0' + plainNumber :
+                      plainNumber
+                  )),
+                  '1.2'
+                );
+
+                if (formatted === '0') {
+                  this.formSteps[0].fieldsList[0].placeholder = '';
+                }
+
+                this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
               }
-
-              this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -195,16 +227,20 @@ export class ItemCreatorComponent implements OnInit {
             fieldStyles: {
               backgroundColor: 'transparent',
               color: 'transparent',
-              zIndex: '50',
+              caretColor: 'transparent',
               position: 'absolute',
               bottom: '0px',
-              left: '0px',
               boxShadow: 'none',
+              userSelect: 'none'
             },
             formattedInputStyles: {
               bottom: '0px',
               left: '0px',
               zIndex: '1',
+            },
+            formattedInputCaretStyles: {
+              width: '0.5px',
+              height: '1rem',
             },
             labelStyles: labelStyles
           },
@@ -302,6 +338,9 @@ export class ItemCreatorComponent implements OnInit {
               name: 'onFileInputBase64',
               callback: (result) => {
                 this.defaultImages[result.index] = result.image;
+                this.formSteps[0].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
+                this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+                this.headerService.removeTempNewItem();
               },
             },
             {

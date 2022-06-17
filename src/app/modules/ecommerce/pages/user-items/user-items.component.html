@@ -56,15 +56,16 @@
   </div>
   <div class="itemGrid" style="margin-top: 30px;">
     <app-saleflow-item
-        *ngFor="let item of filteredItems; index as i"
-        [imgURL]="item.images[0]"
-        [price]="item.pricing"
-        [income]="0"
-        [quantity]="0"
-        [index2]="item.category?.length"
-        [showIcon]="true"
-        (action)="redirect(i)"
-      ></app-saleflow-item>
+      *ngFor="let item of filteredItems; index as i"
+      [imgURL]="item.images[0]"
+      [price]="item.pricing"
+      [income]="0"
+      [quantity]="0"
+      [index2]="item.category?.length"
+      [showIcon]="true"
+      (itemClicked)="editItem(i)"
+      (action)="goToCategoryItemDetail(i)"
+    ></app-saleflow-item>
   </div>
 </div>
 
@@ -96,6 +97,7 @@
     + ' / ' 
     + (users ? users.length : '0') + ' COMPRADORES'
   "
-	[mode]="'disabled-fixed'"
+	[mode]="hasSalesData ? 'fixed' : 'disabled-fixed'"
 	size="small"
+  (click)="goToSales()"
 ></app-sticky-button>

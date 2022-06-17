@@ -9,6 +9,7 @@ export interface FieldStyles {
   labelStyles?: any;
   subLabelStyles?: any;
   formattedInputStyles?: any;
+  formattedInputCaretStyles?: any;
   bottomLabelStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
@@ -32,9 +33,11 @@ export interface FormField {
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
+  customCursorIndex?: number;
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
+  focused?: boolean;
   topLabelAction?: {
     text: string;
     clickable?: boolean;
