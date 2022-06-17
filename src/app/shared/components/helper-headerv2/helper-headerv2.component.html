@@ -4,8 +4,11 @@
         <ng-container *ngIf="mode == 'basic'">
             <div class="top-bar">
                 <div class="left-area">
+                    <img [src]="env + icon" alt="" [ngStyle]="{'filter': filter? filter : 'none'}" *ngIf="icon && !returnAble" />
+
                     <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
-                            [style.color]="color ? color : '#FFFFFF'"></i></a>
+                      [style.color]="color ? color : '#FFFFFF'"></i></a>
+
                     <ng-container *ngIf="navtext">
                     <span class="return" [ngStyle]="
                     {
@@ -47,7 +50,8 @@
                     <div *ngIf="plus"><span class="plus" [ngStyle]="
                         {
                          'font-family': fontFamily2? fontFamily2 : '',
-                         cursor: 'pointer'
+                         cursor: 'pointer',
+                         'color': color
                         }"
                         >+</span></div>
 
@@ -143,6 +147,7 @@
                     [ngStyle]="
                     {
                       'font-family': fontFamily2? fontFamily2 : '',
+                      'color': color,
                       cursor: 'pointer'
                     }"
                     >+</span></div>
