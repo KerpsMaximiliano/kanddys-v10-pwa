@@ -4,7 +4,7 @@
         <ng-container *ngIf="mode == 'basic'">
             <div class="top-bar">
                 <div class="left-area">
-                    <img [src]="env + icon" alt="" [ngStyle]="{'filter': filter? filter : 'none'}" *ngIf="icon && !returnAble" />
+                    <img [src]="env + icon" alt="" [ngStyle]="{'filter': filter? filter : 'none'}" *ngIf="icon && !returnAble" class="icon"/>
 
                     <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
                       [style.color]="color ? color : '#FFFFFF'"></i></a>
