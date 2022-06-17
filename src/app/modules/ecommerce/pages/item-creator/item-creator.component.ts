@@ -338,6 +338,9 @@ export class ItemCreatorComponent implements OnInit {
               name: 'onFileInputBase64',
               callback: (result) => {
                 this.defaultImages[result.index] = result.image;
+                this.formSteps[0].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
+                this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+                this.headerService.removeTempNewItem();
               },
             },
             {
