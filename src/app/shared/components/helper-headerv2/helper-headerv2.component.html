@@ -51,13 +51,14 @@
                          <span *ngIf="batch">BATCH</span> EDIT
                     </button>
 
-                    <div *ngIf="plus"><span class="plus" [ngStyle]="
+                    <button class="header-btn" *ngIf="plus" (click)="triggerEvent('plus')">
+                        <span class="plus" [ngStyle]="
                         {
-                         'font-family': fontFamily2? fontFamily2 : '',
-                         cursor: 'pointer',
-                         'color': color
-                        }"
-                        >+</span></div>
+                        'font-family': fontFamily2? fontFamily2 : '',
+                        cursor: 'pointer',
+                        'color': color
+                        }">+</span>
+                    </button>
 
                     <div *ngIf="upload">
                         <img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;" [ngStyle]="{'filter': filter? filter : 'none'}">

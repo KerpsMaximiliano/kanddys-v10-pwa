@@ -15,7 +15,7 @@ import { User } from 'src/app/core/models/user';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { UsersService } from 'src/app/core/services/users.service';
-import { StoreShareComponent, StoreShareOption } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
@@ -53,7 +53,7 @@ export class NewItemDisplayComponent implements OnInit {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private merchantService: MerchantsService,
-    private saleflowSarvice: SaleFlowService,
+    private saleflowService: SaleFlowService,
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
@@ -119,23 +119,23 @@ export class NewItemDisplayComponent implements OnInit {
                 if (this.isPreItem)
                   await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
-                const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+                const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
 
                 if (!defaultSaleflow) {
-                  const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+                  const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
                     merchant: defaultMerchant._id,
                     name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
                     items: []
                   });
 
-                  const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                  const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
                   this.saleflow = defaultSaleflow;
 
-                  this.saleflowSarvice.createSaleFlowModule({
+                  this.saleflowService.createSaleFlowModule({
                     saleflow: createdSaleflow._id
                   });
 
-                  await this.saleflowSarvice.addItemToSaleFlow({
+                  await this.saleflowService.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
 
@@ -147,34 +147,34 @@ export class NewItemDisplayComponent implements OnInit {
                 if (this.isPreItem)
                   await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
-                const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+                const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
 
                 if (!defaultSaleflow) {
-                  const saleflows = await this.saleflowSarvice.saleflows(merchants[0]._id, {});
+                  const saleflows = await this.saleflowService.saleflows(merchants[0]._id, {});
 
                   if (!saleflows || saleflows.length === 0) {
-                    const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+                    const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
                       merchant: defaultMerchant._id,
                       name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
                       items: []
                     });
 
-                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
                     this.saleflow = defaultSaleflow;
 
-                    this.saleflowSarvice.createSaleFlowModule({
+                    this.saleflowService.createSaleFlowModule({
                       saleflow: createdSaleflow._id
                     });
 
-                    await this.saleflowSarvice.addItemToSaleFlow({
+                    await this.saleflowService.addItemToSaleFlow({
                       item: params.itemId
                     }, defaultSaleflow._id);
                     this.newMerchant = true;
                   } else {
-                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
+                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
                     this.saleflow = defaultSaleflow;
 
-                    await this.saleflowSarvice.addItemToSaleFlow({
+                    await this.saleflowService.addItemToSaleFlow({
                       item: params.itemId
                     }, defaultSaleflow._id);
                     this.newMerchant = true;
@@ -182,7 +182,7 @@ export class NewItemDisplayComponent implements OnInit {
                 } else {
                   this.saleflow = defaultSaleflow;
 
-                  await this.saleflowSarvice.addItemToSaleFlow({
+                  await this.saleflowService.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
 
@@ -197,30 +197,30 @@ export class NewItemDisplayComponent implements OnInit {
               if (this.isPreItem)
                 await this.itemsService.authItem(defaultMerchant._id, params.itemId);
 
-              const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
 
               if (!defaultSaleflow) {
 
-                const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+                const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
                   merchant: defaultMerchant._id,
                   name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
                   items: []
                 });
 
-                const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
 
-                this.saleflowSarvice.createSaleFlowModule({
+                this.saleflowService.createSaleFlowModule({
                   saleflow: createdSaleflow._id
                 });
 
-                await this.saleflowSarvice.addItemToSaleFlow({
+                await this.saleflowService.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
                 unlockUI();
                 // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
                 this.router.navigate([`/ecommerce/user-items`]);
               } else {
-                await this.saleflowSarvice.addItemToSaleFlow({
+                await this.saleflowService.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
                 unlockUI();
@@ -228,7 +228,7 @@ export class NewItemDisplayComponent implements OnInit {
                 this.router.navigate([`/ecommerce/user-items`]);
               }
 
-              // const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);        
+              // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
             }
           }
         } else {
@@ -284,7 +284,7 @@ export class NewItemDisplayComponent implements OnInit {
 
   async getSaleflow() {
     try {
-      this.saleflow = await this.saleflowSarvice.saleflowDefault(this.defaultMerchant._id);
+      this.saleflow = await this.saleflowService.saleflowDefault(this.defaultMerchant._id);
     } catch (error) {
       console.log(error);
     }
@@ -331,30 +331,34 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   openShareDialog() {
-    const options: StoreShareOption[] = [
+    const list: StoreShareList[] = [
       {
-        text: 'Copia el link',
-        mode: 'clipboard',
-        link: `http://localhost:4200/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
-      },
-      {
-        text: 'Comparte el link',
-        mode: 'share',
-        link: `http://localhost:4200/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
-        icon: {
-          src: '/upload.svg',
-          size: {
-            width: 20,
-            height: 26
-          }
-        }
-      },
+        title:  'Mi item',
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            icon: {
+              src: '/upload.svg',
+              size: {
+                width: 20,
+                height: 26
+              }
+            }
+          },
+        ]
+      }
     ]
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: 'Mi item',
-        options
+        list
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
