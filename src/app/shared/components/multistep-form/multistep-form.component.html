@@ -123,13 +123,20 @@
                 {{ currentField.sublabel }}
               </label>
 
-              <div class="input" *ngIf="currentField.shouldFormatNumber" [ngStyle]="{
+              <div *ngIf="currentField.shouldFormatNumber" [ngStyle]="{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-start',
                   backgroundColor: 'white'
-                }">
-                {{ currentField.formattedValue }}
+                }" [ngClass]="{inputFocused: currentField.focused, input: true}">
+                
+                <span *ngFor="let letter of currentField.formattedValue.split(''); let i = index">
+                  {{ letter }}
+                </span>
+
+                <div class="cursor" [ngStyle]="currentField.styles.formattedInputCaretStyles"
+                  [ngClass]="{'blinking-cursor': currentField.focused}">
+                </div>
               </div>
 
               <input [id]="currentField.name" [name]="currentField.name" [formControlName]="currentField.name"
@@ -138,11 +145,9 @@
                   currentField.onlyAllowPositiveNumbers
                     ? 0
                     : null
-                " [placeholder]="currentField.placeholder" [ngClass]="
-                  currentField.styles.customClassName
-                    ? currentField.styles.customClassName
-                    : 'input'
-                " [ngStyle]="
+                " [placeholder]="currentField.placeholder"
+                [ngClass]="{input: true, formatCurrency: true, focused: currentField.focused}"
+                (focus)="currentField.focused = true" (blur)="currentField.focused = false" [ngStyle]="
                   currentField.styles.fieldStyles &&
                   !currentField.styles.customClassName
                     ? currentField.styles.fieldStyles

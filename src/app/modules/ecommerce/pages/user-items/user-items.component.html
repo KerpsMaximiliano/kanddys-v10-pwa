@@ -8,6 +8,7 @@
     bgColor="#E9E371"
     [icon]="'/person.svg'"
     [plus]="true"
+    [returnAble]="false"
     [whatsapp]="false"
     color="#2874AD"
     [shopcart]="false"
@@ -31,17 +32,35 @@
     }
   ]"
   ></app-header-info-admin>
-  <app-page-component-tabs
-   [tabsOptions]="['Todos','CategoryID','CategoryID','CategoryID']"
-  ></app-page-component-tabs>
+  <!-- <app-page-component-tabs
+   [tabsOptions]="tabOptions"
+  ></app-page-component-tabs> -->
+  <div class="page-components-tabs" #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <button class="tab" [ngClass]="{'active': activeCategory == undefined}" (click)="showAll()">
+      Todos
+    </button>
+    <button 
+      class="tab"
+      *ngFor="let category of categories; index as i" 
+      [ngClass]="{'active': activeCategory === i}"
+      (click)="changeTab(i)"
+    >
+      {{category.name}}
+    </button>
+  </div>
   <div class="itemGrid" style="margin-top: 30px;">
     <app-saleflow-item
-      *ngFor="let item of items; index as i"
+      *ngFor="let item of filteredItems; index as i"
       [imgURL]="item.images[0]"
       [price]="item.pricing"
       [income]="0"
       [quantity]="0"
-      [index2]="0"
+      [index2]="item.category?.length"
       [showIcon]="true"
       (itemClicked)="editItem(i)"
       (action)="goToCategoryItemDetail(i)"

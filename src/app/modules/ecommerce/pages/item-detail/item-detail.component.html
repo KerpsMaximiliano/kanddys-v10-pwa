@@ -19,6 +19,7 @@
          </ng-container>
 
          <ng-container *ngIf="viewtype == 'community'">
+            <div style="position: sticky; top: 0; z-index: 2;">
             <app-helper-headerv2
                 [mode]="'basic'"
 		        [navtext]="'MITIENDAID'"
@@ -33,6 +34,7 @@
                 filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"
                 (returnEvent)="back()"
             ></app-helper-headerv2>
+            </div>
          </ng-container>
      
         
