@@ -13,7 +13,8 @@ export class BubbleButtonComponent implements OnInit {
   @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minir' | 'minis' | 'big';
   @Input() icon: string;
   @Input() text: string;
-  @Input() bubblesMarginBottom: number = 20;
+  @Input() flexD: string;
+  @Input() fontSize: string;
   @Input() solo: boolean = true;
   @Input() return: boolean = false;
 
