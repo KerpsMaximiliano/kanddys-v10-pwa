@@ -217,14 +217,15 @@ export class NewItemDisplayComponent implements OnInit {
                   item: params.itemId
                 }, defaultSaleflow._id);
                 unlockUI();
-                this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-
+                // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                this.router.navigate([`/ecommerce/user-items`]);
               } else {
                 await this.saleflowSarvice.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
                 unlockUI();
-                this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                this.router.navigate([`/ecommerce/user-items`]);
               }
 
               // const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);        
@@ -311,7 +312,8 @@ export class NewItemDisplayComponent implements OnInit {
 
   goToMerchantStore() {
     if (this.defaultMerchant)
-      this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+      // this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+      this.router.navigate([`/ecommerce/user-items`]);
   }
 
   goToBanksForm() {

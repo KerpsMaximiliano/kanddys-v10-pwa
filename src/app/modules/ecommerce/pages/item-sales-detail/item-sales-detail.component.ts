@@ -76,9 +76,10 @@ export class ItemSalesDetailComponent implements OnInit {
 
   ordersByItem: ItemOrder[];
   buyersByItem: User[];
-  currentTab: 'Compradores' | 'Ventas';
+  currentTab: 'Compradores' | 'Ventas' = 'Compradores';
   currentUser: User;
   isLogged: boolean = false;
+  canShowItems: boolean = false;
 
   constructor(
     private dialog: DialogService,
@@ -109,6 +110,7 @@ export class ItemSalesDetailComponent implements OnInit {
         this.getOrdersByItem(itemId),
         this.getBuyersByItem(itemId)
       ]);
+      this.canShowItems = true;
       this.filterData();
       this.tabs = [`${this.buyersByItem.length} Compradores`, `${this.ordersByItem.length} Ventas`];
     });

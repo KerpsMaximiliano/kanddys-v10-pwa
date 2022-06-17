@@ -126,7 +126,7 @@ export class SaleDetailComponent implements OnInit {
   }
 
   redirect() {
-    this.location.back();
+    this.router.navigate([`ecommerce/order-sales/${this.merchant._id}`]);
   }
 
 }
