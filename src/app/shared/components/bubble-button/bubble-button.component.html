@@ -1,6 +1,6 @@
 <div class="container" [ngStyle]="{bottom: solo ? '0px' : '14px'}">
 
-    <button class="bubble" [style.background-color]="palette" 
+    <button class="bubble" [style.background-color]="palette" [style.flex-direction]="flexD"
     [ngClass]="{
      'left': position === 'left',
      'right': position === 'right',
@@ -11,7 +11,7 @@
      'big': position === 'big'
     }">
         <a> <i class="fas fa-chevron-left" [style.color]="fontColor" style="font-size: 22px;" *ngIf="return"></i> </a>
-        <p class="text" [style.color]="fontColor" *ngIf="text && !return">{{text}}</p>
+        <p class="text" [style.color]="fontColor" [style.font-size]="fontSize" *ngIf="text && !return">{{text}}</p>
          <img [src]="env + icon" alt="La imagen es variable, pedimos disculpas por inconvenientes ocacionados" [ngStyle]="{filter: filterColor}" *ngIf="icon"
           width="22px" height="22px">
     </button>
