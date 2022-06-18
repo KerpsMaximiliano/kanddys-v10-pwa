@@ -1,58 +1,34 @@
 <ng-container *ngIf="itemData">
     <div class="container">
-         <ng-container *ngIf="viewtype == 'preview'">
-            <app-helper-headerv2
-                [mode]="'basic'"
-                [bgColor]="'#8351FE'"
-                [navtext]="''"
-                [shopcart]="false"
-                [whatsapp]="false"
-                [plus]="false"
-                [upload]="false"
-            ></app-helper-headerv2>
-         </ng-container>
-
-         <ng-container *ngIf="viewtype == 'merchant'">
-            <app-helper-headerv2
+        <div style="position: sticky; top: 0; z-index: 2;">
+        <app-helper-headerv2
             [mode]="'basic'"
-            ></app-helper-headerv2>
-         </ng-container>
-
-         <ng-container *ngIf="viewtype == 'community'">
-            <div style="position: sticky; top: 0; z-index: 2;">
-            <app-helper-headerv2
-                [mode]="'basic'"
-		        [navtext]="'MITIENDAID'"
-		        [returnAble]="false"
-		        [whatsapp]="true"
-		        [shopcart]="true"
-		        [cartAmount]="1"
-		        cartColor="blue"
-		        fontSize2="21px"
-		        [bgColor]="'#E9E371'"
-		        [color]="'#2874AD'"
-                filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"
-                (returnEvent)="back()"
-            ></app-helper-headerv2>
-            </div>
-         </ng-container>
-     
-        
+            [navtext]="itemData ? itemData.merchant?.name : 'MITIENDAID'"
+            [returnAble]="false"
+            [whatsapp]="true"
+            [shopcart]="true"
+            [cartAmount]="itemCartAmount"
+            [shopCartCallback]="showCartCallBack"
+            cartColor="blue"
+            fontSize2="21px"
+            [bgColor]="'#E9E371'"
+            [color]="'#2874AD'"
+            filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"
+            (returnEvent)="back()"
+        ></app-helper-headerv2>
+        </div>
         <div class="item-info" *ngIf="itemData">
             <div class="description" *ngIf="itemData.description">
                 <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
                     {{itemData.name}}
                 </h2>
                 <p>{{itemData.description}}</p>
-    
             </div>
-    
             <div *ngIf="itemData.name && (!itemData.images || !itemData.images?.length)">
                 <div class="grey-box">
                     <h3 class="title">{{itemData.name}}</h3>
                 </div>
             </div>
-    
             <div class="fullScreenSwiper" *ngIf="itemData.images?.length">
                 <div class="shadowWrapper">
                     <swiper [config]="swiperConfig">
@@ -65,21 +41,19 @@
                   </swiper>
                 </div>
             </div>
-    
             <div class="no-description" *ngIf="itemData.name && !itemData.description && itemData.images">
                 <h3 class="title">{{itemData.name}}</h3>
             </div>
-    
             <div *ngIf="itemData.pricing" class="item-price">
                 <span class="vale">Vale</span>
                 <h4 class="price">${{itemData.pricing | number}}</h4>
             </div>
-    
             <div class="client-submit-area">
-                    <button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
-                    <img src="{{ env }}/bookmark-plus.svg" alt="">
+                <button class="action-btn" [ngClass]="{'yellow': !inCart, 'blue': inCart}" (click)="onCartClick()">
+                    {{inCart ? 'En el ' : 'Adicionar al '}}<span><img src="{{ env }}/carrito_blanco.svg" alt=""></span>
+                </button>
+                <button class="side-btn"><img src="{{ env }}/bookmark-plus.svg" alt=""></button>
             </div>
-    
             <ng-container *ngIf="itemData.content?.length">
                 <hr class="divider">
                 <div class="content">
@@ -92,74 +66,14 @@
                 </div>
             </ng-container>
         </div>
-
-
-		<ng-container *ngIf="viewtype == 'merchant'">
-			<div class="cta-area">
-				<app-cta-buttons
-						[ctaText]="'Añadelo A Mi Lista'"
-						[btnColor]="'#40772F'"
-				>
-				</app-cta-buttons>
-				<app-cta-buttons
-						[ctaText]="'Recauda Fondos'"
-						[btnColor]="'#8351FE'"
-				>
-				</app-cta-buttons>
-				<app-cta-buttons
-						[ctaText]="
-							(itemData?.status === 'disabled' && 'Empieza a venderlo') ||
-							(itemData?.status === 'active' && 'En Venta')
-						"
-						[btnColor]="
-							(itemData?.status === 'disabled' && '#4773D8') ||
-							(itemData?.status === 'active' && '#4FE95F')
-						"
-						[icon]="
-							(itemData?.status === 'disabled' && env + '/closed-eye.svg') ||
-							(itemData?.status === 'active' && env + '/open-eye.svg')
-						"
-						(click)="toggleActivateItem()"
-				>
-				</app-cta-buttons>
-			</div>
-		</ng-container>
-
-        <ng-container *ngIf="viewtype == 'community' ">
-
-            <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button>
-            <app-bubble-button [position]="'left'" [return]="true" (click)="back()" [color]="'blue'"></app-bubble-button>
-	        <app-bubble-button [position]="'minir'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
-	        <app-bubble-button [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'"></app-bubble-button>
-
-	        <app-sticky-button
-		    [text]="'GUARDA Y RECAUDA FONDOS'"
-		    [mode]="'disabled-fixed'"
-		    size="small"
-	        ></app-sticky-button>
-        </ng-container>
-
-        <ng-container *ngIf="viewtype == 'preview'">
-        <div class="cta-area">
-            <app-cta-buttons
-                [ctaText]="'Vista En Mi Tienda'"
-                [btnColor]="'#40772F'"
-            >
-            </app-cta-buttons>
-
-            <app-cta-buttons
-                [ctaText]="'Vista En Comunidades'"
-                [btnColor]="'#8351FE'"
-            >
-            </app-cta-buttons>
-
-            <app-cta-buttons
-                [ctaText]="'Empieza A Venderlo'"
-                [btnColor]="'#4773D8'"
-                (click)="openMagicLinkDialog()"
-            >
-            </app-cta-buttons>
-        </div>
-        </ng-container>
+        <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button>
+        <app-bubble-button (click)="back()" [position]="'left'" [return]="true" [color]="'blue'"></app-bubble-button>
+        <app-bubble-button (click)="openShareDialog()" [position]="(itemCartAmount > 0) ? 'minir' : 'right'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
+        <app-bubble-button (click)="showItems()" [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'" *ngIf="itemCartAmount > 0"></app-bubble-button>
+        <app-sticky-button
+        [text]="'GUARDA Y RECAUDA FONDOS'"
+        [mode]="'disabled-fixed'"
+        size="small"
+        ></app-sticky-button>
     </div>
 </ng-container>

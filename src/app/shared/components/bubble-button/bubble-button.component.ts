@@ -11,12 +11,14 @@ export class BubbleButtonComponent implements OnInit {
   //Inputs
   @Input() color: 'yellow' | 'blue' = 'yellow';
   @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minir' | 'minis' | 'big';
+  @Input() cartAmount: number;
   @Input() icon: string;
   @Input() text: string;
   @Input() flexD: string;
   @Input() fontSize: string;
   @Input() solo: boolean = true;
   @Input() return: boolean = false;
+  @Input() cart: boolean = false;
 
   //EventEmitters
   @Output() leftAction: EventEmitter<any> = new EventEmitter();

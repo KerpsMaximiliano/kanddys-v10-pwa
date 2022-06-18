@@ -125,6 +125,10 @@
       margin-right: 5px;
       cursor: pointer;
 
+      &:hover {
+        background-color: #ffda55;
+      }
+
       img {
         filter: brightness(0) saturate(100%) invert(11%) sepia(12%) saturate(3277%) hue-rotate(174deg) brightness(99%) contrast(100%);
       }
@@ -135,6 +139,10 @@
         font-family: "RobotoMedium";
         box-shadow: 0px 4px 10px #ddd;
         white-space: nowrap;
+
+        &:hover {
+          background-color: #f5f5f5;
+        }
       }
     }
     
@@ -375,4 +383,8 @@
       }
     }
   }
+}
+
+.itemImg:hover {
+  opacity: 0.75;
 }

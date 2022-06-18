@@ -12,6 +12,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-user-items',
@@ -19,6 +20,7 @@ import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/stor
   styleUrls: ['./user-items.component.scss']
 })
 export class UserItemsComponent implements OnInit {
+  URI: string = environment.uri;
   tabOptions: string[] = [];
   items: Item[] = [];
   filteredItems: Item[] = [];
@@ -60,7 +62,7 @@ export class UserItemsComponent implements OnInit {
       this.getSaleflow(this.merchant._id),
       this.getCategories(this.merchant._id),
     ]);
-    this.hasSalesData = true;
+    if (this.ordersTotal.total || (this.users != undefined)) this.hasSalesData = true;
     unlockUI();
   }
 
@@ -178,22 +180,22 @@ export class UserItemsComponent implements OnInit {
       //   ]
       // },
       {
-        title:  'Mi Contacto',
+        title:  'Mi Tienda',
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
           },
           {
             text: 'Descarga el qrCode',
             mode: 'qr',
-            link: `https://kanddys.com/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
           },
           {
             text: 'Vista del Comprador',
@@ -226,6 +228,10 @@ export class UserItemsComponent implements OnInit {
 
   goToCategoryItemDetail(i) {
     this.router.navigate([`/ecommerce/category-item-detail/${this.items[i]._id}`]);
+  }
+
+  goToDashBoard() {
+    this.router.navigate([`/ecommerce/user-dashboard`]);
   }
 
   goToSales() {
