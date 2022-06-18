@@ -167,8 +167,8 @@ export class AuthClassicComponent implements OnInit {
 
       if (token) {
         try {
-          const { analizeMagicLink: session } =
-            await this.authService.analizeMagicLink(token);
+          const { analyzeMagicLink: session } =
+            await this.authService.analyzeMagicLink(token);
 
           localStorage.setItem('session-token', session.token);
 

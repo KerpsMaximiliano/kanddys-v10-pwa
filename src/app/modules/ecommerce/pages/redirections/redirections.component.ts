@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { filter } from 'rxjs/operators';
+import { analyzeMagicLink } from 'src/app/core/graphql/auth.gql';
 
 @Component({
   selector: 'app-redirections',
@@ -20,7 +21,7 @@ export class RedirectionsComponent implements OnInit {
     private authService: AuthService,
     private header: HeaderService,
     private appService: AppService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     let storedRoute = JSON.parse(localStorage.getItem('currentRoute'));
@@ -32,7 +33,7 @@ export class RedirectionsComponent implements OnInit {
     if (localStorage.getItem('session-token')) {
       if (!this.header.user) {
         let sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth')) 
+          .pipe(filter((e) => e.type === 'auth'))
           .subscribe((e) => {
             this.afterLoaderProcesses(redirectURL);
 
@@ -49,20 +50,31 @@ export class RedirectionsComponent implements OnInit {
     lockUI();
 
     this.route.queryParams.subscribe(async (params) => {
-      const { token, destinationRoute, ...rest } = params;
+      const { authCode } = params;
+      const redirectURL: { url: string, queryParams: Record<string, string> } = { url: null, queryParams: {} };
 
       try {
-        const { analizeMagicLink: session } =
-          await this.authService.analizeMagicLink(token);
+        const { analyzeMagicLink: result } =
+          await this.authService.analyzeMagicLink(authCode);
+        const { session, redirectionRoute } = result;
 
         localStorage.setItem('session-token', session.token);
 
-        redirectURL.url = destinationRoute;
-        redirectURL.queryParams = { token };
+        const routeParts = redirectionRoute.split('?');
+        const redirectionURL = routeParts[0];
+        const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+          const queryStringElements = queryString.split('=');
 
-        Object.keys(rest).forEach(key => {
-          redirectURL.queryParams[key] = rest[key];
+          return ({ [queryStringElements[0]]: queryStringElements[1] })
         })
+
+        redirectURL.url = redirectionURL;
+        redirectURL.queryParams = {};
+
+        routeQueryStrings.forEach(queryString => {
+          const key = Object.keys(queryString)[0];
+          redirectURL.queryParams[key] = queryString[key];
+        });
 
         unlockUI();
 

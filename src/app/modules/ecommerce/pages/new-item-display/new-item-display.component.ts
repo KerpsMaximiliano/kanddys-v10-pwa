@@ -91,8 +91,8 @@ export class NewItemDisplayComponent implements OnInit {
         }
 
         if (magicLinkToken) {
-          const { analizeMagicLink: session } =
-            await this.authService.analizeMagicLink(magicLinkToken);
+          const { analyzeMagicLink: session } =
+            await this.authService.analyzeMagicLink(magicLinkToken);
 
           if (session.token && session.user.phone && mode === 'new-item') {
             localStorage.setItem('session-token', session.token);
