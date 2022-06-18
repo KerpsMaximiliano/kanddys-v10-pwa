@@ -50,7 +50,10 @@ export class UserDashboardComponent implements OnInit {
     question: 'Vende Online o por WhatsApp',
     answer: '',
     hidden: false,
-    line: false
+    line: false,
+    callback: () => {
+      this.router.navigate([`/ecommerce/item-creator`])
+    }
     }
     ];
 
@@ -84,6 +87,10 @@ export class UserDashboardComponent implements OnInit {
 
   redirect() {
     this.router.navigate([`ecommerce/error-screen/`]);
+  }
+
+  goToItems() {
+    this.router.navigate([`/ecommerce/user-items`]);
   }
 
   wichName(e: string) {

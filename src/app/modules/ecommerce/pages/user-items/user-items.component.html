@@ -81,6 +81,7 @@
   position="left"
 	color="blue"
 	icon="/arrow-left.svg"
+  (click)="goToDashBoard()"
 ></app-bubble-button>
 <app-bubble-button
   [solo]="true"
@@ -98,6 +99,8 @@
     + (users ? users.length : '0') + ' COMPRADORES'
   "
 	[mode]="hasSalesData ? 'fixed' : 'disabled-fixed'"
+  [bgColor]="'#2874AD'"
+  [color]="'#E9E371'"
 	size="small"
   (click)="goToSales()"
 ></app-sticky-button>

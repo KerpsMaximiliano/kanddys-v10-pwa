@@ -39,6 +39,8 @@
 		color="#E9E371"
 		bgColor="#2874AD"
 		mode="basic"
+		[returnAble]="true"
+		(returnEvent)="back()"
 		></app-helper-headerv2>
 		<div class="page-components-tabs" #elemt
 			(mousedown)="startDragging($event, elemt)"
