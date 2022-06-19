@@ -13,13 +13,9 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ItemV2 } from 'src/app/core/types/item-v2.types';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-//import { CommunityNewUserComponent } from 'src/app/shared/dialogs/community-new-user/community-new-user.component';
-//import { ReservationCreatorComponent } from 'src/app/shared/dialogs/reservation-creator/reservation-creator.component';
-import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 
 @Component({
   selector: 'app-reservation-orderless',
@@ -116,7 +112,6 @@ export class ReservationOrderlessComponent implements OnInit {
   }
 
   checkCalendar() {
-    console.log("calendarid", this.calendarId);
     this.calendar.getCalendar(this.calendarId).then((data) => {
       this.merchant = null;
       this.merchantName = "";
