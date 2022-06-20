@@ -524,7 +524,7 @@
 
     <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
     <app-sticky-button *ngIf="
-      currentStep === currentStepIndex" [text]="
+      currentStep === currentStepIndex && !steps[currentStep].stepAnchorURL" [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStepIndex].stepButtonValidText
           : steps[currentStepIndex].stepButtonInvalidText
@@ -540,6 +540,25 @@
       [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
       [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null">
     </app-sticky-button>
+
+    <a [href]="steps[currentStep].stepAnchorURL" target="_blank"
+      *ngIf="steps[currentStep].stepAnchorURL && currentStep === currentStepIndex">
+      <app-sticky-button [text]="
+        dataModel.get(currentStepString).valid
+          ? steps[currentStepIndex].stepButtonValidText
+          : steps[currentStepIndex].stepButtonInvalidText
+      " [bgColor]="steps[currentStep].footerConfig?.bgColor" [mode]="
+        dataModel.get(currentStepString).status !== 'INVALID'
+          ? 'fixed'
+          : 'disabled-fixed'
+      " (click)="
+        !steps[currentStepIndex].justExecuteCustomScrollToStep
+          ? executeStepDataProcessing()
+          : steps[currentStepIndex].customScrollToStep(stepFunctionParams)
+      " [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
+        [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null">
+      </app-sticky-button>
+    </a>
 
     <app-bubble-button *ngIf="
       currentStep === currentStepIndex && 

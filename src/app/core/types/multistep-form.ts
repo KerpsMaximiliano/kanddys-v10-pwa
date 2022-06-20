@@ -21,7 +21,7 @@ export interface SingleControl {
 
 export interface MultipleControl {
   type: 'multiple',
-  control: FormArray;  
+  control: FormArray;
 }
 
 export interface FormField {
@@ -129,6 +129,7 @@ export interface FormStep {
   stepButtonValidText: string;
   stepButtonInvalidText: string;
   asyncStepProcessingFunction?: AsyncFunction;
+  stepAnchorURL?: string;
   stepProcessingFunction?(...params): any;
   avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;

@@ -354,7 +354,23 @@ export class ReservationOrderlessComponent implements OnInit {
       ),
     };
 
-    this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatHour4(this.num(this.datePreview.hour).toString() + ":" + "45")} ${this.datePreview.hour.slice(-2)}`;
+    const hoursStringLast2Digits = this.datePreview.hour.slice(-2);
+    const hoursStringFirst2Digits = this.datePreview.hour.slice(0, 2);
+
+    const hourIn24HoursHumanFormat = hoursStringLast2Digits === 'pm' ? (
+      hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) + 12 : (
+        hoursStringFirst2Digits !== '12' ?
+          Number(hoursStringFirst2Digits) + 12
+          : 12
+      )
+    ) : (
+      hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) :
+        hoursStringFirst2Digits !== '12' ? Number(hoursStringFirst2Digits) : 0
+    );
+
+    const hourStringIn24HourFormat = hourIn24HoursHumanFormat < 10 ? '0' + hourIn24HoursHumanFormat + ':00' : hourIn24HoursHumanFormat + ':00';
+
+    this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
 
     this.onReservation.emit({
       message: this.reservationMessage,
@@ -424,18 +440,17 @@ export class ReservationOrderlessComponent implements OnInit {
 
   zorroChange5(string) {
     string = parseInt(string.split(':')[0]);
-    if (string > 12) {
+
+    if (string < 12) {
+      string = string.toString() + ':' + '00' + ' ' + 'am';
+    } else if (string > 12) {
       string = string - 12;
-    }
-    if (string == 12) {
+
       string = string.toString() + ':' + '00' + ' ' + 'pm';
-    } else if (string == 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
-    } else if (string > 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
     } else {
       string = string.toString() + ':' + '00' + ' ' + 'pm';
-    }
+    };
+
     return string;
   }
 
@@ -451,6 +466,32 @@ export class ReservationOrderlessComponent implements OnInit {
     }
     return string;
   }
+
+  formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {
+    let hourInteger: number | string = parseInt(hourString.split(':')[0]);
+    let formattedHour: string;
+    let minutesString: string;
+
+    minutesString = minutes < 10 ? '0' + minutes : String(minutes);
+
+    if (addOne) hourInteger += 1;
+
+    if (hourInteger < 12) {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'am';
+    } else if (hourInteger > 12) {
+      hourInteger = hourInteger - 12;
+
+      if (hourInteger !== 12)
+        formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+      else
+        formattedHour = '00' + ':' + minutesString + ' ' + 'am';
+    } else {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+    };
+
+    return formattedHour;
+  }
+
 
   num(number) {
     return parseInt(number);

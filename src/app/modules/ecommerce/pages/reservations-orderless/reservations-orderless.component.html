@@ -162,15 +162,15 @@
                             calendar.hours[0] !== 'Día Ocupado';
                             else nonAvailable
                           ">
-                          De {{ zorroChange5(slide) }} a
+                          De {{ formatDayHourToAmOrPm(slide) }} a
                           <ng-container *ngIf="!isLast; else notLast">
                             {{
-                            formatHour2(num(slide).toString() + ":" + "45")
+                            formatDayHourToAmOrPm(slide, true)
                             }}
                           </ng-container>
                           <ng-template #notLast>
                             {{
-                            formatHour2(num(slide).toString() + ":" + "45")
+                            formatDayHourToAmOrPm(slide, true)
                             }}
                           </ng-template>
                         </ng-container>
@@ -200,15 +200,15 @@
                             calendar.hours[0] !== 'Día Ocupado';
                             else nonAvailable
                           ">
-                          De {{ zorroChange5(slide) }} a
+                          De {{ formatDayHourToAmOrPm(slide) }} a
                           <ng-container *ngIf="!isLast; else notLast">
                             {{
-                            formatHour2(num(slide).toString() + ":" + "45")
+                            formatDayHourToAmOrPm(slide, true)
                             }}
                           </ng-container>
                           <ng-template #notLast>
                             {{
-                            formatHour2(num(slide).toString() + ":" + "45")
+                            formatDayHourToAmOrPm(slide, true)
                             }}
                           </ng-template>
                         </ng-container>
