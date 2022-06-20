@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { filter } from 'rxjs/operators';
-import { analyzeMagicLink } from 'src/app/core/graphql/auth.gql';
+import { analizeMagicLink } from 'src/app/core/graphql/auth.gql';
 
 @Component({
   selector: 'app-redirections',
@@ -54,8 +54,8 @@ export class RedirectionsComponent implements OnInit {
       const redirectURL: { url: string, queryParams: Record<string, string> } = { url: null, queryParams: {} };
 
       try {
-        const { analyzeMagicLink: result } =
-          await this.authService.analyzeMagicLink(authCode);
+        const { analizeMagicLink: result } =
+          await this.authService.analizeMagicLink(authCode);
         const { session, redirectionRoute } = result;
 
         localStorage.setItem('session-token', session.token);

@@ -33,7 +33,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   databaseName: string = null;
   choosedReservation: boolean = false;
   fullFormMessage: string = null;
-  whatsappLink: string = null;
+  whatsappLink: string = 'https://wa.me/18098718288?text=';
 
   formSteps: FormStep[] = [
     {
@@ -115,7 +115,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               {
                 name: 'instagram',
                 url: 'https://instagram.com/llstudiord?igshid=YmMyMTA2M2Y='
-              }, 
+              },
               {
                 name: 'phone',
                 url: '18098718288'
@@ -199,17 +199,6 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
       ],
       stepProcessingFunction: () => {
-        const phoneNumber = this.formSteps[1].fieldsList[0].fieldControl.control.value.e164Number;
-        const filteredPhone = phoneNumber.split('').filter(character => {
-          if (!' -+()'.includes(character)) {
-            return true;
-          }
-
-          return false;
-        }).join('');
-
-        this.whatsappLink = `https://wa.me/${filteredPhone}?text=`;
-
         return { ok: true }
       },
       footerConfig,
@@ -255,10 +244,20 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'totalAmount',
-          formattedValue: '',
+          customCursorIndex: this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ).length + 1,
+          formattedValue: '$' + this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ),
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl(0, [
+              Validators.required,
+              Validators.min(0),
+            ])
           },
           shouldFormatNumber: true,
           label: 'Monto total de Compra:',
@@ -267,21 +266,52 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
             try {
-              const plainNumber = change
-                .split(',')
-                .join('')
-                .split('.')
-                .join('');
-              const formatted = this.decimalPipe.transform(
-                Number(plainNumber),
-                '1.0-2'
-              );
+              if (!change.includes('.')) {
+                const plainNumber = change
+                  .split(',')
+                  .join('');
 
-              if (formatted === '0') {
-                this.formSteps[3].fieldsList[0].placeholder = '';
+                if (plainNumber[0] === '0') {
+                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                        plainNumber.slice(1)
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[3].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
+                } else {
+                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length === 1 ? '0' + plainNumber :
+                        plainNumber
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[3].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
+                }
+              } else {
+                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+                this.formSteps[3].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
+                  emitEvent: false,
+                });
               }
-
-              this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -674,12 +704,16 @@ export class LlStudioOrderFormComponent implements OnInit {
             this.fullFormMessage += `*Foto de Referencia:*\n${fileRoutes[0]}\n\n`;
             this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[1]}\n\n`;
 
+            const convertedTotalAmount = Number(
+              this.formSteps[3].fieldsList[0].formattedValue
+                .split('').filter(char => char !== ',' && char !== '$').join(''));
+
             const data = {
               details: this.formSteps[0].fieldsList[0].fieldControl.control.value,
               referenceImage: fileRoutes[0],
               phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.control.value,
               fullname: this.formSteps[2].fieldsList[0].fieldControl.control.value,
-              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.control.value,
+              totalAmount: convertedTotalAmount,
               paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.control.value,
               proofOfPayment: fileRoutes[1],
               fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.control.value,

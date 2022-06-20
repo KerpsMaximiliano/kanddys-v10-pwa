@@ -65,9 +65,9 @@ export const generateMagicLink = gql`
   }
 `;
 
-export const analyzeMagicLink = gql`
-  query analyzeMagicLink($tempcode: String!) {
-    analyzeMagicLink(tempcode: $tempcode) 
+export const analizeMagicLink = gql`
+  query analizeMagicLink($tempcode: String!) {
+    analizeMagicLink(tempcode: $tempcode) 
   }
 `;
 

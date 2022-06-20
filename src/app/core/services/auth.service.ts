@@ -20,7 +20,7 @@ import {
   userData,
   generateOTP,
   generateMagicLink,
-  analyzeMagicLink,
+  analizeMagicLink,
   signinSocial,
   simplifySignup,
   getTempCodeData,
@@ -319,10 +319,10 @@ export class AuthService {
     }
   }
 
-  public async analyzeMagicLink(tempcode: String) {
+  public async analizeMagicLink(tempcode: String) {
     try {
       const response = await this.graphql.query({
-        query: analyzeMagicLink,
+        query: analizeMagicLink,
         variables: { tempcode },
         fetchPolicy: 'no-cache',
       });
