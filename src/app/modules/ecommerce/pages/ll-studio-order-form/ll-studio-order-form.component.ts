@@ -726,7 +726,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                   this.reservation.data.hour.slice(0, 2) !== '12' ? this.reservation.data.hourNumber + 12 :
                   this.reservation.data.hour.slice(-2) === 'am' &&
                     this.reservation.data.hour.slice(0, 2) !== '12' ? this.reservation.data.hourNumber :
-                    0,
+                    this.reservation.data.hour.slice(-2) === 'pm' ? 12 : 0,
                 this.reservation.data.minutesNumber
               ).toISOString() : '',
               'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.control.value,
