@@ -114,7 +114,11 @@ export class LlStudioOrderFormComponent implements OnInit {
             socials: [
               {
                 name: 'instagram',
-                url: 'http://localhost:4200/ecommerce/ll-studio-order-form'
+                url: 'https://instagram.com/llstudiord?igshid=YmMyMTA2M2Y='
+              }, 
+              {
+                name: 'phone',
+                url: '18098718288'
               }
             ],
             reverseInfoOrder: true,
