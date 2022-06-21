@@ -2,9 +2,9 @@
     <div class="dialog-card">
         <div *ngFor="let item of list">
             
-            <div class="image-area">
+            <div class="image-area" *ngIf="item.image || item.name">
                 <img [src]="env + item.image" alt="Logo de la tienda" class="image" *ngIf="item.image">
-                <h1 class="store-name">{{item.name}}, <span class="type">{{item.type}}</span></h1>
+                <h1 class="store-name" *ngIf="item.name">{{item.name}}, <span class="type" *ngIf="item.type">{{item.type}}</span></h1>
             </div>
 
             <h2 class="title">{{item.title}}</h2>
