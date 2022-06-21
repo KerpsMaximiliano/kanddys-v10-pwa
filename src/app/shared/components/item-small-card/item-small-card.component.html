@@ -2,7 +2,8 @@
   <ng-container *ngIf="item.images?.length">
     <img [src]="item.images[0]" [alt]="item.name">
   </ng-container>
-  <div>
+  <div *ngIf="!item.images?.length" class="placeholder"></div>
+  <div class="content" [ngStyle]="{marginTop: !item.images?.length ? '0' : '-2px'}">
     <span class="name">{{item.name}}</span>
     <span class="price">${{item.pricing | number}} DOP</span>
   </div>

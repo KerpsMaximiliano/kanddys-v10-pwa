@@ -8,7 +8,7 @@
   .card-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 
     h6 {
       font-family: "RobotoBold";
@@ -27,9 +27,28 @@
         color:rgb(62, 147, 212);
       }
     }
+
+    .switch-label {
+      font-family: 'SfProMedium';
+      font-size: 14px;
+      color: #A1A1A1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+  }
+  
+  .info {
+    font-family: 'SfProMedium';
+    font-size: 17px;
+    color: #2874AD;
+    margin: 0;
+    padding-bottom: 12px;
   }
 
   .item-list {
+    margin-top: 12px;
     display: flex;
     justify-content: space-between;
   }

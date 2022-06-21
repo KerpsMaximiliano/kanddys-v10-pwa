@@ -14,6 +14,7 @@ import {
   merchants,
   addMerchant,
   createMerchant,
+  updateMerchant,
   merchantDefault,
   setDefaultMerchant,
   hotMerchant,
@@ -28,7 +29,7 @@ import {
   uploadAirtableAttachments,
   usersOrderMerchant
 } from './../graphql/merchants.gql';
-import { EmployeeContract, Merchant } from './../models/merchant';
+import { EmployeeContract, Merchant, MerchantInput } from './../models/merchant';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
@@ -176,7 +177,7 @@ export class MerchantsService {
   }
 
 
-  async createMerchant(input): Promise<{ createMerchant: Merchant }> {
+  async createMerchant(input: MerchantInput): Promise<{ createMerchant: Merchant }> {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createMerchant,
@@ -188,6 +189,18 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     console.log(result);
     return result;
+  }
+
+  async updateMerchant(input: MerchantInput, id: string): Promise<Merchant> {
+    const result = await this.graphql.mutate({
+      mutation: updateMerchant,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.updateMerchant;
   }
 
   async addMerchant(emailOrPhone: string, input: any) {

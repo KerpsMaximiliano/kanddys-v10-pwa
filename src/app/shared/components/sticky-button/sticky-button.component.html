@@ -2,6 +2,7 @@
   <button
     class="button"
     [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+    [ngStyle]="{color: color && color}"
     [style.background-color]="bgColor"
   >
     {{ text }}

@@ -1,10 +1,11 @@
-.switch{
+.input-switch {
     display: inline-block;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
   }
   
-  .switch input {
+  .input-switch input {
     display: none;
   }
   

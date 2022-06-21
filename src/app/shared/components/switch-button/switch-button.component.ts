@@ -16,15 +16,15 @@ export class SwitchButtonComponent implements OnInit {
     margin?: string
   };
   @Output() switched = new EventEmitter();
-  isClicked : boolean;
+  @Input() isClicked : boolean;
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  statechanger(event){
+  statechanger(){
     this.isClicked = !this.isClicked;
-    this.switched.emit(event)
+    this.switched.emit();
   }
 
 }
