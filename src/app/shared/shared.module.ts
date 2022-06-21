@@ -87,6 +87,7 @@ import { PostEditButtonsComponent } from './components/post-edit-buttons/post-ed
 import { UserActionsComponent } from './components/user-actions/user-actions.component';
 import { NotificationToggleComponent } from './components/notification-toggle/notification-toggle.component';
 import { GeneralFormSubmissionDialogComponent } from './dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { SwitchButtonComponent } from './components/switch-button/switch-button.component';
 import { ItemSmallCardComponent } from './components/item-small-card/item-small-card.component';
 
 const imports = [
@@ -172,6 +173,7 @@ const declarations = [
   UserActionsComponent,
   NotificationToggleComponent,
   GeneralFormSubmissionDialogComponent,
+  SwitchButtonComponent,
   ItemSmallCardComponent,
 ];
 
