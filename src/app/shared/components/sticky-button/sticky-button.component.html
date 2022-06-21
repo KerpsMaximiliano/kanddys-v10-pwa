@@ -37,6 +37,30 @@
   </button>
 </div>
 
+<div class="fixed-double" *ngIf="mode == 'double'">
+    <button
+      (click)="leftButton()"
+      class="double"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height
+      } : null">
+        {{ text }}
+    </button>
+    <button
+      (click)="rightButton()"
+      class="double"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height
+      } : null">
+        {{ text2 }}
+    </button>
+  </div>
+  
+
 <div class="fixed-container" *ngIf="mode == 'fixed'">
   <button
     class="button"
