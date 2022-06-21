@@ -89,6 +89,7 @@ import { NotificationToggleComponent } from './components/notification-toggle/no
 import { GeneralFormSubmissionDialogComponent } from './dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { SwitchButtonComponent } from './components/switch-button/switch-button.component';
 import { ItemSmallCardComponent } from './components/item-small-card/item-small-card.component';
+import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-list.component';
 
 const imports = [
   CommonModule,
@@ -175,6 +176,7 @@ const declarations = [
   GeneralFormSubmissionDialogComponent,
   SwitchButtonComponent,
   ItemSmallCardComponent,
+  EntityItemListComponent,
 ];
 
 @NgModule({

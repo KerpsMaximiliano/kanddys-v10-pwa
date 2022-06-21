@@ -1,0 +1,108 @@
+.container{
+    width: 86%;
+    margin: auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: column;
+    margin-bottom: 52px;
+    background-color: transparent;
+
+    .dialog-card {
+        width: 100%;
+        padding: 30px 0 17px;
+        border-radius: 18px;
+        background-color: #FFFFFF;
+
+        .image-area{
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 48px;
+
+            .image{
+                width: 124px;
+                height: 124px;
+                object-fit: cover;
+                border-radius: 50%;
+                margin-bottom: 12px;
+                box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 12%);
+            }
+
+            .store-name{
+                font-family: 'SfProMedium';
+                font-size: 19px;
+                color: #4F4F4F;
+                margin: 0;
+
+                .type{
+                    font-family: 'SfProLight';
+                    font-size: 17px;
+                    color: #4F4F4F;
+                    text-transform: uppercase;
+                }
+            }
+
+        }
+        
+        .title{
+            font-family: 'RobotoBold';
+            font-size: 17px;
+            color: #202020;
+            margin: 20px;
+        }
+
+        .function{
+            all: unset;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+
+            &:not(:last-of-type) {
+                border-bottom: solid 1px rgb(112, 112, 112, 16%);
+            }
+
+            .text{
+                font-family: 'SfProLight';
+                font-size: 17px;
+                color: #4F4F4F;
+            }
+
+            .icon{
+                &.blue {
+                    filter: brightness(0) saturate(100%) invert(42%) sepia(28%) saturate(3255%) hue-rotate(206deg) brightness(90%) contrast(86%);
+                }
+                &.red {
+                    filter: brightness(0) saturate(100%) invert(36%) sepia(72%) saturate(7485%) hue-rotate(348deg) brightness(102%) contrast(98%);
+                }
+            }
+
+            &:hover {
+                background-color: #eeeeee;
+            }
+        }
+    }
+
+    .cancel{
+        width: 100%;
+        padding: 24px;
+        background-color: #FFFFFF;
+        font-family: "RobotoMedium";
+        font-size: 20px;
+        color: #4773D8;
+        text-transform: uppercase;
+        margin-top: 11.5px;
+        border: none;
+        border-radius: 18px;
+        cursor: pointer;
+    }
+}
+

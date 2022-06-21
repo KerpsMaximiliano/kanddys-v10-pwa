@@ -7,14 +7,14 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class SwitchButtonComponent implements OnInit {
 
-  @Input() settings: {
+  @Input() settings?: {
     position?: string,
     top?: string,
     right?: string,
     bottom?: string,
     left?: string,
     margin?: string
-  }
+  };
   @Output() switched = new EventEmitter();
   @Input() isClicked : boolean;
   constructor() { }
