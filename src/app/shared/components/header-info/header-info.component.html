@@ -60,7 +60,8 @@
                             <path id="Polygon_3" data-name="Polygon 3" d="M5.5,0,11,9H0Z" transform="translate(11 9) rotate(180)" fill="#7b7b7b"/>
                         </svg>
                     </button>
-                    <button class="save-btn" *ngIf="showMore">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button>
+                    <button class="save-btn" *ngIf="showMore && !admin">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button>
+                    <a (click)="redirect()" class="save-btn" *ngIf="showMore && admin">EDIT</a>
                 </div>
             </div>
             <div class="more-info-button" *ngIf="socials?.length && mode !== 'expanded'">
@@ -85,7 +86,7 @@
                 <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
             </button>
         </div>
-        <div class="socials">
+        <div class="socials" *ngIf="hasSocials">
             <h6>Cuentas sociales</h6>
             <div class="space-between">
                 <ng-container *ngFor="let social of socials">

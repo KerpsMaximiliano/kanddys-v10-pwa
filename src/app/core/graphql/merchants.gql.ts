@@ -27,6 +27,7 @@ export const body = `
   bio
   default
   active
+  showItems
   owner { 
     phone
     email
@@ -52,7 +53,8 @@ export const merchantDefault = gql`
   query merchantDefault($userId: ObjectID) {
     merchantDefault(userId: $userId) {
       _id
-      name 
+      name
+      showItems
       owner {
         _id
       }
