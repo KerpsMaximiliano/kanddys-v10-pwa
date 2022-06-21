@@ -149,10 +149,11 @@ export class MerchantsService {
     return (result || []).map((r: any) => new Merchant(r));
   }
 
-  async merchantDefault(): Promise<Merchant> {
+  async merchantDefault(userId?: string): Promise<Merchant> {
     try {
       const response = await this.graphql.query({
         query: merchantDefault,
+        variables: { userId },
         fetchPolicy: 'no-cache',
       });
       if(!response || response?.errors) return undefined;

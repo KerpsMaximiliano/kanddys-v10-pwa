@@ -1,0 +1,36 @@
+<div style="min-height: 100vh;">
+  <div style="background-color: #EEF6DF;">
+    <app-header-info
+      [profileImage]="user?.image"
+      [title]="user?.name"
+      [description]="'desc'"
+      [socials]="merchant?.social"
+      [mode]="merchant ? 'expanded' : 'normal'"
+    ></app-header-info>
+  </div>
+
+  <div class="items-card">
+    <div class="card-header">
+      <h6>Items</h6>
+      <a>Mas</a>
+    </div>
+    <div class="item-list">
+      <app-item-small-card
+        *ngFor="let item of items"
+        [item]="item"
+      ></app-item-small-card>
+    </div>
+  </div>
+  <app-bubble-button
+    position="left"
+    color="blue"
+    [return]="true"
+    (click)="back()"
+  ></app-bubble-button>
+  <app-bubble-button
+    position="right"
+    color="blue"
+    icon="/upload.svg"
+    (click)="openShareDialog()"
+  ></app-bubble-button>
+</div>

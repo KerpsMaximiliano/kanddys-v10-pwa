@@ -24,7 +24,7 @@ interface StoreShareOption {
 }
 
 export interface StoreShareList {
-  title: string;
+  title?: string;
   options: StoreShareOption[];
 }
 

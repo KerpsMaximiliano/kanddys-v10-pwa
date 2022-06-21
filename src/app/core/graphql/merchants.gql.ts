@@ -49,12 +49,16 @@ export const merchants = gql`
 `;
 
 export const merchantDefault = gql`
-  query merchantDefault {
-    merchantDefault {
+  query merchantDefault($userId: ObjectID) {
+    merchantDefault(userId: $userId) {
       _id
       name 
       owner {
         _id
+      }
+      social {
+        name
+        url
       }
     }
   }

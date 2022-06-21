@@ -86,11 +86,11 @@ export class OrderService {
     | 'to confirm'
     | 'completed'
     | 'error'
-    | 'draft')[], merchantId?: string, orders?: string[]): Promise<{ total: number, length: number }> {
+    | 'draft')[], merchantId: string, orders: string[] = [], itemCategoryId?: string): Promise<{ total: number, length: number }> {
     try {
       const response = await this.graphql.query({
         query: ordersTotal,
-        variables: { status, merchantId, orders },
+        variables: { status, merchantId, orders, itemCategoryId },
         fetchPolicy: 'no-cache',
       });
       if(!response || response?.errors) return undefined;
