@@ -6,6 +6,10 @@
   transition: transform 1s ease-in-out;
 }
 
+.header-fixed {
+  height: fit-content;
+}
+
 .form-step {
   .step-header {
     display: flex;
