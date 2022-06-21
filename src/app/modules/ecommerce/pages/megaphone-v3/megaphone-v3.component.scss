@@ -36,6 +36,10 @@
       margin-top: 0;
       margin-bottom: 8px;
       cursor: pointer;
+
+      &:hover {
+        color: #999999;
+      }
     }
 }
 
