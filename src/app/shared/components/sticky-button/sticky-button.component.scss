@@ -121,6 +121,30 @@
   }
 }
 
+.fixed-double{
+    width: 100%;
+    max-width: 500px;
+    position: fixed;
+    bottom: 0;
+    z-index: 11;
+    background-color: #27a2ff;
+    display: flex;
+    justify-content: space-around;
+
+    .double{
+        all: unset;
+        width: 50%;
+        max-width: 250px;
+        height: 55px;
+        font-family: 'RobotoMedium';
+        font-size: 17px;
+        text-align: center;
+        color: #E9E371;
+        white-space: break-spaces;
+        cursor: pointer;
+    }
+}
+
 .with-icon {
   display: flex;
   justify-content: center;
