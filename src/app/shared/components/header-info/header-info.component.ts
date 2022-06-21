@@ -25,6 +25,7 @@ export class HeaderInfoComponent implements OnInit {
   @Input() customStyles: Record<string, Record<string, string>> = null;
   @Input() reverseInfoOrder: boolean = false;
   @Input() hasSocials: boolean;
+  regex = /\D/g;
   env: string = environment.assetsUrl;
   showMore: boolean;
 

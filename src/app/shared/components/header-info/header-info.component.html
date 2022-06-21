@@ -81,10 +81,12 @@
                     <a *ngIf="social.name === 'phone'" href="tel:+{{social.url}}"><img class="blue" [src]="env + '/telephone.svg'" alt="call" width="26" height="26"></a>
                 </ng-container>
             </div>
-            <button class="wa-btn">
-                SALUDANOS
-                <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
-            </button>
+            <ng-container *ngFor="let social of socials">
+                <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+title">
+                    SALUDANOS
+                    <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
+                </a>
+            </ng-container>
         </div>
         <div class="socials" *ngIf="hasSocials">
             <h6>Cuentas sociales</h6>
