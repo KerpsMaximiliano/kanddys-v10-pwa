@@ -25,7 +25,6 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
-  bigqr?: boolean;
   qrlink?: string;
   options: StoreShareOption[];
 }

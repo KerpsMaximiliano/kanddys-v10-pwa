@@ -43,8 +43,8 @@
             <div class="main">
                 <div>
                     <h6 class="header-name">
-                        <span class="title">{{title}},</span>
-                        <span class="type">TIENDA</span>
+                        <span class="title">{{title}}</span>
+                        <span class="type" *ngIf="merchant">,TIENDA</span>
                     </h6>
                     <p class="header-desc">
                         {{description}}

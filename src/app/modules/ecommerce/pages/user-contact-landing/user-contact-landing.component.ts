@@ -62,6 +62,7 @@ export class UserContactLandingComponent implements OnInit {
   openShareDialog() {
     const list: StoreShareList[] = [
       {
+        qrlink: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
         options: [
           {
             text: 'Copia el link',
