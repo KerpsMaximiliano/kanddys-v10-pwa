@@ -36,11 +36,29 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fontSize2: string;
     @Input() rmargin: string;
     @Input() filter: string;
-    @Input() navtest: any = {
+    @Input() config: any = {
         text: '',
         fontFamily: '',
+        leftText: '',
+        leftFont: '',
+        rightText: '',
+        rightFont: '',
         fontSize: '',
-        color: this.color
+        plusFont: '',
+        billId: '',
+        itemId: '',
+        icon: '',
+        color: this.color,
+        return: false,
+        whatsapp: false,
+        fixed: false,
+        edit: false,
+        batch: false,
+        dots: false,
+        search: false,
+        plus: false,
+        upload: false,
+        inMall: false,
         };
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();

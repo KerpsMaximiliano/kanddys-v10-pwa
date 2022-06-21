@@ -15,10 +15,17 @@
         border-radius: 18px;
         background-color: #FFFFFF;
 
+        .bigqr{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .title{
             font-family: 'RobotoBold';
-            font-size: 29px;
-            color: #0B1F38;
+            font-size: 17px;
+            color: #202020;
             margin: 20px;
         }
 
@@ -37,8 +44,8 @@
             }
 
             .text{
-                font-family: 'RobotoRegular';
-                font-size: 20px;
+                font-family: 'SfProLight';
+                font-size: 17px;
                 color: #4773D8;
                 
             }

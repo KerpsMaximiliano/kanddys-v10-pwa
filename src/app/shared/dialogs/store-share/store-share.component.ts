@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,8 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
+  bigqr?: boolean;
+  qrlink?: string;
   options: StoreShareOption[];
 }
 
@@ -37,15 +39,17 @@ export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
+  size: number;
+  screenWidth: number;
 
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private ref: DialogRef,
-  ) { }
+  ) {this.onResize(); /* actualiza dinamicamente el tamaño del qr */ }
 
   ngOnInit(): void {
-    if(!this.list || !this.list.length) throw new Error('Ingresa opciones para mostrar')
+    if(!this.list || !this.list.length) throw new Error('Ingresa opciones para mostrar'); 
   }
 
   downloadQr() {
@@ -101,6 +105,15 @@ export class StoreShareComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event?) {
+     this.screenWidth = window.innerWidth;
+     this.size = (this.screenWidth * 80)/100
+     if(this.size > 400){
+        this.size = 400;
+     }
   }
 
   close() {

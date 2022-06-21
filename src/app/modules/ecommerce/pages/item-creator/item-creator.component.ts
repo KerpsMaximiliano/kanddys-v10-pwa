@@ -52,8 +52,6 @@ export class ItemCreatorComponent implements OnInit {
           const totalArray = firstHalf.concat('.').concat(secondHalf);
           const totalWithDecimal = Number(totalArray.join(''));
 
-          alert(totalWithDecimal);
-
           if (
             this.currentUserId &&
             this.merchantOwnerId &&
@@ -393,8 +391,6 @@ export class ItemCreatorComponent implements OnInit {
             const totalArray = firstHalf.concat('.').concat(secondHalf);
             const totalWithDecimal = Number(totalArray.join(''));
   
-            alert(totalWithDecimal);
-
             if (
               this.currentUserId &&
               this.merchantOwnerId &&
