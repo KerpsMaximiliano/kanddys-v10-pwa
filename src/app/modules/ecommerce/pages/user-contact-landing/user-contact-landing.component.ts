@@ -165,6 +165,7 @@ export class UserContactLandingComponent implements OnInit {
             text: 'Vende Online y por WhatsApp',
             mode: 'func',
             func: () => this.router.navigate([`/ecommerce/item-creator`]),
+            plus: true,
           },
         ]
       },

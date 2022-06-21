@@ -55,6 +55,10 @@
                             )"
                         [alt]="option.text"
                     >
+                    <span
+                        *ngIf="option.plus && !option.icon && option.mode !== 'share' && option.mode !== 'qr'"
+                        class="plus-icon"
+                    >+</span>
                 </button>
             </ng-container>
         </div>
