@@ -1,26 +1,43 @@
 <div class="container" [ngStyle]="{bottom: solo ? '0px' : '14px'}">
 
-    <button class="bubble" [style.background-color]="palette" [style.flex-direction]="flexD"
-    [ngClass]="{
-     'left': position === 'left',
-     'right': position === 'right',
-     'rightxl': position === 'rightxl',
-     'mini': position === 'mini',
-     'minir': position === 'minir',
-     'minis': position === 'minis', 
-     'big': position === 'big'
-    }">
-        <a> <i class="fas fa-chevron-left" [style.color]="fontColor" style="font-size: 22px;" *ngIf="return && !text && !cart"></i> </a>
-
-        <p class="text" [style.color]="fontColor" [style.font-size]="fontSize" *ngIf="text && !return && !cart">{{text}}</p>
-
-        <img [src]="env + icon" alt="La imagen es variable, pedimos disculpas por inconvenientes ocacionados" [ngStyle]="{filter: filterColor}" *ngIf="icon"
-        width="22px" height="22px">
-
-        <div style="margin-left: -24px; margin-bottom: -3px" *ngIf="cart && !return && !text"> 
-            <app-cart-button [filter]="filterColor" [cartAmount]="cartAmount" ></app-cart-button> 
-        </div>
-
-    </button>
+	<button
+		class="bubble"
+		[style.flex-direction]="flexD"
+		[ngClass]="{
+		'left': position === 'left',
+		'right': position === 'right',
+		'rightxl': position === 'rightxl',
+		'mini': position === 'mini',
+		'minir': position === 'minir',
+		'minis': position === 'minis', 
+		'big': position === 'big',
+		'yellow': color === 'yellow',
+		'yellow': color === 'blue'
+		}"
+	>
+		<a *ngIf="return && !text && !cart">
+			<i
+				class="fas fa-chevron-left"
+				style="font-size: 22px;"
+			></i>
+		</a>
+		<p
+			*ngIf="text && !return && !cart"
+			class="text"
+			[style.font-size]="fontSize"
+		>
+			{{text}}
+		</p>
+		<img
+			*ngIf="icon"
+			[src]="env + icon"
+			alt="La imagen es variable, pedimos disculpas por inconvenientes ocacionados"
+			width="22px"
+			height="22px"
+		>
+		<div style="margin-left: -24px; margin-bottom: -3px" *ngIf="cart && !return && !text"> 
+			<app-cart-button [filter]="filterColor" [cartAmount]="cartAmount" ></app-cart-button> 
+		</div>
+	</button>
 
 </div>

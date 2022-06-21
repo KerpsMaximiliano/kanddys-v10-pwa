@@ -76,9 +76,9 @@ export class UserOrdersComponent implements OnInit {
   }
 
   async getOrdersTotal() {
-    const result = await this.orderService.ordersTotal(['to confirm', 'completed']);
-    if(!result) throw new Error('Error al obtener los resultados de las ordenes');
-    this.totalIncome = result.total;
-    this.totalSales = result.length;
+    // const result = await this.orderService.ordersTotal(['to confirm', 'completed']);
+    // if(!result) throw new Error('Error al obtener los resultados de las ordenes');
+    // this.totalIncome = result.total;
+    // this.totalSales = result.length;
   }
 }

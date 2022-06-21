@@ -18,14 +18,13 @@ export class UsersService {
     return result;
   }
 
-  async user(id) {
-    console.log('id', id);
+  async user(userId: string): Promise<User> {
     let value = await this.graphql.query({
       query: user,
-      variables: { userId: id },
+      variables: { userId },
       fetchPolicy: 'no-cache',
     });
-    return value;
+    return value?.user ? new User(value.user) : undefined;
   }
 
   async buyersByItem(itemId: string): Promise<{ buyersByItem: User[] }> {

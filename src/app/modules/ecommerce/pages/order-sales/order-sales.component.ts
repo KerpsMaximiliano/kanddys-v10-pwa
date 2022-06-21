@@ -173,6 +173,10 @@ export class OrderSalesComponent implements OnInit {
     this.router.navigate([`ecommerce/tags-edit`]);
   }
 
+  back() {
+    this.router.navigate([`/ecommerce/user-items`]);
+  }
+
   toggleNotification() {
     this.tagsService.updateTag({
       notify: !this.tags[this.activeTag].tags.notify

@@ -58,6 +58,7 @@ import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
+import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 
 const routes: Routes = [
   {
@@ -138,7 +139,6 @@ const routes: Routes = [
     path: 'privacy-policy',
     component: PrivacyPolicyComponent,
   },
-  //added create-giftcard again because the merge was deleted??????
   {
     path: 'create-giftcard',
     component: CreateGiftcardComponent,
@@ -319,6 +319,10 @@ const routes: Routes = [
     path: 'my-customers',
     component: MyCustomersComponent
   },
+  {
+    path: 'user-contact-landing/:id',
+    component: UserContactLandingComponent
+  },
 ];
 
 @NgModule({
@@ -381,6 +385,7 @@ const routes: Routes = [
     ItemSalesDetailComponent,
     UserItemsComponent,
     MyCustomersComponent,
+    UserContactLandingComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

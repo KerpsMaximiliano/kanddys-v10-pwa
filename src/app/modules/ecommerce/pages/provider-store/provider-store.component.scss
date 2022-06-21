@@ -14,6 +14,7 @@
     z-index: 1002;
     & .option {
       // margin-top: 24px;
+      color: #4773d8;
       height: 32px;
       padding: inherit;
       display: flex;
@@ -22,16 +23,23 @@
       max-height: 60px;
       text-align: center;
       margin-right: 17px;
-      /* padding-top: 11px;
-            padding-bottom: 11px;
-            padding-left: 22px;
-            padding-right: 22px; */
       font-family: "RobotoMedium";
       font-size: 16px;
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
       background-color: transparent;
       transition: 0.2s;
+      cursor: pointer;
+
+      &:hover {
+        color: #759df8;
+      }
+
+      &.active {
+        border-radius: 16px 16px 0px 0px;
+        color: #ffffff;
+        background: linear-gradient(130deg, #31a4f9, #1d58db);
+      }
     }
   }
 }

@@ -319,11 +319,11 @@ export class AuthService {
     }
   }
 
-  public async analizeMagicLink(token: String) {
+  public async analizeMagicLink(tempcode: String) {
     try {
       const response = await this.graphql.query({
         query: analizeMagicLink,
-        variables: { token },
+        variables: { tempcode },
         fetchPolicy: 'no-cache',
       });
       return response;

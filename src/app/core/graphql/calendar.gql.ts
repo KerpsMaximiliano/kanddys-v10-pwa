@@ -15,7 +15,7 @@ export const getCalendar = gql`
         toHour
       }
       timeChunkSize
-
+      mode
       active
       reservations {
         reservation

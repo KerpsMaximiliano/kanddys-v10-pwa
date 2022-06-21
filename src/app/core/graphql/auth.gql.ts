@@ -66,21 +66,8 @@ export const generateMagicLink = gql`
 `;
 
 export const analizeMagicLink = gql`
-  query analizeMagicLink($token: String!) {
-    analizeMagicLink(token: $token) {
-      _id
-      user {
-        _id
-        email
-        phone
-      }
-      createdAt
-      updatedAt
-      token
-      new
-      remember
-      expiredAt
-    }
+  query analizeMagicLink($tempcode: String!) {
+    analizeMagicLink(tempcode: $tempcode) 
   }
 `;
 

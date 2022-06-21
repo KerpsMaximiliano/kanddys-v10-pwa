@@ -5,18 +5,15 @@ import { Item } from '../../../../core/models/item';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { Location } from '@angular/common';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
-import { notification } from 'onsenui';
 import { Subscription } from 'rxjs';
 import { SwiperOptions } from 'swiper';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-item-detail',
@@ -30,24 +27,12 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private header: HeaderService,
     private router: Router,
     private dialog: DialogService,
-    private location: Location,
     private appService: AppService,
     private saleflowService: SaleFlowService
   ) {}
-  boxTitle: string = '';
-  boxText: string = '';
-  shopcart: boolean = true;
-  whatsapp: boolean = true;
-  myStore: boolean = true;
-  viewtype: 'merchant' | 'community' | 'preview';
-  preamount: string = '20';
-  priceLabel : number = 0.00;
   itemData: Item;
   saleflowData: SaleFlow;
-  itemCartCTA: string = 'Al Carrito Para Comprarlo';
   inCart: boolean;
-  whatsappLink: string = '';
-  fullLink: string = '';
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
@@ -57,8 +42,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     freeMode: true,
     spaceBetween: 5,
   };
-  // tapped: boolean = false;
-  // tagsData: Array<any> = [ '', '', '', ''];
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -66,23 +49,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
       this.itemData = await this.items.item(params.id);
       if(!this.itemData) return this.back();
-      this.boxTitle = this.itemData.merchant?.name;
-      this.boxText = this.itemData.description || this.itemData.name;
-      this.priceLabel = this.itemData.pricing;
       if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
-      this.fullLink = `${this.saleflowData._id 
-        ? `${environment.uri}/ecommerce/item-detail/${this.saleflowData._id}/${params.id}?viewtype=community`
-        : `${environment.uri}/ecommerce/item-detail/${params.id}?viewtype=community`}`;
-      this.generateWhatsappLink(this.itemData.merchant.owner.phone, this.itemData.merchant.name, this.fullLink);
       this.showCartCallBack = () => this.showItems();
-    });
-
-    this.route.queryParams.subscribe((params)=>{
-        this.viewtype = params.viewtype;
-        if (this.viewtype === 'merchant') this.viewtype = 'merchant'
-        else if( this.viewtype === 'preview' ) this.viewtype = 'preview'
-        else if (this.viewtype === 'community'  || !this.viewtype) this.viewtype = 'community'   
     });
 
     this.deleteEvent = this.appService.events
@@ -99,6 +68,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
+    console.log(this.itemCartAmount);
     if (productData && productData.length > 0) {
       this.inCart = productData.some((item) => item._id === this.itemData._id);
     } else this.inCart = false;
@@ -141,19 +111,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  openMagicLinkDialog() {
-    this.dialog.open(MagicLinkDialogComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        ids: {
-          id: this.itemData._id
-        }
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
   onCartClick() {
     if(this.inCart) {
       this.saveProduct();
@@ -177,33 +134,36 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.showItems();
   }
 
-  toggleActivateItem() {
-    this.items.updateItem({
-      status: this.itemData.status === 'disabled' ? 'active' : 'disabled'
-    }, this.itemData._id).catch((error) => {
-      console.log(error);
-      this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
-    })
-    this.itemData.status = this.itemData.status === 'disabled' ? 'active' : 'disabled';
-  }
-
-  generateWhatsappLink(phone: string, merchantName: string, link: string) {
-    this.whatsappLink = `https://wa.me/${
-        phone
-      }?text=Hola%20${
-        merchantName
-      },%20me%20interesa%20este%20producto: \n${
-        link
-      }`;
+  openShareDialog() {
+    const list: StoreShareList[] = [
+      {
+        title:  this.itemData.name || 'Mi item',
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+          },
+        ]
+      }
+    ]
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   back() {
     this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
-  }
-
-  async copyLink() {
-    await copyText(this.fullLink);
-    await notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
   }
 
   // tapping(){

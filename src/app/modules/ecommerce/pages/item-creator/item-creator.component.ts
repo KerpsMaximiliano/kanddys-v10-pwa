@@ -46,6 +46,11 @@ export class ItemCreatorComponent implements OnInit {
         right: { text: 'VISTA' },
         function: async (params) => {
           const values = params.dataModel.value;
+          const priceWithDecimalArray = values['1'].price.split('');
+          const firstHalf = priceWithDecimalArray.slice(0, -2);
+          const secondHalf = priceWithDecimalArray.slice(-2);
+          const totalArray = firstHalf.concat('.').concat(secondHalf);
+          const totalWithDecimal = Number(totalArray.join(''));
 
           if (
             this.currentUserId &&
@@ -57,7 +62,7 @@ export class ItemCreatorComponent implements OnInit {
               {
                 name: values['4'].name,
                 description: values['3'].description,
-                pricing: Number(values['1'].price),
+                pricing: totalWithDecimal,
                 images: this.files,
                 content: values['2'].whatsIncluded,
                 currencies: [],
@@ -75,7 +80,7 @@ export class ItemCreatorComponent implements OnInit {
               const { createItem } = await this.itemService.createItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
-                pricing: Number(values['1'].price),
+                pricing: totalWithDecimal,
                 images: this.files,
                 merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
                 content: values['2'].whatsIncluded.length > 0 && !(
@@ -103,7 +108,7 @@ export class ItemCreatorComponent implements OnInit {
               const { createPreItem } = await this.itemService.createPreItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
-                pricing: Number(values['1'].price),
+                pricing: totalWithDecimal,
                 images: this.files,
                 content: values['2'].whatsIncluded.length > 0 && !(
                   values['2'].whatsIncluded.length === 1 &&
@@ -174,44 +179,51 @@ export class ItemCreatorComponent implements OnInit {
           placeholder: 'Precio...',
           changeCallbackFunction: (change, params) => {
             try {
-              const plainNumber = change
-                .split(',')
-                .join('');
+              if (!change.includes('.')) {
+                const plainNumber = change
+                  .split(',')
+                  .join('');
 
-              if (plainNumber[0] === '0') {
-                const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
-                  Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                  '1.2'
-                ) : this.decimalPipe.transform(
-                  Number('0.' + (
-                    plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
-                      plainNumber.slice(1)
-                  )),
-                  '1.2'
-                );
+                if (plainNumber[0] === '0') {
+                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                        plainNumber.slice(1)
+                    )),
+                    '1.2'
+                  );
 
-                if (formatted === '0') {
-                  this.formSteps[0].fieldsList[0].placeholder = '';
+                  if (formatted === '0.00') {
+                    this.formSteps[0].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                } else {
+                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length === 1 ? '0' + plainNumber :
+                        plainNumber
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[0].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                 }
-
-                this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
               } else {
-                const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
-                  Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                  '1.2'
-                ) : this.decimalPipe.transform(
-                  Number('0.' + (
-                    plainNumber.length === 1 ? '0' + plainNumber :
-                      plainNumber
-                  )),
-                  '1.2'
-                );
-
-                if (formatted === '0') {
-                  this.formSteps[0].fieldsList[0].placeholder = '';
-                }
-
-                this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+                this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
+                  emitEvent: false,
+                });
               }
             } catch (error) {
               console.log(error);
@@ -373,7 +385,12 @@ export class ItemCreatorComponent implements OnInit {
         function: async (params) => {
           try {
             const values = params.dataModel.value;
-
+            const priceWithDecimalArray = values['1'].price.split('');
+            const firstHalf = priceWithDecimalArray.slice(0, -2);
+            const secondHalf = priceWithDecimalArray.slice(-2);
+            const totalArray = firstHalf.concat('.').concat(secondHalf);
+            const totalWithDecimal = Number(totalArray.join(''));
+  
             if (
               this.currentUserId &&
               this.merchantOwnerId &&
@@ -384,7 +401,7 @@ export class ItemCreatorComponent implements OnInit {
                 {
                   name: values['4'].name,
                   description: values['3'].description,
-                  pricing: Number(values['1'].price),
+                  pricing: totalWithDecimal,
                   images: this.files,
                   content: values['2'].whatsIncluded,
                   currencies: [],
@@ -403,7 +420,7 @@ export class ItemCreatorComponent implements OnInit {
                 const { createItem } = await this.itemService.createItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
-                  pricing: Number(values['1'].price),
+                  pricing: totalWithDecimal,
                   images: this.files,
                   merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
                   content: values['2'].whatsIncluded.length > 0 && !(
@@ -430,7 +447,7 @@ export class ItemCreatorComponent implements OnInit {
                 const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
-                  pricing: Number(values['1'].price),
+                  pricing: totalWithDecimal,
                   images: this.files,
                   content: values['2'].whatsIncluded.length > 0 && !(
                     values['2'].whatsIncluded.length === 1 &&

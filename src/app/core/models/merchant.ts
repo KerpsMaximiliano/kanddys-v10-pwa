@@ -1,4 +1,6 @@
 import { Model } from '../objects/model';
+import { AirtableConfiguration } from './airtable';
+import { SocialMediaModel } from './saleflow';
 import { User } from './user';
 
 export class Merchant extends Model<Merchant> {
@@ -21,6 +23,8 @@ export class Merchant extends Model<Merchant> {
   customFee?: number;
   itemNickname?: String
   packageNickname?: String
+  social: SocialMediaModel[];
+  airtableConfiguration: AirtableConfiguration;
   tags?: string[];
   reference?: String
   minPaymentQantity?: number;

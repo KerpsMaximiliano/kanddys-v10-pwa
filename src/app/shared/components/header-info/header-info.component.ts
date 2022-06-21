@@ -12,6 +12,8 @@ import { MerchantInfoComponent } from '../../dialogs/merchant-info/merchant-info
 export class HeaderInfoComponent implements OnInit {
 
   @Input() simple: boolean = false;
+  @Input() merchant: boolean;
+  @Input() mode: 'normal' | 'simple' | 'expanded';
   @Input() profileImage: string;
   @Input() starsAmount: string;
   @Input() title: string;
@@ -21,6 +23,7 @@ export class HeaderInfoComponent implements OnInit {
   @Input() customStyles: Record<string, Record<string, string>> = null;
   @Input() reverseInfoOrder: boolean = false;
   env: string = environment.assetsUrl;
+  showMore: boolean;
 
   constructor(
     private dialogService: DialogService,

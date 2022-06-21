@@ -74,6 +74,11 @@ export const saleflowDefault = gql`
     saleflowDefault(merchantId: $merchantId) {
       _id
       name
+      items {
+        item {
+          _id
+        }
+      }
     }
   }
 `;

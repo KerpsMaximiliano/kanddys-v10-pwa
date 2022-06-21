@@ -32,6 +32,8 @@ export class LlStudioOrderFormComponent implements OnInit {
   merchantId: string = null;
   databaseName: string = null;
   choosedReservation: boolean = false;
+  fullFormMessage: string = null;
+  whatsappLink: string = 'https://wa.me/18098718288?text=';
 
   formSteps: FormStep[] = [
     {
@@ -112,7 +114,11 @@ export class LlStudioOrderFormComponent implements OnInit {
             socials: [
               {
                 name: 'instagram',
-                url: 'http://localhost:4200/ecommerce/ll-studio-order-form'
+                url: 'https://instagram.com/llstudiord?igshid=YmMyMTA2M2Y='
+              },
+              {
+                name: 'phone',
+                url: '18098718288'
               }
             ],
             reverseInfoOrder: true,
@@ -145,6 +151,8 @@ export class LlStudioOrderFormComponent implements OnInit {
         padding: '0px',
       },
       stepProcessingFunction: () => {
+        this.fullFormMessage = `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`;
+
         return { ok: true }
       },
       footerConfig,
@@ -223,6 +231,8 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       stepProcessingFunction: () => {
+        this.fullFormMessage += `*¿A nombre de quién estás realizando esta orden?:*\n${this.formSteps[2].fieldsList[0].fieldControl.control.value}\n\n`;
+
         return { ok: true }
       },
       footerConfig,
@@ -234,10 +244,20 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'totalAmount',
-          formattedValue: '',
+          customCursorIndex: this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ).length + 1,
+          formattedValue: '$' + this.decimalPipe.transform(
+            Number(0),
+            '1.2'
+          ),
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl(0, [
+              Validators.required,
+              Validators.min(0),
+            ])
           },
           shouldFormatNumber: true,
           label: 'Monto total de Compra:',
@@ -246,21 +266,52 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
             try {
-              const plainNumber = change
-                .split(',')
-                .join('')
-                .split('.')
-                .join('');
-              const formatted = this.decimalPipe.transform(
-                Number(plainNumber),
-                '1.0-2'
-              );
+              if (!change.includes('.')) {
+                const plainNumber = change
+                  .split(',')
+                  .join('');
 
-              if (formatted === '0') {
-                this.formSteps[3].fieldsList[0].placeholder = '';
+                if (plainNumber[0] === '0') {
+                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                        plainNumber.slice(1)
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[3].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
+                } else {
+                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length === 1 ? '0' + plainNumber :
+                        plainNumber
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[3].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
+                }
+              } else {
+                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+                this.formSteps[3].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
+                  emitEvent: false,
+                });
               }
-
-              this.formSteps[3].fieldsList[0].formattedValue = '$' + formatted;
             } catch (error) {
               console.log(error);
             }
@@ -366,6 +417,9 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
       ],
       stepProcessingFunction: () => {
+        this.fullFormMessage += `*Monto total de Compra:*\n${this.formSteps[3].fieldsList[0].fieldControl.control.value}\n\n`;
+        this.fullFormMessage += `*Vía de pago:*\n${this.formSteps[3].fieldsList[1].fieldControl.control.value}\n\n`;
+
         return { ok: true }
       },
       footerConfig,
@@ -416,6 +470,8 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       stepProcessingFunction: () => {
+        this.fullFormMessage += `*Via por la que está colocando esta orden:*\n${this.formSteps[4].fieldsList[0].fieldControl.control.value}\n\n`;
+
         return { ok: true }
       },
       footerConfig,
@@ -506,7 +562,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs:
           {
-            calendarId: "62a7e8dabc94801413a541f5"
+            calendarId: "62ac227945c3506dfb3c87cc"
           },
           outputs: [
             {
@@ -521,7 +577,11 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       stepProcessingFunction: () => {
-        if (this.reservation) return { ok: true };
+        if (this.reservation) {
+          this.fullFormMessage += `*Fecha de entrega:*\n${this.formSteps[6].fieldsList[0].fieldControl.control.value}\n\n`;
+
+          return { ok: true };
+        }
 
         return { ok: false };
       },
@@ -585,6 +645,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           params.scrollToStep(6, false);
       },
       stepProcessingFunction: () => {
+        this.fullFormMessage += `*Sobre la entrega:*\n${this.formSteps[7].fieldsList[0].fieldControl.control.value}\n\n`;
+
         return { ok: true }
       },
       footerConfig,
@@ -594,7 +656,7 @@ export class LlStudioOrderFormComponent implements OnInit {
     {
       fieldsList: [
         {
-          name: 'details',
+          name: 'whereToDeliver',
           label: '¿Dónde entregaremos?',
           sublabel: 'Indicar sólamente si aplica. El delivery en Santo Domingo sólo aplica a la zona metropolitana y varia de RD$200 a RD$350 aproximadamente. El envio al interior se hace via courrier, a partir de RD$300.',
           inputType: 'textarea',
@@ -629,6 +691,9 @@ export class LlStudioOrderFormComponent implements OnInit {
         type: 'promise',
         function: async (params) => {
           try {
+            if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
+              this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
+
             const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
               [
                 base64ToFile(this.formSteps[0].fieldsList[1].fieldControl.control.value),
@@ -636,12 +701,19 @@ export class LlStudioOrderFormComponent implements OnInit {
               ]
             );
 
+            this.fullFormMessage += `*Foto de Referencia:*\n${fileRoutes[0]}\n\n`;
+            this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[1]}\n\n`;
+
+            const convertedTotalAmount = Number(
+              this.formSteps[3].fieldsList[0].formattedValue
+                .split('').filter(char => char !== ',' && char !== '$').join(''));
+
             const data = {
               details: this.formSteps[0].fieldsList[0].fieldControl.control.value,
               referenceImage: fileRoutes[0],
               phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.control.value,
               fullname: this.formSteps[2].fieldsList[0].fieldControl.control.value,
-              totalAmount: this.formSteps[3].fieldsList[0].fieldControl.control.value,
+              totalAmount: convertedTotalAmount,
               paymentMethod: this.formSteps[3].fieldsList[1].fieldControl.control.value,
               proofOfPayment: fileRoutes[1],
               fromWhereAreYouPaying: this.formSteps[4].fieldsList[0].fieldControl.control.value,
@@ -650,7 +722,11 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.reservation.data.dateInfo,
                 this.reservation.data.monthNumber,
                 this.reservation.data.day,
-                this.reservation.data.hourNumber,
+                this.reservation.data.hour.slice(-2) === 'pm' &&
+                  this.reservation.data.hour.slice(0, 2) !== '12' ? this.reservation.data.hourNumber + 12 :
+                  this.reservation.data.hour.slice(-2) === 'am' &&
+                    this.reservation.data.hour.slice(0, 2) !== '12' ? this.reservation.data.hourNumber :
+                    this.reservation.data.hour.slice(-2) === 'pm' ? 12 : 0,
                 this.reservation.data.minutesNumber
               ).toISOString() : '',
               'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.control.value,
@@ -672,6 +748,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               customClass: 'app-dialog',
               flags: ['no-header'],
             });
+
+            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
             return { ok: true };
           } catch (error) {

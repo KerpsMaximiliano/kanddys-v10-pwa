@@ -1,0 +1,36 @@
+.items-card {
+  background-color: #FFFFFF;
+  box-shadow: 0px 4px 10px #ddd;
+  padding: 24px;
+  margin: 24px;
+  border-radius: 12px;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+
+    h6 {
+      font-family: "RobotoBold";
+      font-size: "17px";
+      color: #202020;
+      margin: 0;
+    }
+
+    a {
+      font-family: "SfProLight";
+      font-size: 17px;
+      color: #2874AD;
+      cursor: pointer;
+
+      &:hover {
+        color:rgb(62, 147, 212);
+      }
+    }
+  }
+
+  .item-list {
+    display: flex;
+    justify-content: space-between;
+  }
+}

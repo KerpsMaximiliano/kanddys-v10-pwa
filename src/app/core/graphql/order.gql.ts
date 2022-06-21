@@ -279,8 +279,8 @@ export const ordersByUser = gql`
 `;
 
 export const ordersTotal = gql`
-  query ordersTotal($status: [String!]!, $merchantId: ObjectID, $orders: [ObjectID!]) {
-    ordersTotal(status: $status, merchantId: $merchantId, orders: $orders)
+  query ordersTotal($status: [String!]!, $merchantId: ObjectID!, $orders: [ObjectID!], $itemCategoryId: ObjectID) {
+    ordersTotal(status: $status, merchantId: $merchantId, orders: $orders, itemCategoryId: $itemCategoryId)
   }
 `;
 
