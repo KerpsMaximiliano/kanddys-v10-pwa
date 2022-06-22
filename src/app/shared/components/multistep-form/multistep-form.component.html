@@ -1,7 +1,10 @@
 <div [ngStyle]="{
   overflowY: scrollableForm && !disableSmoothScroll ? 'hidden' : null,
   height: scrollableForm && !disableSmoothScroll && formWrapperHeight ? formWrapperHeight + 'px' : null
-}" (window:resize)="resizeFormWrapper()">
+}"
+  class="fullform-wrapper"
+  (window:resize)="resizeFormWrapper()"
+>
 
   <app-helper-header
     *ngIf="!steps[currentStep].hideHeader && (!steps[currentStep].headerMode || steps[currentStep].headerMode === 'v1')"
@@ -44,14 +47,18 @@ shouldScrollBackwards &&
     transform: scrollableForm && !disableSmoothScroll ? 'translateY(' + currentYPosition + 'px)' : null
   }">
     <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
-      <div class="form-step" [ngStyle]="!steps[currentStep].hideHeader ? {
-      paddingTop: headerHeightTracker ? headerHeightTracker + 'px' : '60px',
-      paddingBottom: currentStepString? bottomCtaStatusTracker[currentStepString] + 'px' : '0px'
-    } : steps[currentStep].styles ? spreadOperator(steps[currentStep].styles, {
-      paddingBottom: currentStepString? bottomCtaStatusTracker[currentStepString] + 'px' : '0px'
-    }) : null" [id]="'step-' + currentStepIndex" *ngIf="
+      <div class="form-step" [ngStyle]="!steps[currentStepIndex].hideHeader ? {
+      paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
+      minHeight: dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+        ? 'calc(100vh - 55px)'
+        : 'calc(100vh - 38px)'
+    } : steps[currentStepIndex].styles ? spreadOperator(steps[currentStepIndex].styles, {
+      paddingTop: '0px'
+    }) : null" 
+        [id]="'step-' + currentStepIndex" *ngIf="
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
-      ">
+        "
+      >
         <ng-container *ngIf="currentStepObject.pageHeader">
           <div [ngStyle]="
           currentStepObject.pageHeader?.styles
@@ -71,6 +78,46 @@ shouldScrollBackwards &&
             let currentField of currentStepObject['fieldsList'];
             let currentFieldIndex = index
           " [formGroupName]="currentStepIndex + 1">
+
+
+            <!-- LINKS OPCIONALES, PERO ANTES DE UN FIELD -->
+            <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
+              !currentStepObject['optionalLinksTo']['afterIndex']
+              currentStepObject['optionalLinksTo']['beforeIndex']
+            ">
+              <ng-container
+                *ngIf="
+                  currentStepObject['optionalLinksTo']['beforeIndex'] === currentFieldIndex
+                "
+              >
+                <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" 
+                  class="optional-links" 
+                  [ngStyle]="
+                    groupOfLinks?.styles?.containerStyles
+                      ? groupOfLinks?.styles?.containerStyles
+                      : null
+                ">
+                  <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
+                    groupOfLinks?.styles?.labelStyles
+                      ? groupOfLinks?.styles?.labelStyles
+                      : null
+                  ">
+                    {{groupOfLinks.topLabel}}:
+                  </span>
+                  <ng-container *ngFor="let link of groupOfLinks.links">
+                    <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
+                      groupOfLinks?.styles?.fieldStyles
+                        ? groupOfLinks?.styles?.fieldStyles
+                        : null
+                    ">
+                      {{ link.text }}
+                    </span>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- EMBEDDED COMPONENTS ANTES DE UN FIELD -->
             <ng-container *ngIf="currentStepObject['embeddedComponents']">
               <ng-container *ngFor="
                 let currentEmbeddedComponent of currentStepObject[
@@ -441,7 +488,9 @@ shouldScrollBackwards &&
               </label>
 
               <label class="file" [for]="currentField.name" [ngStyle]="applyStylesToImages(currentField)">
-                <span *ngIf="currentField.fieldControl.control.value === ''">Upload / Image</span>
+                <span *ngIf="currentField.fieldControl.control.value === ''">{{
+                  currentField.placeholder || "Upload / Image"
+                  }}</span>
               </label>
 
               <div *ngIf="currentField.showImageBottomLabel" class="showImageBottomLabel" [ngStyle]="
@@ -456,6 +505,64 @@ shouldScrollBackwards &&
                 (change)="loadFile(currentField, $event)" />
             </div>
 
+            <!-- BUTTON INPUTS GO HERE -->
+            <div *ngIf="currentField.inputType === 'button'" [ngStyle]="
+              currentField.styles.containerStyles
+                ? currentField.styles.containerStyles
+                : null
+            ">
+              <button 
+                [ngStyle]="
+                  currentField.styles.fieldStyles && !currentField.hovered
+                    ? currentField.styles.fieldStyles
+                    : currentField.hovered
+                     ? currentField.styles.hoverStyles
+                     : null
+                "
+                (mouseenter)="changeStylesOnHover(currentField, true)"
+                (mouseleave)="changeStylesOnHover(currentField, false)"
+                [disabled]="!currentField.fieldControl.control.value"
+              >{{currentField.label}}</button>
+            </div>
+
+            <!-- LINKS OPCIONALES, PERO DESPUES DE UN FIELD -->
+            <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
+              !currentStepObject['optionalLinksTo']['beforeIndex'] &&
+              currentStepObject['optionalLinksTo']['afterIndex']
+            ">
+              <ng-container
+                *ngIf="
+                  currentStepObject['optionalLinksTo']['afterIndex'] === currentFieldIndex
+                "
+              >
+                <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" 
+                  class="optional-links" 
+                  [ngStyle]="
+                    groupOfLinks?.styles?.containerStyles
+                      ? groupOfLinks?.styles?.containerStyles
+                      : null
+                ">
+                  <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
+                    groupOfLinks?.styles?.labelStyles
+                      ? groupOfLinks?.styles?.labelStyles
+                      : null
+                  ">
+                    {{groupOfLinks.topLabel}}:
+                  </span>
+                  <ng-container *ngFor="let link of groupOfLinks.links">
+                    <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
+                      groupOfLinks?.styles?.fieldStyles
+                        ? groupOfLinks?.styles?.fieldStyles
+                        : null
+                    ">
+                      {{ link.text }}
+                    </span>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+
+            <!-- EMBEDDED COMPONENTS DESPUES DE UN FIELD -->
             <ng-container *ngIf="currentStepObject['embeddedComponents']">
               <ng-container *ngFor="
                 let currentEmbeddedComponent of currentStepObject[
@@ -481,8 +588,11 @@ shouldScrollBackwards &&
         </form>
 
         <!-- LINKS OPCIONALES -->
-        <ng-container *ngIf="currentStepObject['optionalLinksTo']">
-          <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo']" class="optional-links" [ngStyle]="
+        <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
+          !currentStepObject['optionalLinksTo']['beforeIndex'] &&
+          !currentStepObject['optionalLinksTo']['afterIndex']
+        ">
+          <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" class="optional-links" [ngStyle]="
             groupOfLinks?.styles?.containerStyles
               ? groupOfLinks?.styles?.containerStyles
               : null
@@ -522,6 +632,15 @@ shouldScrollBackwards &&
             {{ currentStepIndex + 1 }} / {{ steps.length }} PASOS
           </div>
         </div>
+
+        <!-- SEPARADOR INFERIOR -->
+        <div
+          [ngStyle]="{
+            height: dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+                ? '55px'
+                : '38px'
+          }"
+        ></div>
       </div>
     </ng-container>
   </div>
@@ -542,7 +661,9 @@ shouldScrollBackwards &&
           : steps[currentStep].customScrollToStep(stepFunctionParams)
       "
     [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
-    [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null">
+    [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null"
+    [injectBottomSeparator]="true"
+  >
   </app-sticky-button>
 
   <a [href]="steps[currentStep].stepAnchorURL" target="_blank" *ngIf="steps[currentStep].stepAnchorURL">
@@ -560,7 +681,9 @@ shouldScrollBackwards &&
           : steps[currentStep].customScrollToStep(stepFunctionParams)
       "
       [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
-      [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null">
+      [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null"
+      [injectBottomSeparator]="true"  
+    >
     </app-sticky-button>
   </a>
 

@@ -58,6 +58,7 @@ import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
+import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 
 const routes: Routes = [
   {
@@ -319,6 +320,10 @@ const routes: Routes = [
     path: 'my-customers',
     component: MyCustomersComponent
   },
+  {
+    path: 'user-creator',
+    component: UserCreatorComponent
+  },
 ];
 
 @NgModule({
@@ -381,6 +386,7 @@ const routes: Routes = [
     ItemSalesDetailComponent,
     UserItemsComponent,
     MyCustomersComponent,
+    UserCreatorComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

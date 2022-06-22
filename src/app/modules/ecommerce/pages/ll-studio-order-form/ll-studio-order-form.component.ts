@@ -397,7 +397,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           styles: {
             containerStyles: {
               minWidth: '281px',
-              marginTop: '44px'
+              marginTop: '44px',
+              marginBottom: '269px',
             },
             labelStyles: {
               fontFamily: 'Roboto',

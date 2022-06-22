@@ -11,6 +11,7 @@ export interface FieldStyles {
   formattedInputStyles?: any;
   formattedInputCaretStyles?: any;
   bottomLabelStyles?: any;
+  hoverStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
@@ -38,6 +39,7 @@ export interface FormField {
   validators?: Array<any>;
   description?: string;
   focused?: boolean;
+  hovered?: boolean;
   topLabelAction?: {
     text: string;
     clickable?: boolean;
@@ -136,7 +138,11 @@ export interface FormStep {
   customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: LinkAction;
   linkFooter?: LinkAction;
-  optionalLinksTo?: Array<OptionalLinks>;
+  optionalLinksTo?: {
+    beforeIndex?: number | null;
+    afterIndex?: number | null;
+    groupOfLinksArray: Array<OptionalLinks>;
+  };
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
   showShoppingCartOnCurrentStep?: boolean;

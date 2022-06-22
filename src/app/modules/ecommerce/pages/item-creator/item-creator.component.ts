@@ -472,46 +472,48 @@ export class ItemCreatorComponent implements OnInit {
           return { ok: true };
         },
       },
-      optionalLinksTo: [
-        {
-          topLabel: 'Contenido opcional',
-          styles: {
-            containerStyles: {
-              marginTop: '40px',
-              marginBottom: '0px'
+      optionalLinksTo: {
+        groupOfLinksArray: [
+          {
+            topLabel: 'Contenido opcional',
+            styles: {
+              containerStyles: {
+                marginTop: '40px',
+                marginBottom: '0px'
+              },
+              fieldStyles: {
+                marginTop: '18px',
+                paddingLeft: '17px',
+                width: 'fit-content'
+              },
+              labelStyles: labelStyles
             },
-            fieldStyles: {
-              marginTop: '18px',
-              paddingLeft: '17px',
-              width: 'fit-content'
-            },
-            labelStyles: labelStyles
-          },
-          links: [
-            {
-              text: 'Nombre',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(3);
-              }
-            },
-            {
-              text: 'Descripción',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(2);
-              }
-            },
-            {
-              text: 'Lo incluido',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(1);
-              }
-            },
-          ]
-        }
-      ],
+            links: [
+              {
+                text: 'Nombre',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(3);
+                }
+              },
+              {
+                text: 'Descripción',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(2);
+                }
+              },
+              {
+                text: 'Lo incluido',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(1);
+                }
+              },
+            ]
+          }
+        ]
+      },
       pageHeader: {
         text: 'Lo que vendes',
         styles: {

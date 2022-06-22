@@ -163,19 +163,21 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
           console.log('Whatever goes here');
         },
       },
-      optionalLinksTo: [
-        {
-          topLabel: 'Opcional',
-          links: [
-            {
-              text: 'Que la parte de atrás sea una fotografia',
-              action: () => {
-                console.log('Something happened');
+      optionalLinksTo: {
+        groupOfLinksArray: [
+          {
+            topLabel: 'Opcional',
+            links: [
+              {
+                text: 'Que la parte de atrás sea una fotografia',
+                action: () => {
+                  console.log('Something happened');
+                },
               },
-            },
-          ],
-        }
-      ],
+            ],
+          }
+        ]
+      },
       headerText: 'fase 1',
       stepButtonInvalidText: 'Adiciona TU MOBILE',
       stepButtonValidText: 'Verificar mi mobile',
@@ -231,8 +233,8 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   currentYPosition: number = 0;
   shouldAddMultipleInput = false;
   timeoutId: any = null;
-  currentStep: number = 0;
-  currentStepString: string = (this.currentStep + 1).toString();
+  @Input() currentStep: number = 0;
+  @Input() currentStepString: string = (this.currentStep + 1).toString();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
@@ -240,7 +242,6 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
-  bottomCtaStatusTracker: Record<string, number> = {};
   headerHeightTracker: number = 60;
 
   constructor(private header: HeaderService, private dialog: DialogService) { }
@@ -261,16 +262,20 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit(): void {
-    this.headerHeightTracker = document.querySelector(".helper-headerv1") ?
-      document.querySelector('.helper-headerv1').clientHeight :
-      document.querySelector('.helper-headerv2') ?
-        document.querySelector('.helper-headerv2').clientHeight :
-        60
-      ;
+    setTimeout(() => {
+      this.headerHeightTracker = document.querySelector(".helper-headerv1") ?
+        document.querySelector('.helper-headerv1').clientHeight :
+        document.querySelector('.helper-headerv2') ?
+          document.querySelector('.helper-headerv2').clientHeight :
+          0
+        ;
+    }, 100)
 
 
     if (this.scrollableForm && !this.disableSmoothScroll) {
-      this.formWrapperHeight = document.querySelector('#step-0').clientHeight;
+      setTimeout(() => {
+        this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
+      }, 100)
     }
 
 
@@ -282,8 +287,9 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
       ) as FormGroup;
 
       currentStepFormGroup.statusChanges.subscribe((statusValue) => {
-        console.log(statusValue);
-        this.bottomCtaStatusTracker[this.currentStepString] = statusValue === 'INVALID' ? 38 : 55;
+        setTimeout(() => {
+          this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
+        }, 100);
       });
     })
   }
@@ -301,8 +307,6 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
       let currentStepFormGroup = this.dataModel.get(
         currentStepKey
       ) as FormGroup;
-
-      this.bottomCtaStatusTracker[this.currentStepString] = 34;
 
       step.fieldsList.forEach((field) => {
         if (!currentStepFormGroup.get(field.name))
@@ -337,7 +341,16 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   resizeFormWrapper() {
-    this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
+    if(this.scrollableForm && !this.disableSmoothScroll) {//Arreglar a futuro
+      let currentStepHtmlElement: HTMLElement = document.querySelector(
+        `#step-${this.currentStep}`
+      );
+  
+      this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
+      this.currentYPosition = currentStepHtmlElement.offsetTop * -1;
+
+      document.querySelector('.fullform-wrapper').scrollTo(0, 0);
+    }
   }
 
   /**
@@ -476,6 +489,14 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     return styles;
   }
 
+  changeStylesOnHover(
+    currentField: FormField,
+    hovered: boolean,
+  ) {
+    console.log("cambiando status boton", hovered);
+    currentField.hovered = hovered;
+  }
+
   /**
    * Hace scroll hacia una fase del formulario según su indice en el array de steps
    * @method
@@ -498,7 +519,9 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.currentYPosition = nextStepHtmlElement.offsetTop * -1;
 
-        this.formWrapperHeight = nextStepHtmlElement.clientHeight;
+        setTimeout(() => {
+          this.formWrapperHeight = nextStepHtmlElement.clientHeight;
+        }, 100);
       } else if (this.disableSmoothScroll && this.scrollableForm) {
 
 
@@ -524,12 +547,14 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
       this.currentStep = index;
       this.currentStepString = (index + 1).toString();
 
-      this.headerHeightTracker = document.querySelector(".helper-headerv1") ?
-        document.querySelector('.helper-headerv1').clientHeight :
-        document.querySelector('.helper-headerv2') ?
-          document.querySelector('.helper-headerv2').clientHeight :
-          60
-        ;
+      setTimeout(() => {
+        this.headerHeightTracker = document.querySelector(".helper-headerv1") ?
+          document.querySelector('.helper-headerv1').clientHeight :
+          document.querySelector('.helper-headerv2') ?
+            document.querySelector('.helper-headerv2').clientHeight :
+            0
+          ;
+      }, 100);
     }
   };
 
