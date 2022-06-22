@@ -22,7 +22,7 @@ export class CustomizerStickersComponent implements OnInit {
 
   sanitizeImageUrl(imageUrl: string): SafeUrl {
     return this.sanitizer.bypassSecurityTrustUrl("data:image/svg+xml;charset=UTF-8," + imageUrl);
-}
+  }
 
   onClick(url: string, id: number) {
     this.customizerValueService.urlEmitter.next({url, id});

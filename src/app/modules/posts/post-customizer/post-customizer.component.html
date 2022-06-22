@@ -1,5 +1,5 @@
 <ng-container>
-  <div style="min-height: 100vh">
+  <div style="min-height: 100vh; background-color: #ffffff;">
     <div
       class="menu-nav"
       [ngStyle]="{
@@ -34,7 +34,6 @@
       </div>
     </div>
     <section class="content">
-      <div style="font-family: Nirvana">.</div>
       <div class="canvas-container">
         <canvas
           class="canvas"
@@ -44,6 +43,64 @@
           (rotate)="onRotateStart($event)"
         >
         </canvas>
+        <div class="canvas-editing">
+          <!-- <img class="canvas-content" [src]="item?.images?.length && item.images[0]" [alt]="item?.name"> -->
+          <ng-container *ngIf="elementList?.length">
+            <div *ngIf="currentStickersAmount" style="padding: 20px;" [ngClass]="{'canvas-active': selectedOption === 'stickers'}">
+              <ng-container *ngFor="let element of elementList">
+                <img *ngIf="element.sticker" [src]="sanitizeImageUrl(element.sticker.decoded)">
+              </ng-container>
+            </div>
+            <div *ngIf="currentTextsAmount" style="padding: 20px; display: flex; align-items: center;" [ngClass]="{'canvas-active': selectedOption === 'tipografía'}">
+              <ng-container *ngFor="let element of elementList">
+                <span
+                  *ngIf="element.typography && !element.typography.hidden"
+                  [ngStyle]="{
+                    'color': element.typography.color.fixedValue,
+                    'font-size':element.typography.size+'px',
+                    'font-family': element.typography.font
+                  }"
+                >
+                  {{element.typography.text}}
+                </span>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+        <div class="btn-column">
+          <button class="side-btn" (click)="onIconClick()" 
+          *ngIf="
+            customizerRules?.stickers?.active &&
+            customizerRules.stickers.itemsRule?.length &&
+            customizerRules.stickers.itemsRule[0].fixed?.length > 1
+          ">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Iconos
+          </button>
+          <button class="side-btn" [ngClass]="{'active': selectedOption === 'stickers' && selectedElementOption === 'color'}" (click)="onIconColorClick()" *ngIf="customizerRules?.stickers?.active">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Color de Iconos
+          </button>
+          <button class="side-btn" [ngClass]="{'active': selectedOption === 'tipografía' && selectedElementOption === 'tipografia'}" (click)="onTypographyClick()" *ngIf="customizerRules?.texts?.active">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Tipografía
+          </button>
+          <button class="side-btn" [ngClass]="{'active': selectedOption === 'tipografía' && selectedElementOption === 'color'}" (click)="onTextColorClick()" *ngIf="customizerRules?.texts?.active">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Color de Letras
+          </button>
+          <button class="preview-btn" (click)="previewCanvas()">
+            Preview
+          </button>
+        </div>
         <div class="is-dragging" [ngStyle]="{ opacity: dragok ? 1 : 0 }">
           <span class="dragging-text">Arrastra para eliminar</span>
           <div>
@@ -94,7 +151,8 @@
           Tipografía
         </button>
       </div>
-      <div
+      <!-- REMOVED -->
+      <!-- <div
         class="button-carousel"
         *ngIf="customizerRules && (modifyingElement >= 0 || isEditing)"
       >
@@ -107,7 +165,8 @@
             {{ option | titlecase }}
           </button>
         </ng-container>
-      </div>
+      </div> -->
+      <!-- REMOVED -->
       <div class="customizer" *ngIf="customizerRules">
         <!-- ----------------------- EFFECTS ----------------------- -->
         <!-- <div *ngIf="selectedOption === 'efectos'">
@@ -265,8 +324,9 @@
           </div>
           <div *ngIf="selectedElementOption === 'color'">
             <p class="option-label">Colores:</p>
+            <!-- option-list a option-list-grid -->
             <div
-              class="option-list"
+              class="option-list-grid"
               #stickerColorDiv
               (mousedown)="startDragging($event, false, stickerColorDiv)"
               (mouseup)="stopDragging($event, false)"
@@ -383,13 +443,19 @@
                   }"
                   >Aa</span
                 >
+                <span style="white-space: nowrap">
+                  {{ style === 'Dorsa' ? 'Empire' : ''}}
+                  {{ style === 'Commercial-Script' ? 'Classic' : ''}}
+                  {{ (style !== 'Commercial-Script' && style !== 'Dorsa') ? style : ''}}
+                </span>
               </div>
             </div>
           </div>
           <div *ngIf="selectedElementOption === 'color' && !isEditing">
             <p class="option-label">Colores:</p>
+            <!-- option-list a option-list-grid -->
             <div
-              class="option-list"
+              class="option-list-grid"
               #textColor
               (mousedown)="startDragging($event, false, textColor)"
               (mouseup)="stopDragging($event, false)"
@@ -415,7 +481,7 @@
             </h6>
           </div>
         </div>
-        <div *ngIf="willShowInput">
+        <div *ngIf="willShowInput" style="margin-top: 10px;">
           <p class="label1">Texto para la servilleta:</p>
           <input
             type="text"
@@ -427,6 +493,7 @@
             (ngModelChange)="onChangeInput()"
             (blur)="setInputText()"
             (keydown)="validateInput($event)"
+            [ngStyle]="{'font-family': typographyData && typographyData.fontStyle, 'color': typographyData && typographyData.fontColor && typographyData.fontColor.fixedValue }"
           />
         </div>
         <!-- ------------------------ LAPIZ ------------------------ -->
@@ -445,7 +512,8 @@
           </div>
           <div>
             <p class="option-label">Colores:</p>
-            <div class="option-list">
+            <!-- option-list a option-list-grid -->
+            <div class="option-list-grid">
               <div class="list-option" *ngFor="let color of getLineColors()">
                 <span
                   (click)="lineColor = color.fixedValue"
