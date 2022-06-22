@@ -167,11 +167,6 @@ export class CategoryItemsComponent implements OnInit {
         },
         this.saleflowData._id
       );
-      const bestSellersIds = await this.item.bestSellersByMerchant(
-        15,
-        this.saleflowData.merchant._id
-      );
-
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
@@ -190,10 +185,17 @@ export class CategoryItemsComponent implements OnInit {
         );
       }
 
-      bestSellersIds.forEach((id) => {
-        const item = items.find((item) => item._id === id);
-        if (item) this.bestSellers.push(item);
-      });
+      if(!this.hasCustomizer) {
+        const bestSellersIds = await this.item.bestSellersByMerchant(
+          15,
+          this.saleflowData.merchant._id
+        );
+        bestSellersIds.forEach((id) => {
+          const item = items.find((item) => item._id === id);
+          if (item) this.bestSellers.push(item);
+        });
+      }
+
       this.items = [...items];
       this.originalItems = [...items];
 
