@@ -203,7 +203,10 @@ export class UserCreatorComponent implements OnInit {
                 this.currentStep = 1;
               } else if(newTabIndex === 2) {
                 this.currentStep = 2;
-              };
+              } else if(newTabIndex === 1) {
+                this.currentStep = 3;
+              };;
+              
               this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
               this.formSteps[this.currentStep].embeddedComponents[0].shouldRerender = true;
             },
@@ -545,6 +548,152 @@ export class UserCreatorComponent implements OnInit {
           },
           placeholder: '',
           label: 'DIRECCIÓN',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginBottom: '24px',
+              display: 'inline-block',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '38px',
+              backgroundPositionX: '8px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+              borderRadius: '22px'
+            },
+            containerStyles: {
+              marginTop: '81px'
+            }
+          },
+        },
+      ],
+      embeddedComponents: this.injectTabComponent(),
+      avoidGoingToNextStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2'
+    },
+    {
+      hideHeader: true,
+      fieldsList: [
+        {
+          name: 'instagram',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          label: 'INSTAGRAM URL',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginBottom: '24px',
+              display: 'inline-block',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '38px',
+              backgroundPositionX: '8px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+              borderRadius: '22px'
+            },
+            containerStyles: {
+              marginTop: '81px'
+            }
+          },
+        },
+        {
+          name: 'twitter',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          label: 'TWITTER',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginBottom: '24px',
+              display: 'inline-block',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '38px',
+              backgroundPositionX: '8px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+              borderRadius: '22px'
+            },
+            containerStyles: {
+              marginTop: '81px'
+            }
+          },
+        },
+        {
+          name: 'linkedin',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          label: 'LINKED IN',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginBottom: '24px',
+              display: 'inline-block',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '38px',
+              backgroundPositionX: '8px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+              borderRadius: '22px'
+            },
+            containerStyles: {
+              marginTop: '81px'
+            }
+          },
+        },
+        {
+          name: 'tiktok',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          label: 'TIKTOK',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginBottom: '24px',
+              display: 'inline-block',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '38px',
+              backgroundPositionX: '8px',
+            },
+            fieldStyles: {
+              boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+              borderRadius: '22px'
+            },
+            containerStyles: {
+              marginTop: '81px'
+            }
+          },
+        },
+        {
+          name: 'facebook',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          label: 'FACEBOOK',
           styles: {
             labelStyles: {
               ...labelStyles,
