@@ -2749,6 +2749,8 @@ export class PostCustomizerComponent
       type: 'fullscreen-translucent',
       props: {
         imageSourceURL,
+        buttonText: 'Continuar con la orden',
+        buttonFunc: () => this.onSave()
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

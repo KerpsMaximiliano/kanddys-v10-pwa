@@ -27,13 +27,13 @@
         /> -->
         <a
           class="saveButton"
-          [ngStyle]="{ color: isEditing || canDraw ? 'gray' : '#27A2FF' }"
-          (click)="onSave()"
-          >Continuar</a
+          (click)="previewCanvas()"
+          >Visualizar y Continuar</a
         >
       </div>
     </div>
     <section class="content">
+      <h3 class="title">Editando el contenido</h3>
       <div class="canvas-container">
         <canvas
           class="canvas"

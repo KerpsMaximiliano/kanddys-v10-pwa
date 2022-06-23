@@ -15,6 +15,10 @@
     color: #27a2ff;
     font-family: "RobotoMedium";
     font-size: 16px;
+
+    &:hover {
+      color: #1886da;
+    }
   }
 
   a {
@@ -35,6 +39,11 @@
       margin-right: 12px;
     }
   }
+}
+
+.title {
+  font-family: "RobotoMedium";
+  color: #2E2E2E;
 }
 
 input[type="file"] {
@@ -86,7 +95,7 @@ input[type="file"] {
   padding: 10px 20px;
   margin-top: 10px;
   border-radius: 6px;
-  background-color: #ebf7ff;
+  background-color: #daf0ff;
   transition: 200ms;
   cursor: pointer;
 
