@@ -1,9 +1,9 @@
 <div style="min-height: 100vh;">
   <div style="background-color: #EEF6DF;">
     <app-header-info
-      [profileImage]="user?.image"
-      [title]="user?.name"
-      [description]="'desc'"
+      [profileImage]="merchant ? merchant.image : user?.image"
+      [title]="merchant ? merchant.name : user?.name"
+      [description]="merchant ? merchant.bio : user?.bio"
       [socials]="merchant ? merchant.social : user?.social"
       [mode]="merchant ? 'expanded' : 'normal'"
       [merchant]="merchant ? true : false"
