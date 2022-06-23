@@ -44,6 +44,7 @@
 .title {
   font-family: "RobotoMedium";
   color: #2E2E2E;
+  margin: 0;
 }
 
 input[type="file"] {
@@ -80,6 +81,17 @@ input[type="file"] {
   grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+
+  .preview-btn {
+    display: none;
+  }
+}
+
 .btn-column {
   width: 100%;
   padding: 10px 5px;
@@ -93,7 +105,6 @@ input[type="file"] {
   all: unset;
   color: #27A2FC;
   padding: 10px 20px;
-  margin-top: 10px;
   border-radius: 6px;
   background-color: #daf0ff;
   transition: 200ms;
@@ -550,5 +561,22 @@ input[type="file"] {
     font-family: RobotoMedium;
     font-size: 20px;
     color: rgb(161, 161, 161, 0.6);
+  }
+}
+
+@media (max-width: 480px) {
+  .canvas-editing {
+    grid-column: span 12 / span 12;
+  }
+  .btn-column {
+    grid-column: span 12 / span 12;
+    flex-direction: row;
+    align-items: baseline;
+  }
+  .header .preview-btn {
+    display: block;
+  }
+  .btn-column .preview-btn {
+    display: none;
   }
 }

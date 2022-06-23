@@ -33,7 +33,12 @@
       </div>
     </div>
     <section class="content">
-      <h3 class="title">Editando el contenido</h3>
+      <div class="header">
+        <h3 class="title">Edición de contenido</h3>
+        <button class="preview-btn" (click)="previewCanvas()">
+          Preview
+        </button>
+      </div>
       <div class="canvas-container">
         <canvas
           class="canvas"
@@ -97,7 +102,7 @@
             </span>
             Color de Letras
           </button>
-          <button class="preview-btn" (click)="previewCanvas()">
+          <button class="preview-btn" style="margin-top:10px;" (click)="previewCanvas()">
             Preview
           </button>
         </div>

@@ -16,20 +16,15 @@
 }
 
 .preview-btn {
+  all: unset;
   font-family: "RobotoMedium";
   padding: 14px 25px;
-  margin-right: 20px;
+  margin-top: 16px;
   border-radius: 25px;
   color: #174B72;
-  width: 70%;
-  border: 0;
   font-size: 16px;
   text-transform: uppercase;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   background-color: #FED230;
 
     &:hover {
