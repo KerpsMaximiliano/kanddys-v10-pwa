@@ -493,7 +493,6 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     currentField: FormField,
     hovered: boolean,
   ) {
-    console.log("cambiando status boton", hovered);
     currentField.hovered = hovered;
   }
 
@@ -570,18 +569,20 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     if (asyncFunction.type === 'observable') {
       asyncFunction.function(stepFunctionParams).subscribe((result) => {
         this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-        if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          !('customScrollToStep' in this.steps[this.currentStep])
-        )
-          this.scrollToStep();
-        else if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          'customScrollToStep' in this.steps[this.currentStep]
-        )
-          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
       });
     } else {
       asyncFunction.function(stepFunctionParams).then((result) => {
@@ -622,18 +623,20 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
       let result =
         this.steps[this.currentStep].stepProcessingFunction(stepFunctionParams);
 
-      if (
-        result.ok &&
-        this.currentStep !== this.steps.length - 1 &&
-        !('customScrollToStep' in this.steps[this.currentStep])
-      )
-        this.scrollToStep();
-      else if (
-        result.ok &&
-        this.currentStep !== this.steps.length - 1 &&
-        'customScrollToStep' in this.steps[this.currentStep]
-      )
-        this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+      if (!this.steps[this.currentStep].avoidGoingToNextStep) {      
+        if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          !('customScrollToStep' in this.steps[this.currentStep])
+        )
+          this.scrollToStep();
+        else if (
+          result.ok &&
+          this.currentStep !== this.steps.length - 1 &&
+          'customScrollToStep' in this.steps[this.currentStep]
+        )
+          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+      }
     } else {
       let stepButtonText = this.steps[this.currentStep].stepButtonValidText;
       this.steps[this.currentStep].stepButtonValidText = 'ESPERE...';

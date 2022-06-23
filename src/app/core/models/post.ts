@@ -1,15 +1,6 @@
 import { Model } from '../objects/model';
+import { SocialMediaModel, SocialMediaModelInput } from './saleflow';
 import { IpUser, User } from './user';
-
-export class SocialMediaModel {
-    name: string;
-    url: string;
-}
-
-export class SocialMediaModelInput {
-    name?: string;
-    url: string;
-}
 
 export class Target extends Model<Target> {
     emailOrPhone: string

@@ -96,28 +96,31 @@ export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string };
-      right?: { text?: string; icon?: string };
+      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
       function(...params): Promise<any> | any;
     },
     invalidStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string };
-      right?: { text?: string; icon?: string };
+      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
     }
   },
   bgColor?: string;
+  color?: string;
   enabledStyles?: {
     fontSize?: string;
     height?: string;
+    padding?: string;
   },
   disabledStyles?: {
     fontSize?: string;
     height?: string;
+    padding?: string;
   },
 }
 
@@ -148,9 +151,18 @@ export interface FormStep {
   showShoppingCartOnCurrentStep?: boolean;
   shoppingCartCallback?(...params): any;
   hideHeader?: boolean;
+  hideMainStepCTA?: boolean;
   headerMode?: 'v1' | 'v2';
   footerConfig?: FooterOptions;
   styles?: Record<string, string>;
+  customStickyButton?: {
+    mode: string;
+    bgcolor?: string;
+    color?: string;
+    height?: string;
+    text: string;
+    text2?: string;
+  }
 }
 
 export interface LinkAction {

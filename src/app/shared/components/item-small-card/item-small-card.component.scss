@@ -1,0 +1,53 @@
+button {
+  all: unset;
+  transition: 300ms;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 110px;
+    height: 81px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    margin-bottom: -1px;
+  }
+
+  .placeholder {
+    width: 110px;
+    height: 81px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    margin-bottom: -1px;
+    background-color: #A1A1A1;
+  }
+
+  .content {
+    width: 110px;
+    background-color: #F6F6F6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    .name {
+      font-family: "RobotoMedium";
+      font-size: 15px;
+      color: #202020;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .price {
+      font-family: "RobotoRegular";
+      font-size: 13px;
+      color: #7B7B7B;
+    }
+  }
+}

@@ -1,0 +1,57 @@
+<div style="min-height: 100vh;">
+  <div style="background-color: #EEF6DF;">
+    <app-header-info
+      [profileImage]="user?.image"
+      [title]="user?.name"
+      [description]="'desc'"
+      [socials]="merchant ? merchant.social : user?.social"
+      [mode]="merchant ? 'expanded' : 'normal'"
+      [merchant]="merchant ? true : false"
+      [admin]="admin"
+      [hasSocials]="hasSocials"
+    ></app-header-info>
+  </div>
+
+  <div class="items-card" *ngIf="(admin && merchant) || (!admin && merchant && merchant.showItems)">
+    <div class="card-header">
+      <h6>Items</h6>
+      <a *ngIf="!admin">Mas</a>
+      <span *ngIf="admin" class="switch-label">
+        Mostrar En Contacto
+        <app-switch-button
+          [isClicked]="merchant.showItems"
+          (switched)="toggleShowItems()"
+        ></app-switch-button>
+      </span>
+    </div>
+    <p class="info" *ngIf="admin">{{ordersTotal?.length}} item / ${{ordersTotal?.total | number}} in / {{users?.length}} compradores</p>
+    <div class="item-list">
+      <app-item-small-card
+        *ngFor="let item of items"
+        [item]="item"
+      ></app-item-small-card>
+    </div>
+  </div>
+  <app-bubble-button
+    position="left"
+    color="blue"
+    [return]="true"
+    (click)="back()"
+    [solo]="false"
+  ></app-bubble-button>
+  <app-bubble-button
+    position="right"
+    color="blue"
+    icon="/upload.svg"
+    (click)="openShareDialog()"
+    [solo]="false"
+  ></app-bubble-button>
+</div>
+<app-sticky-button
+  *ngIf="admin"
+  (click)="openCreateItemDialog()"
+  size="small"
+  text="WEBAPPS STORE"
+  bgColor="#2874AD"
+  color="#E9E371"
+></app-sticky-button>

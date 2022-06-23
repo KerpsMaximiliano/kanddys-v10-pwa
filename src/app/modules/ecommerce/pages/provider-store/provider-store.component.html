@@ -43,13 +43,7 @@
     <ng-container *ngFor="let option of options; let i = index">
       <div
         class="option"
-        [ngStyle]="{
-          color: option.active ? '#FFFFFF' : '#4773D8',
-          background: option.active
-            ? 'linear-gradient(130deg, #31a4f9, #1d58db)'
-            : 'none',
-          padding: option.active == false ? '0' : 'inherit'
-        }"
+        [ngClass]="{'active': option.active }"
         (click)="changeOption(i)"
         routerLink="{{ option.link }}"
       >

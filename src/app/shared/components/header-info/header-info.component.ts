@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { SocialMediaModel } from 'src/app/core/models/saleflow';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
@@ -12,6 +13,9 @@ import { MerchantInfoComponent } from '../../dialogs/merchant-info/merchant-info
 export class HeaderInfoComponent implements OnInit {
 
   @Input() simple: boolean = false;
+  @Input() merchant: boolean;
+  @Input() admin: boolean;
+  @Input() mode: 'normal' | 'simple' | 'expanded';
   @Input() profileImage: string;
   @Input() starsAmount: string;
   @Input() title: string;
@@ -20,10 +24,14 @@ export class HeaderInfoComponent implements OnInit {
   @Input() socials: SocialMediaModel[];
   @Input() customStyles: Record<string, Record<string, string>> = null;
   @Input() reverseInfoOrder: boolean = false;
+  @Input() hasSocials: boolean;
+  regex = /\D/g;
   env: string = environment.assetsUrl;
+  showMore: boolean;
 
   constructor(
     private dialogService: DialogService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -42,6 +50,10 @@ export class HeaderInfoComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  redirect() {
+    this.router.navigate(['/ecommerce/user-creator']);
   }
 
 }

@@ -1,0 +1,16 @@
+<div class="input-switch"
+	[ngStyle]="{
+    'position': settings?.position ? settings.position : 'relative',
+    'top': settings?.top ? settings.top : '',
+    'right': settings?.top ? settings.right : '',
+    'bottom': settings?.top ? settings.bottom : '',
+    'left': settings?.top ? settings.left : '',
+    'margin': settings?.margin ? settings.margin : ''
+  }">
+	<div class="itemCheckBox" [ngClass]="{'active': isClicked == true}" (click)="statechanger()">
+		<input type="checkbox">
+		<span class="text-inner no" *ngIf="!isClicked">No</span>
+		<span class="text-inner si" *ngIf="isClicked">Si</span>
+		<span class="itemSwitch"></span>
+	</div>
+</div>

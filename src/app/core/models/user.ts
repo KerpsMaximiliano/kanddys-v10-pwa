@@ -2,6 +2,7 @@ import { Form, Control } from '@mukuve/ngx-forms';
 import { Community } from 'src/app/core/models/community';
 import { CardData } from './../../shared/components/card/card.component';
 import { Model } from './../objects/model';
+import { SocialMediaModel } from './saleflow';
 import { Tag } from './tags';
 
 export class IpUser extends Model<IpUser> {
@@ -18,6 +19,7 @@ export class User extends Model<User> {
   birthdate?: Date;
   image?: string;
   roles?: any[];
+  social: SocialMediaModel[];
   defaultCommunity?: Community;
   validatedAt?: string;
   deliveryLocations: any;

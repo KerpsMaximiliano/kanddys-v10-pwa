@@ -47,6 +47,11 @@ export class SocialMediaModel {
   url?: string;
 }
 
+export class SocialMediaModelInput {
+  name?: string;
+  url: string;
+}
+
 export class SaleFlowItem extends Model<SaleFlowItem> {
   item?: Item;
   customizer?: Customizer;

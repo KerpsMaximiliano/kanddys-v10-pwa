@@ -18,6 +18,7 @@ interface StoreShareIcon {
 interface StoreShareOption {
   text: string;
   icon?: StoreShareIcon;
+  plus?: boolean;
   func?: () => void;
   link?: string;
   mode?: 'clipboard' | 'share' | 'func' | 'qr';
@@ -25,7 +26,6 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
-  bigqr?: boolean;
   qrlink?: string;
   options: StoreShareOption[];
 }

@@ -636,9 +636,19 @@ shouldScrollBackwards &&
         <!-- SEPARADOR INFERIOR -->
         <div
           [ngStyle]="{
-            height: dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
-                ? '55px'
-                : '38px'
+            height: dataModel.get((currentStepIndex + 1) + '').status === 'VALID' && (
+              steps[currentStepIndex].footerConfig?.enabledStyles
+            ) ? steps[currentStepIndex].footerConfig?.enabledStyles.height 
+              : dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' && (
+                steps[currentStepIndex].footerConfig?.disabledStyles
+              ) ? steps[currentStepIndex].footerConfig?.disabledStyles.height :
+                steps[currentStepIndex].customStickyButton ? 
+                  steps[currentStepIndex].customStickyButton.height :
+                    steps[currentStepIndex].hideMainStepCTA ? 
+                      '0px' :
+                        dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+                        ? '55px'
+                        : '38px'
           }"
         ></div>
       </div>
@@ -647,11 +657,17 @@ shouldScrollBackwards &&
 
   <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
   <app-sticky-button *ngIf="
-      !steps[currentStep].stepAnchorURL" [text]="
+      !steps[currentStep].stepAnchorURL && 
+      !steps[currentStep].customStickyButton &&
+      !steps[currentStep].hideMainStepCTA" 
+      [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStep].stepButtonValidText
           : steps[currentStep].stepButtonInvalidText
-      " [bgColor]="steps[currentStep].footerConfig?.bgColor" [mode]="
+      " 
+      [bgColor]="steps[currentStep].footerConfig?.bgColor"
+      [color]="steps[currentStep].footerConfig?.color"
+      [mode]="
         dataModel.get(currentStepString).status !== 'INVALID'
           ? 'fixed'
           : 'disabled-fixed'
@@ -662,11 +678,17 @@ shouldScrollBackwards &&
       "
     [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
     [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null"
+    [padding]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.padding : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.padding : null"
     [injectBottomSeparator]="true"
   >
   </app-sticky-button>
 
-  <a [href]="steps[currentStep].stepAnchorURL" target="_blank" *ngIf="steps[currentStep].stepAnchorURL">
+  <a [href]="steps[currentStep].stepAnchorURL" target="_blank"
+    *ngIf="
+      steps[currentStep].stepAnchorURL && 
+      !steps[currentStep].customStickyButton &&
+      !steps[currentStep].hideMainStepCTA 
+    ">
     <app-sticky-button [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStep].stepButtonValidText
@@ -686,6 +708,20 @@ shouldScrollBackwards &&
     >
     </app-sticky-button>
   </a>
+
+  <!-- STICKY BUTTON CUSTOM -->
+  <app-sticky-button
+    *ngIf="steps[currentStep].customStickyButton"
+    [mode]="steps[currentStep].customStickyButton.mode"
+    [text]="steps[currentStep].customStickyButton.text"
+    [text2]="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+      steps[currentStep].customStickyButton.text2 ? 
+        steps[currentStep].customStickyButton.text2 : null"
+    [bgColor]="steps[currentStep].customStickyButton.bgcolor"
+    [color]="steps[currentStep].customStickyButton.color"
+    [height]="steps[currentStep].customStickyButton.height"
+  ></app-sticky-button>
 
   <app-bubble-button *ngIf="
       currentStep === currentStep && 
@@ -710,7 +746,13 @@ shouldScrollBackwards &&
           ? scrollToStep(this.currentStep - 1, false)
           : steps[currentStep].customScrollToStepBackwards
           ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
-          : null"></app-bubble-button>
+          : null"
+          [color]="
+            dataModel.get(currentStepString).status !== 'INVALID' ?
+              steps[currentStep].footerConfig.bubbleConfig.validStep?.left?.color :
+              steps[currentStep].footerConfig.bubbleConfig.invalidStep?.left?.color
+          "
+          ></app-bubble-button>
 
   <app-bubble-button *ngIf="
           currentStep === currentStep && 
@@ -730,6 +772,12 @@ shouldScrollBackwards &&
           steps[currentStep].footerConfig.bubbleConfig.validStep.right && steps[currentStep].footerConfig.bubbleConfig.validStep.right.icon :
           steps[currentStep].footerConfig.bubbleConfig.invalidStep.right && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.icon
         " [solo]="false"
-    (click)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null">
+    (click)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null"
+    [color]="
+      dataModel.get(currentStepString).status !== 'INVALID' ?
+        steps[currentStep].footerConfig.bubbleConfig.validStep?.right?.color :
+        steps[currentStep].footerConfig.bubbleConfig.invalidStep?.right?.color
+    "
+    >
   </app-bubble-button>
 </div>

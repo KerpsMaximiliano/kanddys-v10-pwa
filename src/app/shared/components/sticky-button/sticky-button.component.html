@@ -2,6 +2,7 @@
   <button
     class="button"
     [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+    [ngStyle]="{color: color && color}"
     [style.background-color]="bgColor"
   >
     {{ text }}
@@ -30,18 +31,52 @@
     [ngClass]="{'small': size === 'small'}"
     [ngStyle]="(fontSize || height) ? {
       fontSize: fontSize,
-      height: height
+      height: height,
+      padding: padding ? padding : null
     } : null">
       {{ text }}
   </button>
 </div>
+
+<div class="fixed-double" *ngIf="mode == 'double'">
+    <button
+      (click)="leftButton()"
+      class="double"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height,
+        backgroundColor: bgColor ? bgColor : null,
+        color: color ? color : null
+      } : null">
+        {{ text }}
+    </button>
+    <button
+      (click)="rightButton()"
+      class="double"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height,
+        backgroundColor: bgColor ? bgColor : null,
+        color: color ? color : null
+      } : null">
+        {{ text2 }}
+    </button>
+  </div>
+  
 
 <div class="fixed-container" *ngIf="mode == 'fixed'">
   <button
     class="button"
     [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
     [style.backgroundColor]="bgColor"
-    [ngStyle]="{fontSize: fontSize ? fontSize : null, height: height ? height : null, color: color ? color : null}"
+    [ngStyle]="{
+      fontSize: fontSize ? fontSize : null, 
+      height: height ? height : null, 
+      color: color ? color : null,
+      padding: padding ? padding : null
+    }"
   >
     {{ text }}
     <img *ngIf="icon" [src]="icon" [alt]="icon">

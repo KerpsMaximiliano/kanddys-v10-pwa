@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { notification } from 'onsenui';
@@ -11,14 +11,19 @@ import { notification } from 'onsenui';
 export class StickyButtonComponent implements OnInit {
   @Input() mode: string = 'basic';
   @Input() text: string;
+  @Input() text2: string;
   @Input() auxText: string;
   @Input() link: string = 'linktest.com';
   @Input() icon: string;
   @Input() bgColor: string = "#27a2ff";
+  @Input() padding: string = null;
   @Input() color: string;
   @Input() height: string = null;  
   @Input() fontSize: string = null;  
   @Input() size: 'small' | 'normal' = "normal";
+
+  @Output() left = new EventEmitter;
+  @Output() right = new EventEmitter;
 
   private ngNavigatorShareService: NgNavigatorShareService;
 
@@ -87,4 +92,13 @@ export class StickyButtonComponent implements OnInit {
         console.log(error);
       });
   }
+  
+  leftButton(){
+    this.left.emit();
+  }
+
+  rightButton(){
+    this.right.emit();
+  }
+
 }

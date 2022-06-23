@@ -1,0 +1,55 @@
+.items-card {
+  background-color: #FFFFFF;
+  box-shadow: 0px 4px 10px #ddd;
+  padding: 24px;
+  margin: 24px;
+  border-radius: 12px;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    h6 {
+      font-family: "RobotoBold";
+      font-size: "17px";
+      color: #202020;
+      margin: 0;
+    }
+
+    a {
+      font-family: "SfProLight";
+      font-size: 17px;
+      color: #2874AD;
+      cursor: pointer;
+
+      &:hover {
+        color:rgb(62, 147, 212);
+      }
+    }
+
+    .switch-label {
+      font-family: 'SfProMedium';
+      font-size: 14px;
+      color: #A1A1A1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+  }
+  
+  .info {
+    font-family: 'SfProMedium';
+    font-size: 17px;
+    color: #2874AD;
+    margin: 0;
+    padding-bottom: 12px;
+  }
+
+  .item-list {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+}

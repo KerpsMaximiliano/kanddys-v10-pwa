@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormField, FormStep } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { PageComponentTabsComponent } from 'src/app/shared/components/page-component-tabs/page-component-tabs.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { EntityItemListComponent } from 'src/app/shared/dialogs/entity-item-list/entity-item-list.component';
+import { EntityLists } from 'src/app/shared/dialogs/entity-item-list/entity-item-list.component';
+import { FooterOptions } from 'src/app/core/types/multistep-form';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -173,47 +177,67 @@ export class UserCreatorComponent implements OnInit {
   isMerchant: boolean = false;
   currentTab: number = 0;
   currentStep: number = 0;
+  currentStepString: string = '1';
 
-  injectTabComponent(){ 
-    return [
+  tabComponent = {
+    containerStyles: {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      right: '0',
+      maxWidth: '500px',
+      margin: 'auto'
+    },
+    beforeIndex: 0,
+    component: PageComponentTabsComponent,
+    inputs: {
+      tabsOptions,
+      activeTag: this.currentTab
+    },
+    outputs: [
       {
-        containerStyles: {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          maxWidth: '500px',
-          margin: 'auto'
+        name: 'changeValue',
+        callback: (newTabName) => {
+          const newTabIndex = tabsOptions.findIndex(tabName => tabName === newTabName);
+
+          this.currentTab = newTabIndex;
+          this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
+          if(newTabIndex === 0) {
+            this.currentStep = 1;
+          } else if(newTabIndex === 2) {
+            this.currentStep = 2;
+          } else if(newTabIndex === 1) {
+            this.currentStep = 3;
+          };;
+          this.currentStepString = this.currentStep + 1 + '';
+          
+          this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
+          this.formSteps[this.currentStep].embeddedComponents[0].shouldRerender = true;
         },
-        beforeIndex: 0,
-        component: PageComponentTabsComponent,
-        inputs: {
-          tabsOptions,
-          activeTag: this.currentTab
-        },
-        outputs: [
-          {
-            name: 'changeValue',
-            callback: (newTabName) => {
-              const newTabIndex = tabsOptions.findIndex(tabName => tabName === newTabName);
-    
-              this.currentTab = newTabIndex;
-              this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
-              if(newTabIndex === 0) {
-                this.currentStep = 1;
-              } else if(newTabIndex === 2) {
-                this.currentStep = 2;
-              } else if(newTabIndex === 1) {
-                this.currentStep = 3;
-              };;
-              
-              this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
-              this.formSteps[this.currentStep].embeddedComponents[0].shouldRerender = true;
-            },
-          }
-        ]
       }
     ]
+  };
+
+  footerConfig: FooterOptions = {
+    bubbleConfig: {
+      validStep: {
+        left: { icon: '/arrow-left.svg', color: 'blue' },
+        function: async (params) => {
+        }
+      },
+      invalidStep: {
+        left: { icon: '/arrow-left.svg', color: 'blue' },
+      }
+    },
+    bgColor: '#2874AD',
+    enabledStyles: {
+      height: '49px',
+      fontSize: '17px',
+    },
+    disabledStyles: {
+      height: '30px',
+      fontSize: '17px',
+    },
   }
 
   formSteps: FormStep[] = [
@@ -282,8 +306,12 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Contacto: Email, Telefonos, URL’s.',
                 action: (params) => {
-                  this.currentTab = 3;
-                  params.scrollToStep(2);
+                  this.currentTab = 2;
+                  this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+
+                  this.currentStep = 2;
+                  this.currentStepString = '3';
+                  window.scroll(0, 0);
                 }
               },
               {
@@ -296,6 +324,7 @@ export class UserCreatorComponent implements OnInit {
                 text: 'Métodos de recibir pago',
                 action: (params) => {
                   this.currentStep = 1;
+                  this.currentStepString = '2';
                   window.scroll(0, 0);
                 }
               },
@@ -307,7 +336,15 @@ export class UserCreatorComponent implements OnInit {
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
-      headerMode: 'v2'
+      headerMode: 'v2',
+      customStickyButton: {
+        text: 'POSIBILIDADES',
+        text2: 'WebApps STORE',
+        bgcolor: '#2874AD',
+        color: '#E9E371',
+        mode: 'double',
+        height: '30px'
+      }
     },
     {
       hideHeader: true,
@@ -316,7 +353,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'paypal',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'PAYPAL',
@@ -343,7 +380,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'venmo',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'VENMO',
@@ -370,7 +407,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'cashapp',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'CASHAPP',
@@ -448,15 +485,123 @@ export class UserCreatorComponent implements OnInit {
           color: '#2E2E2E'
         }
       },
-      embeddedComponents: this.injectTabComponent(),
+      footerConfig: {
+        bgColor: '#2874AD',
+        color: '#E9E371',
+        enabledStyles: {
+          height: '30px',
+          fontSize: '17px',
+          padding: '0px'
+        },
+        disabledStyles: {
+          height: '30px',
+          fontSize: '17px',
+          padding: '0px'
+        },
+      },
+      stepProcessingFunction: () => {
+        const paymentMethodIcons = {
+          'PayPal': ''
+        }
+
+        const dialogList: EntityLists[] = [
+          {
+            name: !this.isMerchant ? (
+              this.formSteps[0].fieldsList[1].fieldControl.control.value  + 
+              ' ' + this.formSteps[0].fieldsList[2].fieldControl.control.value
+            ) : null,
+            title: 'Selecciona el método de pago que te convenga:',
+            type: !this.isMerchant ? 'Usuario' : 'Tienda',
+            isImageBase64: true,
+            image: this.formSteps[0].fieldsList[0].fieldControl.control.value,
+            options: [
+              {
+                text: 'PayPal',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: this.formSteps[1].fieldsList[0].fieldControl.control.value
+              },
+              {
+                text: 'Venmo',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: this.formSteps[1].fieldsList[2].fieldControl.control.value
+              },
+              {
+                text: 'CashApp',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: this.formSteps[1].fieldsList[3].fieldControl.control.value
+              },
+              {
+                text: 'Transferencia a Banco',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: ''
+              },
+              {
+                text: 'Tarjeta de Crédito',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: ''
+              },
+              {
+                text: 'YoYo App',
+                icon: {
+                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+                  alt: 'field.label',
+                  width: 17,
+                  height: 17
+                },
+                url: ''
+              }
+            ]
+          } 
+        ]
+
+        this.dialog.open(EntityItemListComponent, {
+          type: 'fullscreen-translucent',
+          props: {
+            list: dialogList
+          },
+          customClass: 'app-dialog',
+          flags: ['no-header'],
+        });
+
+        return {ok: true};
+      },
+      embeddedComponents: [
+        this.tabComponent
+      ],
       avoidGoingToNextStep: true,
       headerText: '',
-      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
-      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      stepButtonInvalidText: '',
+      stepButtonValidText: 'EJEMPLO AL COMPARTIRLO',
       headerMode: 'v2'
     },
     {
       hideHeader: true,
+      hideMainStepCTA: true,
       fieldsList: [
         {
           name: 'email',
@@ -563,12 +708,22 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '81px',
+              paddingBottom: '259px'
             }
           },
         },
       ],
-      embeddedComponents: this.injectTabComponent(),
+      embeddedComponents: [
+        this.tabComponent
+      ],
+      footerConfig: {
+        ...this.footerConfig
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0);
+        window.scroll(0, 0);
+      },
       avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
@@ -577,12 +732,13 @@ export class UserCreatorComponent implements OnInit {
     },
     {
       hideHeader: true,
+      hideMainStepCTA: true,
       fieldsList: [
         {
           name: 'instagram',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'INSTAGRAM URL',
@@ -601,7 +757,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '107px'
             }
           },
         },
@@ -609,7 +765,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'twitter',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'TWITTER',
@@ -628,7 +784,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '57px'
             }
           },
         },
@@ -636,7 +792,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'linkedin',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'LINKED IN',
@@ -655,7 +811,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '57px'
             }
           },
         },
@@ -663,7 +819,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'tiktok',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'TIKTOK',
@@ -682,7 +838,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '57px'
             }
           },
         },
@@ -690,7 +846,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'facebook',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: '',
           label: 'FACEBOOK',
@@ -709,12 +865,22 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '57px',
+              paddingBottom: '124px'
             }
           },
         },
       ],
-      embeddedComponents: this.injectTabComponent(),
+      embeddedComponents: [
+        this.tabComponent
+      ],
+      footerConfig: {
+        ...this.footerConfig
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0);
+        window.scroll(0, 0);
+      },
       avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
@@ -723,7 +889,7 @@ export class UserCreatorComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor(private dialog: DialogService) { }
 
   ngOnInit(): void {
   }
