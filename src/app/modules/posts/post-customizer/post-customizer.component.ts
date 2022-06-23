@@ -2660,7 +2660,8 @@ export class PostCustomizerComponent
     if (this.imageElement) this.drawBackgroundImage();
     if (
       this.customizerRules.backgroundColor.active &&
-      this.selectedBackgroundColor
+      this.selectedBackgroundColor &&
+      !this.imageElement
     )
       this.drawBackgroundColor();
     for (let i = 0; i < this.elementList.length; i++) {

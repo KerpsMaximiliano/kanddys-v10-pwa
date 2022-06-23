@@ -51,7 +51,7 @@
                 <img *ngIf="element.sticker" [src]="sanitizeImageUrl(element.sticker.decoded)">
               </ng-container>
             </div>
-            <div *ngIf="currentTextsAmount" style="padding: 20px; display: flex; align-items: center;" [ngClass]="{'canvas-active': selectedOption === 'tipografía'}">
+            <div *ngIf="currentTextsAmount" class="canvas-text" [ngClass]="{'canvas-active': selectedOption === 'tipografía'}">
               <ng-container *ngFor="let element of elementList">
                 <span
                   *ngIf="element.typography && !element.typography.hidden"

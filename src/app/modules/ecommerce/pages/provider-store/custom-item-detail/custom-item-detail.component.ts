@@ -66,7 +66,10 @@ export class CustomItemDetailComponent implements OnInit {
         paramValue: (this.header.items[0] as Item).params[1].values[index]._id,
       };
       if((this.header.items[0] as Item).params[1].values[index].name.includes('Color')) {
-        if((this.header.items[0] as Item).params[1].values[index].name === 'Linen Like Color' && (this.header.items[0] as Item).category[0].name === 'Baño') {
+        if(
+          (this.header.items[0].params[1].values[index].name === 'Linen Like Color' && this.header.items[0].category[0].name === 'Baño') ||
+          (this.header.items[0].params[1].values[index].name === 'Dry Cotton Color' && this.header.items[0].category[0].name === 'Comidas')
+        ) {
           this.header.paramHasImage = true;
           this.header.paramHasColor = false;
         }

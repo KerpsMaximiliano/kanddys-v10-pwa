@@ -143,6 +143,13 @@ input[type="file"] {
   margin: auto;
 }
 
+.canvas-text {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .canvas-content {
   width: 100%;
   border: 1px solid black;
@@ -472,16 +479,17 @@ input[type="file"] {
   @include selectableOption();
   background-color: #0b1f38;
   color: white;
-  width: 2.375rem;
-  height: 2.375rem;
+  width: 3rem;
+  height: 3rem;
+  font-size: 24px;
   align-items: center;
   justify-content: center;
 }
 
 .color-font {
   @include selectableOption();
-  width: 1.875rem;
-  height: 1.875rem;
+  width: 3rem;
+  height: 3rem;
 }
 
 .option-list {
@@ -494,10 +502,14 @@ input[type="file"] {
 .option-list-grid {
   display: grid;
   overflow-x: scroll;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   grid-auto-flow: column;
   gap: 20px;
   margin-bottom: 10px;
+}
+
+.list-option {
+  text-align: center;
 }
 
 .label1 {
