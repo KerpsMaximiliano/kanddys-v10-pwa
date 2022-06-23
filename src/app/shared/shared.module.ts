@@ -90,6 +90,7 @@ import { GeneralFormSubmissionDialogComponent } from './dialogs/general-form-sub
 import { SwitchButtonComponent } from './components/switch-button/switch-button.component';
 import { ItemSmallCardComponent } from './components/item-small-card/item-small-card.component';
 import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-list.component';
+import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/item-dashboard-options.component';
 
 const imports = [
   CommonModule,
@@ -177,6 +178,7 @@ const declarations = [
   SwitchButtonComponent,
   ItemSmallCardComponent,
   EntityItemListComponent,
+  ItemDashboardOptionsComponent,
 ];
 
 @NgModule({
