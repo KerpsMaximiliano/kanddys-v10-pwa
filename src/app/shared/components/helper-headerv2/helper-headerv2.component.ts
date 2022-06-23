@@ -11,6 +11,7 @@ interface config  {
     fontSize?: string,
     plusFont?: string,
     plusSize?: string,
+    plusColor?: string,
     billId?: string,
     itemId?: string,
     icon?: string,
@@ -25,6 +26,7 @@ interface config  {
     plus?: boolean,
     upload?: boolean,
     inMall?: boolean,
+    pointer?: boolean,
 }
 
 @Component({
@@ -34,32 +36,12 @@ interface config  {
 })
 export class HelperHeaderv2Component implements OnInit {
     @Input() bgColor: string = '#4773D8';
-    @Input() navtext: string = 'Volver';
     @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test' ; 
-    @Input() whatsapp: boolean = true;
-    @Input() shopcart: boolean = true;
     @Input() cartAmount: number;
     @Input() public shopCartCallback: () => void;
-    @Input() returnAble: boolean = true;
-    @Input() plus: boolean = false;
-    @Input() upload: boolean = false;
-    @Input() inMall: boolean = false;
     @Input() line: boolean = true;
-    @Input() leftText: string = 'Ir A Mis Datos Personales';
-    @Input() rightText: string = 'Ir A Los Datos Mi Tienda';
-    @Input() billId: string;
-    @Input() itemId: string;
     @Input() fixed: boolean = false;
-    @Input() edit: boolean = false;
-    @Input() batch: boolean = false;
-    @Input() search: boolean = false;
-    @Input() dots: boolean = false;
     @Input() color: string = '#FFFFFF';
-    @Input() icon: string;
-    @Input() fontFamily: string ;
-    @Input() fontFamily2: string ;
-    @Input() fontSize: string = '35px';
-    @Input() fontSize2: string;
     @Input() rmargin: string;
     @Input() filter: string;
     @Input() config?: config;

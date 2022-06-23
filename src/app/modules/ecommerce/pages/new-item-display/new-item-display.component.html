@@ -1,13 +1,15 @@
 <div class="container">
 	<app-helper-headerv2
 		[mode]="'basic'"
-		[navtext]="item?.merchant?.name"
-		[returnAble]="true"
-		[whatsapp]="!providerView"
-		[shopcart]="!providerView"
+        [config]="{
+            text: item?.merchant?.name,
+            fontSize: '21px',
+            whatsapp: !providerView,
+            shopcart: !providerView,
+            return: true
+        }"
 		[cartAmount]="1"
 		cartColor="blue"
-		fontSize2="21px"
 		filter="brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)"
 		[bgColor]="providerView ? '#2874AD' : '#E9E371'"
 		[color]="providerView ? '#FFFFFF' : '#2874AD'"

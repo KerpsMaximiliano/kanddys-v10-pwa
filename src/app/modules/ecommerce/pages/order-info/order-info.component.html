@@ -16,7 +16,9 @@
   <div class="provider-info-wrapper">
     <app-helper-headerv2
       mode="center"
-      [navtext]="'Codigo: '+dateId"
+      [config]="{
+        text: 'Codigo: '+dateId
+    }"
     ></app-helper-headerv2>
     <app-header-info
       [profileImage]="providerData.image"

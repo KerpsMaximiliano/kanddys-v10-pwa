@@ -2,12 +2,11 @@
 	<ng-container *ngIf="inSearch">
 		<app-helper-headerv2
 			[mode]="'center'"
-			navtext="Salir De La Busqueda"
-			[whatsapp]="false"
-			[shopcart]="false"
-			[line]="false"
-			[returnAble]="false"
-			style="cursor: pointer;"
+            [config]="{
+                text: 'Salir De La Busqueda',
+                return: true,
+                pointer: true
+            }"
 			(click)="searchToggle()"
 		></app-helper-headerv2>
  </ng-container> 
@@ -26,20 +25,18 @@
 
 	<ng-container *ngIf="!inSearch">
 		<app-helper-headerv2
-        [fontSize2]="'21px'"
-		[navtext]="'Ventas'"
-		[search]="true"
+        [config]="{
+            text: 'Ventas',
+            fontSize: '21px',
+            search: true,
+            dots: true,
+            return: true
+        }"
 		(searchEvent)="searchToggle()"
-		[dots]="true"
 		(dotEvent)="openDialog()"
-		[batch]="false"
-		[plus]="false"
-		[whatsapp]="false"
-		[shopcart]="false"
 		color="#E9E371"
 		bgColor="#2874AD"
 		mode="basic"
-		[returnAble]="true"
 		(returnEvent)="back()"
 		></app-helper-headerv2>
 		<div class="page-components-tabs" #elemt

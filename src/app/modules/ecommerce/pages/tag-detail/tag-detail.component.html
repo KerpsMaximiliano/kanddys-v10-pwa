@@ -2,11 +2,13 @@
 
     <app-helper-headerv2
     [mode]="'edit'"
-    [fontSize2]="'21px'"
-    [returnAble]="true"
-    [batch]="true"
+    [config]="{
+        text: 'Etiqueta Name',
+        fontSize: '21px',
+        return: true,
+        batch: true
+    }"
     [color]="'#E9E371'"
-    navtext="Etiqueta Name"
     ></app-helper-headerv2>
 
     <app-header-info-admin

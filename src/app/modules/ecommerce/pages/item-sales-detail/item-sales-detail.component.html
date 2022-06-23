@@ -1,12 +1,14 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-    navtext="{{ itemData?.name.toUpperCase() }}"
+    [config]="{
+        text: itemData?.name.toUpperCase(),
+        whatsapp: false,
+        shopcart: false,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+    }"
     mode="center"
     color="#E9E371"
-    [whatsapp]="false"
-    [shopcart]="false"
-    fontFamily="SfProBold"
-    fontSize="21px"
     (returnEvent)="back()"
   ></app-helper-headerv2>
   <div class="fullScreenSwiper" *ngIf="itemData?.images.length">

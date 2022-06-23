@@ -2,10 +2,11 @@
     <app-helper-headerv2
     [mode]="'double'"
     [bgColor]="'#2F6ED8'"
-    [leftText]="'Ir A Mis Datos Personales'"
-    [rightText]="'Ir A Los Datos Mi Tienda'"
-    [whatsapp]="false"
-    [shopcart]="false"
+    [config]="{
+        leftText:'Ir A Mis Datos Personales',
+        rightText: 'Ir A Los Datos Mi Tienda',
+        pointer: true
+    }"
     ></app-helper-headerv2>
 
     <div class="circle-container">

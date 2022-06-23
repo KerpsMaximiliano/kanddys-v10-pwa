@@ -23,11 +23,16 @@
     "></app-helper-header>
 
   <app-helper-headerv2 [mode]="'options'" [fixed]="true"
-    *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" [returnAble]="true" [billId]="''"
-    [itemId]="!steps[currentStep].headerTextSide ||
-    steps[currentStep].headerTextSide === 'CENTER'
-      ? steps[currentStep].headerText
-      : null" [leftText]="''" [rightText]="''" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
+    [config]="{
+        billId: '',
+        itemId: !steps[currentStep].headerTextSide ||
+        steps[currentStep].headerTextSide === 'CENTER'
+          ? steps[currentStep].headerText
+          : null,
+        leftText: '',
+        return: shouldScrollBackwards
+    }"
+    *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" (returnEvent)="currentStep > 0 &&
     shouldScrollBackwards &&
     !steps[currentStep].customScrollToStepBackwards
       ? scrollToStep(this.currentStep - 1, false)

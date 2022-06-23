@@ -1,18 +1,18 @@
 <div class="container">
   <app-helper-headerv2
-    [fontFamily]="'SfProBold'"
-    [fontSize2]="'21px'"
-    [navtext]="merchant ? merchant.name : 'Tienda Sin nombre'"
     mode="basic"
+    [config]="{
+        text: merchant ? merchant.name : 'Tienda Sin nombre',
+        fontFamily: 'SfProBold',
+        fontSize: '21px',
+        icon: '/person.svg',
+        plus: true,
+        plusColor: '#2874AD',
+        return: true
+    }"
     color="#2874AD"
     bgColor="#E9E371"
-    [icon]="'/person.svg'"
-    [plus]="true"
-    [returnAble]="false"
     [filter]="'invert(40%) sepia(16%) saturate(2024%) hue-rotate(163deg) brightness(75%) contrast(93%)'"
-    [whatsapp]="false"
-    color="#2874AD"
-    [shopcart]="false"
     (plusEvent)="openCreateNew()"
   ></app-helper-headerv2>
   <app-header-info-admin

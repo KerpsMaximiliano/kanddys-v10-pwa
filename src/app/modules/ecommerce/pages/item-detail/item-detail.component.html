@@ -3,14 +3,16 @@
         <div style="position: sticky; top: 0; z-index: 2;">
         <app-helper-headerv2
             [mode]="'basic'"
-            [navtext]="itemData ? itemData.merchant?.name : 'MITIENDAID'"
-            [returnAble]="false"
-            [whatsapp]="true"
-            [shopcart]="true"
+            [config]="{
+                text: itemData ? itemData.merchant?.name : 'MITIENDAID',
+                fontSize: '21px,',
+                return: false,
+                whatsapp: true,
+                shopcart: true
+            }"
             [cartAmount]="itemCartAmount"
             [shopCartCallback]="showCartCallBack"
             cartColor="blue"
-            fontSize2="21px"
             [bgColor]="'#E9E371'"
             [color]="'#2874AD'"
             filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"

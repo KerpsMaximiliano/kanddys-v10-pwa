@@ -2,9 +2,12 @@
 
 	<app-helper-headerv2
 		[mode]="'edit'"
-		[edit]="true"
-		[navtext]="!item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name"
-		[icon]="'/expand-categories.svg'"
+        [config]="{
+            text: !item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name,
+            icon: '/expand-categories.svg',
+            edit: true,
+            return: true
+        }"
 		[color]="'#E9E371'"
 		[filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"
 		(returnEvent)="redirect()"
