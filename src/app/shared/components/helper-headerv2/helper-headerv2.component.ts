@@ -1,6 +1,32 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
+interface config  {
+    text?: string,
+    fontFamily?: string,
+    leftText?: string,
+    leftFont?: string,
+    rightText?: string,
+    rightFont?: string,
+    fontSize?: string,
+    plusFont?: string,
+    plusSize?: string,
+    billId?: string,
+    itemId?: string,
+    icon?: string,
+    return?: boolean,
+    shopcart?: boolean,
+    whatsapp?: boolean,
+    fixed?: boolean,
+    edit?: boolean,
+    batch?: boolean,
+    dots?: boolean,
+    search?: boolean,
+    plus?: boolean,
+    upload?: boolean,
+    inMall?: boolean,
+}
+
 @Component({
   selector: 'app-helper-headerv2',
   templateUrl: './helper-headerv2.component.html',
@@ -9,7 +35,7 @@ import { environment } from 'src/environments/environment';
 export class HelperHeaderv2Component implements OnInit {
     @Input() bgColor: string = '#4773D8';
     @Input() navtext: string = 'Volver';
-    @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' ; 
+    @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test' ; 
     @Input() whatsapp: boolean = true;
     @Input() shopcart: boolean = true;
     @Input() cartAmount: number;
@@ -36,30 +62,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fontSize2: string;
     @Input() rmargin: string;
     @Input() filter: string;
-    @Input() config: any = {
-        text: '',
-        fontFamily: '',
-        leftText: '',
-        leftFont: '',
-        rightText: '',
-        rightFont: '',
-        fontSize: '',
-        plusFont: '',
-        billId: '',
-        itemId: '',
-        icon: '',
-        color: this.color,
-        return: false,
-        whatsapp: false,
-        fixed: false,
-        edit: false,
-        batch: false,
-        dots: false,
-        search: false,
-        plus: false,
-        upload: false,
-        inMall: false,
-        };
+    @Input() config?: config;
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
