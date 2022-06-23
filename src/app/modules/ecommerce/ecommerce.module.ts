@@ -46,7 +46,7 @@ import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.componen
 import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
-import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
+import { Authentication } from './pages/authentication/authentication.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { MyStoreComponent } from './pages/merchant-dashboard/my-store/my-store.component';
 import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
@@ -289,8 +289,12 @@ const routes: Routes = [
     component: BankRegistrationComponent
   },
   {
-    path: 'new-item-contact-info/:itemId',
-    component: NewItemContactInfoComponent
+    path: 'authentication',
+    component: Authentication
+  },
+  {
+    path: 'authentication/:itemId',
+    component: Authentication
   },
   {
     path: 'll-studio-order-form/:merchantId/:databaseName',
@@ -378,7 +382,7 @@ const routes: Routes = [
     ItemGalleryComponent,
     NewItemDisplayComponent,
     BankRegistrationComponent,
-    NewItemContactInfoComponent,
+    Authentication,
     LlStudioOrderFormComponent,
     MyStoreComponent,
     MallDashboardComponent,

@@ -54,13 +54,15 @@ export const generateMagicLink = gql`
     $phoneNumber: String!,
     $redirectionRoute: String!,
     $redirectionRouteId: String!,
-    $entity: String!    
+    $entity: String!,
+    $redirectionRouteQueryParams: JSON
   ) {
     generateMagicLink(
       phoneNumber: $phoneNumber, 
       redirectionRoute: $redirectionRoute, 
       redirectionRouteId: $redirectionRouteId, 
-      entity: $entity
+      entity: $entity,
+      redirectionRouteQueryParams: $redirectionRouteQueryParams
     )
   }
 `;

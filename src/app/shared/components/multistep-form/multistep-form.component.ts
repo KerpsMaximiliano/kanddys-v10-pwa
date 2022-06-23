@@ -290,6 +290,15 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
         setTimeout(() => {
           this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
         }, 100);
+        
+        if(step.statusChangeCallbackFunction)
+          step.statusChangeCallbackFunction(statusValue, this.stepFunctionParams);
+      });
+
+      //allows you to execute custom code when field is not valid
+      this.steps[index].fieldsList.forEach(field => {
+        if(field.statusChangeCallbackFunction)
+          field.fieldControl.control.statusChanges.subscribe(field.statusChangeCallbackFunction);
       });
     })
   }

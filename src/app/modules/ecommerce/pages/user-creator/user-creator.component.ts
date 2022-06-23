@@ -6,6 +6,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { EntityItemListComponent } from 'src/app/shared/dialogs/entity-item-list/entity-item-list.component';
 import { EntityLists } from 'src/app/shared/dialogs/entity-item-list/entity-item-list.component';
 import { FooterOptions } from 'src/app/core/types/multistep-form';
+import { SwitchButtonComponent } from 'src/app/shared/components/switch-button/switch-button.component';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -15,116 +16,25 @@ const labelStyles = {
   margin: '0px'
 };
 
-const injectUserFieldsInFirstStep = (isMerchant): FormField[] => {
-  return !isMerchant ? [
-    {
-      name: 'name',
-      fieldControl: {
-        type: 'single',
-        control: new FormControl('')
-      },
-      label: 'Nombre:',
-      placeholder: 'Me llamo..',
-      styles: {
-        containerStyles: {
-          display: 'inline-block',
-          width: 'calc(100% / 2)',
-          paddingRight: '6px',
-          marginTop: '73px'
-          // width: '83.70%',
-        },
-        fieldStyles: {
-          width: '100%',
-          marginTop: '19px',
-        },
-        labelStyles: labelStyles,
-      },
-    },
-    {
-      name: 'lastname',
-      fieldControl: {
-        type: 'single',
-        control: new FormControl('')
-      },
-      label: 'Apellido:',
-      placeholder: 'Mi apellido es..',
-      styles: {
-        containerStyles: {
-          display: 'inline-block',
-          width: 'calc(100% / 2)',
-          paddingLeft: '6px'
-          // width: '83.70%',
-        },
-        fieldStyles: {
-          width: '100%',
-          marginTop: '19px',
-        },
-        labelStyles: labelStyles,
-      },
-    },
-    {
-      name: 'subtext',
-      fieldControl: {
-        type: 'single',
-        control: new FormControl('')
-      },
-      label: 'Escribe lo que irá debajo del nombre:',
-      placeholder: 'Ej, CEO..',
-      styles: {
-        containerStyles: {
-          marginTop: '60px',
-        },
-        fieldStyles: {
-          maxWidth: '166px',
-          marginTop: '19px',
-        },
-        labelStyles: labelStyles,
-      },
-    }
-  ] : [
-    {
-      name: 'businessName',
-      fieldControl: {
-        type: 'single',
-        control: new FormControl('')
-      },
-      label: 'Nombre del negocio',
-      placeholder: 'Nombre del negocio es..',
-      styles: {
-        containerStyles: {
-          marginTop: '73px'
-          // width: '83.70%',
-        },
-        fieldStyles: {
-          width: '100%',
-          marginTop: '19px',
-        },
-        labelStyles: labelStyles,
-      },
-    },
-    {
-      name: 'businessType',
-      fieldControl: {
-        type: 'single',
-        control: new FormControl('')
-      },
-      label: 'Escribe el tipo de negocio',
-      placeholder: 'Ej, TIENDA..',
-      styles: {
-        containerStyles: {
-          marginTop: '60px',
-        },
-        fieldStyles: {
-          maxWidth: '166px',
-          marginTop: '19px',
-        },
-        labelStyles: labelStyles,
-      },
-    }
-  ]
+const labelStyles2 = {
+  fontFamily: "SfProLight",
+  marginLeft: '17px',
+  marginBottom: '25px',
+  color: '#7B7B7B',
+  fontSize: '14px',
+  fontWeight: 'normal',
 }
 
-const injectSubmitButtom = (buttonText: string = 'SALVAR CONTACTO'): FormField => ({
+const commonFieldStyles = {
+  boxShadow: '0px 0px 4px 1px inset rgb(0 0 0 / 20%)',
+  borderRadius: '22px'
+};
+
+const commonFieldContainerStyles = {
+  marginTop: '55px'
+};
+
+const injectSubmitButtom = (callback: any, step = 0, buttonText: string = 'SALVAR CONTACTO'): FormField => ({
   name: 'submit-button',
   fieldControl: {
     type: 'single',
@@ -133,6 +43,8 @@ const injectSubmitButtom = (buttonText: string = 'SALVAR CONTACTO'): FormField =
   hovered: false,
   inputType: 'button',
   label: buttonText,
+  callbackOnClick: callback ? callback : null,
+  disabled: step === 0 ? true : false,
   styles: {
     containerStyles: {
       marginBottom: '60px',
@@ -161,6 +73,17 @@ const injectSubmitButtom = (buttonText: string = 'SALVAR CONTACTO'): FormField =
       border: '0px',
       borderRadius: '30px',
       cursor: 'pointer'
+    },
+    disabledStyles: {
+      backgroundColor: '#AFAFAF',
+      outline: 0,
+      width: '100%',
+      color: '#fff',
+      fontWeight: 500,
+      textAlign: 'center',
+      padding: '20px 0px',
+      border: '0px',
+      borderRadius: '30px',
     },
   },
 });
@@ -247,7 +170,7 @@ export class UserCreatorComponent implements OnInit {
           name: 'userImage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Informaciones de Contacto',
           sublabel: 'Adiciona la imagen que te representa:',
@@ -256,7 +179,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               // minWidth: '281px',
-              marginTop: '72px'
+              marginTop: '30px'
             },
             labelStyles: {
               fontFamily: 'Roboto',
@@ -279,11 +202,140 @@ export class UserCreatorComponent implements OnInit {
             }
           },
         },
-        ...injectUserFieldsInFirstStep(this.isMerchant),
-        injectSubmitButtom()
+        {
+          name: 'name',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Nombre:',
+          placeholder: 'Me llamo..',
+          styles: {
+            containerStyles: {
+              display: !this.isMerchant ? 'inline-block' : 'none',
+              width: 'calc(100% / 2)',
+              paddingRight: '6px',
+              marginTop: '73px'
+              // width: '83.70%',
+            },
+            fieldStyles: {
+              width: '100%',
+              marginTop: '19px',
+            },
+            labelStyles: labelStyles,
+          },
+        },
+        {
+          name: 'lastname',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Apellido:',
+          placeholder: 'Mi apellido es..',
+          styles: {
+            containerStyles: {
+              display: !this.isMerchant ? 'inline-block' : 'none',
+              width: 'calc(100% / 2)',
+              paddingLeft: '6px'
+              // width: '83.70%',
+            },
+            fieldStyles: {
+              width: '100%',
+              marginTop: '19px',
+            },
+            labelStyles: labelStyles,
+          },
+        },
+        {
+          name: 'subtext',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Escribe lo que irá debajo del nombre:',
+          placeholder: 'Ej, CEO..',
+          styles: {
+            containerStyles: {
+              display: !this.isMerchant ? 'inline-block' : 'none',
+              marginTop: '60px',
+            },
+            fieldStyles: {
+              maxWidth: '166px',
+              marginTop: '19px',
+            },
+            labelStyles: labelStyles,
+          },
+        },
+        {
+          name: 'businessName',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Nombre del negocio',
+          placeholder: 'Nombre del negocio es..',
+          styles: {
+            containerStyles: {
+              display: this.isMerchant ? 'block' : 'none',
+              marginTop: '73px'
+              // width: '83.70%',
+            },
+            fieldStyles: {
+              width: '100%',
+              marginTop: '19px',
+            },
+            labelStyles: labelStyles,
+          },
+        },
+        {
+          name: 'businessType',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Escribe el tipo de negocio',
+          placeholder: 'Ej, TIENDA..',
+          styles: {
+            containerStyles: {
+              display: this.isMerchant ? 'block' : 'none',
+              marginTop: '60px',
+            },
+            fieldStyles: {
+              maxWidth: '166px',
+              marginTop: '19px',
+            },
+            labelStyles: labelStyles,
+          },
+        },
+        injectSubmitButtom((params) => {
+          const {
+            businessName,
+            businessType,
+            lastname,
+            name,
+            'submit-button': submitButton,
+            subtext,
+            userImage
+          } = params.dataModel.get('1').value;
+
+          const {
+            venmo,
+            paypal,
+            cashapp
+          } = params.dataModel.get('2').value;
+
+          const {
+            email,
+            phoneNumber,
+            address
+          } = params.dataModel.get('3').value;
+
+          this.initValidatorsExclusiveToMerchantOrRegularUser();
+        })
       ],
       optionalLinksTo: {
-        afterIndex: 3,
+        afterIndex: !this.isMerchant ? 3 : 5,
         groupOfLinksArray: [
           {
             topLabel: 'Contenido opcional',
@@ -311,13 +363,14 @@ export class UserCreatorComponent implements OnInit {
 
                   this.currentStep = 2;
                   this.currentStepString = '3';
+
+                  console.log("cs", this.currentStep, this.currentStepString);
                   window.scroll(0, 0);
                 }
               },
               {
                 text: 'Pequeña descripción como tu Bio',
                 action: (params) => {
-                  params.scrollToStep(2);
                 }
               },
               {
@@ -332,11 +385,25 @@ export class UserCreatorComponent implements OnInit {
           }
         ]
       },
+      statusChangeCallbackFunction: (status) => {
+        console.log("El estatus de " + this.currentStep + " ha cambiado a", status);
+
+        if(status === 'INVALID')
+          this.formSteps[0].fieldsList[6].disabled = true;
+        if(status === 'VALID')
+          this.formSteps[0].fieldsList[6].disabled = false;
+
+        console.log(this.formSteps[0].fieldsList[6]);
+      },
       avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
       headerMode: 'v2',
+      hideHeader: true,
+      footerConfig: {
+        ...this.footerConfig
+      },
       customStickyButton: {
         text: 'POSIBILIDADES',
         text2: 'WebApps STORE',
@@ -344,7 +411,33 @@ export class UserCreatorComponent implements OnInit {
         color: '#E9E371',
         mode: 'double',
         height: '30px'
-      }
+      },
+      embeddedComponents: [
+        {
+          beforeIndex: 0,
+          component: SwitchButtonComponent,
+          inputs: {
+            settings: {
+              leftText: 'ES UN NEGOCIO?',
+            },
+            containerStyles: {
+              paddingTop: '58px',
+              justifyContent: 'flex-end'
+            },
+            textStyles: {
+              fontFamily: 'SfProRegular',
+              paddingRight: '6px',
+              color: '#7B7B7B'
+            }
+          },
+          outputs: [
+            {
+              name: 'switched',
+              callback: (params) => this.changeMerchant(),
+            }
+          ]
+        }
+      ]
     },
     {
       hideHeader: true,
@@ -430,7 +523,15 @@ export class UserCreatorComponent implements OnInit {
             }
           },
         },
-        injectSubmitButtom("SALVAR METODOS DE RECIBIR $")
+        injectSubmitButtom((params) => {
+          this.currentTab = 0;
+          this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+          this.currentStep = 0;
+          this.currentStepString = '1';
+  
+          params.scrollToStep(0);
+          window.scroll(0, 0);
+        }, 1, "SALVAR METODOS DE RECIBIR $")
       ],
       optionalLinksTo: {
         afterIndex: 2,
@@ -456,7 +557,13 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Cuentas Bancarias',
                 action: (params) => {
-                  params.scrollToStep(3);
+                  this.currentTab = 0;
+                  // this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+                  this.currentStep = 4;
+                  this.currentStepString = '5';
+          
+                  params.scrollToStep(4);
+                  window.scroll(0, 0);
                 }
               },
               {
@@ -721,6 +828,11 @@ export class UserCreatorComponent implements OnInit {
         ...this.footerConfig
       },
       customScrollToStepBackwards: (params) => {
+        this.currentTab = 0;
+        this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+        this.currentStep = 0;
+        this.currentStepString = '1';
+
         params.scrollToStep(0);
         window.scroll(0, 0);
       },
@@ -878,6 +990,11 @@ export class UserCreatorComponent implements OnInit {
         ...this.footerConfig
       },
       customScrollToStepBackwards: (params) => {
+        this.currentTab = 0;
+        this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+        this.currentStep = 0;
+        this.currentStepString = '1';
+
         params.scrollToStep(0);
         window.scroll(0, 0);
       },
@@ -886,12 +1003,138 @@ export class UserCreatorComponent implements OnInit {
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
       headerMode: 'v2'
-    }
+    },
+    {
+      hideHeader: true,
+      fieldsList: [
+        {
+          name: 'bankName',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'NOMBRE DEL BANCO',
+          placeholder: '',
+          styles: {
+            labelStyles: {
+              ...labelStyles2,
+              marginTop: '33px'
+            },
+            fieldStyles: commonFieldStyles,
+            topLabelActionStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '37px',
+              marginBottom: '47px',
+            },
+            containerStyles: commonFieldContainerStyles
+          },
+          topLabelAction: {
+            text: '¿En cuál Banco Dominicano te harán la transferencia de los pagos?',
+            clickable: true,
+          },
+        },
+        {
+          name: 'accountNumber',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'NÚMERO DE CUENTA',
+          inputType: 'number',
+          placeholder: '',
+          styles: {
+            labelStyles: labelStyles2,
+            fieldStyles: commonFieldStyles,
+            containerStyles: commonFieldContainerStyles
+          }
+        },
+        {
+          name: 'owner',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'TITULAR',
+          placeholder: '',
+          styles: {
+            labelStyles: labelStyles2,
+            fieldStyles: commonFieldStyles,
+            containerStyles: commonFieldContainerStyles
+          }
+        },
+        {
+          name: 'socialID',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'DOC. DE IDENTIDAD',
+          inputType: 'number',
+          placeholder: '',
+          styles: {
+            labelStyles: labelStyles2,
+            fieldStyles: commonFieldStyles,
+            containerStyles: {
+              ...commonFieldContainerStyles,
+              paddingBottom: '161px'
+            }
+          }
+        },
+      ],
+      hideMainStepCTA: true,
+      // embeddedComponents: [
+      //   this.tabComponent
+      // ],
+      footerConfig: {
+        ...this.footerConfig
+      },
+      customScrollToStepBackwards: (params) => {
+        this.currentTab = 0;
+        this.formSteps[1].embeddedComponents[0].inputs.activeTag = this.currentTab;
+        this.currentStep = 1;
+        this.currentStepString = '2';
+
+        // params.scrollToStep(0);
+        window.scroll(0, 0);
+      },
+      avoidGoingToNextStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2'
+    },
   ];
 
   constructor(private dialog: DialogService) { }
 
   ngOnInit(): void {
+    this.initValidatorsExclusiveToMerchantOrRegularUser()
+  }
+
+  initValidatorsExclusiveToMerchantOrRegularUser() {
+    this.formSteps[0].fieldsList.forEach((field, index) => {
+      if(index < 4 && !this.isMerchant) {
+        field.fieldControl.control.setValidators(Validators.required);
+      } else if ((index === 0 || (index > 3 && index < 6)) && this.isMerchant) {
+        field.fieldControl.control.setValidators(Validators.required);
+      }
+    });
+  }
+
+  changeMerchant() {
+    this.isMerchant = !this.isMerchant;
+
+    this.formSteps[0].fieldsList.forEach((field, index) => {
+      if(index > 0 && index < 4) {
+        field.styles.containerStyles.display = !this.isMerchant ? 'inline-block' : 'none';
+      } else if (index > 3 && index < 6) {
+        field.styles.containerStyles.display = this.isMerchant ? 'block' : 'none';
+      }
+    })
+    this.formSteps[0].optionalLinksTo.afterIndex = !this.isMerchant ? 3 : 5;
   }
 
 }

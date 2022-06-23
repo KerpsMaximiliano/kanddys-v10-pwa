@@ -12,6 +12,7 @@ export interface FieldStyles {
   formattedInputCaretStyles?: any;
   bottomLabelStyles?: any;
   hoverStyles?: any;
+  disabledStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
@@ -33,6 +34,7 @@ export interface FormField {
   formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
+  statusChangeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
   customCursorIndex?: number;
   selectionOptions?: Array<string>;
@@ -40,6 +42,7 @@ export interface FormField {
   description?: string;
   focused?: boolean;
   hovered?: boolean;
+  disabled?: boolean;
   topLabelAction?: {
     text: string;
     clickable?: boolean;
@@ -54,6 +57,7 @@ export interface FormField {
   };
   placeholder?: string;
   inputType?: string;
+  callbackOnClick?(...params): any;
   shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
@@ -135,6 +139,7 @@ export interface FormStep {
   stepButtonInvalidText: string;
   asyncStepProcessingFunction?: AsyncFunction;
   stepAnchorURL?: string;
+  statusChangeCallbackFunction?(...params): any;
   stepProcessingFunction?(...params): any;
   avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;

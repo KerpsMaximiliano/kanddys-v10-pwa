@@ -6,11 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
-  selector: 'app-new-item-contact-info',
-  templateUrl: './new-item-contact-info.component.html',
-  styleUrls: ['./new-item-contact-info.component.scss']
+  selector: 'app-authentication',
+  templateUrl: './authentication.component.html',
+  styleUrls: ['./authentication.component.scss']
 })
-export class NewItemContactInfoComponent implements OnInit {
+export class Authentication implements OnInit {
   scrollableForm: boolean = false;
   itemId: string;
 

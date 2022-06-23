@@ -513,22 +513,28 @@ shouldScrollBackwards &&
             ">
               <button 
                 [ngStyle]="
-                  currentField.styles.fieldStyles && !currentField.hovered
+                  currentField.styles.fieldStyles && !currentField.hovered && !currentField.disabled
                     ? currentField.styles.fieldStyles
-                    : currentField.hovered
+                    : currentField.hovered && !currentField.disabled 
                      ? currentField.styles.hoverStyles
-                     : null
+                     : currentField.disabled
+                      ? currentField.styles.disabledStyles
+                        : null
                 "
                 (mouseenter)="changeStylesOnHover(currentField, true)"
                 (mouseleave)="changeStylesOnHover(currentField, false)"
-                [disabled]="!currentField.fieldControl.control.value"
+                [disabled]="currentField.disabled"
+                (click)="
+                  currentField.callbackOnClick ? 
+                    currentField.callbackOnClick(stepFunctionParams) : null
+                "
               >{{currentField.label}}</button>
             </div>
 
             <!-- LINKS OPCIONALES, PERO DESPUES DE UN FIELD -->
             <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
               !currentStepObject['optionalLinksTo']['beforeIndex'] &&
-              currentStepObject['optionalLinksTo']['afterIndex']
+              currentStepObject['optionalLinksTo']['afterIndex'] !== null
             ">
               <ng-container
                 *ngIf="

@@ -72,7 +72,7 @@ export class ItemCreatorComponent implements OnInit {
               this.currentItemId
             );
             // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-            // this.router.navigate([`/ecommerce/new-item-contact-info/${this.currentItemId}`]);
+            // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
             this.router.navigate([`/ecommerce/user-items`]);
           } else {
             if (this.loggedIn) {
@@ -120,7 +120,7 @@ export class ItemCreatorComponent implements OnInit {
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`]);
+              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`]);
             }
           }
 
@@ -413,7 +413,7 @@ export class ItemCreatorComponent implements OnInit {
 
               this.headerService.flowRoute = this.router.url;
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-              // this.router.navigate([`/ecommerce/new-item-contact-info/${this.currentItemId}`]);
+              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
               this.router.navigate([`/ecommerce/user-items`]);
             } else {
               if (this.loggedIn) {
@@ -440,7 +440,7 @@ export class ItemCreatorComponent implements OnInit {
                 if ('_id' in createItem) {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
-                  // this.router.navigate([`/ecommerce/new-item-contact-info/${createItem._id}`]);
+                  // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
                   this.router.navigate([`/ecommerce/user-items`]);
                 }
               } else {
@@ -461,7 +461,7 @@ export class ItemCreatorComponent implements OnInit {
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
-                  this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`])
+                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
                 };
               }
             }
