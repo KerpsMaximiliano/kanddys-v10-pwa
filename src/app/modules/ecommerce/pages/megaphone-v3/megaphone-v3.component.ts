@@ -143,6 +143,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
+      this.header.orderId = null;
       this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
       if (!orderData || !orderData.products || orderData.products.length === 0)
