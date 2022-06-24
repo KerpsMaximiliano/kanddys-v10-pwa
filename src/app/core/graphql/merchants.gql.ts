@@ -56,6 +56,7 @@ export const merchantDefault = gql`
       name
       showItems
       bio
+      image
       owner {
         _id
       }
