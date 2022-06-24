@@ -17,6 +17,7 @@
     <app-helper-headerv2
       mode="center"
       [navtext]="'Codigo: '+dateId"
+      [returnAble]="false"
     ></app-helper-headerv2>
     <app-header-info
       [profileImage]="providerData.image"
@@ -29,6 +30,8 @@
       [description2]="'el '+date"
       [featuredText]="{ 'text': name[0].toUpperCase() + name.substr(1).toLowerCase(), 'styles': '#2874AD' }"
       [socials]="providerData.socials"
+      [route]="ruta"
+      type="route"
       (featuredTextEvent)="redirectToUserContact()"
     ></app-header-info>
   </div>

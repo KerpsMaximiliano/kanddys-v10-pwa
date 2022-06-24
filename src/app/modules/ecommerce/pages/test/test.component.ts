@@ -4,6 +4,7 @@ import { CustomFieldsComponent } from 'src/app/shared/dialogs/custom-fields/cust
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 import { CollaborationsComponent } from 'src/app/shared/dialogs/collaborations/collaborations.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { ItemDashboardOptionsComponent, DashboardOption } from 'src/app/shared/dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
 @Component({
@@ -34,65 +35,70 @@ export class TestComponent implements OnInit {
     //   flags: ['no-header'],
     // });
     // +++++++ Para verificar la task 958
-    // const options: StoreShareOption[] = [
-    //   {
-    //     text: 'asd test',
-    //     mode: 'clipboard',
-    //     link: 'dasdasdasdsa',
-    //     icon: {
-    //       src: '/upload.svg',
-    //       size: {
-    //         width: 20,
-    //         height: 26
-    //       }
-    //     }
-    //   },
-    //   {
-    //     text: 'now sharing!',
-    //     mode: 'share',
-    //     link: 'this is the linkj to share',
-    //     icon: {
-    //       src: '/upload.svg',
-    //       size: {
-    //         width: 20,
-    //         height: 26
-    //       }
-    //     }
-    //   },
-    //   {
-    //     text: 'qr thing',
-    //     mode: 'qr',
-    //     link: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-    //     icon: {
-    //       src: '/qr-code.svg',
-    //       size: {
-    //         width: 30,
-    //         height: 30
-    //       }
-    //     }
-    //   },
-    //   {
-    //     text: 'xd',
-    //     func: () => console.log('uwu'),
-    //   }
-    // ];
-    // this.dialog.open(StoreShareComponent, {
-    //   type: 'fullscreen-translucent',
-    //   props: {
-    //     title: 'test!!!',
-    //     options
-    //   },
-    //   customClass: 'app-dialog',
-    //   flags: ['no-header'],
-    // });
+    const list: DashboardOption[] = [
+        {
+        button: {
+            text: 'Half Button'
+        },
+        title:'El leer es importante',
+        content:[
+            {
+              headline: 'Item',
+              icon: {
+                src: '/upload.svg',
+                width: 20,
+                height: 17
+              },
+              description: '$10.00 por cada 100 veces que lo vendas para facilitarte formas de pago al comprador, tu base de datos para reventas, automatización de mensajes por WhatsApp* según el proceso y mas.'
+            },
+            {
+              headline: 'Categoria',
+              icon: {
+                src: '/upload.svg',
+                width: 20,
+                height: 17
+              },
+              description: '$10.00 por cada 100 veces que lo vendas para facilitarte formas de pago al comprador, tu base de datos para reventas, automatización de mensajes por WhatsApp* según el proceso y mas.'
+            },
+            {
+             headline: 'Gift-Card',
+             icon: {
+               src: '/upload.svg',
+               width: 20,
+               height: 17
+             },
+             description: '$10.00 después de 100 pagos que recibas.'
+            },
+            {
+               headline: 'Vouchers',
+               icon: {
+                 src: '/upload.svg',
+                 width: 20,
+                 height: 17
+               },
+               description: '$10.00 después de 100 pagos que recibas.'
+            }
+        ] 
+        }
+    ];
+
+    this.dialog.open(ItemDashboardOptionsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
     // ------- Para verificar la task 958
-    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+    /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
       props: {
         icon: 'check-circle.svg'
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    });
+    }); */
   }
 }
+
