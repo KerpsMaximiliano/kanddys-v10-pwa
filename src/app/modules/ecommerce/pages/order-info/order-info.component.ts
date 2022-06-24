@@ -542,6 +542,10 @@ export class OrderInfoComponent implements OnInit {
     });
   }
 
+  redirectToUserContact() {
+    this.router.navigate([`/ecommerce/user-contact-landing/${this.order.user._id}`]);
+  }
+
   wichName(e) {
     if (e === 'Reservación') {
       this.reservacion = true;

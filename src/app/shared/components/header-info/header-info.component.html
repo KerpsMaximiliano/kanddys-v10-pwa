@@ -19,7 +19,7 @@
                         {{simple ? description : title}}
                     </h2>
                     <p class="header-desc" [ngStyle]="customStyles?.subtitle">
-                        {{simple ? title : description}}
+                        {{simple ? title : description}} <span [ngStyle]="{ 'color': featuredText.styles, 'cursor': 'pointer', 'font-weight': 'bold' }" (click)="triggerFeaturedText()" *ngIf="featuredText">{{ featuredText.text }}</span>
                     </p>
                 </ng-container>
     
