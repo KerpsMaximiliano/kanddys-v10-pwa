@@ -569,8 +569,10 @@ input[type="file"] {
   }
   .btn-column {
     grid-column: span 12 / span 12;
-    flex-direction: row;
     align-items: baseline;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
   }
   .header .preview-btn {
     display: block;

@@ -73,7 +73,15 @@
           </ng-container>
         </div>
         <div class="btn-column">
-          <button class="side-btn" *ngIf="backgroundColorActive" [ngClass]="{'active': selectedOption === 'bgColor'}" (click)="onBgColorClick()">
+          <button class="side-btn"
+            *ngIf="
+              backgroundColorActive &&
+              customizerRules?.backgroundColor?.active &&
+              customizerRules.backgroundColor.fixed?.length > 2
+            "
+            [ngClass]="{'active': selectedOption === 'bgColor'}"
+            (click)="onBgColorClick()"
+          >
             <span class="icon-btn">
               <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
             </span>
