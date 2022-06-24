@@ -128,8 +128,8 @@ export class PostCustomizerComponent
   customizerValueID: string;
   customizerRuleID: string;
   customizeOptions: string[] = [];
-  selectedOption: 'tipografía' | 'stickers' | 'lápiz' | '';
-  selectedElementOption: '' | 'tamaño' | 'angulo' | 'color' | 'tipografia';
+  selectedOption: 'tipografía' | 'stickers' | 'lápiz' | 'bgColor' | '';
+  selectedElementOption: '' | 'tamaño' | 'angulo' | 'color' | 'tipografia' | 'input';
   textOptions: string = 'texto';
   backgroundImageOptions: string[] = [
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253670596.jpeg',
@@ -1548,11 +1548,18 @@ export class PostCustomizerComponent
     return color;
   }
 
+  onBgColorClick() {
+    this.selectedOption = 'bgColor';
+  }
+
   onIconClick() {
-    this.modifyingElement = this.elementList.findIndex((element) => element.sticker);
-    this.modifyingSticker = this.elementList[this.modifyingElement].sticker.number;
+    this.onIconColorClick();
     this.openDialog();
-    this.modifyingElement = -1;
+  }
+
+  onTextClick() {
+    this.selectedOption = 'tipografía';
+    this.selectedElementOption = 'input';
   }
 
   onIconColorClick() {

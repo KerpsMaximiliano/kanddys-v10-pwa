@@ -161,6 +161,10 @@ input[type="file"] {
   display: flex;
   flex-direction: column;
   margin: auto;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
 }
 
 .canvas-text {
@@ -530,14 +534,6 @@ input[type="file"] {
 
 .list-option {
   text-align: center;
-}
-
-.label1 {
-  font-size: 24px;
-  font-family: Roboto;
-  font-weight: bold;
-  color: #2e2e2e;
-  margin: 0 0 10px 0;
 }
 
 .input {

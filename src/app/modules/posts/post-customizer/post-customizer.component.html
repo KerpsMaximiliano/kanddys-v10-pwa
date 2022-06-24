@@ -48,7 +48,7 @@
           (rotate)="onRotateStart($event)"
         >
         </canvas>
-        <div class="canvas-editing">
+        <div class="canvas-editing" [ngStyle]="{'background-color': selectedBackgroundColor?.fixedValue }">
           <!-- <img class="canvas-content" [src]="item?.images?.length && item.images[0]" [alt]="item?.name"> -->
           <ng-container *ngIf="elementList?.length">
             <div *ngIf="currentStickersAmount" style="padding: 20px;" [ngClass]="{'canvas-active': selectedOption === 'stickers'}">
@@ -73,6 +73,12 @@
           </ng-container>
         </div>
         <div class="btn-column">
+          <button class="side-btn" *ngIf="backgroundColorActive" [ngClass]="{'active': selectedOption === 'bgColor'}" (click)="onBgColorClick()">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Color de Fondo
+          </button>
           <button class="side-btn" (click)="onIconClick()" 
           *ngIf="
             customizerRules?.stickers?.active &&
@@ -90,7 +96,22 @@
             </span>
             Color de Iconos
           </button>
-          <button class="side-btn" [ngClass]="{'active': selectedOption === 'tipografía' && selectedElementOption === 'tipografia'}" (click)="onTypographyClick()" *ngIf="customizerRules?.texts?.active">
+          <button class="side-btn" [ngClass]="{'active': selectedOption === 'tipografía' && selectedElementOption === 'input'}" (click)="onTextClick()" *ngIf="customizerRules?.texts?.active && willShowInput">
+            <span class="icon-btn">
+              <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
+            </span>
+            Texto
+          </button>
+          <button
+            class="side-btn"
+            [ngClass]="{'active': selectedOption === 'tipografía' && selectedElementOption === 'tipografia'}"
+            (click)="onTypographyClick()"
+            *ngIf="
+              customizerRules?.texts?.active &&
+              customizerRules.texts.itemsRule?.length &&
+              customizerRules.texts.itemsRule[0].fixedFonts?.length > 1
+            "
+          >
             <span class="icon-btn">
               <img [src]="env + '/pencil.svg'" alt="NoImage :'(" width="26" height="26">
             </span>
@@ -274,7 +295,7 @@
             />
           </div>
         </div> -->
-        <div *ngIf="!selectedOption && backgroundColorActive && getBackgroundColors().length > 2">
+        <div *ngIf="selectedOption === 'bgColor' && backgroundColorActive && getBackgroundColors().length > 2">
           <div class="option-list">
             <div
               class="list-option"
@@ -328,7 +349,7 @@
             />
           </div>
           <div *ngIf="selectedElementOption === 'color'">
-            <p class="option-label">Colores:</p>
+            <p class="option-label">Color de icono:</p>
             <!-- option-list a option-list-grid -->
             <div
               class="option-list-grid"
@@ -457,7 +478,7 @@
             </div>
           </div>
           <div *ngIf="selectedElementOption === 'color' && !isEditing">
-            <p class="option-label">Colores:</p>
+            <p class="option-label">Color de letras:</p>
             <!-- option-list a option-list-grid -->
             <div
               class="option-list-grid"
@@ -485,21 +506,23 @@
               Realidad
             </h6>
           </div>
-        </div>
-        <div *ngIf="willShowInput" style="margin-top: 10px;">
-          <p class="label1">Texto para la servilleta:</p>
-          <input
-            type="text"
-            class="input"
-            placeholder="..."
-            [maxLength]="inputMaxLength"
-            (input)="checkMaxLength($event)"
-            [(ngModel)]="hiddenFontText"
-            (ngModelChange)="onChangeInput()"
-            (blur)="setInputText()"
-            (keydown)="validateInput($event)"
-            [ngStyle]="{'font-family': typographyData && typographyData.fontStyle, 'color': typographyData && typographyData.fontColor && typographyData.fontColor.fixedValue }"
-          />
+          <div *ngIf="selectedElementOption === 'input'" style="margin-top: 10px;">
+            <p class="option-label" style="margin-top: 0">
+              Texto para la servilleta:
+            </p>
+            <input
+              type="text"
+              class="input"
+              placeholder="..."
+              [maxLength]="inputMaxLength"
+              (input)="checkMaxLength($event)"
+              [(ngModel)]="hiddenFontText"
+              (ngModelChange)="onChangeInput()"
+              (blur)="setInputText()"
+              (keydown)="validateInput($event)"
+              [ngStyle]="{'font-family': typographyData && typographyData.fontStyle, 'color': typographyData && typographyData.fontColor && typographyData.fontColor.fixedValue }"
+            />
+          </div>
         </div>
         <!-- ------------------------ LAPIZ ------------------------ -->
         <div *ngIf="selectedOption === 'lápiz' && canDraw">

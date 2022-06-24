@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { Location, TitleCasePipe } from '@angular/common';
+import { LocationStrategy, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -103,7 +103,15 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     private titlecasePipe: TitleCasePipe,
     private saleflow: SaleFlowService,
     private dialogService: DialogService,
-  ) {}
+    private location: LocationStrategy,
+  ) {
+    if(this.header.orderId) {
+      history.pushState(null, null, window.location.href);
+      this.location.onPopState(() => {
+        history.pushState(null, null, window.location.href);
+      });
+    }
+  }
 
   afterOrderRequest = async (data) => {
     if (
@@ -526,7 +534,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
 
     if (
-      this.step === 'PHONE_CHECK_AND_SHOW_BANKS' &&
+      this.step === 'PHONE_CHECK_AND_SHOW_BANKS' && !this.header.orderId &&
       (this.header.flowRoute || this.localStorageFlowRoute !== '')
     ) {
       const redirectionURL = `/ecommerce/${
