@@ -48,7 +48,7 @@
           (rotate)="onRotateStart($event)"
         >
         </canvas>
-        <div class="canvas-editing" [ngStyle]="{'background-color': selectedBackgroundColor?.fixedValue }">
+        <div class="canvas-editing" [ngStyle]="{'background-color': selectedBackgroundColor?.fixedValue, 'background-image': (selectedBackgroundImage && (!selectedBackgroundColor || selectedBackgroundColor.name === 'Blanco' )) ? 'url('+selectedBackgroundImage+')' : '' }">
           <!-- <img class="canvas-content" [src]="item?.images?.length && item.images[0]" [alt]="item?.name"> -->
           <ng-container *ngIf="elementList?.length">
             <div *ngIf="currentStickersAmount" style="padding: 20px;" [ngClass]="{'canvas-active': selectedOption === 'stickers'}">
