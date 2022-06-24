@@ -138,11 +138,13 @@ export class AuthService {
   public async signup(
     input: any,
     notificationMethod?: string,
-    code?: string
+    code?: string,
+    assignPassword?: boolean,
+    files?: any
   ): Promise<User> {
     const result = await this.graphql.mutate({
       mutation: signup,
-      variables: { input, notificationMethod, code },
+      variables: { input, notificationMethod, code, assignPassword, files },
       context: {
         useMultipart: true,
       },
@@ -298,19 +300,29 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) { }
+    } catch (e) { 
+      console.log(e);
+      return null;
+    }
   }
 
   public async generateMagicLink(
     phoneNumber: string,
     redirectionRoute: string,
     redirectionRouteId: string,
-    entity: string
+    entity: string,
+    redirectionRouteQueryParams: any
   ) {
     try {
       const response = await this.graphql.mutate({
         mutation: generateMagicLink,
-        variables: { phoneNumber, redirectionRoute, redirectionRouteId, entity },
+        variables: { 
+          phoneNumber, 
+          redirectionRoute, 
+          redirectionRouteId, 
+          entity, 
+          redirectionRouteQueryParams
+        },
       });
 
       return response;

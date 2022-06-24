@@ -3,6 +3,5 @@
     [disableSmoothScroll]="false" 
     [scrollableForm]="scrollableForm"
     [showStepNumbers]="false"
-    [currentStep]="currentStep"
-    [currentStepString]="currentStepString"
+    (paramsRef)="storeParams($event)"
 ></app-multistep-form>

@@ -12,6 +12,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -52,34 +53,85 @@ export class UserContactLandingComponent implements OnInit {
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     private dialogService: DialogService,
+    private walletService: WalletService,
     private location: Location,
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      lockUI();
-      const [user, currentUser] = await Promise.all([
-        this.usersService.user(params.id),
-        this.authService.me(),
-      ])
-      if(!user) return unlockUI();
-      this.user = user;
-      if(user._id === currentUser?._id) this.admin = true;
-      this.merchant = await this.merchantsService.merchantDefault(this.user._id);
-      if(!this.merchant) return unlockUI();
-      this.checkSocials(this.merchant.social);
-      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
-      if(!this.saleflow) return unlockUI();
-      if(this.admin) {
-        const [total, users] = await Promise.all([
-          this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
-          this.merchantsService.usersOrderMerchant(this.merchant._id),
-          this.getItems()
-        ]);
-        this.ordersTotal = total;
-        this.users = users;
-      } else this.getItems();
-      unlockUI();
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { 
+          type, 
+          merchantId, 
+          venmo,
+          paypal,
+          cashapp,
+          bankName,
+          accountNumber,
+          owner,
+          socialID
+        } = queryParams;
+
+        if(type === 'from-merchant-creation' && merchantId) {
+          const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
+
+          const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+            merchant: merchant._id,
+            name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
+            items: []
+          });
+
+          await this.merchantsService.setDefaultMerchant(merchant._id);
+          await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+
+          if(bankName && accountNumber && owner && socialID) {
+            const electronicPayment = [];
+
+            [venmo, paypal, cashapp].forEach(paymentMethod => {
+              if(paymentMethod) {
+                electronicPayment.push({
+                  link: paymentMethod
+                });
+              }
+            })
+
+            await this.walletService.createExchangeData({
+              bank: [{
+                bankName,
+                ownerAccount: owner,
+                routingNumber: parseInt(socialID),
+                isActive: true,
+                account: accountNumber
+              }],
+              electronicPayment
+            });
+          }
+        }
+
+        lockUI();
+        const [user, currentUser] = await Promise.all([
+          this.usersService.user(params.id),
+          this.authService.me(),
+        ])
+        if(!user) return unlockUI();
+        this.user = user;
+        if(user._id === currentUser?._id) this.admin = true;
+        this.merchant = await this.merchantsService.merchantDefault(this.user._id);
+        if(!this.merchant) return unlockUI();
+        this.checkSocials(this.merchant.social);
+        this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
+        if(!this.saleflow) return unlockUI();
+        if(this.admin) {
+          const [total, users] = await Promise.all([
+            this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
+            this.merchantsService.usersOrderMerchant(this.merchant._id),
+            this.getItems()
+          ]);
+          this.ordersTotal = total;
+          this.users = users;
+        } else this.getItems();
+        unlockUI();
+      })
     })
   }
 

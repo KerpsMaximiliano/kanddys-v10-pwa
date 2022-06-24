@@ -7,6 +7,8 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
@@ -235,6 +237,7 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   timeoutId: any = null;
   @Input() currentStep: number = 0;
   @Input() currentStepString: string = (this.currentStep + 1).toString();
+  @Output() paramsRef = new EventEmitter();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
@@ -259,6 +262,8 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     this.initController();
+
+    this.paramsRef.emit(this.stepFunctionParams);
   }
 
   ngAfterViewInit(): void {

@@ -14,9 +14,11 @@ import {
   merchants,
   addMerchant,
   createMerchant,
+  createMerchant2,
   updateMerchant,
   merchantDefault,
   setDefaultMerchant,
+  merchantAuthorize,
   hotMerchant,
   hotMerchants,
   itemsByMerchant,
@@ -27,7 +29,8 @@ import {
   tagsByMerchant,
   uploadDataToClientsAirtable,
   uploadAirtableAttachments,
-  usersOrderMerchant
+  usersOrderMerchant,
+  merchantDefault2
 } from './../graphql/merchants.gql';
 import { EmployeeContract, Merchant, MerchantInput } from './../models/merchant';
 
@@ -153,7 +156,7 @@ export class MerchantsService {
   async merchantDefault(userId?: string): Promise<Merchant> {
     try {
       const response = await this.graphql.query({
-        query: merchantDefault,
+        query: merchantDefault2,
         variables: { userId },
         fetchPolicy: 'no-cache',
       });
@@ -172,15 +175,24 @@ export class MerchantsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
+  
+  async merchantAuthorize(merchantId: string): Promise<{ merchantAuthorize: Merchant }> {
+    const result = await this.graphql.mutate({
+      mutation: merchantAuthorize,
+      variables: { merchantId },
+      fetchPolicy: 'no-cache',
+    });
 
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
 
   async createMerchant(input: MerchantInput): Promise<{ createMerchant: Merchant }> {
     console.log(input);
     const result = await this.graphql.mutate({
-      mutation: createMerchant,
+      mutation: createMerchant2,
       variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },

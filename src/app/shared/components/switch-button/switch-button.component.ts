@@ -26,7 +26,7 @@ export class SwitchButtonComponent implements OnInit {
 
   statechanger(){
     this.isClicked = !this.isClicked;
-    this.switched.emit();
+    this.switched.emit(this.isClicked);
   }
 
 }

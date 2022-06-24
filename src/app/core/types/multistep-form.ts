@@ -160,6 +160,10 @@ export interface FormStep {
   headerMode?: 'v1' | 'v2';
   footerConfig?: FooterOptions;
   styles?: Record<string, string>;
+  showTabs?: boolean;
+  currentTab?: number;
+  tabsOptions?: string[];
+  tabsCallback?(change, params): any;
   customStickyButton?: {
     mode: string;
     bgcolor?: string;

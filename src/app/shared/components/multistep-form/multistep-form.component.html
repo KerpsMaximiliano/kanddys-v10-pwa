@@ -43,6 +43,13 @@ shouldScrollBackwards &&
   : null" [bgColor]="'#2874ad'">
   </app-helper-headerv2>
 
+  <app-page-component-tabs
+    *ngIf="steps[currentStep].showTabs"
+    [tabsOptions]="steps[currentStep].tabsOptions"
+    [activeTag]="steps[currentStep].currentTab"
+    (changeValue)="steps[currentStep].tabsCallback($event, stepFunctionParams)"
+  ></app-page-component-tabs>
+
   <div class="form-wrapper" [ngStyle]="{
     transform: scrollableForm && !disableSmoothScroll ? 'translateY(' + currentYPosition + 'px)' : null
   }">
@@ -526,9 +533,30 @@ shouldScrollBackwards &&
                 [disabled]="currentField.disabled"
                 (click)="
                   currentField.callbackOnClick ? 
-                    currentField.callbackOnClick(stepFunctionParams) : null
+                    currentField.callbackOnClick(stepFunctionParams) :
+                    !steps[currentStep].justExecuteCustomScrollToStep
+                      ? executeStepDataProcessing()
+                      : steps[currentStep].customScrollToStep(stepFunctionParams)
                 "
-              >{{currentField.label}}</button>
+              >
+                {{currentField.label || (
+                  !currentField.disabled ? 
+                    steps[currentStepIndex].stepButtonValidText : 
+                    steps[currentStepIndex].stepButtonInvalidText
+                )}}
+              </button>
+
+              <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
+                currentField.styles.bottomLabelStyles
+                  ? currentField.styles.bottomLabelStyles
+                  : null
+                " (click)="
+                  currentField.bottomLabel.clickable
+                    ? currentField.bottomLabel.callback(stepFunctionParams)
+                    : null
+              ">
+                {{ currentField.bottomLabel.text }}
+              </span>
             </div>
 
             <!-- LINKS OPCIONALES, PERO DESPUES DE UN FIELD -->

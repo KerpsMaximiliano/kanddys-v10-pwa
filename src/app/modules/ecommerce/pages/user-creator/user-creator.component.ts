@@ -7,6 +7,9 @@ import { EntityItemListComponent } from 'src/app/shared/dialogs/entity-item-list
 import { EntityLists } from 'src/app/shared/dialogs/entity-item-list/entity-item-list.component';
 import { FooterOptions } from 'src/app/core/types/multistep-form';
 import { SwitchButtonComponent } from 'src/app/shared/components/switch-button/switch-button.component';
+import { MultistepFormServiceService } from 'src/app/core/services/multistep-form-service.service';
+import { Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -98,48 +101,66 @@ const tabsOptions = ["Recibir pagos", "Cuentas Sociales", "Contacto"];
 export class UserCreatorComponent implements OnInit {
   scrollableForm = false;
   isMerchant: boolean = false;
-  currentTab: number = 0;
-  currentStep: number = 0;
-  currentStepString: string = '1';
-
-  tabComponent = {
-    containerStyles: {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      right: '0',
-      maxWidth: '500px',
-      margin: 'auto'
-    },
-    beforeIndex: 0,
-    component: PageComponentTabsComponent,
-    inputs: {
-      tabsOptions,
-      activeTag: this.currentTab
-    },
-    outputs: [
-      {
-        name: 'changeValue',
-        callback: (newTabName) => {
-          const newTabIndex = tabsOptions.findIndex(tabName => tabName === newTabName);
-
-          this.currentTab = newTabIndex;
-          this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
-          if(newTabIndex === 0) {
-            this.currentStep = 1;
-          } else if(newTabIndex === 2) {
-            this.currentStep = 2;
-          } else if(newTabIndex === 1) {
-            this.currentStep = 3;
-          };;
-          this.currentStepString = this.currentStep + 1 + '';
-          
-          this.formSteps[this.currentStep].embeddedComponents[0].inputs.activeTag = this.currentTab;
-          this.formSteps[this.currentStep].embeddedComponents[0].shouldRerender = true;
-        },
-      }
-    ]
+  multistepFormData: any = null;
+  userRequiredFields = {
+    userImage: false,
+    name: false,
+    lastname: false,
+    subtext: false,
   };
+  merchantRequiredFields = {
+    userImage: false,
+    businessName: false,
+    businessType: false
+  }
+
+  injectRequiredFunction(change: string, userType: 'both' | 'user' | 'merchant', propertyName: string) {
+    if(change === null || change === '') {
+      if(userType === 'both') {        
+        this.userRequiredFields[propertyName] = false;
+        this.merchantRequiredFields[propertyName] = false;
+      } else if(userType === 'user') {        
+        this.userRequiredFields[propertyName] = false;
+      } else {        
+        this.merchantRequiredFields[propertyName] = false;
+      }
+    } else {
+      if(userType === 'both') {        
+        this.userRequiredFields[propertyName] = true;
+        this.merchantRequiredFields[propertyName] = true;
+      } else if(userType === 'user') {        
+        this.userRequiredFields[propertyName] = true;
+      } else {        
+        this.merchantRequiredFields[propertyName] = true;
+      }
+    }
+
+    if(this.isMerchant) {
+      let count = 0;
+      const fields = Object.keys(this.merchantRequiredFields);
+      fields.forEach(field => {
+        count += this.merchantRequiredFields[field] ? 1 : 0;
+      })
+
+      if(count === fields.length) 
+        this.formSteps[0].fieldsList[6].disabled = false;
+      else
+        this.formSteps[0].fieldsList[6].disabled = true;
+    }
+
+    if(!this.isMerchant) {
+      let count = 0;
+      const fields = Object.keys(this.userRequiredFields);
+      fields.forEach(field => {
+        count += this.userRequiredFields[field] ? 1 : 0;
+      });
+
+      if(count === fields.length)
+        this.formSteps[0].fieldsList[6].disabled = false;
+      else
+        this.formSteps[0].fieldsList[6].disabled = true;
+    }
+  }
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -161,6 +182,23 @@ export class UserCreatorComponent implements OnInit {
       height: '30px',
       fontSize: '17px',
     },
+  }
+
+  tabsCallback(newTabName, params) {
+    const newTabIndex = tabsOptions.findIndex(tabName => tabName === newTabName);
+    
+    if(newTabIndex === 0) {
+      params.scrollToStep(1);
+    } else if(newTabIndex === 2) {
+      params.scrollToStep(2);
+    } else if(newTabIndex === 1) {
+      params.scrollToStep(3);
+    };
+  }
+
+  //para casos de emergencia
+  storeParams(params: any) {
+    this.multistepFormData = params;
   }
 
   formSteps: FormStep[] = [
@@ -201,6 +239,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '7px'
             }
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'both', 'userImage')
         },
         {
           name: 'name',
@@ -224,6 +263,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'user', 'name')
         },
         {
           name: 'lastname',
@@ -246,6 +286,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'user', 'lastname')
         },
         {
           name: 'subtext',
@@ -266,6 +307,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'user', 'subtext')
         },
         {
           name: 'businessName',
@@ -287,6 +329,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'merchant', 'businessName')
         },
         {
           name: 'businessType',
@@ -307,6 +350,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'merchant', 'businessType')
         },
         injectSubmitButtom((params) => {
           const {
@@ -331,7 +375,58 @@ export class UserCreatorComponent implements OnInit {
             address
           } = params.dataModel.get('3').value;
 
-          this.initValidatorsExclusiveToMerchantOrRegularUser();
+          const {
+            facebook,
+            twitter,
+            tiktok,
+            linkedin,
+            instagram
+          } = params.dataModel.get('4').value;
+
+          const {
+            bankName,
+            accountNumber,
+            owner,
+            socialID
+          } = params.dataModel.get('5').value;
+
+          this.multistepFormService.storeMultistepFormData('user-creation', this.formSteps, {
+            isMerchant: this.isMerchant,
+            userRequiredFields: this.userRequiredFields,
+            merchantRequiredFields: this.merchantRequiredFields,
+            businessName,
+            businessType,
+            lastname,
+            name,
+            submitButton,
+            subtext,
+            userImage,
+            venmo,
+            paypal,
+            cashapp,
+            email,
+            phoneNumber,
+            address,
+            socials: {
+              facebook,
+              twitter,
+              tiktok,
+              linkedin,
+              instagram
+            },
+            bankInfo: {
+              bankName,
+              accountNumber,
+              owner,
+              socialID
+            }
+          });
+          
+          this.router.navigate(['ecommerce/authentication'], {queryParams: {
+            type: 'create-user'
+          }});
+
+          this.headerService.flowRoute = this.router.url;
         })
       ],
       optionalLinksTo: {
@@ -358,13 +453,13 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Contacto: Email, Telefonos, URL’s.',
                 action: (params) => {
-                  this.currentTab = 2;
-                  this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
+                  // this.currentTab = 2;
+                  // this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
 
-                  this.currentStep = 2;
-                  this.currentStepString = '3';
+                  // this.currentStep = 2;
+                  // this.currentStepString = '3';
 
-                  console.log("cs", this.currentStep, this.currentStepString);
+                  params.scrollToStep(2);
                   window.scroll(0, 0);
                 }
               },
@@ -376,24 +471,15 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Métodos de recibir pago',
                 action: (params) => {
-                  this.currentStep = 1;
-                  this.currentStepString = '2';
+                  // this.currentStep = 1;
+                  // this.currentStepString = '2';
+                  params.scrollToStep(1);
                   window.scroll(0, 0);
                 }
               },
             ]
           }
         ]
-      },
-      statusChangeCallbackFunction: (status) => {
-        console.log("El estatus de " + this.currentStep + " ha cambiado a", status);
-
-        if(status === 'INVALID')
-          this.formSteps[0].fieldsList[6].disabled = true;
-        if(status === 'VALID')
-          this.formSteps[0].fieldsList[6].disabled = false;
-
-        console.log(this.formSteps[0].fieldsList[6]);
       },
       avoidGoingToNextStep: true,
       headerText: '',
@@ -433,7 +519,9 @@ export class UserCreatorComponent implements OnInit {
           outputs: [
             {
               name: 'switched',
-              callback: (params) => this.changeMerchant(),
+              callback: (params) => {
+                this.changeMerchant();
+              },
             }
           ]
         }
@@ -524,11 +612,6 @@ export class UserCreatorComponent implements OnInit {
           },
         },
         injectSubmitButtom((params) => {
-          this.currentTab = 0;
-          this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
-          this.currentStep = 0;
-          this.currentStepString = '1';
-  
           params.scrollToStep(0);
           window.scroll(0, 0);
         }, 1, "SALVAR METODOS DE RECIBIR $")
@@ -557,11 +640,6 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Cuentas Bancarias',
                 action: (params) => {
-                  this.currentTab = 0;
-                  // this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
-                  this.currentStep = 4;
-                  this.currentStepString = '5';
-          
                   params.scrollToStep(4);
                   window.scroll(0, 0);
                 }
@@ -697,9 +775,10 @@ export class UserCreatorComponent implements OnInit {
 
         return {ok: true};
       },
-      embeddedComponents: [
-        this.tabComponent
-      ],
+      showTabs: true,
+      tabsOptions,
+      currentTab: 0,
+      tabsCallback: this.tabsCallback,
       avoidGoingToNextStep: true,
       headerText: '',
       stepButtonInvalidText: '',
@@ -821,18 +900,14 @@ export class UserCreatorComponent implements OnInit {
           },
         },
       ],
-      embeddedComponents: [
-        this.tabComponent
-      ],
+      showTabs: true,
+      tabsOptions,
+      currentTab: 2,
+      tabsCallback: this.tabsCallback,
       footerConfig: {
         ...this.footerConfig
       },
       customScrollToStepBackwards: (params) => {
-        this.currentTab = 0;
-        this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
-        this.currentStep = 0;
-        this.currentStepString = '1';
-
         params.scrollToStep(0);
         window.scroll(0, 0);
       },
@@ -983,18 +1058,14 @@ export class UserCreatorComponent implements OnInit {
           },
         },
       ],
-      embeddedComponents: [
-        this.tabComponent
-      ],
+      showTabs: true,
+      tabsOptions,
+      currentTab: 1,
+      tabsCallback: this.tabsCallback,
       footerConfig: {
         ...this.footerConfig
       },
       customScrollToStepBackwards: (params) => {
-        this.currentTab = 0;
-        this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
-        this.currentStep = 0;
-        this.currentStepString = '1';
-
         params.scrollToStep(0);
         window.scroll(0, 0);
       },
@@ -1092,12 +1163,7 @@ export class UserCreatorComponent implements OnInit {
         ...this.footerConfig
       },
       customScrollToStepBackwards: (params) => {
-        this.currentTab = 0;
-        this.formSteps[1].embeddedComponents[0].inputs.activeTag = this.currentTab;
-        this.currentStep = 1;
-        this.currentStepString = '2';
-
-        // params.scrollToStep(0);
+        params.scrollToStep(0);
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1108,24 +1174,30 @@ export class UserCreatorComponent implements OnInit {
     },
   ];
 
-  constructor(private dialog: DialogService) { }
+  constructor(
+    private dialog: DialogService,
+    private multistepFormService: MultistepFormServiceService,
+    private router: Router,
+    private headerService: HeaderService
+  ) { }
 
   ngOnInit(): void {
-    this.initValidatorsExclusiveToMerchantOrRegularUser()
-  }
+    const storedData = this.multistepFormService.getMultiStepFormData('user-creation');
 
-  initValidatorsExclusiveToMerchantOrRegularUser() {
-    this.formSteps[0].fieldsList.forEach((field, index) => {
-      if(index < 4 && !this.isMerchant) {
-        field.fieldControl.control.setValidators(Validators.required);
-      } else if ((index === 0 || (index > 3 && index < 6)) && this.isMerchant) {
-        field.fieldControl.control.setValidators(Validators.required);
-      }
-    });
+    if(storedData) {
+      this.formSteps = storedData.reference;
+      this.userRequiredFields = storedData.essentialData.userRequiredFields;
+      this.merchantRequiredFields = storedData.essentialData.merchantRequiredFields;
+      this.multistepFormService.removeMultiStepFormData('user-creation');
+    }
   }
 
   changeMerchant() {
     this.isMerchant = !this.isMerchant;
+
+    let userRequiredExclusiveFields = 4;
+    let merchantRequiredExclusiveFields = 3;
+    let requiredFieldsCount = 0;
 
     this.formSteps[0].fieldsList.forEach((field, index) => {
       if(index > 0 && index < 4) {
@@ -1133,7 +1205,22 @@ export class UserCreatorComponent implements OnInit {
       } else if (index > 3 && index < 6) {
         field.styles.containerStyles.display = this.isMerchant ? 'block' : 'none';
       }
+
+      if(!this.isMerchant && [0, 1, 2, 3].includes(index)) 
+      {
+        requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+
+        this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
+      }
+
+      if(this.isMerchant && [0, 4, 5].includes(index)) 
+      { 
+        requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+
+        this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === merchantRequiredExclusiveFields ? false : true;
+      }
     })
+
     this.formSteps[0].optionalLinksTo.afterIndex = !this.isMerchant ? 3 : 5;
   }
 
