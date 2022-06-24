@@ -156,6 +156,7 @@ export class OrderInfoComponent implements OnInit {
   isValidMessage: boolean = false;
   ruta: string;
   merchantId: string;
+  isMerchantView: boolean = false;
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -484,6 +485,11 @@ export class OrderInfoComponent implements OnInit {
       /* if (params.notification) {
         window.open(`https://wa.me/19188156444?text=Pedido%20de%20Foto%20Davitte`);
       } */
+    });
+
+    this.route.queryParams.subscribe(params => {
+      const { viewtype } = params;
+      if (viewtype === 'merchant') this.isMerchantView = true;
     });
   }
 
