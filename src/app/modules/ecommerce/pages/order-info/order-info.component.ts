@@ -154,6 +154,7 @@ export class OrderInfoComponent implements OnInit {
   fotodavitte: boolean = false;
   customizerDetails: { name: string; value: string }[] = [];
   isValidMessage: boolean = false;
+  ruta: string;
 
   ngOnInit(): void {
     let localLastHour = new Date();
@@ -166,6 +167,7 @@ export class OrderInfoComponent implements OnInit {
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
           this.order = data.order;
+          this.ruta = `user-contact-landing/${this.order.user._id}`;
           this.notifications = data.order.userNotifications;
           this.items = data.order.items;
           this.showHeader = this.headerService.fromOrderSales ? true : false;
@@ -544,6 +546,7 @@ export class OrderInfoComponent implements OnInit {
 
   redirectToUserContact() {
     this.router.navigate([`/ecommerce/user-contact-landing/${this.order.user._id}`]);
+    
   }
 
   wichName(e) {
