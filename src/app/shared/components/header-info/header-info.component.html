@@ -2,7 +2,7 @@
     <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
         <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
             <img *ngIf="profileImage else placeholder" [src]="profileImage" alt="profile-image"
-                class="image-profile">
+                class="image-profile" (click)="clickOnImage($event)">
             <ng-template #placeholder>
                 <div class="placeholder"></div>
             </ng-template>
