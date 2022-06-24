@@ -37,6 +37,7 @@ export class HeaderInfoComponent implements OnInit {
   showMore: boolean;
 
   @Output() featuredTextEvent = new EventEmitter<boolean>();
+  @Output() clickedImage = new EventEmitter();
 
   constructor(
     private dialogService: DialogService,
@@ -73,4 +74,7 @@ export class HeaderInfoComponent implements OnInit {
     this.featuredTextEvent.emit(true);
   }
 
+  clickOnImage(event){
+    this.clickedImage.emit(event)
+  }
 }
