@@ -311,7 +311,8 @@ export class AuthService {
     redirectionRoute: string,
     redirectionRouteId: string,
     entity: string,
-    redirectionRouteQueryParams: any
+    redirectionRouteQueryParams: any,
+    attachments?: any
   ) {
     try {
       const response = await this.graphql.mutate({
@@ -321,8 +322,10 @@ export class AuthService {
           redirectionRoute, 
           redirectionRouteId, 
           entity, 
-          redirectionRouteQueryParams
+          redirectionRouteQueryParams,
+          attachments
         },
+        context: { useMultipart: true }
       });
 
       return response;

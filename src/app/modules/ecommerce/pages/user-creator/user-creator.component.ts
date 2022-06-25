@@ -103,15 +103,16 @@ export class UserCreatorComponent implements OnInit {
   isMerchant: boolean = false;
   multistepFormData: any = null;
   userRequiredFields = {
-    userImage: false,
+    // userImage: false,
     name: false,
-    lastname: false,
-    subtext: false,
+    // lastname: false,
+    // subtext: false,
   };
+  isClicked = false;
   merchantRequiredFields = {
-    userImage: false,
+    // userImage: false,
     businessName: false,
-    businessType: false
+    // businessType: false
   }
 
   injectRequiredFunction(change: string, userType: 'both' | 'user' | 'merchant', propertyName: string) {
@@ -201,6 +202,34 @@ export class UserCreatorComponent implements OnInit {
     this.multistepFormData = params;
   }
 
+  switchButton = {
+    beforeIndex: 0,
+    component: SwitchButtonComponent,
+    inputs: {
+      isClicked: this.isClicked,
+      settings: {
+        leftText: 'ES UN NEGOCIO?',
+      },
+      containerStyles: {
+        paddingTop: '58px',
+        justifyContent: 'flex-end'
+      },
+      textStyles: {
+        fontFamily: 'SfProRegular',
+        paddingRight: '6px',
+        color: '#7B7B7B'
+      }
+    },
+    outputs: [
+      {
+        name: 'switched',
+        callback: (params) => {
+          this.changeMerchant();
+        },
+      }
+    ]
+  };
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -247,7 +276,7 @@ export class UserCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl('')
           },
-          label: 'Nombre:',
+          label: 'Nombre(*)',
           placeholder: 'Me llamo..',
           styles: {
             containerStyles: {
@@ -315,7 +344,7 @@ export class UserCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl('')
           },
-          label: 'Nombre del negocio',
+          label: 'Nombre del negocio(*)',
           placeholder: 'Nombre del negocio es..',
           styles: {
             containerStyles: {
@@ -350,7 +379,6 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
-          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'merchant', 'businessType')
         },
         injectSubmitButtom((params) => {
           const {
@@ -499,32 +527,7 @@ export class UserCreatorComponent implements OnInit {
         height: '30px'
       },
       embeddedComponents: [
-        {
-          beforeIndex: 0,
-          component: SwitchButtonComponent,
-          inputs: {
-            settings: {
-              leftText: 'ES UN NEGOCIO?',
-            },
-            containerStyles: {
-              paddingTop: '58px',
-              justifyContent: 'flex-end'
-            },
-            textStyles: {
-              fontFamily: 'SfProRegular',
-              paddingRight: '6px',
-              color: '#7B7B7B'
-            }
-          },
-          outputs: [
-            {
-              name: 'switched',
-              callback: (params) => {
-                this.changeMerchant();
-              },
-            }
-          ]
-        }
+        this.switchButton
       ]
     },
     {
@@ -613,6 +616,9 @@ export class UserCreatorComponent implements OnInit {
         },
         injectSubmitButtom((params) => {
           params.scrollToStep(0);
+          this.formSteps[0].embeddedComponents = [];
+          this.switchButton.inputs.isClicked = this.isClicked;
+          this.formSteps[0].embeddedComponents[0] = this.switchButton;
           window.scroll(0, 0);
         }, 1, "SALVAR METODOS DE RECIBIR $")
       ],
@@ -683,6 +689,16 @@ export class UserCreatorComponent implements OnInit {
           fontSize: '17px',
           padding: '0px'
         },
+        bubbleConfig: {
+          ...this.footerConfig.bubbleConfig
+        }
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0);
+        this.formSteps[0].embeddedComponents = [];
+        this.switchButton.inputs.isClicked = this.isClicked;
+        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        window.scroll(0, 0);
       },
       stepProcessingFunction: () => {
         const paymentMethodIcons = {
@@ -691,14 +707,29 @@ export class UserCreatorComponent implements OnInit {
 
         const dialogList: EntityLists[] = [
           {
-            name: !this.isMerchant ? (
-              this.formSteps[0].fieldsList[1].fieldControl.control.value  + 
-              ' ' + this.formSteps[0].fieldsList[2].fieldControl.control.value
-            ) : null,
-            title: 'Selecciona el método de pago que te convenga:',
+            name: !this.isMerchant && (
+              this.formSteps[0].fieldsList[1].fieldControl.control.value !== ''
+            ) ? this.formSteps[0].fieldsList[1].fieldControl.control.value :
+              !this.isMerchant && (
+                this.formSteps[0].fieldsList[1].fieldControl.control.value !== '' &&
+                this.formSteps[0].fieldsList[2].fieldControl.control.value !== ''
+              ) ? (
+                this.formSteps[0].fieldsList[1].fieldControl.control.value
+                  + ' ' + this.formSteps[0].fieldsList[2].fieldControl.control.value
+                ) : this.isMerchant && this.formSteps[0].fieldsList[4].fieldControl.control.value !== '' ?
+                    this.isMerchant && this.formSteps[0].fieldsList[4].fieldControl.control.value : '(NOMBRE)',
+            title: (
+                this.formSteps[1].fieldsList[0].fieldControl.control.value !== '' &&
+                this.formSteps[1].fieldsList[1].fieldControl.control.value !== '' &&
+                this.formSteps[1].fieldsList[2].fieldControl.control.value !== ''
+              ) ? 'Selecciona el método de pago que te convenga:' : null,
             type: !this.isMerchant ? 'Usuario' : 'Tienda',
-            isImageBase64: true,
-            image: this.formSteps[0].fieldsList[0].fieldControl.control.value,
+            isImageBase64: this.formSteps[0].fieldsList[0].fieldControl.control.value === '' ?
+              false : true,
+            image: this.formSteps[0].fieldsList[0].fieldControl.control.value !== '' ?
+              this.formSteps[0].fieldsList[0].fieldControl.control.value : 
+              '/user-default.png',
+            shoudlAllowDeactivation: true,
             options: [
               {
                 text: 'PayPal',
@@ -708,7 +739,8 @@ export class UserCreatorComponent implements OnInit {
                   width: 17,
                   height: 17
                 },
-                url: this.formSteps[1].fieldsList[0].fieldControl.control.value
+                url: this.formSteps[1].fieldsList[0].fieldControl.control.value,
+                active: this.formSteps[1].fieldsList[0].fieldControl.control.value !== ''
               },
               {
                 text: 'Venmo',
@@ -718,7 +750,8 @@ export class UserCreatorComponent implements OnInit {
                   width: 17,
                   height: 17
                 },
-                url: this.formSteps[1].fieldsList[2].fieldControl.control.value
+                url: this.formSteps[1].fieldsList[1].fieldControl.control.value,
+                active: this.formSteps[1].fieldsList[1].fieldControl.control.value !== ''
               },
               {
                 text: 'CashApp',
@@ -728,38 +761,39 @@ export class UserCreatorComponent implements OnInit {
                   width: 17,
                   height: 17
                 },
-                url: this.formSteps[1].fieldsList[3].fieldControl.control.value
+                url: this.formSteps[1].fieldsList[2].fieldControl.control.value,
+                active: this.formSteps[1].fieldsList[2].fieldControl.control.value !== ''
               },
-              {
-                text: 'Transferencia a Banco',
-                icon: {
-                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
-                  alt: 'field.label',
-                  width: 17,
-                  height: 17
-                },
-                url: ''
-              },
-              {
-                text: 'Tarjeta de Crédito',
-                icon: {
-                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
-                  alt: 'field.label',
-                  width: 17,
-                  height: 17
-                },
-                url: ''
-              },
-              {
-                text: 'YoYo App',
-                icon: {
-                  src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
-                  alt: 'field.label',
-                  width: 17,
-                  height: 17
-                },
-                url: ''
-              }
+              // {
+              //   text: 'Transferencia a Banco',
+              //   icon: {
+              //     src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+              //     alt: 'field.label',
+              //     width: 17,
+              //     height: 17
+              //   },
+              //   url: ''
+              // },
+              // {
+              //   text: 'Tarjeta de Crédito',
+              //   icon: {
+              //     src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+              //     alt: 'field.label',
+              //     width: 17,
+              //     height: 17
+              //   },
+              //   url: ''
+              // },
+              // {
+              //   text: 'YoYo App',
+              //   icon: {
+              //     src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg',
+              //     alt: 'field.label',
+              //     width: 17,
+              //     height: 17
+              //   },
+              //   url: ''
+              // }
             ]
           } 
         ]
@@ -909,6 +943,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
+        this.formSteps[0].embeddedComponents = [];
+        this.switchButton.inputs.isClicked = this.isClicked;
+        this.formSteps[0].embeddedComponents[0] = this.switchButton;
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1067,6 +1104,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
+        this.formSteps[0].embeddedComponents = [];
+        this.switchButton.inputs.isClicked = this.isClicked;
+        this.formSteps[0].embeddedComponents[0] = this.switchButton;
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1164,6 +1204,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
+        this.formSteps[0].embeddedComponents = [];
+        this.switchButton.inputs.isClicked = this.isClicked;
+        this.formSteps[0].embeddedComponents[0] = this.switchButton;
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1222,6 +1265,7 @@ export class UserCreatorComponent implements OnInit {
     })
 
     this.formSteps[0].optionalLinksTo.afterIndex = !this.isMerchant ? 3 : 5;
+    this.isClicked = !this.isClicked;
   }
 
 }

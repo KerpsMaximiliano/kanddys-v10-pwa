@@ -495,6 +495,11 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
           currentField.fieldControl.control.value +
           ') no-repeat center center / contain #fff'
           : null,
+      border: (
+        currentField.fieldControl.control.value === '' ||
+        !currentField.fieldControl.control.value
+      ) ? '1px solid dodgerblue' : 'none',
+      backgroundSize: 'cover',
       height: '200px',
       minWidth: '250px',
       ...currentField.styles.fieldStyles,

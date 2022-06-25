@@ -3,6 +3,7 @@ import { FormStep, FooterOptions, FormField } from 'src/app/core/types/multistep
 import { FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -204,7 +205,8 @@ export class Authentication implements OnInit {
     private multistepService: MultistepFormServiceService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private usersService: UsersService
   ) {
   }
 
@@ -216,6 +218,9 @@ export class Authentication implements OnInit {
         if(type === 'create-user') {
           this.type = type;
           this.storedFormData = this.multistepService.getMultiStepFormData('user-creation');
+
+          if(!this.storedFormData) this.router.navigate(['ecommerce/error-screen']);
+
           this.formSteps[0].fieldsList[0].label = '¿En cuál # de WhatsApp guardarás el contacto?';
           this.formSteps[0].fieldsList[0].bottomLabel = {
             text: 'Otras maneras de guardar >',
@@ -233,8 +238,6 @@ export class Authentication implements OnInit {
                 const { essentialData } = this.storedFormData;
                 const { 
                   isMerchant,
-                  userRequiredFields,
-                  merchantRequiredFields,
                   businessName,
                   businessType,
                   lastname,
@@ -252,7 +255,6 @@ export class Authentication implements OnInit {
                   address
                 } = essentialData;
 
-                console.log("Banco", bankInfo, essentialData)
   
                 if(!isMerchant) {
                   const phoneNumber = params.dataModel.get('1').value.phoneNumber.e164Number.split('+')[1];
@@ -260,16 +262,23 @@ export class Authentication implements OnInit {
                   const foundUser = await this.authService.checkUser(phoneNumber);
 
                   if(!foundUser) {
+                    const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
+                      return socials[socialNetworkKey].length > 0 ? true : false;
+                    })
+                    .map(socialNetworkKey => ({
+                      name: socialNetworkKey,
+                      url: socials[socialNetworkKey]
+                    }));
+                    
                     const createdUser = await this.authService.signup({
                       phone: phoneNumber,
                       email,
                       name,
                       lastname,
                       bio: subtext,
-                      social: Object.keys(socials).map(socialNetworkKey => ({
-                        name: socialNetworkKey,
-                        url: socials[socialNetworkKey]
-                      }))
+                      social: socialsFiltered,
+                      facebook: socials.facebook,
+                      instagram: socials.instagram
                     }, 'none', null, true, base64ToFile(userImage));
 
 
@@ -280,9 +289,30 @@ export class Authentication implements OnInit {
                       'NewUser',
                       {
                         type: 'from-user-creation',
-                        venmo,
-                        paypal,
-                        cashapp
+                        jsondata: JSON.stringify({
+                          exchangeData: {
+                            electronicPayment: [
+                              {
+                                link: venmo
+                              },
+                              {
+                                link: paypal
+                              },
+                              {
+                                link: cashapp
+                              }
+                            ],
+                            bank: Object.keys(bankInfo).length > 3 ? [
+                              {
+                                bankName: bankInfo.bankName,
+                                account: bankInfo.accountNumber,
+                                isActive: true,
+                                ownerAccount: bankInfo.owner,
+                                routingNumber: bankInfo.socialID
+                              }
+                            ] : null
+                          }
+                        })
                       }  
                     );
 
@@ -296,6 +326,48 @@ export class Authentication implements OnInit {
                       customClass: 'app-dialog',
                       flags: ['no-header'],
                     });
+                  } else {
+                    const userImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
+                    const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
+                      return socials[socialNetworkKey].length > 0 ? true : false;
+                    })
+                    .map(socialNetworkKey => ({
+                      name: socialNetworkKey,
+                      url: socials[socialNetworkKey]
+                    }));
+
+                    const magicLinkCreated = await this.authService.generateMagicLink(
+                      phoneNumber,
+                      '/ecommerce/user-contact-landing',
+                      foundUser._id,
+                      'UserUpdate',
+                      {
+                        type: 'from-user-creation-update',
+                        jsondata: JSON.stringify({
+                          email,
+                          name,
+                          lastname,
+                          bio: subtext,
+                          social: socialsFiltered,
+                          facebook: socials.facebook,
+                          instagram: socials.instagram,
+                        }),
+                      },
+                      [
+                        userImageConverted
+                      ]
+                    );
+
+                    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                      type: 'centralized-fullscreen',
+                      props: {
+                        icon: magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
+                        message: magicLinkCreated ? 
+                          "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
+                      },
+                      customClass: 'app-dialog',
+                      flags: ['no-header'],
+                    });
                   }
   
                   // await this.authService.generateMagicLink(phoneNumber, `ecommerce/user-contact-landing/`, null, 'NewUser', {
@@ -304,7 +376,6 @@ export class Authentication implements OnInit {
                 } 
 
                 if(isMerchant) {
-
                   const phoneNumber = params.dataModel.get('1').value.phoneNumber.e164Number.split('+')[1];
                   
                   const foundUser = await this.authService.checkUser(phoneNumber);
@@ -354,6 +425,144 @@ export class Authentication implements OnInit {
                       customClass: 'app-dialog',
                       flags: ['no-header'],
                     });
+                  } else {
+                    const defaultMerchant = await this.merchantService.merchantDefault();
+                    
+                    const merchantImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
+                    const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
+                      return socials[socialNetworkKey].length > 0 ? true : false;
+                    })
+                    .map(socialNetworkKey => ({
+                      name: socialNetworkKey,
+                      url: socials[socialNetworkKey]
+                    }));
+
+                    if(!defaultMerchant) {
+                      const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
+                        name: businessName,
+                        bio: businessType,
+                        image: merchantImageConverted
+                      });
+                      
+                      const magicLinkCreated = await this.authService.generateMagicLink(
+                        phoneNumber, 
+                        "/ecommerce/user-contact-landing",
+                        foundUser._id,
+                        'NewMerchantToExistingUser',
+                        {
+                          type: 'from-merchant-creation-user-exists',
+                          merchantId: createdMerchant._id,
+                          jsondata: JSON.stringify({
+                            userData: {
+                              phone: phoneNumber,
+                              email,
+                              social: socialsFiltered,
+                              instagram: socials.instagram,
+                              facebook: socials.facebook
+                            },
+                            exchangeData: {
+                              electronicPayment: [
+                                {
+                                  link: venmo
+                                },
+                                {
+                                  link: paypal
+                                },
+                                {
+                                  link: cashapp
+                                }
+                              ],
+                              bank: [
+                                {
+                                  bankName: bankInfo.bankName,
+                                  account: bankInfo.accountNumber,
+                                  isActive: true,
+                                  ownerAccount: bankInfo.owner,
+                                  routingNumber: bankInfo.socialID
+                                }
+                              ]
+                            }
+                          })
+                        } 
+                      );
+
+                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                        type: 'centralized-fullscreen',
+                        props: {
+                          icon: createdMerchant && magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
+                          message: createdMerchant && magicLinkCreated ? 
+                            "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
+                        },
+                        customClass: 'app-dialog',
+                        flags: ['no-header'],
+                      });
+                    } else {
+                      const magicLinkCreated = await this.authService.generateMagicLink(
+                        phoneNumber, 
+                        "/ecommerce/user-contact-landing",
+                        foundUser._id,
+                        'UpdateExistingMerchant',
+                        {
+                          type: 'update-merchant',
+                          merchantId: defaultMerchant._id,
+                          jsondata: JSON.stringify({
+                            userData: {
+                              name: businessName,
+                              phone: phoneNumber,
+                              email,
+                              social: socialsFiltered,
+                              instagram: socials.instagram,
+                              facebook: socials.facebook
+                            },
+                            merchantData: {
+                              name: businessName,
+                              email,
+                              bio: businessType,
+                              social: socialsFiltered,
+                              instagram: socials.instagram,
+                              facebook: socials.facebook
+                            },
+                            exchangeData: {
+                              electronicPayment: [
+                                {
+                                  link: venmo
+                                },
+                                {
+                                  link: paypal
+                                },
+                                {
+                                  link: cashapp
+                                }
+                              ],
+                              bank: Object.keys(bankInfo).length > 3 ? [
+                                {
+                                  bankName: bankInfo.bankName,
+                                  account: bankInfo.accountNumber,
+                                  isActive: true,
+                                  ownerAccount: bankInfo.owner,
+                                  routingNumber: bankInfo.socialID
+                                }
+                              ] : null
+                            }
+                          })
+                        },
+                        [
+                          merchantImageConverted
+                        ]
+                      );
+
+                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                        type: 'centralized-fullscreen',
+                        props: {
+                          icon: magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
+                          message: magicLinkCreated ? 
+                            "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
+                        },
+                        customClass: 'app-dialog',
+                        flags: ['no-header'],
+                      });
+                    }
+
                   }
                 }
               } catch (error) {

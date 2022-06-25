@@ -56,9 +56,11 @@ shouldScrollBackwards &&
     <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
       <div class="form-step" [ngStyle]="!steps[currentStepIndex].hideHeader ? {
       paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
-      minHeight: dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
-        ? 'calc(100vh - 55px)'
-        : 'calc(100vh - 38px)'
+      minHeight: steps[currentStepIndex].customStickyButton ?
+      'calc(100vh - ' + steps[currentStepIndex].customStickyButton.height + ')' :
+        dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+          ? 'calc(100vh - 55px)'
+          : 'calc(100vh - 38px)'
     } : steps[currentStepIndex].styles ? spreadOperator(steps[currentStepIndex].styles, {
       paddingTop: '0px'
     }) : null" 

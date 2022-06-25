@@ -25,6 +25,41 @@ const socialNames = [
   'facebook',
 ]
 
+const deleteIrrelevantDataFromObject = (dataObject) => {
+  Object.keys(dataObject).forEach(key => {
+    if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
+      delete dataObject[key];
+    }
+
+    if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
+      dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
+    }
+
+    if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
+      dataObject[key].forEach((element, index) => {
+        //Delete irrelevant content from array indexes that arent nested arrays
+        if(typeof element === 'object' && !Array.isArray(element)) {
+          dataObject[key][index] = deleteIrrelevantDataFromObject(element);
+        }
+
+        //Delete irrelevant content from array indexes that are nested arrays
+        if(typeof element === 'object' && Array.isArray(element)) {
+          element.forEach((innerElement, index2) => {
+            if(
+              typeof innerElement === 'object' && 
+              !Array.isArray(innerElement)
+            ) {
+              dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
+            }
+          })
+        }
+      })
+    }
+  })
+
+  return dataObject;
+}
+
 @Component({
   selector: 'app-user-contact-landing',
   templateUrl: './user-contact-landing.component.html',
@@ -69,8 +104,26 @@ export class UserContactLandingComponent implements OnInit {
           bankName,
           accountNumber,
           owner,
-          socialID
+          socialID,
+          jsondata,
+          file0
         } = queryParams;
+        const urlWithoutQueryParams = this.router.url.split('?')[0]
+
+        if(type === 'from-user-creation') {
+          const parsedData = JSON.parse(decodeURIComponent(jsondata));
+
+          const relevantData = deleteIrrelevantDataFromObject(parsedData);
+
+          if(
+            relevantData.exchangeData && (
+              Object.keys(relevantData.exchangeData.bank[0]).length > 4 ||
+              (relevantData.exchangeData.electronicPayment?.length > 0) 
+            ) 
+          ) {
+            await this.walletService.createExchangeData(relevantData.exchangeData);
+          }
+        }
 
         if(type === 'from-merchant-creation' && merchantId) {
           const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
@@ -105,6 +158,78 @@ export class UserContactLandingComponent implements OnInit {
               }],
               electronicPayment
             });
+          }
+
+          window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
+        }
+
+        if(type === 'from-user-creation-update') {
+
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const userImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+  
+            if(userImage) relevantData.image = userImage;
+
+            const updatedUser = await this.authService.updateMe(relevantData);
+
+            window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if(type === 'from-merchant-creation-user-exists' && merchantId) {
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const merchantImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+            
+            const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
+            
+            const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+              merchant: merchant._id,
+              name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
+              items: []
+            });
+
+            console.log(merchant._id);
+            
+            await this.merchantsService.setDefaultMerchant(merchant._id);
+            await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+
+            if(merchant) {
+              if(file0) {
+                relevantData.userData.image = merchantImage;
+              };
+              await this.authService.updateMe(relevantData.userData);
+              // await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
+              await this.walletService.createExchangeData(relevantData.exchangeData);
+            }
+
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if(type === 'update-merchant' && merchantId) {
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const merchantImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+            
+            if(file0) relevantData.merchantData.image = merchantImage;
+            if(file0) relevantData.userData.image = merchantImage;
+
+            await this.authService.updateMe(relevantData.userData);
+            await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
+            await this.walletService.createExchangeData(relevantData.exchangeData);
+          } catch (error) {
+            console.log(error);
           }
         }
 

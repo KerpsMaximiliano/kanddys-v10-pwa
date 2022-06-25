@@ -156,7 +156,7 @@ export class MerchantsService {
   async merchantDefault(userId?: string): Promise<Merchant> {
     try {
       const response = await this.graphql.query({
-        query: merchantDefault2,
+        query: merchantDefault,
         variables: { userId },
         fetchPolicy: 'no-cache',
       });
@@ -192,7 +192,7 @@ export class MerchantsService {
   async createMerchant(input: MerchantInput): Promise<{ createMerchant: Merchant }> {
     console.log(input);
     const result = await this.graphql.mutate({
-      mutation: createMerchant2,
+      mutation: createMerchant,
       variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },

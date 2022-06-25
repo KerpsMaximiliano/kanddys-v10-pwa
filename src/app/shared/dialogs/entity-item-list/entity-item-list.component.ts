@@ -9,10 +9,12 @@ export interface EntityLists {
   name?: string,
   type?: string,
   options?: options[];
+  shoudlAllowDeactivation?: boolean;
 }
 
 interface options{
     text?: string,
+    active?: boolean;
     icon?: {
         src: string,
         alt?: string,
