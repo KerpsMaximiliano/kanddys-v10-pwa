@@ -277,7 +277,7 @@ export class Authentication implements OnInit {
           this.formSteps[0].asyncStepProcessingFunction = {
             type: 'promise',
             function: async (params) => {
-              try {
+          
                 const { essentialData } = this.storedFormData;
                 const { 
                   isMerchant,
@@ -322,7 +322,7 @@ export class Authentication implements OnInit {
                       social: socialsFiltered,
                       facebook: socials.facebook,
                       instagram: socials.instagram
-                    }, 'none', null, true, base64ToFile(userImage));
+                    }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
 
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
@@ -373,6 +373,7 @@ export class Authentication implements OnInit {
                       params.scrollToStep(1);
                     }
                   } else {
+                    console.log("!founduser");
                     const userImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
                       return socials[socialNetworkKey].length > 0 ? true : false;
@@ -440,7 +441,7 @@ export class Authentication implements OnInit {
                         name: socialNetworkKey,
                         url: socials[socialNetworkKey]
                       }))
-                    }, 'none', null, true, base64ToFile(userImage));
+                    }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
                     
                     const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
                       name: businessName,
@@ -623,17 +624,7 @@ export class Authentication implements OnInit {
                     }
                   }
                 }
-              } catch (error) {
-                this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                  type: 'centralized-fullscreen',
-                  props: {
-                    icon: 'sadFace.svg',
-                    message: 'Ocurrió un problema'
-                  },
-                  customClass: 'app-dialog',
-                  flags: ['no-header'],
-                });
-              }
+              
             }
           }
         } else {
