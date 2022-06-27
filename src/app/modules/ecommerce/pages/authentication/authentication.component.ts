@@ -538,16 +538,19 @@ export class Authentication implements OnInit {
                         } 
                       );
 
-                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                        type: 'centralized-fullscreen',
-                        props: {
-                          icon: createdMerchant && magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
-                          message: createdMerchant && magicLinkCreated ? 
-                            "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
-                        },
-                        customClass: 'app-dialog',
-                        flags: ['no-header'],
-                      });
+                      if(!createdMerchant || !magicLinkCreated) {
+                        this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                          type: 'centralized-fullscreen',
+                          props: {
+                            icon: 'sadFace.svg',
+                            message: 'Ocurrió un problema'
+                          },
+                          customClass: 'app-dialog',
+                          flags: ['no-header'],
+                        });
+                      } else {
+                        params.scrollToStep(1);
+                      }
                     } else {
                       const magicLinkCreated = await this.authService.generateMagicLink(
                         phoneNumber, 
@@ -603,22 +606,23 @@ export class Authentication implements OnInit {
                         ]
                       );
 
-                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                        type: 'centralized-fullscreen',
-                        props: {
-                          icon: magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
-                          message: magicLinkCreated ? 
-                            "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
-                        },
-                        customClass: 'app-dialog',
-                        flags: ['no-header'],
-                      });
+                      if(!magicLinkCreated) {
+                        this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                          type: 'centralized-fullscreen',
+                          props: {
+                            icon: 'sadFace.svg',
+                            message: 'Ocurrió un problema'
+                          },
+                          customClass: 'app-dialog',
+                          flags: ['no-header'],
+                        });
+                      } else {
+                        params.scrollToStep(1);
+                      }
                     }
-
                   }
                 }
               } catch (error) {
-                
                 this.dialog.open(GeneralFormSubmissionDialogComponent, {
                   type: 'centralized-fullscreen',
                   props: {
@@ -628,7 +632,6 @@ export class Authentication implements OnInit {
                   customClass: 'app-dialog',
                   flags: ['no-header'],
                 });
-
               }
             }
           }
