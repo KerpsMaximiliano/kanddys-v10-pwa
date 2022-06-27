@@ -1229,6 +1229,13 @@ export class UserCreatorComponent implements OnInit {
 
     if(storedData) {
       this.formSteps = storedData.reference;
+      this.isClicked = storedData.essentialData.isMerchant;
+
+      this.formSteps[0].embeddedComponents = [];
+      this.switchButton.inputs.isClicked = this.isClicked;
+      this.formSteps[0].embeddedComponents[0] = this.switchButton;
+
+      this.isMerchant = storedData.essentialData.isMerchant;
       this.userRequiredFields = storedData.essentialData.userRequiredFields;
       this.merchantRequiredFields = storedData.essentialData.merchantRequiredFields;
       this.multistepFormService.removeMultiStepFormData('user-creation');

@@ -399,9 +399,10 @@ export class Authentication implements OnInit {
                           instagram: socials.instagram,
                         }),
                       },
+                      userImageConverted ?
                       [
                         userImageConverted
-                      ]
+                      ] : null
                     );
 
                     if(!magicLinkCreated) {
@@ -601,9 +602,9 @@ export class Authentication implements OnInit {
                             }
                           })
                         },
-                        [
+                        merchantImageConverted ? [
                           merchantImageConverted
-                        ]
+                        ] : null
                       );
 
                       if(!magicLinkCreated) {
