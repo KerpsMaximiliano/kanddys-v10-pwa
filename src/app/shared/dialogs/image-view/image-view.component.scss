@@ -31,3 +31,14 @@
       background-color: #fdd852;
     }
 }
+
+@media only screen and (max-height: 600px) {
+    .inner-wrapper {
+        height: 70vh !important;
+        min-height: auto !important;
+    }
+
+    .preview-btn{
+        margin-top: 11px !important;
+    }
+}
