@@ -58,6 +58,7 @@ interface CanvasElement {
     color?: {
       name: string;
       fixedValue: string;
+      nickname: string;
     };
     number: number;
     url?: string;
@@ -70,6 +71,7 @@ interface CanvasElement {
     color: {
       name: string;
       fixedValue: string;
+      nickname: string;
     };
     fixSizeOnly: boolean;
     number: number;
@@ -88,13 +90,14 @@ interface TextData {
   imageText: string;
   fontSize: string;
   fontStyle: string;
-  fontColor: { name: string; fixedValue: string };
+  fontColor: { name: string; fixedValue: string, nickname: string };
 }
 
-const allColors: { name: string; fixedValue: string }[] = [
+const allColors: { name: string; fixedValue: string, nickname: string }[] = [
   {
     name: 'Default',
     fixedValue: '#D5D5D5',
+    nickname: 'Default',
   },
 ];
 
@@ -187,7 +190,7 @@ export class PostCustomizerComponent
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253683952.svg',
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253684463.svg',
   ];
-  stickerColors: { name: string; fixedValue: string }[] = allColors;
+  stickerColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
   currentStickersAmount: number = 0;
   stickerMax: boolean = false;
   stickerColor: string = '';
@@ -198,7 +201,7 @@ export class PostCustomizerComponent
   canDraw: boolean = false;
   lineWidth: number = 2;
   lineColor: string = '#D5D5D5';
-  lineColors: { name: string; fixedValue: string }[] = allColors;
+  lineColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
   // LÁPIZ
 
   // TIPOGRAFIA
@@ -210,6 +213,7 @@ export class PostCustomizerComponent
     fontColor: {
       fixedValue: '#D5D5D5',
       name: 'Default',
+      nickname: 'Default',
     },
   };
   fontStyles: string[] = [
@@ -292,7 +296,7 @@ export class PostCustomizerComponent
       fontName: 'Onyx',
     },
   ];
-  fontColors: { name: string; fixedValue: string }[] = allColors;
+  fontColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
   currentTextsAmount: number = 0;
   currentMaxLength: number;
   textMax: boolean = false;
@@ -502,7 +506,7 @@ export class PostCustomizerComponent
               fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
               fontColor: text.onlyFixedColor
                 ? text.fixedColors[0]
-                : { fixedValue: '#ffffff', name: 'Default' },
+                : { fixedValue: '#ffffff', name: 'Default', nickname: 'Default' },
               fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
             };
             this.typographyData = textData;
@@ -1108,7 +1112,7 @@ export class PostCustomizerComponent
     return !this.elementList[this.modifyingElement].fixPositionOnly;
   }
 
-  getStickerColors(): { name: string; fixedValue: string }[] {
+  getStickerColors(): { name: string; fixedValue: string, nickname: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.stickers.fixedAmountItems) {
         const element = this.elementList[this.modifyingElement].sticker.number;
@@ -1194,7 +1198,7 @@ export class PostCustomizerComponent
   }
 
   // Changes sticker color, only should work on unicolor stickers
-  onChangeStickerColor(color: { name: string; fixedValue: string }) {
+  onChangeStickerColor(color: { name: string; fixedValue: string, nickname: string }) {
     this.elementList.forEach((element) => {
       if (element.sticker) {
         const newSticker = element.sticker;
@@ -1266,7 +1270,7 @@ export class PostCustomizerComponent
     url: string,
     element: CanvasElement,
     srcUrl: string,
-    color?: { name: string; fixedValue: string }
+    color?: { name: string; fixedValue: string, nickname: string }
   ) {
     element.sticker.url = srcUrl;
     let canvasSticker = new Image();
@@ -1307,6 +1311,7 @@ export class PostCustomizerComponent
       element.sticker.color = {
         fixedValue: '#' + currentColor[0],
         name: color.name,
+        nickname: color.nickname
       };
     }
     // Temporal
@@ -1335,7 +1340,7 @@ export class PostCustomizerComponent
   // Sends a sticker for modification or adds a new one
   addSticker(url: string, id: number) {
     let srcUrl: string;
-    let specifiedColor: { name: string; fixedValue: string };
+    let specifiedColor: { name: string; fixedValue: string, nickname: string };
     if (this.customizerRules.stickers.fixedAmountItems) {
       if (this.modifyingSticker >= 0) {
         if (
@@ -1537,6 +1542,7 @@ export class PostCustomizerComponent
         stickerElements[current].sticker.color = {
           fixedValue: '#' + currentColor[0],
           name: 'color',
+          nickname: 'nickname'
         };
       }
     };
@@ -1711,7 +1717,7 @@ export class PostCustomizerComponent
     }
   }
 
-  getFontColors(): { name: string; fixedValue: string }[] {
+  getFontColors(): { name: string; fixedValue: string, nickname: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.texts.fixedAmountItems) {
         const element =
@@ -1743,7 +1749,7 @@ export class PostCustomizerComponent
   }
 
   // Changes font color. If not editing text, draws the new color
-  onChangeFontColor(color: { name: string; fixedValue: string }) {
+  onChangeFontColor(color: { name: string; fixedValue: string, nickname: string }) {
     this.typographyData.fontColor = color;
     if (this.isEditing) return;
     const element = this.elementList[this.modifyingElement];
@@ -2506,7 +2512,8 @@ export class PostCustomizerComponent
         backgroundColor: {
           color: {
             fixedValue: this.selectedBackgroundColor.fixedValue,
-            name: this.selectedBackgroundColor.name
+            name: this.selectedBackgroundColor.name,
+            nickname: null,
           },
         },
         canvas: {
