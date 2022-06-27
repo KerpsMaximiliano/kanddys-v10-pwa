@@ -18,7 +18,6 @@ interface config  {
     return?: boolean,
     shopcart?: boolean,
     whatsapp?: boolean,
-    fixed?: boolean,
     edit?: boolean,
     batch?: boolean,
     dots?: boolean,
@@ -41,10 +40,81 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() public shopCartCallback: () => void;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;
+    @Input() inMall: boolean;
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
     @Input() filter: string;
     @Input() config?: config;
+
+    @Input() mainText?: {
+        text: string,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
+    };
+    @Input() leftText?: {
+        text: string,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
+    };
+    @Input() rightText?: {
+        text: string,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
+    };
+    @Input() extraTexts?: {
+        itemId?: string,
+        billId?: string,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
+    };
+    @Input() plus?: {
+        active: boolean,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
+    };
+    @Input() icon?: {
+        src: string,
+        alt?: string,
+        filter?: string,
+        width?: number,
+        height?: number
+    };
+    @Input() dots?: {
+        active: boolean,
+        color?: string,
+        func?: () => void
+    };
+    @Input() search?: {
+        active: boolean,
+        filter?: string,
+        func?: () => void
+    };
+    @Input() upload?: {
+        active: boolean,
+        filter?: string,
+        func?: () => void
+    };
+    @Input() edit?:{
+        active: boolean,
+        batch: boolean,
+        bgColor?: string,
+        color?: string
+    };
+    @Input() shopcart?:{
+        active: boolean,
+        cartAmount: number,
+        filter?: string
+    };
+    @Input() whatsapp?: {
+        active: boolean,
+        filter?: string
+    };
+    
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
