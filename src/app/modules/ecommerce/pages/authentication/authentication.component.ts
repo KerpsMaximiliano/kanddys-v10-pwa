@@ -351,7 +351,7 @@ export class Authentication implements OnInit {
                                 account: bankInfo.accountNumber,
                                 isActive: true,
                                 ownerAccount: bankInfo.owner,
-                                routingNumber: bankInfo.socialID
+                                routingNumber: Number(bankInfo.socialID)
                               }
                             ] : null
                           }
@@ -532,7 +532,7 @@ export class Authentication implements OnInit {
                                   account: bankInfo.accountNumber,
                                   isActive: true,
                                   ownerAccount: bankInfo.owner,
-                                  routingNumber: bankInfo.socialID
+                                  routingNumber: Number(bankInfo.socialID)
                                 }
                               ]
                             }
@@ -597,7 +597,7 @@ export class Authentication implements OnInit {
                                   account: bankInfo.accountNumber,
                                   isActive: true,
                                   ownerAccount: bankInfo.owner,
-                                  routingNumber: bankInfo.socialID
+                                  routingNumber: Number(bankInfo.socialID)
                                 }
                               ] : null
                             }

@@ -60,6 +60,7 @@ import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
+import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 
 const routes: Routes = [
   {
@@ -396,6 +397,7 @@ const routes: Routes = [
     MyCustomersComponent,
     UserCreatorComponent,
     UserContactLandingComponent,
+    HeavenlyBalloonsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
