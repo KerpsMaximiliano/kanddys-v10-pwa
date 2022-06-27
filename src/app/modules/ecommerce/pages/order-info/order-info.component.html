@@ -61,6 +61,7 @@
                 [src]="item.item.images[0]"
                 alt="no-image"
                 class="image-item"
+                (click)="openImageModal(item.item.images[0])"
               />
             </ng-container>
             <ng-template #elseTemplate>
@@ -99,6 +100,7 @@
               [src]="order.itemPackage.images[0]"
               alt="no-image"
               class="image-item"
+              (click)="openImageModal(order.itemPackage.images[0])"
             />
             <div class="list-item-content">
               <div class="item">
