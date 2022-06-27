@@ -2,9 +2,9 @@
 	<ng-container *ngIf="inSearch">
 		<app-helper-headerv2
 			[mode]="'center'"
-            [config]="{
+            [returnAble]="true"
+            [mainText]="{
                 text: 'Salir De La Busqueda',
-                return: true,
                 pointer: true
             }"
 			(click)="searchToggle()"
@@ -25,12 +25,16 @@
 
 	<ng-container *ngIf="!inSearch">
 		<app-helper-headerv2
-        [config]="{
+        [mainText]="{
             text: 'Ventas',
-            fontSize: '21px',
-            search: true,
-            dots: true,
-            return: true
+            fontSize: '21px'
+        }"
+        [returnAble]="true"
+        [search]="{
+            active: true
+        }"
+        [dots]="{
+            active: true
         }"
 		(searchEvent)="searchToggle()"
 		(dotEvent)="openDialog()"

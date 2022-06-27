@@ -2,10 +2,12 @@
 
     <!-- Top bar -->
     <app-helper-headerv2 [mode]="'edit'"
-        [config]="{
-            text: merchant ? 'Etiquetas de ' + merchant.name : 'Etiquetas de CompradorId',
-            return: true,
-            edit: true
+        [mainText]="{
+            text: merchant ? 'Etiquetas de ' + merchant.name : 'Etiquetas de CompradorId'
+        }"
+        [returnAble]="true"
+        [edit]="{
+            active: true
         }"
         [bgColor]="'#2874AD'" 
         [color]="'#E9E371'"

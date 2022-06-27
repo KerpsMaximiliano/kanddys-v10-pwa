@@ -1,14 +1,19 @@
 <div class="container">
   <app-helper-headerv2 
   [mode]="'basic'"
-  [config]="{
+  [mainText]="{
     text: 'Mis Compradores',
-    fontSize: '21px',
-    return: true,
-    batch: true,
-    plus: true,
-    plusSize: '29px'
-  }" 
+    fontSize: '21px'
+  }"
+  [edit]="{
+    active: true,
+    batch: true
+  }"
+  [plus]="{
+    active: true,
+    fontSize: '29px'
+  }"
+  [returnAble]="true"
   [color]="'#E9E371'">
   </app-helper-headerv2>
 
