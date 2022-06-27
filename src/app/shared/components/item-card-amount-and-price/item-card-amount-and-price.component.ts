@@ -129,7 +129,6 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
   }
 
   imageEventTrigger() {
-    console.log("JEJEJ");
     this.imageClicked.emit();
   }
 
