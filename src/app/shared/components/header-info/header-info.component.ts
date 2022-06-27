@@ -1,9 +1,10 @@
-import { Component, OnInit, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocialMediaModel } from 'src/app/core/models/saleflow';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import { MerchantInfoComponent } from '../../dialogs/merchant-info/merchant-info.component';
+
 
 @Component({
   selector: 'app-header-info',
@@ -21,13 +22,22 @@ export class HeaderInfoComponent implements OnInit {
   @Input() title: string;
   @Input() description: string;
   @Input() description2: string;
+  @Input() featuredText: {
+    text: string,
+    styles: string
+  }
   @Input() socials: SocialMediaModel[];
   @Input() customStyles: Record<string, Record<string, string>> = null;
   @Input() reverseInfoOrder: boolean = false;
   @Input() hasSocials: boolean;
+  @Input() type: string;
+  @Input() route: string;
   regex = /\D/g;
   env: string = environment.assetsUrl;
   showMore: boolean;
+
+  @Output() featuredTextEvent = new EventEmitter<boolean>();
+  @Output() clickedImage = new EventEmitter();
 
   constructor(
     private dialogService: DialogService,
@@ -37,7 +47,8 @@ export class HeaderInfoComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openDialog() {
+  openInfo(type) {
+    if(type === 'dialog' || !type){
     this.dialogService.open(MerchantInfoComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -50,10 +61,20 @@ export class HeaderInfoComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+      } else if(type === 'route') {
+        this.router.navigate([`/ecommerce/${this.route}`]);
+      }
   }
 
   redirect() {
     this.router.navigate(['/ecommerce/user-creator']);
   }
 
+  triggerFeaturedText() {
+    this.featuredTextEvent.emit(true);
+  }
+
+  clickOnImage(event){
+    this.clickedImage.emit(event)
+  }
 }

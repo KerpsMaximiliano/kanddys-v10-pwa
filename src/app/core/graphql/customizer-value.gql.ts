@@ -44,6 +44,7 @@ export const customizerValue = `
       color {
         name
         fixedValue
+        nickname
       }
     }
   }
@@ -51,6 +52,7 @@ export const customizerValue = `
     color {
       name
       fixedValue
+      nickname
     }
     text
     font

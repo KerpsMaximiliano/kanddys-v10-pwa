@@ -68,6 +68,7 @@
           [price]="!hasCustomizer && item.pricing"
           [imgURL]="item.images ? item.images[0] : ''"
           [showPrice]="item.customizerId ? false : true"
+          [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
           (itemClicked)="onClick(i)"
           (changeSelection)="toggleSelected('item', i)"
           [priceAlign]="'start'"

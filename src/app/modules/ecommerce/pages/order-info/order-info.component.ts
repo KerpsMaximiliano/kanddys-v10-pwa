@@ -23,6 +23,7 @@ import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { StatusListComponent } from 'src/app/shared/dialogs/status-list/status-list.component';
 import { ItemStatus } from 'src/app/shared/components/item-status/item-status.component';
 import { Post } from 'src/app/core/models/post';
+import { Merchant } from 'src/app/core/models/merchant';
 moment.locale('es');
 
 @Component({
@@ -154,7 +155,9 @@ export class OrderInfoComponent implements OnInit {
   fotodavitte: boolean = false;
   customizerDetails: { name: string; value: string }[] = [];
   isValidMessage: boolean = false;
-
+  ruta: string;
+  merchantId: string;
+  isMerchantView: boolean = false;
   ngOnInit(): void {
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
@@ -166,6 +169,8 @@ export class OrderInfoComponent implements OnInit {
         if (data != undefined) {
           if (data.order.itemPackage) this.existPackage = true;
           this.order = data.order;
+          this.ruta = `user-contact-landing/${this.order.items[0].saleflow.merchant.owner._id}`;
+          this.merchantId = data.order.items[0].saleflow._id;
           this.notifications = data.order.userNotifications;
           this.items = data.order.items;
           this.showHeader = this.headerService.fromOrderSales ? true : false;
@@ -481,6 +486,11 @@ export class OrderInfoComponent implements OnInit {
         window.open(`https://wa.me/19188156444?text=Pedido%20de%20Foto%20Davitte`);
       } */
     });
+
+    this.route.queryParams.subscribe(params => {
+      const { viewtype } = params;
+      if (viewtype === 'merchant') this.isMerchantView = true;
+    });
   }
 
   openStatusDialog() {
@@ -540,6 +550,14 @@ export class OrderInfoComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  redirectToUserContact() {
+    this.router.navigate([`/ecommerce/user-contact-landing/${this.order.user._id}`]);
+  }
+
+  redirectToMegaphone() {
+    this.router.navigate([`/ecommerce/megaphone-v3/${this.merchantId}`])
   }
 
   wichName(e) {

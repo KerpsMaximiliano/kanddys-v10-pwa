@@ -52,6 +52,7 @@ export const customizer =`
         colors {
           name
           fixedValue
+          nickname
         }
       }
     }
@@ -68,6 +69,7 @@ export const customizer =`
       fixedColors {
         name
         fixedValue
+        nickname
       }
       fixPositionOnly
       fixPosition {

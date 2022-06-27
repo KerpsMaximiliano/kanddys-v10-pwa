@@ -74,6 +74,7 @@ export const merchantDefault = gql`
       name
       showItems
       image
+      bio
       owner {
         _id
       }
@@ -90,6 +91,8 @@ export const merchantDefault2 = gql`
     merchantDefault(userId: $userId) {
       _id
       name
+      bio
+      image
       owner {
         _id
       }

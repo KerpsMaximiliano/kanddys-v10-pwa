@@ -2,7 +2,7 @@
     <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
         <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
             <img *ngIf="profileImage else placeholder" [src]="profileImage" alt="profile-image"
-                class="image-profile">
+                class="image-profile" (click)="clickOnImage($event)">
             <ng-template #placeholder>
                 <div class="placeholder"></div>
             </ng-template>
@@ -19,7 +19,7 @@
                         {{simple ? description : title}}
                     </h2>
                     <p class="header-desc" [ngStyle]="customStyles?.subtitle">
-                        {{simple ? title : description}}
+                        {{simple ? title : description}} <span [ngStyle]="{ 'color': featuredText.styles, 'cursor': 'pointer', 'font-weight': 'bold' }" (click)="triggerFeaturedText()" *ngIf="featuredText">{{ featuredText.text }}</span>
                     </p>
                 </ng-container>
     
@@ -34,7 +34,7 @@
                 <p class="header-desc" *ngIf="!simple && description2">{{description2}}</p>
             </div>
             <div class="more-info-button" *ngIf="socials?.length">
-                <span (click)="openDialog()">
+                <span (click)="openInfo(type)">
                     <img class="blue" [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
                 </span>
             </div>
@@ -42,10 +42,10 @@
         <div class="content expanded" *ngIf="mode === 'expanded'">
             <div class="main">
                 <div>
-                    <h6 class="header-name">
+                    <div class="header-name">
                         <span class="title">{{title}}</span>
-                        <span class="type" *ngIf="merchant">,TIENDA</span>
-                    </h6>
+                        <span class="type" *ngIf="merchant">, TIENDA</span>
+                    </div>
                     <p class="header-desc">
                         {{description}}
                     </p>
@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="more-info-button" *ngIf="socials?.length && mode !== 'expanded'">
-                <span (click)="openDialog()">
+                <span (click)="openInfo(type)">
                     <img class="blue" [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
                 </span>
             </div>

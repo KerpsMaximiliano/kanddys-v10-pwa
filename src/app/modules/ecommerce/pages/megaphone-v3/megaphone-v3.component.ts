@@ -48,6 +48,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantSubheadline: string = '';
   merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
+  contactLandingRoute: string;
   canOpenCart: boolean;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -143,6 +144,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
+      this.header.orderId = null;
       this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
       if (!orderData || !orderData.products || orderData.products.length === 0)
@@ -175,6 +177,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
       this.categories = this.getCategories(itemCategories.itemCategoriesList, headlines[0]);
       this.setMerchant(merchant);
+      this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
       // Package fetching
       if (this.saleflowData.packages.length) {
         const listPackages = (

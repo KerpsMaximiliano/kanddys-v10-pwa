@@ -108,9 +108,9 @@ export class StoreShareComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event?) {
+  onResize() {
      this.screenWidth = window.innerWidth;
-     this.size = (this.screenWidth * 80)/100
+     this.size = (this.screenWidth * 75)/100
      if(this.size > 400){
         this.size = 400;
      }

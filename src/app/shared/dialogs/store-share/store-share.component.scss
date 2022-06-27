@@ -86,3 +86,14 @@
     }
 }
 
+@media (max-height: 770px) {
+    .container {
+        margin-bottom: 15px;
+        .dialog-card {
+            .function{
+                padding: 15px;
+            }
+        }
+    }
+}
+

@@ -17,17 +17,26 @@
     <app-helper-headerv2
       mode="center"
       [navtext]="'Codigo: '+dateId"
+      [returnAble]="false"
     ></app-helper-headerv2>
     <app-header-info
       [profileImage]="providerData.image"
       [title]="providerData.headline"
       [description]="
         name
-          ? 'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()
+          ? 'Vendió a '
           : ''
       "
       [description2]="'el '+date"
+      [featuredText]="{ 'text': 
+      isMerchantView ? name[0].toUpperCase() + name.substr(1).toLowerCase() + ' (' + phone + ')'
+      : name[0].toUpperCase() + name.substr(1).toLowerCase(),
+      'styles': '#2874AD' }"
       [socials]="providerData.socials"
+      [route]="ruta"
+      type="route"
+      (featuredTextEvent)="redirectToUserContact()"
+      (clickedImage)="redirectToMegaphone()"
     ></app-header-info>
   </div>
 
@@ -52,6 +61,7 @@
                 [src]="item.item.images[0]"
                 alt="no-image"
                 class="image-item"
+                (click)="openImageModal(item.item.images[0])"
               />
             </ng-container>
             <ng-template #elseTemplate>
@@ -90,6 +100,7 @@
               [src]="order.itemPackage.images[0]"
               alt="no-image"
               class="image-item"
+              (click)="openImageModal(order.itemPackage.images[0])"
             />
             <div class="list-item-content">
               <div class="item">
