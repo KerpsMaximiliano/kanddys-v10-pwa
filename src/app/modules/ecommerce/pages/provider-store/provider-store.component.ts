@@ -12,6 +12,7 @@ import { lockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { LocationStrategy } from '@angular/common';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-provider-store',
@@ -438,5 +439,16 @@ export class ProviderStoreComponent implements OnInit {
     this.router.navigate([
       '/ecommerce/megaphone-v3/' + this.header.saleflow._id,
     ]);
+  }
+
+  openImageDetail() {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL: this.header.items[0].images[0],
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    })
   }
 }
