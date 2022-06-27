@@ -128,7 +128,6 @@ export class SaleFlowService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -140,7 +139,6 @@ export class SaleFlowService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 

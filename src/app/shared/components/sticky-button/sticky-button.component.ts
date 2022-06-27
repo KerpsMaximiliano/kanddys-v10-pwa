@@ -16,6 +16,7 @@ export class StickyButtonComponent implements OnInit {
   @Input() link: string = 'linktest.com';
   @Input() icon: string;
   @Input() bgColor: string = "#27a2ff";
+  @Input() padding: string = null;
   @Input() color: string;
   @Input() height: string = null;  
   @Input() fontSize: string = null;  

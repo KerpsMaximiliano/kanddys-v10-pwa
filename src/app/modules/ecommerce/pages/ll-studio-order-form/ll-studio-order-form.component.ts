@@ -24,7 +24,7 @@ const footerConfig = {
   styleUrls: ['./ll-studio-order-form.component.scss']
 })
 export class LlStudioOrderFormComponent implements OnInit {
-  scrollableForm = false;
+  scrollableForm = true;
   reservation: {
     data: Record<string, any>,
     message: string;
@@ -51,6 +51,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           styles: {
             containerStyles: {
               ...commonContainerStyles,
+              marginTop: '0px',
+              paddingTop: '60px'
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -81,7 +83,8 @@ export class LlStudioOrderFormComponent implements OnInit {
             containerStyles: {
               ...commonContainerStyles,
               minWidth: '281px',
-              marginTop: '58px'
+              paddingTop: '64px',
+              paddingBottom: '270px'
             },
             labelStyles: {
               fontFamily: 'Roboto',
@@ -110,7 +113,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputs: {
             title: 'LL Studio',
             description: 'Formulario de Ordenes',
-            profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/IMG_6602234459B7-1.jpeg',
+            profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
             socials: [
               {
                 name: 'instagram',
@@ -394,7 +397,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           styles: {
             containerStyles: {
               minWidth: '281px',
-              marginTop: '44px'
+              marginTop: '44px',
+              marginBottom: '269px',
             },
             labelStyles: {
               fontFamily: 'Roboto',
@@ -749,9 +753,9 @@ export class LlStudioOrderFormComponent implements OnInit {
               flags: ['no-header'],
             });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            // window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
-            return { ok: true };
+            // return { ok: true };
           } catch (error) {
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',

@@ -3,26 +3,50 @@
         <div *ngFor="let item of list">
             
             <div class="image-area" *ngIf="item.image || item.name">
-                <img [src]="env + item.image" alt="Logo de la tienda" class="image" *ngIf="item.image">
+                <img [src]="!item.isImageBase64 ? env + item.image : item.image" alt="Logo de la tienda" class="image" *ngIf="item.image">
                 <h1 class="store-name" *ngIf="item.name">{{item.name}}, <span class="type" *ngIf="item.type">{{item.type}}</span></h1>
             </div>
 
             <h2 class="title">{{item.title}}</h2>
             
-            <ng-container *ngFor="let option of item.options">
-                <a class="function" [href]="option.url" target="_blank">
-                    <p class="text">{{option.text}}</p>
-                    
-                    <img
-                        *ngIf="option.icon"
-                        class="icon"
-                        [src]="env + option.icon.src"
-                        [alt]="option.icon.alt"
-                        [width]="option.icon.width"
-                        [height]="option.icon.height"
-                        [ngStyle]="{filter: option.icon.color && option.icon.color}"
-                    >
-                </a>
+            <ng-container
+                *ngIf="item.shoudlAllowDeactivation"
+            >
+                <ng-container *ngFor="let option of item.options">
+                    <a class="function" [href]="option.url" target="_blank" *ngIf="option.active">
+                        <p class="text">{{option.text}}</p>
+                        
+                        <img
+                            *ngIf="option.icon"
+                            class="icon"
+                            [src]="env + option.icon.src"
+                            [alt]="option.icon.alt"
+                            [width]="option.icon.width"
+                            [height]="option.icon.height"
+                            [ngStyle]="{filter: option.icon.color && option.icon.color}"
+                        >
+                    </a>
+                </ng-container>
+            </ng-container>
+
+            <ng-container
+                *ngIf="!item.shoudlAllowDeactivation"
+            >
+                <ng-container *ngFor="let option of item.options">
+                    <a class="function" [href]="option.url" target="_blank">
+                        <p class="text">{{option.text}}</p>
+                        
+                        <img
+                            *ngIf="option.icon"
+                            class="icon"
+                            [src]="env + option.icon.src"
+                            [alt]="option.icon.alt"
+                            [width]="option.icon.width"
+                            [height]="option.icon.height"
+                            [ngStyle]="{filter: option.icon.color && option.icon.color}"
+                        >
+                    </a>
+                </ng-container>
             </ng-container>
         </div>
     </div>

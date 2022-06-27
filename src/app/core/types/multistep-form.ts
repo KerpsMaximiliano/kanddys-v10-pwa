@@ -11,6 +11,8 @@ export interface FieldStyles {
   formattedInputStyles?: any;
   formattedInputCaretStyles?: any;
   bottomLabelStyles?: any;
+  hoverStyles?: any;
+  disabledStyles?: any;
   customClassName?: string; //you must use ::ng-deep in the scss of the parent component
 }
 
@@ -32,12 +34,15 @@ export interface FormField {
   formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
+  statusChangeCallbackFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
   customCursorIndex?: number;
   selectionOptions?: Array<string>;
   validators?: Array<any>;
   description?: string;
   focused?: boolean;
+  hovered?: boolean;
+  disabled?: boolean;
   topLabelAction?: {
     text: string;
     clickable?: boolean;
@@ -52,6 +57,7 @@ export interface FormField {
   };
   placeholder?: string;
   inputType?: string;
+  callbackOnClick?(...params): any;
   shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
@@ -94,28 +100,31 @@ export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string };
-      right?: { text?: string; icon?: string };
+      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
       function(...params): Promise<any> | any;
     },
     invalidStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string };
-      right?: { text?: string; icon?: string };
+      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
     }
   },
   bgColor?: string;
+  color?: string;
   enabledStyles?: {
     fontSize?: string;
     height?: string;
+    padding?: string;
   },
   disabledStyles?: {
     fontSize?: string;
     height?: string;
+    padding?: string;
   },
 }
 
@@ -124,27 +133,46 @@ export interface FormStep {
   headerText?: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   pageHeader?: PageHeader;
+  pageSubHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;
   accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
+  stepButtonValidText?: string;
+  stepButtonInvalidText?: string;
   asyncStepProcessingFunction?: AsyncFunction;
   stepAnchorURL?: string;
+  statusChangeCallbackFunction?(...params): any;
   stepProcessingFunction?(...params): any;
   avoidGoingToNextStep?: boolean;
   customScrollToStep?(...params): any;
   customScrollToStepBackwards?(...params): any;
   bottomLeftAction?: LinkAction;
   linkFooter?: LinkAction;
-  optionalLinksTo?: Array<OptionalLinks>;
+  optionalLinksTo?: {
+    beforeIndex?: number | null;
+    afterIndex?: number | null;
+    groupOfLinksArray: Array<OptionalLinks>;
+  };
   stepResult?: any;
   justExecuteCustomScrollToStep?: boolean;
   showShoppingCartOnCurrentStep?: boolean;
   shoppingCartCallback?(...params): any;
   hideHeader?: boolean;
+  hideMainStepCTA?: boolean;
   headerMode?: 'v1' | 'v2';
   footerConfig?: FooterOptions;
   styles?: Record<string, string>;
+  showTabs?: boolean;
+  currentTab?: number;
+  tabsOptions?: string[];
+  tabsCallback?(change, params): any;
+  customStickyButton?: {
+    mode: string;
+    bgcolor?: string;
+    color?: string;
+    height?: string;
+    text: string;
+    text2?: string;
+  }
 }
 
 export interface LinkAction {

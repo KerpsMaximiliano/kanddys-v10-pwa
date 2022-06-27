@@ -53,14 +53,18 @@ export const generateMagicLink = gql`
   mutation generateMagicLink(
     $phoneNumber: String!,
     $redirectionRoute: String!,
-    $redirectionRouteId: String!,
-    $entity: String!    
+    $redirectionRouteId: String,
+    $entity: String!,
+    $redirectionRouteQueryParams: JSON,
+    $attachments: [Upload!]
   ) {
     generateMagicLink(
       phoneNumber: $phoneNumber, 
       redirectionRoute: $redirectionRoute, 
       redirectionRouteId: $redirectionRouteId, 
-      entity: $entity
+      entity: $entity,
+      redirectionRouteQueryParams: $redirectionRouteQueryParams,
+      attachments: $attachments
     )
   }
 `;
@@ -78,8 +82,8 @@ export const signin = gql`
 `;
 
 export const signup = gql`
-  mutation signup($input: UserInput!,$notificationMethod:String!, $code: String) {
-    user: signup(input: $input,notificationMethod:$notificationMethod, assignPassword: false, code: $code) { ${user} }
+  mutation signup($input: UserInput!,$notificationMethod:String!, $code: String, $assignPassword: Boolean, $files: [Upload!]) {
+    user: signup(input: $input,notificationMethod:$notificationMethod, assignPassword: $assignPassword, code: $code, files: $files) { ${user} }
   }
 `;
 

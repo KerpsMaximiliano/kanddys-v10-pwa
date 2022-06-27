@@ -1,3 +1,8 @@
+.input-button-container{
+  display: flex;
+  align-items: center;
+}
+
 .input-switch {
     display: inline-block;
     align-items: center;
@@ -47,4 +52,8 @@
     .no{
         margin: 3px 0 3px 20px;
     }
+  }
+
+  .left-text {
+
   }

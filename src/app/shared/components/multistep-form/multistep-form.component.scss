@@ -6,6 +6,10 @@
   transition: transform 1s ease-in-out;
 }
 
+.header-fixed {
+  height: fit-content;
+}
+
 .form-step {
   .step-header {
     display: flex;
@@ -22,8 +26,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0px 33px;
-  padding-top: 60px;
+  padding-left: 33px;
+  padding-right: 33px;
 
   .optional-links {
     margin-bottom: 80px;

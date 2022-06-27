@@ -1,13 +1,14 @@
 .container{
     width: 86%;
     margin: auto;
-    min-height: 100vh;
+    height: calc(100vh - 96px);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     flex-direction: column;
     margin-bottom: 52px;
     background-color: transparent;
+    margin-top: calc(96px / 2);
 
     .dialog-card {
         width: 100%;
