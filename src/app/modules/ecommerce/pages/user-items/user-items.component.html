@@ -1,15 +1,19 @@
 <div class="container">
   <app-helper-headerv2
     mode="basic"
-    [config]="{
+    [mainText]="{
         text: merchant ? merchant.name : 'Tienda Sin nombre',
         fontFamily: 'SfProBold',
-        fontSize: '21px',
-        icon: '/person.svg',
-        plus: true,
-        plusColor: '#2874AD',
-        return: true
+        fontSize: '21px'
     }"
+    [icon]="{
+        src: '/person.svg'
+    }"
+    [plus]="{
+        active: true,
+        color: '#2874AD'
+    }"
+    [returnAble]="true"
     color="#2874AD"
     bgColor="#E9E371"
     [filter]="'invert(40%) sepia(16%) saturate(2024%) hue-rotate(163deg) brightness(75%) contrast(93%)'"

@@ -23,15 +23,17 @@
     "></app-helper-header>
 
   <app-helper-headerv2 [mode]="'options'" [fixed]="true"
-    [config]="{
+    [extraTexts]="{
         billId: '',
         itemId: !steps[currentStep].headerTextSide ||
         steps[currentStep].headerTextSide === 'CENTER'
           ? steps[currentStep].headerText
-          : null,
-        leftText: '',
-        return: shouldScrollBackwards
+          : null
     }"
+    [leftText]="{
+        text: ''
+    }"
+    [returnAble]="shouldScrollBackwards"
     *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" (returnEvent)="currentStep > 0 &&
     shouldScrollBackwards &&
     !steps[currentStep].customScrollToStepBackwards
