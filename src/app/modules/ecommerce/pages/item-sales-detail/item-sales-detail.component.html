@@ -1,12 +1,11 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-    [config]="{
+    [mainText]="{
         text: itemData?.name.toUpperCase(),
-        whatsapp: false,
-        shopcart: false,
         fontFamily: 'SfProBold',
         fontSize: '21px'
     }"
+    [returnAble]="true"
     mode="center"
     color="#E9E371"
     (returnEvent)="back()"

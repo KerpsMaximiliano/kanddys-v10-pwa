@@ -81,11 +81,12 @@
             margin-right: 22px;
         }
 
-        .plus {
+        .header-btn{
+            all: unset;
             font-family: 'SfProBold';
             font-size: 35px;
             color: #FFFFFF;
-        }
+        }     
 
         .edit-button{
             all: unset;
@@ -222,8 +223,4 @@
         }
     }
 
-}
-
-.header-btn {
-    all: unset;
 }

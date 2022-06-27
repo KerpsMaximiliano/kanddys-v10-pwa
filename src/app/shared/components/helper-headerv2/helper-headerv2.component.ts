@@ -26,7 +26,7 @@ interface config  {
     upload?: boolean,
     inMall?: boolean,
     pointer?: boolean,
-}
+} //order66
 
 @Component({
   selector: 'app-helper-headerv2',
@@ -44,35 +44,33 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
     @Input() filter: string;
-    @Input() config?: config;
+    @Input() returnAble: boolean;
+    @Input() config?: config; //order66
 
     @Input() mainText?: {
         text: string,
         fontFamily?: string,
         fontSize?: string,
-        color?: string
+        color?: string,
+        pointer?: boolean
     };
     @Input() leftText?: {
         text: string,
         fontFamily?: string,
         fontSize?: string,
-        color?: string
+        color?: string,
+        pointer?: boolean
     };
     @Input() rightText?: {
         text: string,
         fontFamily?: string,
         fontSize?: string,
-        color?: string
+        color?: string,
+        pointer?: boolean
     };
     @Input() extraTexts?: {
         itemId?: string,
         billId?: string,
-        fontFamily?: string,
-        fontSize?: string,
-        color?: string
-    };
-    @Input() plus?: {
-        active: boolean,
         fontFamily?: string,
         fontSize?: string,
         color?: string
@@ -83,6 +81,12 @@ export class HelperHeaderv2Component implements OnInit {
         filter?: string,
         width?: number,
         height?: number
+    };
+    @Input() plus?: {
+        active: boolean,
+        fontFamily?: string,
+        fontSize?: string,
+        color?: string
     };
     @Input() dots?: {
         active: boolean,
@@ -101,7 +105,7 @@ export class HelperHeaderv2Component implements OnInit {
     };
     @Input() edit?:{
         active: boolean,
-        batch: boolean,
+        batch?: boolean,
         bgColor?: string,
         color?: string
     };
