@@ -133,10 +133,11 @@ export interface FormStep {
   headerText?: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   pageHeader?: PageHeader;
+  pageSubHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;
   accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
+  stepButtonValidText?: string;
+  stepButtonInvalidText?: string;
   asyncStepProcessingFunction?: AsyncFunction;
   stepAnchorURL?: string;
   statusChangeCallbackFunction?(...params): any;

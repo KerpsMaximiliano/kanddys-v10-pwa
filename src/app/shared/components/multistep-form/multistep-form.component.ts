@@ -489,17 +489,18 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   applyStylesToImages(currentField: any) {
     let styles = {
-      background:
+      backgroundImage:
         currentField.fieldControl.control.value !== ''
           ? 'url(' +
           currentField.fieldControl.control.value +
-          ') no-repeat center center / contain #fff'
+          ')'
           : null,
       border: (
         currentField.fieldControl.control.value === '' ||
         !currentField.fieldControl.control.value
       ) ? '1px solid dodgerblue' : 'none',
       backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat',
       height: '200px',
       minWidth: '250px',
       ...currentField.styles.fieldStyles,

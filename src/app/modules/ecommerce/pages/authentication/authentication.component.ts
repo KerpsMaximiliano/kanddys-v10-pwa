@@ -194,6 +194,49 @@ export class Authentication implements OnInit {
         height: '30px'
       },
       hideMainStepCTA: true
+    },
+    {
+      fieldsList: [],
+      pageHeader: {
+        text: 'Magik-Link con acceso a compartir, vender y editar el item fue enviado!!',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '48px'
+        }
+      },
+      customScrollToStepBackwards: (params) => {
+        console.log("FLOW ROUTE", this.headerService.flowRoute);
+        if (this.headerService.flowRoute)
+          this.router.navigate([this.headerService.flowRoute]);
+      },
+      pageSubHeader: {
+        text: 'Puedes continuar desde el Magik-Link que recibiste por WhatsApp.',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: '200',
+          fontSize: '19px',
+          margin: '0px',
+          marginTop: '24px',
+        }
+      },
+      headerText: "",
+      headerMode: 'v2',
+      footerConfig: {
+        ...this.footerConfig,
+      },
+      avoidGoingToNextStep: true,
+      customStickyButton: {
+        text: 'POSIBILIDADES',
+        text2: '',
+        bgcolor: '#2874AD',
+        color: '#E9E371',
+        mode: 'double',
+        height: '30px'
+      },
+      hideMainStepCTA: true
     }
   ];
 
@@ -316,16 +359,19 @@ export class Authentication implements OnInit {
                       }  
                     );
 
-                    this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: createdUser && magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
-                        message: createdUser && magicLinkCreated ? 
-                          "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    });
+                    if(!createdUser || !magicLinkCreated) {
+                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                        type: 'centralized-fullscreen',
+                        props: {
+                          icon: 'sadFace.svg',
+                          message: 'Ocurrió un problema'
+                        },
+                        customClass: 'app-dialog',
+                        flags: ['no-header'],
+                      });
+                    } else {
+                      params.scrollToStep(1);
+                    }
                   } else {
                     const userImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
@@ -358,16 +404,19 @@ export class Authentication implements OnInit {
                       ]
                     );
 
-                    this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
-                        message: magicLinkCreated ? 
-                          "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    });
+                    if(!magicLinkCreated) {
+                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                        type: 'centralized-fullscreen',
+                        props: {
+                          icon: 'sadFace.svg',
+                          message: 'Ocurrió un problema'
+                        },
+                        customClass: 'app-dialog',
+                        flags: ['no-header'],
+                      });
+                    } else {
+                      params.scrollToStep(1);
+                    }
                   }
   
                   // await this.authService.generateMagicLink(phoneNumber, `ecommerce/user-contact-landing/`, null, 'NewUser', {
@@ -415,16 +464,19 @@ export class Authentication implements OnInit {
                       }  
                     );
 
-                    this.dialog.open(GeneralFormSubmissionDialogComponent, {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: createdUser && magicLinkCreated ? 'check-circle.svg' : 'sadFace.svg',
-                        message: createdUser && magicLinkCreated ? 
-                          "Se ha enviado un mLink a tu WhatsApp" : 'Ocurrió un problema'
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    });
+                    if(!magicLinkCreated || !createdUser) {
+                      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                        type: 'centralized-fullscreen',
+                        props: {
+                          icon: 'sadFace.svg',
+                          message: 'Ocurrió un problema'
+                        },
+                        customClass: 'app-dialog',
+                        flags: ['no-header'],
+                      });
+                    } else {
+                      params.scrollToStep(1);
+                    }
                   } else {
                     const defaultMerchant = await this.merchantService.merchantDefault();
                     

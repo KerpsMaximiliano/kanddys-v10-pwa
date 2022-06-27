@@ -82,6 +82,20 @@ shouldScrollBackwards &&
           </div>
         </ng-container>
 
+        <ng-container *ngIf="currentStepObject.pageSubHeader">
+          <div [ngStyle]="
+          currentStepObject.pageSubHeader?.styles
+            ? currentStepObject.pageSubHeader?.styles
+            : null
+        " (click)="
+            currentStepObject.pageSubHeader.callback ? 
+              currentStepObject.pageSubHeader.callback(stepFunctionParams) : 
+              null
+          ">
+            {{currentStepObject.pageSubHeader.text}}
+          </div>
+        </ng-container>
+
         <form [formGroup]="dataModel" [ngStyle]="{padding: '0px', height: 'fit-content'}">
           <ng-container *ngFor="
             let currentField of currentStepObject['fieldsList'];
