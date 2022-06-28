@@ -50,8 +50,8 @@ const injectSubmitButtom = (callback: any, step = 0, buttonText: string = 'SALVA
   disabled: step === 0 ? true : false,
   styles: {
     containerStyles: {
-      marginBottom: '60px',
-      marginTop: '58px',
+      marginBottom: '58px',
+      marginTop: '32px',
     },
     hoverStyles: {
       backgroundColor: '#ECB010',
@@ -211,7 +211,7 @@ export class UserCreatorComponent implements OnInit {
         leftText: 'ES UN NEGOCIO?',
       },
       containerStyles: {
-        paddingTop: '58px',
+        paddingTop: '24px',
         justifyContent: 'flex-end'
       },
       textStyles: {
@@ -246,20 +246,21 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               // minWidth: '281px',
-              marginTop: '30px'
+              marginTop: '16px'
             },
             labelStyles: {
               fontFamily: 'Roboto',
               fontWeight: 'bold',
               fontSize: '24px',
               color: '#2E2E2E',
-              marginBottom: '51px',
+              marginBottom: '24px',
             },
             subLabelStyles: {
               color: '#7B7B7B',
               fontFamily: 'RobotoMedium',
               fontSize: '17px',
-              fontWeight: 500
+              fontWeight: 500,
+              marginBottom: '12px',
             },
             fieldStyles: {
               minWidth: '192px',
@@ -283,12 +284,12 @@ export class UserCreatorComponent implements OnInit {
               display: !this.isMerchant ? 'inline-block' : 'none',
               width: 'calc(100% / 2)',
               paddingRight: '6px',
-              marginTop: '73px'
+              marginTop: '24px'
               // width: '83.70%',
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '19px',
+              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -311,7 +312,7 @@ export class UserCreatorComponent implements OnInit {
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '19px',
+              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -328,11 +329,11 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               display: !this.isMerchant ? 'inline-block' : 'none',
-              marginTop: '60px',
+              marginTop: '24px',
             },
             fieldStyles: {
               maxWidth: '166px',
-              marginTop: '19px',
+              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -349,12 +350,12 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               display: this.isMerchant ? 'block' : 'none',
-              marginTop: '73px'
+              marginTop: '24px'
               // width: '83.70%',
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '19px',
+              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -371,11 +372,11 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               display: this.isMerchant ? 'block' : 'none',
-              marginTop: '60px',
+              marginTop: '24px',
             },
             fieldStyles: {
               maxWidth: '166px',
-              marginTop: '19px',
+              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -464,8 +465,8 @@ export class UserCreatorComponent implements OnInit {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '60px',
-                marginBottom: '58px'
+                marginTop: '32px',
+                marginBottom: '32px'
               },
               fieldStyles: {
                 marginTop: '20px',
@@ -544,7 +545,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -556,7 +557,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '32px'
             }
           },
         },
@@ -571,7 +572,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -583,7 +584,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '24px'
             }
           },
         },
@@ -598,7 +599,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -610,7 +611,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '24px'
             }
           },
         },
@@ -629,8 +630,8 @@ export class UserCreatorComponent implements OnInit {
             topLabel: 'Otras formas de recibir pagos:',
             styles: {
               containerStyles: {
-                marginTop: '60px',
-                marginBottom: '58px'
+                marginTop: '32px',
+                marginBottom: '32px'
               },
               fieldStyles: {
                 marginTop: '20px',
@@ -669,7 +670,7 @@ export class UserCreatorComponent implements OnInit {
       pageHeader: {
         text: 'Adiciona los links que usualmente mandas para que ta paguen',
         styles: {
-          paddingTop: '92px',
+          paddingTop: '24px',
           fontFamily: 'Roboto',
           fontWeight: 'bold',
           fontSize: '24px',
@@ -840,7 +841,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -850,7 +851,7 @@ export class UserCreatorComponent implements OnInit {
             bottomLabelStyles: {
               fontWeight: 'normal',
               fontSize: '14px',
-              marginTop: '22px',
+              marginTop: '12px',
               color: '#27A2FC',
               fontFamily: 'SfProRegular',
               textAlign: 'right'
@@ -860,7 +861,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '24px'
             }
           },
         },
@@ -881,7 +882,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -891,7 +892,7 @@ export class UserCreatorComponent implements OnInit {
             bottomLabelStyles: {
               fontWeight: 'normal',
               fontSize: '14px',
-              marginTop: '22px',
+              marginTop: '12px',
               color: '#27A2FC',
               fontFamily: 'SfProRegular',
               textAlign: 'right'
@@ -901,7 +902,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px'
+              marginTop: '24px'
             }
           },
         },
@@ -916,7 +917,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -928,8 +929,8 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '81px',
-              paddingBottom: '259px'
+              marginTop: '24px',
+              paddingBottom: '80px'
             }
           },
         },
@@ -969,7 +970,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -981,7 +982,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '107px'
+              marginTop: '24px'
             }
           },
         },
@@ -996,7 +997,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1008,7 +1009,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '24px'
             }
           },
         },
@@ -1023,7 +1024,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1035,7 +1036,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '24px'
             }
           },
         },
@@ -1050,7 +1051,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1062,7 +1063,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px'
+              marginTop: '24px'
             }
           },
         },
@@ -1077,7 +1078,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '24px',
+              marginBottom: '12px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1089,8 +1090,8 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '57px',
-              paddingBottom: '124px'
+              marginTop: '24px',
+              paddingBottom: '80px'
             }
           },
         },

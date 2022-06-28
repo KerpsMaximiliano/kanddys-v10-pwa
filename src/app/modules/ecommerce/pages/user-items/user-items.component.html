@@ -63,8 +63,8 @@
       [quantity]="0"
       [index2]="item.category ? item.category.length : 0"
       [showIcon]="true"
-      (itemClicked)="editItem(i)"
-      (action)="goToCategoryItemDetail(i)"
+      (itemClicked)="editItem(item._id)"
+      (action)="goToCategoryItemDetail(item._id)"
     ></app-saleflow-item>
   </div>
 </div>
