@@ -24,18 +24,26 @@
   </button>
 </div>
 
-<div class="fixed-container" *ngIf="mode == 'disabled-fixed'">
-  <button
-    disabled="true"
-    class="disabled"
-    [ngClass]="{'small': size === 'small'}"
-    [ngStyle]="(fontSize || height) ? {
-      fontSize: fontSize,
-      height: height,
-      padding: padding ? padding : null
-    } : null">
-      {{ text }}
-  </button>
+<div class="fixed-container-wrapper" *ngIf="mode == 'disabled-fixed'">
+  <div *ngIf="addBottomSeparator" [ngStyle]="{
+    height: '38px',
+    width: '100%'
+  }"></div>
+
+  
+  <div class="fixed-container" >
+    <button
+      disabled="true"
+      class="disabled"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height,
+        padding: padding ? padding : null
+      } : null">
+        {{ text }}
+    </button>
+  </div>
 </div>
 
 <div class="fixed-double" *ngIf="mode == 'double'">
@@ -65,23 +73,30 @@
     </button>
   </div>
   
+<div class="fixed-container-wrapper" *ngIf="mode == 'fixed'">
+  <div *ngIf="addBottomSeparator" [ngStyle]="{
+    height: '55px',
+    width: '100%'
+  }"></div>
 
-<div class="fixed-container" *ngIf="mode == 'fixed'">
-  <button
-    class="button"
-    [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
-    [style.backgroundColor]="bgColor"
-    [ngStyle]="{
-      fontSize: fontSize ? fontSize : null, 
-      height: height ? height : null, 
-      color: color ? color : null,
-      padding: padding ? padding : null
-    }"
-  >
-    {{ text }}
-    <img *ngIf="icon" [src]="icon" [alt]="icon">
-    {{ auxText }}
-  </button>
+  <div class="fixed-container">
+    <button
+      class="button"
+      [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+      [style.backgroundColor]="bgColor"
+      [ngStyle]="{
+        fontSize: fontSize ? fontSize : null, 
+        height: height ? height : null, 
+        color: color ? color : null,
+        padding: padding ? padding : null
+      }"
+    >
+      {{ text }}
+      <img *ngIf="icon" [src]="icon" [alt]="icon">
+      {{ auxText }}
+    </button>
+  </div>
+
 </div>
 
 <div class="fixed-container" *ngIf="mode == 'fixed-v2'">
