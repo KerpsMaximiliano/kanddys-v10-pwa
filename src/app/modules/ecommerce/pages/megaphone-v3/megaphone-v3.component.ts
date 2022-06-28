@@ -92,8 +92,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   organizeItems() {
-    if (!this.categories || !this.categories.length) return;
     this.categorylessItems = this.items.filter((item) => !item.category.length);
+    if (!this.categories || !this.categories.length) return;
     this.categories.forEach((saleflowCategory) => {
       if (
         this.items.some((item) =>

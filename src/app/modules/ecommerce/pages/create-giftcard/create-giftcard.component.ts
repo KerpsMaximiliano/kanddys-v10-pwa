@@ -247,9 +247,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             },
           },
           styles: {
-            containerStyles: {
-              marginTop: '68px',
-            },
             topLabelActionStyles: {
               display: 'block',
               color: '#27A2FF',
@@ -257,8 +254,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               fontFamily: 'RobotoMedium',
               cursor: 'pointer',
               margin: '0px',
-              marginTop: '68px',
-              marginBottom: '33px',
+              marginTop: '32px',
+              marginBottom: '24px',
             },
             labelStyles: lightLabelStyles,
           },
@@ -273,8 +270,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           placeholder: 'Type...',
           styles: {
             containerStyles: {
-              marginTop: '80px',
-              marginBottom: '80px',
+              marginTop: '32px',
+              marginBottom: '32px',
             },
             labelStyles: lightLabelStyles,
           },
@@ -290,7 +287,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           placeholder: 'Type your message here...',
           styles: {
             containerStyles: {
-              marginBottom: '90px',
+              marginBottom: '60px',
             },
             fieldStyles: {
               boxShadow: '0px 4px 5px 0px #ddd inset',

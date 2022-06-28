@@ -130,7 +130,7 @@ export class ShipmentDataFormComponent implements OnInit {
           },
           styles: {
             containerStyles: {
-              marginTop: '60px',
+              marginTop: '30px',
             },
             fieldStyles: {
               backgroundColor: 'white',
@@ -146,7 +146,7 @@ export class ShipmentDataFormComponent implements OnInit {
               marginBottom: '33px'
             },
             labelStyles: {
-              marginTop: '34px',
+              marginTop: '20px',
               fontWeight: '600',
             },
           },
@@ -160,7 +160,7 @@ export class ShipmentDataFormComponent implements OnInit {
           },
           afterIndex: 0,
           containerStyles: {
-            marginTop: '129px',
+            marginTop: '30px',
           },
         },
       ],

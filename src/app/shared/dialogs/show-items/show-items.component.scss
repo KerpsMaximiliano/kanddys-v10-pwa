@@ -99,11 +99,27 @@
   color: #7b7b7b;
 }
 
+.price {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 50px;
+  margin-top: 10px;
+  padding-left: 20px;
+  align-items: center;
+}
+
 .total {
   color: #7b7b7b;
   font-size: 45px;
   font-family: RobotoMedium;
   margin: 0;
+}
+
+.dop {
+  font-family: 'SfProRegular';
+  font-size: 19px;
+  color: #7b7b7b;
+  margin-top: 10px;
 }
 
 .delete-button {
@@ -116,4 +132,22 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .header {
+    margin-bottom: 0;
+  }
+  .card-item {
+    padding: 15px;
+  }
+  .total {
+    font-size: 36px;
+  }
+  .dop {
+    font-size: 16px;
+  }
+  .price {
+    margin-bottom: 20px;
+  }
 }
