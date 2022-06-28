@@ -582,8 +582,15 @@ input[type="file"] {
   }
   .header .preview-btn {
     display: block;
+    margin-left: 10px;
   }
   .btn-column .preview-btn {
     display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .title {
+
   }
 }
