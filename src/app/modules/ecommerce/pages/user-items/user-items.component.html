@@ -61,7 +61,7 @@
       [price]="item.pricing"
       [income]="0"
       [quantity]="0"
-      [index2]="item.category?.length"
+      [index2]="item.category ? item.category.length : 0"
       [showIcon]="true"
       (itemClicked)="editItem(i)"
       (action)="goToCategoryItemDetail(i)"
@@ -69,14 +69,6 @@
   </div>
 </div>
 
-<app-bubble-button
-[position]="'mini'"
-[color]="'blue'"
-[fontSize]="'19px'"
-[text]="'$'"
-[icon]="'/person.svg'"
-[flexD]="'row'"
-></app-bubble-button>
 <app-bubble-button
   position="left"
 	color="blue"
@@ -94,7 +86,7 @@
 	[text]="
     (ordersTotal ? ordersTotal.length : '0') 
     + ' / ' + '$' 
-    + (ordersTotal ? ordersTotal.total : '0') 
+    + (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') 
     + ' / ' 
     + (users ? users.length : '0') + ' COMPRADORES'
   "

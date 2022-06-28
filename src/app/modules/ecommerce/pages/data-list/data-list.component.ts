@@ -121,11 +121,7 @@ export class DataListComponent implements OnInit {
       else return this.redirect();
     })
     if (this.viewtype === 'merchant') {
-      // this.merchantId = this.headerService.merchantInfo?._id;
-      this.merchantId = "62ab42ee5c298435f993da96";
-
-      console.log(this.merchantId);
-      // this.merchantId = "616a13a527bcf7b8ba3ac312";
+      this.merchantId = this.headerService.merchantInfo?._id;
       if (!this.merchantId) return this.redirect();
     }
     this.route.params.subscribe(async (params) => {

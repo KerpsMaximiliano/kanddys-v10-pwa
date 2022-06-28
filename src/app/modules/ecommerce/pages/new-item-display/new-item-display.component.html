@@ -109,7 +109,7 @@
 				</button>
 				<a class="side-btn" [routerLink]="['/ecommerce/category-item-detail',item._id]">
 					<img src="{{ env }}/categories-list.svg" width="30" height="30" alt="">
-					<span [ngClass]="{'plus': !item.category.length}">{{item.category.length ? item.category.length : '+'}}</span>
+					<span [ngClass]="{'plus': !item?.category?.length}">{{item?.category?.length ? item.category.length : '+'}}</span>
 				</a>
 			</ng-container>
 		</div>

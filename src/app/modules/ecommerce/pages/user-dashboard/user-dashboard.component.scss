@@ -1,9 +1,9 @@
 .container{
     background: linear-gradient(180deg, #ffffff 0%, #f6f6f6 35%, #f6f6f6 100%);
     min-height: 100vh;
+    padding-bottom: 160px;
 
     .main-button{
-        all: unset;
         width: 86.21%;
         padding: 30px 10px;
         background-color: #FED230;
@@ -15,6 +15,7 @@
         font-size: 16px;
         color: #174B72;
         margin: 30px auto 27px;
+        text-decoration: none;
         cursor: pointer;
 
         &:hover {

@@ -13,26 +13,27 @@
         <h6>Mi tienda</h6>
         <span>{{items?.length}} item / ${{ordersTotal?.total | number}} in / {{users?.length}} compradores</span>
     </button>
-    <button class="main-button">ADICIONA LA INFO DE CONTACTO</button>
+    <a class="main-button" [routerLink]="['/ecommerce/user-creator']">ADICIONA LA INFO DE CONTACTO</a>
 
     <app-user-actions
     [title]="'Opcional'"
     [content]="content"
     ></app-user-actions>
 
-    <app-bubble-button
+    <!-- <app-bubble-button
     [position]="'left'"
     [color]="'blue'"
     [icon]="'/printer.svg'"
-    ></app-bubble-button>
+    ></app-bubble-button> -->
 
     <app-bubble-button
     [position]="'right'"
     [color]="'blue'"
     [icon]="'/upload.svg'"
+    (click)="openShare()"
     ></app-bubble-button>
 
-    <app-bubble-button
+    <!-- <app-bubble-button
     [position]="'mini'"
     [color]="'blue'"
     [icon]="'/pencil_line.svg'"
@@ -41,7 +42,7 @@
     <app-bubble-button
     [position]="'minir'"
     [color]="'blue'"
-    ></app-bubble-button>
+    ></app-bubble-button> -->
 
     <app-sticky-button
     [mode]="'disabled-fixed'"
