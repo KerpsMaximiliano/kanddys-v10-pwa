@@ -473,27 +473,53 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 this.orderId
               );
 
-              registeredNewUser = await this.signUp();
-              this.userData = registeredNewUser;
+              if(!foundUser) {
+                registeredNewUser = await this.signUp();
+                this.userData = registeredNewUser;
 
-              if (registeredNewUser && orderStatus === 'draft') {
-                await this.order.authOrder(this.orderId, registeredNewUser._id);
-                this.header.deleteSaleflowOrder(this.saleflowData._id);
-                this.header.resetIsComplete();
-                this.isAPreOrder = false;
+                if (registeredNewUser && orderStatus === 'draft') {
+                  await this.order.authOrder(this.orderId, registeredNewUser._id);
+                  this.header.deleteSaleflowOrder(this.saleflowData._id);
+                  this.header.resetIsComplete();
+                  this.isAPreOrder = false;
+                }
+  
+                await this.getOrderData(this.orderId, false);
+                //disable 1st step inputs to avoid further changes to existing order
+                this.name.disable();
+  
+                if (this.banks.length === 1) {
+                  this.selectedBank = this.bankOptions[0];
+                }
+  
+                this.pastStep = this.step;
+                this.step = 'PAYMENT_INFO';
+                unlockUI();
               }
 
-              await this.getOrderData(this.orderId, false);
-              //disable 1st step inputs to avoid further changes to existing order
-              this.name.disable();
-
-              if (this.banks.length === 1) {
-                this.selectedBank = this.bankOptions[0];
+              if(foundUser && !foundUser.name) {
+                this.userData.name = this.name.value;
+                const { orderStatus } = await this.order.getOrderStatus(
+                  this.orderId
+                );
+  
+                if (orderStatus === 'draft') {
+                  await this.order.authOrder(this.orderId, foundUser._id);
+                  this.header.deleteSaleflowOrder(this.saleflowData._id);
+                  this.header.resetIsComplete();
+                  this.isAPreOrder = false;
+                }
+  
+                await this.getOrderData(this.orderId, false);
+  
+                //disable 1st step inputs to avoid further changes to existing order
+                this.phoneNumber.disable();
+  
+                if (this.banks.length === 1) {
+                  this.selectedBank = this.bankOptions[0];
+                }
+                unlockUI();
               }
-
-              this.pastStep = this.step;
-              this.step = 'PAYMENT_INFO';
-              unlockUI();
             }
             // this.updateUser();
           }
