@@ -27,6 +27,7 @@ export class ImageInputComponent implements OnInit {
   @Input() allowedTypes: string[] = [];
   @Input() multiple: boolean;
   @Input() innerLabel: string = 'Upload / Camera';
+  @Input() expandImage: boolean = false;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -42,9 +43,10 @@ export class ImageInputComponent implements OnInit {
     else this.acceptTypes = 'image/*';
   }
 
-  sanitize(image: string | ArrayBuffer) {
+  sanitize(image: string | ArrayBuffer, expandImage) {
+    
     return this._DomSanitizer.bypassSecurityTrustStyle(
-      `url(${image}) no-repeat center center / contain #fff`
+      `url(${image}) no-repeat center center / ${!expandImage ? 'contain' : 'cover'} #fff`
     );
   }
 

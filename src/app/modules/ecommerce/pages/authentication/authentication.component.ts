@@ -319,9 +319,7 @@ export class Authentication implements OnInit {
                       name,
                       lastname,
                       bio: subtext,
-                      social: socialsFiltered,
-                      facebook: socials.facebook,
-                      instagram: socials.instagram
+                      social: socialsFiltered
                     }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
 
 
@@ -431,21 +429,27 @@ export class Authentication implements OnInit {
                   
                   const foundUser = await this.authService.checkUser(phoneNumber);
 
+                  const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
+                    return socials[socialNetworkKey].length > 0 ? true : false;
+                  })
+                  .map(socialNetworkKey => ({
+                    name: socialNetworkKey,
+                    url: socials[socialNetworkKey]
+                  }));
+
                   if(!foundUser) {
                     const createdUser = await this.authService.signup({
                       phone: phoneNumber,
                       email,
                       name: businessName,
                       bio: businessType,
-                      social: Object.keys(socials).map(socialNetworkKey => ({
-                        name: socialNetworkKey,
-                        url: socials[socialNetworkKey]
-                      }))
+                      social: socialsFiltered
                     }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
                     
                     const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
                       name: businessName,
-                      bio: businessType
+                      bio: businessType,
+                      social: socialsFiltered
                     });
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
@@ -495,7 +499,8 @@ export class Authentication implements OnInit {
                       const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
                         name: businessName,
                         bio: businessType,
-                        image: merchantImageConverted
+                        image: merchantImageConverted,
+                        social: socialsFiltered
                       });
                       
                       const magicLinkCreated = await this.authService.generateMagicLink(

@@ -16,7 +16,8 @@
         [accept]="acceptTypes"
       />
       <label
-        [style.background]="sanitize(input)"
+        [style.background]="sanitize(input, expandImage)"
+        [style.border]="input ? 'none' : '1px solid dodgerblue'"
         [for]="'file' + i"
         class="file"
         [ngStyle]="fileStyles ? fileStyles : null"

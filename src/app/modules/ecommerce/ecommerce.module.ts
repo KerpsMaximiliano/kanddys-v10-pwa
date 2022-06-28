@@ -302,6 +302,10 @@ const routes: Routes = [
     component: LlStudioOrderFormComponent
   },
   {
+    path: 'heavenly-balloons/:merchantId/:databaseName',
+    component: HeavenlyBalloonsComponent
+  },
+  {
     path: 'category-items-admin/:categoryId',
     component: CategoryItemsAdminComponent
   },

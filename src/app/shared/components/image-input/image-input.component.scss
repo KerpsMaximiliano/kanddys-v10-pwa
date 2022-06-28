@@ -25,6 +25,10 @@
   cursor: pointer;
   z-index: 1;
 
+  .selected {
+    border: none;
+  }
+
   &.error {
     border-color: red;
     color: red;
