@@ -1,7 +1,7 @@
-.container{
-    min-height: 100vh;
-    //AREA NUEVA COPIADA DE NEW-ITEM-DISPLAY
-    .item-info {
+.container {
+	min-height: 100vh;
+	//AREA NUEVA COPIADA DE NEW-ITEM-DISPLAY
+	.item-info {
 		display: flex;
 		flex-direction: column;
 		padding-bottom: 30px;
@@ -14,12 +14,12 @@
 			background-color: #ffffff;
 			padding: 24px 32px;
 
-			.title-name{
-			    font-family: 'RobotoBold';
-			    font-size: 22px;
-			    color: #174B72;
-			    margin: 0;
-					margin-bottom: 10px;
+			.title-name {
+				font-family: "RobotoBold";
+				font-size: 22px;
+				color: #174b72;
+				margin: 0;
+				margin-bottom: 10px;
 			}
 			p {
 				font-family: "SfProRegular";
@@ -45,13 +45,13 @@
 				margin: 0;
 			}
 		}
-.no-description {
+		.no-description {
 			width: 100%;
 
 			.title {
 				font-family: "RobotoBold";
 				font-size: 22px;
-				color: #174B72;
+				color: #174b72;
 				margin: 17.1px 32px 7px;
 			}
 		}
@@ -59,7 +59,7 @@
 		.item-price {
 			display: flex;
 			flex-direction: column;
-			margin: 19px 32px 20px;
+			margin: 16px 32px;
 
 			.vale {
 				font-family: "SfProRegular";
@@ -100,139 +100,147 @@
 			}
 		}
 	}
-.client-submit-area {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-    background-color: #f6f6f6;
-    padding: 15px 0;
-    position: sticky;
-    top: 36px;
-	.action-btn {
-		font-family: "RobotoMedium";
-		padding: 14px 25px;
-		margin-right: 20px;
-		border-radius: 25px;
-		color: #174B72;
-		width: 70%;
-		border: 0;
-		font-size: 16px;
-		text-transform: uppercase;
-		cursor: pointer;
+	.client-submit-area {
 		display: flex;
-        justify-content: center;
-        align-items: center;
-	
-		&.yellow {
-			background-color: #FED230;
-
-			&:hover {
-				background-color: #fdd852;
-			}
-		}
-
-		&.blue {
-			background-color: #59C0EC;
-
-			&:hover {
-				background-color: #72cff7;
-			}
-		}
-		img {
-			filter: brightness(0) saturate(100%) invert(20%) sepia(98%) saturate(606%) hue-rotate(169deg) brightness(96%) contrast(91%);
-			width: 25px;
-			height: 16px;
-		}
-	}
-	.side-btn {
-		all: unset;
-		padding: 10px 12px;
-		border-radius: 999px;
-		cursor: pointer;
-		position: relative;
-
-		&:hover {
-			background-color: rgb(240, 240, 240);
-		}
-
-		span {
-			position: absolute;
-			bottom: 10px;
-			right: 10px;
-			color: #2874AD;
+		justify-content: center;
+		align-items: center;
+		background-color: #f6f6f6;
+		padding: 12px 0;
+		position: sticky;
+		top: 36px;
+		gap: 20px;
+		.action-btn {
 			font-family: "RobotoMedium";
+			padding: 14px 25px;
+			border-radius: 25px;
+			color: #174b72;
+			width: 70%;
+			border: 0;
 			font-size: 16px;
+			text-transform: uppercase;
+			cursor: pointer;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 
-			&.plus {
-				font-size: 24px;
-				font-family: "SfProBold";
-				right: 5px;
+			&.yellow {
+				background-color: #fed230;
+
+				&:hover {
+					background-color: #fdd852;
+				}
+			}
+
+			&.blue {
+				background-color: #59c0ec;
+
+				&:hover {
+					background-color: #72cff7;
+				}
+			}
+			img {
+				filter: brightness(0) saturate(100%) invert(20%) sepia(98%) saturate(606%) hue-rotate(169deg) brightness(96%)
+					contrast(91%);
+				width: 25px;
+				height: 16px;
+			}
+		}
+		.side-btn {
+			all: unset;
+			padding: 10px 12px;
+			border-radius: 999px;
+			cursor: pointer;
+			position: relative;
+
+			&:hover {
+				background-color: rgb(240, 240, 240);
+			}
+
+			span {
+				position: absolute;
+				bottom: 10px;
+				right: 10px;
+				color: #2874ad;
+				font-family: "RobotoMedium";
+				font-size: 16px;
+
+				&.plus {
+					font-size: 24px;
+					font-family: "SfProBold";
+					right: 5px;
+				}
 			}
 		}
 	}
-}
-
 }
 .fullScreenSwiper {
-    position: relative;
-    font-family: "Roboto";
-    background-color: white;
-    & .shadowWrapper {
-      box-shadow: 0px 10px 20px -10px #999;
-      -webkit-box-shadow: 0px 10px 20px -10px #999;
-      -moz-box-shadow: 0px 10px 20px -10px #999;
-    }
-    & .item {
-      height: 300px;
-      width: 100%;
-      max-width: 500px;
-      padding-bottom: 300px;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-			cursor: pointer;
-  
-      &:hover {
-        opacity: 0.75;
-      }
-    }
-    & .customPagination {
-      position: relative;
-      width: 100%;
-      max-width: 500px;
-      height: 10px;
-      display: flex;
-      gap: 10px;
-      margin-top: 27px;
-      justify-content: center;
-      margin-bottom: 36px;
-      &.price {
-        position: absolute;
-        bottom: 0;
-      }
-      & .pageBall {
-        height: 10px;
-        width: 10px;
-        border-radius: 100%;
-      }
-    }
-    .text {
-      padding-left: 28px;
-      padding-right: 28px;
-      font-size: 17px;
-      color: #272727;
-    }
+	position: relative;
+	font-family: "Roboto";
+	background-color: white;
+	& .shadowWrapper {
+		box-shadow: 0px 10px 20px -10px #999;
+		-webkit-box-shadow: 0px 10px 20px -10px #999;
+		-moz-box-shadow: 0px 10px 20px -10px #999;
+	}
+	& .item {
+		height: 300px;
+		width: 100%;
+		max-width: 500px;
+		padding-bottom: 300px;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.75;
+		}
+	}
+	& .customPagination {
+		position: relative;
+		width: 100%;
+		max-width: 500px;
+		height: 10px;
+		display: flex;
+		gap: 10px;
+		margin-top: 27px;
+		justify-content: center;
+		margin-bottom: 36px;
+		&.price {
+			position: absolute;
+			bottom: 0;
+		}
+		& .pageBall {
+			height: 10px;
+			width: 10px;
+			border-radius: 100%;
+		}
+	}
+	.text {
+		padding-left: 28px;
+		padding-right: 28px;
+		font-size: 17px;
+		color: #272727;
+	}
 }
 
-.colored{
-    background-color: #2874AD !important;
-    border-radius: 4px !important;
+.colored {
+	background-color: #2874ad !important;
+	border-radius: 4px !important;
 }
 
-@media only screen and (max-width: 374px){
-    .container{
-        padding-bottom: 95px;    
-    }
+@media only screen and (max-width: 374px) {
+	.container {
+		padding-bottom: 95px;
+	}
+}
+@media (max-width: 420px) {
+	.fullScreenSwiper {
+		.item {
+			height: 250px;
+			padding-bottom: 250px;
+		}
+	}
 }
 /* 
 .yellow{

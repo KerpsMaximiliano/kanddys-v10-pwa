@@ -25,7 +25,7 @@
         marginTop: '28px'
       }"
     >
-      <p class="label1" [ngStyle]="{ marginTop: '42px', marginBottom: '1rem' }">
+      <p class="label1" [ngStyle]="{ marginTop: '32px', marginBottom: '1rem' }">
         Donde te mandaremos las notificaciones de esta orden?
       </p>
       <ngx-intl-tel-input
@@ -54,8 +54,6 @@
         [ngStyle]="{
           width: '88.32%',
           margin: '0 auto',
-          padding: '0px 25px',
-          paddingTop: '42px',
           borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
         }"
       ></div>
@@ -333,7 +331,7 @@
           Completaré pagando la orden de otra manera.
         </div> -->
       </a>
-      <p style="margin-bottom: 47px; margin-top: 34px" class="label1">
+      <p class="label1">
         Sobre la transferencia que realizó como pago:
       </p>
       <!-- Temporalmente deshabilitado -->
@@ -362,7 +360,7 @@
         class="code-input"
       /> -->
 
-      <p class="label3" style="margin-top: 87px">
+      <p class="label3">
         Adicione la imagen (captura):
       </p>
       <app-image-input
@@ -378,7 +376,6 @@
 
       <p
         class="label3"
-        [ngStyle]="{ marginBottom: '26px' }"
         *ngIf="banks.length > 1"
       >
         En cuál cuenta hizo la transferencia?
@@ -391,7 +388,7 @@
         [showDescription]="false"
         [containerStyles]="{
           margin: '0px',
-          paddingBottom: '72px',
+          paddingBottom: '24px',
           borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
         }"
       ></app-answer-selector>
@@ -399,12 +396,11 @@
       <div
         [ngStyle]="{
           width: '100%',
-          paddingTop: '29.5px',
+          paddingTop: '24px',
           color: '#7B7B7B',
           fontFamily: 'Roboto',
           fontStyle: 'italic',
-          fontSize: '17px',
-          paddingBottom: '67px'
+          fontSize: '17px'
         }"
       >
         En la siguiente pantalla le mandarás el record de tu orden y la

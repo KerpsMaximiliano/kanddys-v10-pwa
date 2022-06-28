@@ -173,10 +173,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '58px',
+              marginTop: '32px',
             },
             fieldStyles: {
-              marginTop: '50px'
+              marginTop: '14px'
             },
           },
         },
@@ -287,7 +287,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           placeholder: 'Type your message here...',
           styles: {
             containerStyles: {
-              marginBottom: '60px',
+              marginBottom: '30px',
             },
             fieldStyles: {
               boxShadow: '0px 4px 5px 0px #ddd inset',
