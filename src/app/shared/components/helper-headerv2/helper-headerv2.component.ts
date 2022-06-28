@@ -37,6 +37,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() navtext: string = 'Volver';
     @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test' ; 
     @Input() whatsapp: boolean = true;
+    @Input() whatsappLink: string = null;
     @Input() shopcart: boolean = true;
     @Input() cartAmount: number;
     @Input() public shopCartCallback: () => void;
