@@ -50,6 +50,7 @@ nav {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   padding: 20px;
+  gap: 15px;
 }
 
 .addButton {
