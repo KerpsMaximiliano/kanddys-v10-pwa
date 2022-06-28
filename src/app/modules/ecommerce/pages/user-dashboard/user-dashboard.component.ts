@@ -67,8 +67,7 @@ export class UserDashboardComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    await this.authService.signin('18492203488', '123', false);
-    
+  
     lockUI();
     const user = await this.authService.me();
     unlockUI();

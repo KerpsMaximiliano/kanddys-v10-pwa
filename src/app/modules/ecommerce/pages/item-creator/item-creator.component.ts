@@ -160,7 +160,7 @@ export class ItemCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl(0, [
               Validators.required,
-              Validators.min(0),
+              Validators.min(0.01),
             ])
           },
           onlyAllowPositiveNumbers: true,
