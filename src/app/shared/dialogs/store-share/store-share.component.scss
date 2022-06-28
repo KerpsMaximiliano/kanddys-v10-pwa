@@ -1,16 +1,28 @@
-.container{
-    width: 86%;
+.external-container {
+    width: 100%;
     margin: auto;
-    min-height: 100vh;
+    position: absolute;
+    top: 50px;
+    height: calc(100vh - 100px);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
     flex-direction: column;
-    margin-bottom: 52px;
     background-color: transparent;
+}
+
+.container{
+    width: 86%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 
     .dialog-card {
+        margin-top: auto;
+        overflow-y: scroll;
         width: 100%;
         padding: 30px 0 17px;
         border-radius: 18px;
@@ -74,6 +86,7 @@
 
     .cancel{
         width: 100%;
+        margin-top: 11.5px;
         padding: 24px;
         background-color: #FFFFFF;
         font-family: "RobotoMedium";
@@ -85,21 +98,3 @@
         cursor: pointer;
     }
 }
-
-@media (max-height: 770px) {
-    .container {
-        margin-bottom: 15px;
-        .dialog-card {
-            padding: 30px 0 0px;
-            border-radius: 10px;
-            .function{
-                padding: 15px;
-            }
-        }
-        .cancel {
-            padding: 16px;
-            border-radius: 10px;
-        }
-    }
-}
-
