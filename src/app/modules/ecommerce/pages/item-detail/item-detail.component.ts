@@ -37,6 +37,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemCartAmount: number;
   env: string = environment.assetsUrl;
   deleteEvent: Subscription;
+  whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -46,9 +47,15 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
-      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
+
+      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);''
       this.itemData = await this.items.item(params.id);
+
       if(!this.itemData) return this.back();
+
+      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.router.url}`);
+      this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
+
       if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.showCartCallBack = () => this.showItems();

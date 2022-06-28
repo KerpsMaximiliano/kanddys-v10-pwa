@@ -48,6 +48,10 @@ export const saleflow = gql`
       merchant {
         _id
         name
+        owner {
+          _id
+          phone
+        }
       }
       packages {
         _id

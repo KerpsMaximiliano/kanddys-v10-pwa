@@ -20,8 +20,11 @@
 
                 <div class="right-area">
                     <!-- ICONOS -->
-                    <div *ngIf="whatsapp"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
-                            alt="" style="cursor: pointer; margin-right: 23px" [ngStyle]="{'filter': filter? filter : 'none'}">
+                    <div *ngIf="whatsapp && whatsappLink">
+                        <a [href]="whatsappLink" target="_blank">
+                            <img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
+                                alt="" style="cursor: pointer; margin-right: 23px" [ngStyle]="{'filter': filter? filter : 'none'}">
+                        </a>
                     </div>
 
                     <ng-container *ngIf="shopcart">
