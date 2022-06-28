@@ -21,6 +21,7 @@ export class StickyButtonComponent implements OnInit {
   @Input() height: string = null;  
   @Input() fontSize: string = null;  
   @Input() size: 'small' | 'normal' = "normal";
+  @Input() addBottomSeparator: boolean = false;
 
   @Output() left = new EventEmitter;
   @Output() right = new EventEmitter;

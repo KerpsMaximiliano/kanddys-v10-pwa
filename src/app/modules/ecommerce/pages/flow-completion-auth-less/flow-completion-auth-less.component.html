@@ -430,6 +430,7 @@
   >
     <app-sticky-button
       *ngIf="step !== 'PAYMENT_INFO'"
+      [addBottomSeparator]="true"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
       (click)="submit()"
@@ -442,6 +443,7 @@
       saleflowData &&
       saleflowData._id !== '6201d72bdfeceed4d13805bc'
     "
+    [addBottomSeparator]="true"
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
     (click)="submit()"
@@ -449,6 +451,7 @@
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
     <app-sticky-button
+      [addBottomSeparator]="true"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
       (click)="submit()"
