@@ -32,10 +32,6 @@ moment.locale('es');
   styleUrls: ['./order-info.component.scss'],
 })
 export class OrderInfoComponent implements OnInit {
-  allDone: boolean;
-  address: boolean = false;
-  pagoView: boolean;
-
   constructor(
     public orderService: OrderService,
     private route: ActivatedRoute,
@@ -99,36 +95,11 @@ export class OrderInfoComponent implements OnInit {
   itemsExtra = [];
   customizer: CustomizerValue;
   order: ItemOrder;
-  socialNetworks: Array<any> = [
-    {
-      iconURL:
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AInstagram_icon.png&psig=AOvVaw0ArCppgE0iVzFJbFsQEGxd&ust=1640235510141000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCPDb88jP9vQCFQAAAAAdAAAAABAU',
-      title: 'Instagram',
-    },
-    {
-      iconURL:
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AFacebook_icon_2013.svg&psig=AOvVaw2nupuCg66y98_7IeNnv8_8&ust=1640235324298000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCKjczKDP9vQCFQAAAAAdAAAAABAP',
-      title: 'Facebook',
-    },
-    {
-      iconURL:
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.stickpng.com%2Fes%2Fimg%2Ficonos-logotipos-emojis%2Fcompanias-technologicas%2Flogo-twitter&psig=AOvVaw0xj9pmyhIEwasq8pZr-D8P&ust=1640235546152000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJifv9rP9vQCFQAAAAAdAAAAABAD',
-      title: 'Twitter',
-    },
-    {
-      iconURL:
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngwing.com%2Fes%2Ffree-png-vllqm&psig=AOvVaw3sfwwI8qPeTQwTxFxwexDQ&ust=1640235565290000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCLDYuOPP9vQCFQAAAAAdAAAAABAD',
-      title: 'Tik Tok',
-    },
-  ];
-  comprado: boolean;
-  escenarios: boolean;
-  reservacion: boolean;
-  personalizacion: boolean;
   tabsOptions = [];
-  mensajeRegalo: boolean;
+  allDone: boolean;
   orderId: string;
   pago: number;
+  view: 'comprado' | 'escenarios' | 'reservacion' | 'personalizacion' | 'mensajeRegalo' | 'pago' | 'address';
   dateOfOrder: string;
   existPackage: boolean = false;
   notifications: boolean = true;
@@ -245,7 +216,7 @@ export class OrderInfoComponent implements OnInit {
           if (daysAgo > 0) timeAgo = 'Hace ' + daysAgo + ' dias';
           if (data.order.ocr) {
             this.tabsOptions.push('Pago');
-            this.pagoView = true;
+            this.view = 'pago';
             this.totalPayed = this.price;
             this.ocrPayments = [
               {
@@ -263,7 +234,7 @@ export class OrderInfoComponent implements OnInit {
                 statusCallback: () => this.openStatusDialog(),
               },
             ];
-          } else this.comprado = true;
+          } else this.view = 'comprado';
           this.tabsOptions.push('Comprado');
           if (
             data.order.items[0].post && 
@@ -569,69 +540,77 @@ export class OrderInfoComponent implements OnInit {
 
   wichName(e) {
     if (e === 'Reservación') {
-      this.reservacion = true;
-      this.address = false;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'reservacion';
+      // this.reservacion = true;
+      // this.address = false;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     } else if (e === 'Entrega') {
-      this.reservacion = false;
-      this.address = true;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'address';
+      // this.reservacion = false;
+      // this.address = true;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     } else if (e === 'Sets') {
-      this.reservacion = false;
-      this.address = false;
-      this.escenarios = true;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'escenarios';
+      // this.reservacion = false;
+      // this.address = false;
+      // this.escenarios = true;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     } else if (e === 'Comprado') {
-      this.reservacion = false;
-      this.address = false;
-      this.escenarios = false;
-      this.comprado = true;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'comprado';
+      // this.reservacion = false;
+      // this.address = false;
+      // this.escenarios = false;
+      // this.comprado = true;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     } else if (e === 'Personalización') {
-      this.reservacion = false;
-      this.address = false;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = true;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'personalizacion';
+      // this.reservacion = false;
+      // this.address = false;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = true;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     } else if (e === 'Mensaje') {
-      this.reservacion = false;
-      this.address = false;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = true;
-      this.pagoView = false;
+      this.view = 'mensajeRegalo';
+      // this.reservacion = false;
+      // this.address = false;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = true;
+      // this.pagoView = false;
     } else if (e === 'Pago') {
-      this.reservacion = false;
-      this.address = false;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = true;
+      this.view = 'pago';
+      // this.reservacion = false;
+      // this.address = false;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = true;
     } else if (e === 'Lugar de la sesión') {
-      this.reservacion = false;
-      this.address = true;
-      this.escenarios = false;
-      this.comprado = false;
-      this.personalizacion = false;
-      this.mensajeRegalo = false;
-      this.pagoView = false;
+      this.view = 'address';
+      // this.reservacion = false;
+      // this.address = true;
+      // this.escenarios = false;
+      // this.comprado = false;
+      // this.personalizacion = false;
+      // this.mensajeRegalo = false;
+      // this.pagoView = false;
     }
   }
 }
