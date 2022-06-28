@@ -397,9 +397,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         case 'PHONE_CHECK_AND_SHOW_BANKS': {
           if (this.isAPreOrder) {
             const foundUser = await this.checkIfUserExists();
+            
             this.userData = foundUser;
 
-            if (!foundUser || String(foundUser.name) === 'null') {
+            if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
               return;
             }

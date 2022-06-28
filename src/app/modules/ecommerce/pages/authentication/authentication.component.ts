@@ -315,7 +315,7 @@ export class Authentication implements OnInit {
                     
                     const createdUser = await this.authService.signup({
                       phone: phoneNumber,
-                      email,
+                      email: email && email.length > 0 ? email : null,
                       name,
                       lastname,
                       bio: subtext,
@@ -389,7 +389,7 @@ export class Authentication implements OnInit {
                       {
                         type: 'from-user-creation-update',
                         jsondata: JSON.stringify({
-                          email,
+                          email: email && email.length > 0 ? email : null,
                           name,
                           lastname,
                           bio: subtext,
@@ -440,7 +440,7 @@ export class Authentication implements OnInit {
                   if(!foundUser) {
                     const createdUser = await this.authService.signup({
                       phone: phoneNumber,
-                      email,
+                      email: email && email.length > 0 ? email : null,
                       name: businessName,
                       bio: businessType,
                       social: socialsFiltered
@@ -514,7 +514,7 @@ export class Authentication implements OnInit {
                           jsondata: JSON.stringify({
                             userData: {
                               phone: phoneNumber,
-                              email,
+                              email: email && email.length > 0 ? email : null,
                               social: socialsFiltered,
                               instagram: socials.instagram,
                               facebook: socials.facebook
@@ -571,14 +571,14 @@ export class Authentication implements OnInit {
                             userData: {
                               name: businessName,
                               phone: phoneNumber,
-                              email,
+                              email: email && email.length > 0 ? email : null,
                               social: socialsFiltered,
                               instagram: socials.instagram,
                               facebook: socials.facebook
                             },
                             merchantData: {
                               name: businessName,
-                              email,
+                              email: email && email.length > 0 ? email : null,
                               bio: businessType,
                               social: socialsFiltered,
                               instagram: socials.instagram,

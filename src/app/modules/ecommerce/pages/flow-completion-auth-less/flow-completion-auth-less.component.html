@@ -242,6 +242,8 @@
           >
             {{ bank.value }}
           </h6>
+
+
           <div *ngIf="bank.description">
             <p
               [ngStyle]="{
@@ -251,9 +253,41 @@
                 color: '#202020',
                 margin: 0
               }"
-              *ngFor="let description of bank.description"
             >
-              {{ description }}
+              Tipo de cuenta: {{ bank.description.typeAccount }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              {{ bank.description.owner }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              Cuenta: {{ bank.description.account }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              RNC: {{ bank.description.routingNumber }}
             </p>
           </div>
         </div>
