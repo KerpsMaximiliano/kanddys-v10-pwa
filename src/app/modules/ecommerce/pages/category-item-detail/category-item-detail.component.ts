@@ -46,7 +46,7 @@ export class CategoryItemDetailComponent implements OnInit {
 
         this.item = await this.itemsService.item(itemId);
 
-        if(!this.item.category || Array.isArray(this.item.category)) 
+        if(!this.item.category || !Array.isArray(this.item.category)) 
           this.item.category = [];
 
         this.item.category.forEach(category => {
@@ -76,6 +76,8 @@ export class CategoryItemDetailComponent implements OnInit {
 
       this.itemCategories[category._id] = true;
     }
+
+    console.log(this.itemCategories, newItemCategories)
 
     await this.itemsService.updateItem({
       category: newItemCategories
