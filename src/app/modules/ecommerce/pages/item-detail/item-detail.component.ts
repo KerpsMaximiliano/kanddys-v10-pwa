@@ -53,7 +53,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
       if(!this.itemData) return this.back();
 
-      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.router.url}`);
+      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${window.location.href}`);
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
 
       if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
