@@ -345,6 +345,10 @@
           height: 97.5px;
           border-radius: 7px;
           cursor: pointer;
+
+          &:hover {
+            opacity: 0.75;
+          }
         }
         .list-square {
           height: 97.5px;

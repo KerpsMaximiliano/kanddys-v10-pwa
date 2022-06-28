@@ -60,7 +60,7 @@
                             <path id="Polygon_3" data-name="Polygon 3" d="M5.5,0,11,9H0Z" transform="translate(11 9) rotate(180)" fill="#7b7b7b"/>
                         </svg>
                     </button>
-                    <button class="save-btn" *ngIf="showMore && !admin">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button>
+                    <!-- <button class="save-btn" *ngIf="showMore && !admin">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button> -->
                     <a (click)="redirect()" class="save-btn" *ngIf="showMore && admin">EDIT</a>
                 </div>
             </div>
@@ -74,7 +74,7 @@
     <div *ngIf="showMore" class="contact-info">
         <div class="info space-between">
             <div class="buttons">
-                <a class="dollar-btn">$</a>
+                <!-- <a class="dollar-btn">$</a> -->
                 <ng-container *ngFor="let social of socials">
                     <a *ngIf="social.name === 'location'" [href]="social.url" target="_blank"><img class="blue" [src]="env + '/location123.svg'" alt="location" width="21" height="26"></a>
                     <a *ngIf="social.name === 'email'" href="mailto:{{social.url}}"><img class="blue" [src]="env + '/send.svg'" alt="email" width="26" height="26"></a>
@@ -99,6 +99,7 @@
                         social.name === 'tiktok' ||
                         social.name === 'web'"
                         [href]="social.url"
+                        target="_blank"
                     >
                         <img *ngIf="social.name === 'linkedin'" [src]="env + '/linkedin.svg'" alt="linkedin" width="28" height="26">
                         <img *ngIf="social.name === 'twitter'" [src]="env + '/twitter.svg'" alt="twitter" width="32" height="26">

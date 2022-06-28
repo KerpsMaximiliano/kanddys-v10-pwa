@@ -150,9 +150,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           selectionOptions:
             [
               'Sin mensaje y sin tarjetita',
-              'Recibes la tarjetita vacía y escribes tu el mensajito',
+              // 'Recibes la tarjetita vacía y escribes tu el mensajito',
               'Nosotros escribiremos el mensaje en una tarjetita',
-              'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
+              // 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
             ],
           changeCallbackFunction: (change, params) => {
             this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
@@ -204,13 +204,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           return { ok: false };
         }
       },
-      embeddedComponents: [
-        {
-          component: PostEditButtonsComponent,
-          afterIndex: 0,
-          inputs: []
-        },
-      ],
+      // embeddedComponents: [
+      //   {
+      //     component: PostEditButtonsComponent,
+      //     afterIndex: 0,
+      //     inputs: []
+      //   },
+      // ],
       customScrollToStepBackwards: (params) => {
         if (this.scrollableForm) {
           params.unblockScrollPastCurrentStep();

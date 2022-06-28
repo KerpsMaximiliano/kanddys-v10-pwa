@@ -160,3 +160,16 @@
 .button > svg > path {
   fill: #fff;
 }
+
+@media (max-width: 440px) {
+  .fixed-container {
+    .button {
+      font-size: 20px;
+    }
+  }
+  .container {
+    .button {
+      font-size: 20px;
+    }
+  }
+}

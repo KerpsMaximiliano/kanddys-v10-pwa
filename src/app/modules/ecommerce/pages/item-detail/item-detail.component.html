@@ -53,7 +53,7 @@
                 <button class="action-btn" [ngClass]="{'yellow': !inCart, 'blue': inCart}" (click)="onCartClick()">
                     {{inCart ? 'En el ' : 'Adicionar al '}}<span><img src="{{ env }}/carrito_blanco.svg" alt=""></span>
                 </button>
-                <button class="side-btn"><img src="{{ env }}/bookmark-plus.svg" alt=""></button>
+                <!-- <button class="side-btn"><img src="{{ env }}/bookmark-plus.svg" alt=""></button> -->
             </div>
             <ng-container *ngIf="itemData.content?.length">
                 <hr class="divider">
@@ -67,10 +67,10 @@
                 </div>
             </ng-container>
         </div>
-        <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button>
+        <!-- <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button> -->
         <app-bubble-button (click)="back()" [position]="'left'" [return]="true" [color]="'blue'"></app-bubble-button>
         <app-bubble-button (click)="openShareDialog()" [position]="(itemCartAmount > 0) ? 'minir' : 'right'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
-        <app-bubble-button (click)="showItems()" [position]="'right'" [icon]="'/carrito_blanco.svg'" [color]="'blue'" *ngIf="itemCartAmount > 0"></app-bubble-button>
+        <app-bubble-button (click)="showItems()" [cart]="true" [cartAmount]="itemCartAmount" [position]="'right'" [color]="'blue'" *ngIf="itemCartAmount > 0"></app-bubble-button>
         <app-sticky-button
         [text]="'GUARDA Y RECAUDA FONDOS'"
         [mode]="'disabled-fixed'"
