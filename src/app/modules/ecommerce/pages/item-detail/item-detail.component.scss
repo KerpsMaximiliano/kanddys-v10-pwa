@@ -1,5 +1,5 @@
 .container{
-    min-height: 100vh;    
+    min-height: 100vh;
     //AREA NUEVA COPIADA DE NEW-ITEM-DISPLAY
     .item-info {
 		display: flex;
@@ -227,6 +227,12 @@
 .colored{
     background-color: #2874AD !important;
     border-radius: 4px !important;
+}
+
+@media only screen and (max-width: 374px){
+    .container{
+        padding-bottom: 95px;    
+    }
 }
 /* 
 .yellow{
