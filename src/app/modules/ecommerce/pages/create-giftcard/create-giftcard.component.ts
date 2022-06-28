@@ -176,7 +176,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               marginTop: '58px',
             },
             fieldStyles: {
-              marginTop: '50px'
+              marginTop: '16px'
             },
           },
         },
