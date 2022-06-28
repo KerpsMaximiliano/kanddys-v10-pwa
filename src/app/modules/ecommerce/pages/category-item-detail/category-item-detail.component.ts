@@ -46,6 +46,9 @@ export class CategoryItemDetailComponent implements OnInit {
 
         this.item = await this.itemsService.item(itemId);
 
+        if(!this.item.category || Array.isArray(this.item.category)) 
+          this.item.category = [];
+
         this.item.category.forEach(category => {
           this.itemCategories[category._id] = true;
         });
