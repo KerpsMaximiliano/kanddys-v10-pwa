@@ -11,6 +11,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { Item } from 'src/app/core/models/item';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -68,15 +69,20 @@ export class UserDashboardComponent implements OnInit {
     private orderService: OrderService,
     private dialogService: DialogService,
     private route: ActivatedRoute,
+    private headerService: HeaderService
   ) { }
 
   async ngOnInit(): Promise<void> {
+    await this.authService.signin('18492203488', '123', false);
+
     lockUI();
     const user = await this.authService.me();
     unlockUI();
     if (!user) return this.redirect();
     this.userData = user;
     this.merchantData = await this.merchantsService.merchantDefault();
+    this.headerService.merchantInfo = this.merchantData;
+    
     if(this.merchantData) {
       const [items, total, users] = await Promise.all([
         this.itemsService.itemsByMerchant(this.merchantData._id),
