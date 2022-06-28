@@ -21,6 +21,7 @@
       font-family: "SfProLight";
       font-size: 17px;
       color: #2874AD;
+      text-decoration: none;
       cursor: pointer;
 
       &:hover {
@@ -51,5 +52,7 @@
     margin-top: 12px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }

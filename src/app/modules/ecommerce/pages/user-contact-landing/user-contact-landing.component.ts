@@ -246,7 +246,7 @@ export class UserContactLandingComponent implements OnInit {
         this.checkSocials(this.merchant.social);
         this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
         if(!this.saleflow) return unlockUI();
-        if(this.admin) {
+        if(this.admin && this.saleflow?.items?.length) {
           const [total, users] = await Promise.all([
             this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
             this.merchantsService.usersOrderMerchant(this.merchant._id),
@@ -254,7 +254,7 @@ export class UserContactLandingComponent implements OnInit {
           ]);
           this.ordersTotal = total;
           this.users = users;
-        } else this.getItems();
+        } else if(this.saleflow?.items?.length) this.getItems();
         unlockUI();
       })
     })

@@ -13,6 +13,14 @@
       border-radius: 8px;
       box-shadow: 0px 4px 10px #ddd;
     }
+
+    &:hover {
+      &.img-btn {
+        .item-img {
+          opacity: 0.75;
+        }
+      }
+    }
   }
 
   &-info {
@@ -38,6 +46,7 @@
       color: white;
       text-transform: uppercase;
       white-space: nowrap;
+      cursor: pointer;
     }
 
     h1 {
@@ -86,6 +95,7 @@
   text-align: center;
   text-transform: uppercase;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .placeholder {
@@ -100,7 +110,6 @@
 @media (max-width: 380px) {
   .bottom-status {
     display: block;
-    margin-top: 20px;
   }
   .item-list-info {
     .status {
@@ -120,4 +129,20 @@
 
 .pointer {
   cursor: pointer;
+}
+
+.verificado {
+  background-color: #40772F;
+
+  &:hover {
+    background-color: #4c8d38;
+  }
+}
+
+.pending {
+  background-color: #DD9204;
+
+  &:hover {
+    background-color: #eea114;
+  }
 }

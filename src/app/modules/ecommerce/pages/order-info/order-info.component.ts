@@ -265,7 +265,14 @@ export class OrderInfoComponent implements OnInit {
             ];
           } else this.comprado = true;
           this.tabsOptions.push('Comprado');
-          if (data.order.items[0].post) this.tabsOptions.push('Mensaje');
+          if (
+            data.order.items[0].post && 
+            (
+              data.order.items[0].post.from ||
+              data.order.items[0].post.to ||
+              data.order.items[0].post.message
+            )
+          ) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');
           const hasItemExtra = data.order.items.find(
