@@ -91,6 +91,7 @@ import { SwitchButtonComponent } from './components/switch-button/switch-button.
 import { ItemSmallCardComponent } from './components/item-small-card/item-small-card.component';
 import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-list.component';
 import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/item-dashboard-options.component';
+import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 
 const imports = [
   CommonModule,
@@ -104,6 +105,7 @@ const imports = [
   TextFieldModule,
   NgxIntlTelInputModule,
   ClipboardModule,
+  GooglePlaceModule
 ];
 const declarations = [
   // Pages

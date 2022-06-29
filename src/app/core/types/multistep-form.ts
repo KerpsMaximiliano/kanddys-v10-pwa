@@ -1,6 +1,9 @@
 import { FormArray, FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { Type } from '@angular/core';
+import {
+  CountryISO,
+} from 'ngx-intl-tel-input';
 
 export interface FieldStyles {
   fieldStyles?: any;
@@ -31,6 +34,7 @@ export interface FormField {
   styles?: FieldStyles;
   fieldControl: SingleControl | MultipleControl;
   onlyAllowPositiveNumbers?: boolean;
+  phoneCountryCode?: CountryISO;
   formattedValue?: string;
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;

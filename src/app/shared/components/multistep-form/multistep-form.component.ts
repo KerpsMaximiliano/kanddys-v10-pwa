@@ -242,9 +242,8 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
   SearchCountryField = SearchCountryField;
-  CountryISO = CountryISO;
+  CountryISO = CountryISO.UnitedStates;
   PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
   headerHeightTracker: number = 60;
 
   constructor(private header: HeaderService, private dialog: DialogService) { }
@@ -623,6 +622,10 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
         }
       });
     }
+  }
+
+  handleAddressChange(change) {
+    console.log(change);
   }
 
   executeStepDataProcessing = () => {

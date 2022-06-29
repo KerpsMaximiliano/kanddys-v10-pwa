@@ -36,8 +36,19 @@ export class ReservationOrderlessComponent implements OnInit {
   options: boolean = false;
   whatsappLink: string;
   merchantName: string;
+
+  //CAMBIOS ULTIMOS LUIS
+  @Input() firstLabel: string = 'DIA CONVENIENTE';
+  @Input() secondLabel: string = 'HORA CONVENIENTE';
+  @Input() timeOfDayMode: boolean = false;
+  timeOfDay: string = null;
+  selectedDateObject: any = null;
+  //FIN CAMBIOS ULTIMOS LUIS
+
+
   @Input() calendarId: string;
   @Output() onReservation = new EventEmitter();
+  @Output() onTimeOfDaySelection = new EventEmitter();
 
   constructor(
     public order: OrderService,
@@ -465,6 +476,23 @@ export class ReservationOrderlessComponent implements OnInit {
       string = string.toString() + ':' + '45';
     }
     return string;
+  }
+
+  selectTimeOfDay(change: string) {
+    this.timeOfDay = change;
+    this.onTimeOfDaySelection.emit({
+      timeOfDay: this.timeOfDay,
+      ...this.selectedDateObject
+    });
+  }
+
+  selectedDate(change: any) {
+    this.selectedDateObject = {
+      monthNumber: change.calendar.id + 1,
+      monthName: change.calendar.name,
+      dayNumber: change.day.dayNumber,
+      dayName: change.day.dayName
+    };
   }
 
   formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {
