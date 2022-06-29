@@ -493,6 +493,12 @@ export class ReservationOrderlessComponent implements OnInit {
       dayNumber: change.day.dayNumber,
       dayName: change.day.dayName
     };
+
+    if(this.timeOfDay)
+      this.onTimeOfDaySelection.emit({
+        ...this.selectedDateObject,
+        timeOfDay: this.timeOfDay 
+      })
   }
 
   formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {

@@ -1,15 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormStep } from 'src/app/core/types/multistep-form';
+import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { CalendarComponent } from 'src/app/shared/components/calendar/calendar.component';
 import { DecimalPipe } from '@angular/common';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import {
   CountryISO,
 } from 'ngx-intl-tel-input';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -19,14 +23,29 @@ const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
   fontSize: '17px',
-  fontWeight: 500,
-  margin: '0px',
+  fontWeight: '500',
   display: 'flex',
   alignItems: 'center',
-  padding: '10.5px 0px'
+  margin: '0px',
+  paddingTop: '51px',
+  paddingBottom: '0px',
+  marginBottom: '0px'
 };
 
-
+const footerConfig: FooterOptions = {
+  bgColor: '#2874AD',
+  color: '#E9E371',
+  enabledStyles: {
+    height: '30px',
+    fontSize: '17px',
+    padding: '0px'
+  },
+  disabledStyles: {
+    height: '30px',
+    fontSize: '17px',
+    padding: '0px'
+  }
+};
 
 @Component({
   selector: 'app-heavenly-balloons',
@@ -38,6 +57,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
   merchantId: string = null;
   databaseName: string = null;
   fullFormMessage: string = null;
+  formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18492068680?text=';
   reservation: {
     data: Record<string, any>,
@@ -59,9 +79,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Nombre (*)',
+          topLabelAction: {
+            text: 'Sobre ti',
+            clickable: false
+          },
           placeholder: 'Me llamo..',
           styles: {
             containerStyles: {
@@ -69,20 +93,28 @@ export class HeavenlyBalloonsComponent implements OnInit {
               width: 'calc(100% / 2)',
               paddingRight: '6px',
               paddingLeft: '33px',
-              marginTop: '73px'
+              marginTop: '36px',
               // width: '83.70%',
+            },
+            topLabelActionStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
             },
             fieldStyles: {
               width: '100%',
+              marginTop: '26px',
             },
-            labelStyles: labelStyles,
+            labelStyles: {
+              ...labelStyles,
+            },
           },
         },
         {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -95,9 +127,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
               // width: '83.70%',
             },
             fieldStyles: {
+              marginTop: '26px',
               width: '100%',
             },
-            labelStyles: labelStyles,
+            labelStyles: {
+              ...labelStyles,
+            },
           },
         },
         {
@@ -110,11 +145,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
           placeholder: '???-???????-?',
           styles: {
             containerStyles: {
-              marginTop: '19px',
               width: '100%',
-              padding: '0px 33px'
+              padding: '0px 33px',
             },
-            labelStyles: labelStyles,
+            fieldStyles: {
+              marginTop: '26px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px'
+            },
           },
         },
         {
@@ -127,17 +168,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Usuario de instagram',
           styles: {
             containerStyles: {
-              marginTop: '19px',
               width: '100%',
               padding: '0px 33px'
             },
+            fieldStyles: {
+              marginTop: '21px',
+              width: '100%',
+            },
             labelStyles: {
               ...labelStyles,
+              paddingTop: '65px',
               backgroundPositionX: '8px',
-              backgroundPositionY: '6.5px',
+              backgroundPositionY: '60.5px',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram.svg)',
               backgroundRepeat: 'no-repeat',
               paddingLeft: '40px',
+              paddingBottom: '5px',
               display: 'flex',
               alignItems: 'center',
             }
@@ -199,10 +245,25 @@ export class HeavenlyBalloonsComponent implements OnInit {
       hideHeader: true,
       styles: {
         padding: '0px',
-        paddingBottom: '2rem'
+        paddingBottom: '4rem'
       },
-      stepProcessingFunction: () => {
-        this.fullFormMessage = `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`;
+      footerConfig,
+      stepProcessingFunction: (params) => {
+        const {name, lastname, socialId, instagramUser} = params.dataModel.value['1'];
+
+        this.fullFormMessage = "";
+        this.fullFormMessage += `*Detalles de la orden*\n\n`;
+        this.fullFormMessage += `*Nombre completo:*\n${name} ${lastname}\n\n`;
+        
+        if(socialId && socialId !== '') this.fullFormMessage += `*RNC o Cédula:*\n${socialId}\n\n`;
+
+        if(instagramUser && instagramUser  !== '') this.fullFormMessage += `*Usuario de Instagram:*\n${instagramUser}\n\n`;
+
+        if(!this.formMessageInitialHistory['1'])
+          this.formMessageInitialHistory['1'] = this.fullFormMessage;
+
+
+        this.formMessageInitialHistory['2'] = null;
 
         return { ok: true }
       },
@@ -216,15 +277,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'phoneNumber',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Número de teléfono (*)',
           inputType: 'phone',
-          phoneCountryCode: CountryISO.Venezuela,
+          phoneCountryCode: CountryISO.DominicanRepublic,
           styles: {
             labelStyles: {
               ...labelStyles,
-            }
+              marginBottom: '26px'
+            },
           },
           statusChangeCallbackFunction: (change) => {
             if(change === 'VALID') {
@@ -243,15 +305,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           label: 'Si tienes otro número al cual deseas que contactemos para realizar la entrega, indícalo aquí',
           inputType: 'phone',
-          phoneCountryCode: CountryISO.Venezuela,
+          phoneCountryCode: CountryISO.DominicanRepublic,
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingTop: '65px',
+              marginBottom: '26px'
             },
             containerStyles: {
               display: 'none',
-              marginTop: '19px'
-            }
+            },
           }
         },
         {
@@ -266,15 +329,33 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingTop: '65px'
             },
             containerStyles: {
-              marginTop: '19px',
-              paddingBottom: '2rem'
+              paddingBottom: '4rem'
+            },
+            fieldStyles: {
+              marginTop: '26px'
             }
           }
         },
       ],
-      stepProcessingFunction: () => {
+      stepProcessingFunction: (params) => {
+        const { email, phoneNumber, receiverPhoneNumber } = params.dataModel.value['2'];
+
+        if(!this.formMessageInitialHistory['2'])
+          this.formMessageInitialHistory['2'] = this.formMessageInitialHistory['1'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['1'];
+        this.fullFormMessage += `*Número de teléfono:*\n${phoneNumber.nationalNumber}\n\n`;
+
+        if(receiverPhoneNumber && receiverPhoneNumber !== '') this.fullFormMessage += `*Número alternativo:*\n${receiverPhoneNumber.nationalNumber}\n\n`;
+        if(email && email !== '') this.fullFormMessage += `*Email:*\n${email}\n\n`;
+
+        this.formMessageInitialHistory['2'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['3'] = null;
+
         return { ok: true }
       },
       pageHeader: {
@@ -284,11 +365,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '44px',
-          marginBottom: '25px',
+          marginTop: '36px',
         }
       },
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      footerConfig,
+      stepButtonInvalidText: 'ESCRIBE COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
     },
     {
@@ -306,6 +387,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px'
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -315,44 +397,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           }
         },
-        {
-          name: 'sender',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('')
-          },
-          label: 'Remitente (Si no deseas que indiquemos de parte de quien proviene este arreglo puedes escribir "Anónimo" o dejarlo vacío',
-          placeholder: 'Escribe aquí',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-            },
-            containerStyles: {
-              marginTop: '19px'
-            }
-          }
-        },
-        {
-          name: 'receiver',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('')
-          },
-          label: 'Destinatario (Quién recibe este arreglo)',
-          placeholder: 'Escribe aquí',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-            },
-            containerStyles: {
-              marginTop: '19px',
-            }
-          }
-        },
       ],
       embeddedComponents: [
         {
-          afterIndex: 2,
+          afterIndex: 0,
           component: ImageInputComponent,
           inputs: {
             imageField:
@@ -365,12 +413,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
             topLabel: {
               text: '¿Tienes fotos de referencia? Adjúntalas aquí:',
               styles: {
-                ...labelStyles
+                ...labelStyles,
+                paddingTop: '65px',
+                paddingBottom: '26px'
               },
             },
             containerStyles: {
               width: '157px',
               height: '137px',
+              margin: '0px'
             },
             fileStyles: {
               width: '157px',
@@ -397,15 +448,108 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           ],
           containerStyles: {
-            marginTop: '19px',
-            paddingBottom: '2rem'
+            marginTop: '0px',
+            paddingBottom: '4rem'
           },
         }
       ],
-      stepProcessingFunction: () => {
+      stepProcessingFunction: (params) => {
+        const { articleDescription } = params.dataModel.value['3'];
+
+        if(!this.formMessageInitialHistory['3'])
+          this.formMessageInitialHistory['3'] = this.formMessageInitialHistory['2'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['2'];
+
+        if(articleDescription && articleDescription !== '') this.fullFormMessage += `*Descripción de Artículo:*\n${articleDescription}\n\n`;
+
+
+        this.formMessageInitialHistory['3'] = this.fullFormMessage;
+        this.formMessageInitialHistory['4'] = null;
+
         return { ok: true }
       },
+      pageHeader: {
+        text: 'Sobre el arreglo',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        }
+      },
+      footerConfig,
       stepButtonInvalidText: 'ESPECIFICA LOS DETALLES DE TU ORDEN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+    },
+    {
+      headerText: '',
+      fieldsList: [
+        {
+          name: 'sender',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          label: 'Remitente (Si no deseas que indiquemos de parte de quien proviene este arreglo puedes escribir "Anónimo" o dejarlo vacío',
+          placeholder: 'Escribe aquí',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px'
+            }
+          }
+        },
+        {
+          name: 'receiver',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'Destinatario (Quién recibe este arreglo) (*)',
+          placeholder: 'Escribe aquí',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+              paddingBottom: '26px'
+            },
+            containerStyles: {
+              paddingBottom: '4rem'
+            }
+          }
+        },
+      ],
+      stepProcessingFunction: (params) => {
+        const { sender, receiver } = params.dataModel.value['4'];
+
+        if(!this.formMessageInitialHistory['4'])
+          this.formMessageInitialHistory['4'] = this.formMessageInitialHistory['3'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['3'];
+
+        if(sender) this.fullFormMessage += `*Remitente:*\n${sender === '' ? 'Anónimo' : sender}\n\n`;
+        if(receiver && receiver !== '') this.fullFormMessage += `*Destinatario:*\n${receiver}\n\n`;
+
+        this.formMessageInitialHistory['4'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['5'] = null;
+        
+        return { ok: true }
+      },
+      pageHeader: {
+        text: 'Sobre la entrega',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        }
+      },
+      footerConfig,
+      stepButtonInvalidText: 'ESPECIFICA LOS DETALLES DE LA ENTREGA',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
@@ -415,25 +559,25 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'wantToAddADedication',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[3].fieldsList[0].fieldControl.control.setValue(change, {
+            this.formSteps[4].fieldsList[0].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
 
             if (change === 'Si') {
-              this.formSteps[3].fieldsList[1].styles.containerStyles.opacity = '1';
-              this.formSteps[3].fieldsList[1].styles.containerStyles.marginLeft = '0px';              
-              // this.formSteps[3].fieldsList[1].fieldControl.control.setValidators(Validators.required);
-              this.formSteps[3].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '1';
+              this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft = '0px';              
+              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators(Validators.required);
+              this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();
             } else {
-              this.formSteps[3].fieldsList[1].styles.containerStyles.opacity = '0';
-              this.formSteps[3].fieldsList[1].styles.containerStyles.marginLeft = '1000px';              
-              this.formSteps[3].fieldsList[1].fieldControl.control.setValue('');
-              this.formSteps[3].fieldsList[1].fieldControl.control.setValidators([]);
-              this.formSteps[3].fieldsList[1].fieldControl.control.updateValueAndValidity();              
+              this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '0';
+              this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft = '1000px';              
+              this.formSteps[4].fieldsList[1].fieldControl.control.setValue('');
+              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators([]);
+              this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();              
             }
           },
           label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
@@ -464,6 +608,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px',
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -480,9 +625,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
           }
         },
       ],
-      stepProcessingFunction: () => {
+      stepProcessingFunction: (params) => {
+        const { wantToAddADedication, dedicationMessage } = params.dataModel.value['5'];
+
+        if(!this.formMessageInitialHistory['5'])
+          this.formMessageInitialHistory['5'] = this.formMessageInitialHistory['4'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['4'];
+
+        if(wantToAddADedication === 'Si')
+          this.fullFormMessage += `*Mensaje de Dedicatoria:*\n${dedicationMessage}\n\n`;
+
+          this.formMessageInitialHistory['5'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['6'] = null;
+        
         return { ok: true }
       },
+      footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
@@ -493,7 +653,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Whatsapp', 'Instagram', 'E-Mail', 'Website', 'Personal'],
           changeCallbackFunction: (change, params) => {
@@ -501,20 +661,49 @@ export class HeavenlyBalloonsComponent implements OnInit {
               emitEvent: false,
             });
           },
-          label: 'Via de pago',
+          label: 'Via de pedido (*)',
           inputType: 'radio',
           styles: {
             containerStyles: {
-              marginTop: '48px',
+              marginTop: '36px',
             },
             labelStyles: {
-              ...labelStyles,
+              fontSize: '24px',
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              marginBottom: '0px',
+              paddingBottom: '26px'
             },
             fieldStyles: {
               paddingLeft: '0px'
             }
           },
         },
+      ],
+      stepProcessingFunction: (params) => {
+        const { orderMedium } = params.dataModel.value['6'];
+
+        if(!this.formMessageInitialHistory['6'])
+          this.formMessageInitialHistory['6'] = this.formMessageInitialHistory['5'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['5'];
+
+        if(orderMedium !== '') 
+          this.fullFormMessage += `*Via de pedido:*\n${orderMedium}\n\n`;
+
+        this.formMessageInitialHistory['6'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['7'] = null;
+        
+        return { ok: true }
+      },
+      footerConfig,
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+    },
+    {
+      headerText: '',
+      fieldsList: [
         {
           name: 'totalAmount',
           customCursorIndex: this.decimalPipe.transform(
@@ -532,7 +721,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           shouldFormatNumber: true,
           label: 'Indica el total de tu orden. Si no lo sabes puedes dejarlo en blanco',
           inputType: 'number',
-          placeholder: 'La compra es de $..',
+          placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
             try {
               if (!change.includes('.')) {
@@ -553,10 +742,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
 
                   if (formatted === '0.00') {
-                    this.formSteps[4].fieldsList[1].placeholder = '';
+                    this.formSteps[6].fieldsList[0].placeholder = '';
                   }
 
-                  this.formSteps[4].fieldsList[1].formattedValue = '$' + formatted;
+                  this.formSteps[6].fieldsList[0].formattedValue = '$' + formatted;
                 } else {
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
@@ -570,14 +759,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
 
                   if (formatted === '0.00') {
-                    this.formSteps[4].fieldsList[1].placeholder = '';
+                    this.formSteps[6].fieldsList[0].placeholder = '';
                   }
 
-                  this.formSteps[4].fieldsList[1].formattedValue = '$' + formatted;
+                  this.formSteps[6].fieldsList[0].formattedValue = '$' + formatted;
                 }
               } else {
                 const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
-                this.formSteps[4].fieldsList[1].fieldControl.control.setValue(convertedNumber, {
+                this.formSteps[6].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
                   emitEvent: false,
                 });
               }
@@ -588,9 +777,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px'
             },
             containerStyles: {
-              marginTop: '19px',
               position: 'relative'
             },
             fieldStyles: {
@@ -621,7 +810,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           ),
           fieldControl: {
             type: 'single',
-            control: new FormControl(0)
+            control: new FormControl(0, [
+              Validators.required,
+              Validators.min(0.01)
+            ])
           },
           shouldFormatNumber: true,
           label: 'Monto Pagado (*)',
@@ -647,10 +839,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
 
                   if (formatted === '0.00') {
-                    this.formSteps[4].fieldsList[2].placeholder = '';
+                    this.formSteps[6].fieldsList[1].placeholder = '';
                   }
 
-                  this.formSteps[4].fieldsList[2].formattedValue = '$' + formatted;
+                  this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
                 } else {
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
@@ -664,14 +856,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
 
                   if (formatted === '0.00') {
-                    this.formSteps[4].fieldsList[2].placeholder = '';
+                    this.formSteps[6].fieldsList[1].placeholder = '';
                   }
 
-                  this.formSteps[4].fieldsList[2].formattedValue = '$' + formatted;
+                  this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
                 }
               } else {
                 const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
-                this.formSteps[4].fieldsList[2].fieldControl.control.setValue(convertedNumber, {
+                this.formSteps[6].fieldsList[1].fieldControl.control.setValue(convertedNumber, {
                   emitEvent: false,
                 });
               }
@@ -682,9 +874,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px',
+              paddingTop: '65px'
             },
             containerStyles: {
-              marginTop: '19px',
               position: 'relative'
             },
             fieldStyles: {
@@ -707,22 +900,25 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'paymentMethod',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Efectivo', 'Cuenta Banreservas', 'Cuenta BHD', 'Cuenta Banco Popular', 'Yoyo App', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[4].fieldsList[3].fieldControl.control.setValue(change, {
+            this.formSteps[6].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
           },
-          label: 'Vía o Cuenta a la que realizaste tu pago',
+          label: 'Vía o Cuenta a la que realizaste tu pago (*)',
           inputType: 'radio',
           styles: {
-            containerStyles: {
-              marginTop: '19px',
-            },
             labelStyles: {
               ...labelStyles,
+              fontFamily: 'Roboto',
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '19px',
+              paddingBottom: '26px',
+              paddingTop: '65px'
             },
             fieldStyles: {
               paddingLeft: '0px'
@@ -733,14 +929,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'referenceImage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
-          label: 'Adjunta aquí tu comprobante de Pago',
+          label: 'Adjunta aquí tu comprobante de Pago(*)',
           inputType: 'file',
           placeholder: 'sube una imagen',
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px',
+              paddingTop: '65px'
             },
             fieldStyles: {
               minWidth: '192px',
@@ -749,15 +947,47 @@ export class HeavenlyBalloonsComponent implements OnInit {
               borderRadius: '7px'
             },
             containerStyles: {
-              marginTop: '19px',
-              paddingBottom: '2rem'
+              paddingBottom: '4rem'
             }
           },
         },
       ],
-      stepProcessingFunction: () => {
+      stepProcessingFunction: (params) => {
+        const totalAmount = this.formSteps[6].fieldsList[0].formattedValue;
+        const firstPayment = this.formSteps[6].fieldsList[1].formattedValue;
+        const { paymentMethod } = params.dataModel.value['7'];
+
+        if(!this.formMessageInitialHistory['7'])
+          this.formMessageInitialHistory['7'] = this.formMessageInitialHistory['6'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['6'];
+
+        if(totalAmount && totalAmount !== '') 
+          this.fullFormMessage += `*Total:*\n${totalAmount}\n\n`;
+
+        if(firstPayment && firstPayment !== '') 
+          this.fullFormMessage += `*1er. Pago:*\n${firstPayment}\n\n`;
+          
+        if(paymentMethod && paymentMethod !== "") 
+          this.fullFormMessage += `*Forma de 1er. Pago:*\n${paymentMethod}\n\n`;
+
+        this.formMessageInitialHistory['7'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['8'] = null;
+        
         return { ok: true }
       },
+      pageHeader: {
+        text: 'Sobre el pago',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        }
+      },
+      footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
@@ -766,7 +996,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         {
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           name: 'reservation',
           label: '',
@@ -784,26 +1014,42 @@ export class HeavenlyBalloonsComponent implements OnInit {
           inputs:
           {
             calendarId: "62bbb5f545c3506dfb3d11d4",
-            firstLabel: "Fecha en la que deseas que entreguemos tu arreglo",
-            secondLabel: "Horario de entrega",
+            firstLabel: "FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO",
+            secondLabel: "HORARIO DE ENTREGA",
             timeOfDayMode: true
           },
           outputs: [
             {
               name: 'onTimeOfDaySelection',
               callback: (timeOfDay) => {
-                this.formSteps[5].fieldsList[0].fieldControl.control.setValue(timeOfDay);
+                this.formSteps[7].fieldsList[0].fieldControl.control.setValue(timeOfDay);
               },
             }
           ],
           containerStyles: {
-            paddingBottom: '2rem'
+            paddingBottom: '4rem'
           }
         }
       ],
-      stepProcessingFunction: () => {
+      stepProcessingFunction: (params) => {
+        const { reservation: timeOfDay } = params.dataModel.value['8'];
+
+        if(!this.formMessageInitialHistory['8'])
+          this.formMessageInitialHistory['8'] = this.formMessageInitialHistory['6'];
+        
+        this.fullFormMessage = this.formMessageInitialHistory['6'];
+
+        if(timeOfDay) {
+          this.fullFormMessage += `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`;
+        }
+
+        this.formMessageInitialHistory['8'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['9'] = null;
+
         return { ok: true };
       },
+      footerConfig,
       stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
@@ -811,11 +1057,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
       headerText: '',
       fieldsList: [
         {
-          name: 'about-delivery',
-          label: '¿Cómo deseas que sea entregado tu arreglo?',
+          name: 'deliveryMethod',
+          label: '¿Cómo deseas que sea entregado tu arreglo? (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Pick Up',
@@ -826,20 +1072,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
           ],
           inputType: 'radio',
           styles: {
-            containerStyles: {
-              marginTop: '44px',
-            },
             labelStyles: {
-              ...labelStyles
+              ...labelStyles,
+              fontFamily: 'Roboto',
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '19px',
+              paddingBottom: '26px',
             }
           }
         },
         {
           name: 'typeOfBuilding',
-          label: 'Indica el tipo de Edificación',
+          label: 'Indica el tipo de Edificación (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Casa',
@@ -849,11 +1097,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
           ],
           inputType: 'radio',
           styles: {
-            containerStyles: {
-              marginTop: '19px',
-            },
             labelStyles: {
-              ...labelStyles
+              ...labelStyles,
+              fontFamily: 'Roboto',
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '19px',
+              paddingBottom: '26px',
+              paddingTop: '65px'
             }
           }
         },
@@ -861,14 +1112,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'deliveryAddress',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
-          label: 'Dirección en la que deseas que sea entregado tu arreglo',
+          label: 'Dirección en la que deseas que sea entregado tu arreglo (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px',
+              paddingTop: '65px'
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -876,9 +1129,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               background: 'white',
               height: '164px'
             },
-            containerStyles: {
-              marginTop: '19px'
-            }
           }
         },
         {
@@ -893,6 +1143,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingBottom: '26px',
+              paddingTop: '65px'
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -901,8 +1153,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '164px'
             },
             containerStyles: {
-              marginTop: '19px',
-              paddingBottom: '2rem'
+              paddingBottom: '4rem'
             }
           }
         },
@@ -912,22 +1163,64 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl('')
           },
-          inputType: 'address',
           label: 'Si tienes el location, puedes indicarlo aquí',
           placeholder: 'Escribe aquí...',
           styles: {
             labelStyles: {
               ...labelStyles,
+              paddingTop: '65px',
+              paddingBottom: '26px'
             },
             containerStyles: {
-              marginTop: '19px',
               paddingBottom: '4rem'
             }
           }
         },
       ],
-      stepProcessingFunction: () => {
+      footerConfig,
+      stepProcessingFunction: (params) => {
+        const { deliveryMethod, typeOfBuilding, deliveryAddress, addressReference, location } = params.dataModel.value['9'];
+
+        if(!this.formMessageInitialHistory['9'])
+          this.formMessageInitialHistory['9'] = this.formMessageInitialHistory['8'];
+      
+        this.fullFormMessage = this.formMessageInitialHistory['8'];
+
+        if(deliveryMethod && deliveryMethod !== '') {
+          this.fullFormMessage += `*Forma de Entrega:*\n${deliveryMethod}\n\n`;
+        }
+
+        if(typeOfBuilding && typeOfBuilding !== '') {
+          this.fullFormMessage += `*Tipo de Edificación:*\n${typeOfBuilding}\n\n`;
+        }
+
+        if(deliveryAddress && deliveryAddress !== '') {
+          this.fullFormMessage += `*Dirección de Entrega:*\n${deliveryAddress}\n\n`;
+        }
+
+        if(addressReference && addressReference !== '') {
+          this.fullFormMessage += `*Referencia Dirección:*\n${addressReference}\n\n`;
+        }
+
+        if(location && location !== '') {
+          this.fullFormMessage += `*Location:*\n${location}\n\n`;
+        }
+
+        this.formMessageInitialHistory['9'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['10'] = null;
+
         return { ok: true }
+      },
+      pageHeader: {
+        text: 'Cuéntanos más sobre la entrega',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        }
       },
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
@@ -940,7 +1233,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Tipo de Factura',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Sin Comprobante',
@@ -953,20 +1246,137 @@ export class HeavenlyBalloonsComponent implements OnInit {
               marginTop: '44px',
             },
             labelStyles: {
-              ...labelStyles
-            },
-            subLabelStyles: {
-              color: '#7B7B7B',
-              fontSize: '1rem',
-              margin: '0px',
-              marginTop: '16px',
-              marginBottom: '27px',
+              ...labelStyles,
+              ...labelStyles,
               fontFamily: 'Roboto',
-              fontWeight: 500
+              color: 'black',
+              fontWeight: 500,
+              fontSize: '19px',
+              paddingBottom: '26px',
             },
           }
         }
       ],
+      footerConfig,
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          try {
+            const { instagramUser, name, lastname, socialId } = params.dataModel.value['1'];
+            const { email, phoneNumber, receiverPhoneNumber } = params.dataModel.value['2'];
+            const { articleDescription } = params.dataModel.value['3'];
+            const { receiver, sender } = params.dataModel.value['4'];
+            const { dedicationMessage } = params.dataModel.value['5'];
+            const { orderMedium } = params.dataModel.value['6'];
+            const { paymentMethod, referenceImage } = params.dataModel.value['7'];
+            let totalAmount = this.formSteps[6].fieldsList[0].formattedValue;
+            let firstPayment = this.formSteps[6].fieldsList[1].formattedValue;
+
+            const convertedTotalAmount = Number(
+              totalAmount
+                .split('').filter(char => char !== ',' && char !== '$').join(''));
+            
+            const convertedFirstPayment = Number(
+              firstPayment
+                .split('').filter(char => char !== ',' && char !== '$').join(''));
+    
+
+            const { reservation: delivery } = params.dataModel.value['8'];
+            const { 
+              addressReference, 
+              deliveryAddress, 
+              deliveryMethod,
+              location,
+              typeOfBuilding
+            } = params.dataModel.value['9'];
+            const { billType } = params.dataModel.value['10'];
+
+            this.formMessageInitialHistory['10'] = this.formMessageInitialHistory['9'];
+
+            this.fullFormMessage = this.formMessageInitialHistory['9'];
+
+            this.fullFormMessage += `*Tipo de Factura:*\n${billType}\n\n`;
+
+            // if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
+            //   this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
+
+            const files = [];
+
+            files.push(base64ToFile(referenceImage));
+
+            this.defaultImages.forEach(image => {
+              if(image !== "") {
+                files.push(base64ToFile(image as string))
+              }
+            });
+
+            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(files);
+
+            this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
+            this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
+
+            const data = {
+              instagramUser,
+              name,
+              lastname,
+              socialId,
+              email,
+              phoneNumber,
+              receiverPhoneNumber,
+              articleDescription,
+              sender: sender !== '' ? sender : 'Anónimo',
+              receiver,
+              dedicationMessage,
+              orderMedium,
+              paymentMethod,
+              referenceImage: fileRoutes[0],
+              delivery: new Date(new Date().getFullYear(), delivery.monthNumber, delivery.dayNumber).toISOString(),
+              timeOfDay: delivery.timeOfDay,
+              addressReference,
+              deliveryAddress,
+              deliveryMethod,
+              location,
+              typeOfBuilding,
+              billType,
+              articlePhotos: fileRoutes.slice(1,)
+            };
+
+            const success = await this.merchantsService.uploadDataToClientsAirtable(
+              this.merchantId,
+              this.databaseName,
+              data
+            );
+
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                message: success ? null : 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
+            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+
+            return { ok: true };
+          } catch (error) {
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'sadFace.svg',
+                message: 'Ocurrió un problema'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+
+            console.log(error);
+
+            return { ok: false };
+          }
+        },
+      },
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     }
@@ -974,7 +1384,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
+    private dialog: DialogService,
+    private merchantsService: MerchantsService
   ) { }
   
 

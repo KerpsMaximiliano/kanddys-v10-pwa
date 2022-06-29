@@ -58,9 +58,13 @@ shouldScrollBackwards &&
       paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
       minHeight: steps[currentStepIndex].customStickyButton ?
       'calc(100vh - ' + steps[currentStepIndex].customStickyButton.height + ')' :
-        dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
-          ? 'calc(100vh - 55px)'
-          : 'calc(100vh - 38px)'
+        steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'VALID' ?
+          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles.height + ')' :
+            steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' ?
+              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles.height + ')' :
+                dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+                  ? 'calc(100vh - 55px)'
+                  : 'calc(100vh - 38px)'
     } : steps[currentStepIndex].styles ? spreadOperator(steps[currentStepIndex].styles, {
       paddingTop: '0px'
     }) : null" 
