@@ -150,7 +150,9 @@
                         'color': color? color : ''
                         }">{{navtext}}</h1>
                 </div>
-                <button class="edit-button" *ngIf="edit || batch"> <span *ngIf="batch">BATCH</span> EDIT</button>
+                <button class="edit-button" *ngIf="edit || batch"
+                    (click)="editBtnCallback ? editBtnCallback() : null"
+                > <span *ngIf="batch">BATCH</span> EDIT</button>
                 <div *ngIf="plus"><span class="plus"
                     [ngStyle]="
                     {

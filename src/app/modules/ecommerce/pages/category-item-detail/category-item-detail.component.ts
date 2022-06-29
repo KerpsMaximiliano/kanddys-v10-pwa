@@ -4,6 +4,7 @@ import { ActivatedRoute, Route } from '@angular/router';
 import { Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from 'src/app/core/models/item';
 import { Location } from '@angular/common';
@@ -30,6 +31,7 @@ export class CategoryItemDetailComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private location: Location,
+    private headerService: HeaderService
   ) { }
 
   async ngOnInit() {
@@ -86,6 +88,11 @@ export class CategoryItemDetailComponent implements OnInit {
 
   redirect() {
     this.location.back();
+  }
+
+  redirectToItemCreator = () => {
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate([`ecommerce/item-creator/${this.item._id}`]);
   }
 
   toData(){

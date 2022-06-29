@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ApplicationRef} from '@angular/core';
 import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ const labelStyles = {
   templateUrl: './item-creator.component.html',
   styleUrls: ['./item-creator.component.scss'],
 })
-export class ItemCreatorComponent implements OnInit {
+export class ItemCreatorComponent implements OnInit{
   currentUserId: string = null;
   merchantOwnerId: string = null;
   currentItemId: string = null;
@@ -777,8 +777,16 @@ export class ItemCreatorComponent implements OnInit {
       const { itemId } = routeParams;
       this.currentItemId = itemId;
 
+      if(this.headerService.flowRoute) {
+        this.shouldScrollBackwards = true;
+        this.formSteps[0].customScrollToStepBackwards = (params) => {
+          this.router.navigate([this.headerService.flowRoute]);
+        };
+      }
+
       if (localStorage.getItem('session-token')) {
         const data = await this.authService.me()
+        this.user = data;
         if (data) this.loggedIn = true;
       }
 
