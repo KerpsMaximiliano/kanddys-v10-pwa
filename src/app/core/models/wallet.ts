@@ -25,6 +25,7 @@ export class Bank extends Model<Bank> {
     isActive: boolean
     account: string;
     routingNumber: number;
+    bankName?: string;
 
     name?: string;
 }

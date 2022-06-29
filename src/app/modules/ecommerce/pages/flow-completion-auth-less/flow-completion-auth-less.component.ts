@@ -345,48 +345,63 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
     console.log(this.banks);
 
-    let wallets = [];
-    for (let i = 0; i < data.ExchangeData.bank.length; i++) {
-      wallets.push(
-        await this.wallet.paymentReceiver(
-          data.ExchangeData.bank[i].paymentReceiver._id
-        )
-      );
-    }
-
-    Promise.all(wallets).then((values) => {
-      console.log(values);
-      let descriptions = data.ExchangeData.bank.map((value) => {
-        return {
-          owner: value.ownerAccount,
-          type: value.typeAccount,
-          account: value.account,
-          routingNumber: value.routingNumber,
-        };
-      });
-      const payments = values.map((value) => {
-        return {
-          paymenteceiver: value.PaymentReceiver,
-          bankdata: descriptions,
-        };
-      });
-      console.log(payments);
-      this.bankOptions = payments.map((value, index) => {
-        this.banks[index].name = this.titlecasePipe.transform(
-          value.paymenteceiver.name
-        );
-        return {
-          value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
-          status: true,
-          description: {
-            typeAccount: value.bankdata[0].type,
-            owner: value.bankdata[0].owner,
-            account: value.bankdata[0].account,
-            routingNumber: value.bankdata[0].routingNumber
-          },
-        };
-      });
+    this.bankOptions = this.banks.map(bank => {
+      return {
+        value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
+        status: true,
+        description: {
+          typeAccount: bank.typeAccount,
+          owner: bank.ownerAccount,
+          account: bank.account,
+          routingNumber: bank.routingNumber
+        }
+      }
     });
+
+    // let wallets = [];
+    // for (let i = 0; i < data.ExchangeData.bank.length; i++) {
+    //   wallets.push(
+    //     await this.wallet.paymentReceiver(
+    //       data.ExchangeData.bank[i].paymentReceiver._id
+    //     )
+    //   );
+    // }
+    
+
+
+    // Promise.all(wallets).then((values) => {
+    //   console.log(values);
+    //   let descriptions = data.ExchangeData.bank.map((value) => {
+    //     return {
+    //       owner: value.ownerAccount,
+    //       type: value.typeAccount,
+    //       account: value.account,
+    //       routingNumber: value.routingNumber,
+    //     };
+    //   });
+    //   const payments = values.map((value) => {
+    //     return {
+    //       paymenteceiver: value.PaymentReceiver,
+    //       bankdata: descriptions,
+    //     };
+    //   });
+    //   console.log(payments);
+    //   this.bankOptions = payments.map((value, index) => {
+    //     this.banks[index].name = this.titlecasePipe.transform(
+    //       value.paymenteceiver.name
+    //     );
+    //     return {
+    //       value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
+    //       status: true,
+    //       description: {
+    //         typeAccount: value.bankdata[0].type,
+    //         owner: value.bankdata[0].owner,
+    //         account: value.bankdata[0].account,
+    //         routingNumber: value.bankdata[0].routingNumber
+    //       },
+    //     };
+    //   });
+    // });
   }
 
   async submit() {
