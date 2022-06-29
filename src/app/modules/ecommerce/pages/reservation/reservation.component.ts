@@ -210,11 +210,12 @@ export class ReservationComponent implements OnInit {
     }*/
   }
 
-  checkCalendar() {
+  async checkCalendar() {
     this.calendar.getCalendar(this.calendarId).then((data) => {
       //this.merchant = data.getCalendar.merchant._id;
       this.merchant = this.saleflowData.merchant._id;
       this.merchantName = this.saleflowData.merchant.name;
+      console.log(this.calendar.availableHours);
       this.getAmAndPm();
       // Logic for default date
       if (!this.sliders) {
@@ -611,6 +612,7 @@ export class ReservationComponent implements OnInit {
 
   getId(id, slide) {
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
+    console.log(slide);
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -621,7 +623,7 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  getReservations(hour1) {
+  getReservations(hour1, test?: any) {
     for (let i = 0; i < this.calendar.reservations.length; i++) {
       let reservationMonthFrom =
         parseInt(this.calendar.reservations[i].date.from.split('-')[1]) - 1;
@@ -653,6 +655,7 @@ export class ReservationComponent implements OnInit {
   }
 
   filterHours(hour) {
+    // if(hour) console.log("PROBANDO MI AMOR POR TIII");
     let today = new Date();
     let time = today.getHours();
     /*if (this.calendar.monthIndex == 0 && this.calendar.dayIndex < (this.calendar.monthDay-1)) {
@@ -664,7 +667,8 @@ export class ReservationComponent implements OnInit {
       if (time >= parseInt(hour) - this.offset) {
         return false;
       } else {
-        return true;
+        if (this.getReservations(hour)) return false;
+        else return true;
       }
     } else if (
       this.getLimit(
