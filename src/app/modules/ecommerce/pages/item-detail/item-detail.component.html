@@ -51,7 +51,7 @@
             </div>
             <div class="client-submit-area">
                 <button class="action-btn" [ngClass]="{'yellow': !inCart, 'blue': inCart}" (click)="onCartClick()">
-                    {{inCart ? 'En el ' : 'Adicionar al carrito '}}<span><img src="{{ env }}/carrito_blanco.svg" alt=""></span>
+                    {{inCart ? 'En el carrito ' : 'Adicionar al carrito '}}<span><img src="{{ env }}/carrito_blanco.svg" alt=""></span>
                 </button>
                 <!-- <button class="side-btn"><img src="{{ env }}/bookmark-plus.svg" alt=""></button> -->
             </div>
