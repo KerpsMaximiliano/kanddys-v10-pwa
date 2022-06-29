@@ -1,6 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
-import { Calendar } from './reservation';
+import { Calendar } from './calendar';
 
 export class ItemParamValue extends Model<ItemParamValue> {
   name?: string;
