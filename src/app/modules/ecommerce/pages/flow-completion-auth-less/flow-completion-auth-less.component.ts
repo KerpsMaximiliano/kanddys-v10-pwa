@@ -85,7 +85,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
+  preferredCountries: CountryISO[] = [CountryISO.DominicanRepublic];
   shouldAllowPaymentSkipping: boolean = false;
   showCartCallBack: () => void;
   itemsAmount: number;
@@ -343,8 +343,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
     this.banks = data.ExchangeData.bank;
 
-    console.log(this.banks);
-
     this.bankOptions = this.banks.map(bank => {
       return {
         value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
@@ -586,6 +584,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
 
     if (this.step === 'PAYMENT_INFO') {
+      this.image = null;
+      this.selectedBank = null;
       this.step = this.pastStep;
       this.isANewUser = false;
     }

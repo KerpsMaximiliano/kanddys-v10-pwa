@@ -39,7 +39,7 @@
           SearchCountryField.Name
         ]"
         [selectFirstCountry]="false"
-        [selectedCountryISO]="CountryISO.UnitedStates"
+        [selectedCountryISO]="CountryISO.DominicanRepublic"
         maxLength="15"
         [phoneValidation]="true"
         [separateDialCode]="true"
@@ -389,7 +389,7 @@
         [showDescription]="false"
         [containerStyles]="{
           margin: '0px',
-          paddingBottom: '24px',
+          paddingBottom: '16px',
           borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
         }"
       ></app-answer-selector>
@@ -397,7 +397,7 @@
       <div
         [ngStyle]="{
           width: '100%',
-          paddingTop: '24px',
+          paddingTop: '32px',
           color: '#7B7B7B',
           fontFamily: 'Roboto',
           fontStyle: 'italic',
@@ -430,7 +430,6 @@
   >
     <app-sticky-button
       *ngIf="step !== 'PAYMENT_INFO'"
-      [addBottomSeparator]="true"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
       (click)="submit()"
@@ -443,7 +442,6 @@
       saleflowData &&
       saleflowData._id !== '6201d72bdfeceed4d13805bc'
     "
-    [addBottomSeparator]="true"
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
     (click)="submit()"
@@ -451,7 +449,6 @@
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
     <app-sticky-button
-      [addBottomSeparator]="true"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
       (click)="submit()"
