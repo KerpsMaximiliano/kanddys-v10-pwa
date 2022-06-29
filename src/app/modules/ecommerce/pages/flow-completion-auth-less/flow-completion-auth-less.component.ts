@@ -584,6 +584,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
 
     if (this.step === 'PAYMENT_INFO') {
+      this.image = null;
+      this.selectedBank = null;
       this.step = this.pastStep;
       this.isANewUser = false;
     }

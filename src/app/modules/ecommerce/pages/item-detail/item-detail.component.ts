@@ -144,7 +144,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   openShareDialog() {
     const list: StoreShareList[] = [
       {
-        title:  this.itemData.name || 'Mi item',
+        title:  this.itemData.name || 'Comparte el producto',
         options: [
           {
             text: 'Copia el link',

@@ -16,7 +16,6 @@
 }
 
 .text-container {
-  padding: 16px;
   padding-top: 22px;
   padding-bottom: 22px;
   max-height: 264px;
@@ -282,7 +281,7 @@
 }
 
 .payment-list {
-  padding-bottom: 12px;
+  padding-bottom: 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
@@ -319,7 +318,7 @@
   font-family: "RobotoMedium";
   font-size: 20px;
   color: #0B1F38;
-  padding-bottom: 24px;
+  padding-bottom: 12px;
 }
 
 .container-v2 {
@@ -422,7 +421,6 @@
   width: 100%;
   .content {
     .squares {
-      padding: 1rem;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
@@ -447,13 +445,6 @@
   .content {
     padding: 24px;
     background-color: #f6f6f6;
-    .title {
-      padding-top: 43.8px;
-      margin-bottom: 20.5px;
-      font-family: SFProRegular;
-      font-size: 14px;
-      color: #7b7b7b;
-    }
     .address {
       margin-top: 0;
       font-family: RobotoItalic;
@@ -461,7 +452,7 @@
       color: #7b7b7b;
     }
     .date-wrapper {
-      // padding-bottom: 312.5px;
+      margin-top: 22px;
       .date2 {
         padding: 5.5px 17px;
         background: linear-gradient(130deg, #31a4f9, #1d58db);
