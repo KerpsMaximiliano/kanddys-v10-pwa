@@ -106,7 +106,13 @@
 ></app-bubble-button> -->
 
 <app-sticky-button
-	[text]="'144 / $145,124,147,00 / 85 COMPRADORES'"
+	[text]="
+		(ordersTotal ? ordersTotal.length : '0') 
+		+ ' / ' + '$' 
+		+ (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') 
+		+ ' / ' 
+		+ (users ? users.length : '0') + ' COMPRADORES'
+	"
 	[mode]="'disabled'"
 	size="small"
 ></app-sticky-button>

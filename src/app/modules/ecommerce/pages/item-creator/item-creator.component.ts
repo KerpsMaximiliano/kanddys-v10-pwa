@@ -18,7 +18,8 @@ import { HeaderService } from 'src/app/core/services/header.service';
 const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
-  fontSize: '17px'
+  fontSize: '17px',
+  marginBottom: '12px'
 };
 
 @Component({
@@ -233,7 +234,7 @@ export class ItemCreatorComponent implements OnInit {
             containerStyles: {
               width: '58.011%',
               minWidth: '210px',
-              marginTop: '102px',
+              marginTop: '32px',
               position: 'relative',
             },
             fieldStyles: {
@@ -331,7 +332,7 @@ export class ItemCreatorComponent implements OnInit {
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '21px'
+                marginBottom: '12px'
               },
             },
             containerStyles: {
@@ -478,11 +479,11 @@ export class ItemCreatorComponent implements OnInit {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '40px',
+                marginTop: '32px',
                 marginBottom: '0px'
               },
               fieldStyles: {
-                marginTop: '18px',
+                marginTop: '12px',
                 paddingLeft: '17px',
                 width: 'fit-content'
               },
@@ -521,8 +522,8 @@ export class ItemCreatorComponent implements OnInit {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '50px',
-          marginBottom: '60px',
+          marginTop: '32px',
+          marginBottom: '12px',
         }
       },
       avoidGoingToNextStep: true,
@@ -549,7 +550,7 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '83.70%',
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               width: '100%',
@@ -593,7 +594,7 @@ export class ItemCreatorComponent implements OnInit {
           inputType: 'textarea',
           styles: {
             containerStyles: {
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               backgroundColor: 'white',
@@ -640,7 +641,7 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '83.70%',
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               width: '100%',

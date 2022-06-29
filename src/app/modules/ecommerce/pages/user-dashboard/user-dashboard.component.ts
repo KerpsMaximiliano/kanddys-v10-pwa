@@ -140,21 +140,4 @@ export class UserDashboardComponent implements OnInit {
       flags: ['no-header'],
     });
   }
-
-  wichName(e: string) {
-    switch (e) {
-      case 'Regalos':
-        console.log('Compradores');
-        break;
-      case 'Tiendas':
-        this.router.navigate(['tiendas'], {relativeTo: this.route });
-        break;
-      case 'Eventos':
-        console.log('Eventos');
-        break;
-      case 'NFTs':
-        console.log('NFTs');
-        break;
-    }
-  }
 }

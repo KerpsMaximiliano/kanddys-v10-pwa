@@ -4,10 +4,10 @@
             <img [src]="env + '/person.svg'" width="13" height="17" alt="Persona, ver mi perfil" class="icon">
             <span>Yo</span>
         </a>
-        <a class="nav-item">
+        <!-- <a class="nav-item">
             <img [src]="env + '/store.svg'" width="19" height="16" alt="Tienda, haz click para ir a Mall" class="icon">
             <span>Mall</span>
-        </a>
+        </a> -->
     </div>
     <button *ngIf="merchantData" class="merchant-info-btn" (click)="goToItems()">
         <h6>Mi tienda</h6>
@@ -50,20 +50,3 @@
     [text]="'TOCA DONDE PREFIERAS'"
     ></app-sticky-button>
 </div>
-
-<!-- 
-    <app-helper-headerv2
-    [bgColor]="'#40772F'"
-    [mode]="'2raise'"
-    [leftText]="'Mi Tienda'"
-    [rightText]="'List 2raise'"
-    ></app-helper-headerv2>
-    <app-header-info
-        [title]="userData?.name"
-    ></app-header-info>
-    <app-page-component-tabs
-        [tabsOptions]="tabs"
-        (changeValue)="wichName($event)"
-    ></app-page-component-tabs>
-    <router-outlet></router-outlet> 
--->

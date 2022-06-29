@@ -85,6 +85,7 @@ export const exchangedata = gql`
         ownerAccount
         routingNumber
         typeAccount
+        bankName
       }
       electronicPayment {
         paymentReceiver {
