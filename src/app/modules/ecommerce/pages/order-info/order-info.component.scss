@@ -282,7 +282,7 @@
 }
 
 .payment-list {
-  padding-bottom: 24px;
+  padding-bottom: 12px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
@@ -381,8 +381,8 @@
         }
       }
       .line {
-        margin-top: 23.5px;
-        margin-bottom: 23.5px;
+        margin-top: 8px;
+        margin-bottom: 8px;
         height: 1px;
         width: 100%;
         border-bottom: solid 1px #C7C7C7;

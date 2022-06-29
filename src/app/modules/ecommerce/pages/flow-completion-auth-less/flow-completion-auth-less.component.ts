@@ -343,8 +343,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
     this.banks = data.ExchangeData.bank;
 
-    console.log(this.banks);
-
     this.bankOptions = this.banks.map(bank => {
       return {
         value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
