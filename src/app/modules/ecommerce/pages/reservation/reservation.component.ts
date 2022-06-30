@@ -43,6 +43,7 @@ export class ReservationComponent implements OnInit {
     dayName: string;
     until: string;
   };
+  shortDatePreview: string;
   options: boolean = false;
   whatsappLink: string;
   merchantName: string;
@@ -405,6 +406,9 @@ export class ReservationComponent implements OnInit {
         this.orderData.products[0].reservation.date.until as string
       ),
     };
+    this.shortDatePreview = `Reservar el ${this.datePreview.dayName} ${this.datePreview.day} de
+      ${this.datePreview.month} a las ${this.datePreview.hour}
+    `
     // Logic for default date
     if (!this.dateComponentFrom)
       this.dateComponentFrom = this.datePreview.month;
