@@ -52,6 +52,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     },
   ];
   bankOptions: BankDetails[] = [];
+  banksInfo: BankDetails[] = [];
   banks: Bank[] = [];
   step: string = 'PHONE_CHECK_AND_SHOW_BANKS';
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
@@ -342,6 +343,19 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     const data = await this.wallet.exchangedata(id);
 
     this.banks = data.ExchangeData.bank;
+
+    this.banksInfo = this.banks.map(bank => {
+      return {
+        value: `${bank.bankName}`,
+        status: true,
+        description: {
+          typeAccount: bank.typeAccount,
+          owner: bank.ownerAccount,
+          account: bank.account,
+          routingNumber: bank.routingNumber
+        }
+      }
+    });
 
     this.bankOptions = this.banks.map(bank => {
       return {
