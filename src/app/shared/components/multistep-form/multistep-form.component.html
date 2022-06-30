@@ -229,7 +229,7 @@ shouldScrollBackwards &&
                   currentField.onlyAllowPositiveNumbers
                     ? 0
                     : null
-                " [placeholder]="currentField.placeholder"
+                " tabindex="-1" [placeholder]="currentField.placeholder"
                   [ngClass]="{input: true, formatCurrency: currentField.inputType === 'number' && currentField.shouldFormatNumber, focused: currentField.focused}"
                   (focus)="currentField.focused = true" (blur)="currentField.focused = false" [ngStyle]="
                   currentField.styles.fieldStyles &&
@@ -270,7 +270,7 @@ shouldScrollBackwards &&
                     width: '100%',
                     margin: '0px'
                   }">
-                    <input [formControlName]="i" [type]="currentField.inputType || 'text'"
+                    <input [formControlName]="i" tabindex="-1" [type]="currentField.inputType || 'text'"
                       [placeholder]="currentField.placeholder" class="input" id="{{ currentField.name }}-{{ i }}"
                       [ngStyle]="
                       currentField.styles.fieldStyles
@@ -342,7 +342,10 @@ shouldScrollBackwards &&
                   {{ currentField.sublabel }}
                 </label>
 
-                <textarea [id]="currentField.name" [placeholder]="currentField.placeholder" [name]="currentField.name"
+                <textarea 
+                  [id]="currentField.name" 
+                  tabindex="-1"
+                  [placeholder]="currentField.placeholder" [name]="currentField.name"
                   [formControlName]="currentField.name" [placeholder]="currentField.placeholder" class="textarea"
                   [ngStyle]="
                   currentField.styles.fieldStyles
@@ -410,6 +413,7 @@ shouldScrollBackwards &&
                   [separateDialCode]="true" 
                   [numberFormat]="PhoneNumberFormat.International"
                   name="phone" 
+                  tabindex="-1"
                   [formControl]="currentField.fieldControl.control"
                 ></ngx-intl-tel-input>
 
@@ -550,7 +554,7 @@ shouldScrollBackwards &&
                   : null
                 " (click)="currentField.fieldControl.control.setValue(option)">
                   <div class="background"></div>
-                  <input type="radio" [value]="option" [formControlName]="currentField.name" />
+                  <input type="radio" [value]="option" [formControlName]="currentField.name" tabindex="-1" />
                   <span>{{ option }}</span>
                 </label>
               </ng-container>
@@ -593,7 +597,71 @@ shouldScrollBackwards &&
               </div>
 
               <input type="file" [id]="currentField.name" [style.display]="'none'"
-                (change)="loadFile(currentField, $event)" />
+                (change)="loadFile(currentField, $event)" tabindex="-1" />
+            </div>
+
+            <!-- DATE INPUTS GO HERE     -->
+            <div *ngIf="
+              currentField.inputType === 'date' && !currentField.multiple
+            " [ngStyle]="
+              currentField.styles.containerStyles
+                ? currentField.styles.containerStyles
+                : null
+            ">
+              
+                <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
+                  currentField.styles.topLabelActionStyles
+                    ? currentField.styles.topLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topLabelAction.clickable
+                    ? currentField.topLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.topLabelAction.text }}
+                </span>
+
+                <label [for]="currentField.name" class="input-label" [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                ">
+                  {{ currentField.label }}
+                </label>
+
+                <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+              currentField.styles.subLabelStyles
+                ? currentField.styles.subLabelStyles
+                : null
+              ">
+                  {{ currentField.sublabel }}
+                </label>
+
+                <input 
+                  type="date" 
+                  [formControlName]="currentField.name" 
+                  class="date-inputs"
+                  [min]="currentField?.minDate"
+                  [max]="currentField?.maxDate"
+                  [ngStyle]="
+                  currentField.styles.fieldStyles
+                    ? currentField.styles.fieldStyles
+                    : null
+                  "
+                />
+
+                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
+                  currentField.styles.bottomLabelStyles
+                    ? currentField.styles.bottomLabelStyles
+                    : null
+                " (click)="
+                  currentField.bottomLabel.clickable
+                    ? currentField.bottomLabel.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.bottomLabel.text }}
+                </span>
+            
             </div>
 
             <!-- BUTTON INPUTS GO HERE -->
@@ -603,6 +671,7 @@ shouldScrollBackwards &&
                 : null
             ">
               <button 
+                tabindex="-1"
                 [ngStyle]="
                   currentField.styles.fieldStyles && !currentField.hovered && !currentField.disabled
                     ? currentField.styles.fieldStyles

@@ -279,6 +279,11 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     if (this.scrollableForm && !this.disableSmoothScroll) {
       setTimeout(() => {
         this.formWrapperHeight = document.querySelector('#step-' + this.currentStep).clientHeight;
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+
+        phoneInputs.forEach(element => {
+          element.setAttribute('tabindex', '-1');
+        })
       }, 100)
     }
 
