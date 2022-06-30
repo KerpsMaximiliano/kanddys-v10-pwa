@@ -26,7 +26,7 @@
       }"
     >
       <p class="label1" [ngStyle]="{ marginTop: '32px', marginBottom: '1rem' }">
-        Donde te mandaremos las notificaciones de esta orden?
+        Mi número de WhatsApp es:
       </p>
       <ngx-intl-tel-input
         [cssClass]="'custom'"
@@ -49,7 +49,7 @@
       ></ngx-intl-tel-input>
     </div>
 
-    <ng-container *ngIf="bankOptions && bankOptions.length">
+    <ng-container *ngIf="banksInfo && banksInfo.length">
       <div
         [ngStyle]="{
           width: '88.32%',
@@ -85,7 +85,7 @@
           }"
         >
           <div
-            *ngFor="let bank of bankOptions"
+            *ngFor="let bank of banksInfo"
             [ngStyle]="{
               marginTop: '28px'
             }"
@@ -225,7 +225,7 @@
         }"
       >
         <div
-          *ngFor="let bank of bankOptions"
+          *ngFor="let bank of banksInfo"
           [ngStyle]="{
             marginTop: '28px'
           }"

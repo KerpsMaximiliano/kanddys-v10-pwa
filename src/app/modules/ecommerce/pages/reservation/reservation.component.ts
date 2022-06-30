@@ -26,32 +26,39 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
   styleUrls: ['./reservation.component.scss'],
 })
 export class ReservationComponent implements OnInit {
-  merchant: any;
-  realMonthIndex: any;
-  isClicked: boolean;
-  activeHour: any;
+  merchant: string;
+  // realMonthIndex: any;
+  // isClicked: boolean;
+  activeHour: number;
   // Property for default date
   firstActiveHour: number;
   // End property for default date
-  changeLabel: boolean = false;
-  datePreview: any;
+  // changeLabel: boolean = false;
+  datePreview: {
+    day: string;
+    month: string;
+    hour: string;
+    dateInfo: string;
+    dayName: string;
+    until: string;
+  };
   options: boolean = false;
   whatsappLink: string;
   merchantName: string;
 
   constructor(
     public order: OrderService,
-    private route: ActivatedRoute,
+    // private route: ActivatedRoute,
     public calendar: CalendarService,
     public reservation: ReservationService,
     private router: Router,
-    private dialog: DialogService,
-    private postService: PostsService,
-    private item: ItemsService,
+    // private dialog: DialogService,
+    // private postService: PostsService,
+    // private item: ItemsService,
     public header: HeaderService,
     public saleflow: SaleFlowService,
-    private location: Location,
-    private app: AppService
+    // private location: Location,
+    // private app: AppService
   ) {}
 
   slides: any = ['1', '2', '3'];
@@ -140,74 +147,6 @@ export class ReservationComponent implements OnInit {
         this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
     }
     this.dialogProps = { orderFinished: true };
-    /*this.route.params.subscribe((params) => {
-      this.saleflowData._id = params.id;
-      console.log(this.saleflowData._id);
-      this.saleflow.saleflow(this.saleflowData._id).then((data) => {
-        console.log(data.saleflow.module.appointment.calendar._id);
-        this.calendarId = data.saleflow.module.appointment.calendar._id;
-        this.calendar.getToday();
-        this.checkCalendar();
-      });
-    });*/
-    /*this.item.item(this.saleflowData._id).then(data=>{
-      console.log(data);
-      this.calendarId = data.calendar._id;
-      console.log(this.calendarId);
-      this.calendar.getToday();
-      console.log(this.calendar.months[this.calendar.monthIndex].dates);
-      this.checkCalendar();
-    });*/
-    /*if (this.header.saleflow.module.post !== null) {
-      if (this.header.saleflow.module.post.isActive && this.header.saleflow.module.post.post) {
-        this.items = [
-          {
-            title: "Arreglos seleccionados",
-            showArrow: true,
-            imageUrl: this.header.items[0].images[0],
-            button: {
-              state: false
-            }
-          },
-          {
-            showArrow: true,
-            title : 'Lugar de Entrega',
-            description: this.header.locationData.length > 30 ? `${this.header.locationData.substring(0, 30)}...` : this.header.locationData,
-            button: {
-              state: false
-            }
-          },
-        ];
-      }
-    }
-    else {
-      this.items = [
-        {
-          title: "Arreglos seleccionados",
-          showArrow: true,
-          imageUrl: this.header.items[0].images[0],
-          button: {
-            state: false
-          }
-        },
-        {
-          showArrow: true,
-          title: this.header.pack.package,
-          description: this.header.pack.description,
-          button: {
-            state: false
-          }
-        },
-        {
-          showArrow: true,
-          title: 'Sucursal',
-          description: this.header.locationData.name,
-          button: {
-            state: false
-          }
-        },
-      ];
-    }*/
   }
 
   async checkCalendar() {
@@ -215,7 +154,6 @@ export class ReservationComponent implements OnInit {
       //this.merchant = data.getCalendar.merchant._id;
       this.merchant = this.saleflowData.merchant._id;
       this.merchantName = this.saleflowData.merchant.name;
-      console.log(this.calendar.availableHours);
       this.getAmAndPm();
       // Logic for default date
       if (!this.sliders) {
@@ -240,18 +178,18 @@ export class ReservationComponent implements OnInit {
     this.blurContent = false;
   }
 
-  toggleBlurcontent() {
-    this.blurSelectable = false;
-    this.blurContent = true;
-  }
+  // toggleBlurcontent() {
+  //   this.blurSelectable = false;
+  //   this.blurContent = true;
+  // }
 
-  toggleHour(time) {
-    if (time == 1) {
-      this.timeToggle = false;
-    } else {
-      this.timeToggle = true;
-    }
-  }
+  // toggleHour(time) {
+  //   if (time == 1) {
+  //     this.timeToggle = false;
+  //   } else {
+  //     this.timeToggle = true;
+  //   }
+  // }
 
   getAmAndPm() {
     let date = new Date();
@@ -445,7 +383,7 @@ export class ReservationComponent implements OnInit {
     let hour =
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
-    let month;
+    let month: string;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
         month = this.calendar.allFullMonths[i].name;
@@ -475,80 +413,59 @@ export class ReservationComponent implements OnInit {
     this.header.storeReservation(this.saleflowData._id, reservation);
     this.header.isComplete.reservation = true;
     this.header.storeOrderProgress(this.saleflowData._id);
-    //this.header.locationData = " Foto Davitte, SD, Este.";
-
-    //this.openDialog(reservation);
   }
 
-  submit() {
-    /*this.dialog.open(CommunityNewUserComponent, {
-      type: 'window',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: { orderCreator: true },
-    });*/
-  }
+  // zorroChange(string) {
+  //   let date = new Date();
+  //   let offset = date.getTimezoneOffset() / 60;
+  //   string = parseInt(string.split(':')[0]) + 1;
+  //   string = string.toString() + ':' + '00';
+  //   string = parseInt(string.split(':')[0]) - 1;
+  //   if (string > 12) {
+  //     string = string - 12;
+  //   }
+  //   if (string > 9) {
+  //     string = string.toString() + ':' + '45';
+  //   } else {
+  //     string = string.toString() + ':' + '45';
+  //   }
+  //   return string;
+  // }
 
-  openDialog(reservation) {
-    /*this.dialog.open(ReservationCreatorComponent, {
-      type: 'window',
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      props: { data: reservation, today: this.today },
-    });*/
-  }
+  // zorroChange3(string) {
+  //   string = parseInt(string.split(':')[0]);
+  //   if (string > 9) {
+  //     string = string.toString() + ':' + '00';
+  //   } else {
+  //     string = '0' + string.toString() + ':' + '00';
+  //   }
+  //   return string;
+  // }
 
-  zorroChange(string) {
-    let date = new Date();
-    let offset = date.getTimezoneOffset() / 60;
-    string = parseInt(string.split(':')[0]) + 1;
-    string = string.toString() + ':' + '00';
-    string = parseInt(string.split(':')[0]) - 1;
-    if (string > 12) {
-      string = string - 12;
-    }
-    if (string > 9) {
-      string = string.toString() + ':' + '45';
-    } else {
-      string = string.toString() + ':' + '45';
-    }
-    return string;
-  }
+  // zorroChange4(string) {
+  //   string = parseInt(string.split(':')[0]) + 1;
+  //   if (string > 9) {
+  //     string = string.toString() + ':' + '00';
+  //   } else {
+  //     string = '0' + string.toString() + ':' + '00';
+  //   }
+  //   return string;
+  // }
 
-  zorroChange3(string) {
-    string = parseInt(string.split(':')[0]);
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = '0' + string.toString() + ':' + '00';
-    }
-    return string;
-  }
-
-  zorroChange4(string) {
-    string = parseInt(string.split(':')[0]) + 1;
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = '0' + string.toString() + ':' + '00';
-    }
-    return string;
-  }
-
-  zorroChange2(string) {
-    let date = new Date();
-    let offset = date.getTimezoneOffset() / 60;
-    string = parseInt(string.split(':')[0]);
-    if (string > 12) {
-      string = string - 12;
-    }
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = string.toString() + ':' + '00';
-    }
-    return string;
-  }
+  // zorroChange2(string) {
+  //   let date = new Date();
+  //   let offset = date.getTimezoneOffset() / 60;
+  //   string = parseInt(string.split(':')[0]);
+  //   if (string > 12) {
+  //     string = string - 12;
+  //   }
+  //   if (string > 9) {
+  //     string = string.toString() + ':' + '00';
+  //   } else {
+  //     string = string.toString() + ':' + '00';
+  //   }
+  //   return string;
+  // }
 
   zorroChange5(string) {
     string = parseInt(string.split(':')[0]);
@@ -567,30 +484,30 @@ export class ReservationComponent implements OnInit {
     return string;
   }
 
-  zorroChange6(string) {
-    string = parseInt(string.split(':')[0]);
-    if (string > 12) {
-      string = string - 12;
-    }
-    if (string > 11) {
-      string = string.toString() + ':' + '45';
-    } else {
-      string = string.toString() + ':' + '45';
-    }
-    return string;
-  }
+  // zorroChange6(string) {
+  //   string = parseInt(string.split(':')[0]);
+  //   if (string > 12) {
+  //     string = string - 12;
+  //   }
+  //   if (string > 11) {
+  //     string = string.toString() + ':' + '45';
+  //   } else {
+  //     string = string.toString() + ':' + '45';
+  //   }
+  //   return string;
+  // }
 
   num(number) {
     return parseInt(number);
   }
 
-  copyLink() {
-    const uri = 'https://kanddys.com';
-    copyText(
-      `${uri}/appointments/calendar-reservation-v4/${this.saleflowData._id}`
-    );
-    notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
-  }
+  // copyLink() {
+  //   const uri = 'https://kanddys.com';
+  //   copyText(
+  //     `${uri}/appointments/calendar-reservation-v4/${this.saleflowData._id}`
+  //   );
+  //   notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
+  // }
 
   formatHour(hour: string) {
     return moment(hour, 'HH:mm').format('hh:mm A');
@@ -610,9 +527,8 @@ export class ReservationComponent implements OnInit {
     return moment(hour, 'h:mm').format('h:mm');
   }
 
-  getId(id, slide) {
+  getId(id: number, slide: string) {
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
-    console.log(slide);
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -623,7 +539,7 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  getReservations(hour1, test?: any) {
+  getReservations(hour1: string) {
     for (let i = 0; i < this.calendar.reservations.length; i++) {
       let reservationMonthFrom =
         parseInt(this.calendar.reservations[i].date.from.split('-')[1]) - 1;
@@ -655,14 +571,8 @@ export class ReservationComponent implements OnInit {
   }
 
   filterHours(hour) {
-    // if(hour) console.log("PROBANDO MI AMOR POR TIII");
     let today = new Date();
     let time = today.getHours();
-    /*if (this.calendar.monthIndex == 0 && this.calendar.dayIndex < (this.calendar.monthDay-1)) {
-      console.log('a');
-
-      return false;
-    }else*/
     if (this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
       if (time >= parseInt(hour) - this.offset) {
         return false;
@@ -689,23 +599,7 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  test(e) {
-    /*
-    this.calendar.dayIndex = dia;
-    this.calendar.showHours = false;
-    this.calendar.hourIndex = 0;
-    this.activeHour = undefined;
-    this.calendar.filterHours();
-    this.todayHours = this.calendar.todayHours;
-    this.hours = this.calendar.hours;
-    this.getAmAndPm();
-    setTimeout((x) => (this.calendar.showHours = true));
-    */
-  }
-
   test2(e) {
-    //this.getMonthId(0);
-
     this.getDayId(
       e.calendar.dates.findIndex(
         (el) => el.indexI === e.day.indexI && el.indexJ === e.day.indexJ
@@ -736,48 +630,48 @@ export class ReservationComponent implements OnInit {
     setTimeout((x) => (this.calendar.showHours = true));
   }
 
-  getMonthId(id) {
-    this.calendar.showHours = false;
-    this.calendar.showDays = false;
-    this.calendar.monthIndex = id;
-    this.realMonthIndex = id;
-    this.calendar.hourIndex = 0;
-    this.calendar.dayIndex = 0;
-    this.todayHours = this.calendar.todayHours;
-    this.hours = this.calendar.hours;
-    this.calendar.filterDays();
-    this.getAmAndPm();
-    setTimeout((x) => (this.calendar.showHours = true));
-    setTimeout((x) => (this.calendar.showDays = true));
-  }
+  // getMonthId(id) {
+  //   this.calendar.showHours = false;
+  //   this.calendar.showDays = false;
+  //   this.calendar.monthIndex = id;
+  //   this.realMonthIndex = id;
+  //   this.calendar.hourIndex = 0;
+  //   this.calendar.dayIndex = 0;
+  //   this.todayHours = this.calendar.todayHours;
+  //   this.hours = this.calendar.hours;
+  //   this.calendar.filterDays();
+  //   this.getAmAndPm();
+  //   setTimeout((x) => (this.calendar.showHours = true));
+  //   setTimeout((x) => (this.calendar.showDays = true));
+  // }
 
-  changeStyles() {
-    this.sliders = !this.sliders;
-  }
+  // changeStyles() {
+  //   this.sliders = !this.sliders;
+  // }
 
   slider = document.querySelector<HTMLElement>('.scroller');
 
-  startDragging(e, flag, el) {
-    this.mouseDown = true;
-    this.startX = e.pageX - el.offsetLeft;
-    this.scrollLeft = el.scrollLeft;
-  }
-  stopDragging(e, flag) {
-    this.mouseDown = false;
-  }
-  moveEvent(e, el) {
-    e.preventDefault();
-    if (!this.mouseDown) {
-      return;
-    }
-    const x = e.pageX - el.offsetLeft;
-    const scroll = x - this.startX;
-    el.scrollLeft = this.scrollLeft - scroll;
-  }
+  // startDragging(e, flag, el) {
+  //   this.mouseDown = true;
+  //   this.startX = e.pageX - el.offsetLeft;
+  //   this.scrollLeft = el.scrollLeft;
+  // }
+  // stopDragging(e, flag) {
+  //   this.mouseDown = false;
+  // }
+  // moveEvent(e, el) {
+  //   e.preventDefault();
+  //   if (!this.mouseDown) {
+  //     return;
+  //   }
+  //   const x = e.pageX - el.offsetLeft;
+  //   const scroll = x - this.startX;
+  //   el.scrollLeft = this.scrollLeft - scroll;
+  // }
 
-  goToLink(url: string) {
-    window.open(url, '_blank');
-  }
+  // goToLink(url: string) {
+  //   window.open(url, '_blank');
+  // }
 
   getLimit(limit, monthIndex, dayNumber) {
     if (monthIndex == 0 && this.calendar.monthDay > dayNumber) {
@@ -811,44 +705,44 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  redirect(id) {
-    const dayName =
-      this.calendar.months[this.calendar.monthIndex].dates[
-        this.calendar.dayIndex
-      ].dayName;
-    const dayNumber =
-      this.calendar.months[this.calendar.monthIndex].dates[
-        this.calendar.dayIndex
-      ].dayNumber;
-    const month = this.calendar.months[this.calendar.monthIndex].name;
-    let formattedHour;
-    if (this.today) {
-      formattedHour = this.formatHour(
-        this.calendar.todayHours[this.calendar.hourIndex]
-      );
-    } else {
-      formattedHour = this.formatHour(
-        this.zorroChange2(this.calendar.hours[this.calendar.hourIndex])
-      );
-    }
-    const uri = 'https://kanddys.com';
-    // const uri = 'http://localhost:4200';
-    window.location.href = `https://wa.me/19188156444?text=Mi%20sesión%20empezará%20el%20${dayName}%20${dayNumber}%20de%20${month}%20a%20las%20${formattedHour}%20(${uri}/appointments/slot/${id})`;
-  }
+  // redirect(id) {
+  //   const dayName =
+  //     this.calendar.months[this.calendar.monthIndex].dates[
+  //       this.calendar.dayIndex
+  //     ].dayName;
+  //   const dayNumber =
+  //     this.calendar.months[this.calendar.monthIndex].dates[
+  //       this.calendar.dayIndex
+  //     ].dayNumber;
+  //   const month = this.calendar.months[this.calendar.monthIndex].name;
+  //   let formattedHour;
+  //   if (this.today) {
+  //     formattedHour = this.formatHour(
+  //       this.calendar.todayHours[this.calendar.hourIndex]
+  //     );
+  //   } else {
+  //     formattedHour = this.formatHour(
+  //       this.zorroChange2(this.calendar.hours[this.calendar.hourIndex])
+  //     );
+  //   }
+  //   const uri = 'https://kanddys.com';
+  //   // const uri = 'http://localhost:4200';
+  //   window.location.href = `https://wa.me/19188156444?text=Mi%20sesión%20empezará%20el%20${dayName}%20${dayNumber}%20de%20${month}%20a%20las%20${formattedHour}%20(${uri}/appointments/slot/${id})`;
+  // }
 
-  toggleOptions() {
-    this.options = !this.options;
-  }
-  share() {
-    /*let local;
-    if (this.header.locationData.googleMapsURL) {
-      local = this.header.locationData.googleMapsURL;
-    } else if (this.header.locationData.note) {
-      local = this.header.locationData.note;
-    }
-    this.whatsappLink = `https://wa.me/18095636780?text=Orden%20de%20${this.header.getDataFromOrder()[0].item[0].name}%20en%20${local}`;
-    window.location.href = this.whatsappLink;*/
-  }
+  // toggleOptions() {
+  //   this.options = !this.options;
+  // }
+  // share() {
+  //   let local;
+  //   if (this.header.locationData.googleMapsURL) {
+  //     local = this.header.locationData.googleMapsURL;
+  //   } else if (this.header.locationData.note) {
+  //     local = this.header.locationData.note;
+  //   }
+  //   this.whatsappLink = `https://wa.me/18095636780?text=Orden%20de%20${this.header.getDataFromOrder()[0].item[0].name}%20en%20${local}`;
+  //   window.location.href = this.whatsappLink;
+  // }
 
   async save() {
     this.orderData.products[0].deliveryLocation = {
@@ -880,37 +774,38 @@ export class ReservationComponent implements OnInit {
   }
 
   deleteSelection() {
+    this.activeHour = null;
     this.datePreview = null;
   }
 
-  saveNoPost() {
-    this.header.post = {
-      message: '',
-      targets: [
-        {
-          name: '',
-          emailOrPhone: '',
-        },
-      ],
-      from: '',
-    };
-  }
+  // saveNoPost() {
+  //   this.header.post = {
+  //     message: '',
+  //     targets: [
+  //       {
+  //         name: '',
+  //         emailOrPhone: '',
+  //       },
+  //     ],
+  //     from: '',
+  //   };
+  // }
 
-  openMagicLinkDialog() {
-    this.dialog.open(MagicLinkDialogComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        asyncCallback: async (whatsappLink: string) => {
-          let preOrderID = await this.header.createPreOrder();
-          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
+  // openMagicLinkDialog() {
+  //   this.dialog.open(MagicLinkDialogComponent, {
+  //     type: 'flat-action-sheet',
+  //     props: {
+  //       asyncCallback: async (whatsappLink: string) => {
+  //         let preOrderID = await this.header.createPreOrder();
+  //         whatsappLink += `text=Keyword-Order%20${preOrderID}`;
 
-          return whatsappLink;
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
+  //         return whatsappLink;
+  //       },
+  //     },
+  //     customClass: 'app-dialog',
+  //     flags: ['no-header'],
+  //   });
+  // }
 
   back() {
     this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`]);
