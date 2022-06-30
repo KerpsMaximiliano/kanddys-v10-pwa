@@ -36,6 +36,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   deleteEvent: Subscription;
   whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
@@ -53,7 +54,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
       if(!this.itemData) return this.back();
 
-      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${window.location.href}`);
+      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`);
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
 
       if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
@@ -149,12 +150,12 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
           },
         ]
       }
