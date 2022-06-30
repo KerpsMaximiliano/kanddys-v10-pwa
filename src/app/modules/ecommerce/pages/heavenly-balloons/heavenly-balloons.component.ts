@@ -657,7 +657,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           selectionOptions: ['Whatsapp', 'Instagram', 'E-Mail', 'Website', 'Personal'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[4].fieldsList[0].fieldControl.control.setValue(change, {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(change, {
               emitEvent: false,
             });
           },
@@ -1360,7 +1360,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               flags: ['no-header'],
             });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            // window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
             return { ok: true };
           } catch (error) {

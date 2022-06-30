@@ -535,6 +535,7 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     if (index < this.steps.length) {
       if (!this.disableSmoothScroll && this.scrollableForm) {
 
+        window.scroll(0, 0);
         this.currentYPosition = nextStepHtmlElement.offsetTop * -1;
 
         setTimeout(() => {

@@ -1,5 +1,9 @@
 @import "forms";
 
+html {
+  scroll-behavior: smooth;
+}
+
 .form-wrapper {
   overflow-y: scroll;
   overflow-x: hidden;
