@@ -19,6 +19,7 @@ import { AppService } from 'src/app/app.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-reservation',
@@ -745,6 +746,7 @@ export class ReservationComponent implements OnInit {
   // }
 
   async save() {
+    lockUI();
     this.orderData.products[0].deliveryLocation = {
       city: null,
       houseNumber: null,
@@ -766,11 +768,8 @@ export class ReservationComponent implements OnInit {
     let preOrderID;
     if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
     else preOrderID = this.header.orderId;
-
+    unlockUI();
     this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
-
-    // this.openMagicLinkDialog();
-    // this.router.navigate([`ecommerce/flow-completion`]);
   }
 
   deleteSelection() {

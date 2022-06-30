@@ -7,8 +7,6 @@
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
     [back]="
-      localStorageFlowRoute &&
-      localStorageFlowRoute !== '' &&
       step !== 'PHONE_CHECK_AND_SHOW_BANKS'
     "
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
@@ -21,7 +19,7 @@
   <div *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS'">
     <div
       [ngStyle]="{
-        padding: '0px 33px',
+        padding: '0px 33px 24px',
         marginTop: '28px'
       }"
     >
