@@ -155,6 +155,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           : totalPrice,
         hasCustomizer: this.fakeData.items[0].customizer ? true : false,
         isPackage: this.fakeData.itemPackage ? true : false,
+        saleflow: this.fakeData.items[0].saleflow
       };
 
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
@@ -270,6 +271,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
       const saleflow =
         this.header.saleflow ||
+        this.orderData.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
 
@@ -484,6 +486,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
+          console.log(this.isAPreOrder, "IAP")
           if (this.isAPreOrder) {
             // this.totalQuestions = 2;
             const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
@@ -494,15 +497,14 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               let registeredNewUser: User = null;
 
               let foundUser = await this.authService.checkUser(phoneNumber);
-              this.userData = foundUser;
 
               const { orderStatus } = await this.order.getOrderStatus(
                 this.orderId
               );
 
               if(!foundUser) {
+                console.log("AAAAAAAAAAAAAAAAAAAAAAAA")
                 registeredNewUser = await this.signUp();
-                this.userData = registeredNewUser;
 
                 if (registeredNewUser && orderStatus === 'draft') {
                   await this.order.authOrder(this.orderId, registeredNewUser._id);
@@ -546,6 +548,33 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                   this.selectedBank = this.bankOptions[0];
                 }
                 unlockUI();
+              }
+            } else {
+              let registeredNewUser: User = null;
+
+              let foundUser = await this.authService.checkUser(phoneNumber);
+
+              const { orderStatus } = await this.order.getOrderStatus(
+                this.orderId
+              );
+
+              if(orderStatus === 'in progress' && !foundUser) {
+                  registeredNewUser = await this.signUp();
+                  this.userData = registeredNewUser;
+
+                  if (registeredNewUser) {
+                    this.header.deleteSaleflowOrder(this.saleflowData._id);
+                    this.header.resetIsComplete();
+                    this.isAPreOrder = false;
+                  }
+    
+                  await this.getOrderData(this.orderId, false);
+                  //disable 1st step inputs to avoid further changes to existing order
+                  this.name.disable();
+    
+                  if (this.banks.length === 1) {
+                    this.selectedBank = this.bankOptions[0];
+                  }
               }
             }
             // this.updateUser();
