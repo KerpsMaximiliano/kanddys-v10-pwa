@@ -65,6 +65,8 @@ export interface FormField {
   shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
+  maxDate?: string;
+  minDate?: string; 
 }
 
 export interface EmbeddedComponentOutput {

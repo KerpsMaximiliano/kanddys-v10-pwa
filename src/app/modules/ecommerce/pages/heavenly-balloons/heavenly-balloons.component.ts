@@ -63,10 +63,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
     data: Record<string, any>,
     message: string;
   } = null;
-  birthday: {
-    data: Record<string, any>,
-    message: string;
-  } = null;
   choosedReservation: boolean = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
   recalculateFormWrapperHeight = false;
@@ -189,6 +185,31 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
           },
         },
+        {
+          name: 'birthday',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: 'YYYY-MM-DD',
+          label: 'Fecha de nacimiento',
+          inputType: 'date',
+          maxDate: `${new Date().getFullYear() - 18}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
+          styles: {
+            containerStyles: {
+              width: '100%',
+              padding: '0px 33px',
+            },
+            fieldStyles: {
+              marginTop: '26px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+            },
+          },
+        },
       ],
       embeddedComponents: [
         {
@@ -231,16 +252,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
           },
           outputs: [],
-        },
-        // {
-        //   component: CalendarComponent,
-        //   afterIndex: 3,
-        //   inputs: {
-        //     monthNameSelected: 'Enero',
-        //     dateNumber: 1
-        //   },
-        //   outputs: []
-        // }
+        }
       ],
       hideHeader: true,
       styles: {
@@ -1258,11 +1270,71 @@ export class HeavenlyBalloonsComponent implements OnInit {
         }
       ],
       footerConfig,
+      stepProcessingFunction: (params) => {
+        const { billType } = params.dataModel.value['10'];
+
+        if(!this.formMessageInitialHistory['10'])
+          this.formMessageInitialHistory['10'] = this.formMessageInitialHistory['9'];
+
+        this.fullFormMessage = this.formMessageInitialHistory['9'];
+
+        this.fullFormMessage += `*Tipo de Factura:*\n${billType}\n\n`;
+
+        this.formMessageInitialHistory['10'] = this.fullFormMessage;
+
+        this.formMessageInitialHistory['11'] = null;
+
+        return { ok: true }
+      },
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+    },
+    {
+      headerText: '',
+      fieldsList: [
+        {
+          name: 'howDidYouFindUs',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: '',
+          placeholder: 'Escribe aquí...',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              height: '0px',
+              padding: '0px',
+              margin: '0px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px'
+            },
+          }
+        },
+      ],
+      pageHeader: {
+        text: '¿Cómo nos conociste? (*)',
+        styles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+          marginBottom: '26px'
+        }
+      },
+      footerConfig,
+      stepButtonInvalidText: 'LLENA EL CAMPO',
+      stepButtonValidText: 'ENVIAR',
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
           try {
-            const { instagramUser, name, lastname, socialId } = params.dataModel.value['1'];
+            const { instagramUser, name, lastname, socialId, birthday } = params.dataModel.value['1'];
             const { email, phoneNumber, receiverPhoneNumber } = params.dataModel.value['2'];
             const { articleDescription } = params.dataModel.value['3'];
             const { receiver, sender } = params.dataModel.value['4'];
@@ -1279,7 +1351,14 @@ export class HeavenlyBalloonsComponent implements OnInit {
             const convertedFirstPayment = Number(
               firstPayment
                 .split('').filter(char => char !== ',' && char !== '$').join(''));
-    
+  
+            let [birthYear, birthMonth, birthDay] = birthday.split('-');
+
+            birthYear = Number(birthYear);
+            birthMonth = Number(birthMonth);
+            birthDay = Number(birthDay);
+
+            const birthDayISOString = new Date(birthYear, birthMonth - 1, birthDay).toISOString();
 
             const { reservation: delivery } = params.dataModel.value['8'];
             const { 
@@ -1290,12 +1369,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               typeOfBuilding
             } = params.dataModel.value['9'];
             const { billType } = params.dataModel.value['10'];
-
-            this.formMessageInitialHistory['10'] = this.formMessageInitialHistory['9'];
-
-            this.fullFormMessage = this.formMessageInitialHistory['9'];
-
-            this.fullFormMessage += `*Tipo de Factura:*\n${billType}\n\n`;
+            const { howDidYouFindUs } = params.dataModel.value['11'];
 
             // if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
             //   this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
@@ -1341,7 +1415,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               billType,
               totalAmount: convertedTotalAmount,
               firstPayment: convertedFirstPayment,
-              articlePhotos: fileRoutes.slice(1,)
+              articlePhotos: fileRoutes.slice(1,),
+              howDidYouFindUs,
+              birthday: birthDayISOString,
             };
 
             const success = await this.merchantsService.uploadDataToClientsAirtable(
@@ -1380,9 +1456,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           }
         },
       },
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN'
-    }
+    },
   ]
 
   constructor(
