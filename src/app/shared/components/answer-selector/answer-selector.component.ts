@@ -16,6 +16,7 @@ export class AnswerSelectorComponent {
   @Input() activeOption: number;
   activeMultipleOption: number[] = [];
   @Input() editable: boolean = true;
+  @Input() indicator: boolean;
   @Input() showSelectedFeedback: boolean = true;
   @Input() showDescription: boolean = true;
   @Input() containerStyles: Record<string, any> | null = null;

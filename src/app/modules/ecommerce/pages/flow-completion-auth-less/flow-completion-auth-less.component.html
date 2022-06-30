@@ -384,6 +384,7 @@
       <app-answer-selector
         *ngIf="banks.length > 1"
         [options]="bankOptions"
+        [indicator]="true"
         (onSelector)="selectBank($event)"
         [showDescription]="false"
         [containerStyles]="{
