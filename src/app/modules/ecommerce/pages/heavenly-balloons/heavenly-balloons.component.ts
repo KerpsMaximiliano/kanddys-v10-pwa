@@ -529,7 +529,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         this.fullFormMessage = this.formMessageInitialHistory['3'];
 
-        if(sender) this.fullFormMessage += `*Remitente:*\n${sender === '' ? 'Anónimo' : sender}\n\n`;
+        this.fullFormMessage += `*Remitente:*\n${!sender || sender === '' ? 'Anónimo' : sender}\n\n`;
         if(receiver && receiver !== '') this.fullFormMessage += `*Destinatario:*\n${receiver}\n\n`;
 
         this.formMessageInitialHistory['4'] = this.fullFormMessage;
@@ -1266,7 +1266,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             const { email, phoneNumber, receiverPhoneNumber } = params.dataModel.value['2'];
             const { articleDescription } = params.dataModel.value['3'];
             const { receiver, sender } = params.dataModel.value['4'];
-            const { dedicationMessage } = params.dataModel.value['5'];
+            const { dedicationMessage, wantToAddADedication } = params.dataModel.value['5'];
             const { orderMedium } = params.dataModel.value['6'];
             const { paymentMethod, referenceImage } = params.dataModel.value['7'];
             let totalAmount = this.formSteps[6].fieldsList[0].formattedValue;
@@ -1327,6 +1327,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               sender: sender !== '' ? sender : 'Anónimo',
               receiver,
               dedicationMessage,
+              wantToAddADedication,
               orderMedium,
               paymentMethod,
               referenceImage: fileRoutes[0],
@@ -1338,6 +1339,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
               location,
               typeOfBuilding,
               billType,
+              totalAmount: convertedTotalAmount,
+              firstPayment: convertedFirstPayment,
               articlePhotos: fileRoutes.slice(1,)
             };
 
