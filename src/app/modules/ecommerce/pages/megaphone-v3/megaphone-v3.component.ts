@@ -229,7 +229,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           if (!this.items[i].customizerId) this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
-          if(!orderData.products.some((item) => item.item === this.items[i]._id)) this.header.removeItem(this.saleflowData._id, this.items[i]._id);
+          if(!orderData?.products?.some((item) => item.item === this.items[i]._id)) this.header.removeItem(this.saleflowData._id, this.items[i]._id);
 
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
