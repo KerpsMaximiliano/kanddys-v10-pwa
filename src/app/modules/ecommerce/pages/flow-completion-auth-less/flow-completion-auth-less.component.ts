@@ -86,7 +86,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [CountryISO.DominicanRepublic];
+  preferredCountries: CountryISO[] = [CountryISO.DominicanRepublic, CountryISO.UnitedStates];
   shouldAllowPaymentSkipping: boolean = false;
   showCartCallBack: () => void;
   itemsAmount: number;
