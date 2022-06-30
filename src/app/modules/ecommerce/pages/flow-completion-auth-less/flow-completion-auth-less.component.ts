@@ -54,7 +54,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   bankOptions: BankDetails[] = [];
   banksInfo: BankDetails[] = [];
   banks: Bank[] = [];
-  step: string = 'PHONE_CHECK_AND_SHOW_BANKS';
+  step: 'PHONE_CHECK_AND_SHOW_BANKS' | 'UPDATE_NAME_AND_SHOW_BANKS' | 'PAYMENT_INFO' = 'PHONE_CHECK_AND_SHOW_BANKS';
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
   phoneNumber = new FormControl('', [Validators.required]);
   selectedBank: BankDetails = null;
@@ -80,7 +80,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   fixedWhatsappLink: string = '';
   fixedWhatsappLink2: string = '';
   isANewUser: boolean = false;
-  pastStep: string = '';
+  pastStep: 'PHONE_CHECK_AND_SHOW_BANKS' | 'UPDATE_NAME_AND_SHOW_BANKS' | 'PAYMENT_INFO';
   env: string = environment.assetsUrl;
   separateDialCode = true;
   SearchCountryField = SearchCountryField;
@@ -518,9 +518,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 if (this.banks.length === 1) {
                   this.selectedBank = this.bankOptions[0];
                 }
-  
-                this.pastStep = this.step;
-                this.step = 'PAYMENT_INFO';
                 unlockUI();
               }
 
