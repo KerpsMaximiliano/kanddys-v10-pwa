@@ -732,7 +732,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     switch (this.step) {
       case 'PHONE_CHECK_AND_SHOW_BANKS':
         return (this.stepButtonText =
-          this.phoneNumber.status === 'INVALID'
+          !this.phoneNumber.value || this.phoneNumber.value.nationalNumber === '' || this.phoneNumber.status === 'INVALID' 
             ? 'ESCRIBE COMO TE CONTACTAMOS'
             : 'CONTINUAR LA ORDEN');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
@@ -753,7 +753,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     switch (this.step) {
       case 'PHONE_CHECK_AND_SHOW_BANKS':
         return (this.stepButtonMode =
-          this.phoneNumber.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
+          !this.phoneNumber.value || this.phoneNumber.value.nationalNumber === '' || this.phoneNumber.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
         return (this.stepButtonMode =
           this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
