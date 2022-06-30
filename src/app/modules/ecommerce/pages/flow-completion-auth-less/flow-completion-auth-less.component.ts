@@ -503,8 +503,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               );
 
               if(!foundUser) {
-                console.log("AAAAAAAAAAAAAAAAAAAAAAAA")
                 registeredNewUser = await this.signUp();
+                this.userData = registeredNewUser;
 
                 if (registeredNewUser && orderStatus === 'draft') {
                   await this.order.authOrder(this.orderId, registeredNewUser._id);
