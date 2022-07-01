@@ -1,0 +1,44 @@
+<div class="container">
+
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [shopcart]="false"
+    [whatsapp]="false"
+    [navtext]="'Creación De Un Webform'"
+    [fontSize2]="'21px'"
+    [fontFamily]="'SfProBold'"
+    [color]="'#FFFFFF'"
+    ></app-helper-headerv2>
+
+    <div class="user-header">
+        <div class="top-bar">
+            <img [src]="env + '/person.svg'" alt="" class="top-image"/>
+
+            <h1 class="top-text">{{topBar}}</h1>
+        </div>
+
+        <hr class="separator"> 
+        
+        <div class="middle">
+            <img [src]="" alt="" class="user-image" />
+
+            <h2 class="webform-name">{{userName}}</h2>
+        </div>
+
+        <hr class="separator2"> 
+
+        <div class="bottom">
+            <button class="transparent-button" (click)="buttonAction('edit')">EDIT</button>
+            <button class="transparent-button"(click)="buttonAction('something')">SOMETHING</button>
+        </div>
+    </div>
+
+    <button class="add-question" (click)="addQuestion()">ADICIONA UNA PREGUNTA</button>
+
+
+    <app-sticky-button
+    [size]="'small'"
+    [mode]="'fixed'"
+    [text]="'PREVIEW PARA SALVAR'"
+    ></app-sticky-button>
+</div>
