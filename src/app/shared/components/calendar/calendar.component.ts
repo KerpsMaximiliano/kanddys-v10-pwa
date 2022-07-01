@@ -77,6 +77,17 @@ export class CalendarComponent implements OnInit {
     this.calendar.dayIndex = 0;
     this.filteredDays = [];
     let filtered = [];
+    // const firstDay = this.calendar.months[this.calendar.monthIndex].dates[0].dayNumber;
+    // if (firstDay > 1) {
+    //   for (let i = firstDay; i > 1; i--) {
+    //     console.log(i-1);
+    //     this.calendar.months[this.calendar.monthIndex].dates.unshift({
+    //       dayName: "Lunes",
+    //       dayNumber: i,
+    //       weekDayNumber: 1
+    //     });
+    //   }
+    // }
     for (let i = 0; i < this.days.length; i++) {
       var filterResult = this.calendar.months[
         this.calendar.monthIndex
