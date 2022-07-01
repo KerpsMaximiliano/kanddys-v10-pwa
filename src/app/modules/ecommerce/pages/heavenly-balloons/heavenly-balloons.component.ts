@@ -194,7 +194,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
           placeholder: 'YYYY-MM-DD',
           label: 'Fecha de nacimiento',
           inputType: 'date',
-          maxDate: `${new Date().getFullYear() - 18}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
             containerStyles: {
               width: '100%',
@@ -1296,7 +1295,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'howDidYouFindUs',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: '',
           placeholder: 'Escribe aquí...',
@@ -1317,7 +1316,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       ],
       pageHeader: {
-        text: '¿Cómo nos conociste? (*)',
+        text: '¿Cómo nos conociste?',
         styles: {
           fontFamily: 'Roboto',
           fontWeight: 'bold',
@@ -1389,6 +1388,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
             this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
             this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
 
+            const deliveryISOString = new Date(new Date().getFullYear(), delivery.monthNumber - 1, delivery.dayNumber).toISOString();
+
+            console.log(deliveryISOString);
+
             const data = {
               instagramUser,
               name,
@@ -1405,7 +1408,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               orderMedium,
               paymentMethod,
               referenceImage: fileRoutes[0],
-              delivery: new Date(new Date().getFullYear(), delivery.monthNumber, delivery.dayNumber).toISOString(),
+              delivery: deliveryISOString,
               timeOfDay: delivery.timeOfDay,
               addressReference,
               deliveryAddress,
@@ -1436,7 +1439,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               flags: ['no-header'],
             });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            // window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
             return { ok: true };
           } catch (error) {
