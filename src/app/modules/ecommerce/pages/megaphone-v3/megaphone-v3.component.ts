@@ -196,7 +196,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.sliderPackage = listPackages;
         await this.itemOfPackage(listPackages);
         this.inputPackage = this.packageData.map((e) => e.package);
-        if(!this.saleflowData.packages.some((itemPackage) => itemPackage._id === orderData.itemPackage))
+        if(orderData && !this.saleflowData.packages.some((itemPackage) => itemPackage._id === orderData.itemPackage))
           this.header.deleteSaleflowOrder(this.saleflowData._id);
       }
       // No packages. Item fetching

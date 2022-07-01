@@ -238,7 +238,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   async ngOnInit() {
     this.localStorageFlowRoute =
-      this.header.flowRoute || localStorage.getItem('flowRoute');
+      this.header.flowRoute || (localStorage.getItem('flowRoute') ?? '');
 
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
@@ -443,6 +443,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, foundUser._id);
+                this.header.flowRoute = '';
+                this.localStorageFlowRoute = '';
+                localStorage.removeItem('flowRoute');
                 this.header.deleteSaleflowOrder(this.saleflowData._id);
                 this.header.resetIsComplete();
                 this.isAPreOrder = false;
@@ -486,7 +489,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
-          console.log(this.isAPreOrder, "IAP")
           if (this.isAPreOrder) {
             // this.totalQuestions = 2;
             const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
@@ -507,6 +509,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 this.userData = registeredNewUser;
 
                 if (registeredNewUser && orderStatus === 'draft') {
+                  this.header.flowRoute = '';
+                  this.localStorageFlowRoute = '';
+                  localStorage.removeItem('flowRoute');
                   await this.order.authOrder(this.orderId, registeredNewUser._id);
                   this.header.deleteSaleflowOrder(this.saleflowData._id);
                   this.header.resetIsComplete();
@@ -560,6 +565,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                   this.userData = registeredNewUser;
 
                   if (registeredNewUser) {
+                    this.header.flowRoute = '';
+                    this.localStorageFlowRoute = '';
+                    localStorage.removeItem('flowRoute');
                     this.header.deleteSaleflowOrder(this.saleflowData._id);
                     this.header.resetIsComplete();
                     this.isAPreOrder = false;

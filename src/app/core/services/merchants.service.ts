@@ -145,12 +145,12 @@ export class MerchantsService {
   }
 
   async myMerchants(params: ListParams = {}): Promise<Merchant[]> {
-    const { myMerchants: result = [] } = await this.graphql.query({
+    const result = await this.graphql.query({
       query: myMerchants,
       variables: { params },
       fetchPolicy: 'no-cache',
     });
-    return (result || []).map((r: any) => new Merchant(r));
+    return (result?.myMerchants || []).map((r: any) => new Merchant(r));
   }
 
   async merchantDefault(userId?: string): Promise<Merchant> {
