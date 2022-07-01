@@ -194,6 +194,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           placeholder: 'YYYY-MM-DD',
           label: 'Fecha de nacimiento',
           inputType: 'date',
+          maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
             containerStyles: {
               width: '100%',
@@ -734,6 +735,19 @@ export class HeavenlyBalloonsComponent implements OnInit {
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
+            const { firstPayment, totalAmount } = params.dataModel.value['7'];
+
+            if(Number(change) < Number(firstPayment)) {
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
+                emitEvent: false,
+              });
+
+              this.formSteps[6].fieldsList[1].formattedValue = '$' + this.decimalPipe.transform(
+                Number(0),
+                '1.2'
+              );
+            } 
+            
             try {
               if (!change.includes('.')) {
                 const plainNumber = change
@@ -831,55 +845,63 @@ export class HeavenlyBalloonsComponent implements OnInit {
           inputType: 'number',
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
-            try {
-              if (!change.includes('.')) {
-                const plainNumber = change
-                  .split(',')
-                  .join('');
+            const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-                if (plainNumber[0] === '0') {
-                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
-                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                    '1.2'
-                  ) : this.decimalPipe.transform(
-                    Number('0.' + (
-                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
-                        plainNumber.slice(1)
-                    )),
-                    '1.2'
-                  );
-
-                  if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[1].placeholder = '';
+            if(Number(change) > Number(totalAmount) && totalAmount !== "") {
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(firstPayment, {
+                emitEvent: false,
+              });
+            } else {
+              try {
+                if (!change.includes('.')) {
+                  const plainNumber = change
+                    .split(',')
+                    .join('');
+  
+                  if (plainNumber[0] === '0') {
+                    const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                          plainNumber.slice(1)
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[1].placeholder = '';
+                    }
+  
+                    this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
+                  } else {
+                    const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length === 1 ? '0' + plainNumber :
+                          plainNumber
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[1].placeholder = '';
+                    }
+  
+                    this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
                   }
-
-                  this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
                 } else {
-                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
-                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                    '1.2'
-                  ) : this.decimalPipe.transform(
-                    Number('0.' + (
-                      plainNumber.length === 1 ? '0' + plainNumber :
-                        plainNumber
-                    )),
-                    '1.2'
-                  );
-
-                  if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[1].placeholder = '';
-                  }
-
-                  this.formSteps[6].fieldsList[1].formattedValue = '$' + formatted;
+                  const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+                  this.formSteps[6].fieldsList[1].fieldControl.control.setValue(convertedNumber, {
+                    emitEvent: false,
+                  });
                 }
-              } else {
-                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
-                this.formSteps[6].fieldsList[1].fieldControl.control.setValue(convertedNumber, {
-                  emitEvent: false,
-                });
+              } catch (error) {
+                console.log(error);
               }
-            } catch (error) {
-              console.log(error);
             }
           },
           styles: {
@@ -1439,7 +1461,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               flags: ['no-header'],
             });
 
-            // window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
             return { ok: true };
           } catch (error) {
