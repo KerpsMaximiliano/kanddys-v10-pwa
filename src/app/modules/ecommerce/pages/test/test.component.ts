@@ -6,6 +6,7 @@ import { CollaborationsComponent } from 'src/app/shared/dialogs/collaborations/c
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemDashboardOptionsComponent, DashboardOption } from 'src/app/shared/dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 
 @Component({
   selector: 'app-test',
@@ -16,6 +17,19 @@ export class TestComponent implements OnInit {
   constructor(private dialog: DialogService) { }
 
   ngOnInit(): void { }
+
+  questions: Questions[] = [{
+            text: 'Pito'
+        },
+        {
+            text: 'Pregunta 2'
+        },
+        {
+            text: 'Pregunta 3/2'
+        },
+        {
+            text: 'Pregunta 3'
+        }]
 
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {
