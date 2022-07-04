@@ -64,10 +64,10 @@ export class ShipmentDataFormComponent implements OnInit {
             text: 'Sin envio, lo pasaré a recoger',
             clickable: true,
             callback: async (params) => {
-              if (this.header.createdOrderWithDelivery === true) {
-                this.header.orderId = null;
-                this.header.createdOrderWithDelivery = false;
-              }
+              // if (this.header.createdOrderWithDelivery === true) {
+              //   this.header.orderId = null;
+              //   this.header.createdOrderWithDelivery = false;
+              // }
 
               let preOrderID;
               let whatsappLinkQueryParams;
@@ -204,7 +204,8 @@ export class ShipmentDataFormComponent implements OnInit {
           this.header.storeOrderProgress(this.header.saleflow?._id || this.header.getSaleflow()?._id);
 
           //========================= CÓDIGO PARA CREAR PREORDER =========================
-          if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
+          if (!this.header.orderId) {
+          // if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
             lockUI();
 
             preOrderID = await this.header.createPreOrder();
@@ -216,7 +217,7 @@ export class ShipmentDataFormComponent implements OnInit {
 
             unlockUI();
 
-            this.header.disableGiftMessageTextarea = true;
+            // this.header.disableGiftMessageTextarea = true;
 
             //Para el magicLink
             // this.openDialog(whatsappLinkQueryParams);
@@ -224,7 +225,7 @@ export class ShipmentDataFormComponent implements OnInit {
               `ecommerce/flow-completion-auth-less/${preOrderID}`,
             ]);
 
-            this.header.createdOrderWithDelivery = true;
+            // this.header.createdOrderWithDelivery = true;
           } else {
             this.router.navigate([
               `ecommerce/flow-completion-auth-less/${this.header.orderId}`,

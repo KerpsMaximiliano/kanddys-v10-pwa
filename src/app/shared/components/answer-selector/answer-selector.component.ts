@@ -30,7 +30,7 @@ export class AnswerSelectorComponent {
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
 
-  @Output() onSelector = new EventEmitter();
+  @Output() onSelector = new EventEmitter<number>();
 
   constructor() {}
 

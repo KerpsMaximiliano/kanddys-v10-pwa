@@ -21,8 +21,8 @@
     }">
     <div class="itemCheckBox" [ngClass]="{'active': isClicked == true}" (click)="statechanger()">
       <input type="checkbox">
-      <span class="text-inner no" *ngIf="!isClicked">No</span>
-      <span class="text-inner si" *ngIf="isClicked">Si</span>
+      <span class="text-inner no" *ngIf="innerText && !isClicked">No</span>
+      <span class="text-inner si" *ngIf="innerText && isClicked">Si</span>
       <span class="itemSwitch"></span>
     </div>
   </div>

@@ -61,6 +61,7 @@ import { MyCustomersComponent } from './pages/my-customers/my-customers.componen
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
+import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
 
 const routes: Routes = [
   {
@@ -337,6 +338,10 @@ const routes: Routes = [
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
   },
+  {
+    path: 'webform-questions',
+    component: AnswerMethodWebformComponent
+  },
 ];
 
 @NgModule({
@@ -402,6 +407,7 @@ const routes: Routes = [
     UserCreatorComponent,
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
+    AnswerMethodWebformComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

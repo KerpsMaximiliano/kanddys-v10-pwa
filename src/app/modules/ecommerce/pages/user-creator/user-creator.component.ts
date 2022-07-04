@@ -207,6 +207,7 @@ export class UserCreatorComponent implements OnInit {
     component: SwitchButtonComponent,
     inputs: {
       isClicked: this.isClicked,
+      innerText: true,
       settings: {
         leftText: 'ES UN NEGOCIO?',
       },
