@@ -30,13 +30,14 @@
             fontSize: '21px'
         }"
         [returnAble]="true"
-        [search]="{
-            active: true
-        }"
+        [icons]="[{
+            src: '/search.svg',
+            callback: searchToggle,
+            color: 'invert(100%) sepia(0%) saturate(7485%) hue-rotate(150deg) brightness(186%) contrast(101%)'
+        }]"
         [dots]="{
             active: true
         }"
-		(searchEvent)="searchToggle()"
 		(dotEvent)="openDialog()"
 		color="#E9E371"
 		bgColor="#2874AD"

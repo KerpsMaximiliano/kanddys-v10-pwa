@@ -95,4 +95,12 @@ export class TestComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+  testing(){
+    console.log('uwu')
+  }
+
+  displau(){
+    console.log('Clickaste display');
+  } 
 }

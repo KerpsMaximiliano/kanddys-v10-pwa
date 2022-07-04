@@ -1,33 +1,15 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-interface config  {
-    text?: string,
-    fontFamily?: string,
-    leftText?: string,
-    leftFont?: string,
-    rightText?: string,
-    rightFont?: string,
-    fontSize?: string,
-    plusFont?: string,
-    plusSize?: string,
-    plusColor?: string,
-    billId?: string,
-    itemId?: string,
-    icon?: string,
-    return?: boolean,
-    shopcart?: boolean,
-    whatsapp?: boolean,
-    edit?: boolean,
-    batch?: boolean,
-    dots?: boolean,
-    search?: boolean,
-    plus?: boolean,
-    upload?: boolean,
-    inMall?: boolean,
-    pointer?: boolean,
-} //order66
-
+interface Icon {
+    src: string;
+	alt?: string;
+	color?: string; 
+	width?: string;
+    height?: string;
+    margin?: string;
+	callback: () => void;
+}
 @Component({
   selector: 'app-helper-headerv2',
   templateUrl: './helper-headerv2.component.html',
@@ -36,7 +18,6 @@ interface config  {
 export class HelperHeaderv2Component implements OnInit {
     @Input() bgColor: string = '#4773D8';
     @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test' ; 
-    @Input() cartAmount: number;
     @Input() public shopCartCallback: () => void;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;
@@ -45,7 +26,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() rmargin: string;
     @Input() filter: string;
     @Input() returnAble: boolean;
-    @Input() config?: config; //order66
+    @Input() icons: Icon[];
 
     @Input() mainText?: {
         text: string,
@@ -80,7 +61,8 @@ export class HelperHeaderv2Component implements OnInit {
         alt?: string,
         filter?: string,
         width?: number,
-        height?: number
+        height?: number,
+        callback?: () => void
     };
     @Input() plus?: {
         active: boolean,
@@ -91,16 +73,6 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() dots?: {
         active: boolean,
         color?: string,
-        func?: () => void
-    };
-    @Input() search?: {
-        active: boolean,
-        filter?: string,
-        func?: () => void
-    };
-    @Input() upload?: {
-        active: boolean,
-        filter?: string,
         func?: () => void
     };
     @Input() edit?:{
@@ -114,15 +86,12 @@ export class HelperHeaderv2Component implements OnInit {
         cartAmount: number,
         filter?: string
     };
-    @Input() whatsapp?: {
-        active: boolean,
-        filter?: string
-    };
-    
+    @Input() public editBtnCallback: () => void;
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
     @Output() dotEvent = new EventEmitter();
+    @Output() display = new EventEmitter();
     env: string = environment.assetsUrl;
 
   constructor() {}
@@ -136,6 +105,10 @@ export class HelperHeaderv2Component implements OnInit {
 
   return(event){
     this.returnEvent.emit(event)
+  }
+
+  displaying(event){
+    this.display.emit(event)
   }
 
   searchTrigger(event){

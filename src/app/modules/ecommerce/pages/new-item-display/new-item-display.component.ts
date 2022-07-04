@@ -387,8 +387,9 @@ export class NewItemDisplayComponent implements OnInit {
     }
   }
 
-  tapping() {
-    this.tapped = !this.tapped;
+  tapping(){
+    let url = 'www.google.com';
+    window.open(url, "_blank");
   }
 
   toggleView() {

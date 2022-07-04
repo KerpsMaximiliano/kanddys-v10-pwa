@@ -5,17 +5,17 @@
             text: item?.merchant?.name,
             fontSize: '21px'
         }"
-        [whatsapp]="{
-            active: !providerView,
-            filter: 'brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)'
-        }"
+        [icons]="[{
+            src: '/whatsapp_blanco.svg',
+            color: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)',
+            callback: tapping
+        }]"
         [shopcart]="{
             active: !providerView,
             cartAmount: 1,
             filter: 'brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)'
         }"
         [returnAble]="true"
-		[cartAmount]="1"
 		cartColor="blue"
 		filter="brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)"
 		[bgColor]="providerView ? '#2874AD' : '#E9E371'"

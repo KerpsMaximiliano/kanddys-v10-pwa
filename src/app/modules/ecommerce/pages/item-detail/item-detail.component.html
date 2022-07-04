@@ -8,10 +8,11 @@
                 fontSize: '21px,'
             }"
             [returnAble]="true"
-            [whatsapp]="{
-                active: true,
-                filter: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)'
-            }"
+            [icons]="[{
+                src: '/whatsapp_blanco.svg',
+                color: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)',
+                callback: tapping
+            }]"
             [shopcart]="{
                 active: true,
                 cartAmount: itemCartAmount
