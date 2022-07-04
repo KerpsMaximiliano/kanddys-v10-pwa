@@ -54,7 +54,50 @@ const AnswerMethodOptions = [
   },
 ];
 
-const AnswerTypeOptions = [
+const DateAnswerTypeOptions = [
+  {
+    value: 'Cualquier dia y hora',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Cualquier dia',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Cualquier hora',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Cualquier dia y bloque de horas',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'En mi disponibilidad de dia y hora',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'En mi disponibilidad de dia',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'En mi disponibilidad de hora',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'En mi disponibilidad de dias y bloques de horas',
+    status: true,
+    click: true,
+  },
+]
+
+const AdditionAnswerTypeOptions = [
   {
     value: 'Adicionará un texto',
     status: true,
@@ -77,6 +120,34 @@ const AnswerTypeOptions = [
   },
   {
     value: 'Adicionará un valor numérico',
+    status: true,
+    click: true,
+  },
+]
+
+const SelectionAnswerTypeOptions = [
+  {
+    value: 'Seleccionará entre textos',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Seleccionará entre imágenes',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Seleccionará entre audios',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Seleccionará entre videos',
+    status: true,
+    click: true,
+  },
+  {
+    value: 'Seleccionará entre valor numérico',
     status: true,
     click: true,
   },
@@ -117,7 +188,7 @@ const OtherTables = [
 })
 export class AnswerMethodWebformComponent implements OnInit {
   answerMethodOptions: OptionAnswerSelector[] = AnswerMethodOptions;
-  answerTypeOptions: OptionAnswerSelector[] = AnswerTypeOptions;
+  answerTypeOptions: OptionAnswerSelector[];
   otherTablesOptions: OptionAnswerSelector[] = OtherTables;
   answerMethod: number;
   answerType: number;
@@ -125,6 +196,9 @@ export class AnswerMethodWebformComponent implements OnInit {
   answerRequired: boolean = false;
   question: string;
   description: string;
+  first_answer: string;
+  second_answer: string;
+  images: File[] = [];
 
   constructor() { }
 
@@ -132,14 +206,36 @@ export class AnswerMethodWebformComponent implements OnInit {
   }
 
   onSelect(option: 'answerMethod' | 'answerType' | 'otherTable', value: number) {
-    if(option === 'answerMethod') return this.answerMethod = value;
+    if(option === 'answerMethod') {
+      if(value != this.answerMethod) this.resetValues();
+      this.answerMethod = value; 
+      switch(value) {
+        case 0: this.answerTypeOptions = SelectionAnswerTypeOptions; break;
+        case 1: this.answerTypeOptions = DateAnswerTypeOptions; break;
+        case 2: this.answerTypeOptions = AdditionAnswerTypeOptions; break;
+      }
+      return;
+    }
     if(option === 'answerType') return this.answerType = value;
     if(option === 'otherTable') return this.otherTable = value;
   }
 
+  resetValues() {
+    this.answerType = null;
+    this.first_answer = null;
+    this.second_answer = null;
+    this.images = [];
+  }
+
   back() {
-    // if(this.answerType != null) return this.answerType = null;
-    // if(this.answerMethod != null) return this.answerMethod = null;
+    //
+  }
+
+  onFileInput(file: File | { image: File; index: number }) {
+    if ('index' in file) {
+      if(file.index >= 2) return;
+      this.images.push(file.image);
+    }
   }
 
 }

@@ -25,7 +25,9 @@ export class ImageInputComponent implements OnInit {
   @Input() containerStyles: Record<string, string> = null;
   @Input() fileStyles: Record<string, string> = null;
   @Input() allowedTypes: string[] = [];
+  @Input() small: boolean;
   @Input() multiple: boolean;
+  @Input() max: number;
   @Input() innerLabel: string = 'Upload / Camera';
   @Input() expandImage: boolean = false;
 
@@ -72,6 +74,7 @@ export class ImageInputComponent implements OnInit {
         this.onFileInputBase64.emit({ image: reader.result, index });
       };
       reader.readAsDataURL(files[0]);
+      if(this.max && this.imageField.length >= this.max) return;
       if (this.multiple && this.imageField.length - 1 === index) {
         this.imageField.push('');
         this.error.push(false);
