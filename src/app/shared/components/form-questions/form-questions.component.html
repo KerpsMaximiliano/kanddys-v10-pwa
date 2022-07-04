@@ -1,0 +1,30 @@
+<div class="body">
+
+    <div class="top-bar">
+        <div class="wrapper">
+            <img [src]="env + '/person.svg'" alt="" class="top-image"/>
+
+            <h1 class="top-text">{{topBar}}</h1>
+        </div>
+
+        <button class="transparent-button" (click)="buttonAction('add')">{{topBtn}}</button>
+    </div>
+
+    <hr class="separator"> 
+    
+    <div class="middle">
+        <ng-container  *ngFor="let question of questions; let i = index">
+            <div class="flexer">
+                <p class="number">#{{i+1}}: </p>
+                <p class="webform-name">{{question.text}}</p>
+            </div>
+        </ng-container>
+    </div>
+
+    <hr class="separator2"> 
+
+    <div class="bottom">
+        <button class="transparent-button" (click)="buttonAction('edit')">{{bottomLeftBtn}}</button>
+        <button class="transparent-button"(click)="buttonAction('something')">{{bottomRightBtn}}</button>
+    </div>
+</div>

@@ -16,7 +16,9 @@
 ></app-helper-headerv2> -->
 <button (click)="openDialog()">Abrir el dialog</button>
 <div style="width: 100%; height: 450px; background-color: #fff;">
-    <app-switch-button></app-switch-button>
+    <app-form-questions
+    [questions]="questions"
+    ></app-form-questions>
 </div>
 <!-- <app-bubble-button
 [cart]="true"

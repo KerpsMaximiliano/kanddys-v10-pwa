@@ -543,20 +543,67 @@ shouldScrollBackwards &&
               </label>
 
 
-              <ng-container *ngFor="let option of currentField.selectionOptions">
-                <label [ngClass]="
-                  option === currentField.fieldControl.control.value
-                    ? 'selector-option active'
-                    : 'selector-option'
-                " [ngStyle]="
-                  currentField.styles.fieldStyles
-                  ? currentField.styles.fieldStyles
-                  : null
-                " (click)="currentField.fieldControl.control.setValue(option)">
-                  <div class="background"></div>
-                  <input type="radio" [value]="option" [formControlName]="currentField.name" tabindex="-1" />
-                  <span>{{ option }}</span>
-                </label>
+
+              <ng-container
+                *ngIf="currentField.collapsed"
+              >
+                <ng-container *ngFor="let option of currentField.selectionOptions">
+                  <div 
+                    [ngStyle]="{
+                      backgroundColor: '#82f18d',
+                      borderRadius: '5px',
+                      color: '#7B7B7B',
+                      fontFamily: 'RobotoMedium',
+                      fontSize: '19px',
+                      fontWeight: '500',
+                      height: '85%',
+                      marginTop: '7.5px',
+                      padding: '10px',
+                      paddingLeft: '38px',
+                      paddingRight: '16px',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }"
+                    *ngIf="option === currentField.fieldControl.control.value"
+                    (click)="currentField.collapsed = !currentField.collapsed"
+                  >
+                    <div>
+                      {{ option }}
+                    </div>
+                    <div
+                      [ngStyle]="{
+                        width: 0, 
+                        height: 0, 
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderTop: '9px solid #fff'
+                      }"
+                    ></div>
+                  </div>
+                </ng-container>
+              </ng-container>
+
+
+              <ng-container
+                *ngIf="!currentField.collapsed"
+              >
+                <ng-container *ngFor="let option of currentField.selectionOptions">
+                  <label [ngClass]="
+                    option === currentField.fieldControl.control.value
+                      ? 'selector-option active'
+                      : 'selector-option'
+                  " [ngStyle]="
+                    currentField.styles.fieldStyles
+                    ? currentField.styles.fieldStyles
+                    : null
+                  " (click)="currentField.fieldControl.control.setValue(option)">
+                    <div class="background"></div>
+                    <input type="radio" [value]="option" [formControlName]="currentField.name" tabindex="-1" />
+                    <span>{{ option }}</span>
+                  </label>
+                </ng-container>
               </ng-container>
             </div>
 

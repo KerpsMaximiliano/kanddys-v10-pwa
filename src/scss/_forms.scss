@@ -107,6 +107,7 @@
 //ESTILOS PARA LISTA DE OPCIÓN MÚLTILPLE
 .selector {
   display: flex;
+  position: relative;
   flex-direction: column;
   width: 100%;
 }

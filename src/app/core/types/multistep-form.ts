@@ -42,6 +42,8 @@ export interface FormField {
   changeFunctionSubscription?: Subscription;
   customCursorIndex?: number;
   selectionOptions?: Array<string>;
+  shouldCollapseList?: boolean;
+  collapsed?: boolean;
   validators?: Array<any>;
   description?: string;
   focused?: boolean;

@@ -62,6 +62,7 @@ import { UserContactLandingComponent } from './pages/user-contact-landing/user-c
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
+import { AirtableFieldConnectionComponent } from './pages/airtable-field-connection/airtable-field-connection.component';
 
 const routes: Routes = [
   {
@@ -342,6 +343,10 @@ const routes: Routes = [
     path: 'webform-questions',
     component: AnswerMethodWebformComponent
   },
+  {
+    path: 'airtable-field-connection/:databaseName',
+    component: AirtableFieldConnectionComponent
+  }
 ];
 
 @NgModule({
@@ -408,6 +413,7 @@ const routes: Routes = [
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
     AnswerMethodWebformComponent,
+    AirtableFieldConnectionComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

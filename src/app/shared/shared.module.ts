@@ -92,6 +92,7 @@ import { ItemSmallCardComponent } from './components/item-small-card/item-small-
 import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-list.component';
 import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GooglePlaceModule } from "ngx-google-places-autocomplete";
+import { FormQuestionsComponent } from './components/form-questions/form-questions.component';
 
 const imports = [
   CommonModule,
@@ -181,6 +182,7 @@ const declarations = [
   ItemSmallCardComponent,
   EntityItemListComponent,
   ItemDashboardOptionsComponent,
+  FormQuestionsComponent,
 ];
 
 @NgModule({
