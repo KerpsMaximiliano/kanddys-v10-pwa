@@ -94,6 +94,8 @@ import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/
 import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 import { FormQuestionsComponent } from './components/form-questions/form-questions.component';
 import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
+import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
+import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 
 const imports = [
   CommonModule,
@@ -185,6 +187,8 @@ const declarations = [
   ItemDashboardOptionsComponent,
   FormQuestionsComponent,
   ShortCalendarComponent,
+  SingleItemListComponent,
+  SliderElementListComponent,
 ];
 
 @NgModule({
