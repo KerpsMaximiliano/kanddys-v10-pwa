@@ -51,15 +51,15 @@ export class CalendarComponent implements OnInit {
     }
   }
 
-  startDragging(e, flag, el) {
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
     this.startX = e.pageX - el.offsetLeft;
     this.scrollLeft = el.scrollLeft;
   }
-  stopDragging(e, flag) {
+  stopDragging() {
     this.mouseDown = false;
   }
-  moveEvent(e, el) {
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
     e.preventDefault();
     if (!this.mouseDown) {
       return;

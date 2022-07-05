@@ -93,6 +93,7 @@ import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-
 import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 import { FormQuestionsComponent } from './components/form-questions/form-questions.component';
+import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
@@ -186,6 +187,7 @@ const declarations = [
   EntityItemListComponent,
   ItemDashboardOptionsComponent,
   FormQuestionsComponent,
+  ShortCalendarComponent,
   SingleItemListComponent,
   SliderElementListComponent,
   QuestionItemComponent,

@@ -33,7 +33,11 @@ export class CalendarService {
     months: {
         id: number;
         name: string;
-        dates: any[];
+        dates: {
+            dayNumber: number;
+            dayName: string;
+            weekDayNumber: number;
+        }[];
         indexI?: number;
         indexJ?: number;
     }[] = [];
@@ -43,7 +47,11 @@ export class CalendarService {
     allMonths: {
         id: number;
         name: string;
-        dates: any[];
+        dates: {
+            dayNumber: number;
+            dayName: string;
+            weekDayNumber: number;
+        }[];
     }[] = [
         {
             "id": 0,
