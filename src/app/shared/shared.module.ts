@@ -93,6 +93,7 @@ import { EntityItemListComponent } from './dialogs/entity-item-list/entity-item-
 import { ItemDashboardOptionsComponent } from './dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 import { FormQuestionsComponent } from './components/form-questions/form-questions.component';
+import { ShortCalendarComponent } from './components/short-calendar/short-calendar.component';
 
 const imports = [
   CommonModule,
@@ -183,6 +184,7 @@ const declarations = [
   EntityItemListComponent,
   ItemDashboardOptionsComponent,
   FormQuestionsComponent,
+  ShortCalendarComponent,
 ];
 
 @NgModule({
