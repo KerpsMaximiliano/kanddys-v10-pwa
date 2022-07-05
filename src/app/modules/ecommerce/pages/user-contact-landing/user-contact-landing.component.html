@@ -24,6 +24,7 @@
       <span *ngIf="admin" class="switch-label">
         Mostrar En Contacto
         <app-switch-button
+          [innerText]="true"
           [isClicked]="merchant.showItems"
           (switched)="toggleShowItems()"
         ></app-switch-button>

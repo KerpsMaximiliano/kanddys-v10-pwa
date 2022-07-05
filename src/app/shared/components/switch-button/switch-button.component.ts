@@ -19,6 +19,7 @@ export class SwitchButtonComponent implements OnInit {
   };
   @Output() switched = new EventEmitter();
   @Input() isClicked : boolean;
+  @Input() innerText : boolean;
   constructor() { }
 
   ngOnInit(): void {

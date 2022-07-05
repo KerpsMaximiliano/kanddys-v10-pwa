@@ -120,7 +120,6 @@ export class OrderInfoComponent implements OnInit {
   providerData: any = {};
   saleFlowId: string;
   headline: string;
-  currentMessage: string;
   showHeader: boolean;
   date: string;
   fotodavitte: boolean = false;
@@ -237,12 +236,7 @@ export class OrderInfoComponent implements OnInit {
           } else this.view = 'comprado';
           this.tabsOptions.push('Comprado');
           if (
-            data.order.items[0].post && 
-            (
-              data.order.items[0].post.from ||
-              data.order.items[0].post.to ||
-              data.order.items[0].post.message
-            )
+            data.order.items[0].post
           ) this.tabsOptions.push('Mensaje');
           if (data.order.items[0].customizer)
             this.tabsOptions.push('Personalización');
@@ -359,13 +353,14 @@ export class OrderInfoComponent implements OnInit {
           if (data.order.items[0].post) {
             this.posts.getPost(data.order.items[0].post._id).then((data) => {
               this.message = data.post;
-              this.currentMessage = this.message.message;
-              if (this.message.from === '' && this.message.message === '' && !this.message.targets) {
-                for (let i = 0; i < this.tabsOptions.length; i++) {
-                  if (this.tabsOptions[i] === 'Mensaje') {
-                    this.tabsOptions.splice(i, 1);
-                  }
-                }
+              if (
+                !this.message.from &&
+                !this.message.message &&
+                this.message.targets.length &&
+                !this.message.targets[0].name
+              ) {
+                const index = this.tabsOptions.indexOf('Mensaje');
+                this.tabsOptions.splice(index, 1);
               } else {
                 this.isValidMessage = true;
               }

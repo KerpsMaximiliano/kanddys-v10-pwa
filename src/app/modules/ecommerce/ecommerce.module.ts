@@ -61,6 +61,7 @@ import { MyCustomersComponent } from './pages/my-customers/my-customers.componen
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
+import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
 import { AirtableFieldConnectionComponent } from './pages/airtable-field-connection/airtable-field-connection.component';
 
 const routes: Routes = [
@@ -339,6 +340,10 @@ const routes: Routes = [
     component: UserContactLandingComponent
   },
   {
+    path: 'webform-questions',
+    component: AnswerMethodWebformComponent
+  },
+  {
     path: 'airtable-field-connection/:databaseName',
     component: AirtableFieldConnectionComponent
   }
@@ -407,6 +412,7 @@ const routes: Routes = [
     UserCreatorComponent,
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
+    AnswerMethodWebformComponent,
     AirtableFieldConnectionComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
