@@ -95,6 +95,7 @@ import { GooglePlaceModule } from "ngx-google-places-autocomplete";
 import { FormQuestionsComponent } from './components/form-questions/form-questions.component';
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
+import { QuestionItemComponent } from './components/question-item/question-item.component';
 
 const imports = [
   CommonModule,
@@ -187,6 +188,7 @@ const declarations = [
   FormQuestionsComponent,
   SingleItemListComponent,
   SliderElementListComponent,
+  QuestionItemComponent,
 ];
 
 @NgModule({
