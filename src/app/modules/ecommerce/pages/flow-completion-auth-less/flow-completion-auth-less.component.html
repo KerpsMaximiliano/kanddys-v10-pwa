@@ -432,7 +432,7 @@
       *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS' || step === 'UPDATE_NAME_AND_SHOW_BANKS'"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
-      (click)="submit()"
+      (click)="!buttonBlocked ? submit() : null"
     ></app-sticky-button>
   </a>
 
@@ -444,14 +444,14 @@
     "
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
-    (click)="submit()"
+    (click)="!buttonBlocked ? submit() : null"
   ></app-sticky-button>
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
     <app-sticky-button
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
-      (click)="submit()"
+      (click)="!buttonBlocked ? submit() : null"
     ></app-sticky-button>
   </a>
 </div>

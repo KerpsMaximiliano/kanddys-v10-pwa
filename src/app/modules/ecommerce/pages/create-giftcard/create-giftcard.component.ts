@@ -361,10 +361,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         //esto deberia estar en el step 4, el de editar, está en el 2, porque se quizo quitar la foto de este flow
         type: 'promise',
         function: async (params) => {
+          console.log(params.dataModel.value);
           if (
-            params.dataModel.value['1']['message'] === '' &&
-            params.dataModel.value['1']['receiver'] === '' &&
-            params.dataModel.value['1']['sender'] === ''
+            params.dataModel.value['2']['message'] === '' &&
+            params.dataModel.value['2']['receiver'] === '' &&
+            params.dataModel.value['2']['sender'] === ''
           ) {
             this.storeEmptyMessageAndGoToShipmentDataForm(params);
             return of({
@@ -373,14 +374,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }
 
           this.header.post = {
-            message: params.dataModel.value['1']['message'],
+            message: params.dataModel.value['2']['message'],
             targets: [
               {
-                name: params.dataModel.value['1']['receiver'],
+                name: params.dataModel.value['2']['receiver'],
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['1']['sender'],
+            from: params.dataModel.value['2']['sender'],
             // multimedia: [this.header.flowImage],
             multimedia: this.header.flowImage,
             socialNetworks: [
@@ -391,14 +392,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           };
 
           const postInput = {
-            message: params.dataModel.value['1']['message'],
+            message: params.dataModel.value['2']['message'],
             targets: [
               {
-                name: params.dataModel.value['1']['receiver'],
+                name: params.dataModel.value['2']['receiver'],
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['1']['sender'],
+            from: params.dataModel.value['2']['sender'],
             // multimedia: this.header.flowImage,
             socialNetworks: [
               {
