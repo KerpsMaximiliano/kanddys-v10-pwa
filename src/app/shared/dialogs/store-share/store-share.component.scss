@@ -99,6 +99,22 @@
     }
 }
 
+.qr-container {
+    text-align: center;
+    margin-bottom: 16px;
+    button {
+        all: unset;
+        font-family: "RobotoRegular";
+        font-size: 15px;
+        color: #2874AD;
+        cursor: pointer;
+
+        &:hover {
+            color: #459de0;
+        }
+    }
+}
+
 @media (max-height: 770px) {
     .container {
         .dialog-card {

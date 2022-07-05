@@ -43,6 +43,7 @@
     background-color: #AFAFAF;
     z-index: 10;
     white-space: break-spaces;
+    position: relative;
 
     &.small {
       height: 30px;
@@ -64,7 +65,7 @@
     cursor: default;
     background-color: #7b7b7b;
     z-index: 1000;
-    position: fixed;
+    position: relative;
     white-space: break-spaces;
 
     &.small {
@@ -123,6 +124,7 @@
     cursor: default;
     background-color: #7b7b7b;
     white-space: break-spaces;
+    position: relative;
   }
 }
 
@@ -164,6 +166,13 @@
 
 .button > svg > path {
   fill: #fff;
+}
+
+.back-btn {
+  color: white;
+  position: absolute;
+  left: 2%;
+  cursor: pointer;
 }
 
 @media (max-width: 480px) {
