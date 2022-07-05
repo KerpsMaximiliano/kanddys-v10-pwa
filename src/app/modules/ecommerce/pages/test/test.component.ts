@@ -7,6 +7,7 @@ import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-sh
 import { ItemDashboardOptionsComponent, DashboardOption } from 'src/app/shared/dialogs/item-dashboard-options/item-dashboard-options.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
+import { Tag } from '../../../../core/models/tags';
 
 @Component({
   selector: 'app-test',
@@ -17,6 +18,55 @@ export class TestComponent implements OnInit {
   constructor(private dialog: DialogService) { }
 
   ngOnInit(): void { }
+
+  tagTest : Tag[] = [ {
+    messageNotify: 'prueba Nº1',
+    counter: 3,
+    name: 'Prueba Nº1 ',
+    notify: true,
+    user: 'patata',
+    notifyUserOrder: true,
+    notifyMerchantOrder: true,
+    _id: 'skw45k10d21',
+    createdAt: 'date',
+    updatedAt: 'date'
+  },
+  {
+    messageNotify: 'prueba Nº2',
+    counter: 2,
+    name: 'Prueba Nº2 ',
+    notify: false,
+    user: 'potat',
+    notifyUserOrder: true,
+    notifyMerchantOrder: true,
+    _id: 'skw44k10d21',
+    createdAt: 'date',
+    updatedAt: 'date'
+  },
+  {
+    messageNotify: 'prueba Nº3',
+    counter: 33,
+    name: 'Prueba Nº3 ',
+    notify: true,
+    user: 'apple',
+    notifyUserOrder: true,
+    notifyMerchantOrder: true,
+    _id: 'skw46k10d21',
+    createdAt: 'date',
+    updatedAt: 'date'
+  },
+  {
+    messageNotify: 'prueba Nº4',
+    counter: 1,
+    name: 'Prueba Nº4 ',
+    notify: false,
+    user: 'pear',
+    notifyUserOrder: true,
+    notifyMerchantOrder: true,
+    _id: 'skw47k10d21',
+    createdAt: 'date',
+    updatedAt: 'date'
+  },]
 
   questions: Questions[] = [{
             text: 'Pito'
@@ -113,6 +163,11 @@ export class TestComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     }); */
+  }
+
+  touched(){
+    console.log('Hiciste click ;)');
+    console.log(this.tagTest[2].user);
   }
 }
 
