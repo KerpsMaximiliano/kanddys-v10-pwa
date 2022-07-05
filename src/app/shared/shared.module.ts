@@ -97,6 +97,7 @@ import { ShortCalendarComponent } from './components/short-calendar/short-calend
 import { SingleItemListComponent } from './components/single-item-list/single-item-list.component';
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { OneLineItemComponent } from './components/one-line-item/one-line-item.component';
+import { QuestionItemComponent } from './components/question-item/question-item.component';
 
 const imports = [
   CommonModule,
@@ -191,6 +192,7 @@ const declarations = [
   SingleItemListComponent,
   SliderElementListComponent,
   OneLineItemComponent,
+  QuestionItemComponent,
 ];
 
 @NgModule({
