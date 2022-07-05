@@ -3,12 +3,12 @@ import { environment } from 'src/environments/environment';
 
 interface Icon {
     src: string;
-	alt?: string;
-	color?: string; 
-	width?: string;
+    alt?: string;
+    color?: string; 
+    width?: string;
     height?: string;
     margin?: string;
-	callback: () => void;
+	  callback: () => void;
 }
 @Component({
   selector: 'app-helper-headerv2',
