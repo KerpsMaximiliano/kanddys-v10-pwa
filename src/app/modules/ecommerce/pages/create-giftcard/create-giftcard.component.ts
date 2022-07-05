@@ -361,6 +361,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         //esto deberia estar en el step 4, el de editar, está en el 2, porque se quizo quitar la foto de este flow
         type: 'promise',
         function: async (params) => {
+          console.log(params.dataModel.value);
           if (
             params.dataModel.value['2']['message'] === '' &&
             params.dataModel.value['2']['receiver'] === '' &&

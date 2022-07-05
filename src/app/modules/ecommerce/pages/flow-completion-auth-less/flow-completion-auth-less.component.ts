@@ -89,6 +89,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   preferredCountries: CountryISO[] = [CountryISO.DominicanRepublic, CountryISO.UnitedStates];
   shouldAllowPaymentSkipping: boolean = false;
   showCartCallBack: () => void;
+  buttonBlocked: boolean = false;
   itemsAmount: number;
 
   constructor(
@@ -419,6 +420,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   async submit() {
+    this.buttonBlocked = true;
+
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
 
     try {
@@ -596,6 +599,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
+
+    this.buttonBlocked = false;
   }
 
   selectBank(index: number) {
