@@ -1,4 +1,10 @@
 //ESTILOS PARA INPUTS TEXT, EMAIL, NUMBER
+.labels-wrapper {
+  width: '100%';
+  display: 'flex';
+  flex-direction: 'column';
+}
+
 .input-label {
   font-family: "Roboto";
   font-size: 24px;
@@ -150,6 +156,47 @@
 .selector-option.active {
   .background {
     width: 100%;
+  }
+}
+
+.radio-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0rem 33px;
+
+  input[type="radio"] {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+
+    font: inherit;
+    color: currentColor;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #2874AD;
+    border-radius: 50%;
+
+    display: grid;
+    place-content: center;
+  }
+
+  input[type="radio"]::before {
+    content: "";
+    width: 17.92px;
+    height: 17.92px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #2874AD;
+  }
+
+  input[type="radio"]:checked::before {
+    transform: scale(1);
   }
 }
 

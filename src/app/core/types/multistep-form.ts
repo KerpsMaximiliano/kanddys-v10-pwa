@@ -9,6 +9,8 @@ export interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
   topLabelActionStyles?: any;
+  topSubLabelActionStyles?: any;
+  labelsContainerStyles?: any;
   labelStyles?: any;
   subLabelStyles?: any;
   formattedInputStyles?: any;
@@ -54,8 +56,14 @@ export interface FormField {
     clickable?: boolean;
     callback?: (...params) => any | Promise<any>;
   };
+  topSubLabelAction?: {
+    text: string;
+    clickable?: boolean;
+    callback?: (...params) => any | Promise<any>;
+  };
   label: string;
   sublabel?: string;
+  shouldWrapLabelAndSublabelInsideADiv?: boolean;
   bottomLabel?: {
     text: string;
     clickable?: boolean;

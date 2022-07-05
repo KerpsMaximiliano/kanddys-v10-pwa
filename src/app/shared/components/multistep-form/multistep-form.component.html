@@ -191,6 +191,18 @@ shouldScrollBackwards &&
                   {{ currentField.topLabelAction.text }}
                 </span>
 
+                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
+                  currentField.styles.topSubLabelActionStyles
+                    ? currentField.styles.topSubLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topSubLabelAction.clickable
+                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.topSubLabelAction.text }}
+                </span>
+
                 <label [for]="currentField.name" class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
@@ -326,6 +338,18 @@ shouldScrollBackwards &&
                   {{ currentField.topLabelAction.text }}
                 </span>
 
+                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
+                  currentField.styles.topSubLabelActionStyles
+                    ? currentField.styles.topSubLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topSubLabelAction.clickable
+                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.topSubLabelAction.text }}
+                </span>
+
                 <label [for]="currentField.name" class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
@@ -375,22 +399,34 @@ shouldScrollBackwards &&
         ">
               <ng-container *ngIf="currentField.fieldControl.type !== 'multiple'">
                 <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-              currentField.styles.topLabelActionStyles
-                ? currentField.styles.topLabelActionStyles
-                : null
-            " (click)="
-              currentField.topLabelAction.clickable
-                ? currentField.topLabelAction.callback(stepFunctionParams)
-                : null
-            ">
+                  currentField.styles.topLabelActionStyles
+                    ? currentField.styles.topLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topLabelAction.clickable
+                    ? currentField.topLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
                   {{ currentField.topLabelAction.text }}
                 </span>
 
+                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
+                  currentField.styles.topSubLabelActionStyles
+                    ? currentField.styles.topSubLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topSubLabelAction.clickable
+                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.topSubLabelAction.text }}
+                </span>
+
                 <label [for]="currentField.name" class="input-label" [ngStyle]="
-              currentField.styles.labelStyles
-                ? currentField.styles.labelStyles
-                : null
-            ">
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                ">
                   {{ currentField.label }}
                 </label>
 
@@ -412,7 +448,6 @@ shouldScrollBackwards &&
                   [phoneValidation]="true" 
                   [separateDialCode]="true" 
                   [numberFormat]="PhoneNumberFormat.International"
-                  name="phone" 
                   tabindex="-1"
                   [formControl]="currentField.fieldControl.control"
                 ></ngx-intl-tel-input>
@@ -438,22 +473,34 @@ shouldScrollBackwards &&
               ">
                   <ng-container *ngIf="currentField.fieldControl.type !== 'multiple'">
                     <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topLabelActionStyles
-                    ? currentField.styles.topLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topLabelAction.clickable
-                    ? currentField.topLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                      currentField.styles.topLabelActionStyles
+                        ? currentField.styles.topLabelActionStyles
+                        : null
+                    " (click)="
+                      currentField.topLabelAction.clickable
+                        ? currentField.topLabelAction.callback(stepFunctionParams)
+                        : null
+                    ">
                       {{ currentField.topLabelAction.text }}
+                    </span>
+
+                    <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
+                      currentField.styles.topSubLabelActionStyles
+                        ? currentField.styles.topSubLabelActionStyles
+                        : null
+                    " (click)="
+                      currentField.topSubLabelAction.clickable
+                        ? currentField.topSubLabelAction.callback(stepFunctionParams)
+                        : null
+                    ">
+                      {{ currentField.topSubLabelAction.text }}
                     </span>
     
                     <label [for]="currentField.name" class="input-label" [ngStyle]="
-                  currentField.styles.labelStyles
-                    ? currentField.styles.labelStyles
-                    : null
-                ">
+                      currentField.styles.labelStyles
+                        ? currentField.styles.labelStyles
+                        : null
+                    ">
                       {{ currentField.label }}
                     </label>
     
@@ -522,7 +569,7 @@ shouldScrollBackwards &&
               </div>
             </div>
 
-            <!-- RADIO INPUTS GO HERE -->
+            <!-- RADIO INPUTS WITH GREEN BACKGROUND GO HERE -->
             <div *ngIf="currentField.inputType === 'radio'" class="selector" [ngStyle]="
               currentField.styles.containerStyles
                 ? currentField.styles.containerStyles
@@ -607,6 +654,66 @@ shouldScrollBackwards &&
               </ng-container>
             </div>
 
+            <!-- RADIO INPUTS WITH SIMPLE STYLES GO HERE -->
+            <div *ngIf="currentField.inputType === 'radio-simple'" 
+              class="radio-simple"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <label 
+                [for]="currentField.name" 
+                class="input-label" 
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+                *ngIf="!currentField.shouldWrapLabelAndSublabelInsideADiv"
+              >{{ currentField.label }}</label>
+
+              <div
+                *ngIf="currentField.shouldWrapLabelAndSublabelInsideADiv"
+                class="labels-wrapper"
+                [ngStyle]="
+                  currentField.styles.labelsContainerStyles
+                    ? currentField.styles.labelsContainerStyles
+                    : null
+                "
+              >
+                <label 
+                  [for]="currentField.name" 
+                  class="input-label" 
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
+                  {{ currentField.label }}
+                </label>
+
+                <span *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                  "
+                >
+                  {{ currentField.sublabel }}
+                </span>
+              </div>
+
+              <input 
+                type="radio"
+                [checked]="currentField.fieldControl.control.value"
+                (change)="currentField.fieldControl.control.setValue(!currentField.fieldControl.control.value)"
+                [formControlName]="currentField.name" 
+                tabindex="-1" 
+              />
+            </div>          
+
             <!-- FILE INPUTS GO HERE -->
             <div *ngIf="currentField.inputType === 'file'" [ngStyle]="
               currentField.styles.containerStyles
@@ -668,6 +775,18 @@ shouldScrollBackwards &&
                   {{ currentField.topLabelAction.text }}
                 </span>
 
+                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
+                  currentField.styles.topSubLabelActionStyles
+                    ? currentField.styles.topSubLabelActionStyles
+                    : null
+                " (click)="
+                  currentField.topSubLabelAction.clickable
+                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
+                    : null
+                ">
+                  {{ currentField.topSubLabelAction.text }}
+                </span>
+
                 <label [for]="currentField.name" class="input-label" [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
@@ -695,6 +814,7 @@ shouldScrollBackwards &&
                     ? currentField.styles.fieldStyles
                     : null
                   "
+                  tabindex="-1"
                 />
 
                 <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="

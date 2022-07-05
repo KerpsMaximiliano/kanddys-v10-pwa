@@ -63,6 +63,7 @@ import { UserCreatorComponent } from './pages/user-creator/user-creator.componen
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
 import { AirtableFieldConnectionComponent } from './pages/airtable-field-connection/airtable-field-connection.component';
+import { WebformClientComponent } from './pages/webform-client/webform-client.component';
 
 const routes: Routes = [
   {
@@ -346,6 +347,10 @@ const routes: Routes = [
   {
     path: 'airtable-field-connection/:databaseName',
     component: AirtableFieldConnectionComponent
+  },
+  {
+    path: 'webform-client',
+    component: WebformClientComponent
   }
 ];
 
@@ -414,6 +419,7 @@ const routes: Routes = [
     HeavenlyBalloonsComponent,
     AnswerMethodWebformComponent,
     AirtableFieldConnectionComponent,
+    WebformClientComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
