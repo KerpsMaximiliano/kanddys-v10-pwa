@@ -1,0 +1,13 @@
+<div class="container" (click)="click($event)">
+
+    <div class="body">
+        <img [src]="env + image" [alt]="" class="image" *ngIf="image">
+    </div>
+
+    <div class="notify" *ngIf="tag.notify">
+        <img [src]="env + '/whatsapp_verde.svg'" alt="Icono de WhatsApp" width="18px" height="18px">
+    </div>
+
+    <p class="down-text">{{tag.name}}</p>
+
+</div>
