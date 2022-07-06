@@ -642,6 +642,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.step = this.pastStep;
       this.isANewUser = false;
     }
+
+    this.buttonBlocked = false;
   }
 
   // PAYMENT INFO
