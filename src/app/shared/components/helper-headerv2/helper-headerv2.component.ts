@@ -19,6 +19,10 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() bgColor: string = '#4773D8';
     @Input() mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test' ; 
     @Input() public shopCartCallback: () => void;
+    @Input() public editBtnCallback: () => void;
+    @Input() returnAble: boolean = true;
+    @Input() plus: boolean = false;
+    @Input() inMall: boolean = false;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;
     @Input() inMall: boolean;

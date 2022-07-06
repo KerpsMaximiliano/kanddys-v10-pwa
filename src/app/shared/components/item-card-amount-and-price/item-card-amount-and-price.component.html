@@ -1,5 +1,5 @@
 <div class="card-item" [@pageAnimations]='animation' (@pageAnimations.start)="onAnimStart($event)" (@pageAnimations.done)="onAnimStart($event)">
-    <div class="image" [@imageAnimation]='animation' *ngIf="itemData.images[0] else noImage" [ngStyle]="{'background-image': 'url(' + itemData.images[0] + ')'}"></div>
+    <div class="image" [@imageAnimation]='animation' *ngIf="itemData.images[0] else noImage" [ngStyle]="{'background-image': 'url(' + itemData.images[0] + ')'}" (click)="imageEventTrigger()"></div>
     <ng-template #noImage>
         <div class="image placeholder" [@imageAnimation]='animation'></div>
     </ng-template>

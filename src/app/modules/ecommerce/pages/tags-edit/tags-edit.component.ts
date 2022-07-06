@@ -30,9 +30,6 @@ export class TagsEditComponent implements OnInit {
       this.tagsService.tag(this.tagID).then(async (data) => {
         this.messageValue = data.tag.messageNotify;
         this.tagValue = data.tag.name;
-
-        console.log(this.messageValue);
-        console.log(this.tagValue);
       });
     } else {
       this.route.queryParams.subscribe(queryParams => {
@@ -45,12 +42,10 @@ export class TagsEditComponent implements OnInit {
 
   writeTag(event) {
     this.tagValue = event.target.value;
-    //   console.log(this.tagValue);
   }
 
   writeMessage(event) {
     this.messageValue = event.target.value;
-    //   console.log(this.messageValue);
   }
 
   sendTag() {
@@ -64,14 +59,9 @@ export class TagsEditComponent implements OnInit {
 
     if (!this.tagID || this.tagID.length < 1) {
       this.tagsService.createTag(data);
-      console.log('Create')
-
       this.location.back();
     } else {
-      console.log(this.tagID)
       this.tagsService.updateTag(data, this.tagID);
-      console.log('Update')
-      console.log(data, this.tagID)
     }
   }
 

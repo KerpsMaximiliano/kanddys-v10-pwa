@@ -60,27 +60,33 @@ export class RedirectionsComponent implements OnInit {
 
         localStorage.setItem('session-token', session.token);
 
-        const routeParts = redirectionRoute.split('?');
-        const redirectionURL = routeParts[0];
-        const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
-          const queryStringElements = queryString.split('=');
+        if(redirectionRoute.includes('?')) {
+          const routeParts = redirectionRoute.split('?');
+          const redirectionURL = routeParts[0];
+          const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+            const queryStringElements = queryString.split('=');
+  
+            return ({ [queryStringElements[0]]: queryStringElements[1] })
+          })
+  
+          redirectURL.url = redirectionURL;
+          redirectURL.queryParams = {};
+  
+          routeQueryStrings.forEach(queryString => {
+            const key = Object.keys(queryString)[0];
+            redirectURL.queryParams[key] = queryString[key];
+          });
+  
+          unlockUI();
+  
+          this.router.navigate([redirectURL.url], {
+            queryParams: redirectURL.queryParams,
+          });
+        } else {
+          this.router.navigate([redirectionRoute]);
 
-          return ({ [queryStringElements[0]]: queryStringElements[1] })
-        })
-
-        redirectURL.url = redirectionURL;
-        redirectURL.queryParams = {};
-
-        routeQueryStrings.forEach(queryString => {
-          const key = Object.keys(queryString)[0];
-          redirectURL.queryParams[key] = queryString[key];
-        });
-
-        unlockUI();
-
-        this.router.navigate([redirectURL.url], {
-          queryParams: redirectURL.queryParams,
-        });
+          unlockUI();
+        }
       } catch (error) {
         console.error(error);
       }

@@ -5,7 +5,11 @@
     [ngStyle]="{color: color && color}"
     [style.background-color]="bgColor"
   >
-    {{ text }}
+    <a class="back-btn" *ngIf="backButton" (click)="backButtonCallback && backButtonCallback()">
+      <i class="fas fa-chevron-left" [style.color]="color ? color : '#FFFFFF'">
+      </i>
+    </a>
+    <span (click)="textCallback && textCallback()">{{ text }}</span>
     <img *ngIf="icon" [src]="icon" [alt]="icon">
   </button>
 </div>
@@ -24,17 +28,26 @@
   </button>
 </div>
 
-<div class="fixed-container" *ngIf="mode == 'disabled-fixed'">
-  <button
-    disabled="true"
-    class="disabled"
-    [ngClass]="{'small': size === 'small'}"
-    [ngStyle]="(fontSize || height) ? {
-      fontSize: fontSize,
-      height: height
-    } : null">
-      {{ text }}
-  </button>
+<div class="fixed-container-wrapper" *ngIf="mode == 'disabled-fixed'">
+  <div *ngIf="addBottomSeparator" [ngStyle]="{
+    height: '38px',
+    width: '100%'
+  }"></div>
+
+  
+  <div class="fixed-container" >
+    <button
+      disabled="true"
+      class="disabled"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="(fontSize || height) ? {
+        fontSize: fontSize,
+        height: height,
+        padding: padding ? padding : null
+      } : null">
+        {{ text }}
+    </button>
+  </div>
 </div>
 
 <div class="fixed-double" *ngIf="mode == 'double'">
@@ -44,7 +57,9 @@
       [ngClass]="{'small': size === 'small'}"
       [ngStyle]="(fontSize || height) ? {
         fontSize: fontSize,
-        height: height
+        height: height,
+        backgroundColor: bgColor ? bgColor : null,
+        color: color ? color : null
       } : null">
         {{ text }}
     </button>
@@ -54,24 +69,42 @@
       [ngClass]="{'small': size === 'small'}"
       [ngStyle]="(fontSize || height) ? {
         fontSize: fontSize,
-        height: height
+        height: height,
+        backgroundColor: bgColor ? bgColor : null,
+        color: color ? color : null
       } : null">
         {{ text2 }}
     </button>
   </div>
   
+<div class="fixed-container-wrapper" *ngIf="mode == 'fixed'">
+  <div *ngIf="addBottomSeparator" [ngStyle]="{
+    height: '55px',
+    width: '100%'
+  }"></div>
 
-<div class="fixed-container" *ngIf="mode == 'fixed'">
-  <button
-    class="button"
-    [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
-    [style.backgroundColor]="bgColor"
-    [ngStyle]="{fontSize: fontSize ? fontSize : null, height: height ? height : null, color: color ? color : null}"
-  >
-    {{ text }}
-    <img *ngIf="icon" [src]="icon" [alt]="icon">
-    {{ auxText }}
-  </button>
+  <div class="fixed-container">
+    <button
+      class="button"
+      [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
+      [style.backgroundColor]="bgColor"
+      [ngStyle]="{
+        fontSize: fontSize ? fontSize : null, 
+        height: height ? height : null, 
+        color: color ? color : null,
+        padding: padding ? padding : null
+      }"
+    >
+      <a class="back-btn" *ngIf="backButton" (click)="backButtonCallback && backButtonCallback()">
+        <i class="fas fa-chevron-left" [style.color]="color ? color : '#FFFFFF'">
+        </i>
+      </a>
+      <span (click)="textCallback && textCallback()">{{ text }}</span>
+      <img *ngIf="icon" [src]="icon" [alt]="icon">
+      {{ auxText }}
+    </button>
+  </div>
+
 </div>
 
 <div class="fixed-container" *ngIf="mode == 'fixed-v2'">

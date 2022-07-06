@@ -27,14 +27,13 @@ ul {
   font-size: 19px;
   margin: 0;
   transition: 0.3s ease;
-}
 
-.option-selected {
-  background-color: #82f18d;
-  border-radius: 5px;
-  margin-right: 1rem;
-  padding: 0.5rem;
-  transition: 0.3s ease;
+  &.selected {
+    background-color: #82f18d;
+    border-radius: 5px;
+    margin-right: 1rem;
+    padding: 0.5rem;
+  }
 }
 
 .description-container {

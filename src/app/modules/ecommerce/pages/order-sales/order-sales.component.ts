@@ -2,21 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
-import { AppService } from 'src/app/app.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { OrderService } from 'src/app/core/services/order.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { searchInput } from 'src/app/shared/components/see-filters/see-filters.component';
 import { CustomFieldsComponent } from '../../../../shared/dialogs/custom-fields/custom-fields.component';
-import { CodeSearchByKeyword } from 'src/app/core/graphql/codes.gql';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { Tag } from 'src/app/core/models/tags';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ItemOrder } from 'src/app/core/models/order';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { User } from 'src/app/core/models/user';
+import { OrderService } from 'src/app/core/services/order.service';
 
 interface CustomItemList extends ItemList {
   tags?: string[]
@@ -35,6 +33,11 @@ export class OrderSalesComponent implements OnInit {
     orders: number,
     tags: Tag
   }[];
+  ordersTotal: {
+    total: number;
+    length: number;
+  };
+  users: User[];
   auxNumbers: string = '';
   active: boolean = true;
   selectedOption: number = 0
@@ -64,6 +67,7 @@ export class OrderSalesComponent implements OnInit {
     private headerSevice: HeaderService,
     private authService: AuthService,
     private tagsService: TagsService,
+    private ordersService: OrderService,
   ) {
   }
 
@@ -90,8 +94,26 @@ export class OrderSalesComponent implements OnInit {
     if(!merchant) return this.errorScreen();
     await Promise.all([
       this.getOrdersByMerchant(),
-      this.getTagsOptions()
+      this.getTagsOptions(),
+      this.getOrderTotal(),
+      this.getMerchantBuyers(),
     ]);
+  }
+
+  async getOrderTotal() {
+    try {
+      this.ordersTotal = await this.ordersService.ordersTotal(['in progress', 'to confirm', 'completed'], this.merchantID);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getMerchantBuyers() {
+    try {
+      this.users = await this.merchantService.usersOrderMerchant(this.merchantID);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getOrdersByMerchant() {

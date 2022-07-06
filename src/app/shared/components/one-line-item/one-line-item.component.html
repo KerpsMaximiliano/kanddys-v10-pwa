@@ -1,0 +1,14 @@
+<div>
+  <button class="leftCTA" *ngIf="leftCTA" (click)="leftCTA.func && leftCTA.func()">
+    <img
+      *ngIf="leftCTA.icon"
+      [src]="env + leftCTA.icon.src"
+      [alt]="leftCTA.icon.alt"
+      [width]="leftCTA.icon.size && leftCTA.icon.size.width"
+      [height]="leftCTA.icon.size && leftCTA.icon.size.height"
+      [ngStyle]="{filter: leftCTA.icon.filter && leftCTA.icon.filter}"
+    >
+    <span [ngStyle]="{color: leftCTA.color && leftCTA.color}">{{leftCTA.text}}</span>
+  </button>
+  <button class="rightCTA" (click)="rightCTA.func && rightCTA.func()" [ngStyle]="{color: rightCTA.color && rightCTA.color}">{{rightCTA.text}}</button>
+</div>

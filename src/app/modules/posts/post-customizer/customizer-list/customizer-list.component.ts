@@ -245,6 +245,7 @@ export class CustomizerListComponent implements OnInit {
     const control = new FormGroup({
       'name': new FormControl(null, Validators.required),
       'fixedValue': new FormControl(null, Validators.required),
+      'nickname': new FormControl(null, Validators.required),
     });
     if(form) (<FormArray>form.get(controlName)).push(control);
     else (<FormArray>this.customizerForm.get(controlName)).push(control);
@@ -306,9 +307,7 @@ export class CustomizerListComponent implements OnInit {
   validateCustomizer(): CustomizerInput {
     let customizerData: CustomizerInput = this.customizerForm.value;
     console.log(customizerData)
-    if(this.autofillColors) {
-      console.log('some values will be autofilled')
-    }
+    if(this.autofillColors) console.log('some values will be autofilled');
     customizerData.merchant = this.userMerchant; // local
     if(this.autofillBgColors) {
       customizerData.backgroundColor.active = true;
@@ -379,9 +378,9 @@ export class CustomizerListComponent implements OnInit {
     return newArray
   }
 
-  hasDuplicateColor(first: {name: string, fixedValue: string}, items: {name: string, fixedValue: string}[]) {
+  hasDuplicateColor(first: {name: string, fixedValue: string, nickname: string}, items: {name: string, fixedValue: string, nickname: string}[]) {
     const array = [...items];
-    let newArray: {name: string, fixedValue: string}[];
+    let newArray: {name: string, fixedValue: string, nickname: string}[];
     const index = array.findIndex((item) => item.name === first.name);
     if(index  > -1) {
       array.splice(index, 1);
@@ -392,165 +391,194 @@ export class CustomizerListComponent implements OnInit {
   }
 }
 
-const colors1= [
-  '#c72c74', '#eeeeee', '#606060','#e4c012','#2262a9', '#ce6568', '#46874e','#9a815c'
-]
+// const colors1= [
+//   '#c72c74', '#eeeeee', '#606060','#e4c012','#2262a9', '#ce6568', '#46874e','#9a815c'
+// ]
 
-const colors2 = [
-  '#c72c74', '#eeeeee', '#606060','#e4c012','#2262a9', 
-  '#799b27','#393939', '#82cac7', '#194520', '#fb7a7a', 
-  '#ff3b3b', '#149f9a', '#ba7364', '#003289', '#9a815c'
-]
+// const colors2 = [
+//   '#c72c74', '#eeeeee', '#606060','#e4c012','#2262a9', 
+//   '#799b27','#393939', '#82cac7', '#194520', '#fb7a7a', 
+//   '#ff3b3b', '#149f9a', '#ba7364', '#003289', '#9a815c'
+// ]
 
 const colorList = [
   {
-    fixedValue: "#57634C",
-    name: "17-B"
+    fixedValue: "#138B00",
+    name: "17-B",
+    nickname: "Verde Limon Brillo"
   },
   {
-    fixedValue: "#7B7B79",
-    name: "19-Q"
-  },
-  {
-    fixedValue: "#4A768F",
-    name: "25-B"
-  },
-  {
-    fixedValue: "#8C4549",
-    name: "23-AP"
-  },
-  {
-    fixedValue: "#305B7D",
-    name: "16-A"
-  },
-  {
-    fixedValue: "#A14549",
-    name: "38-K"
-  },
-  {
-    fixedValue: "#3C7C83",
-    name: "24-K"
-  },
-  {
-    fixedValue: "#6F6D89",
-    name: "40-B"
-  },
-
-  {
-    fixedValue: "#3F5167",
-    name: "47-KD"
-  },
-
-  {
-    fixedValue: "#48474F",
-    name: "45-K"
-  },
-  {
-    fixedValue: "#A25C7E",
-    name: "41-B"
-  },
-  {
-    fixedValue: "#979994",
-    name: "30-K"
-  },
-  {
-    fixedValue: "#5A4E5C",
-    name: "52-K"
-  },
-  {
-    fixedValue: "#707071",
-    name: "10-NA"
-  },
-  {
-    fixedValue: "#A49170",
-    name: "18-Q"
-  },
-  {
-    fixedValue: "#A5536F",
-    name: "42-K"
-  },
-  {
-    fixedValue: "#3A494A",
-    name: "33-AP"
-  },
-  {
-    fixedValue: "#5A4E5C",
-    name: "28-K"
-  },
-  {
-    fixedValue: "#385C44",
-    name: "28-K"
-  },
-  {
-    fixedValue: "#2E4F3E",
-    name: "29-K"
-  },
-  {
-    fixedValue: "#997D44",
-    name: "18-A"
-  },
-  {
-    fixedValue: "#3F4044",
-    name: "20-B"
-  },
-  {
-    fixedValue: "#686a68",
-    name: "44-K"
-  },
-  {
-    fixedValue: "#A17942",
-    name: "34-AP"
-  },
-  {
-    fixedValue: "#3C7374",
-    name: "50-B"
+    fixedValue: "#747378",
+    name: "19-Q",
+    nickname: "Plata Brillo"
   },
   // {
-  //   fixedValue: "#",
-  //   name: "18-AR"
+  //   fixedValue: "#182227",
+  //   name: "24-B",
+  //   nickname: "Azul Brillo"
   // },
   {
-    fixedValue: "#34746C",
-    name: "50-AP"
+    fixedValue: "#DD021E",
+    name: "23-AP",
+    nickname: "Rojo"
+  },
+  // {
+  //   fixedValue: "#10131F",
+  //   name: "16-A",
+  //   nickname: "Azul Brillo"
+  // },
+  {
+    fixedValue: "#F52B1F",
+    name: "38-K",
+    nickname: "Naranja"
   },
   {
-    fixedValue: "#55555F",
-    name: "32-K"
+    fixedValue: "#4FC0FC",
+    name: "24-K",
+    nickname: "Azul Bebé"
+  },
+  // {
+  //   fixedValue: "#212950",
+  //   name: "40-B",
+  //   nickname: "Lila Brillo"
+  // },
+  {
+    fixedValue: "#0226A6",
+    name: "47-AP",
+    nickname: "Azul Oscuro"
+  },
+  // {
+  //   fixedValue: "#1A1A1A",
+  //   name: "45-K",
+  //   nickname: "Marron Oscuro"
+  // },
+  // {
+  //   fixedValue: "#0A0A0A",
+  //   name: "41-B",
+  //   nickname: "Fucsia Brillo"
+  // },
+  {
+    fixedValue: "#FFFFFF",
+    name: "30-K",
+    nickname: "Blanco"
   },
   {
-    fixedValue: "#45577E",
-    name: "25-K"
+    fixedValue: "#85060F",
+    name: "52-K",
+    nickname: "Granate"
+  },
+  // {
+  //   fixedValue: "#050505",
+  //   name: "10-NA",
+  //   nickname: "Arcoiris Brillo"
+  // },
+  {
+    fixedValue: "#4A412E",
+    name: "18-Q",
+    nickname: "Dorado Brillo"
   },
   {
-    fixedValue: "#974448",
-    name: "21-K"
+    fixedValue: "#DF055C",
+    name: "42-K",
+    nickname: "Rosado Fucsia"
   },
   {
-    fixedValue: "#9F8689",
-    name: "35-AP"
+    fixedValue: "#010101",
+    name: "33-AP",
+    nickname: "Negro"
+  },
+  {
+    fixedValue: "#02A64D",
+    name: "28-K",
+    nickname: "Verde"
+  },
+  {
+    fixedValue: "#007E21",
+    name: "29-K",
+    nickname: "Verde"
+  },
+  {
+    fixedValue: "#7E540D",
+    name: "18-A",
+    nickname: "Dorado"
+  },
+  // {
+  //   fixedValue: "#131313",
+  //   name: "20-B",
+  //   nickname: "Cobre Brillo"
+  // },
+  {
+    fixedValue: "#414141",
+    name: "44-K",
+    nickname: "Gris"
+  },
+  {
+    fixedValue: "#FFD414",
+    name: "34-AP",
+    nickname: "Amarillo"
+  },
+  // {
+  //   fixedValue: "#050505",
+  //   name: "50-B",
+  //   nickname: "Turquesa Con Brillo"
+  // },
+  // {
+  //   fixedValue: "",
+  //   name: "18-AR",
+  //   nickname: "Rose Gold Brillo"
+  // },
+  {
+    fixedValue: "#01AAA5",
+    name: "50-AP",
+    nickname: "Turquesa Mate"
+  },
+  // {
+  //   fixedValue: "#2C2422",
+  //   name: "32-K",
+  //   nickname: "Marron Claro"
+  // },
+  {
+    fixedValue: "#0712EA",
+    name: "25-K",
+    nickname: "Azul Cobalto"
+  },
+  {
+    fixedValue: "#E30D27",
+    name: "21-K",
+    nickname: "Coral"
+  },
+  {
+    fixedValue: "#FEBCD1",
+    name: "35-AP",
+    nickname: "Rosa Bebé"
   },
 ]
 
 const bgColors = [
   {
     fixedValue: "#3A3A3A",
-    name: 'Negro'
+    name: 'Negro',
+    nickname: null
   },
   {
     fixedValue: "#FB3E3F",
-    name: 'Rojo'
+    name: 'Rojo',
+    nickname: null
   },
   {
     fixedValue: "#B4B4B4",
-    name: 'Gris'
+    name: 'Gris',
+    nickname: null
   },
   {
     fixedValue: "#676881",
-    name: 'Azul Marino'
+    name: 'Azul Marino',
+    nickname: null
   },
   {
     fixedValue: "#FFFFFF",
-    name: 'Blanco'
+    name: 'Blanco',
+    nickname: null
   },
 ]
 

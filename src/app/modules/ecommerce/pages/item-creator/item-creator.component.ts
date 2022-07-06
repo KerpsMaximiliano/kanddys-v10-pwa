@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ApplicationRef} from '@angular/core';
 import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -18,7 +18,8 @@ import { HeaderService } from 'src/app/core/services/header.service';
 const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
-  fontSize: '17px'
+  fontSize: '17px',
+  marginBottom: '12px'
 };
 
 @Component({
@@ -26,7 +27,7 @@ const labelStyles = {
   templateUrl: './item-creator.component.html',
   styleUrls: ['./item-creator.component.scss'],
 })
-export class ItemCreatorComponent implements OnInit {
+export class ItemCreatorComponent implements OnInit{
   currentUserId: string = null;
   merchantOwnerId: string = null;
   currentItemId: string = null;
@@ -72,7 +73,7 @@ export class ItemCreatorComponent implements OnInit {
               this.currentItemId
             );
             // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-            // this.router.navigate([`/ecommerce/new-item-contact-info/${this.currentItemId}`]);
+            // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
             this.router.navigate([`/ecommerce/user-items`]);
           } else {
             if (this.loggedIn) {
@@ -120,7 +121,7 @@ export class ItemCreatorComponent implements OnInit {
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`]);
+              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`]);
             }
           }
 
@@ -160,7 +161,7 @@ export class ItemCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl(0, [
               Validators.required,
-              Validators.min(0),
+              Validators.min(0.01),
             ])
           },
           onlyAllowPositiveNumbers: true,
@@ -233,7 +234,7 @@ export class ItemCreatorComponent implements OnInit {
             containerStyles: {
               width: '58.011%',
               minWidth: '210px',
-              marginTop: '102px',
+              marginTop: '32px',
               position: 'relative',
             },
             fieldStyles: {
@@ -331,7 +332,7 @@ export class ItemCreatorComponent implements OnInit {
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '21px'
+                marginBottom: '12px'
               },
             },
             containerStyles: {
@@ -413,7 +414,7 @@ export class ItemCreatorComponent implements OnInit {
 
               this.headerService.flowRoute = this.router.url;
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-              // this.router.navigate([`/ecommerce/new-item-contact-info/${this.currentItemId}`]);
+              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
               this.router.navigate([`/ecommerce/user-items`]);
             } else {
               if (this.loggedIn) {
@@ -440,7 +441,7 @@ export class ItemCreatorComponent implements OnInit {
                 if ('_id' in createItem) {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
-                  // this.router.navigate([`/ecommerce/new-item-contact-info/${createItem._id}`]);
+                  // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
                   this.router.navigate([`/ecommerce/user-items`]);
                 }
               } else {
@@ -461,7 +462,7 @@ export class ItemCreatorComponent implements OnInit {
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
-                  this.router.navigate([`/ecommerce/new-item-contact-info/${createPreItem?._id}`])
+                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
                 };
               }
             }
@@ -472,46 +473,48 @@ export class ItemCreatorComponent implements OnInit {
           return { ok: true };
         },
       },
-      optionalLinksTo: [
-        {
-          topLabel: 'Contenido opcional',
-          styles: {
-            containerStyles: {
-              marginTop: '40px',
-              marginBottom: '0px'
+      optionalLinksTo: {
+        groupOfLinksArray: [
+          {
+            topLabel: 'Contenido opcional',
+            styles: {
+              containerStyles: {
+                marginTop: '32px',
+                marginBottom: '0px'
+              },
+              fieldStyles: {
+                marginTop: '12px',
+                paddingLeft: '17px',
+                width: 'fit-content'
+              },
+              labelStyles: labelStyles
             },
-            fieldStyles: {
-              marginTop: '18px',
-              paddingLeft: '17px',
-              width: 'fit-content'
-            },
-            labelStyles: labelStyles
-          },
-          links: [
-            {
-              text: 'Nombre',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(3);
-              }
-            },
-            {
-              text: 'Descripción',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(2);
-              }
-            },
-            {
-              text: 'Lo incluido',
-              action: (params) => {
-                this.shouldScrollBackwards = true;
-                params.scrollToStep(1);
-              }
-            },
-          ]
-        }
-      ],
+            links: [
+              {
+                text: 'Nombre',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(3);
+                }
+              },
+              {
+                text: 'Descripción',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(2);
+                }
+              },
+              {
+                text: 'Lo incluido',
+                action: (params) => {
+                  this.shouldScrollBackwards = true;
+                  params.scrollToStep(1);
+                }
+              },
+            ]
+          }
+        ]
+      },
       pageHeader: {
         text: 'Lo que vendes',
         styles: {
@@ -519,8 +522,8 @@ export class ItemCreatorComponent implements OnInit {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '50px',
-          marginBottom: '60px',
+          marginTop: '32px',
+          marginBottom: '12px',
         }
       },
       avoidGoingToNextStep: true,
@@ -547,7 +550,7 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '83.70%',
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               width: '100%',
@@ -591,7 +594,7 @@ export class ItemCreatorComponent implements OnInit {
           inputType: 'textarea',
           styles: {
             containerStyles: {
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               backgroundColor: 'white',
@@ -638,7 +641,7 @@ export class ItemCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               width: '83.70%',
-              marginTop: '71px',
+              marginTop: '32px',
             },
             fieldStyles: {
               width: '100%',
@@ -774,8 +777,16 @@ export class ItemCreatorComponent implements OnInit {
       const { itemId } = routeParams;
       this.currentItemId = itemId;
 
+      if(this.headerService.flowRoute) {
+        this.shouldScrollBackwards = true;
+        this.formSteps[0].customScrollToStepBackwards = (params) => {
+          this.router.navigate([this.headerService.flowRoute]);
+        };
+      }
+
       if (localStorage.getItem('session-token')) {
         const data = await this.authService.me()
+        this.user = data;
         if (data) this.loggedIn = true;
       }
 

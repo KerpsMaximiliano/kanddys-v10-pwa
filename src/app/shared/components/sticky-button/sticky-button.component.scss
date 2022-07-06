@@ -15,6 +15,7 @@
     border: none;
     height: 55px;
     max-width: 500px;
+    line-height: 1;
     white-space: break-spaces;
 
     &.small {
@@ -37,10 +38,12 @@
     font-size: 17px;
     border: none;
     height: 38px;
+    line-height: 1;
     cursor: default;
     background-color: #AFAFAF;
     z-index: 10;
     white-space: break-spaces;
+    position: relative;
 
     &.small {
       height: 30px;
@@ -58,10 +61,11 @@
     font-size: 17px;
     border: none;
     height: 38px;
+    line-height: 1;
     cursor: default;
     background-color: #7b7b7b;
     z-index: 1000;
-    position: fixed;
+    position: relative;
     white-space: break-spaces;
 
     &.small {
@@ -88,6 +92,7 @@
     font-family: "RobotoMedium";
     font-size: 24px;
     border: none;
+    line-height: 1;
     height: 55px;
     white-space: break-spaces;
     .svg {
@@ -115,9 +120,11 @@
     font-size: 17px;
     border: none;
     height: 38px;
+    line-height: 1;
     cursor: default;
     background-color: #7b7b7b;
     white-space: break-spaces;
+    position: relative;
   }
 }
 
@@ -159,4 +166,24 @@
 
 .button > svg > path {
   fill: #fff;
+}
+
+.back-btn {
+  color: white;
+  position: absolute;
+  left: 2%;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .fixed-container {
+    .button {
+      font-size: 20px;
+    }
+  }
+  .container {
+    .button {
+      font-size: 20px;
+    }
+  }
 }

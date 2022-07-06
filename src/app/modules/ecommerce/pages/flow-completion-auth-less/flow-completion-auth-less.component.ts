@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { Location, TitleCasePipe } from '@angular/common';
+import { LocationStrategy, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -52,8 +52,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     },
   ];
   bankOptions: BankDetails[] = [];
+  banksInfo: BankDetails[] = [];
   banks: Bank[] = [];
-  step: string = 'PHONE_CHECK_AND_SHOW_BANKS';
+  step: 'PHONE_CHECK_AND_SHOW_BANKS' | 'UPDATE_NAME_AND_SHOW_BANKS' | 'PAYMENT_INFO' = 'PHONE_CHECK_AND_SHOW_BANKS';
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
   phoneNumber = new FormControl('', [Validators.required]);
   selectedBank: BankDetails = null;
@@ -79,15 +80,16 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   fixedWhatsappLink: string = '';
   fixedWhatsappLink2: string = '';
   isANewUser: boolean = false;
-  pastStep: string = '';
+  pastStep: 'PHONE_CHECK_AND_SHOW_BANKS' | 'UPDATE_NAME_AND_SHOW_BANKS' | 'PAYMENT_INFO';
   env: string = environment.assetsUrl;
   separateDialCode = true;
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO;
   PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [CountryISO.UnitedStates];
+  preferredCountries: CountryISO[] = [CountryISO.DominicanRepublic, CountryISO.UnitedStates];
   shouldAllowPaymentSkipping: boolean = false;
   showCartCallBack: () => void;
+  buttonBlocked: boolean = false;
   itemsAmount: number;
 
   constructor(
@@ -103,7 +105,15 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     private titlecasePipe: TitleCasePipe,
     private saleflow: SaleFlowService,
     private dialogService: DialogService,
-  ) {}
+    private location: LocationStrategy,
+  ) {
+    if(this.header.orderId) {
+      history.pushState(null, null, window.location.href);
+      this.location.onPopState(() => {
+        history.pushState(null, null, window.location.href);
+      });
+    }
+  }
 
   afterOrderRequest = async (data) => {
     if (
@@ -146,6 +156,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           : totalPrice,
         hasCustomizer: this.fakeData.items[0].customizer ? true : false,
         isPackage: this.fakeData.itemPackage ? true : false,
+        saleflow: this.fakeData.items[0].saleflow
       };
 
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
@@ -228,7 +239,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   async ngOnInit() {
     this.localStorageFlowRoute =
-      this.header.flowRoute || localStorage.getItem('flowRoute');
+      this.header.flowRoute || (localStorage.getItem('flowRoute') ?? '');
 
     this.route.params.subscribe(async (routeParams) => {
       const { orderId } = routeParams;
@@ -261,6 +272,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
       const saleflow =
         this.header.saleflow ||
+        this.orderData.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
       this.saleflowData = saleflow;
 
@@ -335,53 +347,81 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
     this.banks = data.ExchangeData.bank;
 
-    console.log(this.banks);
-
-    let wallets = [];
-    for (let i = 0; i < data.ExchangeData.bank.length; i++) {
-      wallets.push(
-        await this.wallet.paymentReceiver(
-          data.ExchangeData.bank[i].paymentReceiver._id
-        )
-      );
-    }
-
-    Promise.all(wallets).then((values) => {
-      console.log(values);
-      let descriptions = data.ExchangeData.bank.map((value) => {
-        return {
-          owner: value.ownerAccount,
-          type: value.typeAccount,
-          account: value.account,
-          routingNumber: value.routingNumber,
-        };
-      });
-      const payments = values.map((value) => {
-        return {
-          paymenteceiver: value.PaymentReceiver,
-          bankdata: descriptions,
-        };
-      });
-      console.log(payments);
-      this.bankOptions = payments.map((value, index) => {
-        this.banks[index].name = this.titlecasePipe.transform(
-          value.paymenteceiver.name
-        );
-        return {
-          value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
-          status: true,
-          description: {
-            typeAccount: value.bankdata[0].type,
-            owner: value.bankdata[0].owner,
-            account: value.bankdata[0].account,
-            routingNumber: value.bankdata[0].routingNumber
-          },
-        };
-      });
+    this.banksInfo = this.banks.map(bank => {
+      return {
+        value: `${bank.bankName}`,
+        status: true,
+        description: {
+          typeAccount: bank.typeAccount,
+          owner: bank.ownerAccount,
+          account: bank.account,
+          routingNumber: bank.routingNumber
+        }
+      }
     });
+
+    this.bankOptions = this.banks.map(bank => {
+      return {
+        value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
+        status: true,
+        description: {
+          typeAccount: bank.typeAccount,
+          owner: bank.ownerAccount,
+          account: bank.account,
+          routingNumber: bank.routingNumber
+        }
+      }
+    });
+
+    // let wallets = [];
+    // for (let i = 0; i < data.ExchangeData.bank.length; i++) {
+    //   wallets.push(
+    //     await this.wallet.paymentReceiver(
+    //       data.ExchangeData.bank[i].paymentReceiver._id
+    //     )
+    //   );
+    // }
+    
+
+
+    // Promise.all(wallets).then((values) => {
+    //   console.log(values);
+    //   let descriptions = data.ExchangeData.bank.map((value) => {
+    //     return {
+    //       owner: value.ownerAccount,
+    //       type: value.typeAccount,
+    //       account: value.account,
+    //       routingNumber: value.routingNumber,
+    //     };
+    //   });
+    //   const payments = values.map((value) => {
+    //     return {
+    //       paymenteceiver: value.PaymentReceiver,
+    //       bankdata: descriptions,
+    //     };
+    //   });
+    //   console.log(payments);
+    //   this.bankOptions = payments.map((value, index) => {
+    //     this.banks[index].name = this.titlecasePipe.transform(
+    //       value.paymenteceiver.name
+    //     );
+    //     return {
+    //       value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
+    //       status: true,
+    //       description: {
+    //         typeAccount: value.bankdata[0].type,
+    //         owner: value.bankdata[0].owner,
+    //         account: value.bankdata[0].account,
+    //         routingNumber: value.bankdata[0].routingNumber
+    //       },
+    //     };
+    //   });
+    // });
   }
 
   async submit() {
+    this.buttonBlocked = true;
+
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
 
     try {
@@ -389,10 +429,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         case 'PHONE_CHECK_AND_SHOW_BANKS': {
           if (this.isAPreOrder) {
             const foundUser = await this.checkIfUserExists();
+            
             this.userData = foundUser;
 
-            if (!foundUser || String(foundUser.name) === 'null') {
+            if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+              this.buttonBlocked = false;
               return;
             }
 
@@ -405,6 +447,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
               if (orderStatus === 'draft') {
                 await this.order.authOrder(this.orderId, foundUser._id);
+                this.header.flowRoute = '';
+                this.localStorageFlowRoute = '';
+                localStorage.removeItem('flowRoute');
                 this.header.deleteSaleflowOrder(this.saleflowData._id);
                 this.header.resetIsComplete();
                 this.isAPreOrder = false;
@@ -418,9 +463,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               if (this.banks.length === 1) {
                 this.selectedBank = this.bankOptions[0];
               }
+
+              this.buttonBlocked = false;
               unlockUI();
             }
           }
+
           if (this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
             this.pastStep = this.step;
             this.step = 'PAYMENT_INFO';
@@ -445,6 +493,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               : ''
           }.%20Mas%20info%20aquí%20${fullLink}`;
 
+          this.buttonBlocked = false;
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
@@ -458,48 +507,113 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               let registeredNewUser: User = null;
 
               let foundUser = await this.authService.checkUser(phoneNumber);
-              this.userData = foundUser;
 
               const { orderStatus } = await this.order.getOrderStatus(
                 this.orderId
               );
 
-              registeredNewUser = await this.signUp();
-              this.userData = registeredNewUser;
+              if(!foundUser) {
+                registeredNewUser = await this.signUp();
+                this.userData = registeredNewUser;
 
-              if (registeredNewUser && orderStatus === 'draft') {
-                await this.order.authOrder(this.orderId, registeredNewUser._id);
-                this.header.deleteSaleflowOrder(this.saleflowData._id);
-                this.header.resetIsComplete();
-                this.isAPreOrder = false;
+                if (registeredNewUser && orderStatus === 'draft') {
+                  this.header.flowRoute = '';
+                  this.localStorageFlowRoute = '';
+                  localStorage.removeItem('flowRoute');
+                  await this.order.authOrder(this.orderId, registeredNewUser._id);
+                  this.header.deleteSaleflowOrder(this.saleflowData._id);
+                  this.header.resetIsComplete();
+                  this.isAPreOrder = false;
+                }
+  
+                await this.getOrderData(this.orderId, false);
+                //disable 1st step inputs to avoid further changes to existing order
+                this.name.disable();
+  
+                if (this.banks.length === 1) {
+                  this.selectedBank = this.bankOptions[0];
+                }
+
+                this.buttonBlocked = false;
+                unlockUI();
               }
 
-              await this.getOrderData(this.orderId, false);
-              //disable 1st step inputs to avoid further changes to existing order
-              this.name.disable();
+              if(foundUser && !foundUser.name) {
+                this.userData.name = this.name.value;
+                const { orderStatus } = await this.order.getOrderStatus(
+                  this.orderId
+                );
+  
+                if (orderStatus === 'draft') {
+                  await this.order.authOrder(this.orderId, foundUser._id);
+                  this.header.deleteSaleflowOrder(this.saleflowData._id);
+                  this.header.resetIsComplete();
+                  this.isAPreOrder = false;
+                }
+  
+                await this.getOrderData(this.orderId, false);
+  
+                //disable 1st step inputs to avoid further changes to existing order
+                this.phoneNumber.disable();
+  
+                if (this.banks.length === 1) {
+                  this.selectedBank = this.bankOptions[0];
+                }
 
-              if (this.banks.length === 1) {
-                this.selectedBank = this.bankOptions[0];
+                this.buttonBlocked = false;
+                unlockUI();
               }
+            } else {
+              let registeredNewUser: User = null;
 
-              this.pastStep = this.step;
-              this.step = 'PAYMENT_INFO';
-              unlockUI();
+              let foundUser = await this.authService.checkUser(phoneNumber);
+
+              const { orderStatus } = await this.order.getOrderStatus(
+                this.orderId
+              );
+
+              if(orderStatus === 'in progress' && !foundUser) {
+                  registeredNewUser = await this.signUp();
+                  this.userData = registeredNewUser;
+
+                  if (registeredNewUser) {
+                    this.header.flowRoute = '';
+                    this.localStorageFlowRoute = '';
+                    localStorage.removeItem('flowRoute');
+                    this.header.deleteSaleflowOrder(this.saleflowData._id);
+                    this.header.resetIsComplete();
+                    this.isAPreOrder = false;
+                  }
+    
+                  await this.getOrderData(this.orderId, false);
+                  //disable 1st step inputs to avoid further changes to existing order
+                  this.name.disable();
+    
+                  if (this.banks.length === 1) {
+                    this.selectedBank = this.bankOptions[0];
+                  }
+
+                  this.buttonBlocked = false;
+              }
             }
             // this.updateUser();
           }
 
           this.pastStep = this.step;
           this.step = 'PAYMENT_INFO';
+          this.buttonBlocked = false;
           break;
         }
         case 'PAYMENT_INFO':
           this.payOrder();
+          this.buttonBlocked = false;
           break;
       }
     } catch (error) {
       console.log(error);
     }
+
+    this.buttonBlocked = false;
   }
 
   selectBank(index: number) {
@@ -525,20 +639,24 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
     }
 
-    if (
-      this.step === 'PHONE_CHECK_AND_SHOW_BANKS' &&
-      (this.header.flowRoute || this.localStorageFlowRoute !== '')
-    ) {
-      const redirectionURL = `/ecommerce/${
-        this.header.flowRoute || this.localStorageFlowRoute
-      }`;
-      this.router.navigate([redirectionURL]);
-    }
+    // if (
+    //   this.step === 'PHONE_CHECK_AND_SHOW_BANKS' && !this.header.orderId &&
+    //   (this.header.flowRoute || this.localStorageFlowRoute !== '')
+    // ) {
+    //   const redirectionURL = `/ecommerce/${
+    //     this.header.flowRoute || this.localStorageFlowRoute
+    //   }`;
+    //   this.router.navigate([redirectionURL]);
+    // }
 
     if (this.step === 'PAYMENT_INFO') {
+      this.image = null;
+      this.selectedBank = null;
       this.step = this.pastStep;
       this.isANewUser = false;
     }
+
+    this.buttonBlocked = false;
   }
 
   // PAYMENT INFO
@@ -668,7 +786,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     switch (this.step) {
       case 'PHONE_CHECK_AND_SHOW_BANKS':
         return (this.stepButtonText =
-          this.phoneNumber.status === 'INVALID'
+          !this.phoneNumber.value || this.phoneNumber.value.nationalNumber === '' || this.phoneNumber.status === 'INVALID' 
             ? 'ESCRIBE COMO TE CONTACTAMOS'
             : 'CONTINUAR LA ORDEN');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
@@ -689,7 +807,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     switch (this.step) {
       case 'PHONE_CHECK_AND_SHOW_BANKS':
         return (this.stepButtonMode =
-          this.phoneNumber.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
+          !this.phoneNumber.value || this.phoneNumber.value.nationalNumber === '' || this.phoneNumber.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
         return (this.stepButtonMode =
           this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');

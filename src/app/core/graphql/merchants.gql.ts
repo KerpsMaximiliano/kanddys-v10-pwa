@@ -37,6 +37,24 @@ export const body = `
   activity
 `;
 
+export const bodyWithoutShowItems = `
+  _id
+  name
+  location
+  email
+  image
+  bio
+  default
+  active
+  owner { 
+    phone
+    email
+    name
+    _id
+  }
+  activity
+`;
+
 export const myMerchants = gql`
   query merchants($params: ListParams) {
     myMerchants(params: $params) { ${body} }
@@ -55,6 +73,26 @@ export const merchantDefault = gql`
       _id
       name
       showItems
+      image
+      bio
+      owner {
+        _id
+      }
+      social {
+        name
+        url
+      }
+    }
+  }
+`;
+
+export const merchantDefault2 = gql`
+  query merchantDefault($userId: ObjectID) {
+    merchantDefault(userId: $userId) {
+      _id
+      name
+      bio
+      image
       owner {
         _id
       }
@@ -115,6 +153,12 @@ export const createMerchant = gql`
   }
 `;
 
+export const createMerchant2 = gql`
+  mutation createMerchant($input: MerchantInput!) {
+    createMerchant(input: $input) { ${bodyWithoutShowItems} }
+  }
+`;
+
 export const updateMerchant = gql`
   mutation updateMerchant($id: ObjectID!, $input: MerchantInput!) {
     updateMerchant(id: $id, input: $input) { ${body} }
@@ -127,6 +171,14 @@ export const addMerchant = gql`
       _id
     }
   }
+`;
+
+export const merchantAuthorize = gql`
+  mutation merchantAuthorize($merchantId: ObjectID!) {
+    merchantAuthorize(
+      merchantId: $merchantId
+    ) { ${ bodyWithoutShowItems} }
+  } 
 `;
 
 export const itemsByMerchant = gql`

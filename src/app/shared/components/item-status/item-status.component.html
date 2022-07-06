@@ -9,7 +9,7 @@
       </div>
       <button
         *ngIf="itemListContent.eventImage"
-        class="item-list-img"
+        class="item-list-img img-btn"
         style="cursor: pointer;"
         (click)="itemListContent.eventImage()"
       >
@@ -36,10 +36,9 @@
           class="status"
           [ngClass]="{'pointer': itemListContent.statusCallback}"
           (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
-          [ngStyle]="{
-            backgroundColor: 
-              (itemListContent.status === 'verificado' && '#40772F') ||
-              ('#DD9204')
+          [ngClass]="{
+            'verificado': itemListContent.status === 'verificado',
+            'pending': itemListContent.status !== 'verificado'
           }"
           >
           {{itemListContent.status}}
@@ -60,10 +59,9 @@
     class="bottom-status"
     [ngClass]="{'pointer': itemListContent.statusCallback}"
     (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
-    [ngStyle]="{
-      backgroundColor: 
-        (itemListContent.status === 'verificado' && '#40772F') ||
-        ('#DD9204')
+    [ngClass]="{
+      'verificado': itemListContent.status === 'verificado',
+      'pending': itemListContent.status !== 'verificado'
     }"
     >
     {{itemListContent.status}}

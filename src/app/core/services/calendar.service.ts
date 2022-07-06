@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { createCalendar, getCalendar, identifyCalendarAdmin } from '../graphql/calendar.gql'
 import * as moment from 'moment';
+import { ReservationList } from '../models/reservation';
+import { Calendar, CalendarInput } from '../models/calendar';
 
 @Injectable({
     providedIn: 'root',
@@ -19,20 +21,38 @@ export class CalendarService {
     slotDayFrom: string = '';
     slotDayTo: string = '';
     slotMonth: string = 'Enero';
-    monthDay: any;
-    month: any;
-    year: any;
+    monthDay: number;
+    month: number;
+    year: number;
     days: any;
-    monthIndex: any = 0;
-    dayIndex: any = 0;
-    hourIndex: any = null;
+    monthIndex: number = 0;
+    dayIndex: number = 0;
+    hourIndex: number = null;
     showDays: boolean = true;
     showHours: boolean = true;
-    months: any;
-    getCalendarResult: any;
-    reservationLimit: any;
+    months: {
+        id: number;
+        name: string;
+        dates: {
+            dayNumber: number;
+            dayName: string;
+            weekDayNumber: number;
+        }[];
+        indexI?: number;
+        indexJ?: number;
+    }[] = [];
+    getCalendarResult: Calendar;
+    reservationLimit: number;
     canBeToday: boolean = true;
-    allMonths: any = [
+    allMonths: {
+        id: number;
+        name: string;
+        dates: {
+            dayNumber: number;
+            dayName: string;
+            weekDayNumber: number;
+        }[];
+    }[] = [
         {
             "id": 0,
             "name": "Enero",
@@ -95,7 +115,10 @@ export class CalendarService {
         },
     ];
 
-    allFullMonths: any = [
+    allFullMonths: {
+        id: number;
+        name: string;
+    }[] = [
         {
             "id": 0,
             "name": "Enero",
@@ -146,45 +169,44 @@ export class CalendarService {
         },
     ];
 
-    reservations: any = [
-        {
-            "date": {
-                "dateType": "RANGE",
-                "from": "2021-09-30T03:00:00.000Z",
-                "until": "2021-09-30T04:00:00.000Z",
-                "fromHour": "03:00",
-                "toHour": "04:00",
-            }
-        },
-        {
-            "date": {
-                "dateType": "RANGE",
-                "from": "2021-09-29T05:00:00.000Z",
-                "until": "2021-09-29T06:00:00.000Z",
-                "fromHour": "05:00",
-                "toHour": "06:00",
-            }
-        },
-        {
-            "date": {
-                "dateType": "RANGE",
-                "from": "2021-09-28T07:00:00.000Z",
-                "until": "2021-09-28T08:00:00.000Z",
-                "fromHour": "07:00",
-                "toHour": "08:00",
-            }
-        },
+    reservations: ReservationList[] = [
+        // {
+        //     "date": {
+        //         "dateType": "RANGE",
+        //         "from": "2021-09-30T03:00:00.000Z",
+        //         "until": "2021-09-30T04:00:00.000Z",
+        //         "fromHour": "03:00",
+        //         "toHour": "04:00",
+        //     }
+        // },
+        // {
+        //     "date": {
+        //         "dateType": "RANGE",
+        //         "from": "2021-09-29T05:00:00.000Z",
+        //         "until": "2021-09-29T06:00:00.000Z",
+        //         "fromHour": "05:00",
+        //         "toHour": "06:00",
+        //     }
+        // },
+        // {
+        //     "date": {
+        //         "dateType": "RANGE",
+        //         "from": "2021-09-28T07:00:00.000Z",
+        //         "until": "2021-09-28T08:00:00.000Z",
+        //         "fromHour": "07:00",
+        //         "toHour": "08:00",
+        //     }
+        // },
     ]
 
-    calendar: any = [];
-    hours: any = [];
-    allHours: any = [];
-    todayHours: any = [];
-    lastHour: any;
-    lastTodayHours: any;
+    calendar: Calendar;
+    hours: string[] = [];
+    allHours: string[] = [];
+    todayHours: string[] = [];
+    lastHour: string;
+    lastTodayHours: number;
     availableHours: boolean = false;
     availableMonths: boolean = false;
-    testData: any;
     getToday() {
         this.month = new Date().getMonth();
         this.monthDay = new Date().getDate();
@@ -192,7 +214,7 @@ export class CalendarService {
         this.getDaysArray(this.year, this.month, this.monthDay)
     }
 
-    getDaysArray(year, month, monthDay) {
+    getDaysArray(year: number, month: number, monthDay: number) {
         let names = Object.freeze(['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']);
         for (let i = month; i < 12; i++) {
             let date = new Date(year, i, 1);
@@ -210,7 +232,7 @@ export class CalendarService {
         this.months[0].dates = this.months[0].dates.splice(monthDay - 1);
     }
 
-    getLimit(limit) {
+    getLimit(limit: string) {
         if (limit == "Lunes" || limit == "MONDAY") {
             return 0;
         }
@@ -234,7 +256,7 @@ export class CalendarService {
         }
     }
 
-    handleActiveDays(from, to, chunkSize, mode) {
+    handleActiveDays(from: string, to: string, chunkSize: number, mode: string) {
         let brakes = false;
 
         if (mode === 'standard' || !mode) {
@@ -243,10 +265,8 @@ export class CalendarService {
             this.allHours.push(from);
             let fromHour = from.split(':')[0]
 
-            console.log(fromHour, "fromHour");
             let index = 0;
             this.showDays = false;
-            console.log(this.hours, this.allHours, fromHour, index);
             /*for (let i = 0; i < this.months.length; i++) {
                 for (let j = 0; j < this.months[i].dates.length; j++) {
                     if (this.getLimit(this.months[i].dates[j].dayName) < this.getLimit(this.getCalendarResult.limits.fromDay)) {
@@ -263,15 +283,13 @@ export class CalendarService {
                 index += 1;
                 let value = moment.utc().format();
                 if (chunkSize == 60) {
-                    value = moment(value).set({ 'hour': fromHour, 'minutes': 0o0 }).add(index, 'h').format("HH:mm");
+                    value = moment(value).set({ 'hour': parseInt(fromHour), 'minutes': 0o0 }).add(index, 'h').format("HH:mm");
                 }
                 this.hours.push(value);
                 this.allHours.push(value);
                 if (value == to) {
                     brakes = true;
                 }
-
-                console.log("value", value, this.hours, this.allHours);
             }
             let localLastHour = new Date();
             let offset = localLastHour.getTimezoneOffset() / 60;
@@ -281,8 +299,6 @@ export class CalendarService {
             this.lastTodayHours = localLastHour.getHours();
             //hour = new Date().getHours();   
             hour = parseInt(fromHour) - offset;
-
-            console.log("Hour", hour, "lastTodayHours", this.lastTodayHours);
 
             if (hour >= this.lastTodayHours) {
                 this.todayHours = [];
@@ -294,7 +310,6 @@ export class CalendarService {
                 //for (let i = hour + 1; i < this.lastTodayHours; i++) {
                 for (let i = hour; i < this.lastTodayHours; i++) {
                     this.todayHours.push(i.toString() + ':' + '00');
-                    console.log("todayHours", this.todayHours);
                 }
                 for (let j = 0; j < this.reservations.length; j++) {
                     let reservationMonthFrom1 = parseInt(this.reservations[j].date.from.split('-')[1]) - 1;
@@ -311,8 +326,6 @@ export class CalendarService {
                             }
                         }
                     }
-
-                    console.log("todayHours B", this.todayHours);
                 }
                 if (this.todayHours.length < 1) {
                     this.todayHours = [];
@@ -364,7 +377,7 @@ export class CalendarService {
         }
     }
 
-    getOccurrence(array, value) {
+    getOccurrence(array: any[], value: number) {
         return array.filter((v) => (v === value)).length;
     }
 
@@ -396,13 +409,12 @@ export class CalendarService {
 
     async getCalendar(id: string) {
         try {
-            const response = await this.graphql.query({
+            const response: { getCalendar: Calendar} = await this.graphql.query({
                 query: getCalendar,
                 variables: { id },
                 fetchPolicy: 'no-cache',
             });
 
-            console.log(response, "response");
             this.getCalendarResult = response.getCalendar;
             this.reservations = response.getCalendar.reservations;
             this.reservationLimit = response.getCalendar.reservationLimits;
@@ -415,13 +427,12 @@ export class CalendarService {
         }
     }
 
-    async createCalendar(input: any) {
+    async createCalendar(input: CalendarInput) {
         const result = await this.graphql.mutate({
             mutation: createCalendar,
             variables: { input }
         });
         if (!result || result?.errors) return undefined;
-        console.log(result);
         return result;
     }
 
@@ -576,36 +587,36 @@ export class CalendarService {
         ];
 
         this.reservations = [
-            {
-                "date": {
-                    "dateType": "RANGE",
-                    "from": "2021-09-30T03:00:00.000Z",
-                    "until": "2021-09-30T04:00:00.000Z",
-                    "fromHour": "03:00",
-                    "toHour": "04:00",
-                }
-            },
-            {
-                "date": {
-                    "dateType": "RANGE",
-                    "from": "2021-09-29T05:00:00.000Z",
-                    "until": "2021-09-29T06:00:00.000Z",
-                    "fromHour": "05:00",
-                    "toHour": "06:00",
-                }
-            },
-            {
-                "date": {
-                    "dateType": "RANGE",
-                    "from": "2021-09-28T07:00:00.000Z",
-                    "until": "2021-09-28T08:00:00.000Z",
-                    "fromHour": "07:00",
-                    "toHour": "08:00",
-                }
-            },
+            // {
+            //     "date": {
+            //         "dateType": "RANGE",
+            //         "from": "2021-09-30T03:00:00.000Z",
+            //         "until": "2021-09-30T04:00:00.000Z",
+            //         "fromHour": "03:00",
+            //         "toHour": "04:00",
+            //     }
+            // },
+            // {
+            //     "date": {
+            //         "dateType": "RANGE",
+            //         "from": "2021-09-29T05:00:00.000Z",
+            //         "until": "2021-09-29T06:00:00.000Z",
+            //         "fromHour": "05:00",
+            //         "toHour": "06:00",
+            //     }
+            // },
+            // {
+            //     "date": {
+            //         "dateType": "RANGE",
+            //         "from": "2021-09-28T07:00:00.000Z",
+            //         "until": "2021-09-28T08:00:00.000Z",
+            //         "fromHour": "07:00",
+            //         "toHour": "08:00",
+            //     }
+            // },
         ]
 
-        this.calendar = [];
+        this.calendar = null;
         this.hours = [];
         this.allHours = [];
         this.todayHours = [];

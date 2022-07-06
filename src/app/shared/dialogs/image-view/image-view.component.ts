@@ -8,6 +8,8 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 })
 export class ImageViewComponent implements OnInit {
   @Input() imageSourceURL: string;
+  @Input() buttonText?: string;
+  @Input() buttonFunc?: () => void;
   imageCanvasPositionX: number = 0;
   imageCanvasPositionY: number = 0;
 

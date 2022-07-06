@@ -2,7 +2,7 @@ import { Form, Control } from '@mukuve/ngx-forms';
 import { Community } from 'src/app/core/models/community';
 import { CardData } from './../../shared/components/card/card.component';
 import { Model } from './../objects/model';
-import { SocialMediaModel } from './saleflow';
+import { DeliveryLocation, SocialMediaModel } from './saleflow';
 import { Tag } from './tags';
 
 export class IpUser extends Model<IpUser> {
@@ -12,18 +12,32 @@ export class IpUser extends Model<IpUser> {
   user: User
 }
 
+export class Role {
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  code: string;
+  name: string;
+  description: string;
+  }
+
 export class User extends Model<User> {
   email: string;
   phone?: string;
   name?: string;
+  lastname: string;
   birthdate?: Date;
   image?: string;
-  roles?: any[];
+  roles?: Role[];
   social: SocialMediaModel[];
   defaultCommunity?: Community;
   validatedAt?: string;
-  deliveryLocations: any;
-  tags?: Tag[]
+  facebook: string;
+  instagram: string;
+  web: string;
+  bio: string;
+  deliveryLocations: DeliveryLocation[];
+  tags?: string[];
 
   hasRoles(...roles: string[]): boolean {
     return (this.roles || []).some((r) => roles.includes(r.code));

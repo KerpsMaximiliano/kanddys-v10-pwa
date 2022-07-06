@@ -2,18 +2,19 @@
 
 	<app-helper-headerv2
 		[mode]="'edit'"
-        [mainText]="{
+    [mainText]="{
             text: !item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name,
             color:'#E9E371'
         }"
-        [edit]="{
+    [edit]="{
             active: true
         }"
-        [icon]="{
+    [icon]="{
             src: '/expand-categories.svg',
             filter: 'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'
         }"
-        [returnAble]="true"
+    [returnAble]="true"
+		[editBtnCallback]="redirectToItemCreator"
 		[color]="'#E9E371'"
 		[filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"
 		(returnEvent)="redirect()"

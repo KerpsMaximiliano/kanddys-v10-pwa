@@ -6,17 +6,20 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./switch-button.component.scss']
 })
 export class SwitchButtonComponent implements OnInit {
-
+  @Input() containerStyles?: Record<string, any> = null;
+  @Input() textStyles?: Record<string, any> = null;
   @Input() settings?: {
     position?: string,
     top?: string,
     right?: string,
     bottom?: string,
     left?: string,
-    margin?: string
+    margin?: string,
+    leftText?: string,
   };
   @Output() switched = new EventEmitter();
   @Input() isClicked : boolean;
+  @Input() innerText : boolean;
   constructor() { }
 
   ngOnInit(): void {
@@ -24,7 +27,7 @@ export class SwitchButtonComponent implements OnInit {
 
   statechanger(){
     this.isClicked = !this.isClicked;
-    this.switched.emit();
+    this.switched.emit(this.isClicked);
   }
 
 }

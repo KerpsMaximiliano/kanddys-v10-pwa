@@ -7,6 +7,7 @@
       *ngFor="let input of imageField; index as i"
       class="input-container"
       [ngStyle]="containerStyles ? containerStyles : null"
+      [ngClass]="{small: small}"
     >
       <input
         [id]="'file' + i"
@@ -16,11 +17,12 @@
         [accept]="acceptTypes"
       />
       <label
-        [style.background]="sanitize(input)"
+        [style.background]="sanitize(input, expandImage)"
+        [style.border]="input ? 'none' : '1px solid dodgerblue'"
         [for]="'file' + i"
         class="file"
         [ngStyle]="fileStyles ? fileStyles : null"
-        [ngClass]="{ error: error[i] }"
+        [ngClass]="{ error: error[i], small: small }"
       >
         <ng-container *ngIf="!input">{{ innerLabel }}</ng-container>
       </label>

@@ -220,14 +220,14 @@ export class UserItemsComponent implements OnInit {
     this.router.navigate([`ecommerce/error-screen/`]);
   }
 
-  editItem(i) {
-    this.router.navigate([`/ecommerce/item-display/${this.items[i]._id}`], {
+  editItem(id: string) {
+    this.router.navigate([`/ecommerce/item-display/${id}`], {
       queryParams: { mode: 'edit' }
     })
   }
 
-  goToCategoryItemDetail(i) {
-    this.router.navigate([`/ecommerce/category-item-detail/${this.items[i]._id}`]);
+  goToCategoryItemDetail(id: string) {
+    this.router.navigate([`/ecommerce/category-item-detail/${id}`]);
   }
 
   goToDashBoard() {

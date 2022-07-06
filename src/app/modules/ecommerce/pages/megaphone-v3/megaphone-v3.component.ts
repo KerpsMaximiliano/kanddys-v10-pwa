@@ -48,6 +48,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   merchantSubheadline: string = '';
   merchantSocials: SocialMediaModel[];
   merchantHours: string = '';
+  contactLandingRoute: string;
   canOpenCart: boolean;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -91,8 +92,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   organizeItems() {
+    this.categorylessItems = this.items.filter((item) => !item.category.length).sort((a, b) => a.pricing - b.pricing);
     if (!this.categories || !this.categories.length) return;
-    this.categorylessItems = this.items.filter((item) => !item.category.length);
     this.categories.forEach((saleflowCategory) => {
       if (
         this.items.some((item) =>
@@ -143,6 +144,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       lockUI();
 
       this.header.flowId = params.id;
+      this.header.orderId = null;
       this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
       if (!orderData || !orderData.products || orderData.products.length === 0)
@@ -175,6 +177,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
       this.categories = this.getCategories(itemCategories.itemCategoriesList, headlines[0]);
       this.setMerchant(merchant);
+      this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
       // Package fetching
       if (this.saleflowData.packages.length) {
         const listPackages = (
@@ -193,6 +196,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         this.sliderPackage = listPackages;
         await this.itemOfPackage(listPackages);
         this.inputPackage = this.packageData.map((e) => e.package);
+        if(orderData && !this.saleflowData.packages.some((itemPackage) => itemPackage._id === orderData.itemPackage))
+          this.header.deleteSaleflowOrder(this.saleflowData._id);
       }
       // No packages. Item fetching
       if (!this.saleflowData.packages.length && this.saleflowData.items.length) {
@@ -225,7 +230,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           if (!this.items[i].customizerId) this.items[i].isSelected = selectedItems.includes(this.items[i]._id);
-
           if (this.items[i].hasExtraPrice)
             this.items[i].totalPrice =
               this.items[i].fixedQuantity *
@@ -236,6 +240,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           this.items = this.items.sort((a, b) =>
             a.index > b.index ? 1 : b.index > a.index ? -1 : 0
           );
+        }
+        if(orderData?.products?.length) {
+          orderData.products.forEach((item) => {
+            if(!this.items.some((product) => product._id === item.item)) {
+              this.header.removeOrderProduct(this.saleflowData._id, item.item);
+              this.header.removeItem(this.saleflowData._id, item.item);
+            }
+          })
         }
         this.organizeItems();
         this.status = 'complete';

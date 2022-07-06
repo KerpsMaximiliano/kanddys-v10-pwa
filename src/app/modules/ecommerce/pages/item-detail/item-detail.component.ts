@@ -36,7 +36,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   deleteEvent: Subscription;
+  whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -46,9 +48,15 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
-      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
+
+      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);''
       this.itemData = await this.items.item(params.id);
+
       if(!this.itemData) return this.back();
+
+      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`);
+      this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
+
       if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.showCartCallBack = () => this.showItems();
@@ -137,17 +145,17 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   openShareDialog() {
     const list: StoreShareList[] = [
       {
-        title:  this.itemData.name || 'Mi item',
+        title:  this.itemData.name || 'Comparte el producto',
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
           },
         ]
       }

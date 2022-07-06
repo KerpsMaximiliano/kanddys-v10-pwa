@@ -1,9 +1,9 @@
 <div style="min-height: 100vh;">
   <div style="background-color: #EEF6DF;">
     <app-header-info
-      [profileImage]="user?.image"
-      [title]="user?.name"
-      [description]="'desc'"
+      [profileImage]="merchant ? merchant.image : user?.image"
+      [title]="merchant ? merchant.name : user?.name"
+      [description]="merchant ? merchant.bio : user?.bio"
       [socials]="merchant ? merchant.social : user?.social"
       [mode]="merchant ? 'expanded' : 'normal'"
       [merchant]="merchant ? true : false"
@@ -12,13 +12,19 @@
     ></app-header-info>
   </div>
 
-  <div class="items-card" *ngIf="(admin && merchant) || (!admin && merchant && merchant.showItems)">
+  <div
+    class="items-card"
+    *ngIf="
+      (admin && merchant && items.length) ||
+      (!admin && merchant && merchant.showItems && items.length)
+    ">
     <div class="card-header">
       <h6>Items</h6>
-      <a *ngIf="!admin">Mas</a>
+      <a *ngIf="!admin && saleflow" [routerLink]="['/ecommerce/megaphone-v3',saleflow._id]">Mas</a>
       <span *ngIf="admin" class="switch-label">
         Mostrar En Contacto
         <app-switch-button
+          [innerText]="true"
           [isClicked]="merchant.showItems"
           (switched)="toggleShowItems()"
         ></app-switch-button>

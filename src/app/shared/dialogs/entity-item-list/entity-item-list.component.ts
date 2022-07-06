@@ -5,13 +5,16 @@ import { environment } from 'src/environments/environment';
 export interface EntityLists {
   title?: string,
   image?: string,
+  isImageBase64?: boolean,
   name?: string,
   type?: string,
   options?: options[];
+  shoudlAllowDeactivation?: boolean;
 }
 
 interface options{
     text?: string,
+    active?: boolean;
     icon?: {
         src: string,
         alt?: string,
@@ -35,6 +38,7 @@ export class EntityItemListComponent implements OnInit {
   constructor( private ref: DialogRef ) { }
 
   ngOnInit(): void {
+    console.log("Lista", this.list);
   }
 
   close() {

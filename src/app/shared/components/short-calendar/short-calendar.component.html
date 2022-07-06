@@ -1,0 +1,21 @@
+<div
+  class="scroller"
+  #elemt
+  (mousedown)="startDragging($event, elemt)"
+  (mouseup)="stopDragging()"
+  (mouseleave)="stopDragging()"
+  (mousemove)="moveEvent($event, elemt)"
+>
+  <div
+    *ngFor="let day of monthDays"
+    class="day"
+    [ngClass]="{
+      'selected': selectedDay?.getDate() === day.dayNumber,
+      'disabled': day.weekDayNumber === 0
+    }"
+    (click)="onClick(day)"
+  >
+    <span>{{day.dayName[0]}}{{day.dayName[1]}}{{day.dayName[2]}}</span>
+    <span>{{day.dayNumber}}</span>
+  </div>
+</div>

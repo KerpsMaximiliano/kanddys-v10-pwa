@@ -177,25 +177,27 @@ export class BankRegistrationComponent implements OnInit {
           }
         },
       ],
-      optionalLinksTo: [
-        {
-          styles: {
-            containerStyles: {
-              marginTop: '21px',
-              marginBottom: '70px',
-              marginLeft: 'auto'
+      optionalLinksTo: {
+        groupOfLinksArray: [
+          {
+            styles: {
+              containerStyles: {
+                marginTop: '21px',
+                marginBottom: '70px',
+                marginLeft: 'auto'
+              },
             },
-          },
-          links: [
-            {
-              text: 'Adiciona otra cuenta bancaria  +',
-              action: (params) => {
-                // console.log("Something happened")
+            links: [
+              {
+                text: 'Adiciona otra cuenta bancaria  +',
+                action: (params) => {
+                  // console.log("Something happened")
+                }
               }
-            }
-          ]
-        },
-      ],
+            ]
+          },
+        ]
+      },
       headerText: "",
       pageHeader: {
         text: "Ingresaré los datos bancarios después",

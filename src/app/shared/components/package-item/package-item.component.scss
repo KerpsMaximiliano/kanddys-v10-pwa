@@ -7,6 +7,7 @@
         height: fit-content;
         padding: 30px 30px 25px 44px;
         display: flex;
+        gap: 24px;
         flex-direction: column;
         background-color: rgba(189, 189, 189, 17%);
         border-radius: 18px;
@@ -18,13 +19,11 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 10px;
 
             .wrapper {
                 display: flex;
                 flex-wrap: wrap;
                 flex-direction: column;
-                margin-bottom: 30px;
 
                 .plan-name {
                     font-family: 'NeueMontreal';
@@ -87,9 +86,12 @@
             justify-content: center;
             align-items: center;
             margin: 0 auto;
-            margin-top: 34px;
             cursor: pointer;
             letter-spacing: 1.5px;
+
+            &:hover {
+                background-color: #fdd852;
+            }
 
             &.small {
                 width: 40%;
@@ -101,6 +103,9 @@
 
         &.click-able {
             cursor: pointer;
+            &:hover {
+                background-color: rgba(189, 189, 189, 0.26);
+            }
         }
     }
 
@@ -114,7 +119,6 @@
     color: white;
     border: none;
     height: 52px;
-    margin-top: 34px;
     border-radius: 26px;
     cursor: pointer;
     font-family: "RobotoMedium";

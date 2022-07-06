@@ -37,7 +37,7 @@
     
     <app-sticky-button
     [text]="'SALVAR EL TAG'"
-    [mode]="tagValue.length >= 2 ? 'fixed' : 'disabled-fixed' "
+    [mode]="tagValue?.length >= 2 ? 'fixed' : 'disabled-fixed' "
     (click)="sendTag()"
   ></app-sticky-button>
 

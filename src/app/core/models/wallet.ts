@@ -25,19 +25,22 @@ export class Bank extends Model<Bank> {
     isActive: boolean
     account: string;
     routingNumber: number;
+    bankName?: string;
 
     name?: string;
 }
 
 export class ElectronicPaymentInput {
-    paymentReceiver: string;
+    paymentReceiver?: string;
     isActive?: boolean;
-    email: string;
+    email?: string;
+    link: string;
 }
 
 export class BankInput {
-    paymentReceiver: string;
-    typeAccount: string;
+    bankName?: string;
+    paymentReceiver?: string;
+    typeAccount?: string;
     ownerAccount: string;
     isActive: boolean;
     account: string;

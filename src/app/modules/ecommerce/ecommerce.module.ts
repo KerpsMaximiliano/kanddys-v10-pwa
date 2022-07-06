@@ -46,7 +46,7 @@ import { ItemGalleryComponent } from './pages/item-gallery/item-gallery.componen
 import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
 import { NewItemDisplayComponent } from './pages/new-item-display/new-item-display.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
-import { NewItemContactInfoComponent } from './pages/new-item-contact-info/new-item-contact-info.component';
+import { Authentication } from './pages/authentication/authentication.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { MyStoreComponent } from './pages/merchant-dashboard/my-store/my-store.component';
 import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
@@ -59,6 +59,13 @@ import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-d
 import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
+import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
+import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
+import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
+import { AirtableFieldConnectionComponent } from './pages/airtable-field-connection/airtable-field-connection.component';
+import { WebformClientComponent } from './pages/webform-client/webform-client.component';
+import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
+import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
 
 const routes: Routes = [
   {
@@ -288,12 +295,20 @@ const routes: Routes = [
     component: BankRegistrationComponent
   },
   {
-    path: 'new-item-contact-info/:itemId',
-    component: NewItemContactInfoComponent
+    path: 'authentication',
+    component: Authentication
+  },
+  {
+    path: 'authentication/:itemId',
+    component: Authentication
   },
   {
     path: 'll-studio-order-form/:merchantId/:databaseName',
     component: LlStudioOrderFormComponent
+  },
+  {
+    path: 'heavenly-balloons/:merchantId/:databaseName',
+    component: HeavenlyBalloonsComponent
   },
   {
     path: 'category-items-admin/:categoryId',
@@ -320,8 +335,28 @@ const routes: Routes = [
     component: MyCustomersComponent
   },
   {
+    path: 'user-creator',
+    component: UserCreatorComponent
+  },
+  {
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
+  },
+  {
+    path: 'webform-questions',
+    component: AnswerMethodWebformComponent
+  },
+  {
+    path: 'airtable-field-connection/:databaseName',
+    component: AirtableFieldConnectionComponent
+  },
+  {
+    path: 'webform-client',
+    component: WebformClientComponent
+  },
+  {
+    path: 'webform-detail/:id',
+    component: WebformDetailComponent
   },
 ];
 
@@ -373,7 +408,7 @@ const routes: Routes = [
     ItemGalleryComponent,
     NewItemDisplayComponent,
     BankRegistrationComponent,
-    NewItemContactInfoComponent,
+    Authentication,
     LlStudioOrderFormComponent,
     MyStoreComponent,
     MallDashboardComponent,
@@ -385,7 +420,14 @@ const routes: Routes = [
     ItemSalesDetailComponent,
     UserItemsComponent,
     MyCustomersComponent,
+    UserCreatorComponent,
     UserContactLandingComponent,
+    HeavenlyBalloonsComponent,
+    AnswerMethodWebformComponent,
+    AirtableFieldConnectionComponent,
+    WebformClientComponent,
+    WebformCreatorComponent,
+    WebformDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

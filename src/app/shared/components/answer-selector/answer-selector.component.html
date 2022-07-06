@@ -9,18 +9,21 @@
   <ul class="container-options">
     <li *ngFor="let option of options; index as i">
       <div class="container-text-option" *ngIf="!isMultipleOption">
-        <p
-          class="option"
+        <div
           [class]="
-            i === activeOption && showSelectedFeedback
-              ? 'option-selected'
+            !indicator ? (i === activeOption && showSelectedFeedback)
+              ? 'option selected'
               : 'option'
+            : (i === activeOption && showSelectedFeedback)
+              ? 'selector-option active'
+              : 'selector-option'
           "
           [ngStyle]="itemStyles ? itemStyles : null"
           (click)="editable && option.status && clickSelector(i)"
         >
-          {{ option.value }}
-        </p>
+          <div class="background"></div>
+          <span>{{ option.value }}</span>
+      </div>
         <!-- THE LINES BELLOW MAKE AN OPCTION CLICKABLE THROUGH ITS DESCRIPTION   -->
         <div
           class="description-container"

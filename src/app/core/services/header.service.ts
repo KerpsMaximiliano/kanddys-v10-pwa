@@ -116,7 +116,7 @@ export class HeaderService {
   paramHasImage: boolean;
   storedDeliveryLocation: string = null;
   disableGiftMessageTextarea: boolean = false;
-  createdOrderWithDelivery: boolean = false;
+  // createdOrderWithDelivery: boolean = false;
   createdOrderWithoutDelivery: boolean = false;
   newTempItem: Item;
   newTempItemRoute: string = null;

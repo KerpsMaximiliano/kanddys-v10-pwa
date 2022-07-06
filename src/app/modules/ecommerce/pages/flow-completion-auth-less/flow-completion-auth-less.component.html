@@ -7,8 +7,6 @@
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
     [back]="
-      localStorageFlowRoute &&
-      localStorageFlowRoute !== '' &&
       step !== 'PHONE_CHECK_AND_SHOW_BANKS'
     "
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
@@ -21,17 +19,17 @@
   <div *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS'">
     <div
       [ngStyle]="{
-        padding: '0px 33px',
+        padding: '0px 33px 24px',
         marginTop: '28px'
       }"
     >
-      <p class="label1" [ngStyle]="{ marginTop: '42px', marginBottom: '1rem' }">
-        Donde te mandaremos las notificaciones de esta orden?
+      <p class="label1" [ngStyle]="{ marginTop: '32px', marginBottom: '1rem' }">
+        Mi número de WhatsApp es:
       </p>
       <ngx-intl-tel-input
         [cssClass]="'custom'"
         [preferredCountries]="preferredCountries"
-        [enableAutoCountrySelect]="true"
+        [enableAutoCountrySelect]="false"
         [enablePlaceholder]="true"
         [searchCountryFlag]="true"
         [searchCountryField]="[
@@ -39,23 +37,22 @@
           SearchCountryField.Name
         ]"
         [selectFirstCountry]="false"
-        [selectedCountryISO]="CountryISO.UnitedStates"
+        [selectedCountryISO]="CountryISO.DominicanRepublic"
         maxLength="15"
-        [phoneValidation]="true"
+        [phoneValidation]="false"
         [separateDialCode]="true"
         [numberFormat]="PhoneNumberFormat.International"
+        [customPlaceholder]="'Mi WhatsApp es...'"
         name="phone"
         [formControl]="phoneNumber"
       ></ngx-intl-tel-input>
     </div>
 
-    <ng-container *ngIf="bankOptions && bankOptions.length">
+    <ng-container *ngIf="banksInfo && banksInfo.length">
       <div
         [ngStyle]="{
           width: '88.32%',
           margin: '0 auto',
-          padding: '0px 25px',
-          paddingTop: '42px',
           borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
         }"
       ></div>
@@ -87,7 +84,7 @@
           }"
         >
           <div
-            *ngFor="let bank of bankOptions"
+            *ngFor="let bank of banksInfo"
             [ngStyle]="{
               marginTop: '28px'
             }"
@@ -227,7 +224,7 @@
         }"
       >
         <div
-          *ngFor="let bank of bankOptions"
+          *ngFor="let bank of banksInfo"
           [ngStyle]="{
             marginTop: '28px'
           }"
@@ -242,6 +239,8 @@
           >
             {{ bank.value }}
           </h6>
+
+
           <div *ngIf="bank.description">
             <p
               [ngStyle]="{
@@ -251,9 +250,41 @@
                 color: '#202020',
                 margin: 0
               }"
-              *ngFor="let description of bank.description"
             >
-              {{ description }}
+              Tipo de cuenta: {{ bank.description.typeAccount }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              {{ bank.description.owner }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              Cuenta: {{ bank.description.account }}
+            </p>
+            <p
+              [ngStyle]="{
+                fontFamily: 'RobotoLight',
+                fontStyle: 'italic',
+                fontSize: '17px',
+                color: '#202020',
+                margin: 0
+              }"
+            >
+              RNC: {{ bank.description.routingNumber }}
             </p>
           </div>
         </div>
@@ -299,7 +330,7 @@
           Completaré pagando la orden de otra manera.
         </div> -->
       </a>
-      <p style="margin-bottom: 47px; margin-top: 34px" class="label1">
+      <p class="label1">
         Sobre la transferencia que realizó como pago:
       </p>
       <!-- Temporalmente deshabilitado -->
@@ -328,11 +359,12 @@
         class="code-input"
       /> -->
 
-      <p class="label3" style="margin-top: 87px">
+      <p class="label3">
         Adicione la imagen (captura):
       </p>
       <app-image-input
         [allowedTypes]="['png', 'jpg', 'jpeg']"
+        [expandImage]="true"
         (onFileInput)="onFileInput($event)"
       ></app-image-input>
       <!-- <ng-container *ngIf="selectedBank">
@@ -344,20 +376,20 @@
 
       <p
         class="label3"
-        [ngStyle]="{ marginBottom: '26px' }"
         *ngIf="banks.length > 1"
       >
-        En cuál cuenta hizo la transferencia?
+        Selecciona el banco
       </p>
 
       <app-answer-selector
         *ngIf="banks.length > 1"
         [options]="bankOptions"
+        [indicator]="true"
         (onSelector)="selectBank($event)"
         [showDescription]="false"
         [containerStyles]="{
           margin: '0px',
-          paddingBottom: '72px',
+          paddingBottom: '16px',
           borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
         }"
       ></app-answer-selector>
@@ -365,12 +397,11 @@
       <div
         [ngStyle]="{
           width: '100%',
-          paddingTop: '29.5px',
+          paddingTop: '32px',
           color: '#7B7B7B',
           fontFamily: 'Roboto',
           fontStyle: 'italic',
-          fontSize: '17px',
-          paddingBottom: '67px'
+          fontSize: '17px'
         }"
       >
         En la siguiente pantalla le mandarás el record de tu orden y la
@@ -398,10 +429,10 @@
     "
   >
     <app-sticky-button
-      *ngIf="step !== 'PAYMENT_INFO'"
+      *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS' || step === 'UPDATE_NAME_AND_SHOW_BANKS'"
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
-      (click)="submit()"
+      (click)="!buttonBlocked ? submit() : null"
     ></app-sticky-button>
   </a>
 
@@ -413,14 +444,14 @@
     "
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
-    (click)="submit()"
+    (click)="!buttonBlocked ? submit() : null"
   ></app-sticky-button>
 
   <a [href]="whatsappLink" target="_blank" *ngIf="step === 'PAYMENT_INFO'">
     <app-sticky-button
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
-      (click)="submit()"
+      (click)="!buttonBlocked ? submit() : null"
     ></app-sticky-button>
   </a>
 </div>

@@ -235,6 +235,7 @@
                     <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
                       <input type="color" formControlName="fixedValue">
                       <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
                       <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                     </div>
                   </div>
@@ -304,6 +305,7 @@
                         <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
                           <input type="color" formControlName="fixedValue">
                           <input type="text" formControlName="name">
+                          <input type="text" formControlName="nickname">
                           <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                         </div>
                       </div>
@@ -392,6 +394,7 @@
                 <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
                   <input type="color" formControlName="fixedValue">
                   <input type="text" formControlName="name">
+                  <input type="text" formControlName="nickname">
                   <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                 </div>
               </div>
@@ -460,6 +463,7 @@
                     <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
                       <input type="color" formControlName="fixedValue">
                       <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
                       <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                     </div>
                   </div>

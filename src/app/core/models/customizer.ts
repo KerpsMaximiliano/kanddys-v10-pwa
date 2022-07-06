@@ -5,6 +5,7 @@ import { Position } from './customizer-value';
 export interface CustomizerFixedValue {
   name: string;
   fixedValue: string;
+  nickname: string;
 }
 
 interface textItemsRule {

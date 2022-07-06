@@ -12,6 +12,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -23,6 +24,41 @@ const socialNames = [
   'web',
   'facebook',
 ]
+
+const deleteIrrelevantDataFromObject = (dataObject) => {
+  Object.keys(dataObject).forEach(key => {
+    if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
+      delete dataObject[key];
+    }
+
+    if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
+      dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
+    }
+
+    if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
+      dataObject[key].forEach((element, index) => {
+        //Delete irrelevant content from array indexes that arent nested arrays
+        if(typeof element === 'object' && !Array.isArray(element)) {
+          dataObject[key][index] = deleteIrrelevantDataFromObject(element);
+        }
+
+        //Delete irrelevant content from array indexes that are nested arrays
+        if(typeof element === 'object' && Array.isArray(element)) {
+          element.forEach((innerElement, index2) => {
+            if(
+              typeof innerElement === 'object' && 
+              !Array.isArray(innerElement)
+            ) {
+              dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
+            }
+          })
+        }
+      })
+    }
+  })
+
+  return dataObject;
+}
 
 @Component({
   selector: 'app-user-contact-landing',
@@ -52,34 +88,175 @@ export class UserContactLandingComponent implements OnInit {
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     private dialogService: DialogService,
+    private walletService: WalletService,
     private location: Location,
   ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      lockUI();
-      const [user, currentUser] = await Promise.all([
-        this.usersService.user(params.id),
-        this.authService.me(),
-      ])
-      if(!user) return unlockUI();
-      this.user = user;
-      if(user._id === currentUser?._id) this.admin = true;
-      this.merchant = await this.merchantsService.merchantDefault(this.user._id);
-      if(!this.merchant) return unlockUI();
-      this.checkSocials(this.merchant.social);
-      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
-      if(!this.saleflow) return unlockUI();
-      if(this.admin) {
-        const [total, users] = await Promise.all([
-          this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
-          this.merchantsService.usersOrderMerchant(this.merchant._id),
-          this.getItems()
-        ]);
-        this.ordersTotal = total;
-        this.users = users;
-      } else this.getItems();
-      unlockUI();
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { 
+          type, 
+          merchantId, 
+          venmo,
+          paypal,
+          cashapp,
+          bankName,
+          accountNumber,
+          owner,
+          socialID,
+          jsondata,
+          file0
+        } = queryParams;
+        const urlWithoutQueryParams = this.router.url.split('?')[0]
+
+        if(type === 'from-user-creation') {
+          const parsedData = JSON.parse(decodeURIComponent(jsondata));
+
+          const relevantData = deleteIrrelevantDataFromObject(parsedData);
+
+          if(
+            relevantData.exchangeData && (
+              Object.keys(relevantData.exchangeData.bank[0]).length > 4 ||
+              (relevantData.exchangeData.electronicPayment?.length > 0) 
+            ) 
+          ) {
+            await this.walletService.createExchangeData(relevantData.exchangeData);
+          }
+        }
+
+        if(type === 'from-merchant-creation' && merchantId) {
+          const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
+
+          const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+            merchant: merchant._id,
+            name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
+            items: []
+          });
+
+          await this.merchantsService.setDefaultMerchant(merchant._id);
+          await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+
+          if(bankName && accountNumber && owner && socialID) {
+            const electronicPayment = [];
+
+            [venmo, paypal, cashapp].forEach(paymentMethod => {
+              if(paymentMethod) {
+                electronicPayment.push({
+                  link: paymentMethod
+                });
+              }
+            })
+
+            await this.walletService.createExchangeData({
+              bank: [{
+                bankName,
+                ownerAccount: owner,
+                routingNumber: parseInt(socialID),
+                isActive: true,
+                account: accountNumber
+              }],
+              electronicPayment
+            });
+          }
+
+          window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
+        }
+
+        if(type === 'from-user-creation-update') {
+
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const userImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+  
+            if(userImage) relevantData.image = userImage;
+
+            const updatedUser = await this.authService.updateMe(relevantData);
+
+            window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if(type === 'from-merchant-creation-user-exists' && merchantId) {
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const merchantImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+            
+            const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
+            
+            const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+              merchant: merchant._id,
+              name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
+              items: []
+            });
+
+            console.log(merchant._id);
+            
+            await this.merchantsService.setDefaultMerchant(merchant._id);
+            await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+
+            if(merchant) {
+              if(file0) {
+                relevantData.userData.image = merchantImage;
+              };
+              await this.authService.updateMe(relevantData.userData);
+              // await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
+              await this.walletService.createExchangeData(relevantData.exchangeData);
+            }
+
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if(type === 'update-merchant' && merchantId) {
+          try {
+            const parsedData = JSON.parse(decodeURIComponent(jsondata));
+            const merchantImage = file0 ? decodeURIComponent(file0) : null;
+  
+            const relevantData = deleteIrrelevantDataFromObject(parsedData);
+            
+            if(file0) relevantData.merchantData.image = merchantImage;
+            if(file0) relevantData.userData.image = merchantImage;
+
+            await this.authService.updateMe(relevantData.userData);
+            await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
+            await this.walletService.createExchangeData(relevantData.exchangeData);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        lockUI();
+        const [user, currentUser] = await Promise.all([
+          this.usersService.user(params.id),
+          this.authService.me(),
+        ])
+        if(!user) return unlockUI();
+        this.user = user;
+        if(user._id === currentUser?._id) this.admin = true;
+        this.merchant = await this.merchantsService.merchantDefault(this.user._id);
+        if(!this.merchant) return unlockUI();
+        this.checkSocials(this.merchant.social);
+        this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
+        if(!this.saleflow) return unlockUI();
+        if(this.admin && this.saleflow?.items?.length) {
+          const [total, users] = await Promise.all([
+            this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
+            this.merchantsService.usersOrderMerchant(this.merchant._id),
+            this.getItems()
+          ]);
+          this.ordersTotal = total;
+          this.users = users;
+        } else if(this.saleflow?.items?.length) this.getItems();
+        unlockUI();
+      })
     })
   }
 
@@ -133,11 +310,11 @@ export class UserContactLandingComponent implements OnInit {
             mode: 'share',
             link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
           },
-          {
-            text: 'Descarga el qrCode',
-            mode: 'qr',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
-          },
+          // {
+          //   text: 'Descarga el qrCode',
+          //   mode: 'qr',
+          //   link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          // },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',

@@ -1,8 +1,12 @@
-<div class="body" [ngStyle]="customStyles?.wrapper">
+<div 
+    class="body header-info-component"
+    [ngClass]="{'fixed-mode': fixedMode}"
+    [ngStyle]="customStyles?.wrapper"
+>
     <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
         <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
             <img *ngIf="profileImage else placeholder" [src]="profileImage" alt="profile-image"
-                class="image-profile">
+                class="image-profile" (click)="clickOnImage($event)">
             <ng-template #placeholder>
                 <div class="placeholder"></div>
             </ng-template>
@@ -19,7 +23,7 @@
                         {{simple ? description : title}}
                     </h2>
                     <p class="header-desc" [ngStyle]="customStyles?.subtitle">
-                        {{simple ? title : description}}
+                        {{simple ? title : description}} <span [ngStyle]="{ 'color': featuredText.styles, 'cursor': 'pointer', 'font-weight': 'bold' }" (click)="triggerFeaturedText()" *ngIf="featuredText">{{ featuredText.text }}</span>
                     </p>
                 </ng-container>
     
@@ -34,7 +38,7 @@
                 <p class="header-desc" *ngIf="!simple && description2">{{description2}}</p>
             </div>
             <div class="more-info-button" *ngIf="socials?.length">
-                <span (click)="openDialog()">
+                <span (click)="openInfo(type)">
                     <img class="blue" [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
                 </span>
             </div>
@@ -42,10 +46,10 @@
         <div class="content expanded" *ngIf="mode === 'expanded'">
             <div class="main">
                 <div>
-                    <h6 class="header-name">
+                    <div class="header-name">
                         <span class="title">{{title}}</span>
-                        <span class="type" *ngIf="merchant">,TIENDA</span>
-                    </h6>
+                        <span class="type" *ngIf="merchant">, TIENDA</span>
+                    </div>
                     <p class="header-desc">
                         {{description}}
                     </p>
@@ -60,12 +64,12 @@
                             <path id="Polygon_3" data-name="Polygon 3" d="M5.5,0,11,9H0Z" transform="translate(11 9) rotate(180)" fill="#7b7b7b"/>
                         </svg>
                     </button>
-                    <button class="save-btn" *ngIf="showMore && !admin">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button>
+                    <!-- <button class="save-btn" *ngIf="showMore && !admin">SALVALO <img [src]="env + '/contact-save.svg'" alt="Save contact" width="27" height="24"></button> -->
                     <a (click)="redirect()" class="save-btn" *ngIf="showMore && admin">EDIT</a>
                 </div>
             </div>
             <div class="more-info-button" *ngIf="socials?.length && mode !== 'expanded'">
-                <span (click)="openDialog()">
+                <span (click)="openInfo(type)">
                     <img class="blue" [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
                 </span>
             </div>
@@ -74,17 +78,19 @@
     <div *ngIf="showMore" class="contact-info">
         <div class="info space-between">
             <div class="buttons">
-                <a class="dollar-btn">$</a>
+                <!-- <a class="dollar-btn">$</a> -->
                 <ng-container *ngFor="let social of socials">
                     <a *ngIf="social.name === 'location'" [href]="social.url" target="_blank"><img class="blue" [src]="env + '/location123.svg'" alt="location" width="21" height="26"></a>
                     <a *ngIf="social.name === 'email'" href="mailto:{{social.url}}"><img class="blue" [src]="env + '/send.svg'" alt="email" width="26" height="26"></a>
                     <a *ngIf="social.name === 'phone'" href="tel:+{{social.url}}"><img class="blue" [src]="env + '/telephone.svg'" alt="call" width="26" height="26"></a>
                 </ng-container>
             </div>
-            <button class="wa-btn">
-                SALUDANOS
-                <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
-            </button>
+            <ng-container *ngFor="let social of socials">
+                <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+title">
+                    SALUDANOS
+                    <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
+                </a>
+            </ng-container>
         </div>
         <div class="socials" *ngIf="hasSocials">
             <h6>Cuentas sociales</h6>
@@ -97,6 +103,7 @@
                         social.name === 'tiktok' ||
                         social.name === 'web'"
                         [href]="social.url"
+                        target="_blank"
                     >
                         <img *ngIf="social.name === 'linkedin'" [src]="env + '/linkedin.svg'" alt="linkedin" width="28" height="26">
                         <img *ngIf="social.name === 'twitter'" [src]="env + '/twitter.svg'" alt="twitter" width="32" height="26">

@@ -25,11 +25,19 @@
       [title]="providerData.headline"
       [description]="
         name
-          ? 'Vendió a ' + name[0].toUpperCase() + name.substr(1).toLowerCase()
+          ? 'Vendió a '
           : ''
       "
       [description2]="'el '+date"
+      [featuredText]="{ 'text': 
+      isMerchantView ? name[0].toUpperCase() + name.substr(1).toLowerCase() + ' (' + phone + ')'
+      : name[0].toUpperCase() + name.substr(1).toLowerCase(),
+      'styles': '#2874AD' }"
       [socials]="providerData.socials"
+      [route]="ruta"
+      type="route"
+      (featuredTextEvent)="redirectToUserContact()"
+      (clickedImage)="redirectToMegaphone()"
     ></app-header-info>
   </div>
 
@@ -37,13 +45,9 @@
     [tabsOptions]="tabsOptions"
     (changeValue)="wichName($event)"
   ></app-page-component-tabs>
-
-  <div
-    class="content"
-    *ngIf="comprado"
-    style="padding: 0; padding-left: 24px;"
-  >
-    <div class="list-items">
+  <div class="content">
+    <!-- ITEMS COMPRADOS VIEW -->
+    <div class="list-items" *ngIf="view === 'comprado'">
       <ng-container *ngIf="!existPackage">
         <ng-container *ngFor="let item of items; let i = index">
           <div class="list-item">
@@ -54,6 +58,7 @@
                 [src]="item.item.images[0]"
                 alt="no-image"
                 class="image-item"
+                (click)="openImageModal(item.item.images[0])"
               />
             </ng-container>
             <ng-template #elseTemplate>
@@ -92,6 +97,7 @@
               [src]="order.itemPackage.images[0]"
               alt="no-image"
               class="image-item"
+              (click)="openImageModal(order.itemPackage.images[0])"
             />
             <div class="list-item-content">
               <div class="item">
@@ -103,91 +109,83 @@
         </div>
       </ng-container>
     </div>
-  </div>
-
-  <!-- ---------------------------------- -->
-
-  <div class="content" *ngIf="escenarios">
-    <ng-container *ngIf="itemsExtra.length > 0; else elseTemplate">
-      <div class="squares">
-        <ng-container *ngFor="let item of itemsExtra">
-          <ng-container *ngIf="item.images.length > 0; else elseTemplate">
-            <!-- <div [style.background-image]="'url(' + item.images[0] + ')'" [style.width.%]="100" [style.backgroundSize]="'cover'" [style.height.%]="100"></div> -->
-            <img [src]="item.images[0]" alt="no-image" class="item-extra" />
+    <!-- ESCENARIOS VIEW -->
+    <ng-container *ngIf="view === 'escenarios'">
+      <ng-container *ngIf="itemsExtra.length > 0; else elseTemplate">
+        <div class="squares">
+          <ng-container *ngFor="let item of itemsExtra">
+            <ng-container *ngIf="item.images.length > 0; else elseTemplate">
+              <!-- <div [style.background-image]="'url(' + item.images[0] + ')'" [style.width.%]="100" [style.backgroundSize]="'cover'" [style.height.%]="100"></div> -->
+              <img [src]="item.images[0]" alt="no-image" class="item-extra" />
+            </ng-container>
+            <ng-template #elseTemplate>
+              <div class="square"></div>
+            </ng-template>
           </ng-container>
-          <ng-template #elseTemplate>
-            <div class="square"></div>
-          </ng-template>
-        </ng-container>
-      </div>
-    </ng-container>
-    <ng-template #elseTemplate>
-      <div class="squares">
-        <div class="square"></div>
-        <div class="square"></div>
-      </div>
-      <div class="squares">
-        <div class="square"></div>
-        <div class="square"></div>
-      </div>
-    </ng-template>
-  </div>
-  <!-- <app-provider-info providerId="ProviderID"></app-provider-info> -->
-
-  <!--Reservación (en progreso)-->
-
-  <div class="content" *ngIf="reservacion">
-    <p class="title">Reservación</p>
-
-    <div *ngIf="reservationItem" class="date-wrapper">
-      <div class="date2">{{ reservationItem.description }}</div>
-    </div>
-  </div>
-
-  <div class="content" *ngIf="address">
-    <ng-container *ngIf="!fotodavitte; else sesion"> <p class="top-text">Lugar de entrega:</p> </ng-container>
-    <ng-template #sesion> <p class="top-text">Lugar de la sesión:</p> </ng-template>
-    <div class="text-container">
-      <ng-container *ngIf="order.items[0].deliveryLocation.city; else pickUp">
-        {{ order.items[0].deliveryLocation.street }},
-        {{ order.items[0].deliveryLocation.city }}, República Dominicana
-      </ng-container>
-      <ng-template #pickUp>
-        {{ order.items[0].deliveryLocation.nickName }}
-      </ng-template>
-    </div>
-    <ng-container *ngIf="order.items[0].deliveryLocation.note">
-      <div class="target">
-        <p class="top-text">Nota:</p>
-        <div class="text-container" style="margin-bottom: 60px">
-          {{ order.items[0].deliveryLocation.note }}
         </div>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <div class="squares">
+          <div class="square"></div>
+          <div class="square"></div>
+        </div>
+        <div class="squares">
+          <div class="square"></div>
+          <div class="square"></div>
+        </div>
+      </ng-template>
+    </ng-container>
+    <!-- RESERVACION VIEW -->
+    <ng-container *ngIf="view === 'reservacion'">
+      <p class="top-text">Reservación</p>
+      <div *ngIf="reservationItem" class="date-wrapper">
+        <div class="date2">{{ reservationItem.description }}</div>
       </div>
     </ng-container>
-  </div>
-
-  <div class="content-customizer" *ngIf="personalizacion && customizer">
-    <table>
-      <tr *ngFor="let detail of customizerDetails">
-        <th>{{detail.name}}</th>
-        <td>{{detail.value}}</td>
-      </tr>
-    </table>
-    <div class="img-container" *ngIf="customizer.preview">
-      <img class="img" [src]="customizer.preview" alt="" />
+    <!-- ADDRESS VIEW -->
+    <ng-container *ngIf="view === 'address'">
+      <ng-container *ngIf="!fotodavitte; else sesion"> <p class="top-text">Lugar de entrega:</p> </ng-container>
+      <ng-template #sesion> <p class="top-text">Lugar de la sesión:</p> </ng-template>
+      <div class="text-container">
+        <ng-container *ngIf="order.items[0].deliveryLocation.city; else pickUp">
+          {{ order.items[0].deliveryLocation.street }},
+          {{ order.items[0].deliveryLocation.city }}, República Dominicana
+        </ng-container>
+        <ng-template #pickUp>
+          {{ order.items[0].deliveryLocation.nickName }}
+        </ng-template>
+      </div>
+      <ng-container *ngIf="order.items[0].deliveryLocation.note">
+        <div class="target">
+          <p class="top-text" style="margin-top: 24px;">Nota:</p>
+          <div class="text-container" style="margin-bottom: 60px">
+            {{ order.items[0].deliveryLocation.note }}
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <!-- CUSTOMIZER VIEW -->
+    <div class="content-customizer" *ngIf="view === 'personalizacion' && customizer">
+      <table>
+        <tr *ngFor="let detail of customizerDetails">
+          <th>{{detail.name}}</th>
+          <td>{{detail.value}}</td>
+        </tr>
+      </table>
+      <div class="img-container" *ngIf="customizer.preview">
+        <img class="img" [src]="customizer.preview" alt="" />
+      </div>
     </div>
-  </div>
-
-  <div *ngIf="mensajeRegalo && isValidMessage">
-    <app-gift-message
-      [data]="message"
-      [isPreview]="true"
-      [message]="currentMessage"
-    ></app-gift-message>
-  </div>
-
-  <div *ngIf="pagoView">
-    <div class="pagoView">
+    <!-- MENSJE VIEW -->
+    <ng-container *ngIf="view === 'mensajeRegalo' && isValidMessage">
+      <app-gift-message
+        [data]="message"
+        [isPreview]="true"
+        [message]="message.message"
+      ></app-gift-message>
+    </ng-container>
+    <!-- PAGOS VIEW -->
+    <ng-container *ngIf="view === 'pago'">
       <div class="payment-list">
         <div class="payment-card">
           <div class="price">
@@ -206,6 +204,6 @@
       <div *ngFor="let item of ocrPayments">
         <app-item-status [itemListContent]="item"></app-item-status>
       </div>
-    </div>
+    </ng-container>
   </div>
 </div>

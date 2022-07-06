@@ -9,6 +9,9 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { Item } from 'src/app/core/models/item';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -16,6 +19,7 @@ import { Item } from 'src/app/core/models/item';
   styleUrls: ['./user-dashboard.component.scss']
 })
 export class UserDashboardComponent implements OnInit {
+  URI: string = environment.uri;
   env: string = environment.assetsUrl;
   tabs: string[] = ['Regalos', 'Tiendas', 'Eventos', 'NFTs'];
   userData: User;
@@ -28,34 +32,34 @@ export class UserDashboardComponent implements OnInit {
   users: User[] = [];
 
   content: Array<any> = [
+    // {
+    //   question: 'Preguntas automatizadas a tu WhatsApp para facilitar el primer contacto.',
+    //   answer: 'Esto es una muestra de prueba',
+    //   hidden: false,
+    //   line: true
+    // },
+    // {
+    //   question: 'Patrocinio',
+    //   answer: 'Si',
+    //   hidden: false,
+    //   line: true
+    // },
+    // {
+    //   question: 'Data de analisis',
+    //   answer: '',
+    //   hidden: false,
+    //   line: true
+    // },
     {
-    question: 'Preguntas automatizadas a tu WhatsApp para facilitar el primer contacto.',
-    answer: 'Esto es una muestra de prueba',
-    hidden: false,
-    line: true
-    },
-    {
-    question: 'Patrocinio',
-    answer: 'Si',
-    hidden: false,
-    line: true
-    },
-    {
-    question: 'Data de analisis',
-    answer: '',
-    hidden: false,
-    line: true
-    },
-    {
-    question: 'Vende Online o por WhatsApp',
-    answer: '',
-    hidden: false,
-    line: false,
-    callback: () => {
-      this.router.navigate([`/ecommerce/item-creator`])
+      question: 'Vende Online o por WhatsApp',
+      answer: '',
+      hidden: false,
+      line: false,
+      callback: () => {
+        this.router.navigate([`/ecommerce/item-creator`])
+      }
     }
-    }
-    ];
+  ];
 
   constructor(
     private router: Router,
@@ -63,16 +67,22 @@ export class UserDashboardComponent implements OnInit {
     private merchantsService: MerchantsService,
     private itemsService: ItemsService,
     private orderService: OrderService,
+    private dialogService: DialogService,
     private route: ActivatedRoute,
+    private headerService: HeaderService
   ) { }
 
   async ngOnInit(): Promise<void> {
+    await this.authService.signin('18492203488', '123', false);
+
     lockUI();
     const user = await this.authService.me();
     unlockUI();
     if (!user) return this.redirect();
     this.userData = user;
     this.merchantData = await this.merchantsService.merchantDefault();
+    this.headerService.merchantInfo = this.merchantData;
+    
     if(this.merchantData) {
       const [items, total, users] = await Promise.all([
         this.itemsService.itemsByMerchant(this.merchantData._id),
@@ -93,20 +103,41 @@ export class UserDashboardComponent implements OnInit {
     this.router.navigate([`/ecommerce/user-items`]);
   }
 
-  wichName(e: string) {
-    switch (e) {
-      case 'Regalos':
-        console.log('Compradores');
-        break;
-      case 'Tiendas':
-        this.router.navigate(['tiendas'], {relativeTo: this.route });
-        break;
-      case 'Eventos':
-        console.log('Eventos');
-        break;
-      case 'NFTs':
-        console.log('NFTs');
-        break;
-    }
+  openShare() {
+    const list: StoreShareList[] = [
+      {
+        title:  'Mi Contacto',
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+          },
+          {
+            text: 'Descarga el qrCode',
+            mode: 'qr',
+            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+          },
+          {
+            text: 'Vista del Comprador',
+            mode: 'func',
+            func: () => this.router.navigate([`/ecommerce/user-contact-landing/${this.userData._id}`]),
+          },
+        ]
+      },
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

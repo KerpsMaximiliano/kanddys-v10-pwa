@@ -31,6 +31,7 @@ export class AppComponent implements OnDestroy, OnInit {
     // SW
     if (this.swUpdate?.isEnabled) {
       this.swUpdate.available.subscribe(() => {
+        localStorage.clear();
         ons.notification.alert(`Reload to update.`, {
           cancelable: false,
           title: 'New version available!',

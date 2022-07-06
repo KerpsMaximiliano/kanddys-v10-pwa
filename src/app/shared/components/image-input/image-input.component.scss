@@ -1,7 +1,12 @@
 .input-container {
   height: 200px;
-  width: 250px;
+  width: 250px !important;
   margin-bottom: 1px;
+
+  &.small {
+    height: 85px;
+    width: 100px !important;
+  }
 }
 
 .d-none {
@@ -25,8 +30,18 @@
   cursor: pointer;
   z-index: 1;
 
+  .selected {
+    border: none;
+  }
+
   &.error {
     border-color: red;
     color: red;
+  }
+
+  &.small {
+    height: 85px;
+    width: 100px;
+    font-size: 16px;
   }
 }
