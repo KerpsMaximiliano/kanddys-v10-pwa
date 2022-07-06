@@ -68,6 +68,7 @@ import { WebformCreatorComponent } from './pages/webform-creator/webform-creator
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
 import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
 import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
+import { TagListComponent } from './pages/tag-list/tag-list.component';
 
 const routes: Routes = [
   {
@@ -361,6 +362,9 @@ const routes: Routes = [
     component: WebformDetailComponent
   },
   {
+    path: 'tag-list',
+    component: TagListComponent
+  },
     path: 'webform-visitors/:id',
     component: WebformVisitorsComponent
   },
@@ -436,6 +440,7 @@ const routes: Routes = [
     WebformDetailComponent,
     WebformVisitorsComponent,
     TagVisitorsDetailComponent,
+    TagListComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

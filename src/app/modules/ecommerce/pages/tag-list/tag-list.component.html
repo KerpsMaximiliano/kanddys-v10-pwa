@@ -1,0 +1,29 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'center'"
+    [mainText]="{
+        text: 'TAGS'
+    }"
+    [returnAble]="true"
+    ></app-helper-headerv2>
+
+    <div class="grid-area">
+        <app-single-item-list *ngFor=" let item of itemList; index as i"
+        [tag]="item"
+        (singleItem)="touched()"
+        ></app-single-item-list>
+    </div>
+
+    <app-bubble-button
+    [color]="'blue'"
+    [position]="'left'"
+    [return]="true"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'fixed'"
+    [size]="'small'"
+    [bgColor]="'#2874AD'"
+    [text]="'    145 VENTAS         ' + '      RD $14,154          ' + '          157     '"
+    ></app-sticky-button>
+</div>
