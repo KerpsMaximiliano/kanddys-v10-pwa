@@ -66,6 +66,7 @@ import { AirtableFieldConnectionComponent } from './pages/airtable-field-connect
 import { WebformClientComponent } from './pages/webform-client/webform-client.component';
 import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
+import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
 
 const routes: Routes = [
   {
@@ -428,6 +429,7 @@ const routes: Routes = [
     WebformClientComponent,
     WebformCreatorComponent,
     WebformDetailComponent,
+    TagVisitorsDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
