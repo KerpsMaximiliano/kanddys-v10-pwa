@@ -1,12 +1,12 @@
 <div class="container">
     <app-helper-headerv2
     [mode]="'center'"
-    [whatsapp]="false"
-    [shopcart]="false"
-    [navtext]="category?.name"
-    [color]="'#E9E371'"
-    [edit]="false"
+    [mainText]="{
+        text: category?.name,
+        color: '#E9E371'
+    }"
     [returnAble]="true"
+    [color]="'#E9E371'"
     ></app-helper-headerv2>
 
     <app-header-info-admin
