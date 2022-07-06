@@ -21,19 +21,14 @@
     </ng-container>
 
     <ng-container *ngIf="single">
-        <div class="title" [ngStyle]="{'justify-content': 'flex-start'}" *ngFor="let questions of data; index as i">
-            <h1 class="headline">{{questions.question}}</h1>
+        <div class="title" [ngStyle]="{'justify-content': 'flex-start'}">
+            <h1 class="headline">{{headline}}</h1>
             <!-- <img [src]="" alt=""> -->
         </div>
-
-        <hr class="separator">
-
         <div class="question-area" [ngStyle]="{'align-items': 'unset'}">
-            <div class="column-style" *ngFor="let questions of data; index as i">
-                
-                <p class="column-answer">{{questions.answer}}</p>
-                
-                <h2 class="column-date">{{questions.date}}</h2>
+            <div class="column-style">
+                <p class="column-answer">{{answer}}</p>
+                <h2 class="column-date">{{date}}</h2>
             </div>
         </div>
     </ng-container>
