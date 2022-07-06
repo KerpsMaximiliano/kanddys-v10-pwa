@@ -2,18 +2,20 @@
     <div class="container">
         <div class="dialog-card">
             <div *ngFor="let item of list">
-                <qrcode
-                *ngIf="item.qrlink && !item.title"
-                #qrcode
-                [qrdata]="item.qrlink"
-                [elementType]="'img'"
-                [width]="size"
-                [style.margin-top.px]="-25"
-                [errorCorrectionLevel]="'M'"
-                [allowEmptyString]="true"
-                colorDark="#0B1F38"
-                class="bigqr"
-                ></qrcode>
+                <div class="qr-container" *ngIf="item.qrlink && !item.title">
+                    <qrcode
+                    #qrcode
+                    [qrdata]="item.qrlink"
+                    [elementType]="'img'"
+                    [width]="size"
+                    [style.margin-top.px]="-25"
+                    [errorCorrectionLevel]="'M'"
+                    [allowEmptyString]="true"
+                    colorDark="#2874AD"
+                    class="bigqr"
+                    ></qrcode>
+                    <button (click)="downloadQr()">Descarga el qrCode</button>
+                </div>
                 <h2 class="title" *ngIf="!item.qrlink">{{item.title}}</h2>
                 <ng-container *ngFor="let option of item.options">
                     <qrcode

@@ -39,14 +39,16 @@ export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
-  size: number;
+  size: number = 150;
   screenWidth: number;
 
   constructor(
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private ref: DialogRef,
-  ) {this.onResize(); /* actualiza dinamicamente el tamaño del qr */ }
+  ) {
+    // this.onResize(); /* actualiza dinamicamente el tamaño del qr */ 
+  }
 
   ngOnInit(): void {
     if(!this.list || !this.list.length) throw new Error('Ingresa opciones para mostrar'); 
@@ -107,14 +109,9 @@ export class StoreShareComponent implements OnInit {
       });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-     this.screenWidth = window.innerWidth;
-     this.size = (this.screenWidth * 75)/100
-     if(this.size > 400){
-        this.size = 400;
-     }
-  }
+  // @HostListener('window:resize', ['$event'])
+  // onResize() {
+  // }
 
   close() {
     this.ref.close();

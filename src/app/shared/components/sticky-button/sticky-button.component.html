@@ -5,7 +5,11 @@
     [ngStyle]="{color: color && color}"
     [style.background-color]="bgColor"
   >
-    {{ text }}
+    <a class="back-btn" *ngIf="backButton" (click)="backButtonCallback && backButtonCallback()">
+      <i class="fas fa-chevron-left" [style.color]="color ? color : '#FFFFFF'">
+      </i>
+    </a>
+    <span (click)="textCallback && textCallback()">{{ text }}</span>
     <img *ngIf="icon" [src]="icon" [alt]="icon">
   </button>
 </div>
@@ -91,7 +95,11 @@
         padding: padding ? padding : null
       }"
     >
-      {{ text }}
+      <a class="back-btn" *ngIf="backButton" (click)="backButtonCallback && backButtonCallback()">
+        <i class="fas fa-chevron-left" [style.color]="color ? color : '#FFFFFF'">
+        </i>
+      </a>
+      <span (click)="textCallback && textCallback()">{{ text }}</span>
       <img *ngIf="icon" [src]="icon" [alt]="icon">
       {{ auxText }}
     </button>
