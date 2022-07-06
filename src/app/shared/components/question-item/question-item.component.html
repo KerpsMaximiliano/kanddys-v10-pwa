@@ -1,24 +1,31 @@
 <div class="container">
     <ng-container *ngIf="!single">
-        <div class="title" [ngStyle]="{'justify-content': 'flex-start'}">
+        <div class="title">
             <h1 class="headline">{{headline}}</h1>
-            <!-- <img [src]="env + icon" alt="Icono de una persona" width="14px" height="19px" *ngIf=""> -->
+            <button class="headline-btn" *ngIf="user">
+                <img [src]="env + '/person.svg'" alt="user info" width="15" height="19">
+            </button>
         </div>
 
-        <hr class="separator">
-
         <div class="question-area" [ngStyle]="{'justify-content': data[0].image? 'unset': '', 'flex-direction': data[0].image? 'unset': ''}">
-            <div class="wrapper" *ngFor="let questions of data; index as i">
-                <h2 class="date" *ngIf="!questions?.image">{{questions.date}}</h2>
-                <p class="answer" *ngIf="!questions?.image">{{questions.answer}}</p>
-
-                <img [src]="env + questions?.image" alt="Imagen subido por el usuario para la pregunta" class="image-upload" *ngIf="questions?.image">
+            <div class="wrapper" *ngFor="let question of data; index as i">
+                <span class="date" *ngIf="question.date && !question.question && !question.image">{{question.date}}</span>
+                <span class="question" *ngIf="question.question && !question.image">{{question.question}}</span>
+                <p class="answer" *ngIf="!question.image" [ngStyle]="{maxWidth: question.question && '50%'}">{{question.answer}}</p>
+                <img *ngIf="question.image" [src]="env + question.image" alt="question image" class="image-upload">
             </div>
         </div>
 
-        <div class="end-area" [ngStyle]="{'justify-content': 'flex-end'}">
-            <!-- <button class="display">AQUI VA LO QUE DESPLIEGA <span><i class="fas fa-chevron-right"></i></span> <span><i class="fas fa-chevron-down"></i></span></button> -->
+        <div class="end-area" [ngStyle]="{'justify-content': tags && tags.length ? 'space-between' : 'flex-end'}">
+            <button class="display" *ngIf="tags && tags.length" (click)="showTags = !showTags">
+                TAGS
+                <span *ngIf="!showTags"><i class="fas fa-chevron-right"></i></span>
+                <span *ngIf="showTags"><i class="fas fa-chevron-down"></i></span>
+            </button>
             <button class="total">{{total}} RESPUESTAS</button>
+        </div>
+        <div class="tag-list" *ngIf="showTags">
+            <button class="tag-button" [ngClass]="{'selected': tag.selected}" *ngFor="let tag of tags" (click)="tag.selected = !tag.selected">{{tag.name}}</button>
         </div>
     </ng-container>
 

@@ -1,0 +1,15 @@
+.container{
+    width: 100%;
+    min-height: 100vh;
+    background-color: #FFFFFF;
+
+    .grid-area{
+        width: 90%;
+        height: fit-content;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+        margin: 35px auto;
+        row-gap: 39px;
+        column-gap: 5%;
+    }
+}

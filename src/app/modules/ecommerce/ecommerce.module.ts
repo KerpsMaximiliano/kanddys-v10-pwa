@@ -66,7 +66,9 @@ import { AirtableFieldConnectionComponent } from './pages/airtable-field-connect
 import { WebformClientComponent } from './pages/webform-client/webform-client.component';
 import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
+import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
 import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
+import { TagListComponent } from './pages/tag-list/tag-list.component';
 
 const routes: Routes = [
   {
@@ -362,7 +364,15 @@ const routes: Routes = [
   {
     path: 'tag-visitors-detail',
     component: TagVisitorsDetailComponent
-  }
+  },
+  {
+    path: 'tag-list',
+    component: TagListComponent
+  },
+  {
+    path: 'webform-visitors/:id',
+    component: WebformVisitorsComponent
+  },
 ];
 
 @NgModule({
@@ -433,7 +443,9 @@ const routes: Routes = [
     WebformClientComponent,
     WebformCreatorComponent,
     WebformDetailComponent,
+    WebformVisitorsComponent,
     TagVisitorsDetailComponent,
+    TagListComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
