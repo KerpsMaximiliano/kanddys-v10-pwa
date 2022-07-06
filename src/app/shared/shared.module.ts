@@ -98,6 +98,7 @@ import { SingleItemListComponent } from './components/single-item-list/single-it
 import { SliderElementListComponent } from './components/slider-element-list/slider-element-list.component';
 import { OneLineItemComponent } from './components/one-line-item/one-line-item.component';
 import { QuestionItemComponent } from './components/question-item/question-item.component';
+import { ThreejsCanvasComponent } from './components/threejs-canvas/threejs-canvas.component';
 
 const imports = [
   CommonModule,
@@ -193,6 +194,7 @@ const declarations = [
   SliderElementListComponent,
   OneLineItemComponent,
   QuestionItemComponent,
+  ThreejsCanvasComponent
 ];
 
 @NgModule({

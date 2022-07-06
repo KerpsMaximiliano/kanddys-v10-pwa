@@ -165,6 +165,10 @@ export class TestComponent implements OnInit {
     }); */
   }
 
+  log() {
+    console.log("you clicked on somethin")
+  }
+
   touched(){
     console.log('Hiciste click ;)');
     console.log(this.tagTest[2].user);
