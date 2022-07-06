@@ -26,6 +26,25 @@
 		margin: 0 24px;
 		border-bottom: solid 2px #e7e7e7;
 
+		.column-style{
+			display: flex;
+			flex-direction: column;
+
+			.column-answer{
+					font-family: 'RobotoRegular';
+					font-size: 17px;
+					color: #0B1F38;
+					margin-bottom: 21px;
+			}
+
+			.column-date{
+					font-family: 'RobotoRegular';
+					font-size: 13px;
+					color: #7B7B7B;
+			}
+
+	}
+
 		.wrapper {
 			display: flex;
 			align-items: baseline;

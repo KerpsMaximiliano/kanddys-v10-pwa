@@ -1,10 +1,12 @@
 <div class="container">
-    <div class="title">
-        <h1 class="headline">{{headline}}</h1>
-        <!-- <img [src]="" alt=""> -->
-    </div>
-
     <ng-container *ngIf="!single">
+        <div class="title" [ngStyle]="{'justify-content': 'flex-start'}">
+            <h1 class="headline">{{headline}}</h1>
+            <!-- <img [src]="" alt=""> -->
+        </div>
+
+        <hr class="separator">
+
         <div class="question-area">
             <div class="wrapper" *ngFor="let questions of data; index as i">
                 <span class="date">{{questions.date}}</span>
@@ -15,6 +17,24 @@
         <div class="end-area" [ngStyle]="{'justify-content': 'flex-end'}">
             <!-- <button class="display">AQUI VA LO QUE DESPLIEGA <span><i class="fas fa-chevron-right"></i></span> <span><i class="fas fa-chevron-down"></i></span></button> -->
             <button class="total">{{total}} RESPUESTAS</button>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="single">
+        <div class="title" [ngStyle]="{'justify-content': 'flex-start'}" *ngFor="let questions of data; index as i">
+            <h1 class="headline">{{questions.question}}</h1>
+            <!-- <img [src]="" alt=""> -->
+        </div>
+
+        <hr class="separator">
+
+        <div class="question-area" [ngStyle]="{'align-items': 'unset'}">
+            <div class="column-style" *ngFor="let questions of data; index as i">
+                
+                <p class="column-answer">{{questions.answer}}</p>
+                
+                <h2 class="column-date">{{questions.date}}</h2>
+            </div>
         </div>
     </ng-container>
 </div>

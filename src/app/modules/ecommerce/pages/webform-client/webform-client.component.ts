@@ -95,7 +95,7 @@ export class WebformClientComponent implements OnInit {
             labelStyles: {
               margin: '0px',
               paddingBottom: '18px',
-              paddingTop: '47px'
+              paddingTop: '54px'
             },
             subLabelStyles: {
               color: '#7B7B7B',
@@ -183,6 +183,7 @@ export class WebformClientComponent implements OnInit {
             } : null,
             containerStyles: {
               padding: '0rem',
+              paddingRight: '51px'
             }
           },
         },
@@ -202,6 +203,9 @@ export class WebformClientComponent implements OnInit {
               margin: 0,
               color: '#7B7B7B',
               paddingLeft: '16px'
+            },
+            fieldStyles: {
+              paddingRight: '51px',
             },
             containerStyles: {
               paddingTop: '10px',
@@ -323,6 +327,7 @@ export class WebformClientComponent implements OnInit {
             },
             containerStyles: {
               padding: '0rem',
+              paddingRight: '51px'
             },
           }
         },
@@ -370,7 +375,8 @@ export class WebformClientComponent implements OnInit {
             containerStyles: {
               padding: '0px',
               paddingTop: '79px',
-              paddingBottom: '121px'
+              paddingBottom: '121px',
+              paddingRight: '51px'
             },
             topLabelActionStyles: {
               fontFamily: 'Roboto',
@@ -435,7 +441,14 @@ export class WebformClientComponent implements OnInit {
               fontWeight: 'bold',
               fontFamily: 'Roboto'
             },
-            subLabelStyles: labelStyles,
+            subLabelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoRegular',
+              fontWeight: '100'
+            },
+            fieldStyles: {
+              marginBottom: '15px'
+            },
             containerStyles: {
               padding: '0px',
             }
@@ -711,6 +724,9 @@ export class WebformClientComponent implements OnInit {
               fontSize: '24px',
               fontWeight: 'bold',
               fontFamily: 'Roboto'
+            },
+            fieldStyles: {
+              marginBottom: '5px'
             },
             containerStyles: {
               padding: '0px',
