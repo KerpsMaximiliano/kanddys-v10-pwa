@@ -359,6 +359,10 @@ const routes: Routes = [
     path: 'webform-detail/:id',
     component: WebformDetailComponent
   },
+  {
+    path: 'tag-visitors-detail',
+    component: TagVisitorsDetailComponent
+  }
 ];
 
 @NgModule({
