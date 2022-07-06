@@ -1,9 +1,23 @@
 <div style="min-height: 100vh;">
 
   <app-helper-headerv2 [mode]="mode === 'category' ? 'edit':'options'"
-    [navtext]="item && ('Nueva Categoria A '+item.name)" [color]="mode === 'category' ? '#E9E371' : ''"
-    [returnAble]="true" [billId]="'405D $26'" [itemId]="'chps n tips'" [leftText]="'ingreso $2,020.00'"
-    [rightText]="'44 ventas'" (returnEvent)="back()"></app-helper-headerv2>
+    [mainText]="{
+        text: item && ('Nueva Categoria A '+item.name),
+        color: mode === 'category' ? '#E9E371': '#FFF'
+    }"
+    [leftText]="{
+        text: 'ingreso $2,020.00'
+    }"
+    [rightText]="{
+        text: '44 ventas'
+    }"
+    [extraTexts]="{
+        billId: '405D $26',
+        itemId: 'chps n tips'
+    }"
+    [returnAble]="true"
+    [color]="mode === 'category' ? '#E9E371' : ''"
+    (returnEvent)="back()"></app-helper-headerv2>
 
   <div class="input">
     <input class="leadword-input" (input)="searchKeyword()" [(ngModel)]="keyword" type="text" id="search"

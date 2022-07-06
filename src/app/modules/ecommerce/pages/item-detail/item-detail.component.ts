@@ -174,7 +174,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
   }
 
-  // tapping(){
-  //     this.tapped = !this.tapped;
-  // }
+  tapping(){
+    let url = 'www.google.com';
+    window.open(url, "_blank");
+  }
 }

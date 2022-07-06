@@ -1,6 +1,20 @@
 <div class="container">
-  <app-helper-headerv2 [mode]="'basic'" [fontSize2]="'21px'" [whatsapp]="false" [shopcart]="false" [returnAble]="true"
-    [batch]="true" [plus]="true" [color]="'#E9E371'" [fontSize]="'29px'" navtext="Mis Compradores">
+  <app-helper-headerv2 
+  [mode]="'basic'"
+  [mainText]="{
+    text: 'Mis Compradores',
+    fontSize: '21px'
+  }"
+  [edit]="{
+    active: true,
+    batch: true
+  }"
+  [plus]="{
+    active: true,
+    fontSize: '29px'
+  }"
+  [returnAble]="true"
+  [color]="'#E9E371'">
   </app-helper-headerv2>
 
   <div class="tab-area" #elemt (mousedown)="startDragging($event, false, elemt)" (mouseup)="stopDragging($event, false)"

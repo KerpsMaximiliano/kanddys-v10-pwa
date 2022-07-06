@@ -1,5 +1,9 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
+  [mode]="'basic'"
+  [mainText]="{
+    text: 'Placeholder Text'
+  }"
   ></app-helper-headerv2>
   <div class="header" *ngIf="webform">
     <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div>

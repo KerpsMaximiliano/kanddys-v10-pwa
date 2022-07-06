@@ -67,6 +67,7 @@ import { WebformClientComponent } from './pages/webform-client/webform-client.co
 import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
 import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
+import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
 
 const routes: Routes = [
   {
@@ -434,6 +435,7 @@ const routes: Routes = [
     WebformCreatorComponent,
     WebformDetailComponent,
     WebformVisitorsComponent,
+    TagVisitorsDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -14,7 +14,7 @@
 
     .light-text {
         font-size: 16px;
-        font-size: "RobotoRegular";
+        font-family: "RobotoRegular";
         margin: 0;
     }
 
@@ -62,6 +62,7 @@
             }
 
             .return {
+                margin: 0;
                 margin-left: 17px;
                 font-family: 'SfProBold';
                 font-size: 14px;
@@ -81,11 +82,12 @@
             margin-right: 22px;
         }
 
-        .plus {
+        .header-btn{
+            all: unset;
             font-family: 'SfProBold';
             font-size: 35px;
             color: #FFFFFF;
-        }
+        }     
 
         .edit-button{
             all: unset;
@@ -222,8 +224,4 @@
         }
     }
 
-}
-
-.header-btn {
-    all: unset;
 }
