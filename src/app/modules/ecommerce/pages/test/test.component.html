@@ -45,6 +45,15 @@ flex-direction: column;">
     [tag]="item"
     (singleItem)="touched()"
     ></app-single-item-list>
+    
+    <app-question-item
+    [single]="true"
+    [data]="[{
+        date: '25/10/2022',
+        question: '¿Que es lo que mas te gusta?',
+        answer:'Pizzas'
+    }]"
+    ></app-question-item>
 </div>
 <!-- <app-bubble-button
 [cart]="true"
