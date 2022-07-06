@@ -310,11 +310,11 @@ export class UserContactLandingComponent implements OnInit {
             mode: 'share',
             link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
           },
-          {
-            text: 'Descarga el qrCode',
-            mode: 'qr',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
-          },
+          // {
+          //   text: 'Descarga el qrCode',
+          //   mode: 'qr',
+          //   link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          // },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
