@@ -21,15 +21,12 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() public shopCartCallback: () => void;
     @Input() public editBtnCallback: () => void;
     @Input() returnAble: boolean = true;
-    @Input() plus: boolean = false;
     @Input() inMall: boolean = false;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;
-    @Input() inMall: boolean;
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
     @Input() filter: string;
-    @Input() returnAble: boolean;
     @Input() icons: Icon[];
 
     @Input() mainText?: {
@@ -90,7 +87,6 @@ export class HelperHeaderv2Component implements OnInit {
         cartAmount: number,
         filter?: string
     };
-    @Input() public editBtnCallback: () => void;
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
     @Output() searchEvent = new EventEmitter();
