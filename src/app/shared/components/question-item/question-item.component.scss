@@ -9,6 +9,20 @@
 		padding: 20px 0;
 		margin: 0 24px;
 		border-bottom: solid 2px #e7e7e7;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.headline-btn {
+			all: unset;
+			padding: 6px 8px;
+			border-radius: 50%;
+			cursor: pointer;
+
+			&:hover {
+				background-color: #e7e7e7;
+			}
+		}
 
 		.headline {
 			font-weight: 100;
@@ -51,10 +65,19 @@
 			gap: 10px;
 			padding: 4px 0;
 
-			.date {
-				font-family: "RobotoRegular";
-				font-size: 13px;
+			span {
 				color: #7b7b7b;
+				font-family: "RobotoRegular";
+				white-space: nowrap;
+				&.date {
+					font-size: 13px;
+				}
+				&.question {
+					font-size: 17px;
+					max-width: 50%;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
 			}
 			.answer {
 				margin: 0;
@@ -74,7 +97,7 @@
 		margin: 0 24px;
 		padding: 6px 0;
 
-		.total {
+		button {
 			all: unset;
 			font-family: "SfProBold";
 			font-size: 14px;
@@ -85,6 +108,34 @@
 			&:hover {
 				opacity: 0.75;
 			}
+		}
+	}
+}
+
+.tag-list {
+	margin: 0 24px 24px;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	gap: 12px;
+
+	.tag-button {
+		all: unset;
+		font-size: 15px;
+		font-family: "RobotoRegular";
+		padding: 6px;
+		border-radius: 16px;
+		color: #7B7B7B;
+		text-align: center;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #70abd8;
+			color: #ffffff;
+		}
+
+		&.selected {
+			background-color: #2874AD;
+			color: #ffffff;
 		}
 	}
 }
