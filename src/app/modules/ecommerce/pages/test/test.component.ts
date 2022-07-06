@@ -173,5 +173,13 @@ export class TestComponent implements OnInit {
     console.log('Hiciste click ;)');
     console.log(this.tagTest[2].user);
   }
+
+  testing(){
+    console.log('uwu')
+  }
+
+  displau(){
+    console.log('Clickaste display');
+  } 
 }
 

@@ -2,8 +2,15 @@
 
     <!-- Top bar -->
     <app-helper-headerv2 [mode]="'edit'"
-        [navtext]="merchant ? 'Etiquetas de ' + merchant.name : 'Etiquetas de CompradorId'" [returnAble]="true"
-        [whatsapp]="false" [shopcart]="false" [bgColor]="'#2874AD'" [color]="'#E9E371'" [edit]="true"
+        [mainText]="{
+            text: merchant ? 'Etiquetas de ' + merchant.name : 'Etiquetas de CompradorId'
+        }"
+        [returnAble]="true"
+        [edit]="{
+            active: true
+        }"
+        [bgColor]="'#2874AD'" 
+        [color]="'#E9E371'"
         (returnEvent)="redirect()">
     </app-helper-headerv2>
 
