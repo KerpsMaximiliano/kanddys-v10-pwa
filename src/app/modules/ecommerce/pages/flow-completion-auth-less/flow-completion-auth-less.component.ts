@@ -626,15 +626,15 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
     }
 
-    if (
-      this.step === 'PHONE_CHECK_AND_SHOW_BANKS' && !this.header.orderId &&
-      (this.header.flowRoute || this.localStorageFlowRoute !== '')
-    ) {
-      const redirectionURL = `/ecommerce/${
-        this.header.flowRoute || this.localStorageFlowRoute
-      }`;
-      this.router.navigate([redirectionURL]);
-    }
+    // if (
+    //   this.step === 'PHONE_CHECK_AND_SHOW_BANKS' && !this.header.orderId &&
+    //   (this.header.flowRoute || this.localStorageFlowRoute !== '')
+    // ) {
+    //   const redirectionURL = `/ecommerce/${
+    //     this.header.flowRoute || this.localStorageFlowRoute
+    //   }`;
+    //   this.router.navigate([redirectionURL]);
+    // }
 
     if (this.step === 'PAYMENT_INFO') {
       this.image = null;
@@ -642,6 +642,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.step = this.pastStep;
       this.isANewUser = false;
     }
+
+    this.buttonBlocked = false;
   }
 
   // PAYMENT INFO
