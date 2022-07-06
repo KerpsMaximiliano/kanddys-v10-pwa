@@ -67,6 +67,7 @@ import { WebformClientComponent } from './pages/webform-client/webform-client.co
 import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
 import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
+import { TagListComponent } from './pages/tag-list/tag-list.component';
 
 const routes: Routes = [
   {
@@ -359,6 +360,10 @@ const routes: Routes = [
     path: 'webform-detail/:id',
     component: WebformDetailComponent
   },
+  {
+    path: 'tag-list',
+    component: TagListComponent
+  }
 ];
 
 @NgModule({
@@ -430,6 +435,7 @@ const routes: Routes = [
     WebformCreatorComponent,
     WebformDetailComponent,
     TagVisitorsDetailComponent,
+    TagListComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
