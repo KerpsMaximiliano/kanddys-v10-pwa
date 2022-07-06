@@ -365,6 +365,7 @@ const routes: Routes = [
     path: 'tag-list',
     component: TagListComponent
   },
+  {
     path: 'webform-visitors/:id',
     component: WebformVisitorsComponent
   },
