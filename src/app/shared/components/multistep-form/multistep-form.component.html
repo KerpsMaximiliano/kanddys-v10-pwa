@@ -45,7 +45,7 @@
     [itemId]="!steps[currentStep].headerTextSide ||
 steps[currentStep].headerTextSide === 'CENTER'
   ? steps[currentStep].headerText
-  : null" [leftText]="''" [rightText]="''" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
+  : null" [leftText]="{text:''}" [rightText]="{text:''}" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
 shouldScrollBackwards &&
 !steps[currentStep].customScrollToStepBackwards
   ? scrollToStep(this.currentStep - 1, false)
