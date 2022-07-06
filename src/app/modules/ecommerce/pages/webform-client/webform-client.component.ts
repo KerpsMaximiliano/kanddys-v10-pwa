@@ -725,6 +725,9 @@ export class WebformClientComponent implements OnInit {
               fontWeight: 'bold',
               fontFamily: 'Roboto'
             },
+            fieldStyles: {
+              marginBottom: '5px'
+            },
             containerStyles: {
               padding: '0px',
             }
