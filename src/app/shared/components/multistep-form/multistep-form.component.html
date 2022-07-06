@@ -42,6 +42,17 @@ shouldScrollBackwards &&
   ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
   : null" [bgColor]="'#2874ad'">
   </app-helper-headerv2>
+  
+  <app-header-info
+    *ngIf="steps[currentStep].hideHeader && steps[currentStep].headerMode === 'header-info-component'"
+    [title]="steps[currentStep].headerInfoInputs.title"
+    [description]="steps[currentStep].headerInfoInputs.description"
+    [profileImage]="steps[currentStep].headerInfoInputs.profileImage"
+    [socials]="steps[currentStep].headerInfoInputs.socials"
+    [reverseInfoOrder]="steps[currentStep].headerInfoInputs.reverseInfoOrder"
+    [customStyles]="steps[currentStep].headerInfoInputs.customStyles"
+    [fixedMode]="steps[currentStep].headerInfoInputs.fixedMode"
+  ></app-header-info>
 
   <app-page-component-tabs
     *ngIf="steps[currentStep].showTabs"
@@ -54,7 +65,9 @@ shouldScrollBackwards &&
     transform: scrollableForm && !disableSmoothScroll ? 'translateY(' + currentYPosition + 'px)' : null
   }">
     <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
-      <div class="form-step" [ngStyle]="!steps[currentStepIndex].hideHeader ? {
+      <div class="form-step" [ngStyle]="!steps[currentStepIndex].hideHeader || (
+        steps[currentStepIndex].hideHeader && steps[currentStep].headerMode === 'header-info-component'
+      ) ? {
       paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
       minHeight: steps[currentStepIndex].customStickyButton ?
       'calc(100vh - ' + steps[currentStepIndex].customStickyButton.height + ')' :
@@ -158,6 +171,22 @@ shouldScrollBackwards &&
                     ? currentEmbeddedComponent.containerStyles
                     : null
                 ">
+                  <label *ngIf="currentField.label" class="input-label" [ngStyle]="
+                    currentEmbeddedComponent.labelStyles
+                      ? currentEmbeddedComponent.labelStyles
+                      : null
+                  ">
+                    {{ currentEmbeddedComponent.label }}
+                  </label>
+
+                  <label *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+                  currentEmbeddedComponent.sublabelStyles
+                    ? currentEmbeddedComponent.sublabelStyles
+                    : null
+                  ">
+                    {{ currentEmbeddedComponent.sublabel }}
+                  </label>
+
                   <app-dynamic-component [component]="currentEmbeddedComponent.component"
                     [componentInputs]="currentEmbeddedComponent.inputs"
                     [componentOutputs]="currentEmbeddedComponent.outputs"
@@ -212,10 +241,10 @@ shouldScrollBackwards &&
                 </label>
 
                 <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-              currentField.styles.subLabelStyles
-                ? currentField.styles.subLabelStyles
-                : null
-              ">
+                currentField.styles.subLabelStyles
+                  ? currentField.styles.subLabelStyles
+                  : null
+                ">
                   {{ currentField.sublabel }}
                 </label>
 
@@ -930,6 +959,22 @@ shouldScrollBackwards &&
                     ? currentEmbeddedComponent.containerStyles
                     : null
                 ">
+                  <label *ngIf="currentField.label" class="input-label" [ngStyle]="
+                    currentEmbeddedComponent.labelStyles
+                      ? currentEmbeddedComponent.labelStyles
+                      : null
+                  ">
+                    {{ currentEmbeddedComponent.label }}
+                  </label>
+
+                  <label *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+                  currentEmbeddedComponent.sublabelStyles
+                    ? currentEmbeddedComponent.sublabelStyles
+                    : null
+                  ">
+                    {{ currentEmbeddedComponent.sublabel }}
+                  </label>
+
                   <app-dynamic-component [component]="currentEmbeddedComponent.component"
                     [componentInputs]="currentEmbeddedComponent.inputs"
                     [componentOutputs]="currentEmbeddedComponent.outputs"

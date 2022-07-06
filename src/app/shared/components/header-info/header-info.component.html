@@ -1,4 +1,8 @@
-<div class="body" [ngStyle]="customStyles?.wrapper">
+<div 
+    class="body header-info-component"
+    [ngClass]="{'fixed-mode': fixedMode}"
+    [ngStyle]="customStyles?.wrapper"
+>
     <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
         <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
             <img *ngIf="profileImage else placeholder" [src]="profileImage" alt="profile-image"

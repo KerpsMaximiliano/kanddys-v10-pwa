@@ -32,6 +32,7 @@ export class HeaderInfoComponent implements OnInit {
   @Input() hasSocials: boolean;
   @Input() type: string;
   @Input() route: string;
+  @Input() fixedMode: boolean = false;
   regex = /\D/g;
   env: string = environment.assetsUrl;
   showMore: boolean;

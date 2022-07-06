@@ -271,7 +271,9 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
         document.querySelector('.helper-headerv1').clientHeight :
         document.querySelector('.helper-headerv2') ?
           document.querySelector('.helper-headerv2').clientHeight :
-          0
+            document.querySelector('.header-info-component') ? 
+              document.querySelector('.header-info-component').clientHeight : 
+                0
         ;
     }, 100)
 
@@ -576,8 +578,9 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
           document.querySelector('.helper-headerv1').clientHeight :
           document.querySelector('.helper-headerv2') ?
             document.querySelector('.helper-headerv2').clientHeight :
-            0
-          ;
+              document.querySelector('.header-info-component') ? 
+                document.querySelector('.header-info-component').clientHeight : 
+                  0;
       }, 100);
     }
   };

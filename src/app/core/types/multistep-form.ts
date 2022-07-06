@@ -88,6 +88,10 @@ export interface EmbeddedComponent {
   component: Type<any>;
   inputs: Record<string, any>;
   outputs?: Array<EmbeddedComponentOutput>;
+  label?: string;
+  sublabel?: string;
+  labelStyles?: any;
+  sublabelStyles?: any;
   containerStyles?: any;
   afterIndex?: number;
   beforeIndex?: number;
@@ -144,6 +148,16 @@ export interface FooterOptions {
   },
 }
 
+export interface HeaderInfoConfig {
+  title: string;
+  description: string;
+  profileImage: string;
+  socials: { name: string; url: string;}[]
+  reverseInfoOrder?: boolean;
+  customStyles?: any;
+  fixedMode?: boolean;
+};
+
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText?: string;
@@ -174,7 +188,8 @@ export interface FormStep {
   shoppingCartCallback?(...params): any;
   hideHeader?: boolean;
   hideMainStepCTA?: boolean;
-  headerMode?: 'v1' | 'v2';
+  headerMode?: 'v1' | 'v2' | 'header-info-component';
+  headerInfoInputs?: HeaderInfoConfig;
   footerConfig?: FooterOptions;
   styles?: Record<string, string>;
   showTabs?: boolean;
