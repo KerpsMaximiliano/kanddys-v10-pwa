@@ -16,6 +16,7 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-shipment-data-form',
@@ -23,6 +24,7 @@ import { FormStep } from 'src/app/core/types/multistep-form';
   styleUrls: ['./shipment-data-form.component.scss'],
 })
 export class ShipmentDataFormComponent implements OnInit {
+  saleflowData: SaleFlow;
 
   constructor(
     private header: HeaderService,
@@ -31,7 +33,7 @@ export class ShipmentDataFormComponent implements OnInit {
   ) { }
 
   getStoredDeliveryLocation() {
-    const saleflowData =
+    const saleflowData: SaleFlow =
       this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
     const orderData = this.header.getOrder(saleflowData._id);
     let deliveryLocation = null;
@@ -72,13 +74,13 @@ export class ShipmentDataFormComponent implements OnInit {
               let preOrderID;
               let whatsappLinkQueryParams;
 
-              if (this.header.saleflow.module.delivery) {
+              if (this.saleflowData.module.delivery) {
                 this.header.storedDeliveryLocation =
-                  this.header.saleflow.module.delivery.pickUpLocations[0].nickName;
+                  this.saleflowData.module.delivery.pickUpLocations[0].nickName;
               }
 
-              const pickupLocation = this.header.saleflow.module.delivery
-                ? this.header.saleflow.module.delivery.pickUpLocations[0]
+              const pickupLocation = this.saleflowData.module.delivery
+                ? this.saleflowData.module.delivery.pickUpLocations[0]
                   .nickName
                 : this.header.storedDeliveryLocation;
               const deliveryData = {
@@ -89,9 +91,9 @@ export class ShipmentDataFormComponent implements OnInit {
                 this.header.order?.products?.length > 0
               )
                 this.header.order.products[0].deliveryLocation = deliveryData;
-              this.header.storeLocation(this.header.saleflow._id, deliveryData);
+              this.header.storeLocation(this.saleflowData._id, deliveryData);
               this.header.isComplete.delivery = true;
-              this.header.storeOrderProgress(this.header.saleflow._id);
+              this.header.storeOrderProgress(this.saleflowData._id);
 
               this.header.disableGiftMessageTextarea = false;
 
@@ -251,6 +253,7 @@ export class ShipmentDataFormComponent implements OnInit {
     localStorage.setItem('flowRoute', 'shipment-data-form');
     const saleflowData =
       this.header.saleflow || JSON.parse(localStorage.getItem('saleflow-data'));
+    this.saleflowData = saleflowData;
     const orderData = this.header.getOrder(saleflowData._id);
 
     if (!saleflowData) {
@@ -285,7 +288,7 @@ export class ShipmentDataFormComponent implements OnInit {
         ]);
         return;
       }
-      const items = this.header.getItems(this.header.saleflow._id);
+      const items = this.header.getItems(saleflowData._id);
       if (items && items.length > 0) this.header.items = items;
       else {
         this.router.navigate([
