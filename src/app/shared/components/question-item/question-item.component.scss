@@ -16,6 +16,7 @@
             font-family: 'RobotoMedium';
             font-size: 16px;
             color: #7B7B7B;
+            margin: 0;
         }
     }
 
@@ -54,6 +55,7 @@
         }
 
         .wrapper{
+            max-width: 100%;
             display: flex;
             align-items: baseline;
 
@@ -65,12 +67,24 @@
             }
 
             .answer{
+                max-width: 80%;
+                max-height: 17px;
                 font-family: 'RobotoRegular';
                 font-size: 17px;
                 color: #0B1F38;
                 margin-bottom: 7px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
+            .image-upload{
+               width: 76px; 
+               height: 65px;
+               border-radius: 9px;
+               background-color: #FED230;
+               margin-right: 12px;
+            }
         }
     }
 
@@ -90,6 +104,7 @@
             font-family: 'SfProBold';
             font-size: 14px;
             color: #2874AD;
+            margin: 0;
         }
     }
 }

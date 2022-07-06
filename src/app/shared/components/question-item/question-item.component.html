@@ -2,15 +2,17 @@
     <ng-container *ngIf="!single">
         <div class="title" [ngStyle]="{'justify-content': 'flex-start'}">
             <h1 class="headline">{{headline}}</h1>
-            <!-- <img [src]="" alt=""> -->
+            <!-- <img [src]="env + icon" alt="Icono de una persona" width="14px" height="19px" *ngIf=""> -->
         </div>
 
         <hr class="separator">
 
-        <div class="question-area">
+        <div class="question-area" [ngStyle]="{'justify-content': data[0].image? 'unset': '', 'flex-direction': data[0].image? 'unset': ''}">
             <div class="wrapper" *ngFor="let questions of data; index as i">
-                <h2 class="date">{{questions.date}}</h2>
-                <p class="answer">{{questions.answer}}</p>
+                <h2 class="date" *ngIf="!questions?.image">{{questions.date}}</h2>
+                <p class="answer" *ngIf="!questions?.image">{{questions.answer}}</p>
+
+                <img [src]="env + questions?.image" alt="Imagen subido por el usuario para la pregunta" class="image-upload" *ngIf="questions?.image">
             </div>
         </div>
 
