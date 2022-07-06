@@ -66,6 +66,7 @@ import { AirtableFieldConnectionComponent } from './pages/airtable-field-connect
 import { WebformClientComponent } from './pages/webform-client/webform-client.component';
 import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
 import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
+import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
 
 const routes: Routes = [
   {
@@ -358,6 +359,10 @@ const routes: Routes = [
     path: 'webform-detail/:id',
     component: WebformDetailComponent
   },
+  {
+    path: 'webform-visitors/:id',
+    component: WebformVisitorsComponent
+  },
 ];
 
 @NgModule({
@@ -428,6 +433,7 @@ const routes: Routes = [
     WebformClientComponent,
     WebformCreatorComponent,
     WebformDetailComponent,
+    WebformVisitorsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

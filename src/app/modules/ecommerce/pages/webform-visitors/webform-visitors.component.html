@@ -1,0 +1,22 @@
+<div style="min-height: 100vh;">
+  <app-helper-headerv2
+  ></app-helper-headerv2>
+  <div class="section">
+    <app-slider-element-list
+      headline="TAGS DE VISITANTES"
+      [topButton]="{
+        text: 'VER',
+        color: '#2874AD'
+      }"
+      [data]="tags"
+    ></app-slider-element-list>
+  </div>
+  <div class="section" *ngFor="let item of ['','']">
+    <app-question-item
+      headline="Visitante Name"
+      [total]="8"
+      [data]="questions"
+      [tags]="onlyTags"
+    ></app-question-item>
+  </div>
+</div>
