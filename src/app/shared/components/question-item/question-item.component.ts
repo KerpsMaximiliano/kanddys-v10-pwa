@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment'
 interface QuestionForm{
     date?: string;
     answer?: string;
-    question: string;
+    question?: string;
     image?: string;
 };
 
