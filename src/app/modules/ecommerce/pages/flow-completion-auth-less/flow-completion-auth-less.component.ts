@@ -434,6 +434,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
             if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
               this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+              this.buttonBlocked = false;
               return;
             }
 
@@ -462,9 +463,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               if (this.banks.length === 1) {
                 this.selectedBank = this.bankOptions[0];
               }
+
+              this.buttonBlocked = false;
               unlockUI();
             }
           }
+
           if (this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
             this.pastStep = this.step;
             this.step = 'PAYMENT_INFO';
@@ -489,6 +493,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
               : ''
           }.%20Mas%20info%20aquí%20${fullLink}`;
 
+          this.buttonBlocked = false;
           break;
         }
         case 'UPDATE_NAME_AND_SHOW_BANKS': {
@@ -528,6 +533,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 if (this.banks.length === 1) {
                   this.selectedBank = this.bankOptions[0];
                 }
+
+                this.buttonBlocked = false;
                 unlockUI();
               }
 
@@ -552,6 +559,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 if (this.banks.length === 1) {
                   this.selectedBank = this.bankOptions[0];
                 }
+
+                this.buttonBlocked = false;
                 unlockUI();
               }
             } else {
@@ -583,6 +592,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                   if (this.banks.length === 1) {
                     this.selectedBank = this.bankOptions[0];
                   }
+
+                  this.buttonBlocked = false;
               }
             }
             // this.updateUser();
@@ -590,10 +601,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
           this.pastStep = this.step;
           this.step = 'PAYMENT_INFO';
+          this.buttonBlocked = false;
           break;
         }
         case 'PAYMENT_INFO':
           this.payOrder();
+          this.buttonBlocked = false;
           break;
       }
     } catch (error) {

@@ -22,8 +22,10 @@ flex-direction: column;">
         *ngFor="let item of ['','','','','','','','','','','','']"
         [leftCTA]="{
             text: 'visitante Name',
+            color: '#0000ff',
             icon: {
                 src: '/person.svg',
+                filter: 'invert(10%) sepia(75%) saturate(7494%) hue-rotate(245deg) brightness(90%) contrast(149%)',
                 size: {
                     width: 15,
                     height: 19
@@ -31,7 +33,8 @@ flex-direction: column;">
             }
         }"
         [rightCTA]="{
-            text: 'respuEstas'
+            text: 'respuEstas',
+            color: '#ff0000'
         }"
     ></app-one-line-item>
 </div>

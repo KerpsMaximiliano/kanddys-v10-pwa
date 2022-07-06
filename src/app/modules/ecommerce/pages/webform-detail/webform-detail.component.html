@@ -1,0 +1,31 @@
+<div style="min-height: 100vh;">
+  <app-helper-headerv2
+  ></app-helper-headerv2>
+  <div class="header" *ngIf="webform">
+    <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div>
+    <h5>{{webform.name}}</h5>
+    <p>{{webform.description}}</p>
+  </div>
+  <div class="section">
+    <app-slider-element-list
+      headline="TAGS DE VISITANTES"
+      [topButton]="{
+        text: 'VER',
+        color: '#2874AD'
+      }"
+      [data]="tags"
+    ></app-slider-element-list>
+  </div>
+  <div class="section" *ngFor="let item of ['','']">
+    <app-question-item
+      headline="Pregunta ID"
+      [total]="28"
+      [data]="questions"
+    ></app-question-item>
+  </div>
+</div>
+<app-sticky-button
+  mode="basic"
+  text="28 VISITANTES EN TOTAL"
+  [backButton]="true"
+></app-sticky-button>

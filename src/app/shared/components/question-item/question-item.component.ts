@@ -19,6 +19,8 @@ export class QuestionItemComponent implements OnInit {
   @Input() single: boolean;
   @Input() icon: string;
   @Input() headline: string;
+  @Input() answer: string;
+  @Input() date: string;
   @Input() total: number;
   @Input() data: QuestionForm[];
   env: string = environment.assetsUrl;
