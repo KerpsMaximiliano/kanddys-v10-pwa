@@ -31,6 +31,51 @@ export class TagVisitorsDetailComponent implements OnInit {
     {
       name: "Pedro Pérez",
       answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
+    },
+    {
+      name: "Pedro Pérez",
+      answers: 8
     }
   ]
 
