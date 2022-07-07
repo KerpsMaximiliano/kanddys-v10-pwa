@@ -37,6 +37,8 @@
 
 	.question-area {
 		padding: 4px 4px 16px;
+		padding-top: 27px;
+		padding-bottom: 23px;
 		margin: 0 24px;
 		border-bottom: solid 2px #e7e7e7;
 
@@ -87,6 +89,13 @@
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+			}
+
+			.image-upload{
+				width: 76px;
+				height: 65px;
+				border-radius: 10px;
+				border: none;
 			}
 		}
 	}

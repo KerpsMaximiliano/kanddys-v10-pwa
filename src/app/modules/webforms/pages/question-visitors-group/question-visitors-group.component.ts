@@ -180,7 +180,7 @@ export class QuestionVisitorsGroupComponent implements OnInit {
     question: 'Pregunta HechaID',
     answer: 'Respuesta iria aqui Somebody once told me the world is gonna roll me I aint the sharpest tool in the shed She was looking kind of dumb with her finger and her thumb In the shape of an L on her forehead',
     description: 'Dos lineas de descripcion ID',
-    image: '',
+    image: 'https://i.pinimg.com/736x/4a/25/1e/4a251e0f3c3c74c62fdbd99f97778474.jpg',
   };
   tags: {
     image: string;

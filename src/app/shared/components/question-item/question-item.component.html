@@ -5,6 +5,10 @@
             <button class="headline-btn" *ngIf="user">
                 <img [src]="env + '/person.svg'" alt="user info" width="15" height="19">
             </button>
+            <button class="headline-btn" *ngIf="users">
+                <img [src]="env + '/person.svg'" alt="user info" width="15" height="19">
+                <img [src]="env + '/person.svg'" alt="user info" width="15" height="19" [style.marginLeft]="'-4px'">
+            </button>
         </div>
 
         <ng-container *ngIf="data?.length">
@@ -13,7 +17,7 @@
                     <span class="date" *ngIf="question.date && !question.question && !question.image">{{question.date}}</span>
                     <span class="question" *ngIf="question.question && !question.image">{{question.question}}</span>
                     <p class="answer" *ngIf="!question.image" [ngStyle]="{maxWidth: question.question && '50%'}">{{question.answer}}</p>
-                    <img *ngIf="question.image" [src]="env + question.image" alt="question image" class="image-upload">
+                    <img *ngIf="question.image" [src]="question.image" alt="question image" class="image-upload">
                 </div>
             </div>
         </ng-container>

@@ -30,6 +30,7 @@ export class QuestionItemComponent implements OnInit {
   @Input() data: QuestionForm[];
   @Input() tags?: FakeTag[];
   @Input() user?: User;
+  @Input() users?: User[];
   showTags: boolean;
   env: string = environment.assetsUrl;
   constructor() { }
