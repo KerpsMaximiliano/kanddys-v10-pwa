@@ -10,6 +10,7 @@ import { WebformDetailComponent } from './pages/webform-detail/webform-detail.co
 import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
 import { TagListComponent } from './pages/tag-list/tag-list.component';
 import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
+import { VisitorDetailComponent } from './pages/visitor-detail/visitor-detail.component';
 import { QuestionVisitorsGroupComponent } from './pages/question-visitors-group/question-visitors-group.component';
 
 const routes: Routes = [
@@ -46,6 +47,10 @@ const routes: Routes = [
     component: WebformVisitorsComponent
   },
   {
+    path: 'visitor-detail',
+    component: VisitorDetailComponent
+  },
+  {
     path: 'question-visitors-group/:id',
     component: QuestionVisitorsGroupComponent
   },
@@ -60,8 +65,9 @@ const routes: Routes = [
     WebformDetailComponent,
     WebformVisitorsComponent,
     TagVisitorsDetailComponent,
-    QuestionVisitorsGroupComponent,
     TagListComponent,
+    VisitorDetailComponent,
+    QuestionVisitorsGroupComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

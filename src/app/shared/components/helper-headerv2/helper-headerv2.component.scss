@@ -80,6 +80,10 @@
             display: flex;
             align-items: center;
             margin-right: 22px;
+
+            :not(:last-child) {
+                margin: 0 16px;
+            }
         }
 
         .header-btn{
@@ -121,6 +125,12 @@
         .return-holder{
             position: absolute;
             left: 25px;
+            cursor: pointer;
+        }
+
+        .icon-center{
+            position: absolute;
+            right: 22px;
             cursor: pointer;
         }
     }

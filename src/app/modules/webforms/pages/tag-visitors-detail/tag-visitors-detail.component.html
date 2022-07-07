@@ -28,8 +28,16 @@
             ></app-one-line-item>
         </div>
     </div>
+
+    <app-single-item-list
+        [image]="'/whatsapp_verde.svg'"
+        [alternativeName]="'Canguro'"
+    ></app-single-item-list>
+
+    <br><br><br><br><br><br>
+
     <app-bubble-button (click)="back()" [position]="'mini'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
-    <app-bubble-button (click)="back()" [position]="'left'" [icon]="'/arrow-left.svg'" [color]="'blue'" ></app-bubble-button>
+    <app-bubble-button (click)="back()" [position]="'minil'" [icon]="'/arrow-left.svg'" [color]="'blue'" ></app-bubble-button>
     <app-sticky-button
         mode="fixed"
         text="145 VENTAS / RD $14,154 / 157"
