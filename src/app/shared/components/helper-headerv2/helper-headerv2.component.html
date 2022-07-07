@@ -128,9 +128,10 @@
                 'cursor': mainText.pointer? 'pointer': ''
                 }">{{mainText.text}}</p>
 
-                <img [src]="icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
                     height: icon?.height? icon.height : '',
+                    filter: icon?.filter? icon.filter : '',
                     cursor: 'pointer'
                 }" (click)="icon.callback()">
             </div>
