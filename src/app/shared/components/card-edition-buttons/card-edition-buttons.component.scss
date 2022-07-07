@@ -1,0 +1,33 @@
+.card-edition-buttons-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    border-top: 0.5px solid lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-with-icon {
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #fff;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border: 0.2px solid lightgray;
+    transition: background-color 0.5s ease-in-out;
+
+    &:hover {
+        background-color: #ccc;
+        cursor: pointer;
+    }
+
+    &:active {
+        background-color: #ccc;
+        cursor: pointer;
+    }
+}
+

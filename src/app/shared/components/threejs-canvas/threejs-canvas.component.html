@@ -1,1 +1,8 @@
-<canvas id="threejs-canvas"></canvas>
+<div class="threejs-wrapper">
+    <canvas id="threejs-canvas"></canvas>
+    <!-- <input type="file" id="myfiles" name="myfiles" /> -->
+    <app-card-edition-buttons
+    (backImageOutput)="applyImageToGLTFMaterial($event)"
+    (frontImageOutput)="applyImageToGLTFMaterial($event)"
+    ></app-card-edition-buttons>
+</div>
