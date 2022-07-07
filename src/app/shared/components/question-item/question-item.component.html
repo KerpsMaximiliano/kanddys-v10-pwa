@@ -7,14 +7,16 @@
             </button>
         </div>
 
-        <div class="question-area" [ngStyle]="{'justify-content': data[0].image? 'unset': '', 'flex-direction': data[0].image? 'unset': ''}">
-            <div class="wrapper" *ngFor="let question of data; index as i">
-                <span class="date" *ngIf="question.date && !question.question && !question.image">{{question.date}}</span>
-                <span class="question" *ngIf="question.question && !question.image">{{question.question}}</span>
-                <p class="answer" *ngIf="!question.image" [ngStyle]="{maxWidth: question.question && '50%'}">{{question.answer}}</p>
-                <img *ngIf="question.image" [src]="env + question.image" alt="question image" class="image-upload">
+        <ng-container *ngIf="data?.length">
+            <div class="question-area" [ngStyle]="{'justify-content': data[0].image? 'unset': '', 'flex-direction': data[0].image? 'unset': ''}">
+                <div class="wrapper" *ngFor="let question of data; index as i">
+                    <span class="date" *ngIf="question.date && !question.question && !question.image">{{question.date}}</span>
+                    <span class="question" *ngIf="question.question && !question.image">{{question.question}}</span>
+                    <p class="answer" *ngIf="!question.image" [ngStyle]="{maxWidth: question.question && '50%'}">{{question.answer}}</p>
+                    <img *ngIf="question.image" [src]="env + question.image" alt="question image" class="image-upload">
+                </div>
             </div>
-        </div>
+        </ng-container>
 
         <div class="end-area" [ngStyle]="{'justify-content': tags && tags.length ? 'space-between' : 'flex-end'}">
             <button class="display" *ngIf="tags && tags.length" (click)="showTags = !showTags">
