@@ -1,0 +1,29 @@
+<div class="container">
+    <app-helper-headerv2
+        mode="basic"
+        [returnAble]="true"
+        [mainText]="{text: 'TAG NAME'}"
+        (returnEvent)="back()"
+    ></app-helper-headerv2>
+    <ng-container>
+        <app-one-line-item
+            *ngFor="let visitor of dummyVisitors"
+            [leftCTA]="{
+                text: visitor.name,
+                color: '#2874AD',
+                icon: {
+                    src: '/person.svg',
+                    filter: 'invert(33%) sepia(91%) saturate(734%) hue-rotate(172deg) brightness(93%) contrast(79%)',
+                    size: {
+                        width: 20,
+                        height: 20
+                    }
+                }
+            }"
+            [rightCTA]="{
+                text: visitor.answers + ' RESPUESTAS',
+                color: '#2874AD'
+            }"
+        ></app-one-line-item>
+    </ng-container>
+</div>

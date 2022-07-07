@@ -1,15 +1,6 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-  [mode]="'basic'"
-  [mainText]="{
-    text: 'Placeholder Text'
-  }"
   ></app-helper-headerv2>
-  <div class="header" *ngIf="webform">
-    <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div>
-    <h5>{{webform.name}}</h5>
-    <p>{{webform.description}}</p>
-  </div>
   <div class="section">
     <app-slider-element-list
       headline="TAGS DE VISITANTES"
@@ -22,14 +13,10 @@
   </div>
   <div class="section" *ngFor="let item of ['','']">
     <app-question-item
-      headline="Pregunta ID"
-      [total]="28"
+      headline="Visitante Name"
+      [total]="8"
       [data]="questions"
+      [tags]="onlyTags"
     ></app-question-item>
   </div>
 </div>
-<app-sticky-button
-  mode="basic"
-  text="28 VISITANTES EN TOTAL"
-  [backButton]="true"
-></app-sticky-button>
