@@ -39,7 +39,17 @@ const routes: Routes = [
         (m) => m.PostsModule
       ),
   },
-  { path: '**', redirectTo, pathMatch: 'full' },
+  {
+    path: 'webforms',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/webforms/webforms.module').then(
+        (m) => m.WebformsModule
+      ),
+  },
+  { path: '**', redirectTo, pathMatch: 'full' }
 ];
 
 @NgModule({

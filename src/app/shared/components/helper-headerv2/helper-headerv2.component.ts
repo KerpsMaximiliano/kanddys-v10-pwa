@@ -1,6 +1,22 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
+interface Text {
+  text: string,
+  fontFamily?: string,
+  fontSize?: string,
+  color?: string,
+  pointer?: boolean
+}
+
+interface ExtraText {
+  itemId?: string,
+  billId?: string,
+  fontFamily?: string,
+  fontSize?: string,
+  color?: string
+}
+
 interface Icon {
     src: string;
     alt?: string;
@@ -21,6 +37,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() public shopCartCallback: () => void;
     @Input() public editBtnCallback: () => void;
     @Input() returnAble: boolean = true;
+    @Input() down: boolean;
     @Input() inMall: boolean = false;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;
@@ -29,34 +46,10 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() filter: string;
     @Input() icons: Icon[];
 
-    @Input() mainText?: {
-        text: string,
-        fontFamily?: string,
-        fontSize?: string,
-        color?: string,
-        pointer?: boolean
-    };
-    @Input() leftText?: {
-        text: string,
-        fontFamily?: string,
-        fontSize?: string,
-        color?: string,
-        pointer?: boolean
-    };
-    @Input() rightText?: {
-        text: string,
-        fontFamily?: string,
-        fontSize?: string,
-        color?: string,
-        pointer?: boolean
-    };
-    @Input() extraTexts?: {
-        itemId?: string,
-        billId?: string,
-        fontFamily?: string,
-        fontSize?: string,
-        color?: string
-    };
+    @Input() mainText?: Text;
+    @Input() leftText?: Text;
+    @Input() rightText?: Text;
+    @Input() extraTexts?: ExtraText;
     @Input() icon?: {
         src: string,
         alt?: string,

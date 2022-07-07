@@ -1,0 +1,39 @@
+<div class="container">
+    <app-helper-headerv2
+        mode="center"
+        bgColor="#2874AD"
+        [returnAble]="true"
+        [mainText]="{text: 'TAG NAME'}"
+        (returnEvent)="back()"
+    ></app-helper-headerv2>
+    <div style="margin-top: 7px">
+        <div class="item-list" *ngFor="let visitor of dummyVisitors">
+            <app-one-line-item
+                [leftCTA]="{
+                    text: visitor.name,
+                    color: '#2874AD',
+                    icon: {
+                        src: '/person.svg',
+                        filter: 'brightness(0) saturate(100%) invert(33%) sepia(91%) saturate(734%) hue-rotate(172deg) brightness(93%) contrast(79%)',
+                        size: {
+                            width: 20,
+                            height: 20
+                        }
+                    }
+                }"
+                [rightCTA]="{
+                    text: visitor.answers + ' RESPUESTAS',
+                    color: '#2874AD'
+                }"
+            ></app-one-line-item>
+        </div>
+    </div>
+    <app-bubble-button (click)="back()" [position]="'mini'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
+    <app-bubble-button (click)="back()" [position]="'left'" [icon]="'/arrow-left.svg'" [color]="'blue'" ></app-bubble-button>
+    <app-sticky-button
+        mode="fixed"
+        text="145 VENTAS / RD $14,154 / 157"
+        size="small"
+        bgColor="#2874AD"
+    ></app-sticky-button>
+</div>
