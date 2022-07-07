@@ -61,14 +61,6 @@ import { MyCustomersComponent } from './pages/my-customers/my-customers.componen
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
-import { AnswerMethodWebformComponent } from './pages/answer-method-webform/answer-method-webform.component';
-import { AirtableFieldConnectionComponent } from './pages/airtable-field-connection/airtable-field-connection.component';
-import { WebformClientComponent } from './pages/webform-client/webform-client.component';
-import { WebformCreatorComponent } from './pages/webform-creator/webform-creator.component';
-import { WebformDetailComponent } from './pages/webform-detail/webform-detail.component';
-import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
-import { TagVisitorsDetailComponent } from './pages/tag-visitors-detail/tag-visitors-detail.component';
-import { TagListComponent } from './pages/tag-list/tag-list.component';
 
 const routes: Routes = [
   {
@@ -344,35 +336,7 @@ const routes: Routes = [
   {
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
-  },
-  {
-    path: 'webform-questions',
-    component: AnswerMethodWebformComponent
-  },
-  {
-    path: 'airtable-field-connection/:databaseName',
-    component: AirtableFieldConnectionComponent
-  },
-  {
-    path: 'webform-client',
-    component: WebformClientComponent
-  },
-  {
-    path: 'webform-detail/:id',
-    component: WebformDetailComponent
-  },
-  {
-    path: 'tag-visitors-detail',
-    component: TagVisitorsDetailComponent
-  },
-  {
-    path: 'tag-list',
-    component: TagListComponent
-  },
-  {
-    path: 'webform-visitors/:id',
-    component: WebformVisitorsComponent
-  },
+  }
 ];
 
 @NgModule({
@@ -437,15 +401,7 @@ const routes: Routes = [
     MyCustomersComponent,
     UserCreatorComponent,
     UserContactLandingComponent,
-    HeavenlyBalloonsComponent,
-    AnswerMethodWebformComponent,
-    AirtableFieldConnectionComponent,
-    WebformClientComponent,
-    WebformCreatorComponent,
-    WebformDetailComponent,
-    WebformVisitorsComponent,
-    TagVisitorsDetailComponent,
-    TagListComponent,
+    HeavenlyBalloonsComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
