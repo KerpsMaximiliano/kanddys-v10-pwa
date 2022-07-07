@@ -29,12 +29,9 @@
         </div>
     </div>
 
-    <app-question-item
-        [single]="true"
-        [headline]="'Respuesta ID'"
-        [answer]="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita sapiente impedit in, soluta nam aperiam facere. Rem est sunt dolorum ipsum ratione, quam distinctio reiciendis inventore, aliquid natus perferendis laudantium!'"
-        [date]="'06/06/2022'"
-    ></app-question-item>
+    <app-form-questions
+        [questions]="[{text: 'donde está mi papá?'}, {text: 'la farmacia está tan lejos?'}, {text: 'por qué fue por cigarros si en la casa hay?'}]"
+    ></app-form-questions>
 
     <br><br><br><br><br><br>
 
