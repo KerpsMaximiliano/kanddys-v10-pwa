@@ -32,7 +32,7 @@
                         </app-cart-button>
                     </ng-container>
                     
-                    <div *ngFor="let icon of icons; index as i" style="margin: 0 16px;">
+                    <div *ngFor="let icon of icons; index as i" class="icon-item">
                         <img
                             [src]="env + icon.src"
                             [alt]="icon.alt"

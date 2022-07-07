@@ -1,9 +1,19 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-  [mode]="'basic'"
-  [mainText]="{
-    text: 'Placeholder Text'
-  }"
+    [mode]="'basic'"
+    [returnAble]="true"
+    [icons]="[
+      {
+        src: '/upload.svg',
+        callback: onShareClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      },
+      {
+        src: '/pencil.svg',
+        callback: onPencilClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      }
+    ]"
   ></app-helper-headerv2>
   <div class="header" *ngIf="webform">
     <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div>

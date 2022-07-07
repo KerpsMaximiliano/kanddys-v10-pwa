@@ -124,4 +124,12 @@ export class WebformDetailComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onShareClick() {
+    //
+  }
+
+  onPencilClick() {
+    //
+  }
+
 }
