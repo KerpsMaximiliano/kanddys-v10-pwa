@@ -336,7 +336,7 @@ const routes: Routes = [
   {
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
-  }
+  },
 ];
 
 @NgModule({
@@ -401,7 +401,7 @@ const routes: Routes = [
     MyCustomersComponent,
     UserCreatorComponent,
     UserContactLandingComponent,
-    HeavenlyBalloonsComponent
+    HeavenlyBalloonsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
