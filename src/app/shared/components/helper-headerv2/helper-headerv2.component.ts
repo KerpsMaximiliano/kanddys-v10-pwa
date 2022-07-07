@@ -21,6 +21,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() public shopCartCallback: () => void;
     @Input() public editBtnCallback: () => void;
     @Input() returnAble: boolean = true;
+    @Input() down: boolean;
     @Input() inMall: boolean = false;
     @Input() line: boolean = true;
     @Input() fixed: boolean = false;

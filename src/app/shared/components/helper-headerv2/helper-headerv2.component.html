@@ -12,7 +12,7 @@
 
                     <a *ngIf="returnAble && !icon?.src" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="color"></i></a>
 
-                    <a *ngIf="!returnAble && !icon?.src" (click)="displaying($event)"><i class="fas fa-chevron-down" [style.color]="color"></i></a>
+                    <a *ngIf="down &&!returnAble && !icon?.src" (click)="displaying($event)"><i class="fas fa-chevron-down" [style.color]="color"></i></a>
 
                     <ng-container *ngIf="mainText?.text">
                         <p class="return" [ngStyle]="
