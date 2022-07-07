@@ -121,6 +121,9 @@
                 <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
                     [style.color]="color"></i>
                 </a>
+                <a *ngIf="down && !returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-down"
+                    [style.color]="color"></i>
+                </a>
                 <p class="light-text" [ngStyle]="
                 {'font-size': mainText.fontSize? mainText.fontSize : '', 
                 'font-family': mainText.fontFamily? mainText.fontFamily : '',
