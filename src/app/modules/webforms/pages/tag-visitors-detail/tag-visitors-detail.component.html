@@ -28,6 +28,16 @@
             ></app-one-line-item>
         </div>
     </div>
+
+    <app-question-item
+        [single]="true"
+        [headline]="'Respuesta ID'"
+        [answer]="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita sapiente impedit in, soluta nam aperiam facere. Rem est sunt dolorum ipsum ratione, quam distinctio reiciendis inventore, aliquid natus perferendis laudantium!'"
+        [date]="'06/06/2022'"
+    ></app-question-item>
+
+    <br><br><br><br><br><br>
+
     <app-bubble-button (click)="back()" [position]="'mini'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
     <app-bubble-button (click)="back()" [position]="'minil'" [icon]="'/arrow-left.svg'" [color]="'blue'" ></app-bubble-button>
     <app-sticky-button

@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-
+    padding-bottom: 30px;
     .top-area{
         display: flex;
         align-items: center;
@@ -25,7 +25,7 @@
 
         .top-button{
             all: unset;
-            font-family: 'SfProBold';
+            font-family: 'SfProRegular';
             font-size: 14px;
             text-align: center;
             letter-spacing: 1.5px;
