@@ -56,3 +56,16 @@
     gap: 10px;
   }
 }
+
+.contact-info {
+  display: flex;
+  justify-content: end;
+  column-gap: 10px;
+  margin: 10px 24px;
+  cursor: pointer;
+  p {
+    color: #2874AD;
+    font-family: "SfProRegular";
+    text-transform: uppercase;
+  }
+}

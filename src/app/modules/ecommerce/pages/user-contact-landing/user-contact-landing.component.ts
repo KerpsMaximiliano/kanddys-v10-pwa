@@ -67,6 +67,7 @@ const deleteIrrelevantDataFromObject = (dataObject) => {
 })
 export class UserContactLandingComponent implements OnInit {
   URI: string = environment.uri;
+  env: string = environment.assetsUrl;
   user: User;
   admin: boolean;
   merchant: Merchant;
@@ -78,6 +79,7 @@ export class UserContactLandingComponent implements OnInit {
   };
   users: User[] = [];
   hasSocials: boolean;
+  showSocials: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -355,6 +357,14 @@ export class UserContactLandingComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  contactCallback = () => {
+    this.showSocials = !this.showSocials;
+  }
+
+  shareCallback = () => {
+    this.openShareDialog();
   }
 
 }
