@@ -1,0 +1,54 @@
+<div class="container">
+
+    <div class="body">
+
+        <div class="headline">
+            <div class="icon-text">
+                <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [style.filter]="headline.icon.color" *ngIf="headline.icon?.src">
+                <h1 class="headline-text" [ngStyle]="{
+                    'font-size': headline?.fontSize? headline.fontSize : '', 
+                    'font-family': headline?.fontFamily? headline.fontFamily : '',
+                    'color': headline?.color? headline.color : ''
+                }">{{headline.text}}</h1>
+            </div>
+
+            <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
+                'width': icon?.width? icon.width : '',
+                'height': icon?.height? icon.height : '',
+                'filter': icon?.color? icon.color : '',
+                'cursor': 'pointer'
+            }" *ngIf="icon?.src">
+        </div>    
+
+        <div class="item-area">
+
+            <div class="image-area">
+                <img *ngFor="let item of imagesGallery; index as i" [src]="env + item.src" [alt]="item.alt" (click)="item.callback()" class="gallery-image" >
+            </div>
+
+            <button class="cta" [style.color]="cta?.color" *ngIf="cta?.text" (click)="cta.callback">{{cta.text}}</button>
+        </div>
+
+        <hr class="divider" *ngIf="bottomText">
+
+        <div class="bottomText" *ngIf="bottomText">
+            <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
+                'font-size': bottomText.leftText?.fontSize? bottomText.leftText.fontSize : '',
+                'font-family': bottomText.leftText?.fontFamily? bottomText.leftText.fontFamily : '',
+                'color': bottomText.leftText?.color? bottomText.leftText?.color : ''
+                }">
+                {{bottomText.leftText.text}}
+                <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
+                <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
+            </button>
+
+            <button class="display" *ngIf="bottomText?.rightText" (click)="bottomText.rightText.callback()" [ngStyle]="{
+              'font-size': bottomText.rightText?.fontSize? bottomText.rightText.fontSize : '',
+              'font-family': bottomText.rightText?.fontFamily? bottomText.rightText.fontFamily : '',
+              'color': bottomText.rightText?.color? bottomText.rightText?.color : ''
+              }">{{bottomText.rightText.text}}</button>
+        </div>
+
+    </div>
+
+</div>
