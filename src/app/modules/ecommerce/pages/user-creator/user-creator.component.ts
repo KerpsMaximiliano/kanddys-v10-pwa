@@ -620,7 +620,7 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Pequeña descripción como tu Bio',
                 action: (params) => {
-                  params.scrollToStep(6);
+                  params.scrollToStep(5);
                   window.scroll(0, 0);
                 }
               },
