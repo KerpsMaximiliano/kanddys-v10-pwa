@@ -79,10 +79,18 @@
         .right-area {
             display: flex;
             align-items: center;
-            margin-right: 22px;
+            margin-right: 17px;
 
             :not(:last-child) {
-                margin: 0 16px;
+                margin: 0 11px 0 0;
+            }
+
+            .icon-item{
+                display: flex;
+                align-items: center;
+                height: 36px;
+                width: fit-content;
+                padding: 0 5px;
             }
         }
 
