@@ -267,10 +267,10 @@ export class AuthService {
     } catch (e) { }
   }
 
-  public async updateMe(input: any) {
+  public async updateMe(input: any, files?: any) {
     const response = await this.graphql.mutate({
       mutation: updateme,
-      variables: { input },
+      variables: { input, files },
       context: { useMultipart: true },
     });
     let user: User;

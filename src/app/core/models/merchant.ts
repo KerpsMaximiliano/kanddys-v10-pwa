@@ -47,6 +47,7 @@ export class MerchantInput {
   image?: File;
   activity?: string;
   bio?: string;
+  title?: string;
   email?: string;
   location?: string;
   website?: string;

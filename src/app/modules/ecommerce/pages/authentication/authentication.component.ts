@@ -12,6 +12,10 @@ import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
+const checkIfStringIsBase64DataURI = (text: string)=> {
+  return text.slice(0, 5) === 'data:';
+}
+
 @Component({
   selector: 'app-authentication',
   templateUrl: './authentication.component.html',
@@ -290,6 +294,7 @@ export class Authentication implements OnInit {
                   userImage,
                   venmo,
                   paypal,
+                  bio,
                   cashapp,
                   email,
                   socials,
@@ -318,9 +323,12 @@ export class Authentication implements OnInit {
                       email: email && email.length > 0 ? email : null,
                       name,
                       lastname,
-                      bio: subtext,
+                      title: subtext,
+                      bio,
                       social: socialsFiltered
-                    }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
+                    }, 'none', null, true, userImage ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null);
 
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
@@ -334,13 +342,16 @@ export class Authentication implements OnInit {
                           exchangeData: {
                             electronicPayment: [
                               {
-                                link: venmo
+                                link: venmo,
+                                name: 'venmo'
                               },
                               {
-                                link: paypal
+                                link: paypal,
+                                name: 'paypal'
                               },
                               {
-                                link: cashapp
+                                link: cashapp,
+                                name: 'cashapp'
                               }
                             ],
                             bank: Object.keys(bankInfo).length > 3 ? [
@@ -372,7 +383,9 @@ export class Authentication implements OnInit {
                     }
                   } else {
                     console.log("!founduser");
-                    const userImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
+                    const userImageConverted = userImage.length > 0 ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
                       return socials[socialNetworkKey].length > 0 ? true : false;
                     })
@@ -392,10 +405,36 @@ export class Authentication implements OnInit {
                           email: email && email.length > 0 ? email : null,
                           name,
                           lastname,
-                          bio: subtext,
+                          title: subtext,
                           social: socialsFiltered,
+                          bio,
                           facebook: socials.facebook,
                           instagram: socials.instagram,
+                          exchangeData: {
+                            electronicPayment: [
+                              {
+                                link: venmo,
+                                name: 'venmo'
+                              },
+                              {
+                                link: paypal,
+                                name: 'paypal'
+                              },
+                              {
+                                link: cashapp,
+                                name: 'cashapp'
+                              }
+                            ],
+                            bank: Object.keys(bankInfo).length > 3 ? [
+                              {
+                                bankName: bankInfo.bankName,
+                                account: bankInfo.accountNumber,
+                                isActive: true,
+                                ownerAccount: bankInfo.owner,
+                                routingNumber: Number(bankInfo.socialID)
+                              }
+                            ] : null
+                          }
                         }),
                       },
                       userImageConverted ?
@@ -439,17 +478,27 @@ export class Authentication implements OnInit {
 
                   if(!foundUser) {
                     const createdUser = await this.authService.signup({
-                      phone: phoneNumber,
                       email: email && email.length > 0 ? email : null,
-                      name: businessName,
-                      bio: businessType,
+                      name,
+                      lastname,
+                      phone: phoneNumber,
+                      title: subtext,
+                      bio,
                       social: socialsFiltered
-                    }, 'none', null, true, userImage ? base64ToFile(userImage) : null);
+                    }, 'none', null, true, userImage ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null);
                     
                     const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
                       name: businessName,
-                      bio: businessType,
-                      social: socialsFiltered
+                      // bio: businessType,
+                      title: subtext,
+                      bio,
+                      activity: businessType,
+                      social: socialsFiltered,
+                      email: email && email.length > 0 ? email : null,
+                      instagram: socials.instagram,
+                      facebook: socials.facebook,
                     });
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
@@ -465,7 +514,7 @@ export class Authentication implements OnInit {
                         cashapp,
                         bankName: bankInfo.bankName,
                         accountNumber: bankInfo.accountNumber,
-                        owner: bankInfo.owner,
+                        ownerAccount: bankInfo.owner,
                         socialID: bankInfo.socialID
                       }  
                     );
@@ -486,7 +535,9 @@ export class Authentication implements OnInit {
                   } else {
                     const defaultMerchant = await this.merchantService.merchantDefault();
                     
-                    const merchantImageConverted = userImage.length > 0 ? base64ToFile(userImage) : null;
+                    const merchantImageConverted = userImage.length > 0 ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
                       return socials[socialNetworkKey].length > 0 ? true : false;
                     })
@@ -498,10 +549,16 @@ export class Authentication implements OnInit {
                     if(!defaultMerchant) {
                       const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
                         name: businessName,
-                        bio: businessType,
-                        image: merchantImageConverted,
-                        social: socialsFiltered
+                        // bio: businessType,
+                        title: subtext,
+                        activity: businessType,
+                        social: socialsFiltered,
+                        email: email && email.length > 0 ? email : null,
+                        instagram: socials.instagram,
+                        facebook: socials.facebook,
                       });
+
+                      console.log(merchantImageConverted);
                       
                       const magicLinkCreated = await this.authService.generateMagicLink(
                         phoneNumber, 
@@ -522,13 +579,16 @@ export class Authentication implements OnInit {
                             exchangeData: {
                               electronicPayment: [
                                 {
-                                  link: venmo
+                                  link: venmo,
+                                  name: 'venmo'
                                 },
                                 {
-                                  link: paypal
+                                  link: paypal,
+                                  name: 'paypal'
                                 },
                                 {
-                                  link: cashapp
+                                  link: cashapp,
+                                  name: 'cashapp'
                                 }
                               ],
                               bank: [
@@ -542,7 +602,10 @@ export class Authentication implements OnInit {
                               ]
                             }
                           })
-                        } 
+                        },
+                        merchantImageConverted ? [
+                          merchantImageConverted
+                        ] : null
                       );
 
                       if(!createdMerchant || !magicLinkCreated) {
@@ -579,7 +642,9 @@ export class Authentication implements OnInit {
                             merchantData: {
                               name: businessName,
                               email: email && email.length > 0 ? email : null,
-                              bio: businessType,
+                              // bio: businessType,
+                              title: subtext,
+                              activity: businessType,
                               social: socialsFiltered,
                               instagram: socials.instagram,
                               facebook: socials.facebook
@@ -587,13 +652,16 @@ export class Authentication implements OnInit {
                             exchangeData: {
                               electronicPayment: [
                                 {
-                                  link: venmo
+                                  link: venmo,
+                                  name: 'venmo'
                                 },
                                 {
-                                  link: paypal
+                                  link: paypal,
+                                  name: 'paypal'
                                 },
                                 {
-                                  link: cashapp
+                                  link: cashapp,
+                                  name: 'cashapp'
                                 }
                               ],
                               bank: Object.keys(bankInfo).length > 3 ? [

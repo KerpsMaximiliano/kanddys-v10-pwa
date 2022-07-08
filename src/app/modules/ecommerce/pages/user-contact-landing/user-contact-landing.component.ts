@@ -173,8 +173,52 @@ export class UserContactLandingComponent implements OnInit {
   
             if(userImage) relevantData.image = userImage;
 
+            const exchangeDataInInput = 'exchangeData' in relevantData ? relevantData.exchangeData : null;
+
+            if(exchangeDataInInput) delete relevantData.exchangeData;
+
             const updatedUser = await this.authService.updateMe(relevantData);
 
+            const exchangeData = await this.walletService.exchangeDataByUser(updatedUser._id);
+
+            if(updatedUser && exchangeDataInInput) {
+              const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInInput;
+              const electronicPayment = [];
+  
+              electronicPaymentStored.forEach(paymentMethod => {
+                if(paymentMethod) {
+                  electronicPayment.push({
+                    name: paymentMethod.name,
+                    link: paymentMethod.link
+                  });
+                }
+              })
+  
+              if(exchangeData) {
+                await this.walletService.updateExchangeData({
+                  bank: [{
+                    bankName: bank[0].bankName,
+                    ownerAccount: bank[0].owner,
+                    routingNumber: parseInt(bank[0].routingNumber),
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                }, exchangeData._id);
+              } else {
+                await this.walletService.createExchangeData({
+                  bank: [{
+                    bankName: bank[0].bankName,
+                    ownerAccount: bank[0].owner,
+                    routingNumber: parseInt(bank[0].routingNumber),
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                });    
+              }
+            }
+            
             window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
           } catch (error) {
             console.log(error);
@@ -196,8 +240,6 @@ export class UserContactLandingComponent implements OnInit {
               items: []
             });
 
-            console.log(merchant._id);
-            
             await this.merchantsService.setDefaultMerchant(merchant._id);
             await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
 

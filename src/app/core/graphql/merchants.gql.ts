@@ -25,6 +25,7 @@ export const body = `
   email
   image
   bio
+  title
   default
   active
   showItems
