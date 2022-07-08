@@ -1,4 +1,5 @@
 <div class="container">
+    <!-- Header -->
     <app-helper-headerv2
         mode="center"
         bgColor="#2874AD"
@@ -6,6 +7,8 @@
         [mainText]="{text: 'TAG NAME'}"
         (returnEvent)="back()"
     ></app-helper-headerv2>
+
+    <!-- Library -->
     <div style="margin-top: 7px">
         <div class="item-list" *ngFor="let visitor of dummyVisitors">
             <app-one-line-item
@@ -29,15 +32,11 @@
         </div>
     </div>
 
-    <app-single-item-list
-        [image]="'/whatsapp_verde.svg'"
-        [alternativeName]="'Canguro'"
-    ></app-single-item-list>
-
-    <br><br><br><br><br><br>
-
+    <!-- Floating buttons -->
     <app-bubble-button (click)="back()" [position]="'mini'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
     <app-bubble-button (click)="back()" [position]="'minil'" [icon]="'/arrow-left.svg'" [color]="'blue'" ></app-bubble-button>
+    
+    <!-- Fixed button -->
     <app-sticky-button
         mode="fixed"
         text="145 VENTAS / RD $14,154 / 157"
