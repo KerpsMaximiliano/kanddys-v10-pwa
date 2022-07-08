@@ -59,14 +59,47 @@
 .contact-info {
   display: flex;
   justify-content: end;
-  column-gap: 10px;
+  align-self: baseline;
   margin: 10px 24px;
-  cursor: pointer;
   grid-column: 9 / span 4;
-  p {
-    color: #2874ad;
-    font-family: "SfProRegular";
-    text-transform: uppercase;
+
+  .admin-buttons {
+    display: flex;
+    gap: 10px;
+
+    .admin-btn {
+      all: unset;
+      padding: 5px;
+      border-radius: 50%;
+      cursor: pointer;
+
+      img {
+        filter: brightness(0) saturate(100%) invert(37%) sepia(92%) saturate(574%) hue-rotate(167deg) brightness(87%) contrast(83%);
+      }
+
+      &:hover {
+        background-color: #e6e6e6;
+      }
+    }
+  }
+  
+  .save-btn {
+    all: unset;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 5px;
+    p {
+      color: #2874ad;
+      font-family: "SfProRegular";
+      text-transform: uppercase;
+    }
+
+    &:hover {
+      background-color: #e6e6e6;
+    }
   }
 }
 
@@ -95,6 +128,7 @@
     font-family: "SfProMedium";
     font-size: 19px;
     color: #4f4f4f;
+    font-weight: 100;
 
     .title {
       font-family: "SfProLight";

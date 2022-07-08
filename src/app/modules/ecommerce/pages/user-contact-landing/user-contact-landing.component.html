@@ -29,15 +29,29 @@
     <div class="header">
       <div class="top-header">
         <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="">
-        <div class="contact-info" *ngIf="showSocials">
-          <p>Sálvalo</p>
-          <img [src]="env + '/contact.svg'" alt="" width="27" height="23">
+        <div class="contact-info" *ngIf="admin">
+          <div class="admin-buttons">
+            <button class="admin-btn">
+              <img [src]="env + '/pencil.svg'" alt="" width="19" height="19">
+            </button>
+            <button class="admin-btn" (click)="contactCallback()" [ngStyle]="{backgroundColor: showSocials ? '#E9E371' : 'transparent'}">
+              <img [src]="env + '/person.svg'" alt="" width="15" height="19">
+            </button>
+            <button class="admin-btn" (click)="shareCallback()">
+              <img [src]="env + '/upload.svg'" alt="" width="15" height="19">
+            </button>
+          </div>
+        </div>
+        <div class="contact-info" *ngIf="showSocials && !admin">
+          <button class="save-btn">
+            <p>Sálvalo</p>
+            <img [src]="env + '/contact.svg'" alt="" width="27" height="23">
+          </button>
         </div>
       </div>
       <!-- <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div> -->
       <h5>
-        {{merchant?.name || user?.name}}
-        <span class="title" *ngIf="merchant?.title || user?.title">, {{merchant?.title || user?.title}}</span>
+        {{merchant?.name || user?.name}}<span class="title" *ngIf="merchant?.title || user?.title">, {{merchant?.title || user?.title}}</span>
       </h5>
       <p>{{merchant?.bio || user?.bio}}</p>
 
