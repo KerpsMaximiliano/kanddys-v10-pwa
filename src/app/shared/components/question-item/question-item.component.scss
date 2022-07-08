@@ -112,8 +112,18 @@
 	}
 }
 
+.tags-label {
+	font-family: "RobotoMedium";
+	font-size: 16px;
+	color: #7B7B7B;
+	text-transform: uppercase;
+	font-weight: 100;
+	margin: 0;
+	margin-left: 8px;
+	margin-bottom: 8px;
+}
+
 .tag-list {
-	margin: 0 24px 24px;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	gap: 12px;

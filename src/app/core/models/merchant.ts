@@ -8,6 +8,7 @@ export class Merchant extends Model<Merchant> {
   name: string;
   clientMaxBalance: number;
   location?: { lat: number; long: number };
+  title?: string;
   email?: string;
   image?: string;
   activity: string;

@@ -4,13 +4,13 @@
         mode="center"
         bgColor="#2874AD"
         [returnAble]="true"
-        [mainText]="{text: 'TAG NAME'}"
+        [mainText]="{text: tag?.name}"
         (returnEvent)="back()"
     ></app-helper-headerv2>
 
     <!-- Library -->
     <div style="margin-top: 7px">
-        <div class="item-list" *ngFor="let visitor of dummyVisitors">
+        <div class="item-list" *ngFor="let visitor of visitors">
             <app-one-line-item
                 [leftCTA]="{
                     text: visitor.name,

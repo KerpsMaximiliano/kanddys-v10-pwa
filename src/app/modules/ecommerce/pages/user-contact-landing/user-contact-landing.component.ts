@@ -80,6 +80,7 @@ export class UserContactLandingComponent implements OnInit {
   users: User[] = [];
   hasSocials: boolean;
   showSocials: boolean;
+  regex = /\D/g;
 
   constructor(
     private route: ActivatedRoute,

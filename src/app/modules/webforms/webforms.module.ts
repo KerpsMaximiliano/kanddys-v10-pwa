@@ -35,7 +35,7 @@ const routes: Routes = [
     component: WebformDetailComponent
   },
   {
-    path: 'tag-visitors-detail',
+    path: 'tag-visitors-detail/:id',
     component: TagVisitorsDetailComponent
   },
   {

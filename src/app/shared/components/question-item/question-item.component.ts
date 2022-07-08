@@ -29,6 +29,7 @@ export class QuestionItemComponent implements OnInit {
   @Input() total: number;
   @Input() data: QuestionForm[];
   @Input() tags?: FakeTag[];
+  @Input() tagsLabel: string;
   @Input() user?: User;
   showTags: boolean;
   env: string = environment.assetsUrl;

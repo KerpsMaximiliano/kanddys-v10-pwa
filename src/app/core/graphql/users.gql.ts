@@ -23,6 +23,7 @@ export const user = gql`
       phone
       email
       name
+      title
       bio
       social {
         name

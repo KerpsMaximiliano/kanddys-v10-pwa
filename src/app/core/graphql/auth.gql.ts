@@ -7,7 +7,7 @@ const user = `
   name
   birthdate
   image
-
+  title
   validatedAt
   deliveryLocations{
     _id

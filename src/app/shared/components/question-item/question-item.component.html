@@ -26,8 +26,11 @@
             </button>
             <button class="total">{{total}} RESPUESTAS</button>
         </div>
-        <div class="tag-list" *ngIf="showTags">
-            <button class="tag-button" [ngClass]="{'selected': tag.selected}" *ngFor="let tag of tags" (click)="tag.selected = !tag.selected">{{tag.name}}</button>
+        <div style="margin: 0 24px 24px;" *ngIf="showTags">
+            <h6 class="tags-label" *ngIf="tagsLabel">{{tagsLabel}}</h6>
+            <div class="tag-list">
+                <button class="tag-button" [ngClass]="{'selected': tag.selected}" *ngFor="let tag of tags" (click)="tag.selected = !tag.selected">{{tag.name}}</button>
+            </div>
         </div>
     </ng-container>
 
