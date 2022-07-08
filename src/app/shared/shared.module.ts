@@ -100,6 +100,7 @@ import { OneLineItemComponent } from './components/one-line-item/one-line-item.c
 import { QuestionItemComponent } from './components/question-item/question-item.component';
 import { ThreejsCanvasComponent } from './components/threejs-canvas/threejs-canvas.component';
 import { CardEditionButtonsComponent } from './components/card-edition-buttons/card-edition-buttons.component';
+import { EnlistDisplayComponent } from './components/enlist-display/enlist-display.component';
 
 const imports = [
   CommonModule,
@@ -196,7 +197,8 @@ const declarations = [
   OneLineItemComponent,
   QuestionItemComponent,
   ThreejsCanvasComponent,
-  CardEditionButtonsComponent
+  CardEditionButtonsComponent,
+  EnlistDisplayComponent,
 ];
 
 @NgModule({
