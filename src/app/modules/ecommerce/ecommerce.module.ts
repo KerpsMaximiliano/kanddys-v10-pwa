@@ -61,7 +61,6 @@ import { MyCustomersComponent } from './pages/my-customers/my-customers.componen
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
-import { QuestionVisitorsListComponent } from './pages/question-visitors-list/question-visitors-list.component';
 
 const routes: Routes = [
   {
@@ -338,10 +337,6 @@ const routes: Routes = [
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
   },
-  {
-    path: 'question-visitors-list',
-    component: QuestionVisitorsListComponent
-  }
 ];
 
 @NgModule({
@@ -407,7 +402,6 @@ const routes: Routes = [
     UserCreatorComponent,
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
-    QuestionVisitorsListComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

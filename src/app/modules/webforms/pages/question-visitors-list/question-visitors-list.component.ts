@@ -19,7 +19,7 @@ interface QuestionForm{
   styleUrls: ['./question-visitors-list.component.scss']
 })
 export class QuestionVisitorsListComponent implements OnInit {
-  @Input() mode: number = 3;
+  @Input() mode: number = 1;
 
   dummyTags: any[] = [
     {
