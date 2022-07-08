@@ -66,7 +66,7 @@ export class TestComponent implements OnInit {
     _id: 'skw47k10d21',
     createdAt: 'date',
     updatedAt: 'date'
-  },]
+  },];
 
   questions: Questions[] = [{
             text: 'Pito'
@@ -79,7 +79,34 @@ export class TestComponent implements OnInit {
         },
         {
             text: 'Pregunta 3'
-        }]
+        }
+    ];
+
+  testItem: any[] = [{
+    name: 'toito es serio',
+    subtitle: 'negro es un color',
+    cta: {
+        text: 'Mas',
+        color: '#2874AD',
+        callback: () => {console.log('Cy')} 
+    }
+  },{
+    name: 'Creating Happiness one gift at a time.',
+    subtitle: 'negro es un color',
+    cta: {
+        text: 'Mas',
+        color: '#2874AD',
+        callback: () => {console.log('Cy')} 
+    }
+  },{
+    name: 'Justifying your actions through memes is not the right thing to do',
+    subtitle: 'negro es un color no una raza, deja lo bobo',
+    cta: {
+        text: 'Mas',
+        color: '#2874AD',
+        callback: () => {console.log('Cy')} 
+    }
+  }]
 
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {

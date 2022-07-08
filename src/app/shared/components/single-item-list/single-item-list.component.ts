@@ -12,6 +12,7 @@ export class SingleItemListComponent implements OnInit {
     @Input() image: string;
     @Input() tag?: Tag;
     @Input() alternativeName?: string;
+    @Input() filter?: string;
     @Output() singleItem = new EventEmitter();
     env: string = environment.assetsUrl;
     

@@ -26,6 +26,7 @@ export class User extends Model<User> {
   phone?: string;
   name?: string;
   lastname: string;
+  title?: string;
   birthdate?: Date;
   image?: string;
   roles?: Role[];

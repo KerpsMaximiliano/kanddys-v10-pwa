@@ -73,6 +73,7 @@ export const merchantDefault = gql`
     merchantDefault(userId: $userId) {
       _id
       name
+      title
       showItems
       image
       bio

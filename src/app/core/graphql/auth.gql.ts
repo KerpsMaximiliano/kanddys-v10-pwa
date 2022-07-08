@@ -8,6 +8,7 @@ const user = `
   lastname
   birthdate
   image
+  title
   validatedAt
   bio
   title

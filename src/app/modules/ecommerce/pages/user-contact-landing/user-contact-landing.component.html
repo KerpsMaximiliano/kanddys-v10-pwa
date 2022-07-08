@@ -1,15 +1,101 @@
 <div style="min-height: 100vh;">
-  <div style="background-color: #EEF6DF;">
-    <app-header-info
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [icons]="[
+      {
+        src: '/person.svg',
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
+        callback: contactCallback
+      },
+      {
+        src: '/upload.svg',
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
+        callback: shareCallback
+      }
+    ]"
+    [bgColor]="'#2874AD'"
+  ></app-helper-headerv2>
+
+  <div>
+    <!-- <app-header-info
       [profileImage]="merchant ? merchant.image : user?.image"
       [title]="merchant ? merchant.name : user?.name"
       [description]="merchant ? merchant.bio : user?.bio"
       [socials]="merchant ? merchant.social : user?.social"
-      [mode]="merchant ? 'expanded' : 'normal'"
+      [mode]="'normal'"
       [merchant]="merchant ? true : false"
       [admin]="admin"
-      [hasSocials]="hasSocials"
-    ></app-header-info>
+    ></app-header-info> -->
+    <div class="header">
+      <div class="top-header">
+        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="">
+        <div class="contact-info" *ngIf="admin">
+          <div class="admin-buttons">
+            <button class="admin-btn">
+              <img [src]="env + '/pencil.svg'" alt="" width="19" height="19">
+            </button>
+            <button class="admin-btn" (click)="contactCallback()" [ngStyle]="{backgroundColor: showSocials ? '#E9E371' : 'transparent'}">
+              <img [src]="env + '/person.svg'" alt="" width="15" height="19">
+            </button>
+            <button class="admin-btn" (click)="shareCallback()">
+              <img [src]="env + '/upload.svg'" alt="" width="15" height="19">
+            </button>
+          </div>
+        </div>
+        <div class="contact-info" *ngIf="showSocials && !admin">
+          <button class="save-btn">
+            <p>Sálvalo</p>
+            <img [src]="env + '/contact.svg'" alt="" width="27" height="23">
+          </button>
+        </div>
+      </div>
+      <!-- <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div> -->
+      <h5>
+        {{merchant?.name || user?.name}}<span class="title" *ngIf="merchant?.title || user?.title">, {{merchant?.title || user?.title}}</span>
+      </h5>
+      <p>{{merchant?.bio || user?.bio}}</p>
+
+      <div *ngIf="showSocials" class="social-info">
+        <div class="info space-between">
+            <div class="buttons">
+                <!-- <a class="dollar-btn">$</a> -->
+                <ng-container *ngFor="let social of merchant?.social || user?.social">
+                    <a *ngIf="social.name === 'location'" [href]="social.url" target="_blank"><img class="blue" [src]="env + '/location123.svg'" alt="location" width="21" height="26"></a>
+                    <a *ngIf="social.name === 'email'" href="mailto:{{social.url}}"><img class="blue" [src]="env + '/send.svg'" alt="email" width="26" height="26"></a>
+                    <a *ngIf="social.name === 'phone'" href="tel:+{{social.url}}"><img class="blue" [src]="env + '/telephone.svg'" alt="call" width="26" height="26"></a>
+                </ng-container>
+            </div>
+            <ng-container *ngFor="let social of merchant?.social || user?.social">
+                <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+ merchant?.title || user?.title">
+                    SALUDANOS
+                    <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
+                </a>
+            </ng-container>
+        </div>
+        <div class="socials" *ngIf="hasSocials">
+            <h6>Cuentas sociales</h6>
+            <div class="space-between">
+                <ng-container *ngFor="let social of merchant?.social || user?.social">
+                    <a *ngIf="
+                        social.name === 'linkedin' ||
+                        social.name === 'twitter' ||
+                        social.name === 'instagram' ||
+                        social.name === 'tiktok' ||
+                        social.name === 'web'"
+                        [href]="social.url"
+                        target="_blank"
+                    >
+                        <img *ngIf="social.name === 'linkedin'" [src]="env + '/linkedin.svg'" alt="linkedin" width="28" height="26">
+                        <img *ngIf="social.name === 'twitter'" [src]="env + '/twitter.svg'" alt="twitter" width="32" height="26">
+                        <img *ngIf="social.name === 'instagram'" class="blue" [src]="env + '/instagram.svg'" alt="instagram" width="26" height="26">
+                        <img *ngIf="social.name === 'tiktok'" [src]="env + '/tiktok.svg'" alt="tiktok" width="23" height="26">
+                        <img *ngIf="social.name === 'web'" [src]="env + '/planet.svg'" alt="website" width="26" height="26">
+                </a>
+                </ng-container>
+            </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div

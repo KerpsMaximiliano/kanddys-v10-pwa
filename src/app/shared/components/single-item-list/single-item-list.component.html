@@ -13,7 +13,7 @@
 
     <ng-container *ngIf="!tag">
         <div class="body body-flex">
-            <img [src]="env + image" [alt]="" class="image" *ngIf="image">
+            <img [src]="env + image" [ngStyle]="filter && { filter: filter }" [alt]="" class="image" *ngIf="image">
         </div>
     
         <p class="down-text">{{ alternativeName }}</p>
