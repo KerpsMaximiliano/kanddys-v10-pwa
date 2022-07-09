@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { error } from 'console';
 import { environment } from 'src/environments/environment';
 
 interface Text {
@@ -24,6 +25,12 @@ interface Icon {
     width?: string;
     height?: string;
     margin?: string;
+    highlight?: {
+        active?: boolean;
+        highlighted?: boolean;
+        color?: string;
+        filter?: string;
+    };
 	  callback: () => void;
 }
 @Component({
@@ -45,7 +52,6 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() rmargin: string;
     @Input() filter: string;
     @Input() icons: Icon[];
-
     @Input() mainText?: Text;
     @Input() leftText?: Text;
     @Input() rightText?: Text;
@@ -104,10 +110,6 @@ export class HelperHeaderv2Component implements OnInit {
     this.display.emit(event)
   }
 
-  searchTrigger(event){
-    this.searchEvent.emit(event);
-  }
-
   dotAction(event){
     this.dotEvent.emit(event)
   }
@@ -118,4 +120,11 @@ export class HelperHeaderv2Component implements OnInit {
     }
   }
 
+  highlight(i){
+    if (this.icons && this.icons[i].highlight.active === true) {
+    this.icons[i].highlight.highlighted = !this.icons[i].highlight.highlighted;
+    } else {
+      console.log('');
+    }
+  }
 }

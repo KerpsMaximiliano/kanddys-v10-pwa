@@ -83,14 +83,27 @@ export class TestComponent implements OnInit {
     ];
 
   testItem: any[] = [{
-    name: 'toito es serio',
-    subtitle: 'negro es un color',
-    cta: {
-        text: 'Mas',
-        color: '#2874AD',
-        callback: () => {console.log('Cy')} 
-    }
+    src: '/asdawd',
+    callback: () => console.log('tostada')
   },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  },{
+    src: '/asdawd',
+    callback: () => console.log('tostada')
+  }/* {
     name: 'Creating Happiness one gift at a time.',
     subtitle: 'negro es un color',
     cta: {
@@ -106,7 +119,7 @@ export class TestComponent implements OnInit {
         color: '#2874AD',
         callback: () => {console.log('Cy')} 
     }
-  }]
+  } */]
 
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {
@@ -192,7 +205,7 @@ export class TestComponent implements OnInit {
     }); */
   }
 
-  log() {
+  log = () => {
     console.log("you clicked on somethin")
   }
 

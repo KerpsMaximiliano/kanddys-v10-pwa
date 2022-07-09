@@ -189,11 +189,11 @@ export class MerchantsService {
     return result;
   }
 
-  async createMerchant(input: MerchantInput): Promise<{ createMerchant: Merchant }> {
+  async createMerchant(input: MerchantInput, files?: any): Promise<{ createMerchant: Merchant }> {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createMerchant,
-      variables: { input },
+      variables: { input, files },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -203,10 +203,10 @@ export class MerchantsService {
     return result;
   }
 
-  async updateMerchant(input: MerchantInput, id: string): Promise<Merchant> {
+  async updateMerchant(input: MerchantInput, id: string, files?: any): Promise<Merchant> {
     const result = await this.graphql.mutate({
       mutation: updateMerchant,
-      variables: { input, id },
+      variables: { input, id, files },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });

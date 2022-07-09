@@ -26,38 +26,40 @@ const socialNames = [
 ]
 
 const deleteIrrelevantDataFromObject = (dataObject) => {
-  Object.keys(dataObject).forEach(key => {
-    if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
-      delete dataObject[key];
-    }
-
-    if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
-      dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
-    }
-
-    if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
-      dataObject[key].forEach((element, index) => {
-        //Delete irrelevant content from array indexes that arent nested arrays
-        if(typeof element === 'object' && !Array.isArray(element)) {
-          dataObject[key][index] = deleteIrrelevantDataFromObject(element);
-        }
-
-        //Delete irrelevant content from array indexes that are nested arrays
-        if(typeof element === 'object' && Array.isArray(element)) {
-          element.forEach((innerElement, index2) => {
-            if(
-              typeof innerElement === 'object' && 
-              !Array.isArray(innerElement)
-            ) {
-              dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
-            }
-          })
-        }
-      })
-    }
-  })
-
-  return dataObject;
+  if(dataObject) {
+    Object.keys(dataObject).forEach(key => {
+      if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
+        delete dataObject[key];
+      }
+  
+      if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
+        dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
+      }
+  
+      if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
+        dataObject[key].forEach((element, index) => {
+          //Delete irrelevant content from array indexes that arent nested arrays
+          if(typeof element === 'object' && !Array.isArray(element)) {
+            dataObject[key][index] = deleteIrrelevantDataFromObject(element);
+          }
+  
+          //Delete irrelevant content from array indexes that are nested arrays
+          if(typeof element === 'object' && Array.isArray(element)) {
+            element.forEach((innerElement, index2) => {
+              if(
+                typeof innerElement === 'object' && 
+                !Array.isArray(innerElement)
+              ) {
+                dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
+              }
+            })
+          }
+        })
+      }
+    })
+  
+    return dataObject;
+  }
 }
 
 @Component({
@@ -106,7 +108,7 @@ export class UserContactLandingComponent implements OnInit {
           cashapp,
           bankName,
           accountNumber,
-          owner,
+          ownerAccount,
           socialID,
           jsondata,
           file0
@@ -140,21 +142,26 @@ export class UserContactLandingComponent implements OnInit {
           await this.merchantsService.setDefaultMerchant(merchant._id);
           await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
 
-          if(bankName && accountNumber && owner && socialID) {
+          console.log(bankName, accountNumber, ownerAccount, socialID);
+
+          
+          if(bankName && accountNumber && ownerAccount && socialID) {
             const electronicPayment = [];
 
-            [venmo, paypal, cashapp].forEach(paymentMethod => {
+            [venmo, paypal, cashapp].forEach((paymentMethod, index) => {
               if(paymentMethod) {
+                console.log(paymentMethod);
                 electronicPayment.push({
-                  link: paymentMethod
+                  link: paymentMethod,
+                  name: index === 0 ? 'venmo' : index === 1 ? 'paypal' : index === 2 ? 'cashapp' : null
                 });
               }
             })
 
             await this.walletService.createExchangeData({
               bank: [{
-                bankName,
-                ownerAccount: owner,
+                bankName: decodeURIComponent(bankName),
+                ownerAccount: decodeURIComponent(ownerAccount),
                 routingNumber: parseInt(socialID),
                 isActive: true,
                 account: accountNumber
@@ -198,10 +205,11 @@ export class UserContactLandingComponent implements OnInit {
               })
   
               if(exchangeData) {
+
                 await this.walletService.updateExchangeData({
                   bank: [{
                     bankName: bank[0].bankName,
-                    ownerAccount: bank[0].owner,
+                    ownerAccountAccount: bank[0].ownerAccount,
                     routingNumber: parseInt(bank[0].routingNumber),
                     isActive: true,
                     account: bank[0].account
@@ -211,8 +219,8 @@ export class UserContactLandingComponent implements OnInit {
               } else {
                 await this.walletService.createExchangeData({
                   bank: [{
-                    bankName: bank[0].bankName,
-                    ownerAccount: bank[0].owner,
+                    bankName: decodeURIComponent(bank[0].bankName),
+                    ownerAccount: decodeURIComponent(bank[0].ownerAccount),
                     routingNumber: parseInt(bank[0].routingNumber),
                     isActive: true,
                     account: bank[0].account
@@ -251,6 +259,7 @@ export class UserContactLandingComponent implements OnInit {
                 relevantData.userData.image = merchantImage;
               };
               await this.authService.updateMe(relevantData.userData);
+              console.log(relevantData.exchangeData);
               // await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
               await this.walletService.createExchangeData(relevantData.exchangeData);
             }

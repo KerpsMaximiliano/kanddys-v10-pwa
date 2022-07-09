@@ -12,8 +12,10 @@ import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -434,13 +436,17 @@ export class UserCreatorComponent implements OnInit {
             websiteLink
           } = params.dataModel.get('7').value;
 
+          this.formSteps[0].fieldsList[this.formSteps[0].fieldsList.length - 1].label = 'ESPERE...';
+
+          const unformattedPhone = phoneNumber ? phoneNumber.e164Number.split('+')[1] : null;
+
           const socials = {
             facebook,
             twitter,
             tiktok,
             linkedin,
             instagram,
-            phone: phoneNumber ? phoneNumber : null,
+            phone: phoneNumber ? unformattedPhone : null,
             email: email ? email : null,
             location: address ? address : null,
             web: websiteLink
@@ -469,7 +475,7 @@ export class UserCreatorComponent implements OnInit {
             paypal,
             cashapp,
             email,
-            phoneNumber,
+            phoneNumber: unformattedPhone,
             address,
             socials,
             bankInfo
@@ -485,7 +491,7 @@ export class UserCreatorComponent implements OnInit {
             }});
           } else {
             const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
-              return socials[socialNetworkKey].length > 0 ? true : false;
+              return  (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
             })
             .map(socialNetworkKey => ({
               name: socialNetworkKey,
@@ -575,10 +581,204 @@ export class UserCreatorComponent implements OnInit {
                 }
               }
 
-              console.log(`/ecommerce/user-contact-landing/${updatedUser._id}`);
-              // this.router.navigate([`/ecommerce/user-contact-landing/${updatedUser._id}`]);
+              this.router.navigate([`/ecommerce/user-contact-landing/${updatedUser._id}`]);
+            }
+
+            if(this.isMerchant) {
+              const defaultMerchant = await this.merchantsService.merchantDefault();
+                    
+              const merchantImageConverted = userImage.length > 0 ? (
+                checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+              ) : null;
+
+              if(!defaultMerchant) {
+                const { createMerchant: createdMerchant } = await this.merchantsService.createMerchant({
+                  name: businessName,
+                  title: subtext,
+                  bio: bio,
+                  activity: businessType,
+                  social: socialsFiltered,
+                  email: email && email.length > 0 ? email : null,
+                  instagram: socials.instagram,
+                  facebook: socials.facebook,
+                }, userImage ? merchantImageConverted : null);
+
+                const { createSaleflow: createdSaleflow } = await this.saleflowsService.createSaleflow({
+                  merchant: createdMerchant._id,
+                  name: createdMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+                  items: []
+                });
+
+                await this.merchantsService.setDefaultMerchant(createdMerchant._id);
+                await this.saleflowsService.setDefaultSaleflow(createdMerchant._id, createdSaleflow._id);
+
+                const exchangeData = await this.walletService.exchangeDataByUser(createdMerchant.owner._id);
+
+                const exchangeDataInput = {
+                  electronicPayment: [
+                    {
+                      link: venmo,
+                      name: 'venmo'
+                    },
+                    {
+                      link: paypal,
+                      name: 'paypal'
+                    },
+                    {
+                      link: cashapp,
+                      name: 'cashapp'
+                    }
+                  ],
+                  bank: Object.keys(bankInfo).length > 3 ? [
+                    {
+                      bankName: bankInfo.bankName,
+                      account: bankInfo.accountNumber,
+                      isActive: true,
+                      ownerAccount: bankInfo.owner,
+                      routingNumber: Number(bankInfo.socialID)
+                    }
+                  ] : null
+                };
+  
+                if(createdMerchant && exchangeDataInput) {
+                  const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                  const electronicPayment = [];
+      
+                  electronicPaymentStored.forEach(paymentMethod => {
+                    if(paymentMethod) {
+                      electronicPayment.push({
+                        name: paymentMethod.name,
+                        link: paymentMethod.link
+                      });
+                    }
+                  })
+      
+                  if(exchangeData) {
+                    await this.walletService.updateExchangeData({
+                      bank: [{
+                        bankName: bank[0].bankName,
+                        ownerAccount: bank[0].ownerAccount,
+                        routingNumber: bank[0].routingNumber,
+                        isActive: true,
+                        account: bank[0].account
+                      }],
+                      electronicPayment
+                    }, exchangeData._id);
+                  } else {
+                    await this.walletService.createExchangeData({
+                      bank: [{
+                        bankName: bank[0].bankName,
+                        ownerAccount: bank[0].ownerAccount,
+                        routingNumber: bank[0].routingNumber,
+                        isActive: true,
+                        account: bank[0].account
+                      }],
+                      electronicPayment
+                    });    
+                  }
+                }
+
+                if(createdMerchant && createdSaleflow) {
+                  this.router.navigate([`/ecommerce/user-contact-landing/${createdMerchant.owner._id}`]);
+                }
+              } else {
+                const updatedUser = await this.authService.updateMe({
+                  email: email && email.length > 0 ? email : null,
+                  name,
+                  lastname,
+                  title: subtext,
+                  social: socialsFiltered,
+                  facebook: socials.facebook,
+                  instagram: socials.instagram,
+                  web: socials.web,
+                  bio,
+                }, userImage ? merchantImageConverted : null);
+
+                const updatedMerchant = await this.merchantsService.updateMerchant({
+                  name: businessName,
+                  title: subtext,
+                  bio: bio,
+                  activity: businessType,
+                  social: socialsFiltered,
+                  email: email && email.length > 0 ? email : null,
+                  instagram: socials.instagram,
+                  facebook: socials.facebook,
+                }, defaultMerchant._id, userImage ? merchantImageConverted : null);
+
+                const exchangeData = await this.walletService.exchangeDataByUser(defaultMerchant.owner._id);
+
+                const exchangeDataInput = {
+                  electronicPayment: [
+                    {
+                      link: venmo,
+                      name: 'venmo'
+                    },
+                    {
+                      link: paypal,
+                      name: 'paypal'
+                    },
+                    {
+                      link: cashapp,
+                      name: 'cashapp'
+                    }
+                  ],
+                  bank: Object.keys(bankInfo).length > 3 ? [
+                    {
+                      bankName: bankInfo.bankName,
+                      account: bankInfo.accountNumber,
+                      isActive: true,
+                      ownerAccount: bankInfo.owner,
+                      routingNumber: Number(bankInfo.socialID)
+                    }
+                  ] : null
+                };
+  
+                if(updatedMerchant && exchangeDataInput) {
+                  const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                  const electronicPayment = [];
+      
+                  electronicPaymentStored.forEach(paymentMethod => {
+                    if(paymentMethod) {
+                      electronicPayment.push({
+                        name: paymentMethod.name,
+                        link: paymentMethod.link
+                      });
+                    }
+                  })
+      
+                  if(exchangeData) {
+                    await this.walletService.updateExchangeData({
+                      bank: [{
+                        bankName: bank[0].bankName,
+                        ownerAccount: bank[0].ownerAccount,
+                        routingNumber: bank[0].routingNumber,
+                        isActive: true,
+                        account: bank[0].account
+                      }],
+                      electronicPayment
+                    }, exchangeData._id);
+                  } else {
+                    await this.walletService.createExchangeData({
+                      bank: [{
+                        bankName: bank[0].bankName,
+                        ownerAccount: bank[0].ownerAccount,
+                        routingNumber: bank[0].routingNumber,
+                        isActive: true,
+                        account: bank[0].account
+                      }],
+                      electronicPayment
+                    });    
+                  }
+                }
+
+                if(updatedUser && updatedMerchant) {
+                  this.router.navigate([`/ecommerce/user-contact-landing/${defaultMerchant.owner._id}`]);
+                }
+              }
             }
           }
+
+          this.formSteps[0].fieldsList[this.formSteps[0].fieldsList.length - 1].label = 'SALVAR CONTACTO';
 
           this.headerService.flowRoute = this.router.url;
         })
@@ -620,7 +820,7 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Pequeña descripción como tu Bio',
                 action: (params) => {
-                  params.scrollToStep(6);
+                  params.scrollToStep(5);
                   window.scroll(0, 0);
                 }
               },
@@ -998,8 +1198,10 @@ export class UserCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          placeholder: '',
+          placeholder: 'Escribe tu número de teléfono',
           label: 'TELÉFONO',
+          inputType: 'phone',
+          cssClass: 'second-style',
           bottomLabel: {
             text: 'Adiciona otro como LinkedIn, Twitter, TikTok +',
             callback(...params) {
@@ -1449,8 +1651,9 @@ export class UserCreatorComponent implements OnInit {
     private router: Router,
     private headerService: HeaderService,
     private authService: AuthService,
+    private saleflowsService: SaleFlowService,
     private merchantsService: MerchantsService,
-    private walletService: WalletService
+    private walletService: WalletService,
   ) { }
 
   async ngOnInit() {
@@ -1484,6 +1687,14 @@ export class UserCreatorComponent implements OnInit {
       this.formSteps[0].fieldsList[1].fieldControl.control.setValue(myUser.name ? myUser.name : '');
       this.formSteps[0].fieldsList[2].fieldControl.control.setValue(myUser.lastname ? myUser.lastname : '');
       this.formSteps[0].fieldsList[3].fieldControl.control.setValue(myUser.title ? myUser.title : '');
+
+      if(myMerchant) {
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(myMerchant.image ? myMerchant.image : '');
+        this.formSteps[0].fieldsList[3].fieldControl.control.setValue(myMerchant.title ? myMerchant.title : '');
+
+        this.formSteps[0].fieldsList[4].fieldControl.control.setValue(myMerchant.name ? myMerchant.name : '');
+        this.formSteps[0].fieldsList[5].fieldControl.control.setValue(myMerchant.activity ? myMerchant.activity : '');
+      }
 
       if(myMerchant) {
         this.formSteps[0].embeddedComponents = [];          
@@ -1520,7 +1731,14 @@ export class UserCreatorComponent implements OnInit {
         };
       }
 
-      const { bank: bankData, electronicPayment: electronicPayments } = await this.walletService.exchangeDataByUser(myUser._id);
+      const exchangeData = await this.walletService.exchangeDataByUser(myUser._id);
+      let bankData;
+      let electronicPayments;
+
+      if(exchangeData) {
+        bankData = exchangeData.bank;
+        electronicPayments = exchangeData.electronicPayment;
+      }
 
       //Sets up electronic payment data
       if(electronicPayments && electronicPayments.length > 0) {
@@ -1530,9 +1748,14 @@ export class UserCreatorComponent implements OnInit {
             venmo: 1,
             cashapp: 2
           }
-          this.formSteps[1].fieldsList[
+
+          if(this.formSteps[1].fieldsList[
             electronicPaymentHashTable[electronicPayment.name]
-          ].fieldControl.control.setValue(electronicPayment.link);
+          ]) {
+            this.formSteps[1].fieldsList[
+              electronicPaymentHashTable[electronicPayment.name]
+            ].fieldControl.control.setValue(electronicPayment.link);
+          }
         }
       }
 
@@ -1540,7 +1763,6 @@ export class UserCreatorComponent implements OnInit {
 
       //Sets up contact data
       this.formSteps[2].fieldsList[0].fieldControl.control.setValue(myUser.email ? myUser.email : '');
-      this.formSteps[2].fieldsList[1].fieldControl.control.setValue(myUser.phone ? myUser.phone : '');
       this.formSteps[2].fieldsList[2].fieldControl.control.setValue(location ? location.url : '');
 
       const socialsObject = {};
@@ -1555,10 +1777,12 @@ export class UserCreatorComponent implements OnInit {
       this.formSteps[3].fieldsList[3].fieldControl.control.setValue(socialsObject['tiktok'] ? socialsObject['tiktok'] : '');      
       this.formSteps[3].fieldsList[4].fieldControl.control.setValue(socialsObject['facebook'] ? socialsObject['facebook'] : '');      
 
-      this.formSteps[4].fieldsList[0].fieldControl.control.setValue(bankData[0].bankName ? bankData[0].bankName : '');
-      this.formSteps[4].fieldsList[1].fieldControl.control.setValue(bankData[0].account ? bankData[0].account : '');
-      this.formSteps[4].fieldsList[2].fieldControl.control.setValue(bankData[0].ownerAccount ? bankData[0].ownerAccount : '');
-      this.formSteps[4].fieldsList[3].fieldControl.control.setValue(bankData[0].routingNumber ? bankData[0].routingNumber : '');
+      if(exchangeData) {
+        this.formSteps[4].fieldsList[0].fieldControl.control.setValue(bankData[0].bankName ? bankData[0].bankName : '');
+        this.formSteps[4].fieldsList[1].fieldControl.control.setValue(bankData[0].account ? bankData[0].account : '');
+        this.formSteps[4].fieldsList[2].fieldControl.control.setValue(bankData[0].ownerAccount ? bankData[0].ownerAccount : '');
+        this.formSteps[4].fieldsList[3].fieldControl.control.setValue(bankData[0].routingNumber ? bankData[0].routingNumber : '');
+      }
 
       this.formSteps[5].fieldsList[0].fieldControl.control.setValue(myUser.bio ? myUser.bio : '');
       
