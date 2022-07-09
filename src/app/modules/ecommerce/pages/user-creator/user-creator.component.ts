@@ -15,6 +15,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 const labelStyles = {
@@ -119,6 +120,7 @@ export class UserCreatorComponent implements OnInit {
   };
   isClicked = false;
   merchantRequiredFields = {
+    name: false,
     // userImage: false,
     businessName: false,
     // businessType: false
@@ -306,7 +308,7 @@ export class UserCreatorComponent implements OnInit {
             },
             labelStyles: labelStyles,
           },
-          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'user', 'name')
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'both', 'name')
         },
         {
           name: 'lastname',
@@ -503,17 +505,19 @@ export class UserCreatorComponent implements OnInit {
                 checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
               ) : null;
 
-              const updatedUser = await this.authService.updateMe({
-                email: email && email.length > 0 ? email : null,
+              const updateMeInput =deleteIrrelevantDataFromObject({
                 name,
                 lastname,
                 title: subtext,
+                email: email,
                 social: socialsFiltered,
                 facebook: socials.facebook,
                 instagram: socials.instagram,
                 web: socials.web,
                 bio,
-              }, userImage ? userImageConverted : null);
+              });
+
+              const updatedUser = await this.authService.updateMe(updateMeInput, userImage ? userImageConverted : null);
 
               const exchangeData = await this.walletService.exchangeDataByUser(updatedUser._id);
 
@@ -544,7 +548,7 @@ export class UserCreatorComponent implements OnInit {
               };
 
               if(updatedUser && exchangeDataInput) {
-                const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                const { bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
                 const electronicPayment = [];
     
                 electronicPaymentStored.forEach(paymentMethod => {
@@ -555,29 +559,22 @@ export class UserCreatorComponent implements OnInit {
                     });
                   }
                 })
+
+                const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                  bank: [{
+                    bankName: bank[0].bankName,
+                    ownerAccount: bank[0].ownerAccount,
+                    routingNumber: bank[0].routingNumber,
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                });
     
                 if(exchangeData) {
-                  await this.walletService.updateExchangeData({
-                    bank: [{
-                      bankName: bank[0].bankName,
-                      ownerAccount: bank[0].ownerAccount,
-                      routingNumber: bank[0].routingNumber,
-                      isActive: true,
-                      account: bank[0].account
-                    }],
-                    electronicPayment
-                  }, exchangeData._id);
+                  await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
                 } else {
-                  await this.walletService.createExchangeData({
-                    bank: [{
-                      bankName: bank[0].bankName,
-                      ownerAccount: bank[0].ownerAccount,
-                      routingNumber: bank[0].routingNumber,
-                      isActive: true,
-                      account: bank[0].account
-                    }],
-                    electronicPayment
-                  });    
+                  await this.walletService.createExchangeData(exchangeDataMutationInput);    
                 }
               }
 
@@ -592,16 +589,20 @@ export class UserCreatorComponent implements OnInit {
               ) : null;
 
               if(!defaultMerchant) {
-                const { createMerchant: createdMerchant } = await this.merchantsService.createMerchant({
+                const createMerchantInput = deleteIrrelevantDataFromObject({
                   name: businessName,
                   title: subtext,
                   bio: bio,
                   activity: businessType,
                   social: socialsFiltered,
-                  email: email && email.length > 0 ? email : null,
+                  email,
                   instagram: socials.instagram,
                   facebook: socials.facebook,
-                }, userImage ? merchantImageConverted : null);
+                });
+
+                if(!merchantImageConverted) createMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
+
+                const { createMerchant: createdMerchant } = await this.merchantsService.createMerchant(createMerchantInput, userImage ? merchantImageConverted : null);
 
                 const { createSaleflow: createdSaleflow } = await this.saleflowsService.createSaleflow({
                   merchant: createdMerchant._id,
@@ -614,6 +615,7 @@ export class UserCreatorComponent implements OnInit {
 
                 const exchangeData = await this.walletService.exchangeDataByUser(createdMerchant.owner._id);
 
+                //se repite
                 const exchangeDataInput = {
                   electronicPayment: [
                     {
@@ -652,29 +654,22 @@ export class UserCreatorComponent implements OnInit {
                       });
                     }
                   })
+
+                  const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                    bank: [{
+                      bankName: bank[0].bankName,
+                      ownerAccount: bank[0].ownerAccount,
+                      routingNumber: bank[0].routingNumber,
+                      isActive: true,
+                      account: bank[0].account
+                    }],
+                    electronicPayment
+                  });
       
                   if(exchangeData) {
-                    await this.walletService.updateExchangeData({
-                      bank: [{
-                        bankName: bank[0].bankName,
-                        ownerAccount: bank[0].ownerAccount,
-                        routingNumber: bank[0].routingNumber,
-                        isActive: true,
-                        account: bank[0].account
-                      }],
-                      electronicPayment
-                    }, exchangeData._id);
+                    await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
                   } else {
-                    await this.walletService.createExchangeData({
-                      bank: [{
-                        bankName: bank[0].bankName,
-                        ownerAccount: bank[0].ownerAccount,
-                        routingNumber: bank[0].routingNumber,
-                        isActive: true,
-                        account: bank[0].account
-                      }],
-                      electronicPayment
-                    });    
+                    await this.walletService.createExchangeData(exchangeDataMutationInput);    
                   }
                 }
 
@@ -682,8 +677,8 @@ export class UserCreatorComponent implements OnInit {
                   this.router.navigate([`/ecommerce/user-contact-landing/${createdMerchant.owner._id}`]);
                 }
               } else {
-                const updatedUser = await this.authService.updateMe({
-                  email: email && email.length > 0 ? email : null,
+                const updateMeInput = deleteIrrelevantDataFromObject({
+                  email: email,
                   name,
                   lastname,
                   title: subtext,
@@ -692,18 +687,24 @@ export class UserCreatorComponent implements OnInit {
                   instagram: socials.instagram,
                   web: socials.web,
                   bio,
-                }, userImage ? merchantImageConverted : null);
+                })
 
-                const updatedMerchant = await this.merchantsService.updateMerchant({
+                const updatedUser = await this.authService.updateMe(updateMeInput, userImage ? merchantImageConverted : null);
+                
+                const updateMerchantInput = deleteIrrelevantDataFromObject({
                   name: businessName,
                   title: subtext,
                   bio: bio,
                   activity: businessType,
                   social: socialsFiltered,
-                  email: email && email.length > 0 ? email : null,
+                  email: email,
                   instagram: socials.instagram,
                   facebook: socials.facebook,
-                }, defaultMerchant._id, userImage ? merchantImageConverted : null);
+                });
+
+                if(!merchantImageConverted) updateMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
+
+                const updatedMerchant = await this.merchantsService.updateMerchant(updateMerchantInput, defaultMerchant._id, userImage ? merchantImageConverted : null);
 
                 const exchangeData = await this.walletService.exchangeDataByUser(defaultMerchant.owner._id);
 
@@ -745,29 +746,22 @@ export class UserCreatorComponent implements OnInit {
                       });
                     }
                   })
+
+                  const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                    bank: [{
+                      bankName: bank[0].bankName,
+                      ownerAccount: bank[0].ownerAccount,
+                      routingNumber: bank[0].routingNumber,
+                      isActive: true,
+                      account: bank[0].account
+                    }],
+                    electronicPayment
+                  });
       
                   if(exchangeData) {
-                    await this.walletService.updateExchangeData({
-                      bank: [{
-                        bankName: bank[0].bankName,
-                        ownerAccount: bank[0].ownerAccount,
-                        routingNumber: bank[0].routingNumber,
-                        isActive: true,
-                        account: bank[0].account
-                      }],
-                      electronicPayment
-                    }, exchangeData._id);
+                    await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
                   } else {
-                    await this.walletService.createExchangeData({
-                      bank: [{
-                        bankName: bank[0].bankName,
-                        ownerAccount: bank[0].ownerAccount,
-                        routingNumber: bank[0].routingNumber,
-                        isActive: true,
-                        account: bank[0].account
-                      }],
-                      electronicPayment
-                    });    
+                    await this.walletService.createExchangeData(exchangeDataMutationInput);    
                   }
                 }
 
@@ -805,7 +799,7 @@ export class UserCreatorComponent implements OnInit {
             },
             links: [
               {
-                text: 'Contacto: Email, Telefonos, URL’s.',
+                text: 'Contacto: Email, Telefonos, URL’s, Socials.',
                 action: (params) => {
                   // this.currentTab = 2;
                   // this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
@@ -944,9 +938,9 @@ export class UserCreatorComponent implements OnInit {
         },
         injectSubmitButtom((params) => {
           params.scrollToStep(0);
-          this.formSteps[0].embeddedComponents = [];
-          this.switchButton.inputs.isClicked = this.isClicked;
-          this.formSteps[0].embeddedComponents[0] = this.switchButton;
+          
+          this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
           window.scroll(0, 0);
         }, 1, "SALVAR METODOS DE RECIBIR $")
       ],
@@ -1023,9 +1017,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       stepProcessingFunction: () => {
@@ -1273,9 +1267,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1434,9 +1428,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1534,9 +1528,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1583,9 +1577,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1632,9 +1626,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1665,9 +1659,7 @@ export class UserCreatorComponent implements OnInit {
       this.formSteps = storedData.reference;
       this.isClicked = storedData.essentialData.isMerchant;
 
-      this.formSteps[0].embeddedComponents = [];
-      this.switchButton.inputs.isClicked = this.isClicked;
-      this.formSteps[0].embeddedComponents[0] = this.switchButton;
+      this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
 
       this.isMerchant = storedData.essentialData.isMerchant;
       this.userRequiredFields = storedData.essentialData.userRequiredFields;
@@ -1697,38 +1689,7 @@ export class UserCreatorComponent implements OnInit {
       }
 
       if(myMerchant) {
-        this.formSteps[0].embeddedComponents = [];          
-        this.changeMerchant();
-        this.alreadyIsMerchant = true;
-        this.formSteps[0].embeddedComponents[0] = {
-          beforeIndex: 0,
-          component: SwitchButtonComponent,
-          inputs: {
-            isClicked: this.isClicked,
-            innerText: true,
-            blockClickEvent: true,
-            settings: {
-              leftText: 'ES UN NEGOCIO?',
-            },
-            containerStyles: {
-              paddingTop: '24px',
-              justifyContent: 'flex-end'
-            },
-            textStyles: {
-              fontFamily: 'SfProRegular',
-              paddingRight: '6px',
-              color: '#7B7B7B'
-            }
-          },
-          outputs: [
-            {
-              name: 'switched',
-              callback: (params) => {
-                this.changeMerchant();
-              },
-            }
-          ]
-        };
+        this.reinjectSwitchButtonAndMakeItFreeze(true);
       }
 
       const exchangeData = await this.walletService.exchangeDataByUser(myUser._id);
@@ -1795,8 +1756,8 @@ export class UserCreatorComponent implements OnInit {
     if(!(this.alreadyIsMerchant && this.loggedIn)) {
       this.isMerchant = !this.isMerchant;
 
-      let userRequiredExclusiveFields = 4;
-      let merchantRequiredExclusiveFields = 3;
+      let userRequiredExclusiveFields = 1;
+      let merchantRequiredExclusiveFields = 2;
       let requiredFieldsCount = 0;
   
       this.formSteps[0].fieldsList.forEach((field, index) => {
@@ -1804,14 +1765,28 @@ export class UserCreatorComponent implements OnInit {
           field.styles.containerStyles.display = this.isMerchant ? 'block' : 'none';
         }
   
-        if(!this.isMerchant && [0, 1, 2, 3].includes(index)) 
+        // if(!this.isMerchant && [0, 1, 2, 3].includes(index)) 
+        // {
+        //   requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+        //   this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
+        // }
+
+        if(!this.isMerchant && [1].includes(index)) 
         {
           requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
   
           this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
         }
   
-        if(this.isMerchant && [0, 4, 5].includes(index)) 
+        // if(this.isMerchant && [0, 4, 5].includes(index)) 
+        // { 
+        //   requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+        //   this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === merchantRequiredExclusiveFields ? false : true;
+        // }
+
+        if(this.isMerchant && [1, 4].includes(index)) 
         { 
           requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
   
@@ -1824,4 +1799,41 @@ export class UserCreatorComponent implements OnInit {
     }
   }
 
+  reinjectSwitchButtonAndMakeItFreeze(freezeInMerchantMode: boolean = false) {
+    this.formSteps[0].embeddedComponents = [];  
+    
+    if(!this.alreadyIsMerchant && freezeInMerchantMode) {
+      this.changeMerchant(); 
+      this.alreadyIsMerchant = true;
+    }
+    this.formSteps[0].embeddedComponents[0] = {
+      beforeIndex: 0,
+      component: SwitchButtonComponent,
+      inputs: {
+        isClicked: this.isClicked,
+        innerText: true,
+        blockClickEvent: freezeInMerchantMode,
+        settings: {
+          leftText: 'ES UN NEGOCIO?',
+        },
+        containerStyles: {
+          paddingTop: '24px',
+          justifyContent: 'flex-end'
+        },
+        textStyles: {
+          fontFamily: 'SfProRegular',
+          paddingRight: '6px',
+          color: '#7B7B7B'
+        }
+      },
+      outputs: [
+        {
+          name: 'switched',
+          callback: (params) => {
+            this.changeMerchant();
+          },
+        }
+      ]
+    };
+  }
 }

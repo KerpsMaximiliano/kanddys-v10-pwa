@@ -11,10 +11,13 @@ import { MultistepFormServiceService, MultistepFormStorage } from 'src/app/core/
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 
 const checkIfStringIsBase64DataURI = (text: string)=> {
   return text.slice(0, 5) === 'data:';
 }
+
+const defaultUserImage = 'https://www.gravatar.com/avatar/0?s=250&d=mp';              
 
 @Component({
   selector: 'app-authentication',
@@ -488,20 +491,26 @@ export class Authentication implements OnInit {
                     }, 'none', null, true, userImage ? (
                       checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
                     ) : null);
+
                     
-                    const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
+                    const merchantImageConverted = userImage ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null;
+
+                    const createMerchantInput = deleteIrrelevantDataFromObject({
                       name: businessName,
-                      // bio: businessType,
                       title: subtext,
                       bio,
                       activity: businessType,
                       social: socialsFiltered,
-                      email: email && email.length > 0 ? email : null,
+                      email,
                       instagram: socials.instagram,
                       facebook: socials.facebook,
-                    }, userImage ? (
-                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
-                    ) : null);
+                    });
+
+                    if(!merchantImageConverted) createMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
+                    
+                    const { createMerchant: createdMerchant } = await this.merchantService.createMerchant(createMerchantInput, userImage ? merchantImageConverted : null);
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
                       createdUser.phone, 
@@ -549,18 +558,20 @@ export class Authentication implements OnInit {
                     }));
 
                     if(!defaultMerchant) {
-                      const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
+                      const createMerchantInput = deleteIrrelevantDataFromObject({
                         name: businessName,
-                        // bio: businessType,
                         title: subtext,
+                        bio,
                         activity: businessType,
                         social: socialsFiltered,
-                        email: email && email.length > 0 ? email : null,
+                        email,
                         instagram: socials.instagram,
                         facebook: socials.facebook,
                       });
+  
+                      if(!merchantImageConverted) createMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
 
-                      console.log(merchantImageConverted);
+                      const { createMerchant: createdMerchant } = await this.merchantService.createMerchant(createMerchantInput, userImage ? merchantImageConverted : null);
                       
                       const magicLinkCreated = await this.authService.generateMagicLink(
                         phoneNumber, 
@@ -604,10 +615,7 @@ export class Authentication implements OnInit {
                               ]
                             }
                           })
-                        },
-                        merchantImageConverted ? [
-                          merchantImageConverted
-                        ] : null
+                        }
                       );
 
                       if(!createdMerchant || !magicLinkCreated) {
@@ -646,6 +654,7 @@ export class Authentication implements OnInit {
                               email: email && email.length > 0 ? email : null,
                               // bio: businessType,
                               title: subtext,
+                              image: !merchantImageConverted ? 'https://www.gravatar.com/avatar/0?s=250&d=mp' : null,
                               activity: businessType,
                               social: socialsFiltered,
                               instagram: socials.instagram,

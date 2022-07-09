@@ -16,6 +16,7 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
+import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 
 const socialNames = [
   'linkedin',
@@ -25,43 +26,6 @@ const socialNames = [
   'web',
   'facebook',
 ]
-
-const deleteIrrelevantDataFromObject = (dataObject) => {
-  if(dataObject) {
-    Object.keys(dataObject).forEach(key => {
-      if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
-        delete dataObject[key];
-      }
-  
-      if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
-        dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
-      }
-  
-      if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
-        dataObject[key].forEach((element, index) => {
-          //Delete irrelevant content from array indexes that arent nested arrays
-          if(typeof element === 'object' && !Array.isArray(element)) {
-            dataObject[key][index] = deleteIrrelevantDataFromObject(element);
-          }
-  
-          //Delete irrelevant content from array indexes that are nested arrays
-          if(typeof element === 'object' && Array.isArray(element)) {
-            element.forEach((innerElement, index2) => {
-              if(
-                typeof innerElement === 'object' && 
-                !Array.isArray(innerElement)
-              ) {
-                dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
-              }
-            })
-          }
-        })
-      }
-    })
-  
-    return dataObject;
-  }
-}
 
 @Component({
   selector: 'app-user-contact-landing',

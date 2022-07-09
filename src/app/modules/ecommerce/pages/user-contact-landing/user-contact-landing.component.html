@@ -66,7 +66,7 @@
                 </ng-container>
             </div>
             <ng-container *ngFor="let social of merchant?.social || user?.social">
-                <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+ merchant?.title || user?.title">
+                <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+ (merchant?.title || user?.title)">
                     SALUDANOS
                     <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
                 </a>
