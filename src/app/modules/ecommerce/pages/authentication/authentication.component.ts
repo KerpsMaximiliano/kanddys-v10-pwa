@@ -311,7 +311,7 @@ export class Authentication implements OnInit {
 
                   if(!foundUser) {
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
-                      return socials[socialNetworkKey].length > 0 ? true : false;
+                      return (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
                     })
                     .map(socialNetworkKey => ({
                       name: socialNetworkKey,
@@ -387,7 +387,7 @@ export class Authentication implements OnInit {
                       checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
                     ) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
-                      return socials[socialNetworkKey].length > 0 ? true : false;
+                      return (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
                     })
                     .map(socialNetworkKey => ({
                       name: socialNetworkKey,
@@ -469,7 +469,7 @@ export class Authentication implements OnInit {
                   const foundUser = await this.authService.checkUser(phoneNumber);
 
                   const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
-                    return socials[socialNetworkKey].length > 0 ? true : false;
+                    return (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
                   })
                   .map(socialNetworkKey => ({
                     name: socialNetworkKey,
@@ -499,7 +499,9 @@ export class Authentication implements OnInit {
                       email: email && email.length > 0 ? email : null,
                       instagram: socials.instagram,
                       facebook: socials.facebook,
-                    });
+                    }, userImage ? (
+                      checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+                    ) : null);
 
                     const magicLinkCreated = await this.authService.generateMagicLink(
                       createdUser.phone, 
@@ -539,7 +541,7 @@ export class Authentication implements OnInit {
                       checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
                     ) : null;
                     const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
-                      return socials[socialNetworkKey].length > 0 ? true : false;
+                      return (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
                     })
                     .map(socialNetworkKey => ({
                       name: socialNetworkKey,

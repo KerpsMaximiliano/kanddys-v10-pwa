@@ -478,7 +478,7 @@ shouldScrollBackwards &&
                   {{ currentField.sublabel }}
                 </label>
 
-                <ngx-intl-tel-input [cssClass]="'custom'"
+                <ngx-intl-tel-input [cssClass]="currentField.cssClass ? currentField.cssClass : null"
                   [enableAutoCountrySelect]="true" 
                   [enablePlaceholder]="true" 
                   [searchCountryFlag]="true"
@@ -487,6 +487,7 @@ shouldScrollBackwards &&
                   maxLength="15"
                   [phoneValidation]="true" 
                   [separateDialCode]="true" 
+                  [customPlaceholder]="currentField.placeholder ? currentField.placeholder : 'El # de WhatsApp es..'"
                   [numberFormat]="PhoneNumberFormat.International"
                   tabindex="-1"
                   [formControl]="currentField.fieldControl.control"
