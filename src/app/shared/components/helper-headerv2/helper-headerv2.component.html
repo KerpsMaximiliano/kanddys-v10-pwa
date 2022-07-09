@@ -32,7 +32,7 @@
                         </app-cart-button>
                     </ng-container>
                     
-                    <div *ngFor="let icon of icons; index as i" class="icon-item">
+                    <div *ngFor="let icon of icons; index as i" class="icon-item" [ngStyle]="{'background-color':  icon.highlight?.highlighted? icon.highlight?.color : 'transparent'}">
                         <img
                             [src]="env + icon.src"
                             [alt]="icon.alt"
@@ -44,6 +44,7 @@
                                 cursor: 'pointer'
                             }"
                             (click)="icon.callback()"
+                            (click)="highlight(i)"
                         >
                     </div>
                    <!--  <div *ngIf="whatsapp?.active && whatsapp.link"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
