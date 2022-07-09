@@ -60,7 +60,6 @@
   display: flex;
   justify-content: end;
   align-self: baseline;
-  margin: 10px 24px;
   grid-column: 9 / span 4;
 
   .admin-buttons {
@@ -74,7 +73,8 @@
       cursor: pointer;
 
       img {
-        filter: brightness(0) saturate(100%) invert(37%) sepia(92%) saturate(574%) hue-rotate(167deg) brightness(87%) contrast(83%);
+        filter: brightness(0) saturate(100%) invert(37%) sepia(92%) saturate(574%) hue-rotate(167deg) brightness(87%)
+          contrast(83%);
       }
 
       &:hover {
@@ -82,7 +82,7 @@
       }
     }
   }
-  
+
   .save-btn {
     all: unset;
     display: flex;
@@ -107,7 +107,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
+  padding: 24px;
 
   .top-header {
     display: grid;
@@ -121,7 +121,6 @@
       grid-column: 6 / span 2;
     }
   }
-
 
   h5 {
     margin: 8px 0;
@@ -139,9 +138,17 @@
 
   p {
     margin: 0;
-    font-family: "RobotoRegular";
-    font-size: 17px;
-    color: #7b7b7b;
+    font-family: "SfProLight";
+    font-size: 16px;
+    color: #4f4f4f;
+    width: 80%;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
   }
 }
 
