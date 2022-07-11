@@ -118,7 +118,7 @@
         </ng-container>
 
         <ng-container *ngIf="mode == 'center'">
-            <div class="double-text">
+            <div class="double-text" [ngStyle]="{'justify-content': flexDirection? flexDirection : '' }">
                 <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
                     [style.color]="color"></i>
                 </a>
@@ -129,7 +129,8 @@
                 {'font-size': mainText.fontSize? mainText.fontSize : '', 
                 'font-family': mainText.fontFamily? mainText.fontFamily : '',
                 'color': mainText.color? mainText.color : (color? color : ''),
-                'cursor': mainText.pointer? 'pointer': ''
+                'cursor': mainText.pointer? 'pointer': '',
+                'margin-right': rmargin? rmargin : ''
                 }">{{mainText.text}}</p>
 
                 <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{

@@ -50,6 +50,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fixed: boolean = false;
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
+    @Input() flexDirection: string;
     @Input() filter: string;
     @Input() icons: Icon[];
     @Input() mainText?: Text;
