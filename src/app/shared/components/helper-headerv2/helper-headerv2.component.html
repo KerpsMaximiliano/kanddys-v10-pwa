@@ -131,7 +131,7 @@
                 'color': mainText.color? mainText.color : (color? color : ''),
                 'cursor': mainText.pointer? 'pointer': '',
                 'margin-right': rmargin? rmargin : ''
-                }">{{mainText.text}}</p>
+                }" (click)="neutralEvent()">{{mainText.text}}</p>
 
                 <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
