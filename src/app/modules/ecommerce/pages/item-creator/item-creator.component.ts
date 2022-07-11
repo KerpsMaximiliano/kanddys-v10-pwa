@@ -19,7 +19,8 @@ const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
   fontSize: '17px',
-  marginBottom: '12px'
+  marginBottom: '24px',
+  fontWeight: 'normal'
 };
 
 @Component({
@@ -255,7 +256,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               width: '0.5px',
               height: '1rem',
             },
-            labelStyles: labelStyles
+            labelStyles: {
+              ...labelStyles,
+              fontWeight: 'normal'
+            }
           },
         },
         // {
@@ -326,13 +330,14 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
             topLabel: {
-              text: 'Adiciona las imágenes:',
+              text: 'Adiciona el arte en tu herramienta preferida:',
               styles: {
                 color: '#7B7B7B',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '12px'
+                marginBottom: '24px',
+                fontWeight: 'normal'
               },
             },
             containerStyles: {
@@ -483,11 +488,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 marginBottom: '0px'
               },
               fieldStyles: {
-                marginTop: '12px',
+                margin: '0px',
+                marginBottom: '12px',
                 paddingLeft: '17px',
                 width: 'fit-content'
               },
-              labelStyles: labelStyles
+              labelStyles: {
+                ...labelStyles,
+                marginBottom: '30px'
+              }
             },
             links: [
               {
@@ -527,7 +536,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         }
       },
       avoidGoingToNextStep: true,
-      headerText: '',
+      headerText: 'PREVIEW',
+      headerTextSide: 'RIGHT',
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
       headerMode: 'v2',

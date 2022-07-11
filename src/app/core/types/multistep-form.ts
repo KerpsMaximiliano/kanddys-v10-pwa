@@ -162,6 +162,8 @@ export interface HeaderInfoConfig {
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText?: string;
+  headerTextLeft?: string;
+  headerTextRight?: string;  
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   pageHeader?: PageHeader;
   pageSubHeader?: PageHeader;
