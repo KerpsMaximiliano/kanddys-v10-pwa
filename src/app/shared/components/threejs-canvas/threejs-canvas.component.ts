@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { 
   Scene, 
   PerspectiveCamera, 
+  CubeCamera,
+  WebGLCubeRenderTarget,
   Color,
   Clock,
   WebGLRenderer,
@@ -11,8 +13,9 @@ import {
   MeshStandardMaterial,
   PlaneGeometry,
   AmbientLight,
-  SphereGeometry,
   DirectionalLight,
+  PointLight,
+  SphereGeometry,
   MeshBasicMaterial,
   ShaderChunk,
   EquirectangularReflectionMapping,
@@ -45,17 +48,20 @@ export class ThreejsCanvasComponent implements OnInit {
       scene,
       sizes,
       camera,
+      cubeCamera,
       renderer,
       controls,
       clock,
       groundMirror
     } = this.initScene();
-    await this.addGLTFModelToTheScene(camera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/Creditcard.gltf');
-    this.initMenu(camera, this.gltfModel, groundMirror);
+    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/Creditcard.gltf');
+    this.initMenu(camera, cubeCamera, this.gltfModel, groundMirror);
 
     const renderLoop = () => {
       controls.update();
     
+      cubeCamera.update(renderer, scene);
+
       renderer.render(scene, camera);
 
       //Tiempo pasado desde el ultimo frame al actual
@@ -85,6 +91,13 @@ export class ThreejsCanvasComponent implements OnInit {
       50,
       (window.innerWidth >= 500 ? 500 : window.innerWidth) / window.innerHeight,
     );
+
+    const cubeRenderTarget = new WebGLCubeRenderTarget( 512 );
+    // cubeRenderTarget.texture.type = THREE.HalfFloatType;
+
+    const cubeCamera = new CubeCamera( 1, 1000, cubeRenderTarget );
+    scene.add(cubeCamera);
+
     // camera.position.y = 5;
     // camera.position.z = 40;
     camera.position.x = -0.09363450643606908;
@@ -109,6 +122,7 @@ export class ThreejsCanvasComponent implements OnInit {
     directionalLight.shadow.camera.right = 10;
     directionalLight.shadow.bias = -0.005;
     scene.add(directionalLight);
+
     // directionalLight.add(
     //   new Mesh(sphere, new MeshBasicMaterial({ color: 0x87ceeb }))
     // );
@@ -204,6 +218,7 @@ export class ThreejsCanvasComponent implements OnInit {
       scene,
       sizes,
       camera,
+      cubeCamera,
       renderer,
       controls,
       clock,
@@ -211,7 +226,7 @@ export class ThreejsCanvasComponent implements OnInit {
     }
   }
 
-  initMenu(camera: PerspectiveCamera, gltf: GLTF, groundMirror: Reflector) {
+  initMenu(camera: PerspectiveCamera, cubeCamera: CubeCamera, gltf: GLTF, groundMirror: Reflector) {
     const gui = new GUI();
     gui.add( document, 'title' );
 
@@ -233,13 +248,13 @@ export class ThreejsCanvasComponent implements OnInit {
     groundMirrorPositionsFolder.add(groundMirror.position, 'z', -40, 40).step(0.1);
   }
 
-  addGLTFModelToTheScene(camera: PerspectiveCamera, scene: Scene, route: string): Promise<Boolean | null> {
+  addGLTFModelToTheScene(camera: PerspectiveCamera, cubeCamera: CubeCamera, scene: Scene, route: string): Promise<Boolean | null> {
     const loader = new GLTFLoader();
     const rgbeLoader = new RGBELoader();
 
 
     return new Promise((resolve, reject) => {
-      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/brown_photostudio_02_2k.hdr', (envMapTexture => {
+      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/snow_field_2k.hdr', (envMapTexture => {
         envMapTexture.mapping = EquirectangularReflectionMapping;
 
         loader.load(
@@ -257,11 +272,11 @@ export class ThreejsCanvasComponent implements OnInit {
               if(node instanceof Mesh && node.material instanceof MeshStandardMaterial) {              
                 // node.receiveShadow = true;
                 node.castShadow = true;
-  
+                node.material.metalness = 1;
                 node.material.roughness = 0;
-                node.material.metalness = 0.4;
                 node.material.envMap = envMapTexture;
-                node.material.envMapIntensity = 0.4;
+                node.material.envMapIntensity = 1;
+                // node.material.envMap = cubeCamera.renderTarget.texture;
 
                 node.material.needsUpdate = true;
               }
@@ -288,6 +303,9 @@ export class ThreejsCanvasComponent implements OnInit {
             });
   
             gltf.scene.position.y = -0.3;
+            camera.rotation.y = Math.PI / 2;
+            camera.lookAt(gltf.scene.position);
+
     
             scene.add(gltf.scene);
 

@@ -162,7 +162,10 @@ export interface HeaderInfoConfig {
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText?: string;
+  headerTextLeft?: string;
+  headerTextRight?: string;  
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
+  headerTextCallback?(...params): any;
   pageHeader?: PageHeader;
   pageSubHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;
@@ -200,10 +203,15 @@ export interface FormStep {
   customStickyButton?: {
     mode: string;
     bgcolor?: string;
+    bgcolorInactive?: string;
     color?: string;
+    colorInactive?: string;
     height?: string;
+    heightInactive?: string;
     text: string;
     text2?: string;
+    textCallback?( params): any;
+    text2Callback?( params): any;
   }
 }
 

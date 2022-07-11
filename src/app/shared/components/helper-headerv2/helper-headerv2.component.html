@@ -118,21 +118,29 @@
         </ng-container>
 
         <ng-container *ngIf="mode == 'center'">
-            <div class="double-text">
+            <div class="double-text" [ngStyle]="{'justify-content': flexDirection? flexDirection : '' }">
                 <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
                     [style.color]="color"></i>
                 </a>
                 <a *ngIf="down && !returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-down"
                     [style.color]="color"></i>
                 </a>
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && !down && !returnAble" class="return-holder" [ngStyle]="{
+                    width: icon?.width? icon.width : '',
+                    height: icon?.height? icon.height : '',
+                    filter: icon?.filter? icon.filter : '',
+                    cursor: 'pointer'
+                }" (click)="icon.callback()">
+
                 <p class="light-text" [ngStyle]="
                 {'font-size': mainText.fontSize? mainText.fontSize : '', 
                 'font-family': mainText.fontFamily? mainText.fontFamily : '',
                 'color': mainText.color? mainText.color : (color? color : ''),
-                'cursor': mainText.pointer? 'pointer': ''
+                'cursor': mainText.pointer? 'pointer': '',
+                'margin-right': rmargin? rmargin : ''
                 }">{{mainText.text}}</p>
 
-                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && down || returnAble" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
                     height: icon?.height? icon.height : '',
                     filter: icon?.filter? icon.filter : '',
@@ -149,7 +157,7 @@
                     <span class="bold-text" *ngIf="extraTexts?.itemId" [style.margin-left]="'6%'" >{{extraTexts.itemId}}</span>
                     <span class="bill bold-text" *ngIf="extraTexts?.billId" >{{extraTexts.billId}}</span>
                     <span class="bold-text" >{{leftText.text}}</span>
-                    <span class="bold-text" >{{rightText.text}}</span>
+                    <span class="bold-text" (click)="neutralEvent()" >{{rightText.text}}</span>
                 </div>
             </div>
         </ng-container>

@@ -50,6 +50,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() fixed: boolean = false;
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
+    @Input() flexDirection: string;
     @Input() filter: string;
     @Input() icons: Icon[];
     @Input() mainText?: Text;
@@ -88,7 +89,7 @@ export class HelperHeaderv2Component implements OnInit {
     };
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
-    @Output() searchEvent = new EventEmitter();
+    @Output() agnosticAction = new EventEmitter();
     @Output() dotEvent = new EventEmitter();
     @Output() display = new EventEmitter();
     env: string = environment.assetsUrl;
@@ -96,6 +97,10 @@ export class HelperHeaderv2Component implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+  }
+
+  neutralEvent(){
+    this.agnosticAction.emit();
   }
 
   shopCartTrigger() {

@@ -61,6 +61,7 @@ import { MyCustomersComponent } from './pages/my-customers/my-customers.componen
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
+import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 
 const routes: Routes = [
   {
@@ -104,6 +105,10 @@ const routes: Routes = [
   {
     path: 'shipment-data-form',
     component: ShipmentDataFormComponent,
+  },
+  {
+    path: 'item-detail',
+    component: ItemDetailComponent,
   },
   {
     path: 'item-detail/:saleflow/:id',
@@ -337,6 +342,10 @@ const routes: Routes = [
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent
   },
+  {
+    path: 'merchant-items',
+    component: MerchantItemsComponent
+  },
 ];
 
 @NgModule({
@@ -402,6 +411,7 @@ const routes: Routes = [
     UserCreatorComponent,
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
+    MerchantItemsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

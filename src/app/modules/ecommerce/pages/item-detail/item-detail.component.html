@@ -4,26 +4,27 @@
         <app-helper-headerv2
             [mode]="'basic'"
             [mainText]="{
-                text: itemData ? itemData.merchant?.name : 'MITIENDAID',
+                text: itemData ? itemData.merchant?.name : 'TIENDA NAME ID',
                 fontSize: '21px,'
             }"
             [returnAble]="true"
             [icons]="[{
+                src: '/person.svg',
+                color: 'invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+                callback: tapping
+            },{
                 src: '/whatsapp_blanco.svg',
-                color: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)',
+                color: 'invert(10%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)',
+                callback: tapping
+            },{
+                src: '/upload.svg',
+                color: 'invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
                 callback: tapping
             }]"
-            [shopcart]="{
-                active: true,
-                filter: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)',
-                cartAmount: itemCartAmount
-            }"
-            [returnAble]="false"
-            [shopCartCallback]="showCartCallBack"
             cartColor="blue"
-            [bgColor]="'#E9E371'"
-            [color]="'#2874AD'"
-            filter="invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)"
+
+            [color]="'#FFF'"
+            filter="invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)"
             (returnEvent)="back()"
         ></app-helper-headerv2>
         </div>
@@ -77,13 +78,14 @@
             </ng-container>
         </div>
         <!-- <app-bubble-button [position]="'mini'" [icon]="'/bookmarks.svg'" [color]="'blue'"></app-bubble-button> -->
-        <app-bubble-button (click)="back()" [position]="'left'" [return]="true" [color]="'blue'"></app-bubble-button>
-        <app-bubble-button (click)="openShareDialog()" [position]="(itemCartAmount > 0) ? 'minir' : 'right'" [icon]="'/upload.svg'" [color]="'blue'" ></app-bubble-button>
-        <app-bubble-button (click)="showItems()" [cart]="true" [cartAmount]="itemCartAmount" [position]="'right'" [color]="'blue'" *ngIf="itemCartAmount > 0"></app-bubble-button>
-        <!-- <app-sticky-button
-        [text]="'GUARDA Y RECAUDA FONDOS'"
-        [mode]="'disabled-fixed'"
+        <!-- <app-bubble-button (click)="back()" [position]="'left'" [return]="true" [color]="'blue'"></app-bubble-button> 11/07-->
+        <!-- <app-bubble-button (click)="openShareDialog()" [position]="(itemCartAmount > 0) ? 'minir' : 'right'" [icon]="'/upload.svg'" [color]="'blue'" 11/07></app-bubble-button> -->
+        <app-bubble-button (click)="showItems()" [cart]="true" [cartAmount]="itemCartAmount"  [custom]="{width: 91, height: 91, right: '20px', left: 'auto'}" [solo]="false" [color]="'blue'" [lcmargin]="'0'" *ngIf="itemCartAmount > 0"></app-bubble-button>
+        <app-sticky-button
+        [text]="'MIRA Y COMPARTE LO GUARDADO PARA $'"
+        [mode]="'fixed'"
         size="small"
-        ></app-sticky-button> -->
+        bgColor="#2874AD"
+        ></app-sticky-button>
     </div>
 </ng-container>
