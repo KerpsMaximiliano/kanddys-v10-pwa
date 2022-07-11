@@ -1,7 +1,9 @@
 import { Model } from '../objects/model';
+import { Calendar } from './calendar';
 import { Customizer } from './customizer';
 import { Item, ItemCategory, ItemPackage } from './item';
 import { Merchant } from './merchant';
+import { ExchangeData } from './wallet';
 
 export class DeliveryLocation {
   _id?: string;
@@ -25,12 +27,12 @@ export class DeliveryLocationInput {
 
 export class ModuleConfig {
   isActive: boolean;
-  calendar: any;
+  calendar: Calendar;
   post: boolean;
   deliveryLocation: boolean;
   pickUpLocations: DeliveryLocation[];
   moduleOrder: number;
-  paymentModule: any;
+  paymentModule: ExchangeData;
 }
 
 export class SaleFlowModule extends Model<SaleFlowModule> {

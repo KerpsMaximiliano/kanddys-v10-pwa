@@ -397,9 +397,16 @@ export class OrderInfoComponent implements OnInit {
                 const backgroundColor = value.backgroundColor.color.name;
                 if (backgroundColor)
                   this.customizerDetails.push({
-                    name: 'Color',
+                    name: 'Color de fondo',
                     value: backgroundColor,
                   });
+
+                if(value.texts.length) {
+                  this.customizerDetails.push({
+                    name: 'Texto',
+                    value: value.texts.reduce((prev, curr) => prev + curr.text, ''),
+                  });
+                }
 
                 let selectedTypography =
                   value.texts.length > 0 && value.texts[0].font;
@@ -417,22 +424,37 @@ export class OrderInfoComponent implements OnInit {
                     value: selectedTypography,
                   });
 
-                const typographyColor =
+                const typographyColorCode =
                   value.texts.length && value.texts[0].color.name;
-                if (typographyColor)
+                const typographyColorName =
+                  value.texts.length && value.texts[0].color.nickname;
+                if (typographyColorCode && typographyColorName) {
                   this.customizerDetails.push({
                     name: 'Color de tipografía',
-                    value: typographyColor,
+                    value: typographyColorName,
                   });
-
-                const stickerColor =
+                  this.customizerDetails.push({
+                    name: 'Código de color de tipografía',
+                    value: typographyColorCode,
+                  });
+                }
+                
+                const stickerColorCode =
                   value.stickers.length &&
                   value.stickers[0].svgOptions.color.name;
-                if (stickerColor)
+                const stickerColorName =
+                  value.stickers.length &&
+                  value.stickers[0].svgOptions.color.nickname;
+                if (stickerColorName) {
                   this.customizerDetails.push({
                     name: 'Color de sticker',
-                    value: stickerColor,
+                    value: stickerColorName,
                   });
+                  this.customizerDetails.push({
+                    name: 'Código de color de sticker',
+                    value: stickerColorCode,
+                  });
+                }
 
                 this.items[0].item.images[0] = value.preview;
                 this.dateId = this.formatID(data.order.dateId);
