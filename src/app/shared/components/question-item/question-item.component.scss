@@ -37,6 +37,8 @@
 
 	.question-area {
 		padding: 4px 4px 16px;
+		padding-top: 27px;
+		padding-bottom: 23px;
 		margin: 0 24px;
 		border-bottom: solid 2px #e7e7e7;
 
@@ -88,6 +90,13 @@
 				overflow: hidden;
 				text-overflow: ellipsis;
 			}
+
+			.image-upload{
+				width: 76px;
+				height: 65px;
+				border-radius: 10px;
+				border: none;
+			}
 		}
 	}
 
@@ -99,7 +108,7 @@
 
 		button {
 			all: unset;
-			font-family: "SfProBold";
+			font-family: "SfProRegular";
 			font-size: 14px;
 			color: #2874ad;
 			padding: 8px;
@@ -112,8 +121,18 @@
 	}
 }
 
+.tags-label {
+	font-family: "RobotoMedium";
+	font-size: 16px;
+	color: #7B7B7B;
+	text-transform: uppercase;
+	font-weight: 100;
+	margin: 0;
+	margin-left: 8px;
+	margin-bottom: 8px;
+}
+
 .tag-list {
-	margin: 0 24px 24px;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	gap: 12px;

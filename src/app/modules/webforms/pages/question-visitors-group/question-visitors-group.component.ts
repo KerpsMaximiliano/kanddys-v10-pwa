@@ -178,9 +178,7 @@ export class QuestionVisitorsGroupComponent implements OnInit {
   webform: any = {
     name: 'WebForm Name ID',
     question: 'Pregunta HechaID',
-    answer: 'Respuesta iria aqui Somebody once told me the world is gonna roll me I aint the sharpest tool in the shed She was looking kind of dumb with her finger and her thumb In the shape of an L on her forehead',
     description: 'Dos lineas de descripcion ID',
-    image: 'https://monstar-lab.com/global/wp-content/uploads/sites/11/2019/04/male-placeholder-image.jpeg',
     date: 'Mañana, Sábado 14 de Marzo, entre las 10:00 AM y las 2:00PM'
   };
   tags: {

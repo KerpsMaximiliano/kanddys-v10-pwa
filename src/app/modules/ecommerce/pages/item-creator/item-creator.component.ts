@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef} from '@angular/core';
+import { Component, OnInit, ApplicationRef, OnDestroy} from '@angular/core';
 import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ const labelStyles = {
   templateUrl: './item-creator.component.html',
   styleUrls: ['./item-creator.component.scss'],
 })
-export class ItemCreatorComponent implements OnInit{
+export class ItemCreatorComponent implements OnInit, OnDestroy {
   currentUserId: string = null;
   merchantOwnerId: string = null;
   currentItemId: string = null;
@@ -564,11 +564,13 @@ export class ItemCreatorComponent implements OnInit{
         },
       ],
       customScrollToStep: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+        
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -611,11 +613,13 @@ export class ItemCreatorComponent implements OnInit{
         },
       ],
       customScrollToStep: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -655,11 +659,13 @@ export class ItemCreatorComponent implements OnInit{
         },
       ],
       customScrollToStep: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -742,11 +748,13 @@ export class ItemCreatorComponent implements OnInit{
         }
       },
       customScrollToStep: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+        
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
-        this.shouldScrollBackwards = false;
+        this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+        
         params.scrollToStep(0, false);
       },
       justExecuteCustomScrollToStep: true,
@@ -781,6 +789,7 @@ export class ItemCreatorComponent implements OnInit{
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
           this.router.navigate([this.headerService.flowRoute]);
+          this.headerService.flowRoute = null;
         };
       }
 
@@ -897,5 +906,9 @@ export class ItemCreatorComponent implements OnInit{
         this.loggedUserDefaultSaleflow = defaultSaleflow;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    if(this.headerService.flowRoute) this.headerService.flowRoute = null;
   }
 }

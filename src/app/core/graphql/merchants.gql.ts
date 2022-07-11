@@ -25,7 +25,10 @@ export const body = `
   email
   image
   bio
+  title
   default
+  image
+  activity
   active
   showItems
   owner { 
@@ -34,7 +37,6 @@ export const body = `
     name
     _id
   }
-  activity
 `;
 
 export const bodyWithoutShowItems = `
@@ -72,8 +74,10 @@ export const merchantDefault = gql`
     merchantDefault(userId: $userId) {
       _id
       name
+      title
       showItems
       image
+      activity
       bio
       owner {
         _id
@@ -148,8 +152,8 @@ export const hotMerchant = gql`
 `;
 
 export const createMerchant = gql`
-  mutation createMerchant($input: MerchantInput!) {
-    createMerchant(input: $input) { ${body} }
+  mutation createMerchant($input: MerchantInput!, $files: [Upload!]) {
+    createMerchant(input: $input, files: $files) { ${body} }
   }
 `;
 
@@ -160,8 +164,8 @@ export const createMerchant2 = gql`
 `;
 
 export const updateMerchant = gql`
-  mutation updateMerchant($id: ObjectID!, $input: MerchantInput!) {
-    updateMerchant(id: $id, input: $input) { ${body} }
+  mutation updateMerchant($id: ObjectID!, $input: MerchantInput!, $files: [Upload!]) {
+    updateMerchant(id: $id, input: $input, files: $files) { ${body} }
   }
 `;
 

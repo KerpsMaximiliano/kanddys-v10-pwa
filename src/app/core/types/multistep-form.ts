@@ -77,6 +77,7 @@ export interface FormField {
   multiple?: boolean;
   maxDate?: string;
   minDate?: string; 
+  cssClass?: string;
 }
 
 export interface EmbeddedComponentOutput {

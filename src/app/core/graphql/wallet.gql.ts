@@ -94,6 +94,8 @@ export const exchangedata = gql`
         }
         isActive
         email
+        link
+        name
       }
     }
   }
@@ -125,6 +127,8 @@ export const updateExchangeData = gql`
         }
         isActive
         email
+        link
+        name
       }
     }
   }
@@ -244,6 +248,8 @@ export const exchangeDataByUser = gql `
           name
           image
         }
+        ownerAccount
+        bankName
         isActive
         account
         routingNumber
@@ -254,8 +260,10 @@ export const exchangeDataByUser = gql `
           name
           image
         }
+        name
         isActive
         email
+        link
       }
     }
   }

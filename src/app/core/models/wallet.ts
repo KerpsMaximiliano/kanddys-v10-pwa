@@ -10,6 +10,8 @@ export class ElectronicPayment extends Model<ElectronicPayment> {
     paymentReceiver: PaymentReceiver;
     isActive: boolean;
     email: string;
+    link?: string;
+    name?: string;
 }
 
 export class ExchangeData extends Model<ExchangeData> {

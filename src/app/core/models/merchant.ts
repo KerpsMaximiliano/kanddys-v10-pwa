@@ -8,6 +8,7 @@ export class Merchant extends Model<Merchant> {
   name: string;
   clientMaxBalance: number;
   location?: { lat: number; long: number };
+  title?: string;
   email?: string;
   image?: string;
   activity: string;
@@ -47,6 +48,7 @@ export class MerchantInput {
   image?: File;
   activity?: string;
   bio?: string;
+  title?: string;
   email?: string;
   location?: string;
   website?: string;

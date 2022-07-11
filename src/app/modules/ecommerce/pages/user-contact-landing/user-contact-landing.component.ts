@@ -13,8 +13,10 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
+import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 
 const socialNames = [
   'linkedin',
@@ -25,41 +27,6 @@ const socialNames = [
   'facebook',
 ]
 
-const deleteIrrelevantDataFromObject = (dataObject) => {
-  Object.keys(dataObject).forEach(key => {
-    if(typeof dataObject[key] !== 'object' && dataObject[key].length === 0) {
-      delete dataObject[key];
-    }
-
-    if(typeof dataObject[key] === 'object' && !Array.isArray(dataObject[key])) {
-      dataObject[key] = deleteIrrelevantDataFromObject(dataObject[key]);
-    }
-
-    if(typeof dataObject[key] === 'object' && Array.isArray(dataObject[key])) {
-      dataObject[key].forEach((element, index) => {
-        //Delete irrelevant content from array indexes that arent nested arrays
-        if(typeof element === 'object' && !Array.isArray(element)) {
-          dataObject[key][index] = deleteIrrelevantDataFromObject(element);
-        }
-
-        //Delete irrelevant content from array indexes that are nested arrays
-        if(typeof element === 'object' && Array.isArray(element)) {
-          element.forEach((innerElement, index2) => {
-            if(
-              typeof innerElement === 'object' && 
-              !Array.isArray(innerElement)
-            ) {
-              dataObject[key][index][index2] = deleteIrrelevantDataFromObject(innerElement);
-            }
-          })
-        }
-      })
-    }
-  })
-
-  return dataObject;
-}
-
 @Component({
   selector: 'app-user-contact-landing',
   templateUrl: './user-contact-landing.component.html',
@@ -67,6 +34,7 @@ const deleteIrrelevantDataFromObject = (dataObject) => {
 })
 export class UserContactLandingComponent implements OnInit {
   URI: string = environment.uri;
+  env: string = environment.assetsUrl;
   user: User;
   admin: boolean;
   merchant: Merchant;
@@ -78,6 +46,8 @@ export class UserContactLandingComponent implements OnInit {
   };
   users: User[] = [];
   hasSocials: boolean;
+  showSocials: boolean;
+  regex = /\D/g;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,6 +60,7 @@ export class UserContactLandingComponent implements OnInit {
     private dialogService: DialogService,
     private walletService: WalletService,
     private location: Location,
+    private headerService: HeaderService
   ) { }
 
   ngOnInit(): void {
@@ -103,7 +74,7 @@ export class UserContactLandingComponent implements OnInit {
           cashapp,
           bankName,
           accountNumber,
-          owner,
+          ownerAccount,
           socialID,
           jsondata,
           file0
@@ -137,21 +108,26 @@ export class UserContactLandingComponent implements OnInit {
           await this.merchantsService.setDefaultMerchant(merchant._id);
           await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
 
-          if(bankName && accountNumber && owner && socialID) {
+          console.log(bankName, accountNumber, ownerAccount, socialID);
+
+          
+          if(bankName && accountNumber && ownerAccount && socialID) {
             const electronicPayment = [];
 
-            [venmo, paypal, cashapp].forEach(paymentMethod => {
+            [venmo, paypal, cashapp].forEach((paymentMethod, index) => {
               if(paymentMethod) {
+                console.log(paymentMethod);
                 electronicPayment.push({
-                  link: paymentMethod
+                  link: paymentMethod,
+                  name: index === 0 ? 'venmo' : index === 1 ? 'paypal' : index === 2 ? 'cashapp' : null
                 });
               }
             })
 
             await this.walletService.createExchangeData({
               bank: [{
-                bankName,
-                ownerAccount: owner,
+                bankName: decodeURIComponent(bankName),
+                ownerAccount: decodeURIComponent(ownerAccount),
                 routingNumber: parseInt(socialID),
                 isActive: true,
                 account: accountNumber
@@ -173,8 +149,53 @@ export class UserContactLandingComponent implements OnInit {
   
             if(userImage) relevantData.image = userImage;
 
+            const exchangeDataInInput = 'exchangeData' in relevantData ? relevantData.exchangeData : null;
+
+            if(exchangeDataInInput) delete relevantData.exchangeData;
+
             const updatedUser = await this.authService.updateMe(relevantData);
 
+            const exchangeData = await this.walletService.exchangeDataByUser(updatedUser._id);
+
+            if(updatedUser && exchangeDataInInput) {
+              const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInInput;
+              const electronicPayment = [];
+  
+              electronicPaymentStored.forEach(paymentMethod => {
+                if(paymentMethod) {
+                  electronicPayment.push({
+                    name: paymentMethod.name,
+                    link: paymentMethod.link
+                  });
+                }
+              })
+  
+              if(exchangeData) {
+
+                await this.walletService.updateExchangeData({
+                  bank: [{
+                    bankName: bank[0].bankName,
+                    ownerAccountAccount: bank[0].ownerAccount,
+                    routingNumber: parseInt(bank[0].routingNumber),
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                }, exchangeData._id);
+              } else {
+                await this.walletService.createExchangeData({
+                  bank: [{
+                    bankName: decodeURIComponent(bank[0].bankName),
+                    ownerAccount: decodeURIComponent(bank[0].ownerAccount),
+                    routingNumber: parseInt(bank[0].routingNumber),
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                });    
+              }
+            }
+            
             window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
           } catch (error) {
             console.log(error);
@@ -196,8 +217,6 @@ export class UserContactLandingComponent implements OnInit {
               items: []
             });
 
-            console.log(merchant._id);
-            
             await this.merchantsService.setDefaultMerchant(merchant._id);
             await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
 
@@ -206,6 +225,7 @@ export class UserContactLandingComponent implements OnInit {
                 relevantData.userData.image = merchantImage;
               };
               await this.authService.updateMe(relevantData.userData);
+              console.log(relevantData.exchangeData);
               // await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
               await this.walletService.createExchangeData(relevantData.exchangeData);
             }
@@ -341,7 +361,11 @@ export class UserContactLandingComponent implements OnInit {
           {
             text: 'Vende Online y por WhatsApp',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/item-creator`]),
+            func: () => {
+              this.headerService.flowRoute = this.router.url;
+
+              this.router.navigate([`/ecommerce/item-creator`]);
+            },
             plus: true,
           },
         ]
@@ -355,6 +379,14 @@ export class UserContactLandingComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  contactCallback = () => {
+    this.showSocials = !this.showSocials;
+  }
+
+  shareCallback = () => {
+    this.openShareDialog();
   }
 
 }

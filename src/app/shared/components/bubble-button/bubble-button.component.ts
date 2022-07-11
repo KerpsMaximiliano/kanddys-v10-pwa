@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class BubbleButtonComponent implements OnInit {
   //Inputs
   @Input() color: 'yellow' | 'blue' = 'yellow';
-  @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minir' | 'minis' | 'big';
+  @Input() position: 'left'| 'right' | 'rightxl' | 'mini' | 'minil' | 'minir' | 'minis' | 'big';
   @Input() cartAmount: number;
   @Input() icon: string;
   @Input() text: string;

@@ -57,6 +57,8 @@ export class UserDashboardComponent implements OnInit {
       line: false,
       callback: () => {
         this.router.navigate([`/ecommerce/item-creator`])
+
+        this.headerService.flowRoute = '/ecommerce/user-dashboard';
       }
     }
   ];

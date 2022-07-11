@@ -10,13 +10,21 @@ import { SwitchButtonComponent } from 'src/app/shared/components/switch-button/s
 import { MultistepFormServiceService } from 'src/app/core/services/multistep-form-service.service';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
   fontSize: '17px',
   fontWeight: 500,
-  margin: '0px'
+  margin: '0px',
+  marginBottom: '20px'
 };
 
 const labelStyles2 = {
@@ -91,7 +99,7 @@ const injectSubmitButtom = (callback: any, step = 0, buttonText: string = 'SALVA
   },
 });
 
-const tabsOptions = ["Recibir pagos", "Cuentas Sociales", "Contacto"];
+const tabsOptions = ["Recibir pagos", "Cuentas Sociales", "Contacto", "Bio", "Url"];
 
 @Component({
   selector: 'app-user-creator',
@@ -102,6 +110,8 @@ export class UserCreatorComponent implements OnInit {
   scrollableForm = false;
   isMerchant: boolean = false;
   multistepFormData: any = null;
+  loggedIn: boolean = false;
+  alreadyIsMerchant: boolean = false;
   userRequiredFields = {
     // userImage: false,
     name: false,
@@ -110,6 +120,7 @@ export class UserCreatorComponent implements OnInit {
   };
   isClicked = false;
   merchantRequiredFields = {
+    name: false,
     // userImage: false,
     businessName: false,
     // businessType: false
@@ -194,6 +205,10 @@ export class UserCreatorComponent implements OnInit {
       params.scrollToStep(2);
     } else if(newTabIndex === 1) {
       params.scrollToStep(3);
+    } else if(newTabIndex === 3) {
+      params.scrollToStep(5);
+    } else if(newTabIndex === 4) {
+      params.scrollToStep(6);
     };
   }
 
@@ -261,7 +276,7 @@ export class UserCreatorComponent implements OnInit {
               fontFamily: 'RobotoMedium',
               fontSize: '17px',
               fontWeight: 500,
-              marginBottom: '12px',
+              marginBottom: '24px',
             },
             fieldStyles: {
               minWidth: '192px',
@@ -285,16 +300,15 @@ export class UserCreatorComponent implements OnInit {
               display: !this.isMerchant ? 'inline-block' : 'none',
               width: 'calc(100% / 2)',
               paddingRight: '6px',
-              marginTop: '24px'
+              marginTop: '73px'
               // width: '83.70%',
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
-          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'user', 'name')
+          changeCallbackFunction: (change) => this.injectRequiredFunction(change, 'both', 'name')
         },
         {
           name: 'lastname',
@@ -313,7 +327,6 @@ export class UserCreatorComponent implements OnInit {
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -325,16 +338,15 @@ export class UserCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl('')
           },
-          label: 'Escribe lo que irá debajo del nombre:',
+          label: 'Titulo:',
           placeholder: 'Ej, CEO..',
           styles: {
             containerStyles: {
               display: !this.isMerchant ? 'inline-block' : 'none',
-              marginTop: '24px',
+              marginTop: '60px',
             },
             fieldStyles: {
               maxWidth: '166px',
-              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -351,12 +363,11 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               display: this.isMerchant ? 'block' : 'none',
-              marginTop: '24px'
+              marginTop: '60px'
               // width: '83.70%',
             },
             fieldStyles: {
               width: '100%',
-              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
@@ -373,16 +384,15 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             containerStyles: {
               display: this.isMerchant ? 'block' : 'none',
-              marginTop: '24px',
+              marginTop: '60px',
             },
             fieldStyles: {
               maxWidth: '166px',
-              marginTop: '12px',
             },
             labelStyles: labelStyles,
           },
         },
-        injectSubmitButtom((params) => {
+        injectSubmitButtom(async (params) => {
           const {
             businessName,
             businessType,
@@ -420,6 +430,37 @@ export class UserCreatorComponent implements OnInit {
             socialID
           } = params.dataModel.get('5').value;
 
+          const {
+            bio
+          } = params.dataModel.get('6').value;
+
+          const {
+            websiteLink
+          } = params.dataModel.get('7').value;
+
+          this.formSteps[0].fieldsList[this.formSteps[0].fieldsList.length - 1].label = 'ESPERE...';
+
+          const unformattedPhone = phoneNumber ? phoneNumber.e164Number.split('+')[1] : null;
+
+          const socials = {
+            facebook,
+            twitter,
+            tiktok,
+            linkedin,
+            instagram,
+            phone: phoneNumber ? unformattedPhone : null,
+            email: email ? email : null,
+            location: address ? address : null,
+            web: websiteLink
+          };
+
+          const bankInfo = {
+            bankName,
+            accountNumber,
+            owner,
+            socialID
+          };
+
           this.multistepFormService.storeMultistepFormData('user-creation', this.formSteps, {
             isMerchant: this.isMerchant,
             userRequiredFields: this.userRequiredFields,
@@ -430,31 +471,308 @@ export class UserCreatorComponent implements OnInit {
             name,
             submitButton,
             subtext,
+            bio,
             userImage,
             venmo,
             paypal,
             cashapp,
             email,
-            phoneNumber,
+            phoneNumber: unformattedPhone,
             address,
-            socials: {
-              facebook,
-              twitter,
-              tiktok,
-              linkedin,
-              instagram
-            },
-            bankInfo: {
-              bankName,
-              accountNumber,
-              owner,
-              socialID
-            }
+            socials,
+            bankInfo
           });
+
+          const checkIfStringIsBase64DataURI = (text: string)=> {
+            return text.slice(0, 5) === 'data:';
+          }
           
-          this.router.navigate(['ecommerce/authentication'], {queryParams: {
-            type: 'create-user'
-          }});
+          if(!this.loggedIn) {
+            this.router.navigate(['ecommerce/authentication'], {queryParams: {
+              type: 'create-user'
+            }});
+          } else {
+            const socialsFiltered = Object.keys(socials).filter(socialNetworkKey => {
+              return  (socials[socialNetworkKey] && socials[socialNetworkKey].length > 0) ? true : false;
+            })
+            .map(socialNetworkKey => ({
+              name: socialNetworkKey,
+              url: socials[socialNetworkKey]
+            }));
+
+            if(!this.isMerchant) {
+              const userImageConverted = userImage.length > 0 ? (
+                checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+              ) : null;
+
+              const updateMeInput =deleteIrrelevantDataFromObject({
+                name,
+                lastname,
+                title: subtext,
+                email: email,
+                social: socialsFiltered,
+                facebook: socials.facebook,
+                instagram: socials.instagram,
+                web: socials.web,
+                bio,
+              });
+
+              const updatedUser = await this.authService.updateMe(updateMeInput, userImage ? userImageConverted : null);
+
+              const exchangeData = await this.walletService.exchangeDataByUser(updatedUser._id);
+
+              const exchangeDataInput = {
+                electronicPayment: [
+                  {
+                    link: venmo,
+                    name: 'venmo'
+                  },
+                  {
+                    link: paypal,
+                    name: 'paypal'
+                  },
+                  {
+                    link: cashapp,
+                    name: 'cashapp'
+                  }
+                ],
+                bank: Object.keys(bankInfo).length > 3 ? [
+                  {
+                    bankName: bankInfo.bankName,
+                    account: bankInfo.accountNumber,
+                    isActive: true,
+                    ownerAccount: bankInfo.owner,
+                    routingNumber: Number(bankInfo.socialID)
+                  }
+                ] : null
+              };
+
+              if(updatedUser && exchangeDataInput) {
+                const { bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                const electronicPayment = [];
+    
+                electronicPaymentStored.forEach(paymentMethod => {
+                  if(paymentMethod) {
+                    electronicPayment.push({
+                      name: paymentMethod.name,
+                      link: paymentMethod.link
+                    });
+                  }
+                })
+
+                const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                  bank: [{
+                    bankName: bank[0].bankName,
+                    ownerAccount: bank[0].ownerAccount,
+                    routingNumber: bank[0].routingNumber,
+                    isActive: true,
+                    account: bank[0].account
+                  }],
+                  electronicPayment
+                });
+    
+                if(exchangeData) {
+                  await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
+                } else {
+                  await this.walletService.createExchangeData(exchangeDataMutationInput);    
+                }
+              }
+
+              this.router.navigate([`/ecommerce/user-contact-landing/${updatedUser._id}`]);
+            }
+
+            if(this.isMerchant) {
+              const defaultMerchant = await this.merchantsService.merchantDefault();
+                    
+              const merchantImageConverted = userImage.length > 0 ? (
+                checkIfStringIsBase64DataURI(userImage) ? base64ToFile(userImage) : null
+              ) : null;
+
+              if(!defaultMerchant) {
+                const createMerchantInput = deleteIrrelevantDataFromObject({
+                  name: businessName,
+                  title: subtext,
+                  bio: bio,
+                  activity: businessType,
+                  social: socialsFiltered,
+                  email,
+                  instagram: socials.instagram,
+                  facebook: socials.facebook,
+                });
+
+                if(!merchantImageConverted) createMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
+
+                const { createMerchant: createdMerchant } = await this.merchantsService.createMerchant(createMerchantInput, userImage ? merchantImageConverted : null);
+
+                const { createSaleflow: createdSaleflow } = await this.saleflowsService.createSaleflow({
+                  merchant: createdMerchant._id,
+                  name: createdMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+                  items: []
+                });
+
+                await this.merchantsService.setDefaultMerchant(createdMerchant._id);
+                await this.saleflowsService.setDefaultSaleflow(createdMerchant._id, createdSaleflow._id);
+
+                const exchangeData = await this.walletService.exchangeDataByUser(createdMerchant.owner._id);
+
+                //se repite
+                const exchangeDataInput = {
+                  electronicPayment: [
+                    {
+                      link: venmo,
+                      name: 'venmo'
+                    },
+                    {
+                      link: paypal,
+                      name: 'paypal'
+                    },
+                    {
+                      link: cashapp,
+                      name: 'cashapp'
+                    }
+                  ],
+                  bank: Object.keys(bankInfo).length > 3 ? [
+                    {
+                      bankName: bankInfo.bankName,
+                      account: bankInfo.accountNumber,
+                      isActive: true,
+                      ownerAccount: bankInfo.owner,
+                      routingNumber: Number(bankInfo.socialID)
+                    }
+                  ] : null
+                };
+  
+                if(createdMerchant && exchangeDataInput) {
+                  const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                  const electronicPayment = [];
+      
+                  electronicPaymentStored.forEach(paymentMethod => {
+                    if(paymentMethod) {
+                      electronicPayment.push({
+                        name: paymentMethod.name,
+                        link: paymentMethod.link
+                      });
+                    }
+                  })
+
+                  const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                    bank: [{
+                      bankName: bank[0].bankName,
+                      ownerAccount: bank[0].ownerAccount,
+                      routingNumber: bank[0].routingNumber,
+                      isActive: true,
+                      account: bank[0].account
+                    }],
+                    electronicPayment
+                  });
+      
+                  if(exchangeData) {
+                    await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
+                  } else {
+                    await this.walletService.createExchangeData(exchangeDataMutationInput);    
+                  }
+                }
+
+                if(createdMerchant && createdSaleflow) {
+                  this.router.navigate([`/ecommerce/user-contact-landing/${createdMerchant.owner._id}`]);
+                }
+              } else {
+                const updateMeInput = deleteIrrelevantDataFromObject({
+                  email: email,
+                  name,
+                  lastname,
+                  title: subtext,
+                  social: socialsFiltered,
+                  facebook: socials.facebook,
+                  instagram: socials.instagram,
+                  web: socials.web,
+                  bio,
+                })
+
+                const updatedUser = await this.authService.updateMe(updateMeInput, userImage ? merchantImageConverted : null);
+                
+                const updateMerchantInput = deleteIrrelevantDataFromObject({
+                  name: businessName,
+                  title: subtext,
+                  bio: bio,
+                  activity: businessType,
+                  social: socialsFiltered,
+                  email: email,
+                  instagram: socials.instagram,
+                  facebook: socials.facebook,
+                });
+
+                if(!merchantImageConverted) updateMerchantInput.image = 'https://www.gravatar.com/avatar/0?s=250&d=mp';
+
+                const updatedMerchant = await this.merchantsService.updateMerchant(updateMerchantInput, defaultMerchant._id, userImage ? merchantImageConverted : null);
+
+                const exchangeData = await this.walletService.exchangeDataByUser(defaultMerchant.owner._id);
+
+                const exchangeDataInput = {
+                  electronicPayment: [
+                    {
+                      link: venmo,
+                      name: 'venmo'
+                    },
+                    {
+                      link: paypal,
+                      name: 'paypal'
+                    },
+                    {
+                      link: cashapp,
+                      name: 'cashapp'
+                    }
+                  ],
+                  bank: Object.keys(bankInfo).length > 3 ? [
+                    {
+                      bankName: bankInfo.bankName,
+                      account: bankInfo.accountNumber,
+                      isActive: true,
+                      ownerAccount: bankInfo.owner,
+                      routingNumber: Number(bankInfo.socialID)
+                    }
+                  ] : null
+                };
+  
+                if(updatedMerchant && exchangeDataInput) {
+                  const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInput;
+                  const electronicPayment = [];
+      
+                  electronicPaymentStored.forEach(paymentMethod => {
+                    if(paymentMethod) {
+                      electronicPayment.push({
+                        name: paymentMethod.name,
+                        link: paymentMethod.link
+                      });
+                    }
+                  })
+
+                  const exchangeDataMutationInput = deleteIrrelevantDataFromObject({
+                    bank: [{
+                      bankName: bank[0].bankName,
+                      ownerAccount: bank[0].ownerAccount,
+                      routingNumber: bank[0].routingNumber,
+                      isActive: true,
+                      account: bank[0].account
+                    }],
+                    electronicPayment
+                  });
+      
+                  if(exchangeData) {
+                    await this.walletService.updateExchangeData(exchangeDataMutationInput, exchangeData._id);
+                  } else {
+                    await this.walletService.createExchangeData(exchangeDataMutationInput);    
+                  }
+                }
+
+                if(updatedUser && updatedMerchant) {
+                  this.router.navigate([`/ecommerce/user-contact-landing/${defaultMerchant.owner._id}`]);
+                }
+              }
+            }
+          }
+
+          this.formSteps[0].fieldsList[this.formSteps[0].fieldsList.length - 1].label = 'SALVAR CONTACTO';
 
           this.headerService.flowRoute = this.router.url;
         })
@@ -466,7 +784,7 @@ export class UserCreatorComponent implements OnInit {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '32px',
+                marginTop: '60px',
                 marginBottom: '32px'
               },
               fieldStyles: {
@@ -481,7 +799,7 @@ export class UserCreatorComponent implements OnInit {
             },
             links: [
               {
-                text: 'Contacto: Email, Telefonos, URL’s.',
+                text: 'Contacto: Email, Telefonos, URL’s, Socials.',
                 action: (params) => {
                   // this.currentTab = 2;
                   // this.formSteps[2].embeddedComponents[0].inputs.activeTag = this.currentTab;
@@ -496,6 +814,8 @@ export class UserCreatorComponent implements OnInit {
               {
                 text: 'Pequeña descripción como tu Bio',
                 action: (params) => {
+                  params.scrollToStep(5);
+                  window.scroll(0, 0);
                 }
               },
               {
@@ -546,7 +866,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -558,7 +878,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '32px'
+              marginTop: '52px'
             }
           },
         },
@@ -573,7 +893,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -585,7 +905,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
@@ -600,7 +920,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -612,15 +932,15 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
         injectSubmitButtom((params) => {
           params.scrollToStep(0);
-          this.formSteps[0].embeddedComponents = [];
-          this.switchButton.inputs.isClicked = this.isClicked;
-          this.formSteps[0].embeddedComponents[0] = this.switchButton;
+          
+          this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
           window.scroll(0, 0);
         }, 1, "SALVAR METODOS DE RECIBIR $")
       ],
@@ -697,9 +1017,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       stepProcessingFunction: () => {
@@ -842,7 +1162,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -862,7 +1182,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '35px'
             }
           },
         },
@@ -872,8 +1192,10 @@ export class UserCreatorComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          placeholder: '',
+          placeholder: 'Escribe tu número de teléfono',
           label: 'TELÉFONO',
+          inputType: 'phone',
+          cssClass: 'second-style',
           bottomLabel: {
             text: 'Adiciona otro como LinkedIn, Twitter, TikTok +',
             callback(...params) {
@@ -883,7 +1205,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -903,7 +1225,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '74px'
             }
           },
         },
@@ -918,7 +1240,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -930,7 +1252,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px',
+              marginTop: '74px',
               paddingBottom: '80px'
             }
           },
@@ -945,9 +1267,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -971,7 +1293,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -983,7 +1305,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
@@ -998,7 +1320,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1010,7 +1332,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
@@ -1025,7 +1347,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1037,7 +1359,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
@@ -1052,7 +1374,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1064,7 +1386,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px'
+              marginTop: '52px'
             }
           },
         },
@@ -1079,7 +1401,7 @@ export class UserCreatorComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              marginBottom: '12px',
+              marginBottom: '24px',
               display: 'inline-block',
               backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram-outline.svg)',
               backgroundRepeat: 'no-repeat',
@@ -1091,7 +1413,7 @@ export class UserCreatorComponent implements OnInit {
               borderRadius: '22px'
             },
             containerStyles: {
-              marginTop: '24px',
+              marginTop: '52px',
               paddingBottom: '80px'
             }
           },
@@ -1106,9 +1428,9 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1206,9 +1528,107 @@ export class UserCreatorComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(0);
-        this.formSteps[0].embeddedComponents = [];
-        this.switchButton.inputs.isClicked = this.isClicked;
-        this.formSteps[0].embeddedComponents[0] = this.switchButton;
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
+        window.scroll(0, 0);
+      },
+      avoidGoingToNextStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2'
+    },
+    {
+      hideHeader: true,
+      hideMainStepCTA: true,
+      fieldsList: [
+        {
+          name: 'bio',
+          label: 'ESCRIBE EL BIO',
+          inputType: 'textarea',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          styles: {
+            containerStyles: {
+              marginTop: '35px'
+            },
+            labelStyles: {
+              ...labelStyles
+            },
+            fieldStyles: {
+              borderRadius: '15px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '177px'
+            },
+          },
+        },
+      ],
+      showTabs: true,
+      tabsOptions,
+      currentTab: 3,
+      tabsCallback: this.tabsCallback,
+      footerConfig: {
+        ...this.footerConfig
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0);
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
+        window.scroll(0, 0);
+      },
+      avoidGoingToNextStep: true,
+      headerText: '',
+      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
+      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerMode: 'v2'
+    },
+    {
+      hideHeader: true,
+      hideMainStepCTA: true,
+      fieldsList: [
+        {
+          name: 'websiteLink',
+          label: 'PASTE EL LINK DE TU SITIO WEB',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: '',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              marginTop: '35px'
+            },
+            fieldStyles: commonFieldStyles,
+            topLabelActionStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '37px',
+              marginBottom: '47px',
+            },
+          },
+        },
+      ],
+      showTabs: true,
+      tabsOptions,
+      currentTab: 4,
+      tabsCallback: this.tabsCallback,
+      footerConfig: {
+        ...this.footerConfig
+      },
+      customScrollToStepBackwards: (params) => {
+        params.scrollToStep(0);
+        
+        this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
+
         window.scroll(0, 0);
       },
       avoidGoingToNextStep: true,
@@ -1223,58 +1643,197 @@ export class UserCreatorComponent implements OnInit {
     private dialog: DialogService,
     private multistepFormService: MultistepFormServiceService,
     private router: Router,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private authService: AuthService,
+    private saleflowsService: SaleFlowService,
+    private merchantsService: MerchantsService,
+    private walletService: WalletService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     const storedData = this.multistepFormService.getMultiStepFormData('user-creation');
+    let myUser;
+    let myMerchant;
 
     if(storedData) {
       this.formSteps = storedData.reference;
       this.isClicked = storedData.essentialData.isMerchant;
 
-      this.formSteps[0].embeddedComponents = [];
-      this.switchButton.inputs.isClicked = this.isClicked;
-      this.formSteps[0].embeddedComponents[0] = this.switchButton;
+      this.reinjectSwitchButtonAndMakeItFreeze(this.alreadyIsMerchant);
 
       this.isMerchant = storedData.essentialData.isMerchant;
       this.userRequiredFields = storedData.essentialData.userRequiredFields;
       this.merchantRequiredFields = storedData.essentialData.merchantRequiredFields;
       this.multistepFormService.removeMultiStepFormData('user-creation');
     }
+
+    if(localStorage.getItem('session-token'))
+      myUser = await this.authService.me();
+
+    if(myUser) {
+      this.loggedIn = true;
+      myMerchant = await this.merchantsService.merchantDefault(myUser._id);
+
+      //Sets up user basic data
+      this.formSteps[0].fieldsList[0].fieldControl.control.setValue(myUser.image ? myUser.image : '');
+      this.formSteps[0].fieldsList[1].fieldControl.control.setValue(myUser.name ? myUser.name : '');
+      this.formSteps[0].fieldsList[2].fieldControl.control.setValue(myUser.lastname ? myUser.lastname : '');
+      this.formSteps[0].fieldsList[3].fieldControl.control.setValue(myUser.title ? myUser.title : '');
+
+      if(myMerchant) {
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(myMerchant.image ? myMerchant.image : '');
+        this.formSteps[0].fieldsList[3].fieldControl.control.setValue(myMerchant.title ? myMerchant.title : '');
+
+        this.formSteps[0].fieldsList[4].fieldControl.control.setValue(myMerchant.name ? myMerchant.name : '');
+        this.formSteps[0].fieldsList[5].fieldControl.control.setValue(myMerchant.activity ? myMerchant.activity : '');
+      }
+
+      if(myMerchant) {
+        this.reinjectSwitchButtonAndMakeItFreeze(true);
+      }
+
+      const exchangeData = await this.walletService.exchangeDataByUser(myUser._id);
+      let bankData;
+      let electronicPayments;
+
+      if(exchangeData) {
+        bankData = exchangeData.bank;
+        electronicPayments = exchangeData.electronicPayment;
+      }
+
+      //Sets up electronic payment data
+      if(electronicPayments && electronicPayments.length > 0) {
+        for(let electronicPayment of electronicPayments) {
+          const electronicPaymentHashTable = {
+            paypal: 0,
+            venmo: 1,
+            cashapp: 2
+          }
+
+          if(this.formSteps[1].fieldsList[
+            electronicPaymentHashTable[electronicPayment.name]
+          ]) {
+            this.formSteps[1].fieldsList[
+              electronicPaymentHashTable[electronicPayment.name]
+            ].fieldControl.control.setValue(electronicPayment.link);
+          }
+        }
+      }
+
+      const location = myUser.social.find(social => social.name === 'location');
+
+      //Sets up contact data
+      this.formSteps[2].fieldsList[0].fieldControl.control.setValue(myUser.email ? myUser.email : '');
+      this.formSteps[2].fieldsList[2].fieldControl.control.setValue(location ? location.url : '');
+
+      const socialsObject = {};
+
+      myUser.social.forEach(social => {
+        socialsObject[social.name] = social.url
+      });
+
+      this.formSteps[3].fieldsList[0].fieldControl.control.setValue(socialsObject['instagram'] ? socialsObject['instagram'] : '');
+      this.formSteps[3].fieldsList[1].fieldControl.control.setValue(socialsObject['twitter'] ? socialsObject['twitter'] : '');
+      this.formSteps[3].fieldsList[2].fieldControl.control.setValue(socialsObject['linkedin'] ? socialsObject['linkedin'] : '');      
+      this.formSteps[3].fieldsList[3].fieldControl.control.setValue(socialsObject['tiktok'] ? socialsObject['tiktok'] : '');      
+      this.formSteps[3].fieldsList[4].fieldControl.control.setValue(socialsObject['facebook'] ? socialsObject['facebook'] : '');      
+
+      if(exchangeData) {
+        this.formSteps[4].fieldsList[0].fieldControl.control.setValue(bankData[0].bankName ? bankData[0].bankName : '');
+        this.formSteps[4].fieldsList[1].fieldControl.control.setValue(bankData[0].account ? bankData[0].account : '');
+        this.formSteps[4].fieldsList[2].fieldControl.control.setValue(bankData[0].ownerAccount ? bankData[0].ownerAccount : '');
+        this.formSteps[4].fieldsList[3].fieldControl.control.setValue(bankData[0].routingNumber ? bankData[0].routingNumber : '');
+      }
+
+      this.formSteps[5].fieldsList[0].fieldControl.control.setValue(myUser.bio ? myUser.bio : '');
+      
+      this.formSteps[6].fieldsList[0].fieldControl.control.setValue(socialsObject['web'] ? socialsObject['web'] : '');
+    }
+    
   }
 
   changeMerchant() {
-    this.isMerchant = !this.isMerchant;
+    if(!(this.alreadyIsMerchant && this.loggedIn)) {
+      this.isMerchant = !this.isMerchant;
 
-    let userRequiredExclusiveFields = 4;
-    let merchantRequiredExclusiveFields = 3;
-    let requiredFieldsCount = 0;
+      let userRequiredExclusiveFields = 1;
+      let merchantRequiredExclusiveFields = 2;
+      let requiredFieldsCount = 0;
+  
+      this.formSteps[0].fieldsList.forEach((field, index) => {
+        if (index > 3 && index < 6) {
+          field.styles.containerStyles.display = this.isMerchant ? 'block' : 'none';
+        }
+  
+        // if(!this.isMerchant && [0, 1, 2, 3].includes(index)) 
+        // {
+        //   requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+        //   this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
+        // }
 
-    this.formSteps[0].fieldsList.forEach((field, index) => {
-      if(index > 0 && index < 4) {
-        field.styles.containerStyles.display = !this.isMerchant ? 'inline-block' : 'none';
-      } else if (index > 3 && index < 6) {
-        field.styles.containerStyles.display = this.isMerchant ? 'block' : 'none';
-      }
+        if(!this.isMerchant && [1].includes(index)) 
+        {
+          requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+          this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
+        }
+  
+        // if(this.isMerchant && [0, 4, 5].includes(index)) 
+        // { 
+        //   requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+        //   this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === merchantRequiredExclusiveFields ? false : true;
+        // }
 
-      if(!this.isMerchant && [0, 1, 2, 3].includes(index)) 
-      {
-        requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
-
-        this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === userRequiredExclusiveFields ? false : true;
-      }
-
-      if(this.isMerchant && [0, 4, 5].includes(index)) 
-      { 
-        requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
-
-        this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === merchantRequiredExclusiveFields ? false : true;
-      }
-    })
-
-    this.formSteps[0].optionalLinksTo.afterIndex = !this.isMerchant ? 3 : 5;
-    this.isClicked = !this.isClicked;
+        if(this.isMerchant && [1, 4].includes(index)) 
+        { 
+          requiredFieldsCount += this.formSteps[0].fieldsList[index].fieldControl.control.value === '' ? 0 : 1;
+  
+          this.formSteps[0].fieldsList[6].disabled = requiredFieldsCount === merchantRequiredExclusiveFields ? false : true;
+        }
+      })
+  
+      this.formSteps[0].optionalLinksTo.afterIndex = !this.isMerchant ? 3 : 5;
+      this.isClicked = !this.isClicked;
+    }
   }
 
+  reinjectSwitchButtonAndMakeItFreeze(freezeInMerchantMode: boolean = false) {
+    this.formSteps[0].embeddedComponents = [];  
+    
+    if(!this.alreadyIsMerchant && freezeInMerchantMode) {
+      this.changeMerchant(); 
+      this.alreadyIsMerchant = true;
+    }
+    this.formSteps[0].embeddedComponents[0] = {
+      beforeIndex: 0,
+      component: SwitchButtonComponent,
+      inputs: {
+        isClicked: this.isClicked,
+        innerText: true,
+        blockClickEvent: freezeInMerchantMode,
+        settings: {
+          leftText: 'ES UN NEGOCIO?',
+        },
+        containerStyles: {
+          paddingTop: '24px',
+          justifyContent: 'flex-end'
+        },
+        textStyles: {
+          fontFamily: 'SfProRegular',
+          paddingRight: '6px',
+          color: '#7B7B7B'
+        }
+      },
+      outputs: [
+        {
+          name: 'switched',
+          callback: (params) => {
+            this.changeMerchant();
+          },
+        }
+      ]
+    };
+  }
 }

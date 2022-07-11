@@ -5,10 +5,13 @@ const user = `
   email
   phone
   name
+  lastname
   birthdate
   image
-
+  title
   validatedAt
+  bio
+  title
   deliveryLocations{
     _id
     googleMapsURL
@@ -16,6 +19,10 @@ const user = `
     street
     houseNumber
     note
+  }
+  social {
+    name
+    url
   }
 `;
 const sessionBody = `
@@ -38,8 +45,8 @@ export const userExists = gql`
 `;
 
 export const updateme = gql`
-  mutation updateme($input: UserInput!) {
-    me: updateme(input: $input) { ${user} }
+  mutation updateme($input: UserInput!, $files: [Upload!]) {
+    me: updateme(input: $input, files: $files) { ${user} }
   }
 `;
 
