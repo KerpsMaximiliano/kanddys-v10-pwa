@@ -203,10 +203,15 @@ export interface FormStep {
   customStickyButton?: {
     mode: string;
     bgcolor?: string;
+    bgcolorInactive?: string;
     color?: string;
+    colorInactive?: string;
     height?: string;
+    heightInactive?: string;
     text: string;
     text2?: string;
+    textCallback?( params): any;
+    text2Callback?( params): any;
   }
 }
 

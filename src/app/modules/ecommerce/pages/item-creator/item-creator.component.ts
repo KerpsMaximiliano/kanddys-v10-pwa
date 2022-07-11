@@ -172,6 +172,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             Number(0),
             '1.2'
           ).length + 1,
+          statusChangeCallbackFunction: (change) => {
+            if(change === 'VALID') {
+              this.formSteps[0].headerText = 'PREVIEW';
+              this.formSteps[0].headerTextSide = 'RIGHT';           
+            } else {
+              this.formSteps[0].headerText = null;
+              this.formSteps[0].headerTextSide = null;
+            }
+          },
           formattedValue: '$' + this.decimalPipe.transform(
             Number(0),
             '1.2'
@@ -536,40 +545,42 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         }
       },
       avoidGoingToNextStep: true,
-      headerText: 'PREVIEW',
-      headerTextSide: 'RIGHT',
       headerTextCallback: async (params) => {
-        const values = params.dataModel.value;
-
-        const priceWithDecimalArray = values['1'].price.split('');
-        const firstHalf = priceWithDecimalArray.slice(0, -2);
-        const secondHalf = priceWithDecimalArray.slice(-2);
-        const totalArray = firstHalf.concat('.').concat(secondHalf);
-        const totalWithDecimal = Number(totalArray.join(''));
-
-        this.itemService.storeTemporalItem({
-          name: values['4'].name,
-          description: values['3'].description !== '' ? values['3'].description : null,
-          pricing: totalWithDecimal,
-          images: this.defaultImages,
-          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
-          content: values['2'].whatsIncluded.length > 0 && !(
-            values['2'].whatsIncluded.length === 1 &&
-            values['2'].whatsIncluded[0] === ''
-          ) ? values['2'].whatsIncluded : null,
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-        });
-
-        // this.router.navigate(['/ecommerce/item-detail']);
+        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');
       },
-      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
-      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      statusChangeCallbackFunction: (change) => {
+        if(change === 'INVALID') {
+          this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
+          this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
+        } else {
+          this.formSteps[0].customStickyButton.mode = 'double';
+          this.formSteps[0].customStickyButton.text = 'PREVIEW';
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
+        }
+      },
       headerMode: 'v2',
-      footerConfig: {
-        ...this.footerConfig,
-      }
+      customStickyButton: {
+        text: 'ADICIONA LA INFO DE LO QUE VENDES',
+        bgcolor: '#2874AD',
+        color: '#E9E371',
+        bgcolorInactive: '#7b7b7b',
+        colorInactive: '#ffffff',
+        mode: 'disabled-fixed',
+        height: '30px',
+        heightInactive: '30px',
+        textCallback: async (params) => {
+          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');;
+        },
+        text2Callback: async (params) => {
+          try {
+            this.formSteps[0].customStickyButton.text2 = 'ESPERE...';
+            await this.formSteps[0].asyncStepProcessingFunction.function(params);              
+          } catch (error) {
+            console.log(error)
+            this.formSteps[0].customStickyButton.text2 = 'SALVAR';
+          }
+        },
+      },
     },
     {
       fieldsList: [
@@ -929,6 +940,33 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  saveItemInItemServiceAndRedirect(params, route: string) {
+    const values = params.dataModel.value;
+
+        const priceWithDecimalArray = values['1'].price.split('');
+        const firstHalf = priceWithDecimalArray.slice(0, -2);
+        const secondHalf = priceWithDecimalArray.slice(-2);
+        const totalArray = firstHalf.concat('.').concat(secondHalf);
+        const totalWithDecimal = Number(totalArray.join(''));
+
+        this.itemService.storeTemporalItem({
+          name: values['4'].name,
+          description: values['3'].description !== '' ? values['3'].description : null,
+          pricing: totalWithDecimal,
+          images: this.defaultImages,
+          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : undefined,
+          content: values['2'].whatsIncluded.length > 0 && !(
+            values['2'].whatsIncluded.length === 1 &&
+            values['2'].whatsIncluded[0] === ''
+          ) ? values['2'].whatsIncluded : null,
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+        });
+
+    this.router.navigate([route]);
   }
 
   async verifyLoggedUserMerchant() {

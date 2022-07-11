@@ -1129,13 +1129,23 @@ shouldScrollBackwards &&
     *ngIf="steps[currentStep].customStickyButton"
     [mode]="steps[currentStep].customStickyButton.mode"
     [text]="steps[currentStep].customStickyButton.text"
+    (left)="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        (steps[currentStep].customStickyButton.text && steps[currentStep].customStickyButton.textCallback) ? 
+          steps[currentStep].customStickyButton.textCallback(stepFunctionParams) : null
+    "
+    (right)="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        (steps[currentStep].customStickyButton.text2 && steps[currentStep].customStickyButton.text2Callback) ? 
+          steps[currentStep].customStickyButton.text2Callback(stepFunctionParams) : null
+    "
     [text2]="
       steps[currentStep].customStickyButton.mode === 'double' && 
       steps[currentStep].customStickyButton.text2 ? 
         steps[currentStep].customStickyButton.text2 : null"
-    [bgColor]="steps[currentStep].customStickyButton.bgcolor"
-    [color]="steps[currentStep].customStickyButton.color"
-    [height]="steps[currentStep].customStickyButton.height"
+    [bgColor]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.bgcolor : steps[currentStep].customStickyButton.bgcolorInactive"
+    [color]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.color : steps[currentStep].customStickyButton.colorInactive"
+    [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.height : steps[currentStep].customStickyButton.heightInactive"
   ></app-sticky-button>
 
   <app-bubble-button *ngIf="
