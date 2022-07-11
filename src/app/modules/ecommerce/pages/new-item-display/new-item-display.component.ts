@@ -71,6 +71,7 @@ export class NewItemDisplayComponent implements OnInit {
           if (!this.item) return this.redirect();
           if (this.item && !this.item.merchant) this.isPreItem = true;
           // this.item.images = null;
+          this.item.status = 'disabled';
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
 
@@ -227,13 +228,12 @@ export class NewItemDisplayComponent implements OnInit {
                 // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
                 this.router.navigate([`/ecommerce/user-items`]);
               }
-
               // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
             }
           }
         } else {
           this.defaultMerchant = await this.merchantService.merchantDefault();
-          if(!this.defaultMerchant) return unlockUI();;
+          if(!this.defaultMerchant) return unlockUI();
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;
 
@@ -246,8 +246,8 @@ export class NewItemDisplayComponent implements OnInit {
                 this.getSaleflow(),
               ]);
             }
-            unlockUI();
           }
+          unlockUI();
         }
 
         // if (params.itemId && !magicLinkToken) {

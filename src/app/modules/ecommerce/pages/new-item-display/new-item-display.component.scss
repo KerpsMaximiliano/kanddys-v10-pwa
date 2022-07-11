@@ -251,10 +251,22 @@
 	}
 }
 
+.small-title {
+	font-family: "SfProMedium";
+	font-size: 19px;
+	font-weight: 0;
+	margin: 0;
+}
+
+.small-price {
+	font-family: "SfProLight";
+	font-size: 17px;
+}
+
 .flex-box {
 	display: flex;
 	justify-content: space-between;
-	margin: 0 4em;
+	margin: 0 32px;
 }
 
 .gray-label {
