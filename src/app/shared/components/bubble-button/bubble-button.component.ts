@@ -15,10 +15,16 @@ export class BubbleButtonComponent implements OnInit {
   @Input() text: string;
   @Input() flexD: string;
   @Input() fontSize: string;
+  @Input() lcmargin: string;
   @Input() solo: boolean = true;
   @Input() return: boolean = false;
   @Input() cart: boolean = false;
-
+  @Input() custom: {
+    width?: number;
+    height?: number;
+    left?: string;
+    right?: string;
+  };
   //valores utilizados
   filterColor: string;
   env: string = environment.assetsUrl;
