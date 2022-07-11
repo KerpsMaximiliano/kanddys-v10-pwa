@@ -47,7 +47,9 @@ steps[currentStep].headerTextSide === 'CENTER'
   ? steps[currentStep].headerText
   : null" 
   [leftText]="{text: steps[currentStep].headerTextSide === 'LEFT' ? steps[currentStep].headerText : ''}" 
-  [rightText]="{text: steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerText : ''}" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
+  [rightText]="{text: steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerText : ''}" [returnAble]="shouldScrollBackwards"
+  (agnosticAction)="steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerTextCallback(stepFunctionParams) : null"
+  (returnEvent)="currentStep > 0 &&
 shouldScrollBackwards &&
 !steps[currentStep].customScrollToStepBackwards
   ? scrollToStep(this.currentStep - 1, false)

@@ -32,6 +32,16 @@ import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
+  temporalItem: Item = null;
+
+  storeTemporalItem(item: any) {
+    this.temporalItem = item;
+  }
+
+  removeTemporalItem() {
+    this.temporalItem = null;
+  }
+
   constructor(private graphql: GraphQLWrapper) { }
 
   async item(id: string): Promise<Item> {

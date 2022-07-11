@@ -165,6 +165,7 @@ export interface FormStep {
   headerTextLeft?: string;
   headerTextRight?: string;  
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
+  headerTextCallback?(...params): any;
   pageHeader?: PageHeader;
   pageSubHeader?: PageHeader;
   embeddedComponents?: Array<EmbeddedComponent>;

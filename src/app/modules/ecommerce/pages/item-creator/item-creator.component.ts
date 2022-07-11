@@ -342,7 +342,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
             containerStyles: {
               width: '157px',
-              height: '137px',
+              height: '137px !important',
             },
             fileStyles: {
               width: '157px',
@@ -538,6 +538,32 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       avoidGoingToNextStep: true,
       headerText: 'PREVIEW',
       headerTextSide: 'RIGHT',
+      headerTextCallback: async (params) => {
+        const values = params.dataModel.value;
+
+        const priceWithDecimalArray = values['1'].price.split('');
+        const firstHalf = priceWithDecimalArray.slice(0, -2);
+        const secondHalf = priceWithDecimalArray.slice(-2);
+        const totalArray = firstHalf.concat('.').concat(secondHalf);
+        const totalWithDecimal = Number(totalArray.join(''));
+
+        this.itemService.storeTemporalItem({
+          name: values['4'].name,
+          description: values['3'].description !== '' ? values['3'].description : null,
+          pricing: totalWithDecimal,
+          images: this.defaultImages,
+          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
+          content: values['2'].whatsIncluded.length > 0 && !(
+            values['2'].whatsIncluded.length === 1 &&
+            values['2'].whatsIncluded[0] === ''
+          ) ? values['2'].whatsIncluded : null,
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+        });
+
+        // this.router.navigate(['/ecommerce/item-detail']);
+      },
       stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
       stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
       headerMode: 'v2',

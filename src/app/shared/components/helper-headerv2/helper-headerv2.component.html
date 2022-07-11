@@ -131,7 +131,7 @@
                 'color': mainText.color? mainText.color : (color? color : ''),
                 'cursor': mainText.pointer? 'pointer': '',
                 'margin-right': rmargin? rmargin : ''
-                }" (click)="neutralEvent()">{{mainText.text}}</p>
+                }">{{mainText.text}}</p>
 
                 <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
@@ -150,7 +150,7 @@
                     <span class="bold-text" *ngIf="extraTexts?.itemId" [style.margin-left]="'6%'" >{{extraTexts.itemId}}</span>
                     <span class="bill bold-text" *ngIf="extraTexts?.billId" >{{extraTexts.billId}}</span>
                     <span class="bold-text" >{{leftText.text}}</span>
-                    <span class="bold-text" >{{rightText.text}}</span>
+                    <span class="bold-text" (click)="neutralEvent()" >{{rightText.text}}</span>
                 </div>
             </div>
         </ng-container>

@@ -106,6 +106,10 @@ const routes: Routes = [
     component: ShipmentDataFormComponent,
   },
   {
+    path: 'item-detail',
+    component: ItemDetailComponent,
+  },
+  {
     path: 'item-detail/:saleflow/:id',
     component: ItemDetailComponent,
   },
