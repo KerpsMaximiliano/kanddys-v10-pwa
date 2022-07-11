@@ -89,7 +89,7 @@ export class HelperHeaderv2Component implements OnInit {
     };
     @Output() returnEvent = new EventEmitter();
     @Output() plusEvent = new EventEmitter();
-    @Output() searchEvent = new EventEmitter();
+    @Output() agnosticAction = new EventEmitter();
     @Output() dotEvent = new EventEmitter();
     @Output() display = new EventEmitter();
     env: string = environment.assetsUrl;
@@ -97,6 +97,10 @@ export class HelperHeaderv2Component implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+  }
+
+  neutralEvent(){
+    this.agnosticAction.emit();
   }
 
   shopCartTrigger() {
