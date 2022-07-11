@@ -125,6 +125,13 @@
                 <a *ngIf="down && !returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-down"
                     [style.color]="color"></i>
                 </a>
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && !down && !returnAble" class="return-holder" [ngStyle]="{
+                    width: icon?.width? icon.width : '',
+                    height: icon?.height? icon.height : '',
+                    filter: icon?.filter? icon.filter : '',
+                    cursor: 'pointer'
+                }" (click)="icon.callback()">
+
                 <p class="light-text" [ngStyle]="
                 {'font-size': mainText.fontSize? mainText.fontSize : '', 
                 'font-family': mainText.fontFamily? mainText.fontFamily : '',
@@ -133,7 +140,7 @@
                 'margin-right': rmargin? rmargin : ''
                 }">{{mainText.text}}</p>
 
-                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src" class="icon-center" [ngStyle]="{
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && down || returnAble" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
                     height: icon?.height? icon.height : '',
                     filter: icon?.filter? icon.filter : '',

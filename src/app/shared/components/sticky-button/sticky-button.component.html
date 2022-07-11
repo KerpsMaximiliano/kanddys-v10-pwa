@@ -50,7 +50,7 @@
   </div>
 </div>
 
-<div class="fixed-double" *ngIf="mode == 'double'">
+<div class="fixed-double" *ngIf="mode == 'double'" [style.background-color]="bgColor">
     <button
       (click)="leftButton()"
       class="double"
