@@ -15,11 +15,15 @@ import {
   DirectionalLight,
   MeshBasicMaterial,
   ShaderChunk,
-  TextureLoader
+  EquirectangularReflectionMapping,
+  TextureLoader,
+  AnimationMixer,
+  LoopRepeat
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { GLTFLoader, GLTF, GLTFParser } from 'three/examples/jsm/loaders/GLTFLoader';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 import { Reflector } from 'three/examples/jsm/objects/Reflector';
 import { GUI } from 'lil-gui'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -43,10 +47,11 @@ export class ThreejsCanvasComponent implements OnInit {
       camera,
       renderer,
       controls,
-      clock
+      clock,
+      groundMirror
     } = this.initScene();
     await this.addGLTFModelToTheScene(camera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/Creditcard.gltf');
-    this.initMenu(camera, this.gltfModel);
+    this.initMenu(camera, this.gltfModel, groundMirror);
 
     const renderLoop = () => {
       controls.update();
@@ -83,7 +88,7 @@ export class ThreejsCanvasComponent implements OnInit {
     // camera.position.y = 5;
     // camera.position.z = 40;
     camera.position.x = -0.09363450643606908;
-    camera.position.y = 1.1561169246658674;
+    camera.position.y = 0;
     camera.position.z = 4.863602187237972;
 
     //Luces
@@ -91,7 +96,7 @@ export class ThreejsCanvasComponent implements OnInit {
     const light = new AmbientLight(0xffffff, 0.5); // soft white light
     scene.add(light);
 
-    const sphere = new SphereGeometry(0.1, 16, 8);
+    // const sphere = new SphereGeometry(0.1, 16, 8);
 
     const directionalLight = new DirectionalLight(0xffffff, 0.7);
     directionalLight.castShadow = true;
@@ -104,9 +109,9 @@ export class ThreejsCanvasComponent implements OnInit {
     directionalLight.shadow.camera.right = 10;
     directionalLight.shadow.bias = -0.005;
     scene.add(directionalLight);
-    directionalLight.add(
-      new Mesh(sphere, new MeshBasicMaterial({ color: 0x87ceeb }))
-    );
+    // directionalLight.add(
+    //   new Mesh(sphere, new MeshBasicMaterial({ color: 0x87ceeb }))
+    // );
 
 
     //Crea un renderizador para que dibuje el 3D en el canvas
@@ -171,7 +176,7 @@ export class ThreejsCanvasComponent implements OnInit {
     const floorMaterial = new MeshStandardMaterial({
       color: 0xFFFFFF,
       opacity: 0.95,
-      transparent: true
+      transparent: true,
     });
 
     //Añade un espejo para las reflexiones del suelo
@@ -181,7 +186,7 @@ export class ThreejsCanvasComponent implements OnInit {
       textureHeight: window.innerHeight * window.devicePixelRatio,
       color: 0xffffff,
     });
-    groundMirror.position.y = -0.1;
+    groundMirror.position.y = -0.055;
     groundMirror.rotateX(-Math.PI / 2);
     scene.add(groundMirror);
 
@@ -201,107 +206,154 @@ export class ThreejsCanvasComponent implements OnInit {
       camera,
       renderer,
       controls,
-      clock
+      clock,
+      groundMirror
     }
   }
 
-  initMenu(camera: PerspectiveCamera, gltf: GLTF) {
+  initMenu(camera: PerspectiveCamera, gltf: GLTF, groundMirror: Reflector) {
     const gui = new GUI();
     gui.add( document, 'title' );
 
     gui.close();
 
-    console.log("GLTF", gltf);
-    
     const cameraPositionsFolder = gui.addFolder('Camera Positions');
     cameraPositionsFolder.add(camera.position, 'x', -500, 500).step(0.1);
     cameraPositionsFolder.add(camera.position, 'y', -500, 500).step(0.1);
     cameraPositionsFolder.add(camera.position, 'z', -500, 500).step(0.1);
+
+    const modelPositionsFolder = gui.addFolder('Model Positions');
+    modelPositionsFolder.add(gltf.scene.position, 'x', -40, 40).step(0.1);
+    modelPositionsFolder.add(gltf.scene.position, 'y', -40, 40).step(0.1);
+    modelPositionsFolder.add(gltf.scene.position, 'z', -40, 40).step(0.1);
+
+    const groundMirrorPositionsFolder = gui.addFolder('Reflector Positions');
+    groundMirrorPositionsFolder.add(groundMirror.position, 'x', -40, 40).step(0.1);
+    groundMirrorPositionsFolder.add(groundMirror.position, 'y', -40, 40).step(0.1);
+    groundMirrorPositionsFolder.add(groundMirror.position, 'z', -40, 40).step(0.1);
   }
 
   addGLTFModelToTheScene(camera: PerspectiveCamera, scene: Scene, route: string): Promise<Boolean | null> {
     const loader = new GLTFLoader();
+    const rgbeLoader = new RGBELoader();
+
 
     return new Promise((resolve, reject) => {
-      loader.load(
-        route
-        // '../Card/Card.gltf'
-        , (gltf) => {
-          unlockUI();
-          
-          this.gltfModel = gltf;
+      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/brown_photostudio_02_2k.hdr', (envMapTexture => {
+        envMapTexture.mapping = EquirectangularReflectionMapping;
 
-          gltf.scene.traverse( function( node ) {
-            if(node instanceof Mesh) {              
-              // node.receiveShadow = true;
-              node.castShadow = true; 
-            }
-          });
+        loader.load(
+          route
+          // '../Card/Card.gltf'
+          , (gltf: any) => {
+            console.log(gltf);
+
+            unlockUI();
+            const mixer = new AnimationMixer(gltf.scene); //reproductor de animaciones de Three.js
+            
+            this.gltfModel = gltf;
   
-          scene.add(gltf.scene);
+            gltf.scene.traverse( function( node ) {
+              if(node instanceof Mesh && node.material instanceof MeshStandardMaterial) {              
+                // node.receiveShadow = true;
+                node.castShadow = true;
   
-          // const gltfModel = gltf.scene.children[0].children[0];
-      
-          // camera.lookAt(gltfModel.position);
-      
-          // gltf.scene.position.y = 0;
-      
-          // mixer = new THREE.AnimationMixer(gltfModel); //reproductor de animaciones de Three.js
-      
-          // gltf.scene.traverse( function( node ) {
-          //   if ( node.isMesh ) { 
-          //     // node.receiveShadow = true;
-          //     node.castShadow = true; 
-          //   }
-          // });
-      
-          // scene.add(gltfModel);
-      
-          /*
-          if(product.modelName === "Box") {
-            gltfModel.traverse(node => {
-              if(node.material && node.material.name === "MOD-Arriba") {
-                node.material.map = new TextureLoader().load('../images/color.jpg');
-      
-                node.material.map.repeat.x = 4;
-                node.material.map.repeat.y = 4;
-      
-                node.material.map.wrapS = THREE.MirroredRepeatWrapping;
-                node.material.map.wrapT = THREE.MirroredRepeatWrapping;
-                /*
-                node.material.map.wrapS = THREE.RepeatWrapping;
-                node.material.map.wrapT = THREE.RepeatWrapping
-      
-      
-                node.material.map.wrapS = THREE.MirroredRepeatWrapping;
-                node.material.map.wrapT = THREE.MirroredRepeatWrapping;
-      
-                node.material.map.offset.x = 0.5;
-                node.material.map.offset.y = 0.5;
-      
-                node.material.map.rotation = Math.PI * 0.25;
-                node.material.map.center.x = 0.5;
-                node.material.map.center.y = 0.5;
+                node.material.roughness = 0;
+                node.material.metalness = 0.4;
+                node.material.envMap = envMapTexture;
+                node.material.envMapIntensity = 0.4;
+
+                node.material.needsUpdate = true;
               }
-            })
-          }*/
-      
-          // gltfObject = gltf;
-          // gltfJSON = gltf.parser.json;
-      
-          //readFiles();
-          this.gltfJSON = gltf.parser.json;
+            });
 
-          resolve(true);
-        }, 
-        () => {
-          lockUI()
-        },
-        error => {
-          console.log(error);
-          reject(null);
-        }
-      );
+            gltf.animations.forEach((clip) => {
+              //asegura que el ultimo frame prevalezca al terminar la animacion
+              const clipAction = mixer.clipAction(clip);
+              clipAction.clampWhenFinished = true;
+              clipAction.loop = LoopRepeat;
+
+              console.log(clipAction);
+
+              clipAction.play()
+              
+              //Clips de animacion para cada panel
+              // if (clip.name === "cara media interior") {
+              //   clipAction.play()
+              // };
+            
+              //El componente del canvas con camara libre debe tener una linea 
+              //de código que ejecute las animaciones principales con nombre "Main{Numero}"
+              //if(clip.name.includes('Main')) clipAction.play();
+            });
+  
+            gltf.scene.position.y = -0.3;
+    
+            scene.add(gltf.scene);
+
+            // const gltfModel = gltf.scene.children[0].children[0];
+        
+            // camera.lookAt(gltfModel.position);
+        
+            // gltf.scene.position.y = 0;
+        
+            // mixer = new THREE.AnimationMixer(gltfModel); //reproductor de animaciones de Three.js
+        
+            // gltf.scene.traverse( function( node ) {
+            //   if ( node.isMesh ) { 
+            //     // node.receiveShadow = true;
+            //     node.castShadow = true; 
+            //   }
+            // });
+        
+            // scene.add(gltfModel);
+        
+            /*
+            if(product.modelName === "Box") {
+              gltfModel.traverse(node => {
+                if(node.material && node.material.name === "MOD-Arriba") {
+                  node.material.map = new TextureLoader().load('../images/color.jpg');
+        
+                  node.material.map.repeat.x = 4;
+                  node.material.map.repeat.y = 4;
+        
+                  node.material.map.wrapS = THREE.MirroredRepeatWrapping;
+                  node.material.map.wrapT = THREE.MirroredRepeatWrapping;
+                  /*
+                  node.material.map.wrapS = THREE.RepeatWrapping;
+                  node.material.map.wrapT = THREE.RepeatWrapping
+        
+        
+                  node.material.map.wrapS = THREE.MirroredRepeatWrapping;
+                  node.material.map.wrapT = THREE.MirroredRepeatWrapping;
+        
+                  node.material.map.offset.x = 0.5;
+                  node.material.map.offset.y = 0.5;
+        
+                  node.material.map.rotation = Math.PI * 0.25;
+                  node.material.map.center.x = 0.5;
+                  node.material.map.center.y = 0.5;
+                }
+              })
+            }*/
+        
+            // gltfObject = gltf;
+            // gltfJSON = gltf.parser.json;
+        
+            //readFiles();
+            this.gltfJSON = gltf.parser.json;
+  
+            resolve(true);
+          }, 
+          () => {
+            lockUI()
+          },
+          error => {
+            console.log(error);
+            reject(null);
+          }
+        );
+      }));
     });
   }
 
@@ -316,6 +368,7 @@ export class ThreejsCanvasComponent implements OnInit {
       
       if(node instanceof Mesh) {
         if (node.material && node.material.name === targetName) {
+          //reemplazar
           node.material.map = new TextureLoader().load(base64, (texture) => {
             texture.flipY = false;
           });
