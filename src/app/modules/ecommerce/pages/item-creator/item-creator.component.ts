@@ -14,12 +14,14 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { Item } from 'src/app/core/models/item';
 
 const labelStyles = {
   color: '#7B7B7B',
   fontFamily: 'RobotoMedium',
   fontSize: '17px',
-  marginBottom: '12px'
+  marginBottom: '24px',
+  fontWeight: 'normal'
 };
 
 @Component({
@@ -36,9 +38,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
+  editMode: boolean = false;
   user: any;
   shouldScrollBackwards: boolean = false;
   files: File[] = [];
+  item: Item;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -171,6 +175,17 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             Number(0),
             '1.2'
           ).length + 1,
+          statusChangeCallbackFunction: (change) => {
+            if(change === 'VALID') {
+              this.formSteps[0].headerText = this.item.status === 'active' ?
+                'ACTIVO (EXPUESTO EN TIENDA)' :
+                'INACTIVO (NO EXPUESTO)';
+              this.formSteps[0].headerTextSide = 'RIGHT';           
+            } else {
+              this.formSteps[0].headerText = null;
+              this.formSteps[0].headerTextSide = null;
+            }
+          },
           formattedValue: '$' + this.decimalPipe.transform(
             Number(0),
             '1.2'
@@ -255,7 +270,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               width: '0.5px',
               height: '1rem',
             },
-            labelStyles: labelStyles
+            labelStyles: {
+              ...labelStyles,
+              fontWeight: 'normal'
+            }
           },
         },
         // {
@@ -326,18 +344,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
             topLabel: {
-              text: 'Adiciona las imágenes:',
+              text: 'Adiciona el arte en tu herramienta preferida:',
               styles: {
                 color: '#7B7B7B',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '12px'
+                marginBottom: '24px',
+                fontWeight: 'normal'
               },
             },
             containerStyles: {
               width: '157px',
-              height: '137px',
+              height: '137px !important',
             },
             fileStyles: {
               width: '157px',
@@ -483,11 +502,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 marginBottom: '0px'
               },
               fieldStyles: {
-                marginTop: '12px',
+                margin: '0px',
+                marginBottom: '12px',
                 paddingLeft: '17px',
                 width: 'fit-content'
               },
-              labelStyles: labelStyles
+              labelStyles: {
+                ...labelStyles,
+                marginBottom: '30px'
+              }
             },
             links: [
               {
@@ -527,13 +550,42 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         }
       },
       avoidGoingToNextStep: true,
-      headerText: '',
-      stepButtonInvalidText: 'ADICIONA LA INFO DE LO QUE VENDES',
-      stepButtonValidText: 'CONTINUAR CON LA ACTIVACIÓN',
+      headerTextCallback: async (params) => {
+        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');
+      },
+      statusChangeCallbackFunction: (change) => {
+        if(change === 'INVALID') {
+          this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
+          this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
+        } else {
+          this.formSteps[0].customStickyButton.mode = 'double';
+          this.formSteps[0].customStickyButton.text = 'PREVIEW';
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
+        }
+      },
       headerMode: 'v2',
-      footerConfig: {
-        ...this.footerConfig,
-      }
+      customStickyButton: {
+        text: 'ADICIONA LA INFO DE LO QUE VENDES',
+        bgcolor: '#2874AD',
+        color: '#E9E371',
+        bgcolorInactive: '#7b7b7b',
+        colorInactive: '#ffffff',
+        mode: 'disabled-fixed',
+        height: '30px',
+        heightInactive: '30px',
+        textCallback: async (params) => {
+          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');;
+        },
+        text2Callback: async (params) => {
+          try {
+            this.formSteps[0].customStickyButton.text2 = 'ESPERE...';
+            await this.formSteps[0].asyncStepProcessingFunction.function(params);              
+          } catch (error) {
+            console.log(error);
+            this.formSteps[0].customStickyButton.text2 = 'SALVAR';
+          }
+        },
+      },
     },
     {
       fieldsList: [
@@ -806,13 +858,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           String(pricing)
         );
 
-        const plainNumber = String(pricing)
-          .split(',')
-          .join('')
-          .split('.')
-          .join('');
         const formatted = this.decimalPipe.transform(
-          Number(plainNumber),
+          pricing,
           '1.0-2'
         );
 
@@ -850,8 +897,49 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.currentUserId = this.user._id;
 
-        const { pricing, images, content, description, merchant } =
-          await this.itemService.item(itemId);
+        this.item = await this.itemService.item(itemId);
+        const { pricing, images, name, content, description, merchant } = this.item;
+
+        for(let formStep of this.formSteps) {
+          formStep.customHelperHeaderConfig = {
+            bgcolor: '#B17608',
+            color: '#ffffff',
+            flexDirection: 'flex-end',
+            alignItems: 'center',
+            rightTextStyles: {
+              fontSize: '17px',
+              fontFamily: 'RobotoMedium'
+            },
+            icon: {
+              src: `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                this.item.status === 'active' ? 'open' : 'closed'
+              }-eye-white.svg`,
+              width: 32,
+              height: 28,
+              cursor: 'pointer',
+              margin: '0px 0px 0px 6px',
+              callback: async () => {
+                await this.itemService.updateItem(
+                  {
+                    status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                  },
+                  this.currentItemId
+                );
+
+                this.item.status = this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft';
+
+                this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                  this.item.status === 'active' ? 'open' : 'closed'
+                }-eye-white.svg`;
+                
+                this.formSteps[0].headerText = this.item.status === 'active' ?
+                  'ACTIVO (EXPUESTO EN TIENDA)' :
+                  'INACTIVO (NO EXPUESTO)'
+              }
+            }
+          }
+        }
+
 
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
@@ -859,6 +947,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
             String(pricing)
           );
+  
+          const formatted = this.decimalPipe.transform(
+            pricing,
+            '1.0-2'
+          );
+  
+          if (formatted === '0') {
+            this.formSteps[0].fieldsList[0].placeholder = '';
+          }
+  
+          this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+          this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+
           this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
@@ -895,15 +996,89 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
+  saveItemInItemServiceAndRedirect(params, route: string) {
+    const values = params.dataModel.value;
+
+        const priceWithDecimalArray = values['1'].price.split('');
+        const firstHalf = priceWithDecimalArray.slice(0, -2);
+        const secondHalf = priceWithDecimalArray.slice(-2);
+        const totalArray = firstHalf.concat('.').concat(secondHalf);
+        const totalWithDecimal = Number(totalArray.join(''));
+
+        this.itemService.storeTemporalItem({
+          name: values['4'].name,
+          description: values['3'].description !== '' ? values['3'].description : null,
+          pricing: totalWithDecimal,
+          images: this.defaultImages,
+          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
+          content: values['2'].whatsIncluded.length > 0 && !(
+            values['2'].whatsIncluded.length === 1 &&
+            values['2'].whatsIncluded[0] === ''
+          ) ? values['2'].whatsIncluded : null,
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+        });
+
+    this.router.navigate([route]);
+  }
+
   async verifyLoggedUserMerchant() {
     if (this.loggedIn) {
       const defaultMerchant = await this.merchantService.merchantDefault();
-      const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
-
-
-      if (defaultMerchant && defaultSaleflow) {
+      
+      if (defaultMerchant) {
         this.loggedUserDefaultMerchant = defaultMerchant;
-        this.loggedUserDefaultSaleflow = defaultSaleflow;
+
+        const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+        
+        if(defaultSaleflow)
+          this.loggedUserDefaultSaleflow = defaultSaleflow;
+      } else {
+        const merchants = await this.merchantService.myMerchants();
+
+        if(merchants.length === 0) {
+          const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
+            owner: this.user._id,
+            name: this.user.name + " mechant #" + Math.floor(Math.random() * 100000)
+          });
+  
+          const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
+          this.loggedUserDefaultMerchant = defaultMerchant;
+  
+          const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+            merchant: defaultMerchant._id,
+            name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+            items: []
+          });
+          const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+          this.loggedUserDefaultSaleflow = defaultSaleflow;
+        } else {
+          const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
+          this.loggedUserDefaultMerchant = defaultMerchant;
+
+          const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+
+          if (!defaultSaleflow) {
+            const saleflows = await this.saleflowSarvice.saleflows(merchants[0]._id, {});
+
+            if(!saleflows || saleflows.length === 0) {
+              const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+                merchant: defaultMerchant._id,
+                name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+                items: []
+              });
+
+              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+              this.loggedUserDefaultSaleflow = defaultSaleflow;
+            } else {
+              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
+              this.loggedUserDefaultSaleflow = defaultSaleflow;
+            }
+          } else {
+            this.loggedUserDefaultSaleflow = defaultSaleflow;
+          }
+        }
       }
     }
   }

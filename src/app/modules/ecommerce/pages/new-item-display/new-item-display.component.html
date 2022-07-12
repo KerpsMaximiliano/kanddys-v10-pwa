@@ -1,5 +1,5 @@
 <div class="container">
-	<app-helper-headerv2
+	<!-- <app-helper-headerv2
 		[mode]="'basic'"
         [mainText]="{
             text: item?.merchant?.name,
@@ -21,92 +21,82 @@
 		[bgColor]="providerView ? '#2874AD' : '#E9E371'"
 		[color]="providerView ? '#FFFFFF' : '#2874AD'"
 		(returnEvent)="redirect()"
-	></app-helper-headerv2>
-
-	<!-- Info que ve el admin (merchant) del producto -->
-	<ng-container *ngIf="isOwner">
-		<!-- <app-header-info-admin [data]="[{
-				text: {
-					content: '$147,154 DOP total ingresado',
-					color: '#2874AD'
-				}
+	></app-helper-headerv2> -->
+	<app-helper-headerv2
+		*ngIf="item?.status === 'active'"
+		[mode]="'basic'"
+		[icons]="[
+			{
+				src: '/upload.svg',
+				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+				callback: tapping
 			},
 			{
-				text: {
-					content: '1,457 ventas',
-					color: '#2874AD'
-				}
-			}]"></app-header-info-admin>
-
-		<div class="category">
-			<div class="tab-area">
-				<div class="tab" [ngClass]="{colored: tapped}" (click)="tapping()">
-					<img
-						[src]="env + '/expand-categories.svg'"
-						alt="Lista para expandir categorías"
-						width="18px"
-						height="15px"
-						class="icon"
-					>
-					<p class="tab-text" [ngStyle]="{color: tapped? '#E9E371':'#2874AD'}">Categorías</p>
-				</div>
-			</div>
-
-			<ng-container *ngIf="tapped">
-				<div class="tags-area" *ngIf="categories">
-					<app-tags-square *ngFor="let item of categories; index as i"
-						[tagText]="item.name"
-						gains="44 Ventas"
-						[reverse]="true"
-						color="#2874AD"
-						textColor="#2874AD"
-						position="left"
-					></app-tags-square>
-				</div>
-			</ng-container>
-		</div> -->
-	</ng-container>
+				src: '/pencil.svg',
+				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+				 callback: null
+			}
+		]"
+		[returnAble]="true"
+		bgColor="#2874AD"
+		color="#FFFFFF"
+		(returnEvent)="redirect()"
+	></app-helper-headerv2>
+	<app-helper-headerv2
+		*ngIf="item?.status !== 'active'"
+		mode="center"
+		[mainText]="{
+			text: 'INACTIVO (NO EXPUESTO)'
+		}"
+		[icon]="
+			{
+				src: '/closed-eye.svg',
+				filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+				callback: null
+			}
+		"
+		flexDirection="flex-end"
+		[returnAble]="true"
+		rmargin="46px"
+		bgColor="#B17608"
+		color="#FFFFFF"
+		(returnEvent)="redirect()"
+	></app-helper-headerv2>
 
 	<!-- Fin de la info que ve el admin -->
 
 	<div class="item-info" *ngIf="item">
-		<div class="description" *ngIf="item.description">
+		<!-- <div class="description" *ngIf="item.description">
 			<h2 class="title-name" *ngIf="item.name && item.images?.length">
 				{{item.name}}
 			</h2>
 			<p>{{item.description}}</p>
+		</div> -->
 
-			<!-- <hr *ngIf="!item.images && (item.name || item.pricing)" class="divider"> -->
-		</div>
-
-		<div *ngIf="item.name && (!item.images || !item.images?.length)">
+		<!-- <div *ngIf="item.name && (!item.images || !item.images?.length)">
 			<div class="grey-box">
 				<h3 class="title">{{item.name}}</h3>
 			</div>
-		</div>
+		</div> -->
 
 		<button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
 			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
 		</button>
+		<div class="flex-box" style="color:#4F4F4F; margin-top: 32px;">
+			<h6 class="small-title">{{item.name}}</h6>
+			<span class="small-price">${{item.pricing | number}}</span>
+		</div>
 
-		<div class="no-description" *ngIf="item.name && !item.description && item.images">
+		<!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
 			<h3 class="title">{{item.name}}</h3>
-		</div>
-
-		<div *ngIf="item.pricing" class="item-price">
-			<span class="vale">Vale</span>
-			<h4 class="price">${{item.pricing | number}}</h4>
-		</div>
-
-		<!-- <div class="flex-box" *ngIf="providerView">
-			<h3 class="title">{{ item.name }}</h3>
-			<div>
-				<p class="gray-label">RD$ {{ item.pricing | number }}</p>
-				<p class="gray-label">Ganas 14★</p>
-			</div>
 		</div> -->
 
-		<div class="client-submit-area">
+		<!-- <div *ngIf="item.pricing" class="item-price">
+			<span class="vale">Vale</span>
+			<h4 class="price">${{item.pricing | number}}</h4>
+		</div> -->
+
+		<!-- <div class="client-submit-area">
 			<ng-container *ngIf="!providerView">
 				<button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
 				<img src="{{ env }}/bookmark-plus.svg" alt="">
@@ -121,9 +111,9 @@
 					<span [ngClass]="{'plus': !item?.category?.length}">{{item?.category?.length ? item.category.length : '+'}}</span>
 				</a>
 			</ng-container>
-		</div>
+		</div> -->
 
-		<ng-container *ngIf="item.content?.length">
+		<!-- <ng-container *ngIf="item.content?.length">
 			<hr class="divider">
 			<div class="content">
 				<span class="includes">Incluye:</span>
@@ -133,12 +123,12 @@
 					</li>
 				</ul>
 			</div>
-		</ng-container>
+		</ng-container> -->
 	</div>
 
 </div>
 
-<ng-container *ngIf="providerView">
+<!-- <ng-container *ngIf="providerView">
 	<ng-container *ngIf="mode === 'new-item'">
 		<app-bubble-button [position]="'left'" [text]="'TIENDA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
 		<app-bubble-button [position]="'right'" [text]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
@@ -172,4 +162,4 @@
 		[mode]="'disabled-fixed'"
 		size="small"
 	></app-sticky-button>
-</ng-container>
+</ng-container> -->

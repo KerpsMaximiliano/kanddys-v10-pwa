@@ -40,12 +40,23 @@
     [leftText]="{
         text: ''
     }"
+    [bgColor]="steps[currentStep].customHelperHeaderConfig?.bgcolor ? steps[currentStep].customHelperHeaderConfig?.bgcolor : null"
+    [color]="steps[currentStep].customHelperHeaderConfig?.color ? steps[currentStep].customHelperHeaderConfig?.color : null"
+    [flexDirection]="steps[currentStep].customHelperHeaderConfig?.flexDirection ? steps[currentStep].customHelperHeaderConfig?.flexDirection : null"
+    [alignItems]="steps[currentStep].customHelperHeaderConfig?.alignItems ? steps[currentStep].customHelperHeaderConfig?.alignItems : null"
+    [rmargin]="steps[currentStep].customHelperHeaderConfig?.marginRight ? steps[currentStep].customHelperHeaderConfig?.marginRight : null"
+    [icon]="steps[currentStep].customHelperHeaderConfig?.icon ? steps[currentStep].customHelperHeaderConfig?.icon : null"
+    [rightTextStyles]="steps[currentStep].customHelperHeaderConfig?.rightTextStyles ? steps[currentStep].customHelperHeaderConfig?.rightTextStyles : null"
     [returnAble]="shouldScrollBackwards"
     *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" [returnAble]="true" [billId]="''"
     [itemId]="!steps[currentStep].headerTextSide ||
 steps[currentStep].headerTextSide === 'CENTER'
   ? steps[currentStep].headerText
-  : null" [leftText]="{text:''}" [rightText]="{text:''}" [returnAble]="shouldScrollBackwards" (returnEvent)="currentStep > 0 &&
+  : null" 
+  [leftText]="{text: steps[currentStep].headerTextSide === 'LEFT' ? steps[currentStep].headerText : ''}" 
+  [rightText]="{text: steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerText : ''}" [returnAble]="shouldScrollBackwards"
+  (agnosticAction)="steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerTextCallback(stepFunctionParams) : null"
+  (returnEvent)="currentStep > 0 &&
 shouldScrollBackwards &&
 !steps[currentStep].customScrollToStepBackwards
   ? scrollToStep(this.currentStep - 1, false)
@@ -1125,13 +1136,23 @@ shouldScrollBackwards &&
     *ngIf="steps[currentStep].customStickyButton"
     [mode]="steps[currentStep].customStickyButton.mode"
     [text]="steps[currentStep].customStickyButton.text"
+    (left)="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        (steps[currentStep].customStickyButton.text && steps[currentStep].customStickyButton.textCallback) ? 
+          steps[currentStep].customStickyButton.textCallback(stepFunctionParams) : null
+    "
+    (right)="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        (steps[currentStep].customStickyButton.text2 && steps[currentStep].customStickyButton.text2Callback) ? 
+          steps[currentStep].customStickyButton.text2Callback(stepFunctionParams) : null
+    "
     [text2]="
       steps[currentStep].customStickyButton.mode === 'double' && 
       steps[currentStep].customStickyButton.text2 ? 
         steps[currentStep].customStickyButton.text2 : null"
-    [bgColor]="steps[currentStep].customStickyButton.bgcolor"
-    [color]="steps[currentStep].customStickyButton.color"
-    [height]="steps[currentStep].customStickyButton.height"
+    [bgColor]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.bgcolor : steps[currentStep].customStickyButton.bgcolorInactive"
+    [color]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.color : steps[currentStep].customStickyButton.colorInactive"
+    [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.height : steps[currentStep].customStickyButton.heightInactive"
   ></app-sticky-button>
 
   <app-bubble-button *ngIf="

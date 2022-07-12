@@ -164,9 +164,16 @@ export class Authentication implements OnInit {
           try {
             const phoneNumber = params.dataModel.get('1').value.phoneNumber.e164Number.split('+')[1];
 
-            await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
+            try {
+              await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
+              params.scrollToStep(1);
 
-            return { ok: true };
+              return { ok: true };
+            } catch (error) {
+              console.log(error);
+
+              return { ok: false };
+            }
           } catch (error) {
             console.log(error);
             return { ok: false };
@@ -196,9 +203,12 @@ export class Authentication implements OnInit {
         text: 'POSIBILIDADES',
         text2: '',
         bgcolor: '#2874AD',
+        bgcolorInactive: '#2874AD',
         color: '#E9E371',
+        colorInactive: '#E9E371',
+        height: '30px',
+        heightInactive: '30px',
         mode: 'double',
-        height: '30px'
       },
       hideMainStepCTA: true
     },
