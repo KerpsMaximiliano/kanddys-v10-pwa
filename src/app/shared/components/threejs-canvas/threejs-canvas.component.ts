@@ -39,6 +39,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 export class ThreejsCanvasComponent implements OnInit {
   gltfModel: GLTF = null;
   gltfJSON: any = null;
+  animationMixer: AnimationMixer = null;
 
   constructor() { }
 
@@ -54,7 +55,7 @@ export class ThreejsCanvasComponent implements OnInit {
       clock,
       groundMirror
     } = this.initScene();
-    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/Creditcard.gltf');
+    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim3/Creditcard.gltf');
     this.initMenu(camera, cubeCamera, this.gltfModel, groundMirror);
 
     const renderLoop = () => {
@@ -66,6 +67,8 @@ export class ThreejsCanvasComponent implements OnInit {
 
       //Tiempo pasado desde el ultimo frame al actual
       let delta = clock.getDelta();
+
+      this.animationMixer.update(delta);
 
       // if (mixer) mixer.update(delta);
     
@@ -100,9 +103,9 @@ export class ThreejsCanvasComponent implements OnInit {
 
     // camera.position.y = 5;
     // camera.position.z = 40;
-    camera.position.x = -0.09363450643606908;
-    camera.position.y = 0;
-    camera.position.z = 4.863602187237972;
+    camera.position.x = -0.0798657365045112;
+    camera.position.y = 0.4813698379714353;
+    camera.position.z = 4.376446891678747;
 
     //Luces
     //Añade una luz uniforme a toda la escena
@@ -171,7 +174,7 @@ export class ThreejsCanvasComponent implements OnInit {
 
     controls.maxPolarAngle = Math.PI / 2; // radians
 
-    controls.minDistance = 5; // radians
+    controls.minDistance = 1; // radians
     controls.maxDistance = 40; // radians
     
 
@@ -261,10 +264,10 @@ export class ThreejsCanvasComponent implements OnInit {
           route
           // '../Card/Card.gltf'
           , (gltf: any) => {
-            console.log(gltf);
 
             unlockUI();
             const mixer = new AnimationMixer(gltf.scene); //reproductor de animaciones de Three.js
+            this.animationMixer = mixer;
             
             this.gltfModel = gltf;
   
@@ -282,9 +285,11 @@ export class ThreejsCanvasComponent implements OnInit {
               }
             });
 
+            console.log('gltf', gltf);
+
             gltf.animations.forEach((clip) => {
               //asegura que el ultimo frame prevalezca al terminar la animacion
-              const clipAction = mixer.clipAction(clip);
+              const clipAction = this.animationMixer.clipAction(clip);
               clipAction.clampWhenFinished = true;
               clipAction.loop = LoopRepeat;
 
@@ -303,7 +308,6 @@ export class ThreejsCanvasComponent implements OnInit {
             });
   
             gltf.scene.position.y = -0.3;
-            camera.rotation.y = Math.PI / 2;
             camera.lookAt(gltf.scene.position);
 
     

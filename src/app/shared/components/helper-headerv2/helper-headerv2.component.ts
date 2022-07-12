@@ -51,6 +51,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
     @Input() flexDirection: string;
+    @Input() justifyContent: string;
     @Input() alignItems: string;
     @Input() filter: string;
     @Input() icons: Icon[];

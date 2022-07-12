@@ -103,8 +103,6 @@ export class NewItemDisplayComponent implements OnInit {
 
         const myUser = await this.authService.me();
 
-        console.log(myUser, mode);
-
         if (myUser && mode === 'new-item') {
 
           let defaultMerchant = null;
