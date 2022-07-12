@@ -1,7 +1,7 @@
 <div class="container">
 
     <app-helper-headerv2
-    [mode]="'center'"
+    [mode]="'basic'"
     [mainText]="{
         text:'Artículos',
         fontFamily: 'SfProBold',
@@ -9,10 +9,10 @@
         color: '#FFF'
     }"
     [icon]="{
-        src: '/person.svg',
-        width: 30,
-        height: 30,
-        filter: 'invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)'
+        src: '/salealt.svg',
+        width: 24,
+        height: 24,
+        filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)'
     }"
     [returnAble]="false"
     ></app-helper-headerv2>
@@ -21,6 +21,7 @@
 
         <div class="capsize" *ngFor="let list of itemList">
             <app-saleflow-item 
+            [type]="3"
             [price]="list.price"
             [quantity]="list.quantity"
             [showIcon]="true">
@@ -31,11 +32,21 @@
 
 
     <app-sticky-button
-    bgColor="#A1A1A1"
-    [height]="'30px'"
+    size="small"
     [mode]="'double'"
+    bgColor="#A1A1A1"
+    [fontSize]="'14px'"
     [text]="'145 ARTICULOS'"
     [text2]="'$14,451 INGRESO'"
     [color]="'#FFF'"
+    [extra]="{
+        icon:{
+            src: '/salealt.svg',
+            color: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+            width: 19,
+            height: 19
+        },
+        bgColor: '#2874AD'
+    }"
     ></app-sticky-button>
 </div>

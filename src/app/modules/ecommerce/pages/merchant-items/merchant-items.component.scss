@@ -4,8 +4,9 @@
    
     .saleflows-grid{
         width: auto;
-        max-height: 87vh;
-        margin: 21px 5%;
+        margin: 0 5%;
+        max-height: 92vh;
+        padding: 10px 5px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         -moz-column-gap: 10px;

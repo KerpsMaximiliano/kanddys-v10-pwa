@@ -6,8 +6,8 @@
                 <div class="left-area">
                     <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
                         'filter': icon.filter? icon.filter : 'none',
-                        'width': icon.width? icon.width : '',
-                        'height': icon.height? icon.height : ''
+                        'width.px': icon.width? icon.width : '',
+                        'height.px': icon.height? icon.height : ''
                     }" *ngIf="icon?.src && !returnAble" class="icon"/>
 
                     <a *ngIf="returnAble && !icon?.src" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="color"></i></a>
