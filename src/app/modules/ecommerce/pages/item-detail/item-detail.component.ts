@@ -28,7 +28,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: DialogService,
     private appService: AppService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
   ) {}
   itemData: Item;
   saleflowData: SaleFlow;
@@ -44,14 +44,15 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     freeMode: true,
     spaceBetween: 5,
   };
+  previewMode: boolean;
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
+      if(!params.saleflow || !params.id) return this.previewItem();
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
+      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
-      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);''
       this.itemData = await this.items.item(params.id);
-
       if(!this.itemData) return this.back();
 
       const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`);
@@ -73,16 +74,22 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.deleteEvent.unsubscribe();
   }
 
+  previewItem() {
+    if(!this.items.temporalItem) return new Error(`No item to preview`);
+    this.itemData = this.items.temporalItem;
+    this.previewMode = true;
+  }
+
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
-    console.log(this.itemCartAmount);
     if (productData && productData.length > 0) {
       this.inCart = productData.some((item) => item._id === this.itemData._id);
     } else this.inCart = false;
   }
 
   showItems() {
+    if(this.previewMode) return;
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: { 
@@ -120,6 +127,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   onCartClick() {
+    if(this.previewMode) return;
     if(this.inCart) {
       this.saveProduct();
     } else {
@@ -171,10 +179,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   back() {
+    if(this.previewMode) return this.router.navigate([`/ecommerce/item-creator`]);
+    this.items.removeTemporalItem();
     this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
   }
 
   tapping = () => {
+    if(this.previewMode) return;
     let url = this.whatsappLink;
     window.open(url, "_blank");
   }

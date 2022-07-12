@@ -140,7 +140,7 @@
                 'margin-right': rmargin? rmargin : ''
                 }">{{mainText.text}}</p>
 
-                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && down || returnAble" class="icon-center" [ngStyle]="{
+                <img [src]="env + icon?.src" [alt]="icon?.alt" *ngIf="icon?.src && down || returnAble" class="icon-center" [ngStyle]="{
                     width: icon?.width? icon.width : '',
                     height: icon?.height? icon.height : '',
                     filter: icon?.filter? icon.filter : '',
