@@ -64,12 +64,18 @@ export class NewItemDisplayComponent implements OnInit {
     this.route.params.subscribe(async (params) => {
       this.route.queryParams.subscribe(async queryParams => {
         const { token: magicLinkToken, mode } = queryParams;
+
+
         this.mode = mode;
         if (params.itemId) {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
           if (!this.item) return this.redirect();
-          if (this.item && !this.item.merchant) this.isPreItem = true;
+
+          if ((this.item && !this.item.merchant) || (this.item && this.item.status === 'draft')) this.isPreItem = true;
+
+          console.log(this.isPreItem);
+
           // this.item.images = null;
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
@@ -86,42 +92,77 @@ export class NewItemDisplayComponent implements OnInit {
             this.user = await this.authService.me();
 
             if (this.user) this.loggedIn = true;
-            this.checkBanks();
+            try {
+              await this.checkBanks();              
+            } catch (error) {
+              console.log('hubo un error 1');
+            }
           }
         }
 
-        if (magicLinkToken) {
-          const { analizeMagicLink: session } =
-            await this.authService.analizeMagicLink(magicLinkToken);
+        const myUser = await this.authService.me();
 
-          if (session.token && session.user.phone && mode === 'new-item') {
-            localStorage.setItem('session-token', session.token);
+        console.log(myUser, mode);
 
-            let defaultMerchant = null;
+        if (myUser && mode === 'new-item') {
 
-            try {
-              defaultMerchant = await this.merchantService.merchantDefault();
-            } catch (error) {
-              console.log(error);
-            }
+          let defaultMerchant = null;
 
-            if (!defaultMerchant) {
-              const merchants = await this.merchantService.myMerchants();
+          try {
+            console.log('one');
+            defaultMerchant = await this.merchantService.merchantDefault();
+          } catch (error) {
+            console.log('hubo un error 2');
+          }
 
-              if (merchants.length === 0) {
-                const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
-                  owner: session.user._id,
-                  name: session.user.name + " mechant #" + Math.floor(Math.random() * 100000)
+          if (!defaultMerchant) {
+            const merchants = await this.merchantService.myMerchants();
+
+            if (merchants.length === 0) {
+              const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
+                owner: myUser._id,
+                name: myUser.name + " mechant #" + Math.floor(Math.random() * 100000)
+              });
+
+              const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
+
+              if (this.isPreItem)
+                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+
+              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+
+              if (!defaultSaleflow) {
+                const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+                  merchant: defaultMerchant._id,
+                  name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+                  items: []
                 });
 
-                const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
+                const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                this.saleflow = defaultSaleflow;
 
-                if (this.isPreItem)
-                  await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+                this.saleflowService.createSaleFlowModule({
+                  saleflow: createdSaleflow._id
+                });
 
-                const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+                await this.saleflowService.addItemToSaleFlow({
+                  item: params.itemId
+                }, defaultSaleflow._id);
 
-                if (!defaultSaleflow) {
+                this.newMerchant = true;
+              }
+            } else {
+              const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
+
+              if (this.isPreItem)
+                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+
+              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+
+              if (!defaultSaleflow) {
+                const saleflows = await this.saleflowService.saleflows(merchants[0]._id, {});
+
+                if (!saleflows || saleflows.length === 0) {
                   const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
                     merchant: defaultMerchant._id,
                     name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
@@ -138,101 +179,75 @@ export class NewItemDisplayComponent implements OnInit {
                   await this.saleflowService.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
-
                   this.newMerchant = true;
-                }
-              } else {
-                const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
-
-                if (this.isPreItem)
-                  await this.itemsService.authItem(defaultMerchant._id, params.itemId);
-
-                const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
-
-                if (!defaultSaleflow) {
-                  const saleflows = await this.saleflowService.saleflows(merchants[0]._id, {});
-
-                  if (!saleflows || saleflows.length === 0) {
-                    const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-                      merchant: defaultMerchant._id,
-                      name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
-                      items: []
-                    });
-
-                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
-                    this.saleflow = defaultSaleflow;
-
-                    this.saleflowService.createSaleFlowModule({
-                      saleflow: createdSaleflow._id
-                    });
-
-                    await this.saleflowService.addItemToSaleFlow({
-                      item: params.itemId
-                    }, defaultSaleflow._id);
-                    this.newMerchant = true;
-                  } else {
-                    const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
-                    this.saleflow = defaultSaleflow;
-
-                    await this.saleflowService.addItemToSaleFlow({
-                      item: params.itemId
-                    }, defaultSaleflow._id);
-                    this.newMerchant = true;
-                  }
                 } else {
+                  const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
                   this.saleflow = defaultSaleflow;
 
                   await this.saleflowService.addItemToSaleFlow({
                     item: params.itemId
                   }, defaultSaleflow._id);
-
                   this.newMerchant = true;
                 }
-              }
-              unlockUI();
-            } else {
-              this.defaultMerchant = defaultMerchant;
-              if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
-
-              if (this.isPreItem)
-                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
-
-              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
-
-              if (!defaultSaleflow) {
-
-                const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-                  merchant: defaultMerchant._id,
-                  name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
-                  items: []
-                });
-
-                const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
-
-                this.saleflowService.createSaleFlowModule({
-                  saleflow: createdSaleflow._id
-                });
-
-                await this.saleflowService.addItemToSaleFlow({
-                  item: params.itemId
-                }, defaultSaleflow._id);
-                unlockUI();
-                // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-                this.router.navigate([`/ecommerce/user-items`]);
               } else {
+                this.saleflow = defaultSaleflow;
+
                 await this.saleflowService.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
-                unlockUI();
-                // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-                this.router.navigate([`/ecommerce/user-items`]);
-              }
 
-              // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
+                this.newMerchant = true;
+              }
             }
+            unlockUI();
+          } else {
+            this.defaultMerchant = defaultMerchant;
+            if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
+
+            if (this.isPreItem)
+              await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+
+            const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+
+            if (!defaultSaleflow) {
+
+              const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
+                merchant: defaultMerchant._id,
+                name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
+                items: []
+              });
+
+              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+
+              this.saleflowService.createSaleFlowModule({
+                saleflow: createdSaleflow._id
+              });
+
+              await this.saleflowService.addItemToSaleFlow({
+                item: params.itemId
+              }, defaultSaleflow._id);
+              unlockUI();
+              // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+              this.router.navigate([`/ecommerce/user-items`]);
+            } else {
+              await this.saleflowService.addItemToSaleFlow({
+                item: params.itemId
+              }, defaultSaleflow._id);
+              unlockUI();
+              // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+              this.router.navigate([`/ecommerce/user-items`]);
+            }
+
+            // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
           }
         } else {
-          this.defaultMerchant = await this.merchantService.merchantDefault();
+          try {
+            console.log('two');
+            this.defaultMerchant = await this.merchantService.merchantDefault();
+          } catch (error) {
+            console.log('hubo un error 3');
+          }
+
           if(!this.defaultMerchant) return unlockUI();;
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;

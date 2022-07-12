@@ -165,6 +165,7 @@ export interface FormStep {
   headerTextLeft?: string;
   headerTextRight?: string;  
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
+  headerTextIcon?: string;
   headerTextCallback?(...params): any;
   pageHeader?: PageHeader;
   pageSubHeader?: PageHeader;
@@ -212,6 +213,25 @@ export interface FormStep {
     text2?: string;
     textCallback?( params): any;
     text2Callback?( params): any;
+  },
+  customHelperHeaderConfig?: {
+    bgcolor?: string;
+    color?: string;
+    height?: string;
+    flexDirection?: string;
+    alignItems?: string;
+    marginRight?: string;
+    rightTextStyles?: Record<string, any>;
+    icon?: {
+      src: string,
+      alt?: string,
+      cursor?: string,
+      filter?: string,
+      width?: number,
+      height?: number,
+      margin?: string,
+      callback?: () => void
+    };
   }
 }
 

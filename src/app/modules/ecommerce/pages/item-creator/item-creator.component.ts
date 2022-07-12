@@ -14,6 +14,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { Item } from 'src/app/core/models/item';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -37,9 +38,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
+  editMode: boolean = false;
   user: any;
   shouldScrollBackwards: boolean = false;
   files: File[] = [];
+  item: Item;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -174,7 +177,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ).length + 1,
           statusChangeCallbackFunction: (change) => {
             if(change === 'VALID') {
-              this.formSteps[0].headerText = 'PREVIEW';
+              this.formSteps[0].headerText = this.item.status === 'active' ?
+                'ACTIVO (EXPUESTO EN TIENDA)' :
+                'INACTIVO (NO EXPUESTO)';
               this.formSteps[0].headerTextSide = 'RIGHT';           
             } else {
               this.formSteps[0].headerText = null;
@@ -576,7 +581,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.formSteps[0].customStickyButton.text2 = 'ESPERE...';
             await this.formSteps[0].asyncStepProcessingFunction.function(params);              
           } catch (error) {
-            console.log(error)
+            console.log(error);
             this.formSteps[0].customStickyButton.text2 = 'SALVAR';
           }
         },
@@ -853,13 +858,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           String(pricing)
         );
 
-        const plainNumber = String(pricing)
-          .split(',')
-          .join('')
-          .split('.')
-          .join('');
         const formatted = this.decimalPipe.transform(
-          Number(plainNumber),
+          pricing,
           '1.0-2'
         );
 
@@ -897,8 +897,49 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.currentUserId = this.user._id;
 
-        const { pricing, images, content, description, merchant } =
-          await this.itemService.item(itemId);
+        this.item = await this.itemService.item(itemId);
+        const { pricing, images, name, content, description, merchant } = this.item;
+
+        for(let formStep of this.formSteps) {
+          formStep.customHelperHeaderConfig = {
+            bgcolor: '#B17608',
+            color: '#ffffff',
+            flexDirection: 'flex-end',
+            alignItems: 'center',
+            rightTextStyles: {
+              fontSize: '17px',
+              fontFamily: 'RobotoMedium'
+            },
+            icon: {
+              src: `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                this.item.status === 'active' ? 'open' : 'closed'
+              }-eye-white.svg`,
+              width: 32,
+              height: 28,
+              cursor: 'pointer',
+              margin: '0px 0px 0px 6px',
+              callback: async () => {
+                await this.itemService.updateItem(
+                  {
+                    status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                  },
+                  this.currentItemId
+                );
+
+                this.item.status = this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft';
+
+                this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                  this.item.status === 'active' ? 'open' : 'closed'
+                }-eye-white.svg`;
+                
+                this.formSteps[0].headerText = this.item.status === 'active' ?
+                  'ACTIVO (EXPUESTO EN TIENDA)' :
+                  'INACTIVO (NO EXPUESTO)'
+              }
+            }
+          }
+        }
+
 
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
@@ -906,6 +947,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
             String(pricing)
           );
+  
+          const formatted = this.decimalPipe.transform(
+            pricing,
+            '1.0-2'
+          );
+  
+          if (formatted === '0') {
+            this.formSteps[0].fieldsList[0].placeholder = '';
+          }
+  
+          this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+          this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+
           this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
@@ -956,7 +1010,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           description: values['3'].description !== '' ? values['3'].description : null,
           pricing: totalWithDecimal,
           images: this.defaultImages,
-          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : undefined,
+          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
           content: values['2'].whatsIncluded.length > 0 && !(
             values['2'].whatsIncluded.length === 1 &&
             values['2'].whatsIncluded[0] === ''
