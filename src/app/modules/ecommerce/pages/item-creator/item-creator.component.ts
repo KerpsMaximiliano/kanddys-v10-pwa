@@ -78,7 +78,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             );
             // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
             // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-            this.router.navigate([`/ecommerce/user-items`]);
+            this.router.navigate([`/ecommerce/merchant-items`]);
           } else {
             if (this.loggedIn) {
               console.log(this.loggedUserDefaultMerchant);
@@ -105,7 +105,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 // this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
 
-                this.router.navigate([`/ecommerce/user-items`]);
+                this.router.navigate([`/ecommerce/merchant-items`]);
 
                 // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
@@ -440,7 +440,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               this.headerService.flowRoute = this.router.url;
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
               // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-              this.router.navigate([`/ecommerce/user-items`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
             } else {
               if (this.loggedIn) {
                 const { createItem } = await this.itemService.createItem({
@@ -467,7 +467,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
                   // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
-                  this.router.navigate([`/ecommerce/user-items`]);
+                  this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
                 const { createPreItem } = await this.itemService.createPreItem({
@@ -526,20 +526,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   params.scrollToStep(3);
                 }
               },
-              {
-                text: 'Descripción',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(2);
-                }
-              },
-              {
-                text: 'Lo incluido',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(1);
-                }
-              },
+              // {
+              //   text: 'Descripción',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(2);
+              //   }
+              // },
+              // {
+              //   text: 'Lo incluido',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(1);
+              //   }
+              // },
             ]
           }
         ]
