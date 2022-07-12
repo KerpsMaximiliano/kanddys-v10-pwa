@@ -63,6 +63,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.currentUserId === this.merchantOwnerId
             && this.currentItemId
           ) {
+            console.log(this.files);
             await this.itemService.updateItem(
               {
                 name: values['4'].name,
@@ -423,6 +424,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               this.currentUserId === this.merchantOwnerId
               && this.currentItemId
             ) {
+              console.log(this.files);
               await this.itemService.updateItem(
                 {
                   name: values['4'].name,
@@ -858,8 +860,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (data) this.loggedIn = true;
       }
 
-      if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
-        const { description, name, images, pricing, content } = this.headerService.newTempItem;
+      if (this.itemService && this.itemService.temporalItem) {
+        const { description, name, images, pricing, content } = this.itemService.temporalItem;
 
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
@@ -876,10 +878,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
 
-        this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+        if(images && images.length > 0) 
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+        
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
+
+        if(Number(this.formSteps[0].fieldsList[0].fieldControl.control.value) > 0.01) {
+          this.formSteps[0].headerTextSide = 'RIGHT';
+          this.formSteps[0].headerText = 'PREVIEW';
+        } else {
+          this.formSteps[0].headerText = null;
+          this.formSteps[0].headerTextSide = null;
+        }
 
         const formArray = this.formSteps[1].fieldsList[0]
           .fieldControl.control as FormArray;
@@ -946,8 +958,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
-
-          console.log(formStep);
         }
 
 
@@ -971,8 +981,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
 
           this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
-          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-          this.defaultImages = images;
+
+          if(images && images.length > 0) {
+            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+            this.defaultImages = images;
+          }
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
@@ -1019,7 +1032,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           name: values['4'].name,
           description: values['3'].description !== '' ? values['3'].description : null,
           pricing: totalWithDecimal,
-          images: this.defaultImages,
+          images: this.defaultImages.filter(image => image !== ''),
           merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
           content: values['2'].whatsIncluded.length > 0 && !(
             values['2'].whatsIncluded.length === 1 &&
