@@ -531,9 +531,7 @@ input[type="file"] {
 .option-list-grid {
   display: grid;
   overflow-x: scroll;
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  grid-auto-columns: minmax(0, 1fr);
-  grid-auto-flow: column;
+  grid-template-columns: repeat(12, 50px);
   gap: 20px;
   margin-bottom: 10px;
 }
