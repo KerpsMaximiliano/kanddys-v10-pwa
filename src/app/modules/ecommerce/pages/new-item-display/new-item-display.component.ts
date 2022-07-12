@@ -77,7 +77,7 @@ export class NewItemDisplayComponent implements OnInit {
           console.log(this.isPreItem);
 
           // this.item.images = null;
-          this.item.status = 'disabled';
+          // this.item.status = 'disabled';
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
 
@@ -334,7 +334,7 @@ export class NewItemDisplayComponent implements OnInit {
     if (this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
   }
 
-  toggleActivateItem() {
+  toggleActivateItem = () => {
     this.itemsService.updateItem({
       status: this.item.status === 'disabled' ? 'active' : 'disabled'
     }, this.item._id).catch((error) => {
