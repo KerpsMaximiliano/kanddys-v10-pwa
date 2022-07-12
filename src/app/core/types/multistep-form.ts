@@ -219,6 +219,7 @@ export interface FormStep {
     color?: string;
     height?: string;
     flexDirection?: string;
+    justifyContent?: string;
     alignItems?: string;
     marginRight?: string;
     rightTextStyles?: Record<string, any>;

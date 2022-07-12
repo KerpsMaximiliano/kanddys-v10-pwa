@@ -103,8 +103,6 @@ export class NewItemDisplayComponent implements OnInit {
 
         const myUser = await this.authService.me();
 
-        console.log(myUser, mode);
-
         if (myUser && mode === 'new-item') {
 
           let defaultMerchant = null;
@@ -229,14 +227,14 @@ export class NewItemDisplayComponent implements OnInit {
               }, defaultSaleflow._id);
               unlockUI();
               // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-              this.router.navigate([`/ecommerce/user-items`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
             } else {
               await this.saleflowService.addItemToSaleFlow({
                 item: params.itemId
               }, defaultSaleflow._id);
               unlockUI();
               // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
-              this.router.navigate([`/ecommerce/user-items`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
             }
 
             // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
@@ -329,7 +327,7 @@ export class NewItemDisplayComponent implements OnInit {
   goToMerchantStore() {
     if (this.defaultMerchant)
       // this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
-      this.router.navigate([`/ecommerce/user-items`]);
+      this.router.navigate([`/ecommerce/merchant-items`]);
   }
 
   goToBanksForm() {

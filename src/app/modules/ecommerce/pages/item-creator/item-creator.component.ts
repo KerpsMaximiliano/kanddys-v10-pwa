@@ -78,7 +78,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             );
             // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
             // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-            this.router.navigate([`/ecommerce/user-items`]);
+            this.router.navigate([`/ecommerce/merchant-items`]);
           } else {
             if (this.loggedIn) {
               console.log(this.loggedUserDefaultMerchant);
@@ -105,7 +105,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 // this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
 
-                this.router.navigate([`/ecommerce/user-items`]);
+                this.router.navigate([`/ecommerce/merchant-items`]);
 
                 // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
@@ -177,9 +177,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ).length + 1,
           statusChangeCallbackFunction: (change) => {
             if(change === 'VALID') {
-              this.formSteps[0].headerText = this.item.status === 'active' ?
-                'ACTIVO (EXPUESTO EN TIENDA)' :
-                'INACTIVO (NO EXPUESTO)';
+              console.log("edit mode", this.editMode);
+
+              if(this.editMode) {
+                this.formSteps[0].headerText = this.item.status === 'active' ?
+                  'ACTIVO (EXPUESTO EN TIENDA)' :
+                  'INACTIVO (NO EXPUESTO)';
+              } else {
+                this.formSteps[0].headerText = 'PREVIEW'
+              }
               this.formSteps[0].headerTextSide = 'RIGHT';           
             } else {
               this.formSteps[0].headerText = null;
@@ -434,7 +440,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               this.headerService.flowRoute = this.router.url;
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
               // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-              this.router.navigate([`/ecommerce/user-items`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
             } else {
               if (this.loggedIn) {
                 const { createItem } = await this.itemService.createItem({
@@ -461,7 +467,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
                   // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
-                  this.router.navigate([`/ecommerce/user-items`]);
+                  this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
                 const { createPreItem } = await this.itemService.createPreItem({
@@ -520,20 +526,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   params.scrollToStep(3);
                 }
               },
-              {
-                text: 'Descripción',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(2);
-                }
-              },
-              {
-                text: 'Lo incluido',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(1);
-                }
-              },
+              // {
+              //   text: 'Descripción',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(2);
+              //   }
+              // },
+              // {
+              //   text: 'Lo incluido',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(1);
+              //   }
+              // },
             ]
           }
         ]
@@ -558,6 +564,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
           this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
         } else {
+          // this.formSteps[0].headerText = 'PREVIEW';
           this.formSteps[0].customStickyButton.mode = 'double';
           this.formSteps[0].customStickyButton.text = 'PREVIEW';
           this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
@@ -567,7 +574,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       customStickyButton: {
         text: 'ADICIONA LA INFO DE LO QUE VENDES',
         bgcolor: '#2874AD',
-        color: '#E9E371',
+        color: '#ffffff',
         bgcolorInactive: '#7b7b7b',
         colorInactive: '#ffffff',
         mode: 'disabled-fixed',
@@ -894,6 +901,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
       if (itemId && this.loggedIn) {
         lockUI();
+        this.editMode = true;
 
         this.currentUserId = this.user._id;
 
@@ -904,7 +912,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           formStep.customHelperHeaderConfig = {
             bgcolor: '#B17608',
             color: '#ffffff',
-            flexDirection: 'flex-end',
+            justifyContent: 'flex-end',
             alignItems: 'center',
             rightTextStyles: {
               fontSize: '17px',
@@ -926,7 +934,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.currentItemId
                 );
 
-                this.item.status = this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft';
+                this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
 
                 this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
                   this.item.status === 'active' ? 'open' : 'closed'
@@ -938,6 +946,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
+
+          console.log(formStep);
         }
 
 

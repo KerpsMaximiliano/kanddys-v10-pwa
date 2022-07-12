@@ -51,12 +51,18 @@ export class SaleFlowService {
 
   async saleflowDefault(merchantId: string): Promise<SaleFlow> {
     try {
-      const { saleflowDefault: saleflowDefaultResponse } = await this.graphql.query({
+      const response = await this.graphql.query({
         query: saleflowDefault,
         variables: { merchantId },
         fetchPolicy: 'no-cache'
       });
-      return saleflowDefaultResponse;
+
+      if(response) {
+        const { saleflowDefault: saleflowDefaultResponse } = response;
+        return saleflowDefaultResponse;
+      } else {
+        return null;
+      }
     } catch (error) {
       console.log(error);
     }

@@ -153,7 +153,7 @@
             <div class="options">
                 <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
                         [style.color]="color"></i></a>
-                <div class="wrapper" [ngStyle]="{'justify-content': flexDirection? flexDirection : '', 'align-items': alignItems ? alignItems : '' }">
+                <div class="wrapper" [ngStyle]="{'flex-direction': flexDirection? flexDirection : '', 'align-items': alignItems ? alignItems : '', 'justify-content': justifyContent }">
                     <span class="bold-text" *ngIf="extraTexts?.itemId" [style.margin-left]="'6%'" >{{extraTexts.itemId}}</span>
                     <span class="bill bold-text" *ngIf="extraTexts?.billId" >{{extraTexts.billId}}</span>
                     <span class="bold-text" >{{leftText.text}}</span>
