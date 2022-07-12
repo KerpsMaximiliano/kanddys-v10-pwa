@@ -50,7 +50,22 @@
   </div>
 </div>
 
-<div class="fixed-double" *ngIf="mode == 'double'" [style.background-color]="bgColor">
+<div class="fixed-double" *ngIf="mode == 'double'" [ngClass]="{'small': size === 'small'}" [style.background-color]="bgColor">
+    <button
+      (click)="extraButton()"
+      class="added"
+      [ngClass]="{'small': size === 'small'}"
+      [ngStyle]="{
+        fontSize: extra?.fontSize,
+        height: extra?.height,
+        backgroundColor: extra?.bgColor ? extra?.bgColor : null,
+        color: extra?.icon?.color ? extra?.icon?.color : null
+      }"
+      *ngIf="extra?.text || extra?.icon">
+        {{ extra?.text}} 
+        <img [src]="env + extra?.icon?.src" [alt]="extra?.icon?.alt" [width]="extra?.icon?.width" [height]="extra?.icon?.height" *ngIf="extra?.icon?.src" 
+        [ngStyle]="{filter: extra?.icon?.color}">
+    </button>
     <button
       (click)="leftButton()"
       class="double"
@@ -59,7 +74,8 @@
         fontSize: fontSize,
         height: height,
         backgroundColor: bgColor ? bgColor : null,
-        color: color ? color : null
+        color: color ? color : null,
+        width: (extra?.text || extra?.icon)? '42.5%' : ''
       } : null">
         {{ text }}
     </button>
@@ -71,7 +87,8 @@
         fontSize: fontSize,
         height: height,
         backgroundColor: bgColor ? bgColor : null,
-        color: color ? color : null
+        color: color ? color : null,
+        width: (extra?.text || extra?.icon)? '42.5%' : ''
       } : null">
         {{ text2 }}
     </button>

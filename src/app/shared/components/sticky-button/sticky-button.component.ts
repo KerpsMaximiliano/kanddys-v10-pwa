@@ -2,6 +2,22 @@ import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter }
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { notification } from 'onsenui';
+import {environment} from 'src/environments/environment';
+
+interface Extra {
+    text?: string;
+    bgColor?: string;
+    width?: string;
+    height?: string;
+    fontSize?: string;
+    icon?:{
+        src: string;
+        alt?: string;
+        width: number;
+        height: number;
+        color?: string;
+    };
+}
 
 @Component({
   selector: 'app-sticky-button',
@@ -25,10 +41,14 @@ export class StickyButtonComponent implements OnInit {
   @Input() backButton: boolean;
   @Input() backButtonCallback: () => void;
   @Input() textCallback: () => void;
+  
+  @Input() extra: Extra;//Usado en modo "Double", inserta config
 
-  @Output() left = new EventEmitter;
-  @Output() right = new EventEmitter;
+  @Output() left = new EventEmitter();
+  @Output() right = new EventEmitter();
+  @Output() added = new EventEmitter();
 
+  env: string = environment.assetsUrl; 
   private ngNavigatorShareService: NgNavigatorShareService;
 
 
@@ -103,6 +123,10 @@ export class StickyButtonComponent implements OnInit {
 
   rightButton(){
     this.right.emit();
+  }
+
+  extraButton(){
+    this.added.emit();
   }
 
 }

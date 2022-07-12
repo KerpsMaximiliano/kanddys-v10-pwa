@@ -1,5 +1,5 @@
-<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big}">
-  <div class="marginCard" *ngIf = "type == 1">
+<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big}" [ngStyle]="{'border-top-left-radius': type==3? '14px':'', 'border-top-right-radius':type==3? '14px':''}">
+  <div class="marginCard" *ngIf="type == 1"> <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
       <div
         class="itemImg"
         [ngStyle]="{ 'background-image': imgURL && 'url(' + imgURL + ')', 'background-size': backgroundSize }"
@@ -21,38 +21,9 @@
               <span class="total" *ngIf="index2 >= 0">{{index2 | number}} <img [src]="env + '/categories-list.svg'" width="9px" height="9px" class="list-icon" (click)="actionator($event)"></span>
           </div>
       </div>
-
-    <!-- <div
-      class="itemImg"
-      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')' }"
-      [ngClass]="{
-        'gray-shadow': shaded == true,
-        borderRect: borderRadius == false
-      }"
-      (click)="onClick()"
-    ></div>
-    <div *ngIf="price" class="price {{ priceAlign }}">
-      <span style="font-size: 10px; height: 24px">$</span
-      ><span style="font-size: 25px; margin-right: 8px">{{ price | number }}</span
-      ><span style="text-align: start; font-size: 12px"
-        >.00 <br />
-        DOP</span
-      ><span *ngIf="quantity">
-        / <span class="quantity">{{ quantity }}</span></span
-      >
-    </div>
-    <div
-      *ngIf="selectable"
-      (click)="toggleSelect($event)"
-      [ngClass]="{ selected: isSelected }"
-      class="checkBox"
-      style="cursor: pointer;"
-    >
-      <i class="fas fa-check-circle icon"></i>
-    </div> -->
   </div>
 
-  <div *ngIf="type == 2">
+  <div *ngIf="type == 2"> <!--MODALIDAD CON CARRITO Y FUNCIONES -->
     <div
       class="itemImg"
       [ngStyle]="{ 'background-image': 'url(' + imgURL + ')', 'background-size': backgroundSize }"
@@ -98,6 +69,24 @@
         <img *ngIf="!isSelected" [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
         <i *ngIf="isSelected" class="fas fa-check-circle icon"></i>
       </button>
+    </div>
+  </div>
+
+  <div class="simpleCard" *ngIf="type == 3"> <!--MODALIDAD QUE SOLO MUESTRA LOS PRECIOS Y LAS VENTAS-->
+    <div
+        class="itemImg"
+        [ngStyle]="{ 'background-image': imgURL && 'url(' + imgURL + ')', 'background-size': backgroundSize }"
+        (click)="onClick()"
+    ></div>
+
+    <div class="info-area">
+          
+        <div class="flexer">
+            <span class="price">${{price | number}}</span>
+            <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
+        </div>
+
+        <p class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</p>
     </div>
   </div>
 </div>
