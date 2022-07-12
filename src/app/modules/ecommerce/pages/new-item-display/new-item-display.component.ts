@@ -77,6 +77,7 @@ export class NewItemDisplayComponent implements OnInit {
           console.log(this.isPreItem);
 
           // this.item.images = null;
+          this.item.status = 'disabled';
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
 
@@ -195,9 +196,17 @@ export class NewItemDisplayComponent implements OnInit {
                 await this.saleflowService.addItemToSaleFlow({
                   item: params.itemId
                 }, defaultSaleflow._id);
+<<<<<<< HEAD
 
                 this.newMerchant = true;
               }
+=======
+                unlockUI();
+                // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
+                this.router.navigate([`/ecommerce/user-items`]);
+              }
+              // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
+>>>>>>> f7c52ccd977a8437eb63368bafb373998bde8b79
             }
             unlockUI();
           } else {
@@ -241,6 +250,7 @@ export class NewItemDisplayComponent implements OnInit {
             // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
           }
         } else {
+<<<<<<< HEAD
           try {
             console.log('two');
             this.defaultMerchant = await this.merchantService.merchantDefault();
@@ -249,6 +259,10 @@ export class NewItemDisplayComponent implements OnInit {
           }
 
           if(!this.defaultMerchant) return unlockUI();;
+=======
+          this.defaultMerchant = await this.merchantService.merchantDefault();
+          if(!this.defaultMerchant) return unlockUI();
+>>>>>>> f7c52ccd977a8437eb63368bafb373998bde8b79
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;
 
@@ -261,8 +275,8 @@ export class NewItemDisplayComponent implements OnInit {
                 this.getSaleflow(),
               ]);
             }
-            unlockUI();
           }
+          unlockUI();
         }
 
         // if (params.itemId && !magicLinkToken) {

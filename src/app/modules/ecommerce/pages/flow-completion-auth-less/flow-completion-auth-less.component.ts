@@ -270,7 +270,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         this.header.resetIsComplete();
       }
 
-      const saleflow =
+      const saleflow: SaleFlow =
         this.header.saleflow ||
         this.orderData.saleflow ||
         JSON.parse(localStorage.getItem('saleflow-data'));
@@ -359,6 +359,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         }
       }
     });
+    console.log(this.banksInfo)
 
     this.bankOptions = this.banks.map(bank => {
       return {
@@ -788,7 +789,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           !this.phoneNumber.value || this.phoneNumber.value.nationalNumber === '' || this.phoneNumber.status === 'INVALID' 
             ? 'ESCRIBE COMO TE CONTACTAMOS'
-            : 'CONTINUAR LA ORDEN');
+            : this.saleflowData?.module?.paymentMethod?.paymentModule?._id ? 'CONTINUAR LA ORDEN' : 'COMPLETA POR WHATSAPP');
       case 'UPDATE_NAME_AND_SHOW_BANKS':
         return (this.stepButtonText =
           this.name.status === 'INVALID'

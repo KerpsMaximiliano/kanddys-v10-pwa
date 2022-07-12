@@ -47,7 +47,17 @@
         [formControl]="phoneNumber"
       ></ngx-intl-tel-input>
     </div>
-
+    <ng-container *ngIf="saleflowData && !saleflowData.module.paymentMethod?.paymentModule?._id  && (!banksInfo || !banksInfo.length)">
+      <p
+        class="label3"
+        [ngStyle]="{
+          padding: '0px 33px 24px',
+          marginTop: '0'
+        }"
+      >
+        Al completar la orden será enviado a whatsapp. Asegúrese de enviar el mensaje para continuar con la orden.
+      </p>
+    </ng-container>
     <ng-container *ngIf="banksInfo && banksInfo.length">
       <div
         [ngStyle]="{
