@@ -934,7 +934,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.currentItemId
                 );
 
-                this.item.status = this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft';
+                this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
 
                 this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
                   this.item.status === 'active' ? 'open' : 'closed'
