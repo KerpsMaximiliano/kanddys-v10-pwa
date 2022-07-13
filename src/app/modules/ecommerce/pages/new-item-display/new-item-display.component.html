@@ -23,7 +23,7 @@
 		(returnEvent)="redirect()"
 	></app-helper-headerv2> -->
 	<app-helper-headerv2
-		*ngIf="item?.status === 'active'"
+		*ngIf="testActive"
 		[mode]="'basic'"
 		[icons]="[
 			{
@@ -44,9 +44,10 @@
 		bgColor="#2874AD"
 		color="#FFFFFF"
 		(returnEvent)="redirect()"
+        (plusEvent)="openDialog()"
 	></app-helper-headerv2>
 	<app-helper-headerv2
-		*ngIf="item?.status !== 'active'"
+		*ngIf="!testActive"
 		mode="center"
 		[mainText]="{
 			text: 'INACTIVO (NO EXPUESTO)'

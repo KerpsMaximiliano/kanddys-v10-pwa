@@ -413,4 +413,25 @@ export class NewItemDisplayComponent implements OnInit {
     this.providerView = !this.providerView;
   }
 
+  openDialog() {
+    const list: StoreShareList[] = [
+      {
+        title:  'Adicionar',
+        options: [
+          {
+            text: 'Mensaje Automatizado'
+          }
+        ]
+      }
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
 }
