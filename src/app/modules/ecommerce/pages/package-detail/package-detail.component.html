@@ -11,7 +11,7 @@
       (onClose)="back()"
       >
     </app-helper-header>
-    <div class="fullScreenSwiper">
+    <!-- <div class="fullScreenSwiper">
       <div class="shadowWrapper">
           <swiper [config]="swiperConfig">
             <div
@@ -26,8 +26,8 @@
     <div class="desc-area">
       <p class="price" *ngIf="packageData?.price">${{packageData.price | number: "1.0-2" }}</p>
       <p class="desc" *ngIf="packageData?.description">{{packageData.description}}</p>
-  </div>
-    <div class="filter-container" style="background-color: white; margin-bottom: 0px; margin-top: 50px;">
+  </div> -->
+    <div class="filter-container" style="background-color: white; margin-bottom: 0px;">
       <ng-container *ngIf="filters">
         <app-see-filters [type]="3" title="Selecciona los Escenarios" [BigText]="true" [noMarginBottom]="true"
           [tags]="filters" [filters]="false" [showOptions]="false"></app-see-filters>

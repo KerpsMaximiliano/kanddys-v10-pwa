@@ -75,8 +75,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    console.log('dsadsa');
-    console.log(this.items.temporalItem);
     if(!this.items.temporalItem) return this.router.navigate([`/ecommerce/item-creator`]);
     this.itemData = this.items.temporalItem;
     if(!this.itemData.images.length) this.itemData.showImages = false;
