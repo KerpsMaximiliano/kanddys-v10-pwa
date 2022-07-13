@@ -27,6 +27,18 @@
 
                 <div class="right-area">
                     <!-- ICONOS -->
+                    
+                    <button class="header-btn" *ngIf="plus?.active" (click)="triggerEvent('plus')" 
+                    [ngStyle]="
+                        {
+                          'font-family': plus.fontFamily? plus.fontFamily : '',
+                          'font-size': plus.fontSize? plus.fontSize : '',
+                          'color': plus.color? plus.color : (color? color : ''),
+                          cursor: 'pointer'
+                        }">
+                        <span class="plus">+</span>
+                    </button>
+
                     <ng-container *ngIf="shopcart?.active">
                         <app-cart-button [cartAmount]="shopcart.cartAmount" [shopCartCallback]="shopCartCallback" [filter]="shopcart.filter">
                         </app-cart-button>
@@ -47,18 +59,7 @@
                             (click)="highlight(i)"
                         >
                     </div>
-                   <!--  <div *ngIf="whatsapp?.active && whatsapp.link"><img [src]="env + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px"
-                            alt="" style="cursor: pointer; margin-right: 23px" [ngStyle]="{'filter': filter? filter : 'none'}">
-                    </div> -->
 
-
-                    <!-- <img *ngIf="search?.active" [src]="env + '/search.svg'" alt="Imagen de una lupa" (click)="searchTrigger($event)" height="20px" width="20px" class="search" 
-                    [ngStyle]="{
-                        'margin-right': rmargin? rmargin :'20px',
-                        'margin-left': '20px',
-                        cursor: 'pointer',
-                        'filter': search.filter? search.filter : 'invert(100%) sepia(0%) saturate(7485%) hue-rotate(150deg) brightness(186%) contrast(101%)'
-                    }"/> -->
 
                     <div class="dot-trio" *ngIf="dots?.active" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'0'}">
                         <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none'}"> </div>
@@ -72,21 +73,6 @@
                     'background-color': edit.bgColor? bgColor : ''
                     }"  (click)="editBtnCallback ? editBtnCallback() : null"> <span *ngIf="edit.batch" [ngStyle]="{'color': edit.color? edit.color: ''}">BATCH </span> EDIT </button>
 
-                    <button class="header-btn" *ngIf="plus?.active" (click)="triggerEvent('plus')" 
-                    [ngStyle]="
-                        {
-                          'font-family': plus.fontFamily? plus.fontFamily : '',
-                          'font-size': plus.fontSize? plus.fontSize : '',
-                          'color': plus.color? plus.color : (color? color : ''),
-                          cursor: 'pointer'
-                        }">
-                        <span class="plus">+</span>
-                    </button>
-
-                    <!-- <div *ngIf="upload?.active">
-                        <img [src]="env + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;" 
-                        [ngStyle]="{'filter': upload.filter? upload.filter : 'none'}">
-                    </div> -->
                 </div>
             </div>
         </ng-container>

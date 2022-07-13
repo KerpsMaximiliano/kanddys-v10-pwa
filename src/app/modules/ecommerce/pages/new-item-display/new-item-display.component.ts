@@ -44,6 +44,7 @@ export class NewItemDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
   user: User;
   canCreateBank: boolean;
+  testActive: boolean = true;
   saleflow: SaleFlow = null;
 
   constructor(
