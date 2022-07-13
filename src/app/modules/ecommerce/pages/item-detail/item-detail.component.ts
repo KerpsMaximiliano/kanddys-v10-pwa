@@ -75,8 +75,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if(!this.items.temporalItem) return new Error(`No item to preview`);
+    console.log('dsadsa');
+    console.log(this.items.temporalItem);
+    if(!this.items.temporalItem) return this.router.navigate([`/ecommerce/item-creator`]);
     this.itemData = this.items.temporalItem;
+    if(!this.itemData.images.length) this.itemData.showImages = false;
     this.previewMode = true;
   }
 
@@ -179,7 +182,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   back() {
-    if(this.previewMode) return this.router.navigate([`/ecommerce/item-creator`]);
+    if(this.previewMode) {
+      if(this.itemData._id) return this.router.navigate([`/ecommerce/item-creator/${this.itemData._id}`]);
+      else return this.router.navigate([`/ecommerce/item-creator`]);
+    }
     this.items.removeTemporalItem();
     this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
   }
