@@ -61,8 +61,9 @@
         backgroundColor: extra?.bgColor ? extra?.bgColor : null,
         color: extra?.icon?.color ? extra?.icon?.color : null
       }"
-      *ngIf="extra?.text || extra?.icon">
+      *ngIf="extra?.text || extra?.icon ||extra?.return">
         {{ extra?.text}} 
+        <a *ngIf="extra?.return &&!extra?.text && !extra?.icon"><i class="fas fa-chevron-left" [style.color]="'#FFF'" [style.font-size]="'14px'"></i></a>
         <img [src]="env + extra?.icon?.src" [alt]="extra?.icon?.alt" [width]="extra?.icon?.width" [height]="extra?.icon?.height" *ngIf="extra?.icon?.src" 
         [ngStyle]="{filter: extra?.icon?.color}">
     </button>
@@ -75,7 +76,8 @@
         height: height,
         backgroundColor: bgColor ? bgColor : null,
         color: color ? color : null,
-        width: (extra?.text || extra?.icon)? '42.5%' : ''
+        width: (extra?.text || extra?.icon || extra?.return)? '42.5%' : '',
+        cursor: (extra?.icon || extra?.return)? 'unset': ''
       } : null">
         {{ text }}
     </button>
@@ -88,7 +90,8 @@
         height: height,
         backgroundColor: bgColor ? bgColor : null,
         color: color ? color : null,
-        width: (extra?.text || extra?.icon)? '42.5%' : ''
+        width: (extra?.text || extra?.icon || extra?.return)? '42.5%' : '',
+        cursor: (extra?.icon || extra?.return)? 'unset': ''
       } : null">
         {{ text2 }}
     </button>

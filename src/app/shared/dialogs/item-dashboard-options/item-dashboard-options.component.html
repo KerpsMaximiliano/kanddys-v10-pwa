@@ -3,9 +3,9 @@
         <div *ngFor="let item of list">
 
             <button class="top-btn" [ngStyle]="{
-                'color': item.button.color,
-                'background-color': item.button.bgColor
-            }">{{item.button.text}}</button>
+                'color': item.button?.color,
+                'background-color': item.button?.bgColor
+            }" *ngIf="item.button?.text">{{item.button?.text}}</button>
 
             <h1 class="title">{{item.title}}</h1>
             
@@ -17,11 +17,11 @@
                         <img
                             *ngIf="option.icon"
                             class="icon"
-                            [src]="env + option.icon.src"
-                            [alt]="option.icon.alt"
-                            [width]="option.icon.width"
-                            [height]="option.icon.height"
-                            [ngStyle]="{filter: option.icon.color && option.icon.color}"
+                            [src]="env + option.icon?.src"
+                            [alt]="option.icon?.alt"
+                            [width]="option.icon?.width"
+                            [height]="option.icon?.height"
+                            [ngStyle]="{filter: option.icon?.color && option.icon?.color}"
                         >
                     </div>
 

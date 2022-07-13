@@ -6,10 +6,10 @@
             <div class="icon-text">
                 <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [style.filter]="headline.icon.color" *ngIf="headline.icon?.src">
                 <h1 class="headline-text" [ngStyle]="{
-                    'font-size': headline?.fontSize? headline.fontSize : '', 
-                    'font-family': headline?.fontFamily? headline.fontFamily : '',
-                    'color': headline?.color? headline.color : ''
-                }">{{headline.text}}</h1>
+                    'font-size': headline?.text.fontSize? headline.text.fontSize : '', 
+                    'font-family': headline?.text.fontFamily? headline.text.fontFamily : '',
+                    'color': headline?.text.color? headline.text.color : ''
+                }">{{headline.text.text}}</h1>
             </div>
 
             <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
@@ -20,16 +20,26 @@
             }" *ngIf="icon?.src">
         </div>
         
-        <hr class="separator">
+        <hr class="separator" *ngIf="itemList">
 
-        <div class="item-area" *ngFor="let item of itemList; index as i">
+        <div class="item-area" *ngFor="let item of itemList;index as i; last as j" [ngStyle]="{'border-bottom': j? 'none' : ''}">
             <div class="wrapper">
-                <img [src]="item.img" alt="imagen del producto" class="item-image">
+                <img [src]="item.img" alt="imagen del producto" class="item-image" *ngIf="item.img">
                 
                 <div class="title-subtitle">
-                    <h2 class="title">{{item.name}}</h2>
+                    <h2 class="title" [ngStyle]="{
+                        'font-size': item.name.fontSize? item.name.fontSize : '',
+                        'font-family': item.name.fontFamily? item.name.fontFamily : '',
+                        'color': item.name.color? item.name.color : '',
+                        'cursor': item.name.pointer? 'pointer' : ''
+                        }">{{item.name.text}}</h2>
                 
-                    <p class="subtitle" *ngIf="item?.subtitle">{{item.subtitle}}</p>
+                    <p class="subtitle" [ngStyle]="{
+                        'font-size': item.subtitle.fontSize? item.subtitle.fontSize : '',
+                        'font-family': item.subtitle.fontFamily? item.subtitle.fontFamily : '',
+                        'color': item.subtitle.color? item.subtitle.color : '',
+                        'cursor': item.subtitle.pointer? 'pointer' : ''
+                        }" *ngIf="item?.subtitle">{{item.subtitle.text}}</p>
                 </div>
             </div>
 
@@ -38,13 +48,14 @@
 
         <hr class="divider" *ngIf="bottomText">
 
-        <div class="bottomText" *ngIf="bottomText">
+        <div class="bottomText" *ngIf="bottomText" [ngStyle]="{'justify-content': (!bottomText?.leftText && bottomText?.rightText)? 'flex-end': ''}">
             <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
-                'font-size': bottomText.leftText?.fontSize? bottomText.leftText.fontSize : '',
-                'font-family': bottomText.leftText?.fontFamily? bottomText.leftText.fontFamily : '',
-                'color': bottomText.leftText?.color? bottomText.leftText?.color : ''
+                'font-size': bottomText.leftText?.text.fontSize? bottomText.leftText.text.fontSize : '',
+                'font-family': bottomText.leftText?.text.fontFamily? bottomText.leftText.text.fontFamily : '',
+                'color': bottomText.leftText?.text.color? bottomText.leftText.text.color : '',
+                'cursor': bottomText.leftText?.text.pointer? 'pointer' : ''
                 }">
-                {{bottomText.leftText.text}}
+                {{bottomText.leftText.text.text}}
                 <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
                 <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
             </button>
@@ -52,7 +63,8 @@
             <button class="display" *ngIf="bottomText?.rightText" (click)="bottomText.rightText.callback()" [ngStyle]="{
               'font-size': bottomText.rightText?.fontSize? bottomText.rightText.fontSize : '',
               'font-family': bottomText.rightText?.fontFamily? bottomText.rightText.fontFamily : '',
-              'color': bottomText.rightText?.color? bottomText.rightText?.color : ''
+              'color': bottomText.rightText?.color? bottomText.rightText?.color : '',
+              'cursor': bottomText.rightText?.pointer? 'pointer' : ''
               }">{{bottomText.rightText.text}}</button>
         </div>
     </div>

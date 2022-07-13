@@ -1,10 +1,19 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
+interface Text {
+    text: string;
+    color?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    pointer?: boolean;
+    callback?: () => void;
+}
+
 interface ListedItem {
     img?: string;
-    name: string;
-    subtitle?: string;
+    name: Text;
+    subtitle?: Text;
     cta?: {
         text: string;
         color?: string;
@@ -27,12 +36,9 @@ export class EnlistDisplayComponent implements OnInit {
             width?: number;
             height?: number;
         };
-        text: string;
-        color?: string;
-        fontFamily?: string;
-        fontSize?: string;
+        text: Text;
     };
-    @Input() icon: {
+    @Input() icon?: {
         src: string;
         alt?: string;
         color?: string;
@@ -43,20 +49,10 @@ export class EnlistDisplayComponent implements OnInit {
     @Input() itemList: ListedItem[];
     @Input() bottomText: {
         leftText?:{
-            text: string;
-            color?: string;
-            fontFamily?: string;
-            fontSize?: string;
-            callback?: () => void;
+            text: Text;
             arrow?: boolean;
         };
-        rightText?: {
-            text: string;
-            color?: string;
-            fontFamily?: string;
-            fontSize?: string;
-            callback?: () => void;
-        }
+        rightText?: Text;
     };
     showEntry: boolean;
     env: string = environment.assetsUrl;
