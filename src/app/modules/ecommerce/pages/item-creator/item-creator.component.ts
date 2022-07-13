@@ -244,9 +244,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 }
               } else {
                 const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+
                 this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
                   emitEvent: false,
                 });
+
+                this.formSteps[0].fieldsList[0].formattedValue = '$' + change;
               }
             } catch (error) {
               console.log(error);
@@ -412,7 +415,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         function: async (params) => {
           try {
             const values = params.dataModel.value;
-            const priceWithDecimalArray = values['1'].price.split('');
+            const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
             const firstHalf = priceWithDecimalArray.slice(0, -2);
             const secondHalf = priceWithDecimalArray.slice(-2);
             const totalArray = firstHalf.concat('.').concat(secondHalf);
@@ -863,14 +866,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if (this.itemService && this.itemService.temporalItem) {
         const { description, name, images, pricing, content } = this.itemService.temporalItem;
 
+        console.log("seteando 1")
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
+        
+        console.log("what arrived", {
+          description, name, images, pricing, content
+        })
+
+        console.log("THE PRICING SET", String(pricing), this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         const formatted = this.decimalPipe.transform(
           pricing,
           '1.0-2'
         );
+        
+        console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         if (formatted === '0') {
           this.formSteps[0].fieldsList[0].placeholder = '';
@@ -904,6 +916,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         else {
           formArray.push(new FormControl(''));
         }
+
+        // this.formSteps[0].fieldsList[0].fieldControl.control.updateValueAndValidity();
 
         //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
         this.formSteps[0].embeddedComponents[0].shouldRerender = true;
@@ -964,6 +978,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
 
+          console.log("seteando 2")
           this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
             String(pricing)
           );
@@ -1020,28 +1035,41 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   saveItemInItemServiceAndRedirect(params, route: string) {
-    const values = params.dataModel.value;
+    let values = params.dataModel.value;
 
-        const priceWithDecimalArray = values['1'].price.split('');
-        const firstHalf = priceWithDecimalArray.slice(0, -2);
-        const secondHalf = priceWithDecimalArray.slice(-2);
-        const totalArray = firstHalf.concat('.').concat(secondHalf);
-        const totalWithDecimal = Number(totalArray.join(''));
+    if((
+      typeof values['1'].price !== 'string' && values['1'].price < 10
+    ) || (
+      typeof values['1'].price === 'string' && values['1'].price.length === 1
+    )) {
+      console.log("PASANDO POR AQUÍ")
+      this.formSteps[0].fieldsList[0].fieldControl.control.setValue(String('0' + values['1'].price));
 
-        this.itemService.storeTemporalItem({
-          name: values['4'].name,
-          description: values['3'].description !== '' ? values['3'].description : null,
-          pricing: totalWithDecimal,
-          images: this.defaultImages.filter(image => image !== ''),
-          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
-          content: values['2'].whatsIncluded.length > 0 && !(
-            values['2'].whatsIncluded.length === 1 &&
-            values['2'].whatsIncluded[0] === ''
-          ) ? values['2'].whatsIncluded : null,
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-        });
+      values = params.dataModel.value;
+    }
+
+    const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
+    const firstHalf = priceWithDecimalArray.slice(0, -2);
+    const secondHalf = priceWithDecimalArray.slice(-2);
+    const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
+    const totalWithDecimal = Number(totalArray.join(''));
+
+    console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
+
+    this.itemService.storeTemporalItem({
+      name: values['4'].name,
+      description: values['3'].description !== '' ? values['3'].description : null,
+      pricing: totalWithDecimal,
+      images: this.defaultImages.filter(image => image !== ''),
+      merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
+      content: values['2'].whatsIncluded.length > 0 && !(
+        values['2'].whatsIncluded.length === 1 &&
+        values['2'].whatsIncluded[0] === ''
+      ) ? values['2'].whatsIncluded : null,
+      currencies: [],
+      hasExtraPrice: false,
+      purchaseLocations: [],
+    });
 
     this.router.navigate([route]);
   }
