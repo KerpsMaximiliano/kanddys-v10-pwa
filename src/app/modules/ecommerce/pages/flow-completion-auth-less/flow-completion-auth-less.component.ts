@@ -476,10 +476,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           } else {
             this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
 
-            // const link = document.getElementById(
-            //   'invisible-link'
-            // ) as HTMLAnchorElement;
-            // link.click();
+            const link = document.getElementById(
+              'invisible-link'
+            ) as HTMLAnchorElement;
+            link.click();
 
             this.redirect();
           }
@@ -537,6 +537,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
                 this.buttonBlocked = false;
                 unlockUI();
+
+                if(!this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+                  this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+      
+                  const link = document.getElementById(
+                    'invisible-link'
+                  ) as HTMLAnchorElement;
+                  link.click();
+      
+                  this.redirect();
+                }
               }
 
               if(foundUser && !foundUser.name) {
@@ -794,7 +805,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           this.name.status === 'INVALID'
             ? 'ESCRIBE QUIEN ERES'
-            : 'CONTINUAR LA ORDEN');
+            : this.saleflowData?.module?.paymentMethod?.paymentModule?._id ? 'CONTINUAR LA ORDEN' : 'COMPLETA POR WHATSAPP');
 
       case 'PAYMENT_INFO':
         return (this.stepButtonText =
