@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { createCalendar, getCalendar, identifyCalendarAdmin } from '../graphql/calendar.gql'
+import { createCalendar, getCalendar, getCalendarWithMerchantInfo, identifyCalendarAdmin } from '../graphql/calendar.gql'
 import * as moment from 'moment';
 import { ReservationList } from '../models/reservation';
 import { Calendar, CalendarInput } from '../models/calendar';
@@ -344,8 +344,15 @@ export class CalendarService {
             this.availableHours = true;
             this.showDays = true;
         } else if (mode === 'no-limits') {
-            for (let hoursToAddIndex = 1; hoursToAddIndex <= 24; hoursToAddIndex++) {
+            let numericFrom = from ? Number(from.split(":")[0]) : null;
+            let numericTo = to ? Number(to.split(":")[0]) : null;
+
+            let fromHour = !from ? 1 : numericFrom + 1;
+            let limit = !to ? 24 : numericTo;
+
+            for (let hoursToAddIndex = fromHour; hoursToAddIndex <= limit; hoursToAddIndex++) {
                 let normalHourCounter = hoursToAddIndex - 1;
+
                 this.todayHours.push((normalHourCounter).toString() + ':' + '00');
             }
 
@@ -407,10 +414,10 @@ export class CalendarService {
         this.availableHours = true;
     }
 
-    async getCalendar(id: string) {
+    async getCalendar(id: string, includeMerchantInfo = false, queryParamFromLimit: string = null, queryParamToLimit: string = null) {
         try {
             const response: { getCalendar: Calendar} = await this.graphql.query({
-                query: getCalendar,
+                query: (!includeMerchantInfo ? getCalendar : getCalendarWithMerchantInfo),
                 variables: { id },
                 fetchPolicy: 'no-cache',
             });
@@ -420,7 +427,21 @@ export class CalendarService {
             this.reservationLimit = response.getCalendar.reservationLimits;
             this.limitFromDay = this.getLimit(this.getCalendarResult.limits?.fromDay);
             this.limitToDay = this.getLimit(this.getCalendarResult.limits?.toDay);
-            this.handleActiveDays(response.getCalendar.limits?.fromHour, response.getCalendar.limits?.toHour, response.getCalendar.timeChunkSize, response.getCalendar.mode);
+
+            if(!queryParamFromLimit || !queryParamToLimit) {
+                this.handleActiveDays(response.getCalendar.limits?.fromHour, response.getCalendar.limits?.toHour, response.getCalendar.timeChunkSize, response.getCalendar.mode);
+            }
+
+            if(queryParamFromLimit || queryParamToLimit) {
+                console.log("overhiar")
+                this.handleActiveDays(
+                    queryParamFromLimit ? queryParamFromLimit + ':00' : null, 
+                    queryParamToLimit ? queryParamToLimit  + ':00' : null, 
+                    response.getCalendar.timeChunkSize, 
+                    response.getCalendar.mode
+                );
+            }
+
             return response;
         } catch (e) {
             console.log(e);

@@ -317,7 +317,7 @@
 
   <!--Botones-->
 
-  <div class="button-container-2" *ngIf="datePreview">
+  <div class="button-container-2" *ngIf="datePreview && (!whatsappLink || whatsappLink === '')">
     <app-sticky-button
       [mode]="'basic'"
       [text]="shortDatePreview"
@@ -337,6 +337,17 @@
         </button>
       </ng-container> -->
   </div>
+
+  <div class="button-container-2" *ngIf="datePreview && (whatsappLink || whatsappLink !== '')">
+    <a [href]="whatsappLink">
+      <app-sticky-button
+        [mode]="'basic'"
+        [text]="shortDatePreview"
+        (click)="save()"
+      ></app-sticky-button>
+    </a>
+  </div>
+
 
   <div class="button-container-2" *ngIf="!datePreview">
     <app-sticky-button

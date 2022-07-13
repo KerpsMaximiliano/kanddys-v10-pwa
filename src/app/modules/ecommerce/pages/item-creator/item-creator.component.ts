@@ -389,6 +389,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               name: 'onFileInput',
               callback: (result) => {
                 this.files[result.index] = result.image;
+
+                console.log(this.files);
               },
             },
           ],
@@ -896,6 +898,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
+
+        console.log(images);
 
         if(Number(this.formSteps[0].fieldsList[0].fieldControl.control.value) > 0.01) {
           this.formSteps[0].headerTextSide = 'RIGHT';
