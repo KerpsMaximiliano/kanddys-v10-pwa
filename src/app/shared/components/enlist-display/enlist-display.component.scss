@@ -43,17 +43,13 @@
             height: auto;
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: flex-start;
             margin-bottom: 20px;
-            
-
-            &:nth-last-child(1){
-                border-bottom: solid 2px rgba(112, 112, 112, 7%);
-            } //No sé como hacer con esta linea, me rendí
-
-
+            border-bottom: solid 2px rgba(112, 112, 112, 7%);
+ 
             .wrapper{
                 display: flex;
+                max-width: 90%;
 
                 .item-image{
                     width: 79px;
@@ -66,7 +62,7 @@
                 }
 
                 .title-subtitle{
-                    max-width: 70%;
+                    // max-width: 70%;
                     display: flex;
                     flex-direction: column;
 
@@ -87,6 +83,7 @@
                         font-size: 14px;
                         color: #7B7B7B;
                         margin: 0;
+                        margin-bottom: 21px;
                     }
                 }
             }
@@ -130,3 +127,4 @@
 
     }
 }
+
