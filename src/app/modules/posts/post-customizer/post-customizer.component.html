@@ -53,7 +53,7 @@
           <ng-container *ngIf="elementList?.length">
             <div *ngIf="currentStickersAmount" style="padding: 20px;" [ngClass]="{'canvas-active': selectedOption === 'stickers'}">
               <ng-container *ngFor="let element of elementList">
-                <img *ngIf="element.sticker" [src]="sanitizeImageUrl(element.sticker.decoded)">
+                <img style="max-width: 100%;" *ngIf="element.sticker" [src]="sanitizeImageUrl(element.sticker.decoded)">
               </ng-container>
             </div>
             <div *ngIf="currentTextsAmount" class="canvas-text" [ngClass]="{'canvas-active': selectedOption === 'tipografía'}">
@@ -480,7 +480,13 @@
                 <span style="white-space: nowrap">
                   {{ style === 'Dorsa' ? 'Empire' : ''}}
                   {{ style === 'Commercial-Script' ? 'Classic' : ''}}
-                  {{ (style !== 'Commercial-Script' && style !== 'Dorsa') ? style : ''}}
+                  {{ style === 'PomfritDandyNFRegular' ? 'Flair' : ''}}
+                  {{ (
+                      style !== 'Commercial-Script' &&
+                      style !== 'Dorsa' &&
+                      style !== 'PomfritDandyNFRegular'
+                    ) ? style : ''
+                  }}
                 </span>
               </div>
             </div>
