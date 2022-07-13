@@ -10,6 +10,7 @@ interface Extra {
     width?: string;
     height?: string;
     fontSize?: string;
+    return?: boolean;
     icon?:{
         src: string;
         alt?: string;

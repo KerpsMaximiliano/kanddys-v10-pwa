@@ -44,6 +44,7 @@ export class NewItemDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
   user: User;
   canCreateBank: boolean;
+  testActive: boolean = true;
   saleflow: SaleFlow = null;
 
   constructor(
@@ -408,6 +409,27 @@ export class NewItemDisplayComponent implements OnInit {
 
   toggleView() {
     this.providerView = !this.providerView;
+  }
+
+  openDialog() {
+    const list: StoreShareList[] = [
+      {
+        title:  'Adicionar',
+        options: [
+          {
+            text: 'Mensaje Automatizado'
+          }
+        ]
+      }
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
 }
