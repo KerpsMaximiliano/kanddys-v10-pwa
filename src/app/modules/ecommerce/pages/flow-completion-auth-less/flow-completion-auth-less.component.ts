@@ -476,12 +476,15 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           } else {
             this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
 
-            const link = document.getElementById(
-              'invisible-link'
-            ) as HTMLAnchorElement;
-            link.click();
+            // const link = document.getElementById(
+            //   'invisible-link'
+            // ) as HTMLAnchorElement;
+            // link.click();
 
-            this.redirect();
+            // this.redirect();
+
+            lockUI();
+            window.location.href = this.whatsappLink;
           }
 
           this.fixedWhatsappLink = `https://wa.me/${
@@ -539,14 +542,17 @@ export class FlowCompletionAuthLessComponent implements OnInit {
                 unlockUI();
 
                 if(!this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
-                  this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+                  this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
       
-                  const link = document.getElementById(
-                    'invisible-link'
-                  ) as HTMLAnchorElement;
-                  link.click();
+                  // const link = document.getElementById(
+                  //   'invisible-link'
+                  // ) as HTMLAnchorElement;
+                  // link.click();
       
-                  this.redirect();
+                  // this.redirect();
+
+                  lockUI();
+                  window.location.href = this.whatsappLink;
                 }
               }
 
