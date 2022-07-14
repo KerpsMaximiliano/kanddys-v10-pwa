@@ -2,12 +2,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
+  padding: 24px;
 
   .header-image {
     width: 80px;
     height: 80px;
     border-radius: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     background-color: #A1A1A1;
   }
 
@@ -31,5 +34,24 @@
   box-shadow: 0px 4px 10px #ddd;
   &:not(:first-of-type) {
     margin-top: 8px;
+  }
+}
+
+.header-btn {
+  all: unset;
+  font-family: "SfProBold";
+  color: #2874AD;
+  cursor: pointer;
+  letter-spacing: 1.25px;
+  margin-top: 6px;
+  padding: 6px;
+  text-transform: uppercase;
+  transition: all .2s ease-in-out;
+  border-radius: 8px;
+
+  &:hover, &:active {
+    background-color: #2874AD;
+    color: white;
+    transition: .2s;
   }
 }

@@ -2,12 +2,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
+  padding: 24px;
 
   .header-image {
     width: 80px;
     height: 80px;
     border-radius: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     background-color: #A1A1A1;
   }
 
