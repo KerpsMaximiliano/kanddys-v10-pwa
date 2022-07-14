@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Item } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 @Component({
@@ -8,11 +10,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   styleUrls: ['./entity-detail-metrics.component.scss']
 })
 export class EntityDetailMetricsComponent implements OnInit {
-  saleflow = {
-    name: 'Tienda Name ID',
-    description: 'Dos lineas de descripcion ID',
-    image: '',
-  }
+  merchant: Merchant;
+  items: Item[];
 
   constructor(
     private merchantsService: MerchantsService,
@@ -21,9 +20,8 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async params => {
-      const merchant = await this.merchantsService.merchant(params.id);
-      console.log(merchant);
-      const items = await this.merchantsService.itemsByMerchant(params.id);
+      this.merchant = await this.merchantsService.merchant(params.id);
+      this.items = (await this.merchantsService.itemsByMerchant(params.id)).itemsByMerchant;
     })
   }
 

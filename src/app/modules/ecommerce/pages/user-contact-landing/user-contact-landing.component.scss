@@ -58,7 +58,7 @@
 
 .contact-info {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-self: baseline;
   grid-column: 9 / span 4;
 
@@ -221,12 +221,15 @@
     }
   }
   .blue {
-    filter: brightness(0) saturate(100%) invert(37%) sepia(89%) saturate(454%) hue-rotate(163deg) brightness(90%)
-      contrast(89%);
+    filter: brightness(0) saturate(100%) invert(37%) sepia(89%) saturate(454%) hue-rotate(163deg) brightness(90%) contrast(89%);
   }
 }
 
 .space-between {
   display: flex;
   justify-content: space-between;
+}
+
+.swiper-contents{
+    margin-right: 24px;
 }

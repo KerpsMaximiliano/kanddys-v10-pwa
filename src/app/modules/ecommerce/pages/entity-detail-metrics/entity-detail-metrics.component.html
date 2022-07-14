@@ -15,10 +15,17 @@
       }
     ]"
   ></app-helper-headerv2>
-  <div class="header" *ngIf="saleflow">
-    <div class="header-image" [ngClass]="{'placeholder': !saleflow.image}"></div>
-    <h5>{{saleflow.name}}</h5>
-    <p>{{saleflow.description}}</p>
+  <div class="header" *ngIf="merchant">
+    <div
+      class="header-image"
+      [ngStyle]="{backgroundImage: 'url(' + merchant.image + ')'}"
+      [ngClass]="{'placeholder': !merchant.image}"
+    ></div>
+    <h5>{{merchant.name}}</h5>
+    <p>{{merchant.bio}}</p>
+    <button class="header-btn">
+      publica y activa <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
   <!-- <div class="section" *ngFor="let item of ['','']">
     <app-question-item
@@ -28,13 +35,22 @@
     ></app-question-item>
   </div> -->
   <app-form-questions
-  topBar="145 articulos"
+  [topBar]="(items?.length || '0') + ' articulos'"
+  bottomLeftBtn="adicionar nuevo articulo"
   bottomRightBtn="ver mas"
   ></app-form-questions>
 </div>
+<app-bubble-button
+  position="left"
+  [solo]="false"
+  [return]="true"
+  color="blue"
+></app-bubble-button>
 <app-sticky-button
-  mode="basic"
-  text="28 VISITANTES EN TOTAL"
+  mode="double"
+  text="POSIBILIDADES"
+  text2="WEBAPP STORE"
+  size="small"
   [backButton]="true"
   bgColor="#2874AD"
 ></app-sticky-button>

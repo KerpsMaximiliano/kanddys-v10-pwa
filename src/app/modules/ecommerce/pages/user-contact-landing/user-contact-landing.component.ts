@@ -17,6 +17,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
+import { SwiperOptions } from 'swiper';
 
 const socialNames = [
   'linkedin',
@@ -48,6 +49,144 @@ export class UserContactLandingComponent implements OnInit {
   hasSocials: boolean;
   showSocials: boolean;
   regex = /\D/g;
+
+  singleItems: Array<any> = [{
+    name:'respuestas',
+    image: '/activo1.svg'
+  },{
+    name:'banners',
+    image: '/bullhorn.svg'
+  },
+  {
+    name:'simbolos',
+    image: '/composer-edit.svg'
+  },
+  {
+    name: 'enlaces',
+    image: '/signpost-split.svg'
+  },
+  {
+    name:'trivias',
+    image: ''
+  },
+  {
+    name: 'votos',
+    image: ''
+  }
+    ];
+    testGallery: any[] = [{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      },{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      },{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      },{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      },{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      },{
+        src: '/asdawd',
+        callback: () => console.log('imagen de prueba')
+      }
+    ];
+
+    testItem: Array<any> = [{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Creating Happiness one gift at a time.'},
+        subtitle: {text: '5 ARTICULOS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Cy')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Creating Happiness one gift at a time.'},
+        subtitle: {text: '5 ARTICULOS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Cy')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Creating Happiness one gift at a time.'},
+        subtitle: {text: '5 ARTICULOS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Cy')} 
+        }
+      }];
+
+      testItem1: Array<any> = [{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Nombre del WebForm #1'},
+        subtitle: {text: '5 PREGUNTAS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Ño')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Nombre del WebForm #2'},
+        subtitle: {text: '5 PREGUNTAS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Ño')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'Nombre del WebForm #3'},
+        subtitle: {text: '5 PREGUNTAS'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Ño')} 
+        }
+      }];
+
+      testItem2: Array<any> = [{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'SIMBOLO #1'},
+        subtitle: {text: 'ALGO DEL SIMBOLO'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Quizas')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'SIMBOLO #2'},
+        subtitle: {text: 'ALGO DEL SIMBOLO'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Quizas')} 
+        }
+      },{
+        img: 'https://i.imgur.com/pC7xVnn.png',
+        name: {text: 'SIMBOLO #3'},
+        subtitle: {text: 'ALGO DEL SIMBOLO'},
+        cta: {
+            text: 'Mas',
+            color: '#2874AD',
+            callback: () => {console.log('Quizas')} 
+        }
+      }];
+
+  public swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 24,
+  };
 
   constructor(
     private route: ActivatedRoute,

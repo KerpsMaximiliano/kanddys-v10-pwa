@@ -72,6 +72,19 @@
         &.top-border {
             border-top: solid 2px rgba(112, 112, 112, 0.17);
         }
+        .flex-buttons {
+            display: flex;
+            column-gap: 1.2em;
+        }
+    }
+
+    .tags-container {
+        margin-top: 20px;
+        .tag-label {
+            color: #2874AD;
+            font-size: 15px;
+            padding: 5px;
+        }
     }
 }
 
