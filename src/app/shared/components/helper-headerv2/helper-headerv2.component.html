@@ -55,8 +55,8 @@
                                 margin: icon.margin && icon?.margin,
                                 cursor: 'pointer'
                             }"
+                            (click)="icon.highlight?.active ? highlight(i) : null"
                             (click)="icon.callback()"
-                            (click)="highlight(i)"
                         >
                     </div>
 
