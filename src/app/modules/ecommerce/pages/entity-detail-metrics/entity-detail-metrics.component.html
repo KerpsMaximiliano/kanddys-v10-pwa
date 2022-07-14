@@ -1,0 +1,40 @@
+<div style="min-height: 100vh;">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    [icons]="[
+      {
+        src: '/upload.svg',
+        callback: onShareClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      },
+      {
+        src: '/pencil.svg',
+        callback: onPencilClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      }
+    ]"
+  ></app-helper-headerv2>
+  <div class="header" *ngIf="saleflow">
+    <div class="header-image" [ngClass]="{'placeholder': !saleflow.image}"></div>
+    <h5>{{saleflow.name}}</h5>
+    <p>{{saleflow.description}}</p>
+  </div>
+  <!-- <div class="section" *ngFor="let item of ['','']">
+    <app-question-item
+      headline="Pregunta ID"
+      [total]="28"
+      [data]="questions"
+    ></app-question-item>
+  </div> -->
+  <app-form-questions
+  topBar="145 articulos"
+  bottomRightBtn="ver mas"
+  ></app-form-questions>
+</div>
+<app-sticky-button
+  mode="basic"
+  text="28 VISITANTES EN TOTAL"
+  [backButton]="true"
+  bgColor="#2874AD"
+></app-sticky-button>

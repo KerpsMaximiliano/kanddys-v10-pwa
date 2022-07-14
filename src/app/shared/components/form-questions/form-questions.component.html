@@ -9,10 +9,8 @@
 
         <button class="transparent-button" (click)="buttonAction('add')">{{topBtn}}</button>
     </div>
-
-    <hr class="separator"> 
     
-    <div class="middle">
+    <div class="middle" *ngIf="questions?.length">
         <ng-container  *ngFor="let question of questions; let i = index">
             <div class="flexer">
                 <p class="number">#{{i+1}}: </p>
@@ -21,10 +19,16 @@
         </ng-container>
     </div>
 
-    <hr class="separator2"> 
-
-    <div class="bottom">
-        <button class="transparent-button" (click)="buttonAction('edit')">{{bottomLeftBtn}}</button>
-        <button class="transparent-button"(click)="buttonAction('something')">{{bottomRightBtn}}</button>
+    <div
+        class="bottom"
+        [ngClass]="{'top-border': questions?.length}"
+        [ngStyle]="{gridTemplateColumns: bottomLeftBtn && bottomRightBtn && 'auto auto'}"
+    >
+        <button *ngIf="bottomLeftBtn" class="transparent-button" (click)="buttonAction('edit')">
+            {{bottomLeftBtn}}
+        </button>
+        <button *ngIf="bottomRightBtn" class="transparent-button" style="justify-self: flex-end;" (click)="buttonAction('something')">
+            {{bottomRightBtn}}
+        </button>
     </div>
 </div>

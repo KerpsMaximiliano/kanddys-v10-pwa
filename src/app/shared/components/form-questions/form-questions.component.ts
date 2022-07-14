@@ -13,10 +13,10 @@ export interface Questions{
 })
 export class FormQuestionsComponent implements OnInit {
 
-    @Input() topBar: string = 'BARRA SUPERIOR';
-    @Input() topBtn: string = 'ADICIONA UNA PREGUNTA';
-    @Input() bottomLeftBtn: string = 'EDIT';
-    @Input() bottomRightBtn: string = 'SOMETHING';
+    @Input() topBar: string;
+    @Input() topBtn: string;
+    @Input() bottomLeftBtn: string;
+    @Input() bottomRightBtn: string;
     @Input() questions: Questions[];
 
     @Output() topButton = new EventEmitter();
