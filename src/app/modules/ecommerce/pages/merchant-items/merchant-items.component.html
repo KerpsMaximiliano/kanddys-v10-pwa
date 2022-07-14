@@ -1,7 +1,7 @@
 <div class="container">
 
     <app-helper-headerv2
-    [mode]="'basic'"
+    [mode]="'center'"
     [mainText]="{
         text:'Artículos',
         fontFamily: 'SfProBold',
@@ -14,18 +14,20 @@
         height: 24,
         filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)'
     }"
+    bgColor="#2874AD"
     [returnAble]="false"
     ></app-helper-headerv2>
 
     <div class="saleflows-grid">
 
-        <div class="capsize" *ngFor="let list of itemList">
-            <app-saleflow-item 
+        <div class="capsize" *ngFor="let item of items">
+            <app-saleflow-item
             [type]="3"
-            [price]="list.price"
-            [quantity]="list.quantity"
-            [showIcon]="true">
-            </app-saleflow-item>
+            [imgURL]="item.images ? item.images[0] : ''"
+            [price]="item.pricing"
+            [showIcon]="item.status != 'active' ? true : false"
+            (click)="goToDetail(item._id)"
+            ></app-saleflow-item>
         </div>
         
     </div>
@@ -36,8 +38,8 @@
     [mode]="'double'"
     bgColor="#A1A1A1"
     [fontSize]="'14px'"
-    [text]="'145 ARTICULOS'"
-    [text2]="'$14,451 INGRESO'"
+    [text]="items.length + ' ARTICULOS'"
+    [text2]="'$' + ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0'"
     [color]="'#FFF'"
     [extra]="{
         icon:{
