@@ -86,7 +86,8 @@ export class HelperHeaderv2Component implements OnInit {
         active: boolean,
         batch?: boolean,
         bgColor?: string,
-        color?: string
+        color?: string,
+        text?: string
     };
     @Input() shopcart?:{
         active: boolean,

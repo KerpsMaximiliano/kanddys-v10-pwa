@@ -22,12 +22,13 @@
         
         <hr class="separator" *ngIf="itemList">
 
-        <div class="item-area" *ngFor="let item of itemList;index as i; last as j" [ngStyle]="{'border-bottom': j? 'none' : ''}">
+        <div class="item-area" *ngFor="let item of itemList; index as i; last as j" [ngStyle]="{'border-bottom': j? 'none' : '', 'margin-bottom': marginBottom? marginBottom : ''}">
             <div class="wrapper">
                 <img [src]="item.img" alt="imagen del producto" class="item-image" *ngIf="item.img">
                 
                 <div class="title-subtitle">
                     <h2 class="title" [ngStyle]="{
+                        'margin-top': tMarginTop? tMarginTop : '',
                         'font-size': item.name.fontSize? item.name.fontSize : '',
                         'font-family': item.name.fontFamily? item.name.fontFamily : '',
                         'color': item.name.color? item.name.color : '',
