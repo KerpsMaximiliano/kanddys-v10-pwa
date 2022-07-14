@@ -905,7 +905,6 @@ export class ReservationComponent implements OnInit {
       unlockUI();
       this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
     } else {
-      console.log(this.datePreview, "este es el preview uwu");
       const year = new Date().getFullYear();
       const day = Number(this.datePreview.day);
       const month = this.datePreview.monthNumber;
@@ -914,14 +913,23 @@ export class ReservationComponent implements OnInit {
       const fromString = new Date(year, month, day, fromHour).toISOString();
       const untilString = new Date(year, month, day, fromHour + 1).toISOString();
 
+      const convertedFromHour = String(fromHour).length < 2 ? (
+        `0${fromHour}:00`
+      ) : `${fromHour}:00`;
 
-      await this.reservation.createReservation({
+      const convertedToHour = String(fromHour + 1).length < 2 ? (
+        `0${fromHour + 1}:00`
+      ) : `${fromHour + 1}:00`;
+
+      await this.reservation.createReservationAuthLess({
         calendar: this.calendarId,
         merchant: this.merchant,
         date:{
             dateType: "RANGE",
             from: fromString,
             until: untilString,
+            fromHour: convertedFromHour,
+            toHour: convertedToHour
         },
         type: "ORDER"
       });

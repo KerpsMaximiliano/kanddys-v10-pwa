@@ -347,8 +347,8 @@ export class CalendarService {
             let numericFrom = from ? Number(from.split(":")[0]) : null;
             let numericTo = to ? Number(to.split(":")[0]) : null;
 
-            let fromHour = !from ? 1 : numericFrom + 1;
-            let limit = !to ? 24 : numericTo;
+            let fromHour = (!from || numericFrom < 1) ? 1 : numericFrom + 1;
+            let limit = (!to || numericTo > 24) ? 24 : numericTo;
 
             for (let hoursToAddIndex = fromHour; hoursToAddIndex <= limit; hoursToAddIndex++) {
                 let normalHourCounter = hoursToAddIndex - 1;
@@ -433,7 +433,6 @@ export class CalendarService {
             }
 
             if(queryParamFromLimit || queryParamToLimit) {
-                console.log("overhiar")
                 this.handleActiveDays(
                     queryParamFromLimit ? queryParamFromLimit + ':00' : null, 
                     queryParamToLimit ? queryParamToLimit  + ':00' : null, 
