@@ -414,10 +414,10 @@ export class CalendarService {
         this.availableHours = true;
     }
 
-    async getCalendar(id: string, includeMerchantInfo = false, queryParamFromLimit: string = null, queryParamToLimit: string = null) {
+    async getCalendar(id: string, queryParamFromLimit: string = null, queryParamToLimit: string = null) {
         try {
             const response: { getCalendar: Calendar} = await this.graphql.query({
-                query: (!includeMerchantInfo ? getCalendar : getCalendarWithMerchantInfo),
+                query: getCalendar,
                 variables: { id },
                 fetchPolicy: 'no-cache',
             });

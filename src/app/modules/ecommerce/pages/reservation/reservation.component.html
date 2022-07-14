@@ -338,7 +338,7 @@
       </ng-container> -->
   </div>
 
-  <div class="button-container-2" *ngIf="datePreview && (whatsappLink || whatsappLink !== '')">
+  <div class="button-container-2" *ngIf="datePreview && (whatsappLink || whatsappLink !== '') && mode === 'standalone'">
     <a [href]="whatsappLink">
       <app-sticky-button
         [mode]="'basic'"

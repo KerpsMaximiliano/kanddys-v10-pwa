@@ -15,6 +15,7 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { Item } from 'src/app/core/models/item';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -898,8 +899,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
-
-        console.log(images);
+        this.files = images.map(image => base64ToFile(image));
 
         if(Number(this.formSteps[0].fieldsList[0].fieldControl.control.value) > 0.01) {
           this.formSteps[0].headerTextSide = 'RIGHT';
@@ -937,6 +937,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.item = await this.itemService.item(itemId);
         const { pricing, images, name, content, description, merchant } = this.item;
+
+        console.log("Loaded images", images);
+        // if(images.length > 0) this.files = images.map(image => base64ToFile(image)); 
 
         for(let formStep of this.formSteps) {
           formStep.customHelperHeaderConfig = {

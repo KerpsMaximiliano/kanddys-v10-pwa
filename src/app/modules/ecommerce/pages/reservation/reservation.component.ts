@@ -7,6 +7,7 @@ import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -38,7 +39,9 @@ export class ReservationComponent implements OnInit {
   datePreview: {
     day: string;
     month: string;
+    monthNumber?: number;
     hour: string;
+    hourNumber?: number;
     dateInfo: string;
     dayName: string;
     until: string;
@@ -46,6 +49,7 @@ export class ReservationComponent implements OnInit {
   shortDatePreview: string;
   options: boolean = false;
   whatsappLink: string;
+  merchantId: string;
   merchantName: string;
   merchantPhone: string;
   whatsappReservation: any;
@@ -63,6 +67,7 @@ export class ReservationComponent implements OnInit {
     // private item: ItemsService,
     public header: HeaderService,
     public saleflow: SaleFlowService,
+    private merchantsService: MerchantsService,
     // private location: Location,
     // private app: AppService
   ) {}
@@ -118,8 +123,9 @@ export class ReservationComponent implements OnInit {
   //calendar: 6149f790eb8b911a707523ce
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams) => {
-      const { mode, from, to } = queryParams;
+      const { mode, merchantId, from, to } = queryParams;
 
+      if(merchantId && merchantId !== '') this.merchant = merchantId;
       this.mode = mode;
 
       this.header.disableNav();
@@ -166,27 +172,30 @@ export class ReservationComponent implements OnInit {
 
         this.calendarId = calendarId;
         this.calendar.getToday();
-        this.checkCalendar(true, from, to);
+        this.checkCalendar(from, to);
       }
     })
   }
 
-  async checkCalendar(includeMerchantInfoInQuery = false, fromLimit = null, toLimit = null) {
+  async checkCalendar(fromLimit = null, toLimit = null) {
     this.calendar.getCalendar(
       this.calendarId,
-      false,
       fromLimit,
       toLimit
       // includeMerchantInfoInQuery
-    ).then((data) => {
+    ).then(async (data) => {
       this.calendarData = data;
 
       //this.merchant = data.getCalendar.merchant._id;
-      this.merchant = !includeMerchantInfoInQuery ? this.saleflowData.merchant._id : '61c3b1875c4e7c4f59d256d2';
-      this.merchantName = !includeMerchantInfoInQuery ? this.saleflowData.merchant.name : 'Foto Davitte';
+      if(!this.mode || this.mode === 'normal') {
+        this.merchant = this.saleflowData.merchant._id;
+        this.merchantName = this.saleflowData.merchant.name;
+      }
       
       if(this.mode === 'standalone') {
-        this.merchantPhone = data.getCalendar.merchant ? data.getCalendar.merchant.owner?.phone : '584126916838';
+        const merchantData = await this.merchantsService.merchant(this.merchant);
+        this.merchantName = merchantData.name;
+        this.merchantPhone = merchantData.owner.phone;
       }
 
       this.getAmAndPm();
@@ -433,20 +442,24 @@ export class ReservationComponent implements OnInit {
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
     let month: string;
+    let monthNumber;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
         month = this.calendar.allFullMonths[i].name;
+        monthNumber = this.calendar.allFullMonths[i].id;
       }
     }
 
     this.datePreview = {
       day: day,
       month: month,
+      monthNumber,
       hour: (!this.mode || this.mode === 'normal') ? this.formatHour3(
         this.orderData.products[0].reservation.date.from as string
       ) : this.formatHour3(
         this.standaloneReservation.date.from as string
       ),
+      hourNumber: this.formatHour5(reservation.date.from).hour,
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[
@@ -462,6 +475,29 @@ export class ReservationComponent implements OnInit {
     this.shortDatePreview = `Reservar el ${this.datePreview.dayName} ${this.datePreview.day} de
       ${this.datePreview.month} a las ${this.datePreview.hour}
     `;
+
+    // const hoursStringLast2Digits = this.datePreview.hour.slice(-2);
+    // const hoursStringFirst2Digits = this.datePreview.hour.slice(0, 2);
+
+    // const hourIn24HoursHumanFormat = hoursStringLast2Digits === 'pm' ? (
+    //   hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) + 12 : (
+    //     hoursStringFirst2Digits !== '12' ?
+    //       Number(hoursStringFirst2Digits) + 12
+    //       : 12
+    //   )
+    // ) : (
+    //   hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) :
+    //     hoursStringFirst2Digits !== '12' ? Number(hoursStringFirst2Digits) : 0
+    // );
+
+    // const hourStringIn24HourFormat = hourIn24HoursHumanFormat < 10 ? '0' + hourIn24HoursHumanFormat + ':00' : hourIn24HoursHumanFormat + ':00';
+
+    // this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
+
+    // this.onReservation.emit({
+    //   message: this.reservationMessage,
+    //   data: this.datePreview
+    // });
 
     if(!this.mode || this.mode === 'normal') {
       // Logic for default date
@@ -561,6 +597,31 @@ export class ReservationComponent implements OnInit {
   //   return string;
   // }
 
+  formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {
+    let hourInteger: number | string = parseInt(hourString.split(':')[0]);
+    let formattedHour: string;
+    let minutesString: string;
+
+    minutesString = minutes < 10 ? '0' + minutes : String(minutes);
+
+    if (addOne) hourInteger += 1;
+
+    if (hourInteger < 12) {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'am';
+    } else if (hourInteger > 12) {
+      hourInteger = hourInteger - 12;
+
+      if (hourInteger !== 12)
+        formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+      else
+        formattedHour = '00' + ':' + minutesString + ' ' + 'am';
+    } else {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+    };
+
+    return formattedHour;
+  }
+
   num(number) {
     return parseInt(number);
   }
@@ -589,6 +650,13 @@ export class ReservationComponent implements OnInit {
 
   formatHour4(hour: string) {
     return moment(hour, 'h:mm').format('h:mm');
+  }
+
+  formatHour5(hour: string) {
+    let date = moment(hour);
+    let hourNew = Number(date.format('h'));
+    let minutes = Number(date.format('mm'));
+    return { hour: hourNew, minutes };
   }
 
   getId(id: number, slide: string) {
@@ -810,30 +878,54 @@ export class ReservationComponent implements OnInit {
   // }
 
   async save() {
-    lockUI();
-    this.orderData.products[0].deliveryLocation = {
-      city: null,
-      houseNumber: null,
-      nickName:
-        'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
-      note: null,
-      referencePoint: null,
-      street: null,
-    };
-    this.header.storeOrderPackage(
-      this.saleflowData._id,
-      this.orderData.itemPackage,
-      this.orderData.products
-    );
-    this.header.isComplete.reservation = true;
-    this.header.isComplete.delivery = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
 
-    let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
-    else preOrderID = this.header.orderId;
-    unlockUI();
-    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+    if(!this.mode || this.mode === 'normal') {
+      lockUI();
+      this.orderData.products[0].deliveryLocation = {
+        city: null,
+        houseNumber: null,
+        nickName:
+          'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
+        note: null,
+        referencePoint: null,
+        street: null,
+      };
+      this.header.storeOrderPackage(
+        this.saleflowData._id,
+        this.orderData.itemPackage,
+        this.orderData.products
+      );
+      this.header.isComplete.reservation = true;
+      this.header.isComplete.delivery = true;
+      this.header.storeOrderProgress(this.header.saleflow._id);
+
+      let preOrderID;
+      if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+      else preOrderID = this.header.orderId;
+      unlockUI();
+      this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+    } else {
+      console.log(this.datePreview, "este es el preview uwu");
+      const year = new Date().getFullYear();
+      const day = Number(this.datePreview.day);
+      const month = this.datePreview.monthNumber;
+      const fromHour = this.datePreview.hourNumber;
+
+      const fromString = new Date(year, month, day, fromHour).toISOString();
+      const untilString = new Date(year, month, day, fromHour + 1).toISOString();
+
+
+      await this.reservation.createReservation({
+        calendar: this.calendarId,
+        merchant: this.merchant,
+        date:{
+            dateType: "RANGE",
+            from: fromString,
+            until: untilString,
+        },
+        type: "ORDER"
+      });
+    }
   }
 
   deleteSelection() {
