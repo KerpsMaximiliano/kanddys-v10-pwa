@@ -93,11 +93,11 @@ shouldScrollBackwards &&
       ) ? {
       paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
       minHeight: steps[currentStepIndex].customStickyButton ?
-      'calc(100vh - ' + steps[currentStepIndex].customStickyButton.height + ')' :
+      'calc(100vh - ' + steps[currentStepIndex].customStickyButton?.height + ')' :
         steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'VALID' ?
-          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles.height + ')' :
+          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles?.height + ')' :
             steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' ?
-              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles.height + ')' :
+              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles?.height + ')' :
                 dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
                   ? 'calc(100vh - 55px)'
                   : 'calc(100vh - 38px)'

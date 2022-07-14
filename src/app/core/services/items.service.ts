@@ -85,6 +85,7 @@ export class ItemsService {
     const response = await this.graphql.query({
       query: updateItem,
       variables: { input, id },
+      context: { useMultipart: true },
       fetchPolicy: 'no-cache',
     });
     return response;

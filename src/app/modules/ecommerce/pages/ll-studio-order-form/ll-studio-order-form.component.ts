@@ -33,6 +33,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   databaseName: string = null;
   choosedReservation: boolean = false;
   fullFormMessage: string = null;
+  formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18098718288?text=';
 
   formSteps: FormStep[] = [
@@ -737,23 +738,23 @@ export class LlStudioOrderFormComponent implements OnInit {
               whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.control.value,
             }
 
-            const success = await this.merchantsService.uploadDataToClientsAirtable(
-              this.merchantId,
-              this.databaseName,
-              data
-            );
+            // const success = await this.merchantsService.uploadDataToClientsAirtable(
+            //   this.merchantId,
+            //   this.databaseName,
+            //   data
+            // );
 
-            this.dialog.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                message: success ? null : 'Ocurrió un problema'
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
+            // this.dialog.open(GeneralFormSubmissionDialogComponent, {
+            //   type: 'centralized-fullscreen',
+            //   props: {
+            //     icon: success ? 'check-circle.svg' : 'sadFace.svg',
+            //     message: success ? null : 'Ocurrió un problema'
+            //   },
+            //   customClass: 'app-dialog',
+            //   flags: ['no-header'],
+            // });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            // window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
 
             return { ok: true };
           } catch (error) {
