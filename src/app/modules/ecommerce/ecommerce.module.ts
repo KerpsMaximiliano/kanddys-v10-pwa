@@ -62,6 +62,7 @@ import { UserContactLandingComponent } from './pages/user-contact-landing/user-c
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
+import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 
 const routes: Routes = [
   {
@@ -346,6 +347,10 @@ const routes: Routes = [
     path: 'merchant-items',
     component: MerchantItemsComponent
   },
+  {
+    path: 'notifications-log',
+    component: NotificationsLogComponent
+  },
 ];
 
 @NgModule({
@@ -412,6 +417,7 @@ const routes: Routes = [
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
     MerchantItemsComponent,
+    NotificationsLogComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

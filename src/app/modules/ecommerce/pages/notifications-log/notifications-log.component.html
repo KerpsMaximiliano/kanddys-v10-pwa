@@ -1,0 +1,72 @@
+<div class="container">
+    
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    [mainText]="{
+        text: allShow? 'Todos Los Envios':'LOG',
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+    }"
+    [edit]="{
+        active: !allShow,
+        text:'MIRA TODOS'
+    }"
+    [editBtnCallback]="showAll"
+    (returnEvent)="return()"
+    ></app-helper-headerv2>
+
+    <ng-container *ngFor="let item of simpleItems; index as i" >
+        <div class="item-display" *ngIf="!allShow">
+            <app-enlist-display 
+            [headline]="{
+                icon:{
+                    src:item.icon,
+                    width: 30,
+                    height: 30
+                },
+                text:{
+                    text:item.headline
+                }
+            }"
+            [itemList]="item.data"
+            [tMarginTop]="'12px'"
+            [marginBottom]="'0px'"
+            ></app-enlist-display>
+        </div>    
+    </ng-container>
+
+    <ng-container *ngFor="let item of completeItems; index as i">
+        <div class="item-display" *ngIf="allShow">
+            <app-enlist-display 
+            [headline]="{
+                icon:{
+                    src:item.icon,
+                    width: 30,
+                    height: 30
+                },
+                text:{
+                    text:item.headline
+                }
+            }"
+            [itemList]="item.data"
+            [tMarginTop]="'12px'"
+            [marginBottom]="'0px'"
+            ></app-enlist-display>
+        </div>    
+    </ng-container>
+
+    <app-sticky-button
+    [mode]="'double'"
+    [bgColor]="'#A1A1A1'"
+    [text]="''"
+    [text2]="''"
+    [extra]="{
+        return: true,
+        bgColor:'#2874AD'
+    }"
+    [size]="'small'"
+    [fontSize]="'17px'"
+    (added)="return()"
+    ></app-sticky-button>
+</div>

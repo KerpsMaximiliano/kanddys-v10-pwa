@@ -71,8 +71,9 @@
                     'margin-right': rmargin ? rmargin :'20px',
                     'color': edit.color? edit.color: '', 
                     'background-color': edit.bgColor? bgColor : ''
-                    }"  (click)="editBtnCallback ? editBtnCallback() : null"> <span *ngIf="edit.batch" [ngStyle]="{'color': edit.color? edit.color: ''}">BATCH </span> EDIT </button>
-
+                    }"  (click)="editBtnCallback ? editBtnCallback() : null"> <span *ngIf="edit.batch && !edit?.text" [ngStyle]="{'color': edit.color? edit.color: ''}">BATCH </span> <span *ngIf="edit.text">{{edit.text}}</span>
+                    <span *ngIf="!edit?.text"></span> </button>
+                    
                 </div>
             </div>
         </ng-container>
