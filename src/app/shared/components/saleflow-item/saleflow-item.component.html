@@ -86,7 +86,11 @@
             <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
         </div>
 
-        <p class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</p>
+        <div class="flexer" [ngStyle]="{'margin-bottom': 0, 'justify-content': quantity<=0? 'space-between' : ( icon && !quantity ? 'flex-end': '')}">
+            <p class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</p>
+            <img [src]="env + icon?.src" [alt]="icon?.alt" [width]="icon?.width" [height]="icon?.height" [ngStyle]="{'filter': icon?.color}" *ngIf="icon" class="dynamic-img">
+        </div>
+
     </div>
   </div>
 </div>

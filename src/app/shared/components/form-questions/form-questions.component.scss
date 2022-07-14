@@ -41,26 +41,16 @@
     .middle{
         display: flex;
         flex-direction: column;
+        margin: 14px 0;
 
         .flexer{
             display: flex;
 
-            .number{
+            p{
                 font-family: 'RobotoRegular';
                 font-size: 17px;
                 color: #7B7B7B;
-                margin: 0;
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-    
-            .webform-name{
-                font-family: 'RobotoRegular';
-                font-size: 17px;
-                color: #7B7B7B;
-                margin: 0;
-                margin-top: 20px;
-                margin-bottom: 20px;
+                margin: 10px 0;
             }
         }
     }
@@ -80,6 +70,8 @@
 
     .tags-container {
         margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
         .tag-label {
             color: #2874AD;
             font-size: 15px;
@@ -95,4 +87,10 @@
     cursor: pointer;
     letter-spacing: 1.25px;
     text-transform: uppercase;
+}
+
+.right-buttons {
+    display: flex;
+    justify-self: flex-end;
+    gap: 32px;
 }

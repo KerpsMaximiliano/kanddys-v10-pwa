@@ -23,30 +23,101 @@
     ></div>
     <h5>{{merchant.name}}</h5>
     <p>{{merchant.bio}}</p>
-    <button class="header-btn">
+    <button class="header-btn" *ngIf="admin">
       publica y activa <i class="fas fa-chevron-right"></i>
     </button>
   </div>
-  <!-- <div class="section" *ngFor="let item of ['','']">
-    <app-question-item
-      headline="Pregunta ID"
-      [total]="28"
-      [data]="questions"
-    ></app-question-item>
-  </div> -->
-  <app-form-questions
-  [topBar]="(items?.length || '0') + ' articulos'"
-  bottomLeftBtn="adicionar nuevo articulo"
-  bottomRightBtn="ver mas"
-  ></app-form-questions>
+  <div *ngIf="!ordersTotal && mode === 'store'">
+    <app-form-questions
+      [topBar]="items?.length + ' articulos'"
+      bottomLeftBtn="adicionar nuevo articulo"
+      bottomRightBtn="ver mas"
+    ></app-form-questions>
+  </div>
+  <div *ngIf="admin">
+    <app-form-questions
+      *ngIf="ordersTotal"
+      [topBar]="ordersTotal.length + ' ordenes / ventas'"
+      bottomRightBtn="MAS"
+      [questions]="[
+        {
+          text: 'Promedio de ventas mensual',
+          any: ordersTotal.length
+        },
+        {
+          text: 'Promedio de ingreso mensual',
+          any: ordersTotal.length
+        }
+      ]"
+      [dropdowns]="[
+        {
+          title: 'TAGS',
+          content: tags
+        },
+        {
+          title: 'STATUS ID',
+          content: [
+            {
+              text: 'Lorem ipsum 2'
+            }
+          ]
+        }
+      ]"
+    ></app-form-questions>
+    <app-form-questions
+      *ngIf="users"
+      [topBar]="users.length + ' COMPRADORES'"
+      bottomRightBtn="MAS"
+      [questions]="[
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: users.length
+        },
+        {
+          text: 'Promedio de Dias que Repiten',
+          any: users.length
+        }
+      ]"
+      [dropdowns]="[
+        {
+          title: 'TAGS',
+          content: tags
+        }
+      ]"
+    ></app-form-questions>
+    <app-form-questions
+      *ngIf="items"
+      [topBar]="items?.length + ' articulos'"
+      bottomRightBtn="MAS"
+      secondBottomRightBtn="ADD STORE"
+      [questions]="[
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        },
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        }
+      ]"
+      [dropdowns]="[
+        {
+          title: 'categorias',
+          content: categories
+        }
+      ]"
+    ></app-form-questions>
+  </div>
 </div>
 <app-bubble-button
+  *ngIf="admin && mode === 'collections'"
   position="left"
   [solo]="false"
   [return]="true"
   color="blue"
 ></app-bubble-button>
 <app-sticky-button
+  *ngIf="admin && mode === 'collections'"
   mode="double"
   text="POSIBILIDADES"
   text2="WEBAPP STORE"
