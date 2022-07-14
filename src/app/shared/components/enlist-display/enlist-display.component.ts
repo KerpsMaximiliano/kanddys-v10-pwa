@@ -10,7 +10,7 @@ interface Text {
     callback?: () => void;
 }
 
-interface ListedItem {
+export interface ListedItem {
     img?: string;
     name: Text;
     subtitle?: Text;
@@ -54,6 +54,8 @@ export class EnlistDisplayComponent implements OnInit {
         };
         rightText?: Text;
     };
+    @Input() marginBottom: string;
+    @Input() tMarginTop: string;
     showEntry: boolean;
     env: string = environment.assetsUrl;
 
