@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 export interface Questions{
+    enum?: boolean;
     text: string,
     any?: any
 }
@@ -27,6 +28,7 @@ export class FormQuestionsComponent implements OnInit {
     @Input() topBtn: string;
     @Input() bottomLeftBtn: string;
     @Input() bottomRightBtn: string;
+    @Input() secondBottomRightBtn: string;
     @Input() questions: Questions[];
     @Input() dropdowns?: Dropdown[];
 
