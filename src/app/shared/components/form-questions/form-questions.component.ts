@@ -6,6 +6,16 @@ export interface Questions{
     any?: any
 }
 
+export interface Dropdown {
+    title: string,
+    content: DropdownContent[]
+}
+
+export interface DropdownContent {
+    text: string,
+    icon?: string
+}
+
 @Component({
   selector: 'app-form-questions',
   templateUrl: './form-questions.component.html',
@@ -18,6 +28,10 @@ export class FormQuestionsComponent implements OnInit {
     @Input() bottomLeftBtn: string;
     @Input() bottomRightBtn: string;
     @Input() questions: Questions[];
+    @Input() dropdowns?: Dropdown[];
+
+    currentIndex: number = 0;
+    dropdownActive: boolean;
 
     @Output() topButton = new EventEmitter();
     @Output() bottomLeft = new EventEmitter();
@@ -51,4 +65,13 @@ export class FormQuestionsComponent implements OnInit {
     addQuestion(){
       console.log('B I G');
     }
+
+    setCurrentDropdown(index: number) {
+        if (this.currentIndex == index) this.dropdownActive = !this.dropdownActive;
+        else {
+            this.currentIndex = index;
+            this.dropdownActive = true;
+        }
+    }
+
 }

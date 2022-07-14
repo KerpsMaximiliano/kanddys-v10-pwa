@@ -24,11 +24,23 @@
         [ngClass]="{'top-border': questions?.length}"
         [ngStyle]="{gridTemplateColumns: bottomLeftBtn && bottomRightBtn && 'auto auto'}"
     >
-        <button *ngIf="bottomLeftBtn" class="transparent-button" (click)="buttonAction('edit')">
+        <button *ngIf="bottomLeftBtn && !dropdowns?.length" class="transparent-button" (click)="buttonAction('edit')">
             {{bottomLeftBtn}}
         </button>
+        <div *ngIf="dropdowns?.length" class="flex-buttons">
+            <ng-container *ngFor="let dropdown of dropdowns; let i = index">
+                <button class="transparent-button" (click)="setCurrentDropdown(i)">
+                    {{dropdown.title}}
+                    <i class="fas fa-chevron-right" *ngIf="i != currentIndex || !dropdownActive"></i>
+                    <i class="fas fa-chevron-down" *ngIf="i == currentIndex && dropdownActive"></i>
+                </button>
+            </ng-container>
+        </div>
         <button *ngIf="bottomRightBtn" class="transparent-button" style="justify-self: flex-end;" (click)="buttonAction('something')">
             {{bottomRightBtn}}
         </button>
+    </div>
+    <div *ngIf="dropdownActive && dropdowns[currentIndex].content.length" class="tags-container">
+        <span class="tag-label" *ngFor="let content of dropdowns[currentIndex].content">{{ content.text }}</span>
     </div>
 </div>
