@@ -16,28 +16,8 @@
     (returnEvent)="return()"
     ></app-helper-headerv2>
 
-    <ng-container *ngFor="let item of simpleItems; index as i" >
-        <div class="item-display" *ngIf="!allShow">
-            <app-enlist-display 
-            [headline]="{
-                icon:{
-                    src:item.icon,
-                    width: 30,
-                    height: 30
-                },
-                text:{
-                    text:item.headline
-                }
-            }"
-            [itemList]="item.data"
-            [tMarginTop]="'12px'"
-            [marginBottom]="'0px'"
-            ></app-enlist-display>
-        </div>    
-    </ng-container>
-
     <ng-container *ngFor="let item of completeItems; index as i">
-        <div class="item-display" *ngIf="allShow">
+        <div class="item-display">
             <app-enlist-display 
             [headline]="{
                 icon:{
@@ -49,6 +29,7 @@
                     text:item.headline
                 }
             }"
+            [showSubtitle]="item.showSubtitle"
             [itemList]="item.data"
             [tMarginTop]="'12px'"
             [marginBottom]="'0px'"

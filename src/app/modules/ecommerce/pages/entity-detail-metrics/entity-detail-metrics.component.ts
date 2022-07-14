@@ -1,14 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-entity-detail-metrics',
@@ -16,6 +21,7 @@ import { OrderService } from 'src/app/core/services/order.service';
   styleUrls: ['./entity-detail-metrics.component.scss']
 })
 export class EntityDetailMetricsComponent implements OnInit {
+  URI: string = environment.uri;
   merchant: Merchant;
   items: Item[];
   user: User;
@@ -28,13 +34,17 @@ export class EntityDetailMetricsComponent implements OnInit {
   tags: { text: string}[];
   categories: { text: string}[];
   admin: boolean;
+  saleflow: SaleFlow;
 
   constructor(
     private merchantsService: MerchantsService,
     private route: ActivatedRoute,
+    private router: Router,
     private authService: AuthService,
     private ordersService: OrderService,
     private itemsService: ItemsService,
+    private saleflowService: SaleFlowService,
+    private dialogService: DialogService,
   ) { }
 
   ngOnInit(): void {
@@ -53,6 +63,7 @@ export class EntityDetailMetricsComponent implements OnInit {
           this.getMerchantBuyers(),
           this.getTags(),
           this.getCategories(),
+          this.getSaleflow(),
         ]);
       };
       unlockUI();
@@ -92,7 +103,6 @@ export class EntityDetailMetricsComponent implements OnInit {
           limit: 1000,
         },
       }))?.itemCategoriesList;
-      console.log(categories);
       if(!categories) return;
       this.categories = categories.filter(category => category.name).map(category => ({text: category.name}));
     } catch (error) {
@@ -100,12 +110,49 @@ export class EntityDetailMetricsComponent implements OnInit {
     }
   }
 
+  async getSaleflow() {
+    try {
+      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   onShareClick = () => {
-    //
+    const list: StoreShareList[] = [
+      {
+        qrlink: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+          },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () => this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflow._id}`]),
+          },
+        ]
+      },
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   onPencilClick = () => {
-    //
+    this.router.navigate(['ecommerce/user-creator']);
   }
 
 }
