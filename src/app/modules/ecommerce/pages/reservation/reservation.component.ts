@@ -578,7 +578,7 @@ export class ReservationComponent implements OnInit {
 
       string = string.toString() + ':' + '00' + ' ' + 'pm';
     } else if (string <= 12) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
+      string = string.toString() + ':' + '00' + ' ' + (string === 12 ? 'pm' : 'am');
     }
 
     return string;
@@ -661,7 +661,9 @@ export class ReservationComponent implements OnInit {
 
   getId(id: number, slide: string) {
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
-    console.log(id, slide);
+
+    // console.log(slide, "slide");
+
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -679,6 +681,12 @@ export class ReservationComponent implements OnInit {
       let reservationDayFrom = parseInt(
         this.calendar.reservations[i].date.from.split('-')[2]
       );
+
+      // console.log(this.calendar.months[this.calendar.monthIndex].id, reservationMonthFrom);
+      // console.log(this.calendar.months[this.calendar.monthIndex].dates[
+      //   this.calendar.dayIndex
+      // ].dayNumber, reservationDayFrom);
+
       if (
         this.calendar.months[this.calendar.monthIndex].id ==
           reservationMonthFrom &&
@@ -689,7 +697,24 @@ export class ReservationComponent implements OnInit {
         let hour = parseInt(this.calendar.reservations[i].date.fromHour);
         let currentArrayHour;
         currentArrayHour = parseInt(hour1);
-        if (hour == currentArrayHour) {
+
+        // console.log(currentArrayHour, hour);
+
+        if((!this.mode || this.mode === 'normal') && (hour == currentArrayHour)) {
+          if (
+            this.calendar.reservations[i].reservation.length ==
+            this.calendar.reservationLimit
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        const timezoneOffset = new Date().getTimezoneOffset() / 60;
+
+        //Cuando se le pasa el fromHour a createReservation, deberia sumarsele el offset
+        if(this.mode === 'standalone' && (hour == currentArrayHour - timezoneOffset)) {
           if (
             this.calendar.reservations[i].reservation.length ==
             this.calendar.reservationLimit
@@ -878,7 +903,6 @@ export class ReservationComponent implements OnInit {
   // }
 
   async save() {
-
     if(!this.mode || this.mode === 'normal') {
       lockUI();
       this.orderData.products[0].deliveryLocation = {
@@ -921,7 +945,7 @@ export class ReservationComponent implements OnInit {
         `0${fromHour + 1}:00`
       ) : `${fromHour + 1}:00`;
 
-      await this.reservation.createReservationAuthLess({
+      const reservation = await this.reservation.createReservationAuthLess({
         calendar: this.calendarId,
         merchant: this.merchant,
         date:{
@@ -933,6 +957,11 @@ export class ReservationComponent implements OnInit {
         },
         type: "ORDER"
       });
+
+      if(reservation) window.location.href = this.whatsappLink;
+      else {
+        alert("Un error ocurrió al hacer la reservación, intente más tarde");
+      }
     }
   }
 
