@@ -2,7 +2,7 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="true"
-    [icons]="[
+    [icons]="admin && (saleflow ? [
       {
         src: '/upload.svg',
         callback: onShareClick,
@@ -13,7 +13,14 @@
         callback: onPencilClick,
         color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
       }
-    ]"
+    ] :
+    merchant && [
+    {
+      src: '/pencil.svg',
+      callback: onPencilClick,
+      color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+    }
+  ])"
   ></app-helper-headerv2>
   <div class="header" *ngIf="merchant">
     <div

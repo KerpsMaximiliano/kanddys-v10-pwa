@@ -92,7 +92,7 @@
         </div>
       </div>
 
-      <div style="max-width: 100%; margin-top: 26px">
+      <div style="max-width: 100%" [ngStyle]="{marginTop: showSocials ? '0' : '24px'}">
         <swiper [config]="swiperConfig">
           <div class="swiper-contents" *ngFor="let item of singleItems; index as i">
               <app-single-item-list

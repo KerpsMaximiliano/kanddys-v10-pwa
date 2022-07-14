@@ -1,65 +1,46 @@
 import { Component, OnInit } from '@angular/core';
 
-const simpleItems = [{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-},{
-  headline: 'DATE ID PARA (000) 000 - 0000',
-  icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'}}]
-}];
-
 const completeItems = [{
   headline: 'DATE ID PARA (000) 000 - 0000',
   icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'},
-          subtitle: {text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic'}}]
-  },{
+  data: [{
+    name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium' },
+    subtitle: { text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic' }
+  }],
+  showSubtitle: false,
+}, {
   headline: 'DATE ID PARA (000) 000 - 0000',
   icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'},
-          subtitle: {text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic'}}]
-  },{
+  data: [{
+    name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium' },
+    subtitle: { text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic' }
+  }],
+  showSubtitle: false,
+}, {
   headline: 'DATE ID PARA (000) 000 - 0000',
   icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'},
-          subtitle: {text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic'}}]
-  },{
+  data: [{
+    name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium' },
+    subtitle: { text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic' }
+  }],
+  showSubtitle: false,
+}, {
   headline: 'DATE ID PARA (000) 000 - 0000',
   icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'},
-          subtitle: {text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic'}}]
-  },{
+  data: [{
+    name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium' },
+    subtitle: { text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic' }
+  }],
+  showSubtitle: false,
+}, {
   headline: 'DATE ID PARA (000) 000 - 0000',
   icon: '/whatsapp_verde.svg',
-  data: [{name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium'},
-          subtitle: {text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic'}}]
-  },];
+  data: [{
+    name: { text: 'AL VENDERSE', fontSize: '13px', color: '#7B7B7B', fontFamily: 'RobotoMedium' },
+    subtitle: { text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..', fontSize: '17px', color: '#202020', fontFamily: 'RobotoItalic' }
+  }],
+  showSubtitle: false,
+},];
 
 @Component({
   selector: 'app-notifications-log',
@@ -67,9 +48,6 @@ const completeItems = [{
   styleUrls: ['./notifications-log.component.scss']
 })
 export class NotificationsLogComponent implements OnInit {
-
-  simpleItems: Array<any> = simpleItems;
-
   completeItems: any[] = completeItems;
   allShow: boolean = false;
   constructor() { }
@@ -77,15 +55,21 @@ export class NotificationsLogComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  showAll = ()=>{
-    this.allShow = !this.allShow;
+  showAll = () => {
+    this.completeItems.forEach(item => {
+      item.showSubtitle = true;
+    });
+    this.allShow = true;
   }
 
-  return(){
-    if(this.allShow){
-        this.allShow = !this.allShow;
-    }else {
-        console.log('Seria un location Back ')
+  return() {
+    if (this.allShow) {
+      this.completeItems.forEach(item => {
+        item.showSubtitle = false;
+      });
+      this.allShow = false;
+    } else {
+      console.log('Seria un location Back ')
     }
   }
 }

@@ -57,6 +57,7 @@ export class EnlistDisplayComponent implements OnInit {
     @Input() marginBottom: string;
     @Input() tMarginTop: string;
     showEntry: boolean;
+    @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;
 
   constructor() { }
