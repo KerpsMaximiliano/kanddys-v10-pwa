@@ -219,6 +219,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             title: 'Heavenly Balloons',
             description: 'Formulario de Ordenes',
             profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/merchants-images/heavenlyballoons.webp',
+            type: 'dialog',
             socials: [
               {
                 name: 'instagram',

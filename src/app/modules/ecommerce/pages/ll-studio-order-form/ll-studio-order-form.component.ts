@@ -114,6 +114,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputs: {
             title: 'LL Studio',
             description: 'Formulario de Ordenes',
+            type: 'dialog',
             profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
             socials: [
               {
