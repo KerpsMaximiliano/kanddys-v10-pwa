@@ -4,7 +4,7 @@
 
         <div class="headline">
             <div class="icon-text">
-                <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [style.filter]="headline.icon.color" *ngIf="headline.icon?.src">
+                <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [ngStyle]="{'filter': headline.icon?.color}" *ngIf="headline.icon?.src">
                 <h1 class="headline-text" [ngStyle]="{
                     'font-size': headline?.fontSize? headline.fontSize : '', 
                     'font-family': headline?.fontFamily? headline.fontFamily : '',
