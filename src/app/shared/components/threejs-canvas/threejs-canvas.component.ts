@@ -55,7 +55,7 @@ export class ThreejsCanvasComponent implements OnInit {
       clock,
       groundMirror
     } = this.initScene();
-    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim3/Creditcard.gltf');
+    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim4/Creditcard.gltf');
     this.initMenu(camera, cubeCamera, this.gltfModel, groundMirror);
 
     const renderLoop = () => {
@@ -257,7 +257,7 @@ export class ThreejsCanvasComponent implements OnInit {
 
 
     return new Promise((resolve, reject) => {
-      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/snow_field_2k.hdr', (envMapTexture => {
+      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim4/snow_field_2k.hdr', (envMapTexture => {
         envMapTexture.mapping = EquirectangularReflectionMapping;
 
         loader.load(
@@ -393,6 +393,7 @@ export class ThreejsCanvasComponent implements OnInit {
           //reemplazar
           node.material.map = new TextureLoader().load(base64, (texture) => {
             texture.flipY = false;
+            texture.repeat.set(1, 1);
           });
 
           // const materialNameCapitalized = node.material.name[0].toUpperCase() + node.material.name.slice(1);
