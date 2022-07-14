@@ -38,6 +38,13 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showIcon: boolean;
   @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
+  @Input() icon:{
+    src: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+    color?: string;
+  }
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
