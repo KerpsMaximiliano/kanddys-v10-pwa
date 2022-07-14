@@ -64,6 +64,7 @@ import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-ba
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
+import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 
 const routes: Routes = [
   {
@@ -356,6 +357,10 @@ const routes: Routes = [
     path: 'notifications-log',
     component: NotificationsLogComponent
   },
+  {
+    path: 'notification-creator',
+    component: NotificationCreatorComponent
+  },
 ];
 
 @NgModule({
@@ -424,6 +429,7 @@ const routes: Routes = [
     MerchantItemsComponent,
     EntityDetailMetricsComponent,
     NotificationsLogComponent,
+    NotificationCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

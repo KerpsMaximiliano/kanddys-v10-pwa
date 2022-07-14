@@ -143,8 +143,8 @@
                 <div class="wrapper" [ngStyle]="{'flex-direction': flexDirection? flexDirection : '', 'align-items': alignItems ? alignItems : '', 'justify-content': justifyContent }">
                     <span class="bold-text" *ngIf="extraTexts?.itemId" [style.margin-left]="'6%'" >{{extraTexts.itemId}}</span>
                     <span class="bill bold-text" *ngIf="extraTexts?.billId" >{{extraTexts.billId}}</span>
-                    <span class="bold-text" >{{leftText.text}}</span>
-                    <span class="bold-text" [ngStyle]="rightTextStyles ? rightTextStyles : null" (click)="neutralEvent()" >{{rightText.text}}</span>
+                    <span class="bold-text" [ngStyle]="leftTextStyles ? leftTextStyles : null" (click)="neutralEvent()">{{leftText?.text}}</span>
+                    <span class="bold-text" [ngStyle]="rightTextStyles ? rightTextStyles : null" (click)="neutralEvent()" >{{rightText?.text}}</span>
                     <img *ngIf="icon" 
                     (click)="icon.callback ? icon.callback() : null"
                     [src]="env + icon.src" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" 
