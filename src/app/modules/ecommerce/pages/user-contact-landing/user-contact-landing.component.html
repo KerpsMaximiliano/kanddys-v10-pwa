@@ -6,7 +6,11 @@
       {
         src: '/person.svg',
         color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
-        callback: contactCallback
+        callback: contactCallback,
+        highlight:{
+            active: true,
+            color: '#E9E371'
+        }
       },
       {
         src: '/upload.svg',
@@ -18,15 +22,6 @@
   ></app-helper-headerv2>
 
   <div>
-    <!-- <app-header-info
-      [profileImage]="merchant ? merchant.image : user?.image"
-      [title]="merchant ? merchant.name : user?.name"
-      [description]="merchant ? merchant.bio : user?.bio"
-      [socials]="merchant ? merchant.social : user?.social"
-      [mode]="'normal'"
-      [merchant]="merchant ? true : false"
-      [admin]="admin"
-    ></app-header-info> -->
     <div class="header">
       <div class="top-header">
         <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="">
@@ -96,10 +91,23 @@
             </div>
         </div>
       </div>
+
+      <div style="max-width: 100%; margin-top: 26px">
+        <swiper [config]="swiperConfig">
+          <div class="swiper-contents" *ngFor="let item of singleItems; index as i">
+              <app-single-item-list
+              [alternativeName]="item.name"
+              [image]="item.image"
+              [filter]="item.filter"
+              ></app-single-item-list>
+          </div>
+        </swiper>
+      </div>
+      
     </div>
   </div>
 
-  <div
+  <!-- <div
     class="items-card"
     *ngIf="
       (admin && merchant && items.length) ||
@@ -124,8 +132,8 @@
         [item]="item"
       ></app-item-small-card>
     </div>
-  </div>
-  <app-bubble-button
+  </div> -->
+ <!--  <app-bubble-button
     position="left"
     color="blue"
     [return]="true"
@@ -138,13 +146,86 @@
     icon="/upload.svg"
     (click)="openShareDialog()"
     [solo]="false"
-  ></app-bubble-button>
+  ></app-bubble-button> -->
+
+  <div style="margin-bottom: 6px;" *ngIf="!admin">
+    <app-gallery-displayer
+    [headline]="{
+      icon: {
+          src: '/salealt.svg',
+          width: 21,
+          height: 21,
+          color:'invert(71%) sepia(0%) saturate(0%) hue-rotate(18deg) brightness(91%) contrast(87%)'
+      },
+      text: 'Tienda'
+      }"
+      [icon]="{
+          src: '/upload.svg',
+          width: 23,
+          height: 23,
+          color: 'invert(35%) sepia(84%) saturate(470%) hue-rotate(163deg) brightness(97%) contrast(90%)'
+      }"
+    [cta]="{
+          text: 'MAS',
+          callback: null
+      }"
+    [imagesGallery]="testGallery"
+    ></app-gallery-displayer>
+  </div>
+  
+  <ng-container *ngIf="!admin">
+    <div style="margin-bottom: 6px;">
+        <app-enlist-display
+        [headline]="{
+            text: {text: 'COLECCION DE ARTICULOS'},
+            icon:{
+                src: '/salealt.svg',
+                width: 22,
+                height: 22,
+                color:'invert(72%) sepia(0%) saturate(412%) hue-rotate(137deg) brightness(91%) contrast(86%)'
+            }
+        }"
+        [itemList]="testItem"
+        ></app-enlist-display>
+    </div>
+
+    <div style="margin-bottom: 6px;">
+        <app-enlist-display
+        [headline]="{
+            text: {text: 'Web Forms'},
+            icon:{
+                src: '/Page_pencil.svg',
+                width: 22,
+                height: 22
+            }
+        }"
+        [itemList]="testItem1"
+        ></app-enlist-display> 
+    </div>
+
+    <div style="margin-bottom: 6px;">
+        <app-enlist-display
+        [headline]="{
+            text: {text: 'SIMBOLOS'},
+            icon:{
+                src: '/infinity.svg',
+                width: 22,
+                height: 22
+            }
+        }"
+        [itemList]="testItem2"
+        ></app-enlist-display>
+    </div>
+
+  </ng-container>
+
 </div>
 <app-sticky-button
-  *ngIf="admin"
-  (click)="openCreateItemDialog()"
+  mode="double"
   size="small"
-  text="WEBAPPS STORE"
+  fontSize="17px"
+  text="POSIBILIDADES"
+  [text2]="admin? 'WebApps STORE' : 'RECAUDA FONDOS'"
   bgColor="#2874AD"
-  color="#E9E371"
+  color="#FFFFFF"
 ></app-sticky-button>
