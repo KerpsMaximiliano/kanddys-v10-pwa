@@ -38,10 +38,35 @@
     <app-form-questions
       [topBar]="items?.length + ' articulos'"
       bottomLeftBtn="adicionar nuevo articulo"
+      (bottomLeft)="redirectToCreateItem()"
       bottomRightBtn="ver mas"
     ></app-form-questions>
   </div>
   <div *ngIf="admin">
+    <app-form-questions
+      *ngIf="items"
+      [topBar]="items?.length + ' articulos'"
+      bottomRightBtn="MAS"
+      secondBottomRightBtn="ADD STORE"
+      [questions]="[
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        },
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        }
+      ]"
+      bottomLeftBtn="adicionar nuevo articulo"
+      (bottomLeft)="redirectToCreateItem()"
+      ></app-form-questions>
+      <!-- [dropdowns]="[
+        {
+          title: 'categorias',
+          content: categories
+        }
+      ]" -->
     <app-form-questions
       *ngIf="ordersTotal"
       [topBar]="ordersTotal.length + ' ordenes / ventas'"
@@ -89,28 +114,6 @@
         {
           title: 'TAGS',
           content: tags
-        }
-      ]"
-    ></app-form-questions>
-    <app-form-questions
-      *ngIf="items"
-      [topBar]="items?.length + ' articulos'"
-      bottomRightBtn="MAS"
-      secondBottomRightBtn="ADD STORE"
-      [questions]="[
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        },
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        }
-      ]"
-      [dropdowns]="[
-        {
-          title: 'categorias',
-          content: categories
         }
       ]"
     ></app-form-questions>

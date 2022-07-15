@@ -155,4 +155,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     this.router.navigate(['ecommerce/user-creator']);
   }
 
+  redirectToCreateItem = () => {
+    this.router.navigate(['ecommerce/item-creator']);
+  }
+
 }

@@ -7,7 +7,7 @@
             <h1 class="top-text">{{topBar}}</h1>
         </div>
 
-        <button class="transparent-button" (click)="buttonAction('add')">{{topBtn}}</button>
+        <button class="transparent-button" (click)="buttonAction('top')">{{topBtn}}</button>
     </div>
     
     <div class="middle" *ngIf="questions?.length">
@@ -25,9 +25,9 @@
     <div
         class="bottom"
         [ngClass]="{'top-border': questions?.length}"
-        [ngStyle]="{gridTemplateColumns: (bottomLeftBtn && bottomRightBtn) || dropdowns?.length && 'auto auto'}"
+        [ngStyle]="{gridTemplateColumns: (bottomLeftBtn || bottomRightBtn || dropdowns?.length) && 'auto auto'}"
     >
-        <button *ngIf="bottomLeftBtn && !dropdowns?.length" class="transparent-button" (click)="buttonAction('edit')">
+        <button *ngIf="bottomLeftBtn && !dropdowns?.length" class="transparent-button" (click)="buttonAction('left')">
             {{bottomLeftBtn}}
         </button>
         <div *ngIf="dropdowns?.length" class="flex-buttons">
@@ -40,10 +40,10 @@
             </ng-container>
         </div>
         <div *ngIf="bottomRightBtn || secondBottomRightBtn" class="right-buttons">
-            <button *ngIf="bottomRightBtn && secondBottomRightBtn" class="transparent-button" (click)="buttonAction('something')">
+            <button *ngIf="bottomRightBtn && secondBottomRightBtn" class="transparent-button" (click)="buttonAction('right-second')">
                 {{secondBottomRightBtn}}
             </button>
-            <button *ngIf="bottomRightBtn" class="transparent-button" (click)="buttonAction('something')">
+            <button *ngIf="bottomRightBtn" class="transparent-button" (click)="buttonAction('right')">
                 {{bottomRightBtn}}
             </button>
         </div>
