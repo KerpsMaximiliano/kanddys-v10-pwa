@@ -56,7 +56,7 @@
                                 cursor: 'pointer'
                             }"
                             (click)="icon.highlight?.active ? highlight(i) : null"
-                            (click)="icon.callback()"
+                            (click)="icon?.callback? icon.callback() : null"
                         >
                     </div>
 
@@ -117,7 +117,7 @@
                     height: icon?.height? icon.height : '',
                     filter: icon?.filter? icon.filter : '',
                     cursor: 'pointer'
-                }" (click)="icon.callback()">
+                }" (click)="icon?.callback? icon.callback() : null">
 
                 <p class="light-text" [ngStyle]="
                 {'font-size': mainText.fontSize? mainText.fontSize : '', 
