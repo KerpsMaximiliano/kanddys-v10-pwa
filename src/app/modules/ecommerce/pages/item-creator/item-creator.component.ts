@@ -185,6 +185,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 this.formSteps[0].headerText = this.item.status === 'active' ?
                   'ACTIVO (EXPUESTO EN TIENDA)' :
                   'INACTIVO (NO EXPUESTO)';
+
+                for(let formStep of this.formSteps) {
+                  formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                    '#2874AD' : '#B17608';
+                }
               } else {
                 this.formSteps[0].headerText = 'PREVIEW'
               }
@@ -975,7 +980,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 
                 this.formSteps[0].headerText = this.item.status === 'active' ?
                   'ACTIVO (EXPUESTO EN TIENDA)' :
-                  'INACTIVO (NO EXPUESTO)'
+                  'INACTIVO (NO EXPUESTO)';
+
+                for(let formStep of this.formSteps) {
+                  formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                    '#2874AD' : '#B17608';
+                }
               }
             }
           }
