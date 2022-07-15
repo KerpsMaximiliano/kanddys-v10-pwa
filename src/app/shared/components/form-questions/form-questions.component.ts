@@ -38,29 +38,19 @@ export class FormQuestionsComponent implements OnInit {
     @Output() topButton = new EventEmitter();
     @Output() bottomLeft = new EventEmitter();
     @Output() bottomRight = new EventEmitter();
+    @Output() secondBottomRight = new EventEmitter();
     env: string = environment.assetsUrl;
     constructor() { }
   
     ngOnInit(): void {
     }
   
-    buttonAction(type){
-
+    buttonAction(type: 'top' | 'left' | 'right' | 'right-second'){
         switch(type){
-            case 'edit':
-                this.topButton.emit();
-                console.log('EDIT presionado');
-            break;
-
-            case 'something':
-                this.bottomLeft.emit();
-                console.log('SOMETHING presionado');
-            break;
-
-            case 'add':
-                this.bottomRight.emit();
-                console.log('ADD presionado');
-            break;
+            case 'top': this.topButton.emit(); break;
+            case 'left': this.bottomLeft.emit(); break;
+            case 'right': this.bottomRight.emit(); break;
+            case 'right-second': this.secondBottomRight.emit(); break;
         };
     }
   
