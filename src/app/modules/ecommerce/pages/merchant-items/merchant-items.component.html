@@ -12,7 +12,8 @@
         src: '/salealt.svg',
         width: 24,
         height: 24,
-        filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)'
+        filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+        callback: goToMetrics
     }"
     bgColor="#2874AD"
     [returnAble]="false"
@@ -50,5 +51,6 @@
         },
         bgColor: '#2874AD'
     }"
+    (added)="goToMetrics()"
     ></app-sticky-button>
 </div>
