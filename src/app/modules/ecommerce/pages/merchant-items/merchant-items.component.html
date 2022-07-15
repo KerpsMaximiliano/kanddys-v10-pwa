@@ -13,7 +13,7 @@
         width: 24,
         height: 24,
         filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
-        callback: goToEntityDetailMetrics
+        callback: goToMetrics
     }"
     bgColor="#2874AD"
     [returnAble]="false"
@@ -51,6 +51,6 @@
         },
         bgColor: '#2874AD'
     }"
-    (added)="goToEntityDetailMetrics()"
+    (added)="goToMetrics()"
     ></app-sticky-button>
 </div>
