@@ -44,6 +44,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   shouldScrollBackwards: boolean = false;
   files: File[] = [];
   item: Item;
+  imagesAlreadyLoaded: boolean = false;
+  lastCharacterEnteredIsADecimal: boolean = false;
+  tryingToDeleteDotDecimalCounter: number = 0;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -207,8 +210,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           focused: false,
           placeholder: 'Precio...',
           changeCallbackFunction: (change, params) => {
+            const { price: previousPrice } = params.dataModel.value['1'];
+
+            if(change.length === previousPrice.length) {
+              this.lastCharacterEnteredIsADecimal = true;
+              this.tryingToDeleteDotDecimalCounter += 1;
+            } else {
+              this.lastCharacterEnteredIsADecimal = false;
+            }
+
             try {
-              if (!change.includes('.')) {
+              if(this.lastCharacterEnteredIsADecimal && previousPrice.length === change.length && this.tryingToDeleteDotDecimalCounter === 2) {
+                change = change.slice(0, -1);
+
+                this.lastCharacterEnteredIsADecimal = false;
+                this.tryingToDeleteDotDecimalCounter = 0;
+
+                //REFACTOR LATER
                 const plainNumber = change
                   .split(',')
                   .join('');
@@ -230,6 +248,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   }
 
                   this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
+                    emitEvent: false,
+                  });
                 } else {
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
@@ -246,52 +268,99 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     this.formSteps[0].fieldsList[0].placeholder = '';
                   }
 
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
+                    emitEvent: false,
+                  });
+
                   this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                 }
+                
               } else {
-                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
-
-                const plainNumber = String(convertedNumber);
-
-                if (plainNumber[0] === '0') {
-                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
-                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                    '1.2'
-                  ) : this.decimalPipe.transform(
-                    Number('0.' + (
-                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
-                        plainNumber.slice(1)
-                    )),
-                    '1.2'
-                  );
-
-                  if (formatted === '0.00') {
-                    this.formSteps[0].fieldsList[0].placeholder = '';
+                if (!change.includes('.')) {
+                  const plainNumber = change
+                    .split(',')
+                    .join('');
+  
+                  if (plainNumber[0] === '0') {
+                    const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                          plainNumber.slice(1)
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  } else {
+                    const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length === 1 ? '0' + plainNumber :
+                          plainNumber
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                   }
-
-                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                 } else {
-                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
-                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-                    '1.2'
-                  ) : this.decimalPipe.transform(
-                    Number('0.' + (
-                      plainNumber.length === 1 ? '0' + plainNumber :
-                        plainNumber
-                    )),
-                    '1.2'
-                  );
-
-                  if (formatted === '0.00') {
-                    this.formSteps[0].fieldsList[0].placeholder = '';
+                  const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+  
+                  const plainNumber = String(convertedNumber);
+  
+                  if (plainNumber[0] === '0') {
+                    const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                          plainNumber.slice(1)
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  } else {
+                    const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length === 1 ? '0' + plainNumber :
+                          plainNumber
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                   }
-
-                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+  
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
+                    emitEvent: false,
+                  });
                 }
-
-                this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
-                  emitEvent: false,
-                });
               }
             } catch (error) {
               console.log(error);
@@ -393,6 +462,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             imageField:
               this.defaultImages.length > 0 ? this.defaultImages : null,
             multiple: true,
+            imagesAlreadyLoaded: this.imagesAlreadyLoaded,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
@@ -909,13 +979,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (this.itemService && this.itemService.temporalItem) {
-        const { description, name, images, pricing, content } = this.itemService.temporalItem;
+        const { description, name, images, content } = this.itemService.temporalItem;
+        let { pricing } = this.itemService.temporalItem;
 
         // console.log("seteando 1")
-        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-          String(pricing)
-        );
-        
         // console.log("what arrived", {
         //   description, name, images, pricing, content
         // })
@@ -924,9 +991,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         const formatted = this.decimalPipe.transform(
           pricing,
-          '1.0-2'
+          '1.2'
         );
         
+        if(pricing % 1 === 0) pricing = pricing * 100;
+
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+          String(pricing)
+        );
+
         // console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         if (formatted === '0') {
@@ -935,8 +1008,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
 
-        if(images && images.length > 0) 
+        if(images && images.length > 0) {
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.imagesAlreadyLoaded = true;
+          this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+        } 
         
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
@@ -1054,6 +1130,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           if(images && images.length > 0) {
             this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
             this.defaultImages = images;
+            this.imagesAlreadyLoaded = true;
+            this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
           }
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
