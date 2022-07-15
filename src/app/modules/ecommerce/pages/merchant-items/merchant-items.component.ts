@@ -105,4 +105,8 @@ export class MerchantItemsComponent implements OnInit {
     this.router.navigate([`ecommerce/error-screen/`]);
   }
 
+  goToEntityDetailMetrics = () => {
+    this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
+  }
+
 }
