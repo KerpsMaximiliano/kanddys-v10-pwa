@@ -1,7 +1,7 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="true"
+    [returnAble]="false"
     [icons]="admin && (saleflow ? [
       {
         src: '/upload.svg',
@@ -40,6 +40,7 @@
       bottomLeftBtn="adicionar nuevo articulo"
       (bottomLeft)="redirectToCreateItem()"
       bottomRightBtn="ver mas"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
   </div>
   <div *ngIf="admin">
@@ -47,7 +48,7 @@
       *ngIf="items"
       [topBar]="items?.length + ' articulos'"
       bottomRightBtn="MAS"
-      secondBottomRightBtn="ADD STORE"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
       [questions]="[
         {
           text: 'Promedio de Veces que Repiten',
@@ -71,6 +72,7 @@
       *ngIf="ordersTotal"
       [topBar]="ordersTotal.length + ' ordenes / ventas'"
       bottomRightBtn="MAS"
+      (bottomRight)="redirectMerchantItems('order-sales/'+merchant._id)"
       [questions]="[
         {
           text: 'Promedio de ventas mensual',
@@ -99,7 +101,6 @@
     <app-form-questions
       *ngIf="users"
       [topBar]="users.length + ' COMPRADORES'"
-      bottomRightBtn="MAS"
       [questions]="[
         {
           text: 'Promedio de Veces que Repiten',

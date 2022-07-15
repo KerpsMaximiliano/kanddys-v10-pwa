@@ -159,8 +159,11 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
-
     this.router.navigate(['ecommerce/item-creator']);
+  }
+
+  redirectMerchantItems = (url: string) => {
+    this.router.navigate(['/ecommerce/'+url]);
   }
 
 }
