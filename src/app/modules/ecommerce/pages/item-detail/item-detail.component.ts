@@ -41,7 +41,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
-    freeMode: true,
+    freeMode: false,
     spaceBetween: 5,
   };
   previewMode: boolean;

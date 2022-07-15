@@ -17,6 +17,7 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { UsersService } from 'src/app/core/services/users.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-new-item-display',
@@ -30,8 +31,8 @@ export class NewItemDisplayComponent implements OnInit {
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
-  providerView: boolean;
-  mode: 'new-item' | 'edit';
+  // providerView: boolean;
+  // mode: 'new-item' | 'edit';
   defaultMerchant: Merchant = null;
   buyersByItem: User[];
   totalByItem: any;
@@ -58,8 +59,14 @@ export class NewItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private location: Location
+    private location: Location,
   ) { }
+
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 5,
+  };
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -67,7 +74,7 @@ export class NewItemDisplayComponent implements OnInit {
         const { token: magicLinkToken, mode } = queryParams;
 
 
-        this.mode = mode;
+        // this.mode = mode;
         if (params.itemId) {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
@@ -252,15 +259,15 @@ export class NewItemDisplayComponent implements OnInit {
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;
 
-            if(this.mode === 'edit') {
-              this.providerView = true;
+            // if(this.mode === 'edit') {
+              // this.providerView = true;
   
               await Promise.all([
                 this.getTotalByItem(this.item._id),
                 this.getBuyersByItem(this.item._id),
                 this.getSaleflow(),
               ]);
-            }
+            // }
           }
           unlockUI();
         }
@@ -345,7 +352,7 @@ export class NewItemDisplayComponent implements OnInit {
     this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
   }
 
-  openShareDialog() {
+  openShareDialog = () => {
     const list: StoreShareList[] = [
       {
         title:  'Mi item',
@@ -402,14 +409,9 @@ export class NewItemDisplayComponent implements OnInit {
     }
   }
 
-  tapping(){
-    let url = 'www.google.com';
-    window.open(url, "_blank");
-  }
-
-  toggleView() {
-    this.providerView = !this.providerView;
-  }
+  // toggleView() {
+  //   this.providerView = !this.providerView;
+  // }
 
   openDialog() {
     const list: StoreShareList[] = [
@@ -430,6 +432,10 @@ export class NewItemDisplayComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  editItem = () => {
+    this.router.navigate(['/ecommerce/item-creator/'+this.item._id]);
   }
 
 }
