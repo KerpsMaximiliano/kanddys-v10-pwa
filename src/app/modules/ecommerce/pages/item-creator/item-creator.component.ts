@@ -1130,8 +1130,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           if(images && images.length > 0) {
             this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
             this.defaultImages = images;
+
+            for(let imageURL of images) {
+              fetch(imageURL)
+                .then(response => response.blob())
+                .then(blob => new Promise((resolve, reject) => {
+                  const reader = new FileReader()
+                  reader.onloadend = () => resolve(reader.result)
+                  reader.onerror = reject
+                  reader.readAsDataURL(blob)
+                }))
+                .then((base64: string) => this.files.push(base64ToFile(base64)));
+            }
+
             this.imagesAlreadyLoaded = true;
             this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+
+            console.log("e", this.files);
           }
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */

@@ -12,6 +12,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -45,6 +46,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     private itemsService: ItemsService,
     private saleflowService: SaleFlowService,
     private dialogService: DialogService,
+    private headerService: HeaderService
   ) { }
 
   ngOnInit(): void {
@@ -156,6 +158,8 @@ export class EntityDetailMetricsComponent implements OnInit {
   }
 
   redirectToCreateItem = () => {
+    this.headerService.flowRoute = this.router.url;
+
     this.router.navigate(['ecommerce/item-creator']);
   }
 
