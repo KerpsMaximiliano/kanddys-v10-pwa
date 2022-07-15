@@ -182,13 +182,13 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               console.log("edit mode", this.editMode);
 
               if(this.editMode) {
-                this.formSteps[0].headerText = this.item.status === 'active' ?
-                  'ACTIVO (EXPUESTO EN TIENDA)' :
-                  'INACTIVO (NO EXPUESTO)';
-
                 for(let formStep of this.formSteps) {
                   formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
                     '#2874AD' : '#B17608';
+
+                  formStep.headerText = this.item.status === 'active' ?
+                    'ACTIVO (EXPUESTO EN TIENDA)' :
+                    'INACTIVO (NO EXPUESTO)';
                 }
               } else {
                 this.formSteps[0].headerText = 'PREVIEW'
@@ -251,11 +251,47 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               } else {
                 const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
 
+                const plainNumber = String(convertedNumber);
+
+                if (plainNumber[0] === '0') {
+                  const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                        plainNumber.slice(1)
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[0].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                } else {
+                  const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                    Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                    '1.2'
+                  ) : this.decimalPipe.transform(
+                    Number('0.' + (
+                      plainNumber.length === 1 ? '0' + plainNumber :
+                        plainNumber
+                    )),
+                    '1.2'
+                  );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[0].fieldsList[0].placeholder = '';
+                  }
+
+                  this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                }
+
                 this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
                   emitEvent: false,
                 });
-
-                this.formSteps[0].fieldsList[0].formattedValue = '$' + change;
               }
             } catch (error) {
               console.log(error);
@@ -974,15 +1010,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
 
-                this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
-                  this.item.status === 'active' ? 'open' : 'closed'
-                }-eye-white.svg`;
-                
-                this.formSteps[0].headerText = this.item.status === 'active' ?
-                  'ACTIVO (EXPUESTO EN TIENDA)' :
-                  'INACTIVO (NO EXPUESTO)';
-
                 for(let formStep of this.formSteps) {
+                  formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                    this.item.status === 'active' ? 'open' : 'closed'
+                  }-eye-white.svg`;
+                  
+                  formStep.headerText = this.item.status === 'active' ?
+                    'ACTIVO (EXPUESTO EN TIENDA)' :
+                    'INACTIVO (NO EXPUESTO)';
+
                   formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
                     '#2874AD' : '#B17608';
                 }
