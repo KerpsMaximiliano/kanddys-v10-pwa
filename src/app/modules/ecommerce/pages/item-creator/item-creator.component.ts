@@ -64,7 +64,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.currentUserId === this.merchantOwnerId
             && this.currentItemId
           ) {
-            console.log(this.files);
+            // console.log(this.files);
             await this.itemService.updateItem(
               {
                 name: values['4'].name,
@@ -83,7 +83,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.router.navigate([`/ecommerce/merchant-items`]);
           } else {
             if (this.loggedIn) {
-              console.log(this.loggedUserDefaultMerchant);
+              // console.log(this.loggedUserDefaultMerchant);
               const { createItem } = await this.itemService.createItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -179,7 +179,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ).length + 1,
           statusChangeCallbackFunction: (change) => {
             if(change === 'VALID') {
-              console.log("edit mode", this.editMode);
+              // console.log("edit mode", this.editMode);
 
               if(this.editMode) {
                 for(let formStep of this.formSteps) {
@@ -303,6 +303,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               minWidth: '210px',
               marginTop: '32px',
               position: 'relative',
+              overflowX: 'hidden'
             },
             fieldStyles: {
               backgroundColor: 'transparent',
@@ -432,7 +433,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               callback: (result) => {
                 this.files[result.index] = result.image;
 
-                console.log(this.files);
+                // console.log(this.files);
               },
             },
           ],
@@ -471,7 +472,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               this.currentUserId === this.merchantOwnerId
               && this.currentItemId
             ) {
-              console.log(this.files);
+              // console.log(this.files);
               await this.itemService.updateItem(
                 {
                   name: values['4'].name,
@@ -910,23 +911,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if (this.itemService && this.itemService.temporalItem) {
         const { description, name, images, pricing, content } = this.itemService.temporalItem;
 
-        console.log("seteando 1")
+        // console.log("seteando 1")
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
         
-        console.log("what arrived", {
-          description, name, images, pricing, content
-        })
+        // console.log("what arrived", {
+        //   description, name, images, pricing, content
+        // })
 
-        console.log("THE PRICING SET", String(pricing), this.formSteps[0].fieldsList[0].fieldControl.control.value);
+        // console.log("THE PRICING SET", String(pricing), this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         const formatted = this.decimalPipe.transform(
           pricing,
           '1.0-2'
         );
         
-        console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
+        // console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         if (formatted === '0') {
           this.formSteps[0].fieldsList[0].placeholder = '';
@@ -979,7 +980,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.item = await this.itemService.item(itemId);
         const { pricing, images, name, content, description, merchant } = this.item;
 
-        console.log("Loaded images", images);
+        // console.log("Loaded images", images);
         // if(images.length > 0) this.files = images.map(image => base64ToFile(image)); 
 
         for(let formStep of this.formSteps) {
@@ -1031,7 +1032,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
 
-          console.log("seteando 2")
+          // console.log("seteando 2")
           this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
             String(pricing)
           );
@@ -1095,7 +1096,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     ) || (
       typeof values['1'].price === 'string' && values['1'].price.length === 1
     )) {
-      console.log("PASANDO POR AQUÍ")
+      // console.log("PASANDO POR AQUÍ")
       this.formSteps[0].fieldsList[0].fieldControl.control.setValue(String('0' + values['1'].price));
 
       values = params.dataModel.value;
@@ -1107,7 +1108,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
     const totalWithDecimal = Number(totalArray.join(''));
 
-    console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
+    // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
 
     this.itemService.storeTemporalItem({
       name: values['4'].name,
