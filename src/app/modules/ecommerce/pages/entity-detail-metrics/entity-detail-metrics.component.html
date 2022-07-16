@@ -21,6 +21,7 @@
       color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
     }
   ])"
+  (returnEvent)="back()"
   ></app-helper-headerv2>
   <div class="header" *ngIf="merchant">
     <div
@@ -40,6 +41,7 @@
       bottomLeftBtn="adicionar nuevo articulo"
       (bottomLeft)="redirectToCreateItem()"
       bottomRightBtn="ver mas"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
   </div>
   <div *ngIf="admin">
@@ -47,7 +49,7 @@
       *ngIf="items"
       [topBar]="items?.length + ' articulos'"
       bottomRightBtn="MAS"
-      secondBottomRightBtn="ADD STORE"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
       [questions]="[
         {
           text: 'Promedio de Veces que Repiten',
@@ -71,6 +73,7 @@
       *ngIf="ordersTotal"
       [topBar]="ordersTotal.length + ' ordenes / ventas'"
       bottomRightBtn="MAS"
+      (bottomRight)="redirectMerchantItems('order-sales/'+merchant._id)"
       [questions]="[
         {
           text: 'Promedio de ventas mensual',
@@ -99,7 +102,6 @@
     <app-form-questions
       *ngIf="users"
       [topBar]="users.length + ' COMPRADORES'"
-      bottomRightBtn="MAS"
       [questions]="[
         {
           text: 'Promedio de Veces que Repiten',

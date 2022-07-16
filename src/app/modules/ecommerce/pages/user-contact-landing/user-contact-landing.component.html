@@ -1,6 +1,6 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
-    [returnAble]="false"
+    [returnAble]="true"
     [mode]="'basic'"
     [icons]="!admin ? [
       {
@@ -19,12 +19,13 @@
       }
     ] : []"
     [bgColor]="'#2874AD'"
+    (returnEvent)="back()"
   ></app-helper-headerv2>
 
   <div>
     <div class="header">
       <div class="top-header">
-        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="">
+        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="" [ngStyle]="{ 'background-color': merchant.image ? 'transparent' : '#a1a1a1' }">
         <div class="contact-info" *ngIf="admin">
           <div class="admin-buttons">
             <button class="admin-btn">
@@ -63,7 +64,7 @@
             </div>
             <ng-container *ngFor="let social of merchant?.social || user?.social">
                 <a class="wa-btn" target="_blank" *ngIf="social.name === 'phone' && social.url" [href]="'https://wa.me/'+social.url.replace(regex,'')+'?text=Hola%20'+ (merchant?.title || user?.title)">
-                    SALUDANOS
+                    SALÚDANOS
                     <img [src]="env + '/whatsapp-white.svg'" alt="call" width="20" height="20">
                 </a>
             </ng-container>
@@ -92,7 +93,7 @@
         </div>
       </div>
 
-      <div style="max-width: 100%" [ngStyle]="{marginTop: showSocials ? '0' : '24px'}">
+      <!-- <div style="max-width: 100%" [ngStyle]="{marginTop: showSocials ? '0' : '24px'}">
         <swiper [config]="swiperConfig">
           <div class="swiper-contents" *ngFor="let item of singleItems; index as i">
               <app-single-item-list
@@ -102,7 +103,7 @@
               ></app-single-item-list>
           </div>
         </swiper>
-      </div>
+      </div> -->
       
     </div>
   </div>
@@ -148,7 +149,7 @@
     [solo]="false"
   ></app-bubble-button> -->
 
-  <div style="margin-bottom: 6px;" *ngIf="!admin">
+  <div style="margin-bottom: 6px;">
     <app-gallery-displayer
     [headline]="{
       icon: {
@@ -163,17 +164,18 @@
           src: '/upload.svg',
           width: 23,
           height: 23,
-          color: 'invert(35%) sepia(84%) saturate(470%) hue-rotate(163deg) brightness(97%) contrast(90%)'
+          color: 'invert(35%) sepia(84%) saturate(470%) hue-rotate(163deg) brightness(97%) contrast(90%)',
+          callback: shareCallback
       }"
     [cta]="{
-          text: 'MAS',
-          callback: null
+          text: 'MÁS',
+          callback: goToStore
       }"
-    [imagesGallery]="testGallery"
+    [imagesGallery]="imagesGallery"
     ></app-gallery-displayer>
   </div>
   
-  <ng-container *ngIf="!admin">
+  <!-- <ng-container *ngIf="!admin">
     <div style="margin-bottom: 6px;">
         <app-enlist-display
         [headline]="{
@@ -217,7 +219,7 @@
         ></app-enlist-display>
     </div>
 
-  </ng-container>
+  </ng-container> -->
 
 </div>
 <app-sticky-button

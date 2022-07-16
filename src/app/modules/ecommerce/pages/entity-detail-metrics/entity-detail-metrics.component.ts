@@ -1,18 +1,18 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { HeaderService } from 'src/app/core/services/header.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -46,7 +46,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     private itemsService: ItemsService,
     private saleflowService: SaleFlowService,
     private dialogService: DialogService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -159,8 +160,15 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
-
     this.router.navigate(['ecommerce/item-creator']);
+  }
+
+  redirectMerchantItems = (url: string) => {
+    this.router.navigate(['/ecommerce/'+url]);
+  }
+
+  back() {
+    this.location.back();
   }
 
 }
