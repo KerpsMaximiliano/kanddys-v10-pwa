@@ -193,6 +193,14 @@ export interface FormStep {
   shoppingCartCallback?(...params): any;
   hideHeader?: boolean;
   hideMainStepCTA?: boolean;
+  hasQrHeader?: boolean;
+  qrSectionInfo?: {
+    label: string,
+    icon: string,
+    qrLink: string;
+    width: number;
+    containerStyles?: Record<string, string | number>;
+  },
   headerMode?: 'v1' | 'v2' | 'header-info-component';
   headerInfoInputs?: HeaderInfoConfig;
   footerConfig?: FooterOptions;

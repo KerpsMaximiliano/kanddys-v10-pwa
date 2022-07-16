@@ -108,6 +108,28 @@ shouldScrollBackwards &&
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
         "
       >
+        <div 
+          *ngIf="steps[currentStep].hasQrHeader && steps[currentStep].qrSectionInfo"
+          [ngStyle]="steps[currentStep].qrSectionInfo.containerStyles ? steps[currentStep].qrSectionInfo.containerStyles : null"
+          class="qrsection"
+        >
+          <qrcode
+            #qrcode
+            [qrdata]="steps[currentStep].qrSectionInfo.qrLink"
+            [elementType]="'svg'"
+            [width]="steps[currentStep]?.qrSectionInfo?.width ? steps[currentStep]?.qrSectionInfo?.width : null"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#2874AD"
+          ></qrcode>
+      
+          <span>
+            {{steps[currentStep].qrSectionInfo.label}}
+          </span>
+      
+          <img  width="36px" height="30px" [src]="steps[currentStep].qrSectionInfo.icon"/>
+        </div>
+
         <ng-container *ngIf="currentStepObject.pageHeader">
           <div [ngStyle]="
           currentStepObject.pageHeader?.styles

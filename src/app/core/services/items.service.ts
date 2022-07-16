@@ -8,6 +8,8 @@ import {
   itemCategoriesList,
   createItem,
   createPreItem,
+  addImageItem,
+  deleteImageItem,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -89,6 +91,38 @@ export class ItemsService {
       fetchPolicy: 'no-cache',
     });
     return response;
+  }
+
+  async addImageItem(
+    images: any,
+    id: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: addImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async deleteImageItem(
+    images: any,
+    id: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: deleteImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   async authItem(merchantId: string, id: string) {
@@ -254,7 +288,6 @@ export class ItemsService {
   }
 
   async createItem(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },
