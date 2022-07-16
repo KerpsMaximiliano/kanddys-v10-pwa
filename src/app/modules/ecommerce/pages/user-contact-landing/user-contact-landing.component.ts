@@ -519,4 +519,8 @@ export class UserContactLandingComponent implements OnInit {
     this.openShareDialog();
   }
 
+  goToStore = () => {
+    this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflow._id}`]);
+  }
+
 }

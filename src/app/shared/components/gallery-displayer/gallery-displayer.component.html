@@ -26,7 +26,7 @@
                 <img *ngFor="let item of imagesGallery; index as i" [src]="env + item.src" [alt]="item.alt" (click)="item.callback()" class="gallery-image" [ngStyle]="{ 'background-color': item.src ? 'transparent' : '#7B7B7B' }">
             </div>
 
-            <button class="cta" [style.color]="cta?.color" *ngIf="cta?.text" (click)="cta.callback">{{cta.text}}</button>
+            <button class="cta" [style.color]="cta?.color" *ngIf="cta?.text" (click)="cta.callback()">{{cta.text}}</button>
         </div>
 
         <hr class="divider" *ngIf="bottomText">
