@@ -180,6 +180,15 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
           }
         ]
       },
+      hasQrHeader: true,
+      qrSectionInfo: {
+        label: 'Re-direcciona a la Colección de Profesores',
+        qrLink: 'https://metacritic.com/',
+        width: 50,
+        icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/download.svg',
+        containerStyles: {
+        }
+      },
       headerText: 'fase 1',
       stepButtonInvalidText: 'Adiciona TU MOBILE',
       stepButtonValidText: 'Verificar mi mobile',

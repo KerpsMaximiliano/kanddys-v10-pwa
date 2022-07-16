@@ -25,6 +25,10 @@ const labelStyles = {
   fontWeight: 'normal'
 };
 
+const checkIfStringIsBase64DataURI = (text: string)=> {
+  return text.slice(0, 5) === 'data:';
+}
+
 @Component({
   selector: 'app-item-creator',
   templateUrl: './item-creator.component.html',
@@ -36,6 +40,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   currentItemId: string = null;
   scrollableForm = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
+  defaultImagesPermanent: (string)[] = [''];
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
@@ -68,12 +73,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             && this.currentItemId
           ) {
             // console.log(this.files);
-            await this.itemService.updateItem(
+            const {updateItem: updatedItem} = await this.itemService.updateItem(
               {
                 name: values['4'].name,
                 description: values['3'].description,
                 pricing: totalWithDecimal,
-                images: this.files,
                 content: values['2'].whatsIncluded,
                 currencies: [],
                 hasExtraPrice: false,
@@ -81,9 +85,17 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               },
               this.currentItemId
             );
-            // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-            // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-            this.router.navigate([`/ecommerce/merchant-items`]);
+
+            if(updatedItem) {
+              await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+
+              await this.itemService.addImageItem(this.files, updatedItem._id);
+
+              // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
+              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
+            }
+            
           } else {
             if (this.loggedIn) {
               // console.log(this.loggedUserDefaultMerchant);
@@ -502,8 +514,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               name: 'onFileInput',
               callback: (result) => {
                 this.files[result.index] = result.image;
-
-                // console.log(this.files);
+                console.log(this.files);
               },
             },
           ],
@@ -543,12 +554,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               && this.currentItemId
             ) {
               // console.log(this.files);
-              await this.itemService.updateItem(
+              const {updateItem: updatedItem } = await this.itemService.updateItem(
                 {
                   name: values['4'].name,
                   description: values['3'].description,
                   pricing: totalWithDecimal,
-                  images: this.files,
                   content: values['2'].whatsIncluded,
                   currencies: [],
                   hasExtraPrice: false,
@@ -557,10 +567,18 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 this.currentItemId
               );
 
-              this.headerService.flowRoute = this.router.url;
-              // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-              this.router.navigate([`/ecommerce/merchant-items`]);
+              if(updatedItem) {
+                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+
+                await this.itemService.addImageItem(this.files, updatedItem._id);
+
+                this.headerService.flowRoute = this.router.url;
+                // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
+                // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
+                this.itemService.removeTemporalItem();
+                this.router.navigate([`/ecommerce/merchant-items`]);
+              }
+
             } else {
               if (this.loggedIn) {
                 const { createItem } = await this.itemService.createItem({
@@ -587,6 +605,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
                   // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
+                  this.itemService.removeTemporalItem();
                   this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
@@ -607,6 +626,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
+                  this.itemService.removeTemporalItem();
                   this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
                 };
               }
@@ -677,7 +697,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       },
       avoidGoingToNextStep: true,
       headerTextCallback: async (params) => {
-        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');
+        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);
       },
       statusChangeCallbackFunction: (change) => {
         if(change === 'INVALID') {
@@ -701,7 +721,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         height: '30px',
         heightInactive: '30px',
         textCallback: async (params) => {
-          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');;
+          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);;
         },
         text2Callback: async (params) => {
           try {
@@ -979,8 +999,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (this.itemService && this.itemService.temporalItem) {
-        const { description, name, images, content } = this.itemService.temporalItem;
-        let { pricing } = this.itemService.temporalItem;
+        const { description, name, content } = this.itemService.temporalItem;
+        let { pricing, images } = this.itemService.temporalItem;
 
         // console.log("seteando 1")
         // console.log("what arrived", {
@@ -1017,7 +1037,34 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
-        this.files = images.map(image => base64ToFile(image));
+
+        const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
+        const base64Images = images.filter(image => checkIfStringIsBase64DataURI(image));
+
+        if(notBase64Images && notBase64Images.length > 0) {
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.defaultImages = images;
+
+          for(let imageURL of notBase64Images) {
+            this.defaultImagesPermanent.push(imageURL);
+
+            fetch(imageURL)
+              .then(response => response.blob())
+              .then(blob => new Promise((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onloadend = () => resolve(reader.result)
+                reader.onerror = reject
+                reader.readAsDataURL(blob)
+              }))
+              .then((base64: string) => this.files.push(base64ToFile(base64)));
+          }
+
+          this.imagesAlreadyLoaded = true;
+          this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+        }
+
+        base64Images.forEach(image => this.files.push(base64ToFile(image)));
+        
 
         if(Number(this.formSteps[0].fieldsList[0].fieldControl.control.value) > 0.01) {
           this.formSteps[0].headerTextSide = 'RIGHT';
@@ -1054,7 +1101,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.currentUserId = this.user._id;
 
         this.item = await this.itemService.item(itemId);
-        const { pricing, images, name, content, description, merchant } = this.item;
+        const { images, name, content, description, merchant } = this.item;
+        let { pricing } = this.item;
 
         // console.log("Loaded images", images);
         // if(images.length > 0) this.files = images.map(image => base64ToFile(image)); 
@@ -1107,15 +1155,16 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
-
-          // console.log("seteando 2")
-          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-            String(pricing)
-          );
   
           const formatted = this.decimalPipe.transform(
             pricing,
-            '1.0-2'
+            '1.2'
+          );
+
+          if(pricing % 1 === 0) pricing = pricing * 100;
+
+          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+            String(pricing)
           );
   
           if (formatted === '0') {
@@ -1132,6 +1181,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.defaultImages = images;
 
             for(let imageURL of images) {
+              this.defaultImagesPermanent.push(imageURL);
+
               fetch(imageURL)
                 .then(response => response.blob())
                 .then(blob => new Promise((resolve, reject) => {
@@ -1181,7 +1232,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveItemInItemServiceAndRedirect(params, route: string) {
+  saveItemInItemServiceAndRedirect(params, route: string, createdItemId?: string) {
     let values = params.dataModel.value;
 
     if((
@@ -1204,6 +1255,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
 
     this.itemService.storeTemporalItem({
+      _id: createdItemId ? createdItemId : null,
       name: values['4'].name,
       description: values['3'].description !== '' ? values['3'].description : null,
       pricing: totalWithDecimal,
