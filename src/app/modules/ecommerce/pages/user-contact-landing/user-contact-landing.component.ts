@@ -73,27 +73,10 @@ export class UserContactLandingComponent implements OnInit {
     name: 'votos',
     image: ''
   }
-    ];
-    testGallery: any[] = [{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      },{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      },{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      },{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      },{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      },{
-        src: '/asdawd',
-        callback: () => console.log('imagen de prueba')
-      }
-    ];
+  ];
+  imagesGallery: any[] = [];
+
+  defaultImage: string = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/default.jpg';
 
     testItem: Array<any> = [{
         img: 'https://i.imgur.com/pC7xVnn.png',
@@ -186,6 +169,8 @@ export class UserContactLandingComponent implements OnInit {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 24,
+    followFinger: true,
+    resistanceRatio: 0.4
   };
 
   constructor(
@@ -433,10 +418,16 @@ export class UserContactLandingComponent implements OnInit {
       this.items = (await this.saleflowService.listItems({
         findBy: {
           _id: {
-            __in: ([] = this.saleflow.items?.slice(0,3).map((items) => items.item._id)),
+            __in: ([] = this.saleflow.items?.slice(0,6).map((items) => items.item._id)),
           },
         },
       }))?.listItems;
+
+      console.log(this.items);
+      this.imagesGallery = this.items.map(item => ({
+        src: item.images.length ? item.images[0] : this.defaultImage,
+        callback: () => this.router.navigate([`/ecommerce/item-detail/${this.saleflow._id}/${item._id}`])
+      }));
     } catch (error) {
       console.log(error)
     }
