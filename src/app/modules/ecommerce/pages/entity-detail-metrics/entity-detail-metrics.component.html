@@ -22,6 +22,7 @@
     }
   ])"
   (returnEvent)="back()"
+  bgColor="#2874AD"
   ></app-helper-headerv2>
   <div class="header" *ngIf="merchant">
     <div
@@ -31,9 +32,11 @@
     ></div>
     <h5>{{merchant.name}}</h5>
     <p>{{merchant.bio}}</p>
-    <button class="header-btn" *ngIf="admin">
+
+    <!-- Activar/Desactivar la tienda -->
+    <!-- <button class="header-btn" *ngIf="admin">
       publica y activa <i class="fas fa-chevron-right"></i>
-    </button>
+    </button> -->
   </div>
   <div *ngIf="!ordersTotal && mode === 'store'">
     <app-form-questions
@@ -69,7 +72,9 @@
           content: categories
         }
       ]" -->
-    <app-form-questions
+
+    <!-- VENTAS -->
+    <!-- <app-form-questions
       *ngIf="ordersTotal"
       [topBar]="ordersTotal.length + ' ordenes / ventas'"
       bottomRightBtn="MAS"
@@ -98,8 +103,10 @@
           ]
         }
       ]"
-    ></app-form-questions>
-    <app-form-questions
+    ></app-form-questions> -->
+
+    <!-- COMPRADORES -->
+    <!-- <app-form-questions
       *ngIf="users"
       [topBar]="users.length + ' COMPRADORES'"
       [questions]="[
@@ -118,7 +125,7 @@
           content: tags
         }
       ]"
-    ></app-form-questions>
+    ></app-form-questions> -->
   </div>
 </div>
 <app-bubble-button
