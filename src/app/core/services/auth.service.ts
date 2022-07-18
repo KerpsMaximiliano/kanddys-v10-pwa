@@ -20,6 +20,7 @@ import {
   userData,
   generateOTP,
   generateMagicLink,
+  generatePowerMagicLink,
   analizeMagicLink,
   signinSocial,
   simplifySignup,
@@ -343,5 +344,18 @@ export class AuthService {
       });
       return response;
     } catch (e) { }
+  }
+
+  public async generatePowerMagicLink(hostPhoneNumber: string) {
+    try {
+      const response = await this.graphql.query({
+        query: generatePowerMagicLink,
+        variables: { hostPhoneNumber },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e)
+    }
   }
 }

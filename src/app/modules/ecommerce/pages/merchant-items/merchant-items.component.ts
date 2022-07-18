@@ -91,6 +91,7 @@ export class MerchantItemsComponent implements OnInit {
 
   testing = () =>{
     console.log('test')
+  }
 
   async getOrderTotal(merchantID: string) {
     try {
@@ -111,6 +112,5 @@ export class MerchantItemsComponent implements OnInit {
 
    goToMetrics = () =>{
     this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
-
   }
 }

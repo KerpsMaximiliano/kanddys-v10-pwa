@@ -6,7 +6,6 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
-import { runInThisContext } from 'vm';
 
 @Component({
   selector: 'app-item-category-creator',
