@@ -1,0 +1,33 @@
+<div class="container">
+
+    <app-helper-headerv2
+    [mode]="'center'"
+    [mainText]="{
+        text: 'Pick Your Merchant'
+    }"
+    [icon]="{
+        src:'/person.svg',
+        width: 23,
+        height: 23,
+        filter: 'invert(100%) sepia(100%) saturate(2%) hue-rotate(96deg) brightness(125%) contrast(201%)',
+        cursor: 'none'
+    }"
+    [returnAble]="false"
+    ></app-helper-headerv2>
+
+    <hr class="linea">
+
+    <app-enlist-display
+        [headline]="{
+            text: {text: 'NUESTROS MERCHANTS ;)'},
+            icon:{
+                src: '/person.svg',
+                width: 32,
+                height: 32,
+                color:'invert(72%) sepia(0%) saturate(412%) hue-rotate(137deg) brightness(91%) contrast(86%)'
+            }
+        }"
+        [itemList]="testItem"
+    ></app-enlist-display>
+
+</div>

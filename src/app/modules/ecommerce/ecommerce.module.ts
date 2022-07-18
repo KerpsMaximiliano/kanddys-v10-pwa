@@ -65,6 +65,7 @@ import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.co
 import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 
 const routes: Routes = [
   {
@@ -361,6 +362,10 @@ const routes: Routes = [
     path: 'notification-creator',
     component: NotificationCreatorComponent
   },
+  {
+    path: 'admin-login',
+    component: AdminLoginComponent
+  },
 ];
 
 @NgModule({
@@ -430,6 +435,7 @@ const routes: Routes = [
     EntityDetailMetricsComponent,
     NotificationsLogComponent,
     NotificationCreatorComponent,
+    AdminLoginComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
