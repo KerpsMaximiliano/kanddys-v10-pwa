@@ -5,9 +5,12 @@ import {
   item,
   authItem,
   items,
+  itemCategory,
   itemCategoriesList,
   createItem,
   createPreItem,
+  addImageItem,
+  deleteImageItem,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -15,6 +18,7 @@ import {
   createItemPackage,
   itemExtraByMerchant,
   createItemCategory,
+  updateItemCategory,
   deleteItemCategory,
   itemPackageByMerchant,
   listItemPackage,
@@ -85,9 +89,42 @@ export class ItemsService {
     const response = await this.graphql.query({
       query: updateItem,
       variables: { input, id },
+      context: { useMultipart: true },
       fetchPolicy: 'no-cache',
     });
     return response;
+  }
+
+  async addImageItem(
+    images: any,
+    id: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: addImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async deleteImageItem(
+    images: any,
+    id: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: deleteImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   async authItem(merchantId: string, id: string) {
@@ -202,6 +239,20 @@ export class ItemsService {
     }
   }
 
+  async itemCategory(id: string): Promise<ItemCategory> {
+    try {
+      const response = await this.graphql.query({
+        query: itemCategory,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.itemCategory;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   async itemCategories(merchantId: string, params: PaginationInput): Promise<{ itemCategoriesList: ItemCategory[] }> {
     try {
@@ -225,6 +276,17 @@ export class ItemsService {
     });
     if (!result || result?.errors) return undefined;
     return result.createItemCategory;
+  }
+
+  // Actualizar categoria
+  async updateItemCategory(input: ItemCategoryInput, id: string): Promise<ItemCategory> {
+    const result = await this.graphql.mutate({
+      mutation: updateItemCategory,
+      variables: { input, id },
+      context: { useMultipart: true },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateItemCategory;
   }
 
   // Eliminar Categoria
@@ -253,7 +315,6 @@ export class ItemsService {
   }
 
   async createItem(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },

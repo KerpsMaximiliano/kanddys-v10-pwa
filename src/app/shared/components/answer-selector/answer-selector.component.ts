@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export interface OptionAnswerSelector {
-  value: string;
+  value?: string;
+  valueArray?: {text: string, highlight: boolean}[];
+  isOptionAnArray?: boolean;
   status: boolean;
   click?: boolean;
   description?: string[];

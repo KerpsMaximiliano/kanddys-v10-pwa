@@ -43,6 +43,7 @@
     [bgColor]="steps[currentStep].customHelperHeaderConfig?.bgcolor ? steps[currentStep].customHelperHeaderConfig?.bgcolor : null"
     [color]="steps[currentStep].customHelperHeaderConfig?.color ? steps[currentStep].customHelperHeaderConfig?.color : null"
     [flexDirection]="steps[currentStep].customHelperHeaderConfig?.flexDirection ? steps[currentStep].customHelperHeaderConfig?.flexDirection : null"
+    [justifyContent]="steps[currentStep].customHelperHeaderConfig?.justifyContent ? steps[currentStep].customHelperHeaderConfig?.justifyContent : null"
     [alignItems]="steps[currentStep].customHelperHeaderConfig?.alignItems ? steps[currentStep].customHelperHeaderConfig?.alignItems : null"
     [rmargin]="steps[currentStep].customHelperHeaderConfig?.marginRight ? steps[currentStep].customHelperHeaderConfig?.marginRight : null"
     [icon]="steps[currentStep].customHelperHeaderConfig?.icon ? steps[currentStep].customHelperHeaderConfig?.icon : null"
@@ -92,11 +93,11 @@ shouldScrollBackwards &&
       ) ? {
       paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
       minHeight: steps[currentStepIndex].customStickyButton ?
-      'calc(100vh - ' + steps[currentStepIndex].customStickyButton.height + ')' :
+      'calc(100vh - ' + steps[currentStepIndex].customStickyButton?.height + ')' :
         steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'VALID' ?
-          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles.height + ')' :
+          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles?.height + ')' :
             steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' ?
-              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles.height + ')' :
+              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles?.height + ')' :
                 dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
                   ? 'calc(100vh - 55px)'
                   : 'calc(100vh - 38px)'
@@ -107,6 +108,28 @@ shouldScrollBackwards &&
         scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
         "
       >
+        <div 
+          *ngIf="steps[currentStep].hasQrHeader && steps[currentStep].qrSectionInfo"
+          [ngStyle]="steps[currentStep].qrSectionInfo.containerStyles ? steps[currentStep].qrSectionInfo.containerStyles : null"
+          class="qrsection"
+        >
+          <qrcode
+            #qrcode
+            [qrdata]="steps[currentStep].qrSectionInfo.qrLink"
+            [elementType]="'svg'"
+            [width]="steps[currentStep]?.qrSectionInfo?.width ? steps[currentStep]?.qrSectionInfo?.width : null"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#2874AD"
+          ></qrcode>
+      
+          <span>
+            {{steps[currentStep].qrSectionInfo.label}}
+          </span>
+      
+          <img  width="36px" height="30px" [src]="steps[currentStep].qrSectionInfo.icon"/>
+        </div>
+
         <ng-container *ngIf="currentStepObject.pageHeader">
           <div [ngStyle]="
           currentStepObject.pageHeader?.styles

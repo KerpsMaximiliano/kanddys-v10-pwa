@@ -294,6 +294,131 @@ export const updateItem = gql`
   }
 `;
 
+export const addImageItem = gql`
+  mutation addImageItem($images: [Upload!]!, $id: ObjectID!) {
+    addImageItem(images: $images, id: $id) {
+      _id
+      name
+      pricing
+      pricePerUnit
+      description
+      createdAt
+      images
+      fixedQuantity
+      size
+      quality
+      iconImage
+      hasExtraPrice
+      content
+      hasSelection
+      status
+      showImages
+      calendar {
+        _id
+      }
+      category {
+        _id
+        name
+      }
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
+      itemExtra {
+        _id
+        images
+        name
+        isActive
+        createdAt
+      }
+      merchant {
+        _id
+        name
+        owner {
+          _id
+          phone
+        }
+      }
+    }
+  }
+`;
+
+export const deleteImageItem = gql`
+  mutation deleteImageItem($images: [String!]!, $id: ObjectID!) {
+    deleteImageItem(images: $images, id: $id) {
+      _id
+      name
+      pricing
+      pricePerUnit
+      description
+      createdAt
+      images
+      fixedQuantity
+      size
+      quality
+      iconImage
+      hasExtraPrice
+      content
+      hasSelection
+      status
+      showImages
+      calendar {
+        _id
+      }
+      category {
+        _id
+        name
+      }
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
+      itemExtra {
+        _id
+        images
+        name
+        isActive
+        createdAt
+      }
+      merchant {
+        _id
+        name
+        owner {
+          _id
+          phone
+        }
+      }
+    }
+  }
+`;
+
+export const itemCategory = gql`
+  query itemCategory($id: ObjectID!) {
+    itemCategory(id: $id) {
+      merchant {
+        _id
+      }
+      _id
+      name
+      description
+    }
+  }
+`;
+
 export const itemCategoriesList = gql`
   query itemCategoriesList($merchantId: ObjectID, $params: PaginationInput) {
     itemCategoriesList(merchantId: $merchantId, params: $params) {
@@ -307,6 +432,18 @@ export const itemCategoriesList = gql`
 export const createItemCategory = gql`
   mutation createItemCategory($input: ItemCategoryInput!) {
     createItemCategory(input: $input) {
+      merchant {
+        _id
+      }
+      _id
+      name
+    }
+  }
+`;
+
+export const updateItemCategory = gql`
+  mutation updateItemCategory($input: ItemCategoryInput!, $id: ObjectID!) {
+    updateItemCategory(input: $input, id: $id) {
       merchant {
         _id
       }

@@ -41,7 +41,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
-    freeMode: true,
+    freeMode: false,
     spaceBetween: 5,
   };
   previewMode: boolean;
@@ -64,10 +64,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     });
 
     this.deleteEvent = this.appService.events
-        .pipe(filter((e) => e.type === 'deleted-item'))
-        .subscribe((e) => {
-          this.itemInCart();
-        });
+      .pipe(filter((e) => e.type === 'deleted-item'))
+      .subscribe((e) => {
+        this.itemInCart();
+      });
   }
 
   ngOnDestroy() {
@@ -75,8 +75,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if(!this.items.temporalItem) return new Error(`No item to preview`);
+    if(!this.items.temporalItem) return this.router.navigate([`/ecommerce/item-creator`]);
     this.itemData = this.items.temporalItem;
+    if(!this.itemData.images.length) this.itemData.showImages = false;
     this.previewMode = true;
   }
 
@@ -179,7 +180,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   back() {
-    if(this.previewMode) return this.router.navigate([`/ecommerce/item-creator`]);
+    if(this.previewMode) {
+      if(this.itemData._id) return this.router.navigate([`/ecommerce/item-creator/${this.itemData._id}`]);
+      else return this.router.navigate([`/ecommerce/item-creator`]);
+    }
     this.items.removeTemporalItem();
     this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
   }

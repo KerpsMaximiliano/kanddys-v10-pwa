@@ -124,6 +124,13 @@ html {
   }
 }
 
+.qrsection {
+  padding: 22px 24px 22px 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .date-inputs{
   appearance: none;
   display: inline-block;

@@ -33,7 +33,9 @@ export class LlStudioOrderFormComponent implements OnInit {
   databaseName: string = null;
   choosedReservation: boolean = false;
   fullFormMessage: string = null;
+  formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18098718288?text=';
+  whatsappLinkSteps: string[] = [];
 
   formSteps: FormStep[] = [
     {
@@ -113,6 +115,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputs: {
             title: 'LL Studio',
             description: 'Formulario de Ordenes',
+            type: 'dialog',
             profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
             socials: [
               {
@@ -154,7 +157,9 @@ export class LlStudioOrderFormComponent implements OnInit {
         padding: '0px',
       },
       stepProcessingFunction: () => {
-        this.fullFormMessage = `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`;
+        this.whatsappLinkSteps.push(
+          `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`
+        )
 
         return { ok: true }
       },
@@ -204,6 +209,10 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(0, false);
+      },
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
@@ -234,9 +243,13 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       stepProcessingFunction: () => {
-        this.fullFormMessage += `*¿A nombre de quién estás realizando esta orden?:*\n${this.formSteps[2].fieldsList[0].fieldControl.control.value}\n\n`;
+        this.whatsappLinkSteps.push(`*¿A nombre de quién estás realizando esta orden?:*\n${this.formSteps[2].fieldsList[0].fieldControl.control.value}\n\n`);
 
         return { ok: true }
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(1, false);
       },
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
@@ -421,10 +434,14 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
       ],
       stepProcessingFunction: () => {
-        this.fullFormMessage += `*Monto total de Compra:*\n${this.formSteps[3].fieldsList[0].fieldControl.control.value}\n\n`;
-        this.fullFormMessage += `*Vía de pago:*\n${this.formSteps[3].fieldsList[1].fieldControl.control.value}\n\n`;
+        this.whatsappLinkSteps.push(`*Monto total de Compra:*\n${this.formSteps[3].fieldsList[0].formattedValue}\n\n`);
+        this.whatsappLinkSteps.push(`*Vía de pago:*\n${this.formSteps[3].fieldsList[1].fieldControl.control.value}\n\n`);
 
         return { ok: true }
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(2, false);
       },
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE DATOS DEL PAGO',
@@ -474,9 +491,14 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       stepProcessingFunction: () => {
-        this.fullFormMessage += `*Via por la que está colocando esta orden:*\n${this.formSteps[4].fieldsList[0].fieldControl.control.value}\n\n`;
+        this.whatsappLinkSteps.push(`*Via por la que está colocando esta orden:*\n${this.formSteps[4].fieldsList[0].fieldControl.control.value}\n\n`)
 
         return { ok: true }
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(3, false);
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
@@ -540,6 +562,10 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepProcessingFunction: () => {
         return { ok: true }
       },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(4, false);
+      },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
@@ -572,7 +598,6 @@ export class LlStudioOrderFormComponent implements OnInit {
             {
               name: 'onReservation',
               callback: (reservationOutput) => {
-                console.log(reservationOutput);
                 this.reservation = reservationOutput;
                 this.formSteps[6].fieldsList[0].fieldControl.control.setValue(reservationOutput.message);
               },
@@ -582,7 +607,9 @@ export class LlStudioOrderFormComponent implements OnInit {
       ],
       stepProcessingFunction: () => {
         if (this.reservation) {
-          this.fullFormMessage += `*Fecha de entrega:*\n${this.formSteps[6].fieldsList[0].fieldControl.control.value}\n\n`;
+          this.whatsappLinkSteps.push(
+            `*Fecha de entrega:*\n${this.formSteps[6].fieldsList[0].fieldControl.control.value}\n\n`
+          );
 
           return { ok: true };
         }
@@ -645,11 +672,13 @@ export class LlStudioOrderFormComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         if (!this.choosedReservation)
           params.scrollToStep(5, false);
-        else
+        else {
+          this.whatsappLinkSteps.pop();
           params.scrollToStep(6, false);
+        }
       },
       stepProcessingFunction: () => {
-        this.fullFormMessage += `*Sobre la entrega:*\n${this.formSteps[7].fieldsList[0].fieldControl.control.value}\n\n`;
+        this.whatsappLinkSteps.push(`*Sobre la entrega:*\n${this.formSteps[7].fieldsList[0].fieldControl.control.value}\n\n`);
 
         return { ok: true }
       },
@@ -695,8 +724,10 @@ export class LlStudioOrderFormComponent implements OnInit {
         type: 'promise',
         function: async (params) => {
           try {
-            if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
-              this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
+            if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1) {
+              this.whatsappLinkSteps.push(`*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`);
+            }
+
 
             const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
               [
@@ -705,8 +736,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               ]
             );
 
-            this.fullFormMessage += `*Foto de Referencia:*\n${fileRoutes[0]}\n\n`;
-            this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[1]}\n\n`;
+            this.whatsappLinkSteps.push(`*Foto de Referencia:*\n${fileRoutes[0]}\n\n`);
+            this.whatsappLinkSteps.push(`*Comprobante de Pago:*\n${fileRoutes[1]}\n\n`);
 
             const convertedTotalAmount = Number(
               this.formSteps[3].fieldsList[0].formattedValue
@@ -736,6 +767,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               'about-delivery': this.formSteps[7].fieldsList[0].fieldControl.control.value,
               whereToDeliver: this.formSteps[8].fieldsList[0].fieldControl.control.value,
             }
+
+            this.fullFormMessage = this.whatsappLinkSteps.join('');
 
             const success = await this.merchantsService.uploadDataToClientsAirtable(
               this.merchantId,
@@ -772,6 +805,10 @@ export class LlStudioOrderFormComponent implements OnInit {
             return { ok: false };
           }
         },
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        params.scrollToStep(7, false);
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',

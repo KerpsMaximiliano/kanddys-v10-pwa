@@ -1,0 +1,43 @@
+<div style="min-height: 100vh;">
+  <header [ngStyle]="{backgroundColor: active ? '#2874AD' : '#B17608'}">
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <div>
+      <span>{{active ? 'TAB EXPUESTO EN TIENDA' : 'TAB INACTIVO (NO EXPUESTO)'}}</span>
+      <button (click)="toggleStatus()">
+        <img [src]="env + (active ? '/open-eye.svg' : '/closed-eye.svg')" alt="status" width="32" height="24">
+      </button>
+    </div>
+  </header>
+  <main>
+    <h5>Sobre el Tab:</h5>
+    <div class="column">
+      <label class="form-label" for="name">Nombre del Tab:</label>
+      <input class="form-input" type="text" placeholder="Escribe.." [(ngModel)]="name">
+    </div>
+  </main>
+  <div class="message">
+    <app-enlist-display [headline]="{
+      icon:{
+          src: '/whatsapp_verde.svg',
+          width: 30,
+          height: 30
+        },
+        text: {
+          text: 'AUTOMATIZA UN MENSAJE'
+        }
+      }" 
+      [plus]="true"
+    ></app-enlist-display>
+  </div>
+  <main class="optional">
+    <h6 class="additional-label">Contenido opcional</h6>
+    <div class="additional-content">
+        <button class="additional" (click)="showDescription = !showDescription">Descripcion</button>
+        <textarea *ngIf="showDescription" name="description" placeholder="Escribe.." class="textarea form-textarea" id="description" cols="30" rows="10" [(ngModel)]="description"></textarea>
+    </div>
+  </main>
+</div>
+<footer>
+  <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+  <button (click)="save()" *ngIf="name && name.trim()">SALVAR</button>
+</footer>

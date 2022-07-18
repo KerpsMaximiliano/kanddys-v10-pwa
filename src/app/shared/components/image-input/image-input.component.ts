@@ -30,6 +30,7 @@ export class ImageInputComponent implements OnInit {
   @Input() max: number;
   @Input() innerLabel: string = 'Upload / Camera';
   @Input() expandImage: boolean = false;
+  @Input() imagesAlreadyLoaded: boolean = false;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -43,6 +44,8 @@ export class ImageInputComponent implements OnInit {
     if (this.allowedTypes.length > 0)
       this.acceptTypes = '.' + this.allowedTypes.join(', .');
     else this.acceptTypes = 'image/*';
+
+    if(this.imagesAlreadyLoaded) this.imageField.push('');
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {

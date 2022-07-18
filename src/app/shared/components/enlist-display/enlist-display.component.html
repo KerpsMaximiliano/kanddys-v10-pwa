@@ -18,6 +18,7 @@
                 'filter': icon?.color? icon.color : '',
                 'cursor': 'pointer'
             }" *ngIf="icon?.src">
+            <button class="plus" *ngIf="!icon && plus">+</button>
         </div>
         
         <hr class="separator" *ngIf="itemList">
@@ -27,20 +28,19 @@
                 <img [src]="item.img" alt="imagen del producto" class="item-image" *ngIf="item.img">
                 
                 <div class="title-subtitle">
-                    <h2 class="title" [ngStyle]="{
+                    <button class="title" [ngStyle]="{
                         'margin-top': tMarginTop? tMarginTop : '',
                         'font-size': item.name.fontSize? item.name.fontSize : '',
                         'font-family': item.name.fontFamily? item.name.fontFamily : '',
-                        'color': item.name.color? item.name.color : '',
-                        'cursor': item.name.pointer? 'pointer' : ''
-                        }">{{item.name.text}}</h2>
+                        'color': item.name.color? item.name.color : ''
+                        }" (click)="showSubtitle = !showSubtitle">{{item.name.text}}</button>
                 
                     <p class="subtitle" [ngStyle]="{
                         'font-size': item.subtitle.fontSize? item.subtitle.fontSize : '',
                         'font-family': item.subtitle.fontFamily? item.subtitle.fontFamily : '',
                         'color': item.subtitle.color? item.subtitle.color : '',
                         'cursor': item.subtitle.pointer? 'pointer' : ''
-                        }" *ngIf="item?.subtitle">{{item.subtitle.text}}</p>
+                        }" *ngIf="item?.subtitle && showSubtitle">{{item.subtitle.text}}</p>
                 </div>
             </div>
 

@@ -39,6 +39,8 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 export class ThreejsCanvasComponent implements OnInit {
   gltfModel: GLTF = null;
   gltfJSON: any = null;
+  animationMixer: AnimationMixer = null;
+  cardFaces: Record<any, MeshStandardMaterial> = {};
 
   constructor() { }
 
@@ -54,7 +56,7 @@ export class ThreejsCanvasComponent implements OnInit {
       clock,
       groundMirror
     } = this.initScene();
-    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/Creditcard.gltf');
+    await this.addGLTFModelToTheScene(camera, cubeCamera, scene, 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim4/Creditcard.gltf');
     this.initMenu(camera, cubeCamera, this.gltfModel, groundMirror);
 
     const renderLoop = () => {
@@ -66,6 +68,8 @@ export class ThreejsCanvasComponent implements OnInit {
 
       //Tiempo pasado desde el ultimo frame al actual
       let delta = clock.getDelta();
+
+      this.animationMixer.update(delta);
 
       // if (mixer) mixer.update(delta);
     
@@ -100,9 +104,9 @@ export class ThreejsCanvasComponent implements OnInit {
 
     // camera.position.y = 5;
     // camera.position.z = 40;
-    camera.position.x = -0.09363450643606908;
-    camera.position.y = 0;
-    camera.position.z = 4.863602187237972;
+    camera.position.x = -0.0798657365045112;
+    camera.position.y = 0.4813698379714353;
+    camera.position.z = 4.376446891678747;
 
     //Luces
     //Añade una luz uniforme a toda la escena
@@ -171,7 +175,7 @@ export class ThreejsCanvasComponent implements OnInit {
 
     controls.maxPolarAngle = Math.PI / 2; // radians
 
-    controls.minDistance = 5; // radians
+    controls.minDistance = 1; // radians
     controls.maxDistance = 40; // radians
     
 
@@ -246,6 +250,45 @@ export class ThreejsCanvasComponent implements OnInit {
     groundMirrorPositionsFolder.add(groundMirror.position, 'x', -40, 40).step(0.1);
     groundMirrorPositionsFolder.add(groundMirror.position, 'y', -40, 40).step(0.1);
     groundMirrorPositionsFolder.add(groundMirror.position, 'z', -40, 40).step(0.1);
+
+    const frontFaceFolder = gui.addFolder('Front face');
+    frontFaceFolder.add(this.cardFaces['front'].map.offset, 'x').min(-1).max(1).step(0.01).onChange(newValue => {
+      this.cardFaces['front'].map.offset.setX(newValue);
+    });
+
+    frontFaceFolder.add(this.cardFaces['front'].map.offset, 'y').min(-1).max(1).step(0.01).onChange(newValue => {
+      this.cardFaces['front'].map.offset.setY(newValue);
+    });
+
+    frontFaceFolder.add(this.cardFaces['front'].map.offset, 'y').min(-1).max(1).step(0.01).onChange(newValue => {
+      this.cardFaces['front'].map.offset.setY(newValue);
+    });
+
+    frontFaceFolder.add(this.cardFaces['front'].map.repeat, 'x').min(0).max(2).step(0.01).onChange(newValue => {
+      this.cardFaces['front'].map.repeat.setX(newValue);
+    });
+
+    frontFaceFolder.add(this.cardFaces['front'].map.repeat, 'y').min(0).max(2).step(0.01).onChange(newValue => {
+      this.cardFaces['front'].map.repeat.setY(newValue);
+    });
+
+    const backFaceFolder = gui.addFolder('Back face');
+
+    backFaceFolder.add(this.cardFaces['back'].map.offset, 'x').min(-1).max(1).step(0.01).onChange(newValue => {
+      this.cardFaces['back'].map.offset.setX(newValue);
+    });
+
+    backFaceFolder.add(this.cardFaces['back'].map.offset, 'y').min(-1).max(1).step(0.01).onChange(newValue => {
+      this.cardFaces['back'].map.offset.setY(newValue);
+    });
+
+    backFaceFolder.add(this.cardFaces['back'].map.repeat, 'x').min(0).max(2).step(0.01).onChange(newValue => {
+      this.cardFaces['back'].map.repeat.setX(newValue);
+    });
+
+    backFaceFolder.add(this.cardFaces['back'].map.repeat, 'y').min(0).max(2).step(0.01).onChange(newValue => {
+      this.cardFaces['back'].map.repeat.setY(newValue);
+    });
   }
 
   addGLTFModelToTheScene(camera: PerspectiveCamera, cubeCamera: CubeCamera, scene: Scene, route: string): Promise<Boolean | null> {
@@ -254,22 +297,24 @@ export class ThreejsCanvasComponent implements OnInit {
 
 
     return new Promise((resolve, reject) => {
-      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim2/snow_field_2k.hdr', (envMapTexture => {
+      rgbeLoader.load('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/gltfs/Anim4/snow_field_2k.hdr', (envMapTexture => {
         envMapTexture.mapping = EquirectangularReflectionMapping;
 
         loader.load(
           route
           // '../Card/Card.gltf'
           , (gltf: any) => {
-            console.log(gltf);
 
             unlockUI();
             const mixer = new AnimationMixer(gltf.scene); //reproductor de animaciones de Three.js
+            this.animationMixer = mixer;
             
             this.gltfModel = gltf;
   
-            gltf.scene.traverse( function( node ) {
-              if(node instanceof Mesh && node.material instanceof MeshStandardMaterial) {              
+            gltf.scene.traverse(node => {
+              if(node instanceof Mesh && node.material instanceof MeshStandardMaterial) {      
+                if(['front', 'back'].includes(node.material.name)) this.cardFaces[node.material.name] = node.material;
+
                 // node.receiveShadow = true;
                 node.castShadow = true;
                 node.material.metalness = 1;
@@ -282,15 +327,15 @@ export class ThreejsCanvasComponent implements OnInit {
               }
             });
 
+            console.log('gltf', gltf);
+
             gltf.animations.forEach((clip) => {
               //asegura que el ultimo frame prevalezca al terminar la animacion
-              const clipAction = mixer.clipAction(clip);
-              clipAction.clampWhenFinished = true;
-              clipAction.loop = LoopRepeat;
+              // const clipAction = this.animationMixer.clipAction(clip);
+              // clipAction.clampWhenFinished = true;
+              // clipAction.loop = LoopRepeat;
 
-              console.log(clipAction);
-
-              clipAction.play()
+              // clipAction.play()
               
               //Clips de animacion para cada panel
               // if (clip.name === "cara media interior") {
@@ -303,7 +348,6 @@ export class ThreejsCanvasComponent implements OnInit {
             });
   
             gltf.scene.position.y = -0.3;
-            camera.rotation.y = Math.PI / 2;
             camera.lookAt(gltf.scene.position);
 
     
@@ -389,7 +433,10 @@ export class ThreejsCanvasComponent implements OnInit {
           //reemplazar
           node.material.map = new TextureLoader().load(base64, (texture) => {
             texture.flipY = false;
+            // texture.repeat.set(0.8, 0.8);
           });
+          if(['front', 'back'].includes(node.material.name)) this.cardFaces[node.material.name] = node.material;
+          
 
           // const materialNameCapitalized = node.material.name[0].toUpperCase() + node.material.name.slice(1);
 

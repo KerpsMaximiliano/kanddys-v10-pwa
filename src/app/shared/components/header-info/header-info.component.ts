@@ -26,10 +26,10 @@ export class HeaderInfoComponent implements OnInit {
     text: string,
     styles: string
   }
-  // @Input() socials: SocialMediaModel[];
+  @Input() socials: SocialMediaModel[];
   @Input() customStyles: Record<string, Record<string, string>> = null;
   @Input() reverseInfoOrder: boolean = false;
-  @Input() type: 'route';
+  @Input() type: 'route' | 'dialog';
   @Input() route: string;
   @Input() fixedMode: boolean = false;
   
@@ -61,8 +61,25 @@ export class HeaderInfoComponent implements OnInit {
     //   flags: ['no-header'],
     // });
     //   } else if(type === 'route') {
-        this.router.navigate([`/ecommerce/${this.route}`]);
       // }
+
+    if(!this.type || this.type === 'route')
+      this.router.navigate([`/ecommerce/${this.route}`]);
+
+    if(this.type === 'dialog'){
+      this.dialogService.open(MerchantInfoComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          merchantImage: this.profileImage,
+          merchantName: this.title,
+          location: this.socials?.find((social) => social.name === 'location'),
+          instagram: this.socials?.find((social) => social.name === 'instagram'),
+          whatsapp: this.socials?.find((social) => social.name === 'phone'),
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+    }
   }
 
   redirect() {

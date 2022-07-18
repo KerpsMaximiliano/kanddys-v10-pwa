@@ -2,8 +2,19 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 export interface Questions{
+    enum?: boolean;
     text: string,
     any?: any
+}
+
+export interface Dropdown {
+    title: string,
+    content: DropdownContent[]
+}
+
+export interface DropdownContent {
+    text: string,
+    icon?: string
 }
 
 @Component({
@@ -13,42 +24,46 @@ export interface Questions{
 })
 export class FormQuestionsComponent implements OnInit {
 
-    @Input() topBar: string = 'BARRA SUPERIOR';
-    @Input() topBtn: string = 'ADICIONA UNA PREGUNTA';
-    @Input() bottomLeftBtn: string = 'EDIT';
-    @Input() bottomRightBtn: string = 'SOMETHING';
+    @Input() topBar: string;
+    @Input() topBtn: string;
+    @Input() bottomLeftBtn: string;
+    @Input() bottomRightBtn: string;
+    @Input() secondBottomRightBtn: string;
     @Input() questions: Questions[];
+    @Input() dropdowns?: Dropdown[];
+
+    currentIndex: number = 0;
+    dropdownActive: boolean;
 
     @Output() topButton = new EventEmitter();
     @Output() bottomLeft = new EventEmitter();
     @Output() bottomRight = new EventEmitter();
+    @Output() secondBottomRight = new EventEmitter();
     env: string = environment.assetsUrl;
     constructor() { }
   
     ngOnInit(): void {
     }
   
-    buttonAction(type){
-
+    buttonAction(type: 'top' | 'left' | 'right' | 'right-second'){
         switch(type){
-            case 'edit':
-                this.topButton.emit();
-                console.log('EDIT presionado');
-            break;
-
-            case 'something':
-                this.bottomLeft.emit();
-                console.log('SOMETHING presionado');
-            break;
-
-            case 'add':
-                this.bottomRight.emit();
-                console.log('ADD presionado');
-            break;
+            case 'top': this.topButton.emit(); break;
+            case 'left': this.bottomLeft.emit(); break;
+            case 'right': this.bottomRight.emit(); break;
+            case 'right-second': this.secondBottomRight.emit(); break;
         };
     }
   
     addQuestion(){
       console.log('B I G');
     }
+
+    setCurrentDropdown(index: number) {
+        if (this.currentIndex == index) this.dropdownActive = !this.dropdownActive;
+        else {
+            this.currentIndex = index;
+            this.dropdownActive = true;
+        }
+    }
+
 }

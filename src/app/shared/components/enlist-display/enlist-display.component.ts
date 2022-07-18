@@ -46,6 +46,7 @@ export class EnlistDisplayComponent implements OnInit {
         height?: number;
         callback?: () => void;
     };
+    @Input() plus: boolean;
     @Input() itemList: ListedItem[];
     @Input() bottomText: {
         leftText?:{
@@ -57,6 +58,7 @@ export class EnlistDisplayComponent implements OnInit {
     @Input() marginBottom: string;
     @Input() tMarginTop: string;
     showEntry: boolean;
+    @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;
 
   constructor() { }

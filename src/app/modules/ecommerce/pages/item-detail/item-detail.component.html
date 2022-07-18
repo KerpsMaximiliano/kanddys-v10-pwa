@@ -52,7 +52,7 @@
                   </swiper>
                 </div>
             </div>
-            <div class="no-description" *ngIf="itemData.name && !itemData.description && itemData.images">
+            <div class="no-description" *ngIf="itemData.name && !itemData.description && itemData.images?.length">
                 <h3 class="title">{{itemData.name}}</h3>
             </div>
             <div *ngIf="itemData.pricing" class="item-price">
