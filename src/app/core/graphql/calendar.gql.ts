@@ -31,6 +31,47 @@ export const getCalendar = gql`
   }
 `;
 
+export const getCalendarWithMerchantInfo = gql`
+  query getCalendar($id: ObjectID!) {
+    getCalendar(id: $id) {       
+      _id
+      name
+      reservationLimits
+      expirationTime
+      limits {
+        dateType
+        fromDay
+        toDay
+        fromHour
+        toHour
+      }
+      merchant {
+        _id
+        name
+        owner {
+          _id
+          name
+          phone
+          email
+        }
+      }
+      timeChunkSize
+      mode
+      active
+      reservations {
+        reservation
+        date {
+          dateType
+          from
+          until
+          fromHour
+          toHour
+        }
+      }
+    }
+  }
+`;
+
 export const identifyCalendarAdmin = gql`
 mutation identifyCalendarAdmin($id: ObjectID!) {
     Boolean: identifyCalendarAdmin(id: $id)

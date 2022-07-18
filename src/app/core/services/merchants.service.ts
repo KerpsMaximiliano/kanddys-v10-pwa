@@ -76,16 +76,12 @@ export class MerchantsService {
     return result;
   }
 
-  async itemsByMerchant(id: string) {
-    console.log(id);
-
+  async itemsByMerchant(id: string): Promise<{ itemsByMerchant: Item[] }> {
     const response = await this.graphql.query({
       query: itemsByMerchant,
       variables: { id },
       fetchPolicy: 'no-cache',
     });
-    console.log(response);
-
     return response;
   }
 

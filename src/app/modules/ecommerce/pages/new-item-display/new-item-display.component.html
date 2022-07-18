@@ -29,12 +29,12 @@
 			{
 				src: '/upload.svg',
 				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-				callback: tapping
+				callback: openShareDialog
 			},
 			{
 				src: '/pencil.svg',
 				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-				callback: null
+				callback: editItem
 			}
 		]"
         [plus]="{
@@ -83,9 +83,22 @@
 			</div>
 		</div> -->
 
-		<button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
+		<!-- <button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
 			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
-		</button>
+		</button> -->
+
+		<div class="fullScreenSwiper" *ngIf="item.images?.length">
+			<div class="shadowWrapper">
+					<swiper [config]="swiperConfig">
+					<div
+							*ngFor="let item of item.images; let i = index"
+							(click)="openImageModal(item)"
+							class="item"
+							[ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+					></div>
+				</swiper>
+			</div>
+	</div>
 		<div class="flex-box" style="color:#4F4F4F; margin-top: 32px;">
 			<h6 class="small-title">{{item.name}}</h6>
 			<span class="small-price">${{item.pricing | number}}</span>
@@ -162,6 +175,8 @@
     [bgColor]="'#A1A1A1'"
     [text]="'45 ventas'"
     [text2]="'$14,451 INGRESO'"
+	size="small"
+    (added)="redirect()"
     ></app-sticky-button>
 
 </div>

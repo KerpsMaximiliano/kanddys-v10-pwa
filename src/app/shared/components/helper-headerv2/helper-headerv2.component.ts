@@ -51,11 +51,13 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() color: string = '#FFFFFF';
     @Input() rmargin: string;
     @Input() flexDirection: string;
+    @Input() justifyContent: string;
     @Input() alignItems: string;
     @Input() filter: string;
     @Input() icons: Icon[];
     @Input() mainText?: Text;
     @Input() leftText?: Text;
+    @Input() leftTextStyles: Record<string, any>;
     @Input() rightText?: Text;
     @Input() public rightTextCallback: () => void;
     @Input() rightTextStyles: Record<string, any>;

@@ -401,91 +401,71 @@ export class CustomizerListComponent implements OnInit {
 //   '#ff3b3b', '#149f9a', '#ba7364', '#003289', '#9a815c'
 // ]
 
-const colorList = [
+export const colorList = [
   {
-    fixedValue: "#138B00",
-    name: "17-B",
-    nickname: "Verde Limon Brillo"
+    fixedValue: "#FEFEFE",
+    name: "30-AP",
+    nickname: "30-AP"
   },
-  {
-    fixedValue: "#747378",
-    name: "19-Q",
-    nickname: "Plata Brillo"
-  },
-  // {
-  //   fixedValue: "#182227",
-  //   name: "24-B",
-  //   nickname: "Azul Brillo"
-  // },
-  {
-    fixedValue: "#DD021E",
-    name: "23-AP",
-    nickname: "Rojo"
-  },
-  // {
-  //   fixedValue: "#10131F",
-  //   name: "16-A",
-  //   nickname: "Azul Brillo"
-  // },
-  {
-    fixedValue: "#F52B1F",
-    name: "38-K",
-    nickname: "Naranja"
-  },
-  {
-    fixedValue: "#4FC0FC",
-    name: "24-K",
-    nickname: "Azul Bebé"
-  },
-  // {
-  //   fixedValue: "#212950",
-  //   name: "40-B",
-  //   nickname: "Lila Brillo"
-  // },
-  {
-    fixedValue: "#0226A6",
-    name: "47-AP",
-    nickname: "Azul Oscuro"
-  },
-  // {
-  //   fixedValue: "#1A1A1A",
-  //   name: "45-K",
-  //   nickname: "Marron Oscuro"
-  // },
-  // {
-  //   fixedValue: "#0A0A0A",
-  //   name: "41-B",
-  //   nickname: "Fucsia Brillo"
-  // },
   {
     fixedValue: "#FFFFFF",
     name: "30-K",
     nickname: "Blanco"
   },
   {
-    fixedValue: "#85060F",
-    name: "52-K",
-    nickname: "Granate"
-  },
-  // {
-  //   fixedValue: "#050505",
-  //   name: "10-NA",
-  //   nickname: "Arcoiris Brillo"
-  // },
-  {
-    fixedValue: "#4A412E",
-    name: "18-Q",
-    nickname: "Dorado Brillo"
+    fixedValue: "#FEFFFE",
+    name: "30-W",
+    nickname: "30-W"
   },
   {
-    fixedValue: "#DF055C",
-    name: "42-K",
-    nickname: "Rosado Fucsia"
+    fixedValue: "#FBE9C1",
+    name: "37-K",
+    nickname: "37-K"
   },
   {
-    fixedValue: "#010101",
-    name: "33-AP",
-    nickname: "Negro"
+    fixedValue: "#FDE23D",
+    name: "34-K",
+    nickname: "34-K"
+  },
+  {
+    fixedValue: "#FED313",
+    name: "34-AP",
+    nickname: "34-AP"
+  },
+  {
+    fixedValue: "#F52B1F",
+    name: "38-K",
+    nickname: "Naranja"
+  },
+  {
+    fixedValue: "#E30D27",
+    name: "21-K",
+    nickname: "Coral"
+  },
+  {
+    fixedValue: "#D70214",
+    name: "23-K",
+    nickname: "23-K"
+  },
+  {
+    fixedValue: "#DD021E",
+    name: "23-AP",
+    nickname: "Rojo"
+  },
+  {
+    fixedValue: "#A60013",
+    name: "15-L",
+    nickname: "15-L"
+  },
+  {
+    fixedValue: "#080808",
+    name: "15-A",
+    nickname: "15-A"
+  },
+  {
+    fixedValue: "#01AAA5",
+    name: "50-AP",
+    nickname: "Turquesa Mate"
   },
   {
     fixedValue: "#02A64D",
@@ -498,59 +478,284 @@ const colorList = [
     nickname: "Verde"
   },
   {
-    fixedValue: "#7E540D",
-    name: "18-A",
-    nickname: "Dorado"
-  },
-  // {
-  //   fixedValue: "#131313",
-  //   name: "20-B",
-  //   nickname: "Cobre Brillo"
-  // },
-  {
-    fixedValue: "#414141",
-    name: "44-K",
-    nickname: "Gris"
+    fixedValue: "#02762D",
+    name: "29-AP",
+    nickname: "29-AP"
   },
   {
-    fixedValue: "#FFD414",
-    name: "34-AP",
-    nickname: "Amarillo"
+    fixedValue: "#4FDF03",
+    name: "28-P",
+    nickname: "28-P"
   },
-  // {
-  //   fixedValue: "#050505",
-  //   name: "50-B",
-  //   nickname: "Turquesa Con Brillo"
-  // },
-  // {
-  //   fixedValue: "",
-  //   name: "18-AR",
-  //   nickname: "Rose Gold Brillo"
-  // },
   {
-    fixedValue: "#01AAA5",
-    name: "50-AP",
-    nickname: "Turquesa Mate"
+    fixedValue: "#99ED53",
+    name: "28-AP",
+    nickname: "28-AP"
   },
-  // {
-  //   fixedValue: "#2C2422",
-  //   name: "32-K",
-  //   nickname: "Marron Claro"
-  // },
+  {
+    fixedValue: "#138B00",
+    name: "17-B",
+    nickname: "Verde Limon Brillo"
+  },
+  {
+    fixedValue: "#A7AEA7",
+    name: "17-P",
+    nickname: "17-P"
+  },
+  {
+    fixedValue: "#101010",
+    name: "17-L",
+    nickname: "17-L"
+  },
+  {
+    fixedValue: "#050505",
+    name: "17-A",
+    nickname: "17-A"
+  },
+  {
+    fixedValue: "#070707",
+    name: "50-B",
+    nickname: "50-B"
+  },
+  {
+    fixedValue: "#070707",
+    name: "10-NA",
+    nickname: "10-NA"
+  },
+  {
+    fixedValue: "#4FC0FC",
+    name: "24-K",
+    nickname: "Azul Bebé"
+  },
+  {
+    fixedValue: "#0989EE",
+    name: "51-K",
+    nickname: "51-K"
+  },
+  {
+    fixedValue: "#474E6C",
+    name: "16-P",
+    nickname: "16-P"
+  },
+  {
+    fixedValue: "#0F0F0F",
+    name: "16-A",
+    nickname: "16-A"
+  },
+  {
+    fixedValue: "#04168E",
+    name: "16-L",
+    nickname: "16-L"
+  },
+  {
+    fixedValue: "#0A0A0A",
+    name: "16-B",
+    nickname: "16-B"
+  },
+  {
+    fixedValue: "#172328",
+    name: "24-B",
+    nickname: "24-B"
+  },
   {
     fixedValue: "#0712EA",
     name: "25-K",
     nickname: "Azul Cobalto"
   },
   {
-    fixedValue: "#E30D27",
-    name: "21-K",
-    nickname: "Coral"
+    fixedValue: "#172142",
+    name: "47-KD",
+    nickname: "47-KD"
+  },
+  {
+    fixedValue: "#0321A5",
+    name: "47-P",
+    nickname: "47-P"
+  },
+  {
+    fixedValue: "#FEFAFD",
+    name: "10-NP",
+    nickname: "10-NP"
+  },
+  {
+    fixedValue: "#FC5B87",
+    name: "39-P",
+    nickname: "39-P"
   },
   {
     fixedValue: "#FEBCD1",
     name: "35-AP",
     nickname: "Rosa Bebé"
+  },
+  {
+    fixedValue: "#FD83D6",
+    name: "39-K",
+    nickname: "39-K"
+  },
+  {
+    fixedValue: "#FE74AD",
+    name: "56-P",
+    nickname: "56-P"
+  },
+  {
+    fixedValue: "#DF055C",
+    name: "42-K",
+    nickname: "Rosado Fucsia"
+  },
+  {
+    fixedValue: "#1B2C5E",
+    name: "40-B",
+    nickname: "40-B"
+  },
+  {
+    fixedValue: "#352355",
+    name: "41-K",
+    nickname: "41-K"
+  },
+  {
+    fixedValue: "#0F0F0F",
+    name: "41-B",
+    nickname: "41-B"
+  },
+  {
+    fixedValue: "#171717",
+    name: "22-L",
+    nickname: "22-L"
+  },
+  {
+    fixedValue: "#030303",
+    name: "42-B",
+    nickname: "42-B"
+  },
+  {
+    fixedValue: "#030303",
+    name: "21-L",
+    nickname: "21-L"
+  },
+  {
+    fixedValue: "#030303",
+    name: "21-B",
+    nickname: "21-B"
+  },
+  {
+    fixedValue: "#090909",
+    name: "18-L",
+    nickname: "18-L"
+  },
+  {
+    fixedValue: "#7E540D",
+    name: "18-A",
+    nickname: "Dorado"
+  },
+  {
+    fixedValue: "#936B23",
+    name: "18-LM",
+    nickname: "18-LM"
+  },
+  {
+    fixedValue: "#101010",
+    name: "18-LG",
+    nickname: "18-LG"
+  },
+  {
+    fixedValue: "#523726",
+    name: "18-R",
+    nickname: "18-R"
+  },
+  {
+    fixedValue: "#030303",
+    name: "18-AA",
+    nickname: "18-AA"
+  },
+  {
+    fixedValue: "#4A412E",
+    name: "18-Q",
+    nickname: "Dorado Brillo"
+  },
+  {
+    fixedValue: "#940013",
+    name: "46-K",
+    nickname: "46-K"
+  },
+  {
+    fixedValue: "#85060F",
+    name: "52-K",
+    nickname: "Granate"
+  },
+  {
+    fixedValue: "#87021D",
+    name: "52-AP",
+    nickname: "52-AP"
+  },
+  {
+    fixedValue: "#2D2427",
+    name: "32-K",
+    nickname: "Marron Claro"
+  },
+  {
+    fixedValue: "#1A1A1A",
+    name: "45-K",
+    nickname: "Marron Oscuro"
+  },
+  {
+    fixedValue: "#090909",
+    name: "19-L",
+    nickname: "19-L"
+  },
+  {
+    fixedValue: "#79787D",
+    name: "19-Q",
+    nickname: "Plata Brillo"
+  },
+  {
+    fixedValue: "#88878C",
+    name: "19-R",
+    nickname: "19-R"
+  },
+  {
+    fixedValue: "#070707",
+    name: "19-K",
+    nickname: "19-K"
+  },
+  {
+    fixedValue: "#414141",
+    name: "44-K",
+    nickname: "Gris"
+  },
+  {
+    fixedValue: "#010101",
+    name: "33-AP",
+    nickname: "Negro"
+  },
+  {
+    fixedValue: "#050505",
+    name: "33-K",
+    nickname: "33-K"
+  },
+  {
+    fixedValue: "#050505",
+    name: "33-W",
+    nickname: "33-W"
+  },
+  {
+    fixedValue: "#050505",
+    name: "33-A",
+    nickname: "33-A"
+  },
+  {
+    fixedValue: "#131313",
+    name: "20-B",
+    nickname: "Cobre Brillo"
+  },
+  {
+    fixedValue: "#6E382E",
+    name: "20-AP",
+    nickname: "20-AP"
+  },
+  {
+    fixedValue: "#D58C1D",
+    name: "36-AP",
+    nickname: "36-AP"
   },
 ]
 

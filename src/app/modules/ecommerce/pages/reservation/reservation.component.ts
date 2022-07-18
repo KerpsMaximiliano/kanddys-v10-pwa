@@ -7,6 +7,7 @@ import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -38,7 +39,9 @@ export class ReservationComponent implements OnInit {
   datePreview: {
     day: string;
     month: string;
+    monthNumber?: number;
     hour: string;
+    hourNumber?: number;
     dateInfo: string;
     dayName: string;
     until: string;
@@ -46,7 +49,11 @@ export class ReservationComponent implements OnInit {
   shortDatePreview: string;
   options: boolean = false;
   whatsappLink: string;
+  merchantId: string;
   merchantName: string;
+  merchantPhone: string;
+  whatsappReservation: any;
+  calendarData: any = null;
 
   constructor(
     public order: OrderService,
@@ -54,11 +61,13 @@ export class ReservationComponent implements OnInit {
     public calendar: CalendarService,
     public reservation: ReservationService,
     private router: Router,
+    private route: ActivatedRoute,
     // private dialog: DialogService,
     // private postService: PostsService,
     // private item: ItemsService,
     public header: HeaderService,
     public saleflow: SaleFlowService,
+    private merchantsService: MerchantsService,
     // private location: Location,
     // private app: AppService
   ) {}
@@ -108,54 +117,87 @@ export class ReservationComponent implements OnInit {
   weekDay: string;
   orderData: any;
   dialogProps: any;
+  mode: string;
+  standaloneReservation: any;
 
   //calendar: 6149f790eb8b911a707523ce
   ngOnInit(): void {
-    this.header.disableNav();
-    this.header.hide();
-    this.header.flowRoute = 'reservations';
-    localStorage.setItem('flowRoute', 'reservations');
+    this.route.queryParams.subscribe((queryParams) => {
+      const { mode, merchantId, from, to } = queryParams;
 
-    this.version = this.router.url.split('/')[2];
-    this.calendar.setInitalState();
-    this.saleflowData = this.header.getSaleflow();
-    if (!this.header.saleflow) this.header.saleflow = this.saleflowData;
-    this.orderData = this.header.getOrder(this.saleflowData._id);
-    this.header.getOrderProgress(this.saleflowData._id);
-    this.calendarId = this.saleflowData.module.appointment.calendar._id;
-    this.calendar.getToday();
-    this.checkCalendar();
-    if (this.orderData.products[0].reservation) {
-      this.dateFrom = moment(this.orderData.products[0].reservation.date.from)
-        .locale('es-es')
-        .format('DD');
-      this.dateComponentFrom = moment(
-        this.orderData.products[0].reservation.date.from
-      )
-        .locale('es-es')
-        .format('MMMM');
-      this.timeComponentFrom = moment(
-        this.orderData.products[0].reservation.date.from
-      )
-        .locale('es-es')
-        .format('HH:mm');
-      this.dateComponentFrom =
-        this.dateComponentFrom.charAt(0).toUpperCase() +
-        this.dateComponentFrom.slice(1);
-      this.weekDay = moment(this.orderData.products[0].reservation.date.from)
-        .locale('es-es')
-        .format('dddd');
-      this.weekDay =
-        this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
-    }
-    this.dialogProps = { orderFinished: true };
+      if(merchantId && merchantId !== '') this.merchant = merchantId;
+      this.mode = mode;
+
+      this.header.disableNav();
+      this.header.hide();
+      this.header.flowRoute = 'reservations';
+      localStorage.setItem('flowRoute', 'reservations');
+      this.version = this.router.url.split('/')[2];
+      this.calendar.setInitalState();
+
+      if(this.header.getSaleflow() && (!mode || mode === 'normal')) {
+        this.saleflowData = this.header.getSaleflow();
+        if (!this.header.saleflow) this.header.saleflow = this.saleflowData;
+        this.orderData = this.header.getOrder(this.saleflowData._id);
+        this.header.getOrderProgress(this.saleflowData._id);
+        this.calendarId = this.saleflowData.module.appointment.calendar._id;
+        this.calendar.getToday();
+        this.checkCalendar();
+        if (this.orderData.products[0].reservation) {
+          this.dateFrom = moment(this.orderData.products[0].reservation.date.from)
+            .locale('es-es')
+            .format('DD');
+          this.dateComponentFrom = moment(
+            this.orderData.products[0].reservation.date.from
+          )
+            .locale('es-es')
+            .format('MMMM');
+          this.timeComponentFrom = moment(
+            this.orderData.products[0].reservation.date.from
+          )
+            .locale('es-es')
+            .format('HH:mm');
+          this.dateComponentFrom =
+            this.dateComponentFrom.charAt(0).toUpperCase() +
+            this.dateComponentFrom.slice(1);
+          this.weekDay = moment(this.orderData.products[0].reservation.date.from)
+            .locale('es-es')
+            .format('dddd');
+          this.weekDay =
+            this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
+        }
+        this.dialogProps = { orderFinished: true };
+      } else if(mode === 'standalone'){
+        const { calendarId } = queryParams;
+
+        this.calendarId = calendarId;
+        this.calendar.getToday();
+        this.checkCalendar(from, to);
+      }
+    })
   }
 
-  async checkCalendar() {
-    this.calendar.getCalendar(this.calendarId).then((data) => {
+  async checkCalendar(fromLimit = null, toLimit = null) {
+    this.calendar.getCalendar(
+      this.calendarId,
+      fromLimit,
+      toLimit
+      // includeMerchantInfoInQuery
+    ).then(async (data) => {
+      this.calendarData = data;
+
       //this.merchant = data.getCalendar.merchant._id;
-      this.merchant = this.saleflowData.merchant._id;
-      this.merchantName = this.saleflowData.merchant.name;
+      if(!this.mode || this.mode === 'normal') {
+        this.merchant = this.saleflowData.merchant._id;
+        this.merchantName = this.saleflowData.merchant.name;
+      }
+      
+      if(this.mode === 'standalone') {
+        const merchantData = await this.merchantsService.merchant(this.merchant);
+        this.merchantName = merchantData.name;
+        this.merchantPhone = merchantData.owner.phone;
+      }
+
       this.getAmAndPm();
       // Logic for default date
       if (!this.sliders) {
@@ -252,6 +294,7 @@ export class ReservationComponent implements OnInit {
     let date2 = moment.utc().format();
     let lastHour;
     let reservation;
+    
     if (
       this.calendar.dayIndex == 0 &&
       this.calendar.monthIndex == 0 &&
@@ -307,13 +350,18 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      if (this.saleflowData.module.post == null) {
-        this.orderData.products[0].reservation = reservation;
-      } else if (
-        this.saleflowData.module.delivery.deliveryLocation &&
-        this.saleflowData.module.delivery.isActive
-      ) {
-        this.orderData.products[0].reservation = reservation;
+      
+      if(!this.mode || this.mode === 'normal') {
+        if (this.saleflowData.module.post == null) {
+          this.orderData.products[0].reservation = reservation;
+        } else if (
+          this.saleflowData.module.delivery.deliveryLocation &&
+          this.saleflowData.module.delivery.isActive
+        ) {
+          this.orderData.products[0].reservation = reservation;
+        }
+      } else if (this.mode === 'standalone') {
+        this.standaloneReservation = reservation;
       }
     } else {
       this.today = false;
@@ -367,57 +415,107 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      if (this.saleflowData.module.post == null) {
-        this.orderData.products[0].reservation = reservation;
-      } else if (
-        this.saleflowData.module.delivery.deliveryLocation &&
-        this.saleflowData.module.delivery.isActive
-      ) {
-        this.orderData.products[0].reservation = reservation;
+
+      if(!this.mode || this.mode === 'normal') {
+        if (this.saleflowData.module.post == null) {
+          this.orderData.products[0].reservation = reservation;
+        } else if (
+          this.saleflowData.module.delivery.deliveryLocation &&
+          this.saleflowData.module.delivery.isActive
+        ) {
+          this.orderData.products[0].reservation = reservation;
+        }
+      } else if (this.mode === 'standalone') {
+        this.standaloneReservation = reservation;
       }
     }
+
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
-    let dateInfo = (
+
+    let dateInfo = (!this.mode || this.mode === 'normal') ?  (
       this.orderData.products[0].reservation.date.from as string
-    ).split('-');
+    ).split('-') : (this.standaloneReservation.date.from as string).split('-');
+
     let day = dateInfo[2].split('T')[0];
     let hour =
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
     let month: string;
+    let monthNumber;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
         month = this.calendar.allFullMonths[i].name;
+        monthNumber = this.calendar.allFullMonths[i].id;
       }
     }
+
     this.datePreview = {
       day: day,
       month: month,
-      hour: this.formatHour3(
+      monthNumber,
+      hour: (!this.mode || this.mode === 'normal') ? this.formatHour3(
         this.orderData.products[0].reservation.date.from as string
+      ) : this.formatHour3(
+        this.standaloneReservation.date.from as string
       ),
+      hourNumber: this.formatHour5(reservation.date.from).hour,
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayName,
-      until: this.formatHour3(
+      until: (!this.mode || this.mode === 'normal') ? this.formatHour3(
         this.orderData.products[0].reservation.date.until as string
+      ) : this.formatHour3(
+        this.standaloneReservation.date.from as string
       ),
     };
+
     this.shortDatePreview = `Reservar el ${this.datePreview.dayName} ${this.datePreview.day} de
       ${this.datePreview.month} a las ${this.datePreview.hour}
-    `
-    // Logic for default date
-    if (!this.dateComponentFrom)
-      this.dateComponentFrom = this.datePreview.month;
-    if (!this.dateFrom) this.dateFrom = this.datePreview.day;
-    // End logic for default date
-    this.header.datePreview = this.datePreview;
-    this.header.storeReservation(this.saleflowData._id, reservation);
-    this.header.isComplete.reservation = true;
-    this.header.storeOrderProgress(this.saleflowData._id);
+    `;
+
+    // const hoursStringLast2Digits = this.datePreview.hour.slice(-2);
+    // const hoursStringFirst2Digits = this.datePreview.hour.slice(0, 2);
+
+    // const hourIn24HoursHumanFormat = hoursStringLast2Digits === 'pm' ? (
+    //   hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) + 12 : (
+    //     hoursStringFirst2Digits !== '12' ?
+    //       Number(hoursStringFirst2Digits) + 12
+    //       : 12
+    //   )
+    // ) : (
+    //   hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) :
+    //     hoursStringFirst2Digits !== '12' ? Number(hoursStringFirst2Digits) : 0
+    // );
+
+    // const hourStringIn24HourFormat = hourIn24HoursHumanFormat < 10 ? '0' + hourIn24HoursHumanFormat + ':00' : hourIn24HoursHumanFormat + ':00';
+
+    // this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
+
+    // this.onReservation.emit({
+    //   message: this.reservationMessage,
+    //   data: this.datePreview
+    // });
+
+    if(!this.mode || this.mode === 'normal') {
+      // Logic for default date
+      if (!this.dateComponentFrom)
+        this.dateComponentFrom = this.datePreview.month;
+      if (!this.dateFrom) this.dateFrom = this.datePreview.day;
+      // End logic for default date
+      this.header.datePreview = this.datePreview;
+      this.header.storeReservation(this.saleflowData._id, reservation);
+      this.header.isComplete.reservation = true;
+      this.header.storeOrderProgress(this.saleflowData._id);
+    } else if (this.mode === 'standalone') {
+      this.whatsappLink = `https://wa.me/${
+        this.merchantPhone
+      }?text=${encodeURIComponent(`Reservación en la sucursal ${this.calendarData.getCalendar.name} el ${
+        this.datePreview.dayName + ', ' + (this.datePreview.day) + ' de ' + this.datePreview.month
+      } de ${this.datePreview.hour} a ${this.datePreview.until.split(':')[0]}:45 ${this.datePreview.until.slice(-2)}`)}`;
+    }
   }
 
   // zorroChange(string) {
@@ -474,18 +572,15 @@ export class ReservationComponent implements OnInit {
 
   zorroChange5(string) {
     string = parseInt(string.split(':')[0]);
+
     if (string > 12) {
       string = string - 12;
-    }
-    if (string == 12) {
+
       string = string.toString() + ':' + '00' + ' ' + 'pm';
-    } else if (string == 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
-    } else if (string > 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
-    } else {
-      string = string.toString() + ':' + '00' + ' ' + 'pm';
+    } else if (string <= 12) {
+      string = string.toString() + ':' + '00' + ' ' + (string === 12 ? 'pm' : 'am');
     }
+
     return string;
   }
 
@@ -501,6 +596,31 @@ export class ReservationComponent implements OnInit {
   //   }
   //   return string;
   // }
+
+  formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {
+    let hourInteger: number | string = parseInt(hourString.split(':')[0]);
+    let formattedHour: string;
+    let minutesString: string;
+
+    minutesString = minutes < 10 ? '0' + minutes : String(minutes);
+
+    if (addOne) hourInteger += 1;
+
+    if (hourInteger < 12) {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'am';
+    } else if (hourInteger > 12) {
+      hourInteger = hourInteger - 12;
+
+      if (hourInteger !== 12)
+        formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+      else
+        formattedHour = '00' + ':' + minutesString + ' ' + 'am';
+    } else {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+    };
+
+    return formattedHour;
+  }
 
   num(number) {
     return parseInt(number);
@@ -532,8 +652,18 @@ export class ReservationComponent implements OnInit {
     return moment(hour, 'h:mm').format('h:mm');
   }
 
+  formatHour5(hour: string) {
+    let date = moment(hour);
+    let hourNew = Number(date.format('h'));
+    let minutes = Number(date.format('mm'));
+    return { hour: hourNew, minutes };
+  }
+
   getId(id: number, slide: string) {
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
+
+    // console.log(slide, "slide");
+
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -551,6 +681,12 @@ export class ReservationComponent implements OnInit {
       let reservationDayFrom = parseInt(
         this.calendar.reservations[i].date.from.split('-')[2]
       );
+
+      // console.log(this.calendar.months[this.calendar.monthIndex].id, reservationMonthFrom);
+      // console.log(this.calendar.months[this.calendar.monthIndex].dates[
+      //   this.calendar.dayIndex
+      // ].dayNumber, reservationDayFrom);
+
       if (
         this.calendar.months[this.calendar.monthIndex].id ==
           reservationMonthFrom &&
@@ -561,7 +697,24 @@ export class ReservationComponent implements OnInit {
         let hour = parseInt(this.calendar.reservations[i].date.fromHour);
         let currentArrayHour;
         currentArrayHour = parseInt(hour1);
-        if (hour == currentArrayHour) {
+
+        // console.log(currentArrayHour, hour);
+
+        if((!this.mode || this.mode === 'normal') && (hour == currentArrayHour)) {
+          if (
+            this.calendar.reservations[i].reservation.length ==
+            this.calendar.reservationLimit
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        const timezoneOffset = new Date().getTimezoneOffset() / 60;
+
+        //Cuando se le pasa el fromHour a createReservation, deberia sumarsele el offset
+        if(this.mode === 'standalone' && (hour == currentArrayHour - timezoneOffset)) {
           if (
             this.calendar.reservations[i].reservation.length ==
             this.calendar.reservationLimit
@@ -750,30 +903,66 @@ export class ReservationComponent implements OnInit {
   // }
 
   async save() {
-    lockUI();
-    this.orderData.products[0].deliveryLocation = {
-      city: null,
-      houseNumber: null,
-      nickName:
-        'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
-      note: null,
-      referencePoint: null,
-      street: null,
-    };
-    this.header.storeOrderPackage(
-      this.saleflowData._id,
-      this.orderData.itemPackage,
-      this.orderData.products
-    );
-    this.header.isComplete.reservation = true;
-    this.header.isComplete.delivery = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
+    if(!this.mode || this.mode === 'normal') {
+      lockUI();
+      this.orderData.products[0].deliveryLocation = {
+        city: null,
+        houseNumber: null,
+        nickName:
+          'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
+        note: null,
+        referencePoint: null,
+        street: null,
+      };
+      this.header.storeOrderPackage(
+        this.saleflowData._id,
+        this.orderData.itemPackage,
+        this.orderData.products
+      );
+      this.header.isComplete.reservation = true;
+      this.header.isComplete.delivery = true;
+      this.header.storeOrderProgress(this.header.saleflow._id);
 
-    let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
-    else preOrderID = this.header.orderId;
-    unlockUI();
-    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+      let preOrderID;
+      if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+      else preOrderID = this.header.orderId;
+      unlockUI();
+      this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+    } else {
+      const year = new Date().getFullYear();
+      const day = Number(this.datePreview.day);
+      const month = this.datePreview.monthNumber;
+      const fromHour = this.datePreview.hourNumber;
+
+      const fromString = new Date(year, month, day, fromHour).toISOString();
+      const untilString = new Date(year, month, day, fromHour + 1).toISOString();
+
+      const convertedFromHour = String(fromHour).length < 2 ? (
+        `0${fromHour}:00`
+      ) : `${fromHour}:00`;
+
+      const convertedToHour = String(fromHour + 1).length < 2 ? (
+        `0${fromHour + 1}:00`
+      ) : `${fromHour + 1}:00`;
+
+      const reservation = await this.reservation.createReservationAuthLess({
+        calendar: this.calendarId,
+        merchant: this.merchant,
+        date:{
+            dateType: "RANGE",
+            from: fromString,
+            until: untilString,
+            fromHour: convertedFromHour,
+            toHour: convertedToHour
+        },
+        type: "ORDER"
+      });
+
+      if(reservation) window.location.href = this.whatsappLink;
+      else {
+        alert("Un error ocurrió al hacer la reservación, intente más tarde");
+      }
+    }
   }
 
   deleteSelection() {

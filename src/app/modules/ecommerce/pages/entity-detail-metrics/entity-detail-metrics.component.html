@@ -1,0 +1,146 @@
+<div style="min-height: 100vh;">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    [icons]="admin && (saleflow ? [
+      {
+        src: '/upload.svg',
+        callback: onShareClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      },
+      {
+        src: '/pencil.svg',
+        callback: onPencilClick,
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+      }
+    ] :
+    merchant && [
+    {
+      src: '/pencil.svg',
+      callback: onPencilClick,
+      color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+    }
+  ])"
+  (returnEvent)="back()"
+  bgColor="#2874AD"
+  ></app-helper-headerv2>
+  <div class="header" *ngIf="merchant">
+    <div
+      class="header-image"
+      [ngStyle]="{backgroundImage: 'url(' + merchant.image + ')'}"
+      [ngClass]="{'placeholder': !merchant.image}"
+    ></div>
+    <h5>{{merchant.name}}</h5>
+    <p>{{merchant.bio}}</p>
+
+    <!-- Activar/Desactivar la tienda -->
+    <!-- <button class="header-btn" *ngIf="admin">
+      publica y activa <i class="fas fa-chevron-right"></i>
+    </button> -->
+  </div>
+  <div *ngIf="!ordersTotal && mode === 'store'">
+    <app-form-questions
+      [topBar]="items?.length + ' articulos'"
+      bottomLeftBtn="adicionar nuevo articulo"
+      (bottomLeft)="redirectToCreateItem()"
+      bottomRightBtn="ver mas"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
+    ></app-form-questions>
+  </div>
+  <div *ngIf="admin">
+    <app-form-questions
+      *ngIf="items"
+      [topBar]="items?.length + ' articulos'"
+      bottomRightBtn="MAS"
+      (bottomRight)="redirectMerchantItems('merchant-items')"
+      [questions]="[
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        },
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: items?.length
+        }
+      ]"
+      bottomLeftBtn="adicionar nuevo articulo"
+      (bottomLeft)="redirectToCreateItem()"
+      ></app-form-questions>
+      <!-- [dropdowns]="[
+        {
+          title: 'categorias',
+          content: categories
+        }
+      ]" -->
+
+    <!-- VENTAS -->
+    <!-- <app-form-questions
+      *ngIf="ordersTotal"
+      [topBar]="ordersTotal.length + ' ordenes / ventas'"
+      bottomRightBtn="MAS"
+      (bottomRight)="redirectMerchantItems('order-sales/'+merchant._id)"
+      [questions]="[
+        {
+          text: 'Promedio de ventas mensual',
+          any: ordersTotal.length
+        },
+        {
+          text: 'Promedio de ingreso mensual',
+          any: ordersTotal.length
+        }
+      ]"
+      [dropdowns]="[
+        {
+          title: 'TAGS',
+          content: tags
+        },
+        {
+          title: 'STATUS ID',
+          content: [
+            {
+              text: 'Lorem ipsum 2'
+            }
+          ]
+        }
+      ]"
+    ></app-form-questions> -->
+
+    <!-- COMPRADORES -->
+    <!-- <app-form-questions
+      *ngIf="users"
+      [topBar]="users.length + ' COMPRADORES'"
+      [questions]="[
+        {
+          text: 'Promedio de Veces que Repiten',
+          any: users.length
+        },
+        {
+          text: 'Promedio de Dias que Repiten',
+          any: users.length
+        }
+      ]"
+      [dropdowns]="[
+        {
+          title: 'TAGS',
+          content: tags
+        }
+      ]"
+    ></app-form-questions> -->
+  </div>
+</div>
+<app-bubble-button
+  *ngIf="admin && mode === 'collections'"
+  position="left"
+  [solo]="false"
+  [return]="true"
+  color="blue"
+></app-bubble-button>
+<app-sticky-button
+  *ngIf="admin && mode === 'collections'"
+  mode="double"
+  text="POSIBILIDADES"
+  text2="WEBAPP STORE"
+  size="small"
+  [backButton]="true"
+  bgColor="#2874AD"
+></app-sticky-button>

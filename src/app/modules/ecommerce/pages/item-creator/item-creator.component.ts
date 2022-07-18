@@ -15,6 +15,7 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { Item } from 'src/app/core/models/item';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -23,6 +24,10 @@ const labelStyles = {
   marginBottom: '24px',
   fontWeight: 'normal'
 };
+
+const checkIfStringIsBase64DataURI = (text: string)=> {
+  return text.slice(0, 5) === 'data:';
+}
 
 @Component({
   selector: 'app-item-creator',
@@ -35,6 +40,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   currentItemId: string = null;
   scrollableForm = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
+  defaultImagesPermanent: (string)[] = [''];
   loggedUserDefaultMerchant: Merchant;
   loggedUserDefaultSaleflow: SaleFlow;
   loggedIn: boolean = false;
@@ -43,6 +49,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   shouldScrollBackwards: boolean = false;
   files: File[] = [];
   item: Item;
+  imagesAlreadyLoaded: boolean = false;
+  lastCharacterEnteredIsADecimal: boolean = false;
+  tryingToDeleteDotDecimalCounter: number = 0;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -63,12 +72,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.currentUserId === this.merchantOwnerId
             && this.currentItemId
           ) {
-            await this.itemService.updateItem(
+            // console.log(this.files);
+            const {updateItem: updatedItem} = await this.itemService.updateItem(
               {
                 name: values['4'].name,
                 description: values['3'].description,
                 pricing: totalWithDecimal,
-                images: this.files,
                 content: values['2'].whatsIncluded,
                 currencies: [],
                 hasExtraPrice: false,
@@ -76,12 +85,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               },
               this.currentItemId
             );
-            // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-            // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-            this.router.navigate([`/ecommerce/user-items`]);
+
+            if(updatedItem) {
+              await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+
+              await this.itemService.addImageItem(this.files, updatedItem._id);
+
+              // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
+              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
+              this.router.navigate([`/ecommerce/merchant-items`]);
+            }
+            
           } else {
             if (this.loggedIn) {
-              console.log(this.loggedUserDefaultMerchant);
+              // console.log(this.loggedUserDefaultMerchant);
               const { createItem } = await this.itemService.createItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -105,7 +122,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 // this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
 
-                this.router.navigate([`/ecommerce/user-items`]);
+                this.router.navigate([`/ecommerce/merchant-items`]);
 
                 // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
@@ -177,9 +194,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ).length + 1,
           statusChangeCallbackFunction: (change) => {
             if(change === 'VALID') {
-              this.formSteps[0].headerText = this.item.status === 'active' ?
-                'ACTIVO (EXPUESTO EN TIENDA)' :
-                'INACTIVO (NO EXPUESTO)';
+              // console.log("edit mode", this.editMode);
+
+              if(this.editMode) {
+                for(let formStep of this.formSteps) {
+                  formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                    '#2874AD' : '#B17608';
+
+                  formStep.headerText = this.item.status === 'active' ?
+                    'ACTIVO (EXPUESTO EN TIENDA)' :
+                    'INACTIVO (NO EXPUESTO)';
+                }
+              } else {
+                this.formSteps[0].headerText = 'PREVIEW'
+              }
               this.formSteps[0].headerTextSide = 'RIGHT';           
             } else {
               this.formSteps[0].headerText = null;
@@ -194,8 +222,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           focused: false,
           placeholder: 'Precio...',
           changeCallbackFunction: (change, params) => {
+            const { price: previousPrice } = params.dataModel.value['1'];
+
+            if(change.length === previousPrice.length) {
+              this.lastCharacterEnteredIsADecimal = true;
+              this.tryingToDeleteDotDecimalCounter += 1;
+            } else {
+              this.lastCharacterEnteredIsADecimal = false;
+            }
+
             try {
-              if (!change.includes('.')) {
+              if(this.lastCharacterEnteredIsADecimal && previousPrice.length === change.length && this.tryingToDeleteDotDecimalCounter === 2) {
+                change = change.slice(0, -1);
+
+                this.lastCharacterEnteredIsADecimal = false;
+                this.tryingToDeleteDotDecimalCounter = 0;
+
+                //REFACTOR LATER
                 const plainNumber = change
                   .split(',')
                   .join('');
@@ -217,6 +260,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   }
 
                   this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
+                    emitEvent: false,
+                  });
                 } else {
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
@@ -233,13 +280,99 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     this.formSteps[0].fieldsList[0].placeholder = '';
                   }
 
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
+                    emitEvent: false,
+                  });
+
                   this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
                 }
+                
               } else {
-                const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
-                this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
-                  emitEvent: false,
-                });
+                if (!change.includes('.')) {
+                  const plainNumber = change
+                    .split(',')
+                    .join('');
+  
+                  if (plainNumber[0] === '0') {
+                    const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                          plainNumber.slice(1)
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  } else {
+                    const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length === 1 ? '0' + plainNumber :
+                          plainNumber
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  }
+                } else {
+                  const convertedNumber = Number(change.split('').filter(char => char !== '.').join(''));
+  
+                  const plainNumber = String(convertedNumber);
+  
+                  if (plainNumber[0] === '0') {
+                    const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length <= 2 ? '0' + plainNumber.slice(1) :
+                          plainNumber.slice(1)
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  } else {
+                    const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
+                      Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+                      '1.2'
+                    ) : this.decimalPipe.transform(
+                      Number('0.' + (
+                        plainNumber.length === 1 ? '0' + plainNumber :
+                          plainNumber
+                      )),
+                      '1.2'
+                    );
+  
+                    if (formatted === '0.00') {
+                      this.formSteps[0].fieldsList[0].placeholder = '';
+                    }
+  
+                    this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+                  }
+  
+                  this.formSteps[0].fieldsList[0].fieldControl.control.setValue(convertedNumber, {
+                    emitEvent: false,
+                  });
+                }
               }
             } catch (error) {
               console.log(error);
@@ -251,6 +384,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               minWidth: '210px',
               marginTop: '32px',
               position: 'relative',
+              overflowX: 'hidden'
             },
             fieldStyles: {
               backgroundColor: 'transparent',
@@ -340,6 +474,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             imageField:
               this.defaultImages.length > 0 ? this.defaultImages : null,
             multiple: true,
+            imagesAlreadyLoaded: this.imagesAlreadyLoaded,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
@@ -379,6 +514,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               name: 'onFileInput',
               callback: (result) => {
                 this.files[result.index] = result.image;
+                console.log(this.files);
               },
             },
           ],
@@ -405,7 +541,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         function: async (params) => {
           try {
             const values = params.dataModel.value;
-            const priceWithDecimalArray = values['1'].price.split('');
+            const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
             const firstHalf = priceWithDecimalArray.slice(0, -2);
             const secondHalf = priceWithDecimalArray.slice(-2);
             const totalArray = firstHalf.concat('.').concat(secondHalf);
@@ -417,12 +553,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               this.currentUserId === this.merchantOwnerId
               && this.currentItemId
             ) {
-              await this.itemService.updateItem(
+              // console.log(this.files);
+              const {updateItem: updatedItem } = await this.itemService.updateItem(
                 {
                   name: values['4'].name,
                   description: values['3'].description,
                   pricing: totalWithDecimal,
-                  images: this.files,
                   content: values['2'].whatsIncluded,
                   currencies: [],
                   hasExtraPrice: false,
@@ -431,10 +567,18 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 this.currentItemId
               );
 
-              this.headerService.flowRoute = this.router.url;
-              // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-              this.router.navigate([`/ecommerce/user-items`]);
+              if(updatedItem) {
+                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+
+                await this.itemService.addImageItem(this.files, updatedItem._id);
+
+                this.headerService.flowRoute = this.router.url;
+                // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
+                // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
+                this.itemService.removeTemporalItem();
+                this.router.navigate([`/ecommerce/merchant-items`]);
+              }
+
             } else {
               if (this.loggedIn) {
                 const { createItem } = await this.itemService.createItem({
@@ -461,7 +605,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.headerService.flowRoute = this.router.url;
                   // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
                   // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
-                  this.router.navigate([`/ecommerce/user-items`]);
+                  this.itemService.removeTemporalItem();
+                  this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
                 const { createPreItem } = await this.itemService.createPreItem({
@@ -481,6 +626,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
+                  this.itemService.removeTemporalItem();
                   this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
                 };
               }
@@ -520,20 +666,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   params.scrollToStep(3);
                 }
               },
-              {
-                text: 'Descripción',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(2);
-                }
-              },
-              {
-                text: 'Lo incluido',
-                action: (params) => {
-                  this.shouldScrollBackwards = true;
-                  params.scrollToStep(1);
-                }
-              },
+              // {
+              //   text: 'Descripción',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(2);
+              //   }
+              // },
+              // {
+              //   text: 'Lo incluido',
+              //   action: (params) => {
+              //     this.shouldScrollBackwards = true;
+              //     params.scrollToStep(1);
+              //   }
+              // },
             ]
           }
         ]
@@ -551,13 +697,14 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       },
       avoidGoingToNextStep: true,
       headerTextCallback: async (params) => {
-        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');
+        this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);
       },
       statusChangeCallbackFunction: (change) => {
         if(change === 'INVALID') {
           this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
           this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
         } else {
+          // this.formSteps[0].headerText = 'PREVIEW';
           this.formSteps[0].customStickyButton.mode = 'double';
           this.formSteps[0].customStickyButton.text = 'PREVIEW';
           this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
@@ -567,14 +714,14 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       customStickyButton: {
         text: 'ADICIONA LA INFO DE LO QUE VENDES',
         bgcolor: '#2874AD',
-        color: '#E9E371',
+        color: '#ffffff',
         bgcolorInactive: '#7b7b7b',
         colorInactive: '#ffffff',
         mode: 'disabled-fixed',
         height: '30px',
         heightInactive: '30px',
         textCallback: async (params) => {
-          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail');;
+          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);;
         },
         text2Callback: async (params) => {
           try {
@@ -851,17 +998,29 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (data) this.loggedIn = true;
       }
 
-      if (this.headerService.newTempItem && this.headerService.newTempItemRoute) {
-        const { description, name, images, pricing, content } = this.headerService.newTempItem;
+      if (this.itemService && this.itemService.temporalItem) {
+        const { description, name, content } = this.itemService.temporalItem;
+        let { pricing, images } = this.itemService.temporalItem;
+
+        // console.log("seteando 1")
+        // console.log("what arrived", {
+        //   description, name, images, pricing, content
+        // })
+
+        // console.log("THE PRICING SET", String(pricing), this.formSteps[0].fieldsList[0].fieldControl.control.value);
+
+        const formatted = this.decimalPipe.transform(
+          pricing,
+          '1.2'
+        );
+        
+        if(pricing % 1 === 0) pricing = pricing * 100;
 
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
 
-        const formatted = this.decimalPipe.transform(
-          pricing,
-          '1.0-2'
-        );
+        // console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
         if (formatted === '0') {
           this.formSteps[0].fieldsList[0].placeholder = '';
@@ -869,10 +1028,51 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
 
-        this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+        if(images && images.length > 0) {
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.imagesAlreadyLoaded = true;
+          this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+        } 
+        
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
+
+        const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
+        const base64Images = images.filter(image => checkIfStringIsBase64DataURI(image));
+
+        if(notBase64Images && notBase64Images.length > 0) {
+          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+          this.defaultImages = images;
+
+          for(let imageURL of notBase64Images) {
+            this.defaultImagesPermanent.push(imageURL);
+
+            fetch(imageURL)
+              .then(response => response.blob())
+              .then(blob => new Promise((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onloadend = () => resolve(reader.result)
+                reader.onerror = reject
+                reader.readAsDataURL(blob)
+              }))
+              .then((base64: string) => this.files.push(base64ToFile(base64)));
+          }
+
+          this.imagesAlreadyLoaded = true;
+          this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+        }
+
+        base64Images.forEach(image => this.files.push(base64ToFile(image)));
+        
+
+        if(Number(this.formSteps[0].fieldsList[0].fieldControl.control.value) > 0.01) {
+          this.formSteps[0].headerTextSide = 'RIGHT';
+          this.formSteps[0].headerText = 'PREVIEW';
+        } else {
+          this.formSteps[0].headerText = null;
+          this.formSteps[0].headerTextSide = null;
+        }
 
         const formArray = this.formSteps[1].fieldsList[0]
           .fieldControl.control as FormArray;
@@ -886,6 +1086,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           formArray.push(new FormControl(''));
         }
 
+        // this.formSteps[0].fieldsList[0].fieldControl.control.updateValueAndValidity();
+
         //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
         this.formSteps[0].embeddedComponents[0].shouldRerender = true;
 
@@ -894,17 +1096,22 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
       if (itemId && this.loggedIn) {
         lockUI();
+        this.editMode = true;
 
         this.currentUserId = this.user._id;
 
         this.item = await this.itemService.item(itemId);
-        const { pricing, images, name, content, description, merchant } = this.item;
+        const { images, name, content, description, merchant } = this.item;
+        let { pricing } = this.item;
+
+        // console.log("Loaded images", images);
+        // if(images.length > 0) this.files = images.map(image => base64ToFile(image)); 
 
         for(let formStep of this.formSteps) {
           formStep.customHelperHeaderConfig = {
             bgcolor: '#B17608',
             color: '#ffffff',
-            flexDirection: 'flex-end',
+            justifyContent: 'flex-end',
             alignItems: 'center',
             rightTextStyles: {
               fontSize: '17px',
@@ -926,15 +1133,20 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.currentItemId
                 );
 
-                this.item.status = this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft';
+                this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
 
-                this.formSteps[0].customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
-                  this.item.status === 'active' ? 'open' : 'closed'
-                }-eye-white.svg`;
-                
-                this.formSteps[0].headerText = this.item.status === 'active' ?
-                  'ACTIVO (EXPUESTO EN TIENDA)' :
-                  'INACTIVO (NO EXPUESTO)'
+                for(let formStep of this.formSteps) {
+                  formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                    this.item.status === 'active' ? 'open' : 'closed'
+                  }-eye-white.svg`;
+                  
+                  formStep.headerText = this.item.status === 'active' ?
+                    'ACTIVO (EXPUESTO EN TIENDA)' :
+                    'INACTIVO (NO EXPUESTO)';
+
+                  formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                    '#2874AD' : '#B17608';
+                }
               }
             }
           }
@@ -943,14 +1155,16 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
-
-          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-            String(pricing)
-          );
   
           const formatted = this.decimalPipe.transform(
             pricing,
-            '1.0-2'
+            '1.2'
+          );
+
+          if(pricing % 1 === 0) pricing = pricing * 100;
+
+          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+            String(pricing)
           );
   
           if (formatted === '0') {
@@ -961,8 +1175,30 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
 
           this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
-          this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-          this.defaultImages = images;
+
+          if(images && images.length > 0) {
+            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+            this.defaultImages = images;
+
+            for(let imageURL of images) {
+              this.defaultImagesPermanent.push(imageURL);
+
+              fetch(imageURL)
+                .then(response => response.blob())
+                .then(blob => new Promise((resolve, reject) => {
+                  const reader = new FileReader()
+                  reader.onloadend = () => resolve(reader.result)
+                  reader.onerror = reject
+                  reader.readAsDataURL(blob)
+                }))
+                .then((base64: string) => this.files.push(base64ToFile(base64)));
+            }
+
+            this.imagesAlreadyLoaded = true;
+            this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+
+            console.log("e", this.files);
+          }
 
           //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
@@ -996,29 +1232,43 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveItemInItemServiceAndRedirect(params, route: string) {
-    const values = params.dataModel.value;
+  saveItemInItemServiceAndRedirect(params, route: string, createdItemId?: string) {
+    let values = params.dataModel.value;
 
-        const priceWithDecimalArray = values['1'].price.split('');
-        const firstHalf = priceWithDecimalArray.slice(0, -2);
-        const secondHalf = priceWithDecimalArray.slice(-2);
-        const totalArray = firstHalf.concat('.').concat(secondHalf);
-        const totalWithDecimal = Number(totalArray.join(''));
+    if((
+      typeof values['1'].price !== 'string' && values['1'].price < 10
+    ) || (
+      typeof values['1'].price === 'string' && values['1'].price.length === 1
+    )) {
+      // console.log("PASANDO POR AQUÍ")
+      this.formSteps[0].fieldsList[0].fieldControl.control.setValue(String('0' + values['1'].price));
 
-        this.itemService.storeTemporalItem({
-          name: values['4'].name,
-          description: values['3'].description !== '' ? values['3'].description : null,
-          pricing: totalWithDecimal,
-          images: this.defaultImages,
-          merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
-          content: values['2'].whatsIncluded.length > 0 && !(
-            values['2'].whatsIncluded.length === 1 &&
-            values['2'].whatsIncluded[0] === ''
-          ) ? values['2'].whatsIncluded : null,
-          currencies: [],
-          hasExtraPrice: false,
-          purchaseLocations: [],
-        });
+      values = params.dataModel.value;
+    }
+
+    const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
+    const firstHalf = priceWithDecimalArray.slice(0, -2);
+    const secondHalf = priceWithDecimalArray.slice(-2);
+    const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
+    const totalWithDecimal = Number(totalArray.join(''));
+
+    // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
+
+    this.itemService.storeTemporalItem({
+      _id: createdItemId ? createdItemId : null,
+      name: values['4'].name,
+      description: values['3'].description !== '' ? values['3'].description : null,
+      pricing: totalWithDecimal,
+      images: this.defaultImages.filter(image => image !== ''),
+      merchant: this.loggedUserDefaultMerchant ? this.loggedUserDefaultMerchant?._id : null,
+      content: values['2'].whatsIncluded.length > 0 && !(
+        values['2'].whatsIncluded.length === 1 &&
+        values['2'].whatsIncluded[0] === ''
+      ) ? values['2'].whatsIncluded : null,
+      currencies: [],
+      hasExtraPrice: false,
+      purchaseLocations: [],
+    });
 
     this.router.navigate([route]);
   }

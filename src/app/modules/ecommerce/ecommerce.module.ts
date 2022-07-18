@@ -62,7 +62,11 @@ import { UserContactLandingComponent } from './pages/user-contact-landing/user-c
 import { UserCreatorComponent } from './pages/user-creator/user-creator.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
+import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
+import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { AdminLoginComponent } from './components/admin-login/admin-login.component';
+import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 
 const routes: Routes = [
   {
@@ -348,8 +352,28 @@ const routes: Routes = [
     component: MerchantItemsComponent
   },
   {
+    path: 'entity-detail-metrics/:id',
+    component: EntityDetailMetricsComponent
+  },
+  {
     path: 'notifications-log',
     component: NotificationsLogComponent
+  },
+  {
+    path: 'notification-creator',
+    component: NotificationCreatorComponent
+  },
+  {
+    path: 'category-creator/:id',
+    component: ItemCategoryCreatorComponent
+  },
+  {
+    path: 'category-creator',
+    component: ItemCategoryCreatorComponent
+  },
+  {
+    path: 'admin-login',
+    component: AdminLoginComponent
   },
 ];
 
@@ -417,7 +441,11 @@ const routes: Routes = [
     UserContactLandingComponent,
     HeavenlyBalloonsComponent,
     MerchantItemsComponent,
+    EntityDetailMetricsComponent,
     NotificationsLogComponent,
+    NotificationCreatorComponent,
+    AdminLoginComponent,
+    ItemCategoryCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

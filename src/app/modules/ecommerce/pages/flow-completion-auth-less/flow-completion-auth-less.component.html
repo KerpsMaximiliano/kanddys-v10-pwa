@@ -435,7 +435,8 @@
     *ngIf="
       step !== 'PAYMENT_INFO' &&
       saleflowData &&
-      saleflowData._id === '6201d72bdfeceed4d13805bc'
+      !saleflowData.module.paymentMethod?.paymentModule?._id &&
+      userData && userData.name
     "
   >
     <app-sticky-button
@@ -449,8 +450,7 @@
   <app-sticky-button
     *ngIf="
       step !== 'PAYMENT_INFO' &&
-      saleflowData &&
-      saleflowData._id !== '6201d72bdfeceed4d13805bc'
+      saleflowData
     "
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"

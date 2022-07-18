@@ -16,7 +16,11 @@
     ]"
   ></app-helper-headerv2>
   <div class="header" *ngIf="webform">
-    <div class="header-image" [ngClass]="{'placeholder': !webform.image}"></div>
+    <div
+      class="header-image"
+      [ngStyle]="{backgroundImage: 'url(' + webform.image + ')'}"
+      [ngClass]="{'placeholder': !webform.image}"
+    ></div>
     <h5>{{webform.name}}</h5>
     <p>{{webform.description}}</p>
   </div>
