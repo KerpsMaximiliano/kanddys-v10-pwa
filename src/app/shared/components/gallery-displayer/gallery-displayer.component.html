@@ -34,7 +34,7 @@
 
                 <div *ngSwitchCase="3" class="grid-three">
                     <img [src]="env + imagesGallery[0].src" [alt]="imagesGallery[0].alt" class="first" (click)="imagesGallery[0].callback()" >
-                    <img *ngFor="let item of imagesGallery | slice:0:2; index as i" [src]="env + item.src" [alt]="item.alt" class="image-three" (click)="item.callback()" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
+                    <img *ngFor="let item of imagesGallery | slice:1:3; index as i" [src]="env + item.src" [alt]="item.alt" class="image-three" (click)="item.callback()" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
                 </div>
 
                 <div *ngSwitchCase="4" class="grid-four">
