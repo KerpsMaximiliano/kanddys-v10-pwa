@@ -35,7 +35,7 @@ export class GalleryDisplayerComponent implements OnInit {
         height?: number;
         callback?: () => void;
     };
-    @Input() imagesGallery: Images[];
+    @Input() imagesGallery: Array<Images>;
     @Input() cta: {
         text: string;
         color?: string;

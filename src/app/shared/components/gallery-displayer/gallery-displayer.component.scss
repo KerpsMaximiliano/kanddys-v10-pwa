@@ -1,3 +1,7 @@
+html,body{
+    height: 100%;
+}
+
 .container{
     width: 100%;
     margin: 0 auto;
@@ -101,4 +105,91 @@
         }
 
     }
+}
+
+.grid-one{
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    .image-one{
+        object-fit: fill;
+        background-color: #7B7B7B;
+        width: 100%;
+        min-height: 200px;
+        height: 27vh;
+        max-height: 253px;
+        border-radius: 18px;
+        cursor: pointer;
+    }
+}
+
+.grid-two{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+
+    .image-two{
+        object-fit: fill;
+        background-color: #7B7B7B;
+        width: 100%;
+        min-height: 200px;
+        height: 27vh;
+        max-height: 253px;
+        border-radius: 18px;
+    }
+}
+
+.grid-three{
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 6px;
+    row-gap: 6px;
+    grid-template-columns: 1fr 1fr;
+    
+    .first{
+        object-fit: fill;
+        background-color: #7B7B7B;
+        width: 100%;
+        min-height: 200px;
+        height: 27vh;
+        max-height: 253px;
+        border-radius: 18px;
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+
+    .image-three{
+        object-fit: fill;
+        background-color: #7B7B7B;
+        width: 100%;
+        min-height: 100px;
+        height: 14.5vh;
+        max-height: 122px;
+        border-radius: 18px;
+    }
+}
+
+.grid-four{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 3px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    .image-four{
+        object-fit: fill;
+        background-color: #7B7B7B;
+        width: 100%;
+        min-height: 100px;
+        height: 14.5vh;
+        max-height: 126.5px;
+        border-radius: 18px;
+    }    
 }

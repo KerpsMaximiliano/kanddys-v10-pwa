@@ -91,18 +91,6 @@ export class TestComponent implements OnInit {
   },{
     src: '/asdawd',
     callback: () => console.log('tostada')
-  },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
-  },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
-  },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
-  },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
   }/* {
     name: 'Creating Happiness one gift at a time.',
     subtitle: 'negro es un color',
