@@ -32,4 +32,7 @@ export class MerchantItemsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  testing = () =>{
+    console.log('test')
+  }
 }
