@@ -136,10 +136,17 @@
             cursor: pointer;
         }
 
-        .icon-center{
+        .icons-holder{
+            display: flex;
             position: absolute;
             right: 22px;
             cursor: pointer;
+            
+            .icon-center{
+                height: 36px;
+                display: flex;
+                align-items: center;
+            }
         }
     }
 
