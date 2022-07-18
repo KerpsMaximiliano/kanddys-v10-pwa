@@ -329,7 +329,9 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   goToAuth() {
-    this.router.navigate([`/ecommerce/authentication/${this.item._id}`]);
+    this.router.navigate([`/ecommerce/authentication/${this.item._id}`, , {queryParams: {
+      type: 'create-item'
+    }}]);
   }
 
   goToMerchantStore() {
