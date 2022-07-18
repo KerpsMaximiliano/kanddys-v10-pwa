@@ -64,10 +64,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     });
 
     this.deleteEvent = this.appService.events
-        .pipe(filter((e) => e.type === 'deleted-item'))
-        .subscribe((e) => {
-          this.itemInCart();
-        });
+      .pipe(filter((e) => e.type === 'deleted-item'))
+      .subscribe((e) => {
+        this.itemInCart();
+      });
   }
 
   ngOnDestroy() {
