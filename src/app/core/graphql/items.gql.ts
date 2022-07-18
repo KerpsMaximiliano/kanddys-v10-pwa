@@ -375,6 +375,7 @@ export const deleteImageItem = gql`
       category {
         _id
         name
+        active
       }
       params {
         _id
@@ -415,6 +416,7 @@ export const itemCategory = gql`
       _id
       name
       description
+      active
     }
   }
 `;
@@ -425,6 +427,7 @@ export const itemCategoriesList = gql`
       _id
       name
       description
+      active
     }
   }
 `;
@@ -437,6 +440,7 @@ export const createItemCategory = gql`
       }
       _id
       name
+      active
     }
   }
 `;
@@ -449,6 +453,7 @@ export const updateItemCategory = gql`
       }
       _id
       name
+      active
     }
   }
 `;

@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ItemCategoryCreatorComponent implements OnInit {
   env: string = environment.assetsUrl;
-  active: boolean = true;
+  active: boolean;
   showDescription: boolean;
   name: string;
   description: string;
@@ -44,7 +44,7 @@ export class ItemCategoryCreatorComponent implements OnInit {
       if(!params || !params.id) return;
       this.category = await this.itemsService.itemCategory(params.id);
       if(!this.category) return;
-      console.log(this.category)
+      this.active = this.category.active;
       this.name = this.category.name;
       this.description = this.category.description;
     })
@@ -55,7 +55,11 @@ export class ItemCategoryCreatorComponent implements OnInit {
   }
 
   toggleStatus() {
-    this.active = !this.active;
+    const status = this.active;
+    this.active = !status;
+    this.itemsService.updateItemCategory({
+      active: !status
+    }, this.category._id);
   }
 
   save() {
