@@ -66,6 +66,7 @@ import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/enti
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
+import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 
 const routes: Routes = [
   {
@@ -363,6 +364,14 @@ const routes: Routes = [
     component: NotificationCreatorComponent
   },
   {
+    path: 'category-creator/:id',
+    component: ItemCategoryCreatorComponent
+  },
+  {
+    path: 'category-creator',
+    component: ItemCategoryCreatorComponent
+  },
+  {
     path: 'admin-login',
     component: AdminLoginComponent
   },
@@ -436,6 +445,7 @@ const routes: Routes = [
     NotificationsLogComponent,
     NotificationCreatorComponent,
     AdminLoginComponent,
+    ItemCategoryCreatorComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

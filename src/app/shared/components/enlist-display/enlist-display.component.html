@@ -18,6 +18,7 @@
                 'filter': icon?.color? icon.color : '',
                 'cursor': 'pointer'
             }" *ngIf="icon?.src">
+            <button class="plus" *ngIf="!icon && plus">+</button>
         </div>
         
         <hr class="separator" *ngIf="itemList">

@@ -5,6 +5,7 @@ import {
   item,
   authItem,
   items,
+  itemCategory,
   itemCategoriesList,
   createItem,
   createPreItem,
@@ -17,6 +18,7 @@ import {
   createItemPackage,
   itemExtraByMerchant,
   createItemCategory,
+  updateItemCategory,
   deleteItemCategory,
   itemPackageByMerchant,
   listItemPackage,
@@ -237,6 +239,20 @@ export class ItemsService {
     }
   }
 
+  async itemCategory(id: string): Promise<ItemCategory> {
+    try {
+      const response = await this.graphql.query({
+        query: itemCategory,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.itemCategory;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   async itemCategories(merchantId: string, params: PaginationInput): Promise<{ itemCategoriesList: ItemCategory[] }> {
     try {
@@ -260,6 +276,17 @@ export class ItemsService {
     });
     if (!result || result?.errors) return undefined;
     return result.createItemCategory;
+  }
+
+  // Actualizar categoria
+  async updateItemCategory(input: ItemCategoryInput, id: string): Promise<ItemCategory> {
+    const result = await this.graphql.mutate({
+      mutation: updateItemCategory,
+      variables: { input, id },
+      context: { useMultipart: true },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateItemCategory;
   }
 
   // Eliminar Categoria

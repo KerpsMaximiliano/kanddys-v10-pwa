@@ -46,6 +46,7 @@ export class EnlistDisplayComponent implements OnInit {
         height?: number;
         callback?: () => void;
     };
+    @Input() plus: boolean;
     @Input() itemList: ListedItem[];
     @Input() bottomText: {
         leftText?:{
