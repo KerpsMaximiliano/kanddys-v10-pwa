@@ -138,9 +138,17 @@
 
         .icons-holder{
             display: flex;
+            align-items: center;
             position: absolute;
             right: 22px;
             cursor: pointer;
+
+            .header-btn{
+                all: unset;
+                font-family: 'SfProBold';
+                font-size: 29px;
+                color: #FFFFFF;
+            }
             
             .icon-center{
                 height: 36px;

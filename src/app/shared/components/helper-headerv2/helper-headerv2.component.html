@@ -127,10 +127,23 @@
                 'margin-right': rmargin? rmargin : ''
                 }">{{mainText.text}}</p>
 
+                <!--ICONOS-->
                 <div class="icons-holder">
+
+                    <button class="header-btn" *ngIf="plus?.active" (click)="triggerEvent('plus')" 
+                    [ngStyle]="
+                        {
+                          'font-family': plus.fontFamily? plus.fontFamily : '',
+                          'font-size': plus.fontSize? plus.fontSize : '',
+                          'color': plus.color? plus.color : (color? color : ''),
+                          cursor: 'pointer'
+                        }">
+                        <span class="plus">+</span>
+                    </button>
+
                     <div *ngFor="let icon of icons; index as i" class="icon-center" [ngStyle]="{
                         'background-color':  icon.highlight?.highlighted? icon.highlight?.color : 'transparent', 
-                        'margin-left': '31px'
+                        'margin-left': rmargin? rmargin : '31px'
                         }">
                         <img
                             [src]="env + icon.src"
@@ -146,14 +159,8 @@
                             (click)="icon.callback()"
                         >
                     </div>
-                </div>
 
-                <!-- <img [src]="env + icon?.src" [alt]="icon?.alt" *ngIf="icon?.src && down || returnAble" class="icon-center" [ngStyle]="{
-                    width: icon?.width? icon.width : '',
-                    height: icon?.height? icon.height : '',
-                    filter: icon?.filter? icon.filter : '',
-                    cursor: 'pointer'
-                }" (click)="icon.callback()"> -->
+                </div>
             </div>
         </ng-container>
 
