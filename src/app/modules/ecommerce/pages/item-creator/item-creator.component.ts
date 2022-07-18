@@ -142,7 +142,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`]);
+              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+                type: 'create-item'
+              }});
             }
           }
 
@@ -627,7 +629,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
                   this.itemService.removeTemporalItem();
-                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
+                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+                    type: 'create-item'
+                  }})
                 };
               }
             }
