@@ -22,9 +22,30 @@
 
         <div class="item-area">
 
-            <div class="image-area">
-                <img *ngFor="let item of imagesGallery; index as i" [src]="env + item.src" [alt]="item.alt" (click)="item.callback()" class="gallery-image" >
-            </div>
+            <ng-container [ngSwitch]="imagesGallery.length">
+
+                <div *ngSwitchCase="1" class="grid-one">
+                    <img [src]="env + imagesGallery[0].src" [alt]="imagesGallery[0].alt" class="image-one" (click)="imagesGallery[0].callback()">
+                </div>
+
+                <div *ngSwitchCase="2" class="grid-two">
+                    <img *ngFor="let item of imagesGallery | slice:0:2; index as i" [src]="env + item.src" [alt]="item.alt" class="image-two" (click)="item.callback()">
+                </div>
+
+                <div *ngSwitchCase="3" class="grid-three">
+                    <img [src]="env + imagesGallery[0].src" [alt]="imagesGallery[0].alt" class="first" (click)="imagesGallery[0].callback()" >
+                    <img *ngFor="let item of imagesGallery | slice:0:2; index as i" [src]="env + item.src" [alt]="item.alt" class="image-three" (click)="item.callback()">
+                </div>
+
+                <div *ngSwitchCase="4" class="grid-four">
+                    <img *ngFor="let item of imagesGallery | slice:0:4; index as i" [src]="env + item.src" [alt]="item.alt" class="image-four" (click)="item.callback()">
+                </div>
+                
+                <div *ngSwitchDefault class="image-area">
+                    <img *ngFor="let item of imagesGallery | slice:0:6; index as i" [src]="env + item.src" [alt]="item.alt" (click)="item.callback()" class="gallery-image" >
+                </div>
+
+            </ng-container>
 
             <button class="cta" [style.color]="cta?.color" *ngIf="cta?.text" (click)="cta.callback">{{cta.text}}</button>
         </div>
