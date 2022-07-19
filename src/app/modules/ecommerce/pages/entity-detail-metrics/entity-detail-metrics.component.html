@@ -50,16 +50,6 @@
       [topBar]="items?.length + ' articulos'"
       bottomRightBtn="MAS"
       (bottomRight)="redirectMerchantItems('merchant-items')"
-      [questions]="[
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        },
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        }
-      ]"
       bottomLeftBtn="adicionar nuevo articulo"
       (bottomLeft)="redirectToCreateItem()"
       ></app-form-questions>
