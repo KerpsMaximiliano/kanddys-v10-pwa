@@ -904,6 +904,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               fontWeight: '600',
             },
           },
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${change})`;
+          }
         },
       ],
       customScrollToStep: (params) => {
@@ -1246,6 +1249,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   
           this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
           this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+
+          if(name && name !== '') {
+            this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${name})`;
+          }
 
           this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
 
