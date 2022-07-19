@@ -1173,6 +1173,33 @@ shouldScrollBackwards &&
       steps[currentStep].customStickyButton.mode === 'double' && 
       steps[currentStep].customStickyButton.text2 ? 
         steps[currentStep].customStickyButton.text2 : null"
+    [extra]="{
+      text: steps[currentStep].customStickyButton.mode === 'double' && 
+              steps[currentStep].customStickyButton.extra?.text ? 
+                steps[currentStep].customStickyButton.extra?.text : null,
+      icon: steps[currentStep].customStickyButton.mode === 'double' && 
+                steps[currentStep].customStickyButton.extra?.icon ? 
+                  steps[currentStep].customStickyButton.extra?.icon : null,
+      return: steps[currentStep].customStickyButton.mode === 'double' && 
+                  steps[currentStep].customStickyButton.extra?.return ? 
+                    steps[currentStep].customStickyButton.extra?.return : null,
+      height: steps[currentStep].customStickyButton.mode === 'double' && 
+                    steps[currentStep].customStickyButton.extra?.height ? 
+                      steps[currentStep].customStickyButton.extra?.height : null,
+      width: steps[currentStep].customStickyButton.mode === 'double' && 
+                      steps[currentStep].customStickyButton.extra?.width ? 
+                        steps[currentStep].customStickyButton.extra?.width : null    
+    }"
+    [customLeftButtonStyles]="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        steps[currentStep].customStickyButton.customLeftButtonStyles ? 
+          steps[currentStep].customStickyButton.customLeftButtonStyles : null
+    "
+    [customRightButtonStyles]="
+      steps[currentStep].customStickyButton.mode === 'double' && 
+        steps[currentStep].customStickyButton.customRightButtonStyles ? 
+          steps[currentStep].customStickyButton.customRightButtonStyles : null
+    "
     [bgColor]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.bgcolor : steps[currentStep].customStickyButton.bgcolorInactive"
     [color]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.color : steps[currentStep].customStickyButton.colorInactive"
     [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.height : steps[currentStep].customStickyButton.heightInactive"

@@ -45,7 +45,7 @@ export class ImageInputComponent implements OnInit {
       this.acceptTypes = '.' + this.allowedTypes.join(', .');
     else this.acceptTypes = 'image/*';
 
-    if(this.imagesAlreadyLoaded) this.imageField.push('');
+    if(this.imagesAlreadyLoaded && this.imageField[this.imageField.length - 1] !== '') this.imageField.push('');
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {

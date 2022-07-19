@@ -5,7 +5,6 @@
 }
 .itemContainer {
   background-color: #ffffff;
-  width: 212px;
   font-size: 17px;
   color: #7b7b7b;
   margin: auto;
@@ -353,7 +352,6 @@
 
 @media (max-width: 427px) {
   .itemContainer {
-    width: 79%;
     .price {
       margin-top: 9.64px;
       .quantity {
@@ -394,7 +392,6 @@
 
 @media (max-width: 374px) {
   .itemContainer {
-    width: 78%;
     font-size: 12.71px;
 
     .price {

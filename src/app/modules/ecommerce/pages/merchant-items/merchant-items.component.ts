@@ -83,7 +83,8 @@ export class MerchantItemsComponent implements OnInit {
 
   async getItems(merchantID: string) {
     try {
-      const items = (await this.itemsService.itemsByMerchant(merchantID)).itemsByMerchant;
+      const items = (await this.itemsService.itemsByMerchant(merchantID, true)).itemsByMerchant;
+      console.log(items);
       this.items = items;
     } catch (error) {
       console.log(error);

@@ -50,6 +50,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   files: File[] = [];
   item: Item;
   imagesAlreadyLoaded: boolean = false;
+  createdItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
 
@@ -145,6 +146,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
                 type: 'create-item'
               }});
+              this.createdItem = true;
             }
           }
 
@@ -409,7 +411,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             containerStyles: {
               width: '58.011%',
               minWidth: '210px',
-              marginTop: '32px',
+              marginTop: '80px',
               position: 'relative',
               overflowX: 'hidden'
             },
@@ -433,7 +435,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
             labelStyles: {
               ...labelStyles,
-              fontWeight: 'normal'
+              fontWeight: 'normal',
+              marginBottom: '22px'
             }
           },
         },
@@ -505,14 +508,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
+            expandImage: true,
             topLabel: {
-              text: 'Adiciona el arte en tu herramienta preferida:',
+              text: 'La imagen:',
               styles: {
                 color: '#7B7B7B',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '24px',
+                marginBottom: '22px',
                 fontWeight: 'normal'
               },
             },
@@ -523,8 +527,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             fileStyles: {
               width: '157px',
               height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
+              padding: '34px',
+              textAlign: 'center',
             },
           },
           outputs: [
@@ -547,7 +551,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ],
           beforeIndex: 0,
           containerStyles: {
-            marginTop: '10px',
+            marginTop: '52px',
           },
         },
         {
@@ -657,6 +661,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
                     type: 'create-item'
                   }})
+                  this.createdItem = true;
                 };
               }
             }
@@ -673,7 +678,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '32px',
+                marginTop: '79px',
                 marginBottom: '0px'
               },
               fieldStyles: {
@@ -720,8 +725,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '32px',
-          marginBottom: '12px',
+          marginTop: '50px',
+          marginBottom: '0px',
         }
       },
       avoidGoingToNextStep: true,
@@ -736,7 +741,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           // this.formSteps[0].headerText = 'PREVIEW';
           this.formSteps[0].customStickyButton.mode = 'double';
           this.formSteps[0].customStickyButton.text = 'PREVIEW';
-          this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
+          this.formSteps[0].customStickyButton.extra = {};      
+          this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.height = '30px';
+          this.formSteps[0].customStickyButton.customLeftButtonStyles = {
+            width: 'fit-content',
+            marginLeft: 'auto',
+            color: '#fff',
+            height: '30px'
+          };      
+          this.formSteps[0].customStickyButton.customRightButtonStyles = {
+            width: 'fit-content',
+            marginRight: '20px',
+            marginLeft: '44px',
+            color: '#fff',
+            height: '30px'
+          };      
         }
       },
       headerMode: 'v2',
@@ -1066,6 +1087,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
+        console.log(this.defaultImages, "di1")
 
         const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
         const base64Images = images.filter(image => checkIfStringIsBase64DataURI(image));
@@ -1073,6 +1095,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if(notBase64Images && notBase64Images.length > 0) {
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
+          console.log(this.defaultImages, "di2")
 
           for(let imageURL of notBase64Images) {
             this.defaultImagesPermanent.push(imageURL);
@@ -1231,6 +1254,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
             this.defaultImages = images;
 
+            console.log(this.defaultImages, "di3")
+
             for(let imageURL of images) {
               this.defaultImagesPermanent.push(imageURL);
 
@@ -1385,6 +1410,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute) this.headerService.flowRoute = null;
+    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }
