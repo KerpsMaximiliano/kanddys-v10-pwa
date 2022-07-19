@@ -166,7 +166,7 @@ export class Authentication implements OnInit {
 
             try {
               if(this.type === 'create-item') {
-                await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', {});
+                await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
                 params.scrollToStep(1);
 
                 return { ok: true };
@@ -175,7 +175,7 @@ export class Authentication implements OnInit {
                 params.scrollToStep(1);
 
                 if(myUser) {
-                  await this.authService.generateMagicLink(phoneNumber, `ecommerce/entity-detail-metrics`, myUser._id , 'Merchant', {});
+                  await this.authService.generateMagicLink(phoneNumber, `ecommerce/entity-detail-metrics`, myUser._id , 'MerchantAccess', null);
                 }
 
                 return { ok: true };
@@ -286,7 +286,7 @@ export class Authentication implements OnInit {
       this.route.queryParams.subscribe(queryParams => {
         const {type} = queryParams;
 
-        if(this.type) this.type = type;
+        if(type && type.length > 0) this.type = type;
 
         if(type === 'create-user') {
           this.storedFormData = this.multistepService.getMultiStepFormData('user-creation');
