@@ -206,6 +206,31 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   formStep.headerText = this.item.status === 'active' ?
                     'ACTIVO (EXPUESTO EN TIENDA)' :
                     'INACTIVO (NO EXPUESTO)';
+
+                    formStep.headerTextCallback = async () => {
+                      await this.itemService.updateItem(
+                        {
+                          status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                        },
+                        this.currentItemId
+                      );
+  
+                      this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
+
+                      formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                        '#2874AD' : '#B17608';
+  
+                      for(let formStep of this.formSteps) {
+                        formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                          this.item.status === 'active' ? 'open' : 'closed'
+                        }-eye-white.svg`;
+                        
+                        formStep.headerText = this.item.status === 'active' ?
+                          'ACTIVO (EXPUESTO EN TIENDA)' :
+                          'INACTIVO (NO EXPUESTO)';
+                      }
+  
+                    }  
                 }
               } else {
                 this.formSteps[0].headerText = 'PREVIEW'
@@ -1147,6 +1172,28 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   formStep.headerText = this.item.status === 'active' ?
                     'ACTIVO (EXPUESTO EN TIENDA)' :
                     'INACTIVO (NO EXPUESTO)';
+
+                  formStep.headerTextCallback = async () => {
+                    await this.itemService.updateItem(
+                      {
+                        status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                      },
+                      this.currentItemId
+                    );
+
+                    this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
+
+                    for(let formStep of this.formSteps) {
+                      formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                        this.item.status === 'active' ? 'open' : 'closed'
+                      }-eye-white.svg`;
+                      
+                      formStep.headerText = this.item.status === 'active' ?
+                        'ACTIVO (EXPUESTO EN TIENDA)' :
+                        'INACTIVO (NO EXPUESTO)';
+                    }
+
+                  }
 
                   formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
                     '#2874AD' : '#B17608';
