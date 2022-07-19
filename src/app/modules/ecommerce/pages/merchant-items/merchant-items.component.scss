@@ -9,14 +9,14 @@
         padding: 10px 5px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        -moz-column-gap: 10px;
-        column-gap: 10px;
+        -moz-column-gap: 14px;
+        column-gap: 14px;
         row-gap: 25px;
         overflow-x: hidden;
         overflow-y: scroll;
         justify-items: center;
         .capsize{
-            width: auto;
+            width: 100%;
             max-width: 212px;
             height: auto;
         }

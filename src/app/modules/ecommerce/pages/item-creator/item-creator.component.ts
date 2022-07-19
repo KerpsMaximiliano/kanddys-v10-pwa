@@ -508,6 +508,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
+            expandImage: true,
             topLabel: {
               text: 'La imagen:',
               styles: {
