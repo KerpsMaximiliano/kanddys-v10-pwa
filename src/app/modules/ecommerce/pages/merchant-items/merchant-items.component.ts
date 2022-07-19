@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -49,7 +50,8 @@ export class MerchantItemsComponent implements OnInit {
     private itemsService: ItemsService,
     private ordersService: OrderService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -111,6 +113,10 @@ export class MerchantItemsComponent implements OnInit {
   }
 
    goToMetrics = () =>{
+    this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
+  }
+
+  back() {
     this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
   }
 }

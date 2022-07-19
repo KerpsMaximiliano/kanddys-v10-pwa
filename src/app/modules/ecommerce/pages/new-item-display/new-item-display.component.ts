@@ -407,7 +407,7 @@ export class NewItemDisplayComponent implements OnInit {
         queryParams: { type: 'item' },
       });
     } else {
-      this.location.back();
+      this.router.navigate([`/ecommerce/merchant-items`]);
     }
   }
 

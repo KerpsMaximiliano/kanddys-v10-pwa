@@ -133,6 +133,7 @@ export interface FooterOptions {
       right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
+      function?(...params): Promise<any> | any;
     }
   },
   bgColor?: string;
