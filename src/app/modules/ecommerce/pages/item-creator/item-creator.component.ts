@@ -411,7 +411,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             containerStyles: {
               width: '58.011%',
               minWidth: '210px',
-              marginTop: '32px',
+              marginTop: '80px',
               position: 'relative',
               overflowX: 'hidden'
             },
@@ -435,7 +435,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
             labelStyles: {
               ...labelStyles,
-              fontWeight: 'normal'
+              fontWeight: 'normal',
+              marginBottom: '22px'
             }
           },
         },
@@ -508,13 +509,13 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             imagesPerView: 3,
             innerLabel: 'Adiciona las imágenes',
             topLabel: {
-              text: 'Adiciona el arte en tu herramienta preferida:',
+              text: 'La imagen:',
               styles: {
                 color: '#7B7B7B',
                 fontFamily: 'RobotoMedium',
                 fontSize: '17px',
                 margin: '0px',
-                marginBottom: '24px',
+                marginBottom: '22px',
                 fontWeight: 'normal'
               },
             },
@@ -525,8 +526,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             fileStyles: {
               width: '157px',
               height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
+              padding: '34px',
+              textAlign: 'center',
             },
           },
           outputs: [
@@ -549,7 +550,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           ],
           beforeIndex: 0,
           containerStyles: {
-            marginTop: '10px',
+            marginTop: '52px',
           },
         },
         {
@@ -676,7 +677,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '32px',
+                marginTop: '79px',
                 marginBottom: '0px'
               },
               fieldStyles: {
@@ -723,8 +724,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '32px',
-          marginBottom: '12px',
+          marginTop: '50px',
+          marginBottom: '0px',
         }
       },
       avoidGoingToNextStep: true,
@@ -739,7 +740,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           // this.formSteps[0].headerText = 'PREVIEW';
           this.formSteps[0].customStickyButton.mode = 'double';
           this.formSteps[0].customStickyButton.text = 'PREVIEW';
-          this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
+          this.formSteps[0].customStickyButton.extra = {};      
+          this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.height = '30px';
+          this.formSteps[0].customStickyButton.customLeftButtonStyles = {
+            width: 'fit-content',
+            marginLeft: 'auto',
+            color: '#fff',
+            height: '30px'
+          };      
+          this.formSteps[0].customStickyButton.customRightButtonStyles = {
+            width: 'fit-content',
+            marginRight: '20px',
+            marginLeft: '44px',
+            color: '#fff',
+            height: '30px'
+          };      
         }
       },
       headerMode: 'v2',

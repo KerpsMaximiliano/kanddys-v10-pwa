@@ -38,6 +38,8 @@ export class StickyButtonComponent implements OnInit {
   @Input() height: string = null;  
   @Input() fontSize: string = null;  
   @Input() size: 'small' | 'normal' = "normal";
+  @Input() customLeftButtonStyles: Record<string, any> = null;
+  @Input() customRightButtonStyles: Record<string, any> = null;
   @Input() addBottomSeparator: boolean = false;
   @Input() backButton: boolean;
   @Input() backButtonCallback: () => void;

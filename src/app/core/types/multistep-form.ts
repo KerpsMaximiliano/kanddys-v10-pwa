@@ -220,6 +220,21 @@ export interface FormStep {
     heightInactive?: string;
     text: string;
     text2?: string;
+    extra?: {
+      text?: string;
+      icon?: {
+        src: string;
+        alt?: string;
+        width: number;
+        height: number;
+        color?: string;
+      };
+      width?: string;
+      height?: string;
+      return?: boolean;
+    }
+    customLeftButtonStyles?: Record<string, any>;
+    customRightButtonStyles?: Record<string, any>;
     textCallback?( params): any;
     text2Callback?( params): any;
   },
