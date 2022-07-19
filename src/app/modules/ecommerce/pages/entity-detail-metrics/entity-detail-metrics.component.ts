@@ -50,27 +50,28 @@ export class EntityDetailMetricsComponent implements OnInit {
     private location: Location
   ) { }
 
-  ngOnInit(): void {
-    this.route.params.subscribe(async params => {
-      lockUI();
-      this.merchant = await this.merchantsService.merchant(params.id);
-      if(!this.merchant) return;
-      this.items = (await this.merchantsService.itemsByMerchant(params.id))?.itemsByMerchant;
+  async ngOnInit(): Promise<void> {
+    lockUI();
+    this.merchant = await this.merchantsService.merchantDefault();
+    if(!this.merchant) {
+      this.router.navigate([`ecommerce/error-screen/`]);
+      return
+    }
+    this.items = (await this.merchantsService.itemsByMerchant(this.merchant._id))?.itemsByMerchant;
 
-      this.user = await this.authService.me();
-      if(this.user) {
-        if(this.merchant.owner._id !== this.user._id) return;
-        this.admin = true;
-        await Promise.all([
-          this.getOrderTotal(),
-          this.getMerchantBuyers(),
-          this.getTags(),
-          this.getCategories(),
-          this.getSaleflow(),
-        ]);
-      };
-      unlockUI();
-    })
+    this.user = await this.authService.me();
+    if(this.user) {
+      if(this.merchant.owner._id !== this.user._id) return unlockUI();
+      this.admin = true;
+      await Promise.all([
+        this.getOrderTotal(),
+        this.getMerchantBuyers(),
+        this.getTags(),
+        this.getCategories(),
+        this.getSaleflow(),
+      ]);
+    };
+    unlockUI();
   }
 
   async getOrderTotal() {
