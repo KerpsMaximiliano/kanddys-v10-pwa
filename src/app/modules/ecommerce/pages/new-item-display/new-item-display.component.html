@@ -203,8 +203,8 @@
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="'45 ventas'"
-    [text2]="'$14,451 INGRESO'"
+    [text]="totalByItem && totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'"
+    [text2]="totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'"
     size="small"
     (added)="redirect()"
   ></app-sticky-button>
