@@ -50,6 +50,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   files: File[] = [];
   item: Item;
   imagesAlreadyLoaded: boolean = false;
+  createdItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
 
@@ -145,6 +146,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
                 type: 'create-item'
               }});
+              this.createdItem = true;
             }
           }
 
@@ -657,6 +659,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
                     type: 'create-item'
                   }})
+                  this.createdItem = true;
                 };
               }
             }
@@ -1389,6 +1392,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute) this.headerService.flowRoute = null;
+    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }

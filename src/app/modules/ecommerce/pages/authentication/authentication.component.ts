@@ -17,8 +17,6 @@ const checkIfStringIsBase64DataURI = (text: string)=> {
   return text.slice(0, 5) === 'data:';
 }
 
-const defaultUserImage = 'https://www.gravatar.com/avatar/0?s=250&d=mp';              
-
 @Component({
   selector: 'app-authentication',
   templateUrl: './authentication.component.html',
