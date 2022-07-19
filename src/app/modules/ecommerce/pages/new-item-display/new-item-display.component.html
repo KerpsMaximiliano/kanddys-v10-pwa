@@ -64,7 +64,8 @@
         src: '/pencil.svg',
         color:
           'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-        callback: editItem
+        callback: editItem,
+        margin: '0 7px 0 6px'
       }
     ]"
     [returnAble]="true"
@@ -203,8 +204,8 @@
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="'45 ventas'"
-    [text2]="'$14,451 INGRESO'"
+    [text]="totalByItem && totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'"
+    [text2]="totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'"
     size="small"
     (added)="redirect()"
   ></app-sticky-button>
