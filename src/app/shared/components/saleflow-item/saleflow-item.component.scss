@@ -8,6 +8,8 @@
   font-size: 17px;
   color: #7b7b7b;
   margin: auto;
+  width: 212px;
+
   &.type2 {
     background-color: transparent;
     .infocontainer {
@@ -145,6 +147,10 @@
         }
       }
     }
+  }
+
+  &.v2 {
+    width: initial;
   }
 
   .gray-shadow {
@@ -352,6 +358,12 @@
 
 @media (max-width: 427px) {
   .itemContainer {
+    width: 79%;
+
+    &.v2 {
+      width: initial;
+    }
+
     .price {
       margin-top: 9.64px;
       .quantity {
@@ -392,6 +404,12 @@
 
 @media (max-width: 374px) {
   .itemContainer {
+    width: 78%;
+
+    &.v2 {
+      width: initial;
+    }
+
     font-size: 12.71px;
 
     .price {

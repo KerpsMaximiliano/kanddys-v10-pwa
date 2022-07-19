@@ -60,6 +60,7 @@
             [price]="item.pricing"
             [showIcon]="item.status != 'active' ? true : false"
             (click)="goToDetail(item._id)"
+            [responsiveWidthVersion]="true"
             ></app-saleflow-item>
         </div>
         

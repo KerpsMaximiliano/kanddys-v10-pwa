@@ -1,4 +1,4 @@
-<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big}" [ngStyle]="{'border-top-left-radius': type==3? '14px':'', 'border-top-right-radius':type==3? '14px':''}">
+<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big, 'v2': responsiveWidthVersion}" [ngStyle]="{'border-top-left-radius': type==3? '14px':'', 'border-top-right-radius':type==3? '14px':''}">
   <div class="marginCard" *ngIf="type == 1"> <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
       <div
         class="itemImg"
