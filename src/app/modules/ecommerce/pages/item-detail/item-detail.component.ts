@@ -155,10 +155,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.showItems();
   }
 
-  openShareDialog() {
+  openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        title:  this.itemData.name || 'Comparte el producto',
+        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
         options: [
           {
             text: 'Copia el link',
