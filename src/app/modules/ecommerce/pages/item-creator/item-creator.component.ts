@@ -1066,6 +1066,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
         this.defaultImages = images;
+        console.log(this.defaultImages, "di1")
 
         const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
         const base64Images = images.filter(image => checkIfStringIsBase64DataURI(image));
@@ -1073,6 +1074,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if(notBase64Images && notBase64Images.length > 0) {
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
+          console.log(this.defaultImages, "di2")
 
           for(let imageURL of notBase64Images) {
             this.defaultImagesPermanent.push(imageURL);
@@ -1230,6 +1232,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           if(images && images.length > 0) {
             this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
             this.defaultImages = images;
+
+            console.log(this.defaultImages, "di3")
 
             for(let imageURL of images) {
               this.defaultImagesPermanent.push(imageURL);
