@@ -25,6 +25,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./new-item-display.component.scss']
 })
 export class NewItemDisplayComponent implements OnInit {
+  URI: string = environment.uri;
   item: Item;
   shouldRedirectToPreviousPage: boolean = false;
   loggedIn: boolean = false;
@@ -357,17 +358,17 @@ export class NewItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        title:  'Mi item',
+        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
