@@ -37,20 +37,20 @@
   </div>
   <div *ngIf="!ordersTotal && mode === 'store'">
     <app-form-questions
-      [topBar]="items?.length + ' articulos'"
-      bottomLeftBtn="adicionar nuevo articulo"
+      [topBar]="items?.length + ' artículos'"
+      bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
-      bottomRightBtn="ver mas"
+      bottomRightBtn="ver más"
       (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
   </div>
   <div *ngIf="admin">
     <app-form-questions
       *ngIf="items"
-      [topBar]="items?.length + ' articulos'"
-      bottomRightBtn="MAS"
+      [topBar]="items?.length + ' artículos'"
+      bottomRightBtn="MÁS"
       (bottomRight)="redirectMerchantItems('merchant-items')"
-      bottomLeftBtn="adicionar nuevo articulo"
+      bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
       ></app-form-questions>
       <!-- [dropdowns]="[
