@@ -4,17 +4,17 @@
    
     .saleflows-grid{
         width: auto;
-        margin: 0 5%;
+        margin: 21px 18.3px;
         max-height: 93.5vh;
         padding: 10px 5px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         -moz-column-gap: 10px;
         column-gap: 10px;
-        row-gap: 10px;
+        row-gap: 25px;
         overflow-x: hidden;
         overflow-y: scroll;
-        
+        justify-items: center;
         .capsize{
             width: auto;
             max-width: 212px;
