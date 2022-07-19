@@ -18,6 +18,15 @@ export class ImageInputComponent implements OnInit {
     image: string | ArrayBuffer;
     index: number;
   }>();
+
+  @Output() onFileInputMultiple = new EventEmitter<
+    FileList
+  >();
+  @Output() onFileInputBase64Multiple = new EventEmitter<{
+    image: string | ArrayBuffer;
+    index: number;
+  }>();
+
   @Input() topLabel?: {
     text: string;
     styles?: Record<string, string>;
@@ -29,6 +38,7 @@ export class ImageInputComponent implements OnInit {
   @Input() multiple: boolean;
   @Input() max: number;
   @Input() innerLabel: string = 'Upload / Camera';
+  @Input() uploadImagesWithoutPlaceholderBox = false;
   @Input() expandImage: boolean = false;
   @Input() imagesAlreadyLoaded: boolean = false;
 
@@ -45,7 +55,7 @@ export class ImageInputComponent implements OnInit {
       this.acceptTypes = '.' + this.allowedTypes.join(', .');
     else this.acceptTypes = 'image/*';
 
-    if(this.imagesAlreadyLoaded && this.imageField[this.imageField.length - 1] !== '') this.imageField.push('');
+    if(this.imagesAlreadyLoaded && this.imageField[this.imageField.length - 1] !== '' && !this.uploadImagesWithoutPlaceholderBox) this.imageField.push('');
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {
@@ -82,6 +92,40 @@ export class ImageInputComponent implements OnInit {
         this.imageField.push('');
         this.error.push(false);
       }
+      return;
+    }
+  }
+
+  fileProgressMultiple(e: Event) {
+    const fileList = (e.target as HTMLInputElement).files;
+
+    if(fileList.length > 0) {
+      let emitData = fileList;
+      
+      this.onFileInputMultiple.emit(emitData);
+
+      for(let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+
+        if (
+          (this.allowedTypes.length > 0 &&
+            !this.allowedTypes.some((type) => file.type.includes(type))) ||
+          !file.type.includes('image/')
+        ) {
+          if (!this.imageField[i]) this.error[i] = true;
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageField[i] = reader.result;
+          this.onFileInputBase64Multiple.emit({ image: reader.result, index: i });
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      if(this.max && this.imageField.length >= this.max) return;
       return;
     }
   }

@@ -503,7 +503,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           inputs: {
             imageField:
               this.defaultImages.length > 0 ? this.defaultImages : null,
-            multiple: true,
+            uploadImagesWithoutPlaceholderBox: true,
             imagesAlreadyLoaded: this.imagesAlreadyLoaded,
             allowedTypes: ['png', 'jpg', 'jpeg'],
             imagesPerView: 3,
@@ -533,18 +533,17 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           },
           outputs: [
             {
-              name: 'onFileInputBase64',
+              name: 'onFileInputBase64Multiple',
               callback: (result) => {
                 this.defaultImages[result.index] = result.image;
-                this.formSteps[0].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
                 this.formSteps[0].embeddedComponents[0].shouldRerender = true;
                 this.headerService.removeTempNewItem();
               },
             },
             {
-              name: 'onFileInput',
+              name: 'onFileInputMultiple',
               callback: (result) => {
-                this.files[result.index] = result.image;
+                this.files= result;
                 console.log(this.files);
               },
             },
