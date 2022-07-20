@@ -79,6 +79,11 @@ export class NewItemDisplayComponent implements OnInit {
         if (params.itemId) {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
+
+          if(this.item && this.item.category.length > 0) {
+            
+          }
+
           if (!this.item) return this.redirect();
 
           if ((this.item && !this.item.merchant) || (this.item && this.item.status === 'draft')) this.isPreItem = true;
@@ -412,6 +417,15 @@ export class NewItemDisplayComponent implements OnInit {
     }
   }
 
+  redirectTo = (route, params = null) => {
+    if(!params)
+      this.router.navigate([route]);
+    else 
+      this.router.navigate([route], params ? {
+        ...params
+      } : null);
+  }
+
   // toggleView() {
   //   this.providerView = !this.providerView;
   // }
@@ -443,5 +457,6 @@ export class NewItemDisplayComponent implements OnInit {
     this.itemsService.temporalItem = null;
     this.router.navigate(['/ecommerce/item-creator/'+this.item._id]);
   }
+  
 
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ItemCategory } from 'src/app/core/models/item';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
 import { environment } from 'src/environments/environment'
@@ -11,6 +12,16 @@ interface QuestionForm{
 };
 
 interface FakeTag extends Tag {
+  selected?: boolean;
+  icon?: {
+    src: string,
+    callback?(params): any;
+    width: number;
+    height: number;
+  };
+}
+
+interface ExtendedItemCategory extends ItemCategory {
   selected?: boolean;
   icon?: {
     src: string,
@@ -45,6 +56,7 @@ export class QuestionItemComponent implements OnInit {
   @Input() headlineRightText: {
     text: string,
     callback?(...params): any;
+    callbackParams?: any[];
     color: string;
     fontSize: string;
     fontFamily: string;
@@ -59,16 +71,23 @@ export class QuestionItemComponent implements OnInit {
   @Input() total: number;
   @Input() data: QuestionForm[];
   @Input() tags?: FakeTag[];
+  @Input() categories?: ExtendedItemCategory[];
   @Input() collapseTags?: boolean = true;
   @Input() tagsLabel: string;
   @Input() chipMode: number = 1;
   @Input() user?: User;
   @Input() users?: User[];
+  @Input() shadow: string = null;
+  @Input() shouldPreventClickEvent: boolean = false;
   showTags: boolean;
   env: string = environment.assetsUrl;
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  spreadParams(anyFunction, params) {
+    return anyFunction(...params);
   }
 
 }

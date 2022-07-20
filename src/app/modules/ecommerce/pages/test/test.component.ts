@@ -158,6 +158,74 @@ export class TestComponent implements OnInit {
     },
   ];
 
+  onlyTags = [
+    {
+        messageNotify: 'prueba Nº1',
+        counter: 3,
+        name: 'Prueba Nº1 ',
+        notify: true,
+        user: 'patata',
+        notifyUserOrder: true,
+        notifyMerchantOrder: true,
+        _id: 'skw45k10d21',
+        createdAt: 'date',
+        updatedAt: 'date'
+    },
+    {
+        messageNotify: 'prueba Nº2',
+        counter: 2,
+        name: 'Prueba Nº2 ',
+        notify: false,
+        user: 'potat',
+        notifyUserOrder: true,
+        notifyMerchantOrder: true,
+        _id: 'skw44k10d21',
+        createdAt: 'date',
+        updatedAt: 'date'
+    },
+    {
+        messageNotify: 'prueba Nº3',
+        counter: 33,
+        name: 'Prueba Nº3 ',
+        notify: true,
+        user: 'apple',
+        notifyUserOrder: true,
+        notifyMerchantOrder: true,
+        _id: 'skw46k10d21',
+        createdAt: 'date',
+        updatedAt: 'date',
+        icon: {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+          width: 15,
+          height: 15
+        }
+    }, 
+    {
+        messageNotify: 'prueba Nº4',
+        counter: 1,
+        name: 'Prueba Nº4 ',
+        notify: false,
+        user: 'pear',
+        notifyUserOrder: true,
+        notifyMerchantOrder: true,
+        _id: 'skw47k10d21',
+        createdAt: 'date',
+        updatedAt: 'date'
+    },
+    {
+        messageNotify: 'prueba Nº5',
+        counter: 1,
+        name: 'Prueba Nº5 ',
+        notify: false,
+        user: 'pear',
+        notifyUserOrder: true,
+        notifyMerchantOrder: true,
+        _id: 'skw47k10d21',
+        createdAt: 'date',
+        updatedAt: 'date'
+    },
+  ];
+
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {
     //   type: 'flat-action-sheet',
