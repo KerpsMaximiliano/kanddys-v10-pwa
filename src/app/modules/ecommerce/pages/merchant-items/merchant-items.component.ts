@@ -114,10 +114,10 @@ export class MerchantItemsComponent implements OnInit {
   }
 
    goToMetrics = () =>{
-    this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
+    this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
 
   back() {
-    this.router.navigate([`ecommerce/entity-detail-metrics/${this.merchant._id}`]);
+    this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
 }
