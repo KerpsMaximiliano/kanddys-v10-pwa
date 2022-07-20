@@ -1052,8 +1052,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
-          this.router.navigate([this.headerService.flowRoute]);
-          this.headerService.flowRoute = null;
+          this.router.navigate([`/ecommerce/merchant-items`]);
         };
       }
 
