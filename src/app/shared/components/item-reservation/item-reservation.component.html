@@ -1,0 +1,46 @@
+<div class="body">
+    <div style="display: flex; justify-content: space-between"> 
+
+        <div class="headline-wrapper">
+            <h1 class="headline" [ngStyle]="{
+                'font-family': headline?.fontFamily? headline.fontFamily : '',
+                'font-size': headline?.fontSize? headline.fontSize : '', 
+                'color': headline?.color? headline.color : ''}"
+                >{{headline.text}}</h1>
+                
+            <p class="subheadline" *ngIf="subheadline" [ngStyle]="{
+                'font-family': subheadline?.fontFamily? subheadline.fontFamily : '',
+                'font-size': subheadline?.fontSize? subheadline.fontSize : '', 
+                'color':  subheadline?.color?  subheadline.color : ''}" 
+                >{{subheadline.text}}</p>
+    </div>
+
+    <div class="right-wrapper" *ngIf="rightActive">
+        <div style="display: flex;" *ngIf="icon">
+            <img *ngFor="let item of icon; index as i" [src]="env + item?.src" [alt]="item?.alt" [ngStyle]="{
+                'filter': item?.color? item.color : '',
+            'width.px': item?.width? item.width : '',
+            'height.px': item?.height? item.height : '',
+            margin: '3px 0 0 31px'}">
+        </div>
+        
+        <h2 class="right-subheadline" *ngIf="rightSubHeadline" [ngStyle]="{
+            'font-family': rightSubHeadline?.fontFamily? rightSubHeadline.fontFamily : '',
+            'font-size': rightSubHeadline?.fontSize? rightSubHeadline.fontSize : '', 
+            'color': rightSubHeadline?.color? rightSubHeadline.color : ''}"
+            >{{rightSubHeadline.text}}</h2>
+        </div>
+    </div>
+        
+    <hr class="separator" *ngIf="content">
+
+    <div class="content" *ngIf="content"> 
+
+        <h3 class="title" *ngIf="content?.title">{{content.title?.text}}</h3>
+
+        <div class="content-images" *ngIf="content.images">
+            <img *ngFor="let image of content.images" [src]="image" alt="Imagen del producto" class="product-image">
+        </div>
+
+    </div>  
+</div>

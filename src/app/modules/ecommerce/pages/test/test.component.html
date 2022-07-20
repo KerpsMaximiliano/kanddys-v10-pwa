@@ -99,7 +99,7 @@ flex-direction: column;">
 }"
 [imagesGallery]="testItem"
 ></app-gallery-displayer> -->
-<app-enlist-display
+<!-- <app-enlist-display
 [headline]="{
     icon:{
         src: '/person.svg',
@@ -126,4 +126,32 @@ flex-direction: column;">
 }"
 [itemList]="testItem"
 [showSubtitle]="true"
-></app-enlist-display>
+></app-enlist-display> -->
+
+<app-item-reservation
+[headline]="{
+    text: 'Prueba'
+}"
+[subheadline]="{
+    text:'prueba chiquita'
+}"
+[rightActive]="true"
+[rightSubHeadline]="{
+    text:'right-subheadline'
+}"
+[icon]="[{
+    src: '/person.svg',
+    width: 15,
+    height: 19
+},{
+    src: '/pencil.svg',
+    width: 15,
+    height: 19
+}]"
+[content]="{
+    title:{
+        text:' este es el titulo'
+    },
+    images:['https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg']
+}"
+></app-item-reservation>
