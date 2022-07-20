@@ -180,3 +180,9 @@ export const getTempCodeData = gql`
     }
   }
 `;
+
+export const generatePowerMagicLink = gql`
+  mutation generatePowerMagicLink($hostPhoneNumber: String!) {
+    generatePowerMagicLink(hostPhoneNumber: $hostPhoneNumber)
+  }
+`;

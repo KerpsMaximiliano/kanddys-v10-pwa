@@ -133,6 +133,7 @@ export class UserItemsComponent implements OnInit {
             func: () => {
               this.headerService.flowRoute = this.router.url;
 
+              this.itemsService.temporalItem = null;
               this.router.navigate(['/ecommerce/item-creator'])
             }
           },

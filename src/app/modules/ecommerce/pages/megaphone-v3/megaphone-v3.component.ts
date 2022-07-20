@@ -212,6 +212,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             _id: {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
+            status: "active"
           },
           options: {
             limit: 60,

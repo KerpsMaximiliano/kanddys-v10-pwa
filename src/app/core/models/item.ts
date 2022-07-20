@@ -23,6 +23,7 @@ export class ItemCategory extends Model<ItemCategory> {
   name: string;
   description?: string;
   image?: string;
+  active?: boolean;
   isSelected?: boolean;
 }
 
@@ -163,8 +164,9 @@ export class ItemInput {
 }
 
 export class ItemCategoryInput {
-  merchant: string;
-  name: string;
+  merchant?: string;
+  name?: string;
   description?: string;
   image?: string;
+  active?: boolean;
 }

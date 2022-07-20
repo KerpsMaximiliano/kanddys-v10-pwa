@@ -1,5 +1,5 @@
 <div class="container">
-	<!-- <app-helper-headerv2
+  <!-- <app-helper-headerv2
 		[mode]="'basic'"
         [mainText]="{
             text: item?.merchant?.name,
@@ -22,7 +22,9 @@
 		[color]="providerView ? '#FFFFFF' : '#2874AD'"
 		(returnEvent)="redirect()"
 	></app-helper-headerv2> -->
-	<app-helper-headerv2
+
+  <!-- Header with icons  -->
+  <!-- <app-helper-headerv2
 		*ngIf="item?.status === 'active'"
 		[mode]="'basic'"
 		[icons]="[
@@ -45,75 +47,104 @@
 		color="#FFFFFF"
 		(returnEvent)="redirect()"
         (plusEvent)="openDialog()"
-	></app-helper-headerv2>
-	<app-helper-headerv2
-		*ngIf="item?.status !== 'active'"
-		mode="center"
-		[mainText]="{
-			text: 'INACTIVO (NO EXPUESTO)'
-		}"
-		[icon]="
-			{
-				src: '/closed-eye.svg',
-				filter: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-				callback: toggleActivateItem
-			}
-		"
-		flexDirection="flex-end"
-		[returnAble]="true"
-		rmargin="46px"
-		bgColor="#B17608"
-		color="#FFFFFF"
-		(returnEvent)="redirect()"
-	></app-helper-headerv2>
+	></app-helper-headerv2> -->
 
-	<!-- Fin de la info que ve el admin -->
+  <!-- Header without icons -->
+  <app-helper-headerv2
+    *ngIf="item?.status === 'active'"
+    [mode]="'basic'"
+    [icons]="[
+      {
+        src: '/upload.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+        callback: openShareDialog
+      },
+      {
+        src: '/pencil.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+        callback: editItem,
+        margin: '0 7px 0 6px'
+      }
+    ]"
+    [returnAble]="true"
+    bgColor="#2874AD"
+    color="#FFFFFF"
+    (returnEvent)="redirect()"
+  ></app-helper-headerv2>
 
-	<div class="item-info" *ngIf="item">
-		<!-- <div class="description" *ngIf="item.description">
+  <app-helper-headerv2
+    *ngIf="item?.status !== 'active'"
+    mode="center"
+    [mainText]="{
+      text: 'INACTIVO (NO EXPUESTO)',
+      fontFamily: 'RobotoMedium',
+      fontSize: '17px'
+    }"
+    [icons]="[
+      {
+        src: '/closed-eye.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
+        callback: toggleActivateItem
+      }
+    ]"
+    flexDirection="flex-end"
+    [returnAble]="true"
+    rmargin="46px"
+    bgColor="#B17608"
+    color="#FFFFFF"
+    (returnEvent)="redirect()"
+  ></app-helper-headerv2>
+
+  <!-- Fin de la info que ve el admin -->
+
+  <div class="item-info" *ngIf="item">
+    <!-- <div class="description" *ngIf="item.description">
 			<h2 class="title-name" *ngIf="item.name && item.images?.length">
 				{{item.name}}
 			</h2>
 			<p>{{item.description}}</p>
 		</div> -->
 
-		<!-- <div *ngIf="item.name && (!item.images || !item.images?.length)">
+    <!-- <div *ngIf="item.name && (!item.images || !item.images?.length)">
 			<div class="grey-box">
 				<h3 class="title">{{item.name}}</h3>
 			</div>
 		</div> -->
 
-		<!-- <button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
+    <!-- <button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
 			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
 		</button> -->
 
-		<div class="fullScreenSwiper" *ngIf="item.images?.length">
-			<div class="shadowWrapper">
-					<swiper [config]="swiperConfig">
-					<div
-							*ngFor="let item of item.images; let i = index"
-							(click)="openImageModal(item)"
-							class="item"
-							[ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-					></div>
-				</swiper>
-			</div>
-	</div>
-		<div class="flex-box" style="color:#4F4F4F; margin-top: 32px;">
-			<h6 class="small-title">{{item.name}}</h6>
-			<span class="small-price">${{item.pricing | number}}</span>
-		</div>
+    <div class="fullScreenSwiper" *ngIf="item.images?.length">
+      <div class="shadowWrapper">
+        <swiper [config]="swiperConfig">
+          <div
+            *ngFor="let item of item.images; let i = index"
+            (click)="openImageModal(item)"
+            class="item"
+            [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+          ></div>
+        </swiper>
+      </div>
+    </div>
+    <div class="flex-box" style="color: #4f4f4f; margin-top: 32px">
+      <h6 class="small-title">{{ item.name }}</h6>
+      <span class="small-price">${{ item.pricing | number }}</span>
+    </div>
 
-		<!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
+    <!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
 			<h3 class="title">{{item.name}}</h3>
 		</div> -->
 
-		<!-- <div *ngIf="item.pricing" class="item-price">
+    <!-- <div *ngIf="item.pricing" class="item-price">
 			<span class="vale">Vale</span>
 			<h4 class="price">${{item.pricing | number}}</h4>
 		</div> -->
 
-		<!-- <div class="client-submit-area">
+    <!-- <div class="client-submit-area">
 			<ng-container *ngIf="!providerView">
 				<button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
 				<img src="{{ env }}/bookmark-plus.svg" alt="">
@@ -130,7 +161,7 @@
 			</ng-container>
 		</div> -->
 
-		<!-- <ng-container *ngIf="item.content?.length">
+    <!-- <ng-container *ngIf="item.content?.length">
 			<hr class="divider">
 			<div class="content">
 				<span class="includes">Incluye:</span>
@@ -141,9 +172,11 @@
 				</ul>
 			</div>
 		</ng-container> -->
-	</div>
+  </div>
 
-    <div class="displayer">
+  <!-- Notification area -->
+
+  <!-- <div class="displayer">
         <app-enlist-display
         [headline]="{
             icon:{
@@ -162,23 +195,22 @@
             color: 'invert(40%) sepia(19%) saturate(1763%) hue-rotate(163deg) brightness(96%) contrast(93%)'
         }"
         ></app-enlist-display>
-    </div>
+    </div> -->
 
-    <app-sticky-button
+  <app-sticky-button
     [mode]="'double'"
     [extra]="{
-        bgColor:'#2874AD',
-        return: true
+      bgColor: '#2874AD',
+      return: true
     }"
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="'45 ventas'"
-    [text2]="'$14,451 INGRESO'"
-	size="small"
+    [text]="totalByItem && totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'"
+    [text2]="totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'"
+    size="small"
     (added)="redirect()"
-    ></app-sticky-button>
-
+  ></app-sticky-button>
 </div>
 
 <!-- <ng-container *ngIf="providerView">

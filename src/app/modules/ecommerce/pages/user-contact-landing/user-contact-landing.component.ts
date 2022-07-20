@@ -14,6 +14,7 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
@@ -184,7 +185,8 @@ export class UserContactLandingComponent implements OnInit {
     private dialogService: DialogService,
     private walletService: WalletService,
     private location: Location,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private itemsService: ItemsService
   ) { }
 
   ngOnInit(): void {
@@ -494,6 +496,7 @@ export class UserContactLandingComponent implements OnInit {
             func: () => {
               this.headerService.flowRoute = this.router.url;
 
+              this.itemsService.temporalItem = null;
               this.router.navigate([`/ecommerce/item-creator`]);
             },
             plus: true,

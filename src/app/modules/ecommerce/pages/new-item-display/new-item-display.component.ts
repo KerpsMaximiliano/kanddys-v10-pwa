@@ -25,6 +25,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./new-item-display.component.scss']
 })
 export class NewItemDisplayComponent implements OnInit {
+  URI: string = environment.uri;
   item: Item;
   shouldRedirectToPreviousPage: boolean = false;
   loggedIn: boolean = false;
@@ -329,7 +330,9 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   goToAuth() {
-    this.router.navigate([`/ecommerce/authentication/${this.item._id}`]);
+    this.router.navigate([`/ecommerce/authentication/${this.item._id}`, , {queryParams: {
+      type: 'create-item'
+    }}]);
   }
 
   goToMerchantStore() {
@@ -355,17 +358,17 @@ export class NewItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        title:  'Mi item',
+        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `https://kanddys.com/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -405,7 +408,7 @@ export class NewItemDisplayComponent implements OnInit {
         queryParams: { type: 'item' },
       });
     } else {
-      this.location.back();
+      this.router.navigate([`/ecommerce/merchant-items`]);
     }
   }
 
@@ -437,6 +440,7 @@ export class NewItemDisplayComponent implements OnInit {
   editItem = () => {
     this.headerService.flowRoute = this.router.url;
 
+    this.itemsService.temporalItem = null;
     this.router.navigate(['/ecommerce/item-creator/'+this.item._id]);
   }
 

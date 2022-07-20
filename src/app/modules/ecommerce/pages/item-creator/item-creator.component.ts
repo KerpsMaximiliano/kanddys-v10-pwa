@@ -50,6 +50,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   files: File[] = [];
   item: Item;
   imagesAlreadyLoaded: boolean = false;
+  createdItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
 
@@ -142,7 +143,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`]);
+              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+                type: 'create-item'
+              }});
+              this.createdItem = true;
             }
           }
 
@@ -172,6 +176,67 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       fontSize: '17px',
     },
   }
+
+  imageInputComponent =         {
+    component: ImageInputComponent,
+    inputs: {
+      imageField:
+        this.defaultImages.length > 0 ? this.defaultImages : null,
+      uploadImagesWithoutPlaceholderBox: true,
+      imagesAlreadyLoaded: this.imagesAlreadyLoaded,
+      allowedTypes: ['png', 'jpg', 'jpeg'],
+      imagesPerView: 3,
+      innerLabel: 'Adiciona las imágenes',
+      expandImage: true,
+      topLabel: {
+        text: 'La imagen:',
+        styles: {
+          color: '#7B7B7B',
+          fontFamily: 'RobotoMedium',
+          fontSize: '17px',
+          margin: '0px',
+          marginBottom: '22px',
+          fontWeight: 'normal'
+        },
+      },
+      containerStyles: {
+        width: '157px',
+        height: '137px !important',
+      },
+      fileStyles: {
+        width: '157px',
+        height: '137px',
+        padding: '34px',
+        textAlign: 'center',
+      },
+    },
+    outputs: [
+      {
+        name: 'onFileInputBase64Multiple',
+        callback: (result) => {
+          this.defaultImages[result.index] = result.image;
+          
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+          this.headerService.removeTempNewItem();
+        },
+      },
+      {
+        name: 'onFileInputMultiple',
+        callback: (result) => {
+          this.files = result;
+
+          if(this.editMode) {
+            this.defaultImages = [];
+          }
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+        },
+      },
+    ],
+    beforeIndex: 0,
+    containerStyles: {
+      marginTop: '52px',
+    },
+  };
 
   formSteps: FormStep[] = [
     {
@@ -204,6 +269,31 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   formStep.headerText = this.item.status === 'active' ?
                     'ACTIVO (EXPUESTO EN TIENDA)' :
                     'INACTIVO (NO EXPUESTO)';
+
+                    formStep.headerTextCallback = async () => {
+                      await this.itemService.updateItem(
+                        {
+                          status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                        },
+                        this.currentItemId
+                      );
+  
+                      this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
+
+                      formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
+                        '#2874AD' : '#B17608';
+  
+                      for(let formStep of this.formSteps) {
+                        formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                          this.item.status === 'active' ? 'open' : 'closed'
+                        }-eye-white.svg`;
+                        
+                        formStep.headerText = this.item.status === 'active' ?
+                          'ACTIVO (EXPUESTO EN TIENDA)' :
+                          'INACTIVO (NO EXPUESTO)';
+                      }
+  
+                    }  
                 }
               } else {
                 this.formSteps[0].headerText = 'PREVIEW'
@@ -382,7 +472,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             containerStyles: {
               width: '58.011%',
               minWidth: '210px',
-              marginTop: '32px',
+              marginTop: '80px',
               position: 'relative',
               overflowX: 'hidden'
             },
@@ -406,7 +496,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
             labelStyles: {
               ...labelStyles,
-              fontWeight: 'normal'
+              fontWeight: 'normal',
+              marginBottom: '22px'
             }
           },
         },
@@ -468,73 +559,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         // },
       ],
       embeddedComponents: [
-        {
-          component: ImageInputComponent,
-          inputs: {
-            imageField:
-              this.defaultImages.length > 0 ? this.defaultImages : null,
-            multiple: true,
-            imagesAlreadyLoaded: this.imagesAlreadyLoaded,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Adiciona las imágenes',
-            topLabel: {
-              text: 'Adiciona el arte en tu herramienta preferida:',
-              styles: {
-                color: '#7B7B7B',
-                fontFamily: 'RobotoMedium',
-                fontSize: '17px',
-                margin: '0px',
-                marginBottom: '24px',
-                fontWeight: 'normal'
-              },
-            },
-            containerStyles: {
-              width: '157px',
-              height: '137px !important',
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.defaultImages[result.index] = result.image;
-                this.formSteps[0].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
-                this.formSteps[0].embeddedComponents[0].shouldRerender = true;
-                this.headerService.removeTempNewItem();
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.files[result.index] = result.image;
-                console.log(this.files);
-              },
-            },
-          ],
-          beforeIndex: 0,
-          containerStyles: {
-            marginTop: '10px',
-          },
-        },
-        {
-          component: InfoButtonComponent,
-          inputs: {},
-          containerStyles: {
-            position: 'relative',
-            top: '-130px',
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'flex-end',
-          },
-          afterIndex: 2,
-        },
+        this.imageInputComponent,
+        // {
+        //   component: InfoButtonComponent,
+        //   inputs: {},
+        //   containerStyles: {
+        //     position: 'relative',
+        //     top: '-130px',
+        //     display: 'flex',
+        //     width: '100%',
+        //     justifyContent: 'flex-end',
+        //   },
+        //   afterIndex: 2,
+        // },
       ],
       asyncStepProcessingFunction: {
         type: 'promise',
@@ -627,7 +664,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
                   this.itemService.removeTemporalItem();
-                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`])
+                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+                    type: 'create-item'
+                  }})
+                  this.createdItem = true;
                 };
               }
             }
@@ -644,7 +684,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             topLabel: 'Contenido opcional',
             styles: {
               containerStyles: {
-                marginTop: '32px',
+                marginTop: '79px',
                 marginBottom: '0px'
               },
               fieldStyles: {
@@ -691,8 +731,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           fontWeight: 'bold',
           fontSize: '24px',
           margin: '0px',
-          marginTop: '32px',
-          marginBottom: '12px',
+          marginTop: '50px',
+          marginBottom: '0px',
         }
       },
       avoidGoingToNextStep: true,
@@ -707,7 +747,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           // this.formSteps[0].headerText = 'PREVIEW';
           this.formSteps[0].customStickyButton.mode = 'double';
           this.formSteps[0].customStickyButton.text = 'PREVIEW';
-          this.formSteps[0].customStickyButton.text2 = 'SALVAR';          
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
+          this.formSteps[0].customStickyButton.extra = {};      
+          this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.height = '30px';
+          this.formSteps[0].customStickyButton.customLeftButtonStyles = {
+            width: 'fit-content',
+            marginLeft: 'auto',
+            color: '#fff',
+            height: '30px'
+          };      
+          this.formSteps[0].customStickyButton.customRightButtonStyles = {
+            width: 'fit-content',
+            marginRight: '20px',
+            marginLeft: '44px',
+            color: '#fff',
+            height: '30px'
+          };      
         }
       },
       headerMode: 'v2',
@@ -855,15 +911,32 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               fontWeight: '600',
             },
           },
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${change})`;
+          }
         },
       ],
       customScrollToStep: (params) => {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
 
+        this.formSteps[0].embeddedComponents = [];
+
+        if(this.editMode)
+          this.imageInputComponent.inputs.imageField = this.defaultImages.length > 0 ? this.defaultImages : null;
+          
+        this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
+
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
+        this.formSteps[0].embeddedComponents = [];
+
+        if(this.editMode)
+          this.imageInputComponent.inputs.imageField = this.defaultImages.length > 0 ? this.defaultImages : null;
+          
+        this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
 
         params.scrollToStep(0, false);
       },
@@ -987,8 +1060,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
-          this.router.navigate([this.headerService.flowRoute]);
-          this.headerService.flowRoute = null;
+          this.router.navigate([`/ecommerce/merchant-items`]);
         };
       }
 
@@ -999,6 +1071,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (this.itemService && this.itemService.temporalItem) {
+        console.log("one");
         const { description, name, content } = this.itemService.temporalItem;
         let { pricing, images } = this.itemService.temporalItem;
 
@@ -1036,6 +1109,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+        this.files = [];
         this.defaultImages = images;
 
         const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
@@ -1046,8 +1120,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.defaultImages = images;
 
           for(let imageURL of notBase64Images) {
-            this.defaultImagesPermanent.push(imageURL);
-
             fetch(imageURL)
               .then(response => response.blob())
               .then(blob => new Promise((resolve, reject) => {
@@ -1058,6 +1130,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }))
               .then((base64: string) => this.files.push(base64ToFile(base64)));
           }
+
+          for(let imageURL of base64Images) {
+            this.defaultImagesPermanent.push(imageURL);
+          }
+
 
           this.imagesAlreadyLoaded = true;
           this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
@@ -1095,6 +1172,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (itemId && this.loggedIn) {
+        console.log("two");
         lockUI();
         this.editMode = true;
 
@@ -1144,6 +1222,28 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     'ACTIVO (EXPUESTO EN TIENDA)' :
                     'INACTIVO (NO EXPUESTO)';
 
+                  formStep.headerTextCallback = async () => {
+                    await this.itemService.updateItem(
+                      {
+                        status: this.item.status === 'active' ? 'disabled' : this.item.status === 'disabled' ? 'active' : 'draft', 
+                      },
+                      this.currentItemId
+                    );
+
+                    this.item.status = this.item.status === 'active' ? 'disabled' : ['disabled', 'draft'].includes(this.item.status) ? 'active' : 'draft';
+
+                    for(let formStep of this.formSteps) {
+                      formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+                        this.item.status === 'active' ? 'open' : 'closed'
+                      }-eye-white.svg`;
+                      
+                      formStep.headerText = this.item.status === 'active' ?
+                        'ACTIVO (EXPUESTO EN TIENDA)' :
+                        'INACTIVO (NO EXPUESTO)';
+                    }
+
+                  }
+
                   formStep.customHelperHeaderConfig.bgcolor = this.item.status === 'active' ?
                     '#2874AD' : '#B17608';
                 }
@@ -1156,66 +1256,86 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
   
-          const formatted = this.decimalPipe.transform(
-            pricing,
-            '1.2'
-          );
+          if(!this.itemService.temporalItem) {
+            console.log("two");
 
-          if(pricing % 1 === 0) pricing = pricing * 100;
-
-          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-            String(pricing)
-          );
+            const formatted = this.decimalPipe.transform(
+              pricing,
+              '1.2'
+            );
   
-          if (formatted === '0') {
-            this.formSteps[0].fieldsList[0].placeholder = '';
-          }
+            if(pricing % 1 === 0) pricing = pricing * 100;
   
-          this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
-          this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
-
-          this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
-
-          if(images && images.length > 0) {
-            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-            this.defaultImages = images;
-
-            for(let imageURL of images) {
-              this.defaultImagesPermanent.push(imageURL);
-
-              fetch(imageURL)
-                .then(response => response.blob())
-                .then(blob => new Promise((resolve, reject) => {
-                  const reader = new FileReader()
-                  reader.onloadend = () => resolve(reader.result)
-                  reader.onerror = reject
-                  reader.readAsDataURL(blob)
-                }))
-                .then((base64: string) => this.files.push(base64ToFile(base64)));
+            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+              String(pricing)
+            );
+    
+            if (formatted === '0') {
+              this.formSteps[0].fieldsList[0].placeholder = '';
             }
-
-            this.imagesAlreadyLoaded = true;
-            this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
-
-            console.log("e", this.files);
+    
+            this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+            this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+  
+            if(name && name !== '') {
+              this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${name})`;
+            }
+  
+            this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
+  
+            if(images && images.length > 0) {
+              this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+              this.defaultImages = images;
+  
+  
+              for(let imageURL of images) {
+                this.defaultImagesPermanent.push(imageURL);
+  
+                fetch(imageURL)
+                  .then(response => response.blob())
+                  .then(blob => new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onloadend = () => resolve(reader.result)
+                    reader.onerror = reject
+                    reader.readAsDataURL(blob)
+                  }))
+                  .then((base64: string) => this.files.push(base64ToFile(base64)));
+              }
+  
+              this.imagesAlreadyLoaded = true;
+              this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+  
+              console.log("e", this.files);
+            }
+  
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+            this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+  
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+  
+  
+            const formArray = this.formSteps[1].fieldsList[0]
+              .fieldControl.control as FormArray;
+            formArray.removeAt(0);
+  
+            if (content)
+              content.forEach((item) => {
+                formArray.push(new FormControl(item));
+              });
+            else {
+              formArray.push(new FormControl(''));
+            }
           }
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+          //saves the defaultImagesPermanent if you are returning from the preview page
+          if(this.itemService.temporalItem) {
+            console.log("three");
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-
-
-          const formArray = this.formSteps[1].fieldsList[0]
-            .fieldControl.control as FormArray;
-          formArray.removeAt(0);
-
-          if (content)
-            content.forEach((item) => {
-              formArray.push(new FormControl(item));
-            });
-          else {
-            formArray.push(new FormControl(''));
+            if(images && images.length > 0) {
+              for(let imageURL of images) {
+                this.defaultImagesPermanent.push(imageURL);
+              }
+            }
           }
           unlockUI();
         } else {
@@ -1334,6 +1454,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute) this.headerService.flowRoute = null;
+    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }

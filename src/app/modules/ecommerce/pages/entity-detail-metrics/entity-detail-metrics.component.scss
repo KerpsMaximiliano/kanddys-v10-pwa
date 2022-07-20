@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: 30px;
 
   .header-image {
     width: 80px;
@@ -23,6 +23,7 @@
 
   p {
     margin: 0;
+    margin-bottom: 18px;
     font-family: "RobotoRegular";
     font-size: 17px;
     color: #7B7B7B;
