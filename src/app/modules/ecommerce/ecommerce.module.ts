@@ -352,7 +352,7 @@ const routes: Routes = [
     component: MerchantItemsComponent
   },
   {
-    path: 'entity-detail-metrics/:id',
+    path: 'entity-detail-metrics',
     component: EntityDetailMetricsComponent
   },
   {

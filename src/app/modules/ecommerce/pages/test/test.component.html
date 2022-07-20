@@ -1,5 +1,4 @@
 <!-- <app-threejs-canvas></app-threejs-canvas> -->
-
 <!-- <app-multistep-form></app-multistep-form> -->
 <!-- <app-saleflow-item
 [price]="50"
@@ -47,9 +46,7 @@ flex-direction: column;">
     <!-- <app-single-item-list *ngFor="let item of tagTest; index as i"
     [tag]="item"
     (singleItem)="touched()"
-    ></app-single-item-list>
-    
-    
+    ></app-single-item-list>   
 </div> -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> -->
 <!-- <app-sticky-button
@@ -78,6 +75,7 @@ flex-direction: column;">
 }]"
 (displaying)="displau()"
 ></app-helper-headerv2> -->
+
 <!-- <app-question-item
     [single]="false"
     [headline]="'Esto es una prueba'"
@@ -100,6 +98,7 @@ flex-direction: column;">
 [imagesGallery]="testItem"
 ></app-gallery-displayer> -->
 <!-- <app-enlist-display
+<app-enlist-display
 [headline]="{
     icon:{
         src: '/person.svg',
@@ -155,3 +154,16 @@ flex-direction: column;">
     images:['https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg']
 }"
 ></app-item-reservation>
+
+
+<app-answer-selector
+    [options]="actionList"
+    [indicator]="true"
+    [showDescription]="false"
+    [containerStyles]="{
+        margin: '0px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+    }"
+></app-answer-selector>
+

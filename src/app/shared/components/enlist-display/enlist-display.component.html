@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <button class="cta" [style.color]="item.cta?.color" *ngIf="item.cta?.text" (click)="item.cta.callback">{{item.cta.text}}</button>
+            <button class="cta" [style.color]="item.cta?.color" *ngIf="item.cta?.text" (click)="item.cta.callback && item.cta.callback()">{{item.cta.text}}</button>
         </div>
 
         <hr class="divider" *ngIf="bottomText">

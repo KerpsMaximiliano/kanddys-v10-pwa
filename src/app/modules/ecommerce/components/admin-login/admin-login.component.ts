@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-admin-login',
@@ -7,33 +8,42 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminLoginComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+  ) { }
 
   testItem: Array<any> = [{
     img: 'https://i.imgur.com/pC7xVnn.png', //Imagen del merchant si tiene
-    name: {text: 'AQUI VA UN MERCHANT'}, //Nombre
+    name: { text: 'Foto Davitte' }, //Nombre
     cta: {
-        text: 'Acceder =>',
-        color: '#2874AD',
-        callback: () => {console.log('Accediste como este merchant')} 
+      text: 'Acceder =>',
+      color: '#2874AD',
+      callback: () => this.adminLogin('19188156444')
     }
-  },{
+  }, {
     img: 'https://i.imgur.com/pC7xVnn.png',
-    name: {text: 'AQUI VA UN MERCHANT'}, 
+    name: { text: 'Caffaro' },
     cta: {
-        text: 'Acceder =>',
-        color: '#2874AD'
+      text: 'Acceder =>',
+      color: '#2874AD',
+      callback: () => this.adminLogin('18492203488')
     }
-  },{
+  }, {
     img: 'https://i.imgur.com/pC7xVnn.png',
-    name: {text: 'AQUI VA UN MERCHANT'},
+    name: { text: 'Cecilia' },
     cta: {
-        text: 'Acceder =>',
-        color: '#2874AD'
+      text: 'Acceder =>',
+      color: '#2874AD',
+      callback: () => this.adminLogin('18095636780')
     }
   }];
 
   ngOnInit(): void {
+  }
+
+  async adminLogin(phoneNumber: string) {
+    const result = await this.authService.generatePowerMagicLink(phoneNumber);
+    console.log(result);
   }
 
 }

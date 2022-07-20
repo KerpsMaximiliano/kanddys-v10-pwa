@@ -1,25 +1,16 @@
 <div style="min-height: 100vh;">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="true"
+    [returnAble]="false"
     [icons]="admin && (saleflow ? [
       {
         src: '/upload.svg',
         callback: onShareClick,
-        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
-      },
-      {
-        src: '/pencil.svg',
-        callback: onPencilClick,
-        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+        margin: '0 7px 0 14px'
       }
     ] :
     merchant && [
-    {
-      src: '/pencil.svg',
-      callback: onPencilClick,
-      color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
-    }
   ])"
   (returnEvent)="back()"
   bgColor="#2874AD"
@@ -33,6 +24,12 @@
     <h5>{{merchant.name}}</h5>
     <p>{{merchant.bio}}</p>
 
+    <!-- {
+      src: '/pencil.svg',
+      callback: onPencilClick,
+      color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+      margin: '0 7px 0 14px'
+    } -->
     <!-- Activar/Desactivar la tienda -->
     <!-- <button class="header-btn" *ngIf="admin">
       publica y activa <i class="fas fa-chevron-right"></i>
@@ -40,30 +37,20 @@
   </div>
   <div *ngIf="!ordersTotal && mode === 'store'">
     <app-form-questions
-      [topBar]="items?.length + ' articulos'"
-      bottomLeftBtn="adicionar nuevo articulo"
+      [topBar]="items?.length + ' artículos'"
+      bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
-      bottomRightBtn="ver mas"
+      bottomRightBtn="ver más"
       (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
   </div>
   <div *ngIf="admin">
     <app-form-questions
       *ngIf="items"
-      [topBar]="items?.length + ' articulos'"
-      bottomRightBtn="MAS"
+      [topBar]="items?.length + ' artículos'"
+      bottomRightBtn="MÁS"
       (bottomRight)="redirectMerchantItems('merchant-items')"
-      [questions]="[
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        },
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: items?.length
-        }
-      ]"
-      bottomLeftBtn="adicionar nuevo articulo"
+      bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
       ></app-form-questions>
       <!-- [dropdowns]="[

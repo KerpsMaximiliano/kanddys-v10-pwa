@@ -45,6 +45,7 @@ export class SaleflowItemComponent implements OnInit {
     height?: number;
     color?: string;
   }
+  @Input() responsiveWidthVersion: boolean = false;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();

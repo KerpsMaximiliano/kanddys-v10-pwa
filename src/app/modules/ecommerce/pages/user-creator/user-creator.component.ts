@@ -17,6 +17,7 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Location } from '@angular/common';
 
 const labelStyles = {
   color: '#7B7B7B',
@@ -179,10 +180,14 @@ export class UserCreatorComponent implements OnInit {
       validStep: {
         left: { icon: '/arrow-left.svg', color: 'blue' },
         function: async (params) => {
+          this.location.back();
         }
       },
       invalidStep: {
         left: { icon: '/arrow-left.svg', color: 'blue' },
+        function: async (params) => {
+          this.location.back();
+        }
       }
     },
     bgColor: '#2874AD',
@@ -777,6 +782,9 @@ export class UserCreatorComponent implements OnInit {
           this.headerService.flowRoute = this.router.url;
         })
       ],
+      customScrollToStepBackwards: (params) => {
+        this.location.back()
+      },
       optionalLinksTo: {
         afterIndex: !this.isMerchant ? 3 : 5,
         groupOfLinksArray: [
@@ -1648,6 +1656,7 @@ export class UserCreatorComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private merchantsService: MerchantsService,
     private walletService: WalletService,
+    private location: Location
   ) { }
 
   async ngOnInit() {

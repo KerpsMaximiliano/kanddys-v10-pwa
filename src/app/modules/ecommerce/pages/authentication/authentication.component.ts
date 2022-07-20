@@ -17,8 +17,6 @@ const checkIfStringIsBase64DataURI = (text: string)=> {
   return text.slice(0, 5) === 'data:';
 }
 
-const defaultUserImage = 'https://www.gravatar.com/avatar/0?s=250&d=mp';              
-
 @Component({
   selector: 'app-authentication',
   templateUrl: './authentication.component.html',
@@ -165,10 +163,21 @@ export class Authentication implements OnInit {
             const phoneNumber = params.dataModel.get('1').value.phoneNumber.e164Number.split('+')[1];
 
             try {
-              await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
-              params.scrollToStep(1);
+              if(this.type === 'create-item') {
+                await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
+                params.scrollToStep(1);
 
-              return { ok: true };
+                return { ok: true };
+              } else if(!this.type) {
+                const myUser = await this.authService.checkUser(phoneNumber);
+                params.scrollToStep(1);
+
+                if(myUser) {
+                  await this.authService.generateMagicLink(phoneNumber, `ecommerce/entity-detail-metrics`, myUser._id , 'MerchantAccess', null);
+                }
+
+                return { ok: true };
+              }
             } catch (error) {
               console.log(error);
 
@@ -187,7 +196,7 @@ export class Authentication implements OnInit {
           this.formSteps[0].fieldsList[1].disabled = true;
       },
       customScrollToStepBackwards: (params) => {
-        console.log("FLOW ROUTE", this.headerService.flowRoute);
+        // console.log("FLOW ROUTE", this.headerService.flowRoute);
         if (this.headerService.flowRoute)
           this.router.navigate([this.headerService.flowRoute]);
       },
@@ -275,8 +284,9 @@ export class Authentication implements OnInit {
       this.route.queryParams.subscribe(queryParams => {
         const {type} = queryParams;
 
+        if(type && type.length > 0) this.type = type;
+
         if(type === 'create-user') {
-          this.type = type;
           this.storedFormData = this.multistepService.getMultiStepFormData('user-creation');
 
           if(!this.storedFormData) this.router.navigate(['ecommerce/error-screen']);
@@ -721,10 +731,12 @@ export class Authentication implements OnInit {
               
             }
           }
-        } else {
+        } else if (type === 'create-item') {
           if (params.itemId) {
             this.itemId = params.itemId;
           }
+        } else {
+
         }
       })
     })
