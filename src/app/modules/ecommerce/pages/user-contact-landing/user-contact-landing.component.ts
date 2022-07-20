@@ -422,6 +422,7 @@ export class UserContactLandingComponent implements OnInit {
           _id: {
             __in: ([] = this.saleflow.items?.slice(0,6).map((items) => items.item._id)),
           },
+          status: "active"
         },
       }))?.listItems;
 

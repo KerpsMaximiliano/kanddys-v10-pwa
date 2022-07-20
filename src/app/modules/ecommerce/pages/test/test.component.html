@@ -97,8 +97,8 @@ flex-direction: column;">
 }"
 [imagesGallery]="testItem"
 ></app-gallery-displayer> -->
+
 <!-- <app-enlist-display
-<app-enlist-display
 [headline]="{
     icon:{
         src: '/person.svg',
@@ -126,6 +126,7 @@ flex-direction: column;">
 [itemList]="testItem"
 [showSubtitle]="true"
 ></app-enlist-display> -->
+
 
 <app-item-reservation
 [headline]="{
@@ -156,7 +157,8 @@ flex-direction: column;">
 ></app-item-reservation>
 
 
-<app-answer-selector
+
+<!-- <app-answer-selector
     [options]="actionList"
     [indicator]="true"
     [showDescription]="false"
@@ -165,5 +167,38 @@ flex-direction: column;">
         paddingBottom: '16px',
         borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
     }"
-></app-answer-selector>
+></app-answer-selector> -->
 
+<app-question-item
+headline="EXPUESTO EN TAB (S)"
+[headlineContainerStyles]="{
+    justifyContent: 'flex-start'
+}"
+[headlineTitleStyles]="{
+    marginLeft: '10px'
+}"
+[headlineRightTextStyles]="{
+    color: 'blue',
+    marginLeft: 'auto'
+}"
+[headlineLeftIcon]="{
+    icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+    width: 30,
+    height: 30
+}"
+[headlineRightText]="{
+    text: 'MAS',
+    color: 'darkblue',
+    fontSize: '1rem',
+    fontFamily: 'Roboto'
+}"
+[tagListTextStyles]="{
+    marginRight: '5px'
+}"
+[tagListStyles]="{
+    marginTop: '15px'
+}"
+[chipMode]="2"
+[collapseTags]="false"
+[tags]="onlyTags"
+></app-question-item>
