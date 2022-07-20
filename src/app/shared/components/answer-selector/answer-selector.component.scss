@@ -20,6 +20,24 @@ ul {
   margin-bottom: 1rem;
 }
 
+.selector-flex-wrapper {
+  width: 100%;
+  display: flex;
+
+  .selector-option {
+    flex-basis: 100%;
+  }
+
+  .icons-flex-wrapper {
+    display: flex;
+    align-items: center;
+
+    img:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 .option {
   cursor: pointer;
   color: #7b7b7b;

@@ -1,6 +1,6 @@
 <!-- <app-threejs-canvas></app-threejs-canvas> -->
 
-<app-multistep-form></app-multistep-form>
+<!-- <app-multistep-form></app-multistep-form> -->
 <!-- <app-saleflow-item
 [price]="50"
 [income]="5000"
@@ -86,7 +86,7 @@ flex-direction: column;">
 (displaying)="displau()"
 ></app-helper-headerv2> -->
 
-<app-gallery-displayer
+<!-- <app-gallery-displayer
 [headline]="{
     text:'Escenario de prueba',
     icon: {
@@ -96,4 +96,15 @@ flex-direction: column;">
     }
 }"
 [imagesGallery]="testItem"
-></app-gallery-displayer>
+></app-gallery-displayer> -->
+
+<app-answer-selector
+    [options]="actionList"
+    [indicator]="true"
+    [showDescription]="false"
+    [containerStyles]="{
+        margin: '0px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+    }"
+></app-answer-selector>

@@ -8,6 +8,7 @@ import { ItemDashboardOptionsComponent, DashboardOption } from 'src/app/shared/d
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 import { Tag } from '../../../../core/models/tags';
+import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
 
 @Component({
   selector: 'app-test',
@@ -108,6 +109,54 @@ export class TestComponent implements OnInit {
         callback: () => {console.log('Cy')} 
     }
   } */]
+
+  actionList: OptionAnswerSelector[] = [
+    {
+      value: 'Al venderse',
+      status: true,
+      icons: [
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/closed-eye.svg',
+          styles: {
+            width: '21px',
+            height: '21px',
+            margin: '0px 0px 0px 18px',  
+          },
+          callback: () => console.log("clicked icon 1")
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+          styles: {
+            width: '19px',
+            height: '19px',
+            margin: '0px 0px 0px 21px'
+          },
+          callback: () => console.log("clicked icon 2")
+        },
+        {
+          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right.svg',
+          styles: {
+            width: '19px',
+            height: '19px',
+            margin: '0px 0px 0px 11px'
+          },
+          callback: () => console.log("clicked icon 3")
+        }
+      ]
+    },
+    {
+      value: 'Después de la entrega ',
+      status: true
+    },
+    {
+      value: 'StatusID',
+      status: true
+    },
+    {
+      value: 'StatusID',
+      status: true
+    },
+  ];
 
   openDialog() {
     // this.dialog.open(CustomFieldsComponent, {
