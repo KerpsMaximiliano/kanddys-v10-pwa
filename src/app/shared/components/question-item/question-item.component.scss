@@ -157,4 +157,29 @@
 			color: #ffffff;
 		}
 	}
+
+	.tag-button-2 {
+		all: unset;
+		font-size: 15px;
+		font-family: "RobotoRegular";
+		padding: 6px;
+		border-radius: 16px;
+		border: 1px solid rgb(40, 116, 173);;
+		color: #7B7B7B;
+		text-align: center;
+		display: flex;
+		align-items: center;
+		white-space: nowrap;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #70abd8;
+			color: #ffffff;
+		}
+
+		&.selected {
+			background-color: #2874AD;
+			color: #ffffff;
+		}
+	}
 }
