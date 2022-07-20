@@ -49,14 +49,7 @@ flex-direction: column;">
     (singleItem)="touched()"
     ></app-single-item-list>
     
-    <app-question-item
-    [single]="true"
-    [data]="[{
-        date: '25/10/2022',
-        question: '¿Que es lo que mas te gusta?',
-        answer:'Pizzas'
-    }]"
-    ></app-question-item>
+    
 </div> -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> -->
 <!-- <app-sticky-button
@@ -86,6 +79,16 @@ flex-direction: column;">
 (displaying)="displau()"
 ></app-helper-headerv2> -->
 
+<!-- <app-question-item
+    [single]="false"
+    [headline]="'Esto es una prueba'"
+    [data]="[{
+        date: '25/10/2022',
+        question: '¿Que es lo que mas te gusta?',
+        answer:'Pizzas'
+    }]"
+    ></app-question-item>
+ -->
 <!-- <app-gallery-displayer
 [headline]="{
     text:'Escenario de prueba',
@@ -97,6 +100,36 @@ flex-direction: column;">
 }"
 [imagesGallery]="testItem"
 ></app-gallery-displayer> -->
+
+<!-- <app-enlist-display
+[headline]="{
+    icon:{
+        src: '/person.svg',
+        width: 22,
+        height: 22
+    },
+    text:{
+        text:'late night talking'
+    }
+}"
+[iconText]="{
+    texts:[{
+        text: 'lmao'
+        }],
+    icons:[{
+        src:'/upload.svg',
+        width: 22,
+        height: 22
+    },{
+        src:'/pencil.svg',
+        width: 22,
+        height: 22
+    }]
+}"
+[itemList]="testItem"
+[showSubtitle]="true"
+></app-enlist-display> -->
+
 
 <!-- <app-answer-selector
     [options]="actionList"

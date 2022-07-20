@@ -10,6 +10,15 @@ interface Text {
     callback?: () => void;
 }
 
+interface Icon{
+    src: string;
+    alt?: string;
+    color?: string;
+    width?: number;
+    height?: number;
+    callback?: () => void;
+}
+
 export interface ListedItem {
     img?: string;
     name: Text;
@@ -29,32 +38,24 @@ export interface ListedItem {
 export class EnlistDisplayComponent implements OnInit {
 
     @Input() headline: {
-        icon?: {
-            src: string;
-            alt?: string;
-            color?: string;
-            width?: number;
-            height?: number;
-        };
+        icon?: Icon;
         text: Text;
     };
-    @Input() icon?: {
-        src: string;
-        alt?: string;
-        color?: string;
-        width?: number;
-        height?: number;
-        callback?: () => void;
-    };
-    @Input() plus: boolean;
-    @Input() itemList: ListedItem[];
+    @Input() icon?: Icon;
+    @Input() iconText:{
+        texts?: Text[];
+        icons?: Icon[];
+    }
     @Input() bottomText: {
         leftText?:{
             text: Text;
             arrow?: boolean;
         };
+        extraText?: Text;
         rightText?: Text;
     };
+    @Input() itemList: ListedItem[];
+    @Input() plus: boolean;
     @Input() marginBottom: string;
     @Input() tMarginTop: string;
     showEntry: boolean;

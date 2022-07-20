@@ -12,6 +12,8 @@
                 }">{{headline.text.text}}</h1>
             </div>
 
+            <!--ICONOS O ARRAY DE ICONOS Y TEXTO DE LA DERECHA-->
+
             <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
                 'width': icon?.width? icon.width : '',
                 'height': icon?.height? icon.height : '',
@@ -19,6 +21,24 @@
                 'cursor': 'pointer'
             }" *ngIf="icon?.src">
             <button class="plus" *ngIf="!icon && plus">+</button>
+
+            <div *ngIf="iconText && !icon && !plus" style="display: flex; align-items: center;">
+                <!-- TEXTOS -->
+                <button *ngFor="let text of iconText.texts; index as i" class="btn-text" (click)="text.callback()" [ngStyle]="{
+                    'font-size':text?.fontSize && text.fontSize, 
+                    'font-family': text?.fontFamily && text.fontFamily, 
+                    'color': text?.color && text.color}">
+                    {{text.text}}
+                </button>
+                <!-- INCONOS -->
+                <button *ngFor="let icon of iconText.icons; index as i" class="btn-icon" (click)="icon.callback()">
+                    <img [src]="env + icon.src" [ngStyle]="{
+                    'width.px': icon?.width && icon.width,
+                    'height.px': icon?.height && icon.height,
+                    'filter': icon?.color && icon.color}">
+                </button>
+            </div>
+
         </div>
         
         <hr class="separator" *ngIf="itemList">
@@ -50,16 +70,28 @@
         <hr class="divider" *ngIf="bottomText">
 
         <div class="bottomText" *ngIf="bottomText" [ngStyle]="{'justify-content': (!bottomText?.leftText && bottomText?.rightText)? 'flex-end': ''}">
-            <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
-                'font-size': bottomText.leftText?.text.fontSize? bottomText.leftText.text.fontSize : '',
-                'font-family': bottomText.leftText?.text.fontFamily? bottomText.leftText.text.fontFamily : '',
-                'color': bottomText.leftText?.text.color? bottomText.leftText.text.color : '',
-                'cursor': bottomText.leftText?.text.pointer? 'pointer' : ''
-                }">
-                {{bottomText.leftText.text.text}}
-                <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
-                <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
-            </button>
+            
+            <div style="display: flex; justify-content: space-between" *ngIf="bottomText?.leftText || bottomText?.extraText">
+                <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
+                    'font-size': bottomText.leftText?.text.fontSize? bottomText.leftText.text.fontSize : '',
+                    'font-family': bottomText.leftText?.text.fontFamily? bottomText.leftText.text.fontFamily : '',
+                    'color': bottomText.leftText?.text.color? bottomText.leftText.text.color : '',
+                    'cursor': bottomText.leftText?.text.pointer? 'pointer' : ''
+                    }">
+                    {{bottomText.leftText.text.text}}
+                    <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
+                    <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
+                </button>
+
+                <button class="display" *ngIf="bottomText?.extraText" (click)="bottomText?.extraText.callback()" [ngStyle]="{
+                    'font-size': bottomText.extraText?.fontSize? bottomText.extraText.fontSize : '',
+                    'font-family': bottomText.extraText?.fontFamily? bottomText.extraText.fontFamily : '',
+                    'color': bottomText.extraText?.color? bottomText.extraText.color : '',
+                    'cursor': bottomText.extraText?.pointer? 'pointer' : ''
+                    }">
+                    {{bottomText.extraText.text}}
+                </button>
+            </div>
 
             <button class="display" *ngIf="bottomText?.rightText" (click)="bottomText.rightText.callback()" [ngStyle]="{
               'font-size': bottomText.rightText?.fontSize? bottomText.rightText.fontSize : '',
