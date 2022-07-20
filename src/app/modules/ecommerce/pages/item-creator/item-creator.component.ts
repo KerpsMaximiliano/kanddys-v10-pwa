@@ -920,6 +920,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
 
         this.formSteps[0].embeddedComponents = [];
+
+        if(this.editMode)
+          this.imageInputComponent.inputs.imageField = this.defaultImages.length > 0 ? this.defaultImages : null;
+          
         this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
 
         params.scrollToStep(0, false);
@@ -928,6 +932,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
 
         this.formSteps[0].embeddedComponents = [];
+
+        if(this.editMode)
+          this.imageInputComponent.inputs.imageField = this.defaultImages.length > 0 ? this.defaultImages : null;
+          
         this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
 
         params.scrollToStep(0, false);
