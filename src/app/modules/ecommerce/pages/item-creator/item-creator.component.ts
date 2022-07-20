@@ -177,6 +177,67 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     },
   }
 
+  imageInputComponent =         {
+    component: ImageInputComponent,
+    inputs: {
+      imageField:
+        this.defaultImages.length > 0 ? this.defaultImages : null,
+      uploadImagesWithoutPlaceholderBox: true,
+      imagesAlreadyLoaded: this.imagesAlreadyLoaded,
+      allowedTypes: ['png', 'jpg', 'jpeg'],
+      imagesPerView: 3,
+      innerLabel: 'Adiciona las imágenes',
+      expandImage: true,
+      topLabel: {
+        text: 'La imagen:',
+        styles: {
+          color: '#7B7B7B',
+          fontFamily: 'RobotoMedium',
+          fontSize: '17px',
+          margin: '0px',
+          marginBottom: '22px',
+          fontWeight: 'normal'
+        },
+      },
+      containerStyles: {
+        width: '157px',
+        height: '137px !important',
+      },
+      fileStyles: {
+        width: '157px',
+        height: '137px',
+        padding: '34px',
+        textAlign: 'center',
+      },
+    },
+    outputs: [
+      {
+        name: 'onFileInputBase64Multiple',
+        callback: (result) => {
+          this.defaultImages[result.index] = result.image;
+          
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+          this.headerService.removeTempNewItem();
+        },
+      },
+      {
+        name: 'onFileInputMultiple',
+        callback: (result) => {
+          this.files = result;
+
+          if(this.editMode) {
+            this.defaultImages = [];
+          }
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+        },
+      },
+    ],
+    beforeIndex: 0,
+    containerStyles: {
+      marginTop: '52px',
+    },
+  };
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -498,73 +559,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         // },
       ],
       embeddedComponents: [
-        {
-          component: ImageInputComponent,
-          inputs: {
-            imageField:
-              this.defaultImages.length > 0 ? this.defaultImages : null,
-            uploadImagesWithoutPlaceholderBox: true,
-            imagesAlreadyLoaded: this.imagesAlreadyLoaded,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Adiciona las imágenes',
-            expandImage: true,
-            topLabel: {
-              text: 'La imagen:',
-              styles: {
-                color: '#7B7B7B',
-                fontFamily: 'RobotoMedium',
-                fontSize: '17px',
-                margin: '0px',
-                marginBottom: '22px',
-                fontWeight: 'normal'
-              },
-            },
-            containerStyles: {
-              width: '157px',
-              height: '137px !important',
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              padding: '34px',
-              textAlign: 'center',
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64Multiple',
-              callback: (result) => {
-                this.defaultImages[result.index] = result.image;
-                this.formSteps[0].embeddedComponents[0].shouldRerender = true;
-                this.headerService.removeTempNewItem();
-              },
-            },
-            {
-              name: 'onFileInputMultiple',
-              callback: (result) => {
-                this.files= result;
-                console.log(this.files);
-              },
-            },
-          ],
-          beforeIndex: 0,
-          containerStyles: {
-            marginTop: '52px',
-          },
-        },
-        {
-          component: InfoButtonComponent,
-          inputs: {},
-          containerStyles: {
-            position: 'relative',
-            top: '-130px',
-            display: 'flex',
-            width: '100%',
-            justifyContent: 'flex-end',
-          },
-          afterIndex: 2,
-        },
+        this.imageInputComponent,
+        // {
+        //   component: InfoButtonComponent,
+        //   inputs: {},
+        //   containerStyles: {
+        //     position: 'relative',
+        //     top: '-130px',
+        //     display: 'flex',
+        //     width: '100%',
+        //     justifyContent: 'flex-end',
+        //   },
+        //   afterIndex: 2,
+        // },
       ],
       asyncStepProcessingFunction: {
         type: 'promise',
@@ -912,10 +919,16 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       customScrollToStep: (params) => {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
 
+        this.formSteps[0].embeddedComponents = [];
+        this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
+
         params.scrollToStep(0, false);
       },
       customScrollToStepBackwards: (params) => {
         this.shouldScrollBackwards = this.headerService.flowRoute ? true : false;
+
+        this.formSteps[0].embeddedComponents = [];
+        this.formSteps[0].embeddedComponents.push(this.imageInputComponent);
 
         params.scrollToStep(0, false);
       },
@@ -1051,6 +1064,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (this.itemService && this.itemService.temporalItem) {
+        console.log("one");
         const { description, name, content } = this.itemService.temporalItem;
         let { pricing, images } = this.itemService.temporalItem;
 
@@ -1088,8 +1102,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
         this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+        this.files = [];
         this.defaultImages = images;
-        console.log(this.defaultImages, "di1")
 
         const notBase64Images = images.filter(image => !checkIfStringIsBase64DataURI(image));
         const base64Images = images.filter(image => checkIfStringIsBase64DataURI(image));
@@ -1097,11 +1111,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if(notBase64Images && notBase64Images.length > 0) {
           this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
           this.defaultImages = images;
-          console.log(this.defaultImages, "di2")
 
           for(let imageURL of notBase64Images) {
-            this.defaultImagesPermanent.push(imageURL);
-
             fetch(imageURL)
               .then(response => response.blob())
               .then(blob => new Promise((resolve, reject) => {
@@ -1112,6 +1123,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }))
               .then((base64: string) => this.files.push(base64ToFile(base64)));
           }
+
+          for(let imageURL of base64Images) {
+            this.defaultImagesPermanent.push(imageURL);
+          }
+
 
           this.imagesAlreadyLoaded = true;
           this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
@@ -1149,6 +1165,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (itemId && this.loggedIn) {
+        console.log("two");
         lockUI();
         this.editMode = true;
 
@@ -1232,72 +1249,86 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if (this.currentUserId === merchant.owner._id) {
           this.merchantOwnerId = merchant.owner._id;
   
-          const formatted = this.decimalPipe.transform(
-            pricing,
-            '1.2'
-          );
+          if(!this.itemService.temporalItem) {
+            console.log("two");
 
-          if(pricing % 1 === 0) pricing = pricing * 100;
-
-          this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
-            String(pricing)
-          );
+            const formatted = this.decimalPipe.transform(
+              pricing,
+              '1.2'
+            );
   
-          if (formatted === '0') {
-            this.formSteps[0].fieldsList[0].placeholder = '';
-          }
+            if(pricing % 1 === 0) pricing = pricing * 100;
   
-          this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
-          this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
-
-          if(name && name !== '') {
-            this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${name})`;
-          }
-
-          this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
-
-          if(images && images.length > 0) {
-            this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
-            this.defaultImages = images;
-
-            console.log(this.defaultImages, "di3")
-
-            for(let imageURL of images) {
-              this.defaultImagesPermanent.push(imageURL);
-
-              fetch(imageURL)
-                .then(response => response.blob())
-                .then(blob => new Promise((resolve, reject) => {
-                  const reader = new FileReader()
-                  reader.onloadend = () => resolve(reader.result)
-                  reader.onerror = reject
-                  reader.readAsDataURL(blob)
-                }))
-                .then((base64: string) => this.files.push(base64ToFile(base64)));
+            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+              String(pricing)
+            );
+    
+            if (formatted === '0') {
+              this.formSteps[0].fieldsList[0].placeholder = '';
             }
-
-            this.imagesAlreadyLoaded = true;
-            this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
-
-            console.log("e", this.files);
+    
+            this.formSteps[0].fieldsList[0].formattedValue = '$' + formatted;
+            this.formSteps[3].fieldsList[0].fieldControl.control.setValue(name || '');
+  
+            if(name && name !== '') {
+              this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${name})`;
+            }
+  
+            this.formSteps[2].fieldsList[0].fieldControl.control.setValue(description || '');
+  
+            if(images && images.length > 0) {
+              this.formSteps[0].embeddedComponents[0].inputs.imageField = images;
+              this.defaultImages = images;
+  
+  
+              for(let imageURL of images) {
+                this.defaultImagesPermanent.push(imageURL);
+  
+                fetch(imageURL)
+                  .then(response => response.blob())
+                  .then(blob => new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onloadend = () => resolve(reader.result)
+                    reader.onerror = reject
+                    reader.readAsDataURL(blob)
+                  }))
+                  .then((base64: string) => this.files.push(base64ToFile(base64)));
+              }
+  
+              this.imagesAlreadyLoaded = true;
+              this.formSteps[0].embeddedComponents[0].inputs.imagesAlreadyLoaded = this.imagesAlreadyLoaded;
+  
+              console.log("e", this.files);
+            }
+  
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+            this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+  
+            //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
+  
+  
+            const formArray = this.formSteps[1].fieldsList[0]
+              .fieldControl.control as FormArray;
+            formArray.removeAt(0);
+  
+            if (content)
+              content.forEach((item) => {
+                formArray.push(new FormControl(item));
+              });
+            else {
+              formArray.push(new FormControl(''));
+            }
           }
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+          //saves the defaultImagesPermanent if you are returning from the preview page
+          if(this.itemService.temporalItem) {
+            console.log("three");
 
-          //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
-
-
-          const formArray = this.formSteps[1].fieldsList[0]
-            .fieldControl.control as FormArray;
-          formArray.removeAt(0);
-
-          if (content)
-            content.forEach((item) => {
-              formArray.push(new FormControl(item));
-            });
-          else {
-            formArray.push(new FormControl(''));
+            if(images && images.length > 0) {
+              for(let imageURL of images) {
+                this.defaultImagesPermanent.push(imageURL);
+              }
+            }
           }
           unlockUI();
         } else {

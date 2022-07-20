@@ -104,6 +104,8 @@ export class ImageInputComponent implements OnInit {
       
       this.onFileInputMultiple.emit(emitData);
 
+      this.imageField = [];
+
       for(let i = 0; i < fileList.length; i++) {
         const file = fileList.item(i);
 
