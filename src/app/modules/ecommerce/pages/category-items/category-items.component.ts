@@ -163,7 +163,7 @@ export class CategoryItemsComponent implements OnInit {
         orderData?.products?.length > 0
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-      items = await this.item.itemsByCategory(
+      items = (await this.item.itemsByCategory(
         params.categoryId,
         {
           options: {
@@ -171,7 +171,7 @@ export class CategoryItemsComponent implements OnInit {
           },
         },
         this.saleflow._id
-      );
+      )).filter(item => item.status == 'active');
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
