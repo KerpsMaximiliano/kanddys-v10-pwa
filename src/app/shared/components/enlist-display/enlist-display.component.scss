@@ -30,6 +30,34 @@
                     font-weight: 100;
                 }
             }
+
+            .btn-text{
+                all: unset;
+                width: fit-content;
+                height: fit-content;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-right: 20px;
+                padding: 1px;
+                cursor: pointer;
+                color: #2874AD;
+                font-size: 14px;
+                font-family: 'SfProBold';
+            }
+
+            .btn-icon{
+                all: unset;
+                width: fit-content;
+                height: fit-content;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-left: 31px;
+                padding: 1px;
+                cursor: pointer;
+            }
+
         }
 
         .separator{
@@ -88,6 +116,7 @@
                         color: #7B7B7B;
                         margin: 0;
                         margin-bottom: 21px;
+                        white-space: break-spaces;
                     }
                 }
             }

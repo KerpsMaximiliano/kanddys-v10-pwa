@@ -84,31 +84,14 @@ export class TestComponent implements OnInit {
     ];
 
   testItem: any[] = [{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
+    name: {text:'Creating Happiness one gift at a time.'},
+    subtitle: {text:'negro es un color'},
+    
   },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
-  },{
-    src: '/asdawd',
-    callback: () => console.log('tostada')
-  }/* {
-    name: 'Creating Happiness one gift at a time.',
-    subtitle: 'negro es un color',
-    cta: {
-        text: 'Mas',
-        color: '#2874AD',
-        callback: () => {console.log('Cy')} 
-    }
-  },{
-    name: 'Justifying your actions through memes is not the right thing to do',
-    subtitle: 'negro es un color no una raza, deja lo bobo',
-    cta: {
-        text: 'Mas',
-        color: '#2874AD',
-        callback: () => {console.log('Cy')} 
-    }
-  } */]
+    name: {text:'Justifying your actions through memes is not the right thing to do'},
+    subtitle: {text:'negro es un color no una raza, deja lo bobo \n Los patacones son lo maximos \n tercer texto'},
+    
+  }]
 
   actionList: OptionAnswerSelector[] = [
     {
