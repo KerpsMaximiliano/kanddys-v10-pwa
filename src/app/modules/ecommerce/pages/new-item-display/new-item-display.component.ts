@@ -440,6 +440,7 @@ export class NewItemDisplayComponent implements OnInit {
   editItem = () => {
     this.headerService.flowRoute = this.router.url;
 
+    this.itemsService.temporalItem = null;
     this.router.navigate(['/ecommerce/item-creator/'+this.item._id]);
   }
 
