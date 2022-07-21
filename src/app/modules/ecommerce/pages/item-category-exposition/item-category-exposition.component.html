@@ -1,0 +1,33 @@
+<app-helper-headerv2
+    [mode]="'options'"
+    [leftText]="{
+        text: 'Exposición Dentro De Tab (S)',
+        fontFamily: 'SfProRegular',
+        fontSize: '21px',
+        color: '#fff',
+        pointer: true
+    }"
+    [leftTextStyles]="{
+        fontFamily: 'SfProRegular',
+        fontSize: '21px',
+        color: '#fff'
+    }"
+    [bgColor]="'#2874AD'"
+    [fixed]="true"
+></app-helper-headerv2>
+
+<div class="body">
+
+    <h2 class="option-header">Selecciona tu preferencia</h2>
+
+    <app-answer-selector
+        [options]="listOfOptions"
+        [indicator]="true"
+        [showDescription]="false"
+        [containerStyles]="{
+            margin: '0px',
+            paddingBottom: '16px'
+        }"
+    ></app-answer-selector>
+
+</div>
