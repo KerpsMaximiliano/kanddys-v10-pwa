@@ -103,4 +103,10 @@ export class ItemCategoryExpositionComponent implements OnInit {
     } 
   }
 
+  optionClicked(index) {
+    if(index === 0) {
+      this.router.navigate([`ecommerce/category-creator`]);
+    }
+  }
+
 }
