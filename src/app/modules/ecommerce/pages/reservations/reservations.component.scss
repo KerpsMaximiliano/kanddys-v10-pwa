@@ -1,0 +1,44 @@
+.container{
+    width: 100%;
+    max-width: 500px;
+    min-height: 100vh;
+    padding-bottom: 34px;
+
+    .tab-area{
+        width: 100%;
+        height: 46px;
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-end;
+        background-color: rgb(190 219 242);
+        overflow-x: scroll;
+        padding-top: 14px;
+        position: sticky;
+        top: 36px;
+
+        .tab{
+            width: fit-content;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'RobotoMedium';
+            font-size: 16px;
+            color: #2874AD;
+            padding: 5.4px 22px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+
+            &.active{
+                background-color: #2874AD;
+                color: #FFFFFF !important;
+            }
+        }
+    }
+
+    .reservations{
+        width: 100%;
+        height: fit-content;
+        margin-bottom: 4px;
+    }
+}
