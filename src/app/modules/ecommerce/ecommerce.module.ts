@@ -365,6 +365,10 @@ const routes: Routes = [
     component: NotificationCreatorComponent
   },
   {
+    path: 'notification-creator/:id',
+    component: NotificationCreatorComponent
+  },
+  {
     path: 'category-creator/:id',
     component: ItemCategoryCreatorComponent
   },

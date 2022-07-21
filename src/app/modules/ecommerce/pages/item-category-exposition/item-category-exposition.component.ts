@@ -95,6 +95,10 @@ export class ItemCategoryExpositionComponent implements OnInit {
         } 
       };
 
+      itemCategory.icons[1].callback = () => {
+        this.router.navigate([`ecommerce/notification-creator/${category._id}`]);
+      }
+
       itemCategory.icons[2].callback = () => {
         this.router.navigate([`ecommerce/category-creator/${category._id}`]);
       }
