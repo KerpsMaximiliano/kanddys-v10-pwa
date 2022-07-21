@@ -67,6 +67,7 @@ import { NotificationsLogComponent } from './pages/notifications-log/notificatio
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
+import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
 
 const routes: Routes = [
   {
@@ -364,6 +365,10 @@ const routes: Routes = [
     component: NotificationCreatorComponent
   },
   {
+    path: 'notification-creator/:id',
+    component: NotificationCreatorComponent
+  },
+  {
     path: 'category-creator/:id',
     component: ItemCategoryCreatorComponent
   },
@@ -375,6 +380,10 @@ const routes: Routes = [
     path: 'admin-login',
     component: AdminLoginComponent
   },
+  {
+    path: 'item-category-exposition',
+    component: ItemCategoryExpositionComponent
+  }
 ];
 
 @NgModule({
@@ -446,6 +455,7 @@ const routes: Routes = [
     NotificationCreatorComponent,
     AdminLoginComponent,
     ItemCategoryCreatorComponent,
+    ItemCategoryExpositionComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
