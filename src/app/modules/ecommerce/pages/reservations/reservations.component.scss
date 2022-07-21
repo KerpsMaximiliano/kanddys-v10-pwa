@@ -39,6 +39,26 @@
     .reservations{
         width: 100%;
         height: fit-content;
+        display: flex;
+        align-items: center;
         margin-bottom: 4px;
+
+        .delete{
+            width: 17.75%;
+            height: 72.94px;
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .btn-delete{
+                all: unset;
+                padding: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+        }
     }
 }

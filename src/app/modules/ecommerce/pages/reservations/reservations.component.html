@@ -1,8 +1,8 @@
 <div class="container">
 
     <app-helper-headerv2
-    [mode]="'basic'"
-    [icons]="[{
+    [mode]="editMode? 'center' :'basic'"
+    [icons]=" editMode? null : [{
         src: '/search.svg',
         height: '19px',
         width: '19px',
@@ -13,15 +13,15 @@
         height: '17px',
         width: '17px',
         color: 'invert(10%) sepia(6%) saturate(0%) hue-rotate(360deg) brightness(180%) contrast(100%)',
-        callback: placeholder
+        callback: toggleEdit
     }]"
     [mainText]="{
-        text:'Calendario: Abraham Lincoln',
+        text:editMode? 'EDIT MODE':'Calendario: Abraham Lincoln',
         fontSize: '21px',
         fontFamily: 'SfProBold'
     }"
-    [icon]="{
-        src:'/salealt.svg',
+    [icon]=" editMode? null : 
+    {   src:'/salealt.svg',
         width: 19,
         height: 19
     }"
@@ -40,7 +40,7 @@
 
   <div style="margin-top: 36px;" *ngIf="reservations">
     <div *ngFor="let item of reservations; index as i" class="reservations">
-        <app-item-reservation
+        <app-item-reservation style="width: 100%;"
             [headline]="item.headline"
             [subheadline]="item.subheadline"
             [rightSubHeadline]="item.rightSubHeadline"
@@ -48,12 +48,18 @@
             [content]="item.content"
             [rightActive]="true"
         ></app-item-reservation>
+        
+        <div class="delete" *ngIf="editMode">
+            <button class="btn-delete"><img [src]="env + '/delete.svg'" width="27px" height="31.7px" alt="Imagen de una bote de basura" (click)="deleteOrder()"></button>
+        </div>
     </div>
+
+
   </div>
 
     
     <app-sticky-button
-    [mode]="'double'"
+    [mode]="editMode? 'fixed':'double'"
     [extra]="{
         bgColor: '#2874AD',
         icon:{
@@ -73,9 +79,10 @@
         color: '#FFF',
         cursor: 'unset'
     }"
-    [bgColor]="'#A1A1A1'"
-    [text]="'145 RESERVACIONES'"
+    [bgColor]="editMode? '#2874AD':'#A1A1A1'"
+    [text]="editMode? 'SALIR DEL EDIT MODE' :'145 RESERVACIONES'"
     [size]="'small'"
+    (click)="editMode ? toggleEdit() : null"
     ></app-sticky-button>
 
 </div>
