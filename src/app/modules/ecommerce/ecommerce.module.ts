@@ -68,6 +68,7 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
+import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 
 const routes: Routes = [
   {
@@ -383,6 +384,10 @@ const routes: Routes = [
   {
     path: 'item-category-exposition',
     component: ItemCategoryExpositionComponent
+  },
+  {
+    path: 'merchant-orders',
+    component: MerchantOrdersComponent
   }
 ];
 
@@ -456,6 +461,7 @@ const routes: Routes = [
     AdminLoginComponent,
     ItemCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
+    MerchantOrdersComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

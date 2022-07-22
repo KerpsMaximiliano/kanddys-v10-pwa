@@ -1,0 +1,55 @@
+<div class="container">
+    <app-helper-headerv2
+		[mode]="'basic'"
+        [mainText]="{
+            text: 'Ventas',
+            fontFamily:'SfProBold',
+            fontSize: '21px'
+        }"
+        [icons]="[{
+            src: '/search.svg',
+            color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+            callback: null
+        }]"
+        [plus]="{
+            active: true,
+            fontSize:'33px',
+            fontFamily: 'RobotoMedium'
+        }"
+        [icon]="{
+            src:'/salealt.svg',
+            width: 24,
+            height: 24
+        }"
+        [returnAble]="false"
+		[bgColor]="'#2874AD'"
+		[color]="'#FFFFFF'"
+	></app-helper-headerv2>
+
+    
+
+    <app-sticky-button
+    size="small"
+    [mode]="'double'"
+    bgColor="#A1A1A1"
+    [fontSize]="'14px'"
+    [text]="'145 ARTÍCULOS'"
+    [text2]="'$14,451 INGRESO'"
+    [color]="'#FFF'"
+    [extra]="{
+        icon:{
+            src: '/salealt.svg',
+            color: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+            width: 19,
+            height: 19
+        },
+        bgColor: '#2874AD'
+    }"
+    (added)="goToMetrics()"
+    ></app-sticky-button>
+</div>
+
+<!--
+    [text]="items.length + ' ARTÍCULOS'" 
+    [text2]="'$' + (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0')" 
+-->
