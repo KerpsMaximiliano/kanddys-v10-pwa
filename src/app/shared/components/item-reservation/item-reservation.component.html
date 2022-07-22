@@ -8,11 +8,14 @@
                 'color': headline?.color? headline.color : ''}"
                 >{{headline.text}}</h1>
                 
-            <p class="subheadline" *ngIf="subheadline" [ngStyle]="{
-                'font-family': subheadline?.fontFamily? subheadline.fontFamily : '',
-                'font-size': subheadline?.fontSize? subheadline.fontSize : '', 
-                'color':  subheadline?.color?  subheadline.color : ''}" 
+            <div style="display: flex;" *ngIf="subheadlines">
+                <p class="subheadline" *ngFor="let subheadline of subheadlines; index as i" [ngStyle]="{
+                    'font-family': subheadline?.fontFamily? subheadline.fontFamily : '',
+                    'font-size': subheadline?.fontSize? subheadline.fontSize : '', 
+                    'color':  subheadline?.color?  subheadline.color : '',
+                    'margin-right': '21px'}" 
                 >{{subheadline.text}}</p>
+            </div>
     </div>
 
     <div class="right-wrapper" *ngIf="rightActive">
@@ -31,6 +34,19 @@
             >{{rightSubHeadline.text}}</h2>
         </div>
     </div>
+
+    <hr class="divider first" *ngIf="tag">
+
+    <div class="tags-area" *ngIf="tag">
+        <div class="tags-headline">
+            <h3 class="tags-title">{{tag.title.text}}</h3>
+            <img [src]="env + tag.icon.src" [alt]="tag.icon.alt" [ngStyle]="{'width.px': tag.icon.width, 'height.px': tag.icon.height, cursor: 'pointer'}">
+        </div>
+
+        <div class="tags-displayer">
+            <p class="tag-text" *ngFor="let text of tag.tags; index as i">#{{text.name}} <img [src]="env + text.icon.src" [alt]="text.icon.alt" width="11px" height="11px" *ngIf="text.icon" [style.margin-left]="'3px'"></p>
+        </div>
+    </div>
         
     <hr class="separator" *ngIf="content">
 
@@ -41,6 +57,21 @@
         <div class="content-images" *ngIf="content.images">
             <img *ngFor="let image of content.images" [src]="image" alt="Imagen del producto" class="product-image">
         </div>
+    </div>
+    
+    <hr class="divider" *ngIf="ctaText">
 
-    </div>  
+    <div class="bottomText" *ngIf="ctaText">
+
+        <button class="display" *ngIf="ctaText?.text" (click)="ctaText.text.callback()" [ngStyle]="{
+          'font-size': ctaText.text.fontSize? ctaText.text.fontSize : '',
+          'font-family': ctaText.text.fontFamily? ctaText.text.fontFamily : '',
+          'color': ctaText.text.color? ctaText.text.color : '',
+          'cursor': ctaText.text.pointer? 'pointer' : ''
+        }">{{ctaText.text.text}}
+        <span *ngIf="!ctaText.showEntry && ctaText.arrow" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
+        <span *ngIf="ctaText.showEntry && ctaText.arrow" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
+        </button>
+    </div>
+
 </div>
