@@ -61,6 +61,22 @@
         >
           <ng-container *ngIf="!image">{{ innerLabel }}</ng-container>
         </label>
+
+        <div
+          *ngIf="image && allowDeletion"
+          [ngStyle]="{
+          position: 'relative',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyItems: 'center'
+        }">
+          <div 
+            class="delete-btn"
+            (click)="deleteImageFromIndex(i)"
+          >
+          </div>
+        </div>
       </div>
     </ng-container>
   </swiper>

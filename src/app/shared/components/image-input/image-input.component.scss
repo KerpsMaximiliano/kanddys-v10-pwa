@@ -46,3 +46,30 @@
     font-size: 16px;
   }
 }
+
+.delete-btn {
+  background-color: #FBB;
+  border-radius: 50%;
+  padding: 15px;
+  font-family: SfProLight;
+  color: red;
+  margin: auto;
+  margin-top: 10px;
+  box-shadow: 0px 2px 5px lightgray;
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/delete.svg);
+  background-size: 40%;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    background-color: '#F99';
+    color: darkred;
+    box-shadow: 0px 2px 5px darkgray;
+  }
+
+  &:active {
+    box-shadow: 0px 2px 5px darkgray, 0px 0px 5px inset orangered;
+  }
+}

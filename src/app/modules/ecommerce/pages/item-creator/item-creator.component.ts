@@ -188,6 +188,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       imagesPerView: 3,
       innerLabel: 'Adiciona las imágenes',
       expandImage: true,
+      allowDeletion: true,
       topLabel: {
         text: 'La imagen:',
         styles: {
@@ -231,6 +232,27 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
         },
       },
+      {
+        name: 'onFileDeletion',
+        callback: (result) => {
+          const { index } = result;
+
+          const files: any = this.files;
+          const filesArray = [];
+
+          for (let i = 0; i < files.length; i++) {
+              let file = 'item' in files ? files.item(i) : files[i];
+
+              filesArray.push(file);
+          }
+
+          filesArray.splice(index, 1);
+
+          this.files = filesArray;
+
+          this.formSteps[0].embeddedComponents[0].shouldRerender = true;
+        }
+      }
     ],
     beforeIndex: 0,
     containerStyles: {
