@@ -16,7 +16,8 @@
                     ></qrcode>
                     <button (click)="downloadQr()">Descarga el qrCode</button>
                 </div>
-                <h2 class="title" *ngIf="!item.qrlink">{{item.title}}</h2>
+                <h2 class="title" *ngIf="!item.qrlink" [ngClass]="{'alternate': item.description && !item.options}">{{item.title}}</h2>
+                <p class="description" *ngIf="item.description && !item.options">{{item.description}}</p>
                 <ng-container *ngFor="let option of item.options">
                     <qrcode
                         *ngIf="option.mode === 'qr'"
@@ -64,6 +65,7 @@
                         >+</span>
                     </button>
                 </ng-container>
+                <div class="center"><button class="confirm" *ngIf="item.message" (click)="messageCallback($event)">{{item.message}}</button></div>
             </div>
         </div>
         <button class="cancel" (click)="close()">Cancel</button>
