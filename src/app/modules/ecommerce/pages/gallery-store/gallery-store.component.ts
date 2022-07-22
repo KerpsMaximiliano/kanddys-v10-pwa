@@ -10,10 +10,13 @@ import {
   ItemCategoryHeadline,
   ItemPackage,
 } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
@@ -40,6 +43,10 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
       alt?: string;
       callback: () => void;
     }[];
+    earnings?: string;
+    sales?: number;
+    shareCallback: () => void;
+    callback: () => void;
   }[] = [];
   inputPackage: ItemPackage[] = [];
   sliderPackage: ItemPackage[] = [];
@@ -53,6 +60,11 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
   contactLandingRoute: string;
   deleteEvent: Subscription;
   saleflow: SaleFlow;
+  ordersTotal: {
+    total: number,
+    length: number
+  };
+  admin: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,7 +74,9 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
     private dialogService: DialogService,
-    private appService: AppService
+    private authService: AuthService,
+    private orderService: OrderService,
+    private appService: AppService,
   ) {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
@@ -92,7 +106,7 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
       if (!orderData || !orderData.products || orderData.products.length === 0)
         this.headerService.emptyItems(this.saleflow._id);
 
-      const [itemCategories, headlines, merchant] = await Promise.all([
+      const [itemCategories, headlines, merchant, user] = await Promise.all([
         this.itemsService.itemCategories(this.saleflow.merchant._id, {
           options: {
             limit: 20,
@@ -102,8 +116,11 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
           this.saleflow.merchant._id
         ),
         this.merchantsService.merchant(this.saleflow.merchant._id),
+        this.authService.me(),
       ]);
-
+      if(user?._id === merchant?.owner._id) {
+        this.admin = true;
+      }
       this.categories = this.getCategories(
         itemCategories.itemCategoriesList,
         headlines[0]
@@ -197,7 +214,7 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
             }
           });
         }
-        this.organizeItems();
+        await this.organizeItems(merchant);
         this.status = 'complete';
         unlockUI();
       }
@@ -225,12 +242,12 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
     return categories;
   }
 
-  organizeItems() {
+  async organizeItems(merchant: Merchant) {
     this.categorylessItems = this.items
       .filter((item) => !item.category.length)
       .sort((a, b) => a.pricing - b.pricing);
     if (!this.categories || !this.categories.length) return;
-    this.categories.forEach((saleflowCategory) => {
+    this.categories.forEach(async saleflowCategory => {
       if (
         this.items.some((item) =>
           item.category.some(
@@ -238,6 +255,10 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
           )
         )
       ) {
+        lockUI();
+        let ordersTotal: { total: number, length: number };
+        if(this.admin) ordersTotal = await this.orderService.ordersTotal(['completed', 'to confirm', 'verifying'], merchant._id, [], saleflowCategory._id);
+        const url = `ecommerce/category-items/${this.headerService.saleflow._id}/${saleflowCategory._id}`;
         this.itemsByCategory.push({
           label: saleflowCategory.name,
           items: this.items.filter((item) =>
@@ -255,7 +276,12 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
               src: item.images?.length ? item.images[0] : '',
               callback: () => {console.log('clicked item')},
             })),
+          earnings: ordersTotal?.total.toLocaleString('es-MX'),
+          sales: ordersTotal?.length,
+          callback: () => this.router.navigate([url]),
+          shareCallback: () => this.onShareCallback(url)
         });
+        unlockUI();
       }
     });
   }
@@ -307,25 +333,33 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToMetrics = () => {
+    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+  }
+
   onShareClick = () => {
+    this.onShareCallback(`/ecommerce/gallery-store/${this.saleflow._id}`);
+  }
+
+  onShareCallback = (url: string) => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+        qrlink: `${this.URI}${url}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+            link: `${this.URI}${url}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+            link: `${this.URI}${url}`,
           },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/gallery-store/${this.saleflow._id}`]),
+            func: () => this.router.navigate([url]),
           },
         ]
       },

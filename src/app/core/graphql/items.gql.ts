@@ -32,6 +32,7 @@ const itemBody = `
   quality
   iconImage
   hasExtraPrice
+  status
   category {
     _id
     name

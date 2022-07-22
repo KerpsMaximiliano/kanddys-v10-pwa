@@ -52,7 +52,12 @@
 
         <!-- <hr class="divider" *ngIf="bottomText"> -->
 
-        <div class="bottomText" *ngIf="bottomText">
+        <div class="bottomText" *ngIf="bottomText || bottomLeftText">
+            <div *ngIf="bottomLeftText?.length" class="bottom-left-text">
+                <span *ngFor="let item of bottomLeftText">
+                    {{item.text}}
+                </span>
+            </div>
             <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
                 'font-size': bottomText.leftText?.fontSize? bottomText.leftText.fontSize : '',
                 'font-family': bottomText.leftText?.fontFamily? bottomText.leftText.fontFamily : '',
