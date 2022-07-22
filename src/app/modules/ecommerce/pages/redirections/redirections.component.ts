@@ -58,6 +58,7 @@ export class RedirectionsComponent implements OnInit {
           await this.authService.analizeMagicLink(authCode);
         const { session, redirectionRoute } = result;
 
+        localStorage.removeItem('session-token');
         localStorage.setItem('session-token', session.token);
 
         if(redirectionRoute.includes('?')) {

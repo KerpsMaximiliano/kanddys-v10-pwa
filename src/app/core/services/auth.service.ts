@@ -71,6 +71,7 @@ export class AuthService {
       const result = await this.graphql.mutate({ mutation: signin, variables });
       this.session = new Session(result?.session, true);
     } catch (e) {
+      alert("La sesión está siendo revocada, authservice 74");
       this.session?.revoke();
       this.session = undefined;
     }
@@ -85,6 +86,7 @@ export class AuthService {
       const result = await promise;
       this.session = new Session(result?.session, true);
     } catch (e) {
+      alert("La sesión está siendo revocada, authservice 89");
       this.session?.revoke();
       this.session = undefined;
     }
@@ -108,6 +110,7 @@ export class AuthService {
       this.session = new Session(result?.signinSocial, true);
     } catch (e) {
       console.log(e);
+      alert("La sesión está siendo revocada, authservice 113");
       this.session?.revoke();
       this.session = undefined;
     }
@@ -170,6 +173,7 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
+        alert("La sesión está siendo revocada, authservice 176");
         this.session?.revoke();
         this.session = undefined;
       }
@@ -190,6 +194,7 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
+        alert("La sesión está siendo revocada, authservice 197");
         this.session?.revoke();
         this.session = undefined;
       }
@@ -210,6 +215,7 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
+        alert("La sesión está siendo revocada, authservice 218");
         this.session?.revoke();
         this.session = undefined;
         // this.app.nav = [];
@@ -241,6 +247,7 @@ export class AuthService {
       const result = await this.graphql.mutate({ mutation, variables });
       this.session = new Session(result?.session, true);
     } catch (e) {
+      alert("La sesión está siendo revocada, authservice 250");
       this.session?.revoke();
       this.session = undefined;
     }
