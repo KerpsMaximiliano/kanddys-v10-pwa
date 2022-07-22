@@ -17,6 +17,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -26,7 +27,7 @@ import { environment } from 'src/environments/environment';
 })
 export class GalleryStoreComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
-  url: string = environment.uri;
+  URI: string = environment.uri;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   categorylessItems: Item[] = [];
   items: Item[] = [];
@@ -304,5 +305,38 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
       index++;
       unlockUI();
     }
+  }
+
+  onShareClick = () => {
+    const list: StoreShareList[] = [
+      {
+        qrlink: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/gallery-store/${this.saleflow._id}`,
+          },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () => this.router.navigate([`/ecommerce/gallery-store/${this.saleflow._id}`]),
+          },
+        ]
+      },
+    ]
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

@@ -1,8 +1,10 @@
 <div class="component">
   <header>
     <app-helper-headerv2
-      [leftText]="{
-        text: saleflow?.name
+      [mainText]="{
+        text: saleflow?.headline,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
       }"
       mode="basic"
       [icons]="[
@@ -16,7 +18,7 @@
           src: '/upload.svg',
           color:
             'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-          callback: null
+          callback: onShareClick
         }
       ]"
     ></app-helper-headerv2>
