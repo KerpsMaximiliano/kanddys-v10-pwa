@@ -19,6 +19,11 @@ interface Icon{
     callback?: () => void;
 }
 
+interface testTag{
+    name: string;
+    icon?: Icon;
+}
+
 @Component({
   selector: 'app-item-reservation',
   templateUrl: './item-reservation.component.html',
@@ -27,13 +32,23 @@ interface Icon{
 export class ItemReservationComponent implements OnInit {
 
     @Input() headline: Text;
-    @Input() subheadline: Text;
+    @Input() subheadlines: Text[];
     @Input() rightSubHeadline: Text;
     @Input() rightActive: boolean;
     @Input() icon: Array<Icon>;
+    @Input() tag: {
+        title: Text;
+        tags: testTag[];
+        icon?: Icon;
+    };
     @Input() content: {
         title?: Text;
         images?: Array<string>
+    };
+    @Input() ctaText: {
+        text: Text;
+        arrow?: boolean;
+        showEntry?: boolean;
     };
     env: string = environment.assetsUrl;
   constructor() { }
