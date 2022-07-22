@@ -87,6 +87,7 @@ export class AuthService {
       this.session = new Session(result?.session, true);
     } catch (e) {
       alert("La sesión está siendo revocada, authservice 89");
+      console.log(e);
       this.session?.revoke();
       this.session = undefined;
     }

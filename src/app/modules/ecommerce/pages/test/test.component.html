@@ -11,8 +11,7 @@
 <!-- <button (click)="openDialog()">Abrir el dialog</button> -->
 <!-- <app-reservation-orderless calendarId="62ac227945c3506dfb3c87cc"></app-reservation-orderless> -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> -->
-<!-- 
-<button (click)="openDialog()">Abrir el dialog</button> -->
+<!-- <button (click)="openDialog()">Abrir el dialog</button> -->
 <!-- <app-short-calendar></app-short-calendar>
 <div style="display: flex;
 gap: 5px;
@@ -132,9 +131,9 @@ flex-direction: column;">
 [headline]="{
     text: 'Prueba'
 }"
-[subheadline]="{
-    text:'prueba chiquita'
-}"
+[subheadlines]="[{
+    text:'Order ID'
+},{ text:'Status ID'}]"
 [rightActive]="true"
 [rightSubHeadline]="{
     text:'right-subheadline'
@@ -148,13 +147,40 @@ flex-direction: column;">
     width: 15,
     height: 19
 }]"
-[content]="{
+[ctaText]="{
+    text:{text:'Mas'},
+    arrow: false
+}"
+[tag]="{
+    title:{
+        text: 'TAGS'
+    },
+    tags:[{
+        name:'Tag ID',
+        icon:{
+            src:'/whatsapp_verde.svg'
+        }
+    },{
+        name:'Tag ID'
+    },{
+        name:'Tag ID',
+        icon:{
+            src:'/whatsapp_verde.svg'
+        }
+    }],
+    icon:{
+        src:'/pencil.svg',
+        width: 15,
+        height: 15
+    }
+}"
+></app-item-reservation>
+<!-- [content]="{
     title:{
         text:' este es el titulo'
     },
     images:['https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg']
-}"
-></app-item-reservation>
+}" -->
 
 
 
@@ -169,7 +195,7 @@ flex-direction: column;">
     }"
 ></app-answer-selector> -->
 
-<app-question-item
+<!-- <app-question-item
 headline="EXPUESTO EN TAB (S)"
 [headlineContainerStyles]="{
     justifyContent: 'flex-start'
@@ -201,4 +227,4 @@ headline="EXPUESTO EN TAB (S)"
 [chipMode]="2"
 [collapseTags]="false"
 [tags]="onlyTags"
-></app-question-item>
+></app-question-item> -->

@@ -9,6 +9,7 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 import { Tag } from '../../../../core/models/tags';
 import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-test',
@@ -89,9 +90,9 @@ export class TestComponent implements OnInit {
     
   },{
     name: {text:'Justifying your actions through memes is not the right thing to do'},
-    subtitle: {text:'negro es un color no una raza, deja lo bobo \n Los patacones son lo maximos \n tercer texto'},
-    
-  }]
+    subtitle: {text:'negro es un color no una raza, deja lo bobo \n Los patacones son lo maximos \n tercer texto'},   
+  }];
+  
 
   actionList: OptionAnswerSelector[] = [
     {
@@ -227,7 +228,7 @@ export class TestComponent implements OnInit {
     //   flags: ['no-header'],
     // });
     // +++++++ Para verificar la task 958
-    const list: DashboardOption[] = [
+    /* const list: DashboardOption[] = [
         {
         button: {
             text: 'Half Button'
@@ -272,16 +273,32 @@ export class TestComponent implements OnInit {
             }
         ] 
         }
-    ];
+    ]; */
+    /* const list: StoreShareList[] = [
+        {
+            title: 'Eliminar Reservación?',
+            description: 'DATE ID volverá a estar disponible para potenciales compradores al elimnarla.',
+            message: 'Si, Eliminar'
+        },
+      ];
 
-    this.dialog.open(ItemDashboardOptionsComponent, {
+    this.dialog.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    }); */
+
+    /* this.dialog.open(ItemDashboardOptionsComponent, {
       type: 'fullscreen-translucent',
       props: {
         list
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    });
+    }); */
     // ------- Para verificar la task 958
     /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
