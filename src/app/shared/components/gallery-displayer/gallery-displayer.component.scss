@@ -2,6 +2,19 @@ html,body{
     height: 100%;
 }
 
+.image {
+    object-fit: fill;
+    background-color: #7B7B7B;
+    width: 100%;
+    -o-object-fit: fill;
+    transition: all 0.2s;
+
+    &:hover, &:active {
+        opacity: 0.75;
+        transition: 0.2s;
+    }
+}
+
 .container{
     width: 100%;
     margin: 0 auto;
@@ -51,18 +64,13 @@ html,body{
                 overflow-x: scroll;
                 column-gap: 2px;
                 row-gap: 1px;
-                margin-bottom: 17px;
 
                 .gallery-image{
                     min-width: 75px;
-                    width: 100%;
                     max-width: 148px;
                     min-height: 75px;
                     height: 15vh;
                     max-height: 148.66px;
-                    -o-object-fit: fill;
-                    object-fit: fill;
-                    background-color: #7B7B7B;
                     cursor: pointer;
                 }
             }
@@ -80,17 +88,18 @@ html,body{
             }
         }
 
-        .divider{
-            all: unset;
-            width: 100%;
-            height: 2px;
-            margin: 15px 0 8px;
-            background-color: rgba(112, 112, 112, 17%);
-        }
+        // .divider{
+        //     all: unset;
+        //     width: 100%;
+        //     height: 2px;
+        //     margin: 15px 0 8px;
+        //     background-color: rgba(112, 112, 112, 17%);
+        // }
 
         .bottomText{
             display: flex;
             justify-content: space-between;
+            padding-top: 16px;
 
             .display{
                 all: unset;
@@ -113,9 +122,6 @@ html,body{
     display: flex;
 
     .image-one{
-        object-fit: fill;
-        background-color: #7B7B7B;
-        width: 100%;
         min-height: 200px;
         height: 27vh;
         max-height: 253px;
@@ -132,9 +138,6 @@ html,body{
     gap: 6px;
 
     .image-two{
-        object-fit: fill;
-        background-color: #7B7B7B;
-        width: 100%;
         min-height: 200px;
         height: 27vh;
         max-height: 253px;
@@ -151,9 +154,6 @@ html,body{
     grid-template-columns: 1fr 1fr;
     
     .first{
-        object-fit: fill;
-        background-color: #7B7B7B;
-        width: 100%;
         min-height: 200px;
         height: 27vh;
         max-height: 253px;
@@ -165,9 +165,6 @@ html,body{
     }
 
     .image-three{
-        object-fit: fill;
-        background-color: #7B7B7B;
-        width: 100%;
         min-height: 100px;
         height: 14.5vh;
         max-height: 122px;
@@ -183,10 +180,7 @@ html,body{
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
 
-    .image-four{
-        object-fit: fill;
-        background-color: #7B7B7B;
-        width: 100%;
+    .image-four {
         min-height: 100px;
         height: 14.5vh;
         max-height: 126.5px;

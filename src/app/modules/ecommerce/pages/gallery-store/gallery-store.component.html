@@ -1,0 +1,79 @@
+<div class="component">
+  <header>
+    <app-helper-headerv2
+      [mainText]="{
+        text: saleflow?.headline,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+      }"
+      mode="basic"
+      [icons]="[
+        {
+          src: '/search.svg',
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+          callback: null
+        },
+        {
+          src: '/upload.svg',
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+          callback: onShareClick
+        }
+      ]"
+    ></app-helper-headerv2>
+  </header>
+  <main>
+    <div class="content">
+      <ng-container *ngIf="itemsByCategory?.length">
+        <app-gallery-displayer
+          *ngFor="let category of itemsByCategory"
+          [headline]="{
+            text: category.label,
+            icon: {
+              src: '/upload.svg',
+              width: 15,
+              height: 19
+            }
+          }"
+          [imagesGallery]="category.images"
+          [bottomText]="{
+            rightText: {
+              text: 'MAS'
+            }
+          }"
+        ></app-gallery-displayer>
+      </ng-container>
+      <ng-container *ngIf="!itemsByCategory || !itemsByCategory.length">
+        <app-gallery-displayer
+          *ngFor="let item of items"
+          [headline]="{
+            text: item.name || ''
+          }"
+          [icon]="{
+            src: '/upload.svg',
+            width: 15,
+            height: 19
+          }"
+          [imagesGallery]="[
+            {
+              src: item.images?.length ? item.images[0] : '',
+              callback: null
+            }
+          ]"
+          [bottomText]="{
+            rightText: {
+              text: 'MAS'
+            }
+          }"
+        ></app-gallery-displayer>
+      </ng-container>
+    </div>
+  </main>
+  <footer>
+    <app-cart-button
+      [shopCartCallback]="showShoppingCartDialog"
+      [cartAmount]="itemCartAmount"
+    ></app-cart-button>
+  </footer>
+</div>

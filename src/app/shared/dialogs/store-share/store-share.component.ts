@@ -1,5 +1,5 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Output, EventEmitter } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
@@ -26,8 +26,10 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
+  description?: string;
+  message?: string;
   qrlink?: string;
-  options: StoreShareOption[];
+  options?: StoreShareOption[];
 }
 
 @Component({
@@ -40,6 +42,7 @@ export class StoreShareComponent implements OnInit {
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
   size: number = 150;
+  @Output() messageEvent = new EventEmitter();
   screenWidth: number;
 
   constructor(
@@ -109,9 +112,9 @@ export class StoreShareComponent implements OnInit {
       });
   }
 
-  // @HostListener('window:resize', ['$event'])
-  // onResize() {
-  // }
+  messageCallback(event){
+    this.messageEvent.emit(event);
+  }
 
   close() {
     this.ref.close();
