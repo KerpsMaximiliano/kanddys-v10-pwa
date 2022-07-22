@@ -392,7 +392,6 @@ export class CategoryItemsComponent implements OnInit {
   itemInCart() {
     const productData = this.header.getItems(this.saleflow._id);
     this.itemCartAmount = productData?.length;
-    console.log(this.itemCartAmount)
   }
 
   goBack() {
