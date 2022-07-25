@@ -35,9 +35,9 @@
         </div>
     </div>
 
-    <hr class="divider first" *ngIf="tag">
+    <hr class="divider first" *ngIf="tagActive && tag">
 
-    <div class="tags-area" *ngIf="tag">
+    <div class="tags-area" *ngIf="tagActive && tag">
         <div class="tags-headline">
             <h3 class="tags-title">{{tag.title.text}}</h3>
             <img [src]="env + tag.icon.src" [alt]="tag.icon.alt" [ngStyle]="{'width.px': tag.icon.width, 'height.px': tag.icon.height, cursor: 'pointer'}">

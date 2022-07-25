@@ -14,6 +14,408 @@ export class MerchantOrdersComponent implements OnInit {
         total: number;
         length: number;
     };
+    showTags: boolean;
+    mouseDown = false;
+    startX: any;
+    scrollLeft: any;
+    active: number = 0;
+    tabs: string[] = ['STATUS', 'STATUS ID', 'STATUS', 'STATUS ID', 'STATUS'];
+
+    dummyItem: any[] =[
+    {
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },{
+        headline:{
+        text: 'OrdenID'
+    },
+    subheadlines:[{
+        text:'Order ID'
+    },{ text:'Status ID'}],
+    rightActive: true,
+    rightSubHeadline:{
+        text:'right-subheadline'
+    },
+    icon:[{
+        src: '/person.svg',
+        width: 15,
+        height: 19
+    },{
+        src: '/pencil.svg',
+        width: 15,
+        height: 19
+    }],
+    ctaText:{
+        text:{text:'Mas'},
+        arrow: false
+    },
+    tag:{
+        title:{
+            text: 'TAGS'
+        },
+        tags:[{
+            name:'Tag ID',
+            icon:{
+                src:'/whatsapp_verde.svg'
+            }
+            },{
+                name:'Tag ID'
+            },{
+                name:'Tag ID',
+                icon:{
+                    src:'/whatsapp_verde.svg'
+                }
+            },{
+                name:'Tag ID'
+            }],
+        icon:{
+            src:'/pencil.svg',
+            width: 15,
+            height: 15
+        }
+    } 
+    },]; //Dummy data. Por favor eliminar al integrar, thx <3 <3 <3
+
   constructor( private router: Router) { }
 
   ngOnInit(): void {
@@ -23,4 +425,32 @@ export class MerchantOrdersComponent implements OnInit {
   goToMetrics = () =>{
     this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
+
+  changeTab(i: number){
+    this.active = i;
+  }
+
+  startDragging(e, flag, el) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  stopDragging(e, flag) {
+    this.mouseDown = false;
+  }
+
+  moveEvent(e, el) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
+  }
 }
+
+
+
+
