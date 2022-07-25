@@ -23,6 +23,7 @@ export class MerchantItemsComponent implements OnInit {
     length: number;
   };
   hasSalesData: boolean = false;
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   // Dummy Data
   itemList: Array<any> = [{
@@ -56,6 +57,7 @@ export class MerchantItemsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
+    this.status = 'loading';
     await this.authService.me().then(data => {
       if (!data || data === undefined) this.errorScreen();
     });
@@ -69,6 +71,7 @@ export class MerchantItemsComponent implements OnInit {
       this.getOrderTotal(this.merchant._id),
       this.getItems(this.merchant._id)
     ]);
+    this.status = 'complete';
     if (this.ordersTotal.total) this.hasSalesData = true;
     unlockUI();
   }
@@ -77,6 +80,7 @@ export class MerchantItemsComponent implements OnInit {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
     } catch (error) {
+      this.status = 'error';
       console.log(error);
     }
   }
@@ -87,6 +91,7 @@ export class MerchantItemsComponent implements OnInit {
       console.log(items);
       this.items = items;
     } catch (error) {
+      this.status = 'error';
       console.log(error);
     }
   }
@@ -100,6 +105,7 @@ export class MerchantItemsComponent implements OnInit {
     try {
       this.ordersTotal = await this.ordersService.ordersTotal(['in progress', 'to confirm', 'completed'], merchantID);
     } catch (error) {
+      this.status = 'error';
       console.log(error);
     }
   }
@@ -110,6 +116,7 @@ export class MerchantItemsComponent implements OnInit {
 
   errorScreen() {
     unlockUI();
+    this.status = 'error';
     this.router.navigate([`ecommerce/error-screen/`]);
   }
 

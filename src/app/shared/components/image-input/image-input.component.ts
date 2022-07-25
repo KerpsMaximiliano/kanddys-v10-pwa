@@ -27,6 +27,10 @@ export class ImageInputComponent implements OnInit {
     index: number;
   }>();
 
+  @Output() onFileDeletion = new EventEmitter<{
+    index: number
+  }>();
+
   @Input() topLabel?: {
     text: string;
     styles?: Record<string, string>;
@@ -41,6 +45,7 @@ export class ImageInputComponent implements OnInit {
   @Input() uploadImagesWithoutPlaceholderBox = false;
   @Input() expandImage: boolean = false;
   @Input() imagesAlreadyLoaded: boolean = false;
+  @Input() allowDeletion: boolean = false;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -130,5 +135,13 @@ export class ImageInputComponent implements OnInit {
       if(this.max && this.imageField.length >= this.max) return;
       return;
     }
+  }
+
+  deleteImageFromIndex(index: number) {
+    this.imageField.splice(index, 1);
+
+    this.onFileDeletion.emit({index});
+
+    if(this.imageField.length === 0) this.imageField.push('');
   }
 }

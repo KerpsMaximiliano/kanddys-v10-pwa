@@ -52,6 +52,7 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
+    console.log(localStorage.getItem('session-token'));
     this.merchant = await this.merchantsService.merchantDefault();
     if(!this.merchant) {
       this.router.navigate([`ecommerce/error-screen/`]);

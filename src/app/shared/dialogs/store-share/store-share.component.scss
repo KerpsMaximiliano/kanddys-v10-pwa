@@ -40,6 +40,23 @@
             font-size: 17px;
             color: #202020;
             margin: 20px;
+
+            &.alternate{
+                font-family: 'RobotoBold';
+                font-size: 29px;
+                color: #0B1F38;
+                text-align: center;
+            }
+        }
+
+        .description{
+            font-family: "RobotoRegular";
+            font-size: 17px;
+            color: #7B7B7B;
+            margin: 0 auto;
+            margin-top: 7px;
+            width: 66%;
+            text-align: center;
         }
 
         .function{
@@ -80,6 +97,25 @@
 
             &:hover {
                 background-color: #eeeeee;
+            }
+        }
+        
+        .center{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            .confirm{
+                all: unset;
+                width: fit-content;
+                height: fit-content;
+                margin: 44px 0 34px;
+                padding: 10px;
+                font-family: "RobotoMedium";
+                font-size: 20px;
+                color: #2874AD;
+                cursor: pointer;
             }
         }
     }
