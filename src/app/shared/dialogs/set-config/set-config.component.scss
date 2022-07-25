@@ -1,0 +1,76 @@
+.external-container {
+    width: 100%;
+    margin: auto;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-direction: column;
+    background-color: transparent;
+}
+
+.container{
+    width: 86%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    margin-bottom: 15px;
+
+    .dialog-card {
+        margin-top: auto;
+        overflow-y: scroll;
+        width: 100%;
+        padding: 41px 50px 35px 35px;
+        border-radius: 18px;
+        background-color: #FFFFFF;
+    
+        .title{
+            font-family: 'RobotoBold';
+            font-size: 29px;
+            color: #0B1F38;
+            margin: 0px;
+            text-align: center;
+        }
+    
+        .subtitle{
+            font-family: 'RobotoRegular';
+            font-size: 17px;
+            color: #7B7B7B;
+            margin: 6.4px 0 40px;
+            text-align: center;
+        }
+    
+        .text-switch{
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+    
+            .text{
+                font-family: 'SfProLight';
+                font-size: 16px;
+                color: #7B7B7B;
+                margin: 0px 0 16px;
+            }
+        }
+    
+    }
+}
+
+.cancel{
+    width: 86%;
+    margin-top: 11.5px;
+    padding: 24px;
+    background-color: #FFFFFF;
+    font-family: "RobotoMedium";
+    font-size: 20px;
+    color: #4773D8;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+}
