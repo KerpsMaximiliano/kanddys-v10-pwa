@@ -9,6 +9,7 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 import { Tag } from '../../../../core/models/tags';
 import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 
 @Component({
@@ -211,11 +212,18 @@ export class TestComponent implements OnInit {
   ];
 
   openDialog() {
-    // this.dialog.open(CustomFieldsComponent, {
-    //   type: 'flat-action-sheet',
-    //   customClass: 'app-dialog',
-    //   flags: ['no-header'],
-    // });
+      const options: Array<string> = ['TAGS', 'STATUS', 'LO COMPRADO', 'COMPRADOR'];
+    this.dialog.open(SetConfigComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props:{
+        title: 'Preferencia de Vistas',
+        subTitle: 'Personaliza el listado de tus ventas',
+        options
+      }
+    });
+
 
     // this.dialog.open(MagicLinkDialogComponent, {
     //   type: 'flat-action-sheet',

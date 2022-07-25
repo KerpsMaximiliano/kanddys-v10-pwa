@@ -103,6 +103,7 @@ import { CardEditionButtonsComponent } from './components/card-edition-buttons/c
 import { EnlistDisplayComponent } from './components/enlist-display/enlist-display.component';
 import { GalleryDisplayerComponent } from './components/gallery-displayer/gallery-displayer.component';
 import { ItemReservationComponent } from './components/item-reservation/item-reservation.component';
+import { SetConfigComponent } from './dialogs/set-config/set-config.component';
 
 const imports = [
   CommonModule,
@@ -203,6 +204,7 @@ const declarations = [
   EnlistDisplayComponent,
   GalleryDisplayerComponent,
   ItemReservationComponent,
+  SetConfigComponent,
 ];
 
 @NgModule({
@@ -228,6 +230,6 @@ const declarations = [
         ],
       } as SocialAuthServiceConfig,
     },
-  ],
+  ]
 })
 export class SharedModule {}
