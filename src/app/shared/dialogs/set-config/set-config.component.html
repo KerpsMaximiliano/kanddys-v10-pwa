@@ -1,0 +1,16 @@
+<div class="external-container">
+    <div class="container">
+        <div class="dialog-card">
+                <h1 class="title" [ngStyle]="titleStyles">{{title}}</h1>
+                <h2 class="subtitle" [ngStyle]="subTitleStyles">{{subTitle}}</h2>
+                <div class="text-switch" *ngFor="let option of options">
+                    <p class="text" [ngStyle]="optionsStyles">{{option}}</p>
+
+                    <app-switch-button
+                    (switched)="switchAction($event)"
+                    ></app-switch-button>
+                </div>
+        </div>
+    </div>
+    <button class="cancel" (click)="close()">Cancel</button>
+</div>
