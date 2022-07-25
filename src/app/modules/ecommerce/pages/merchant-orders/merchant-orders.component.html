@@ -25,7 +25,7 @@
 		[bgColor]="'#2874AD'"
 		[color]="'#FFFFFF'"
 	></app-helper-headerv2>
-    
+
     <div class="tab-area" #elemt
     (mousedown)="startDragging($event, false, elemt)"
     (mouseup)="stopDragging($event, false)"
@@ -36,6 +36,37 @@
                 {{item}} 
             </div>
         </ng-container>
+    </div>
+
+    <div class="searchBar">
+        <div class="searcher">
+            <label for="Buscador" class="search-label">Buscador:</label>
+            <input type="text" class="search" placeholder="Escribe lo que buscas" (keypress)="search($event)">
+        </div>
+    </div>
+    
+    <div class="tag-area" *ngIf="showTags">
+        <h1 class="tags-label" >Tags</h1>
+            <div class="tag-list">
+                    <ng-container *ngIf="tags && tags.length > 0">
+                        <button
+                            class="tag-button" 
+                            [ngClass]="{'selected': tag.selected}" 
+                            *ngFor="let tag of tags" 
+                            (click)="tag.selected = !tag.selected"
+                            >{{tag.name}}
+
+                            <img
+                                *ngIf="tag.icon"
+                                [src]="tag.icon.src"
+                                alt="the tag one"
+                                [width]="tag.icon.width" 
+                                [height]="tag.icon.height"
+                            >
+                        
+                        </button>
+                    </ng-container>
+            </div>
     </div>
 
     <div class="item" *ngFor="let item of dummyItem; index as i" >

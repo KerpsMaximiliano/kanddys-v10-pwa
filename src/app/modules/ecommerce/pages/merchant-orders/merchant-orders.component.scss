@@ -34,9 +34,98 @@
         }
     }
 
+    .searchBar{
+        width: 100%;
+        padding: 15px 0;
+        background-color: #F6F6F6;
+        display: flex;
+        align-items: center;
+
+        .searcher{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .search-label{
+                font-family: 'RobotoMedium';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin-bottom: 5px;
+                margin-left: 5%;
+            }
+
+            .search{
+                all: unset;
+                width: 90%;
+                height: 60px;
+                font-family: 'RobotoMedium';
+                font-size: 17px;
+                color: #7B7B7B;
+                text-indent: 11px;
+                margin-left: 5%;
+                border-radius: 9px;
+                background-color: #FFFFFF;
+                box-shadow: inset 0px 3px 7px 3px rgba(0, 0, 0, 12%);
+
+                &::placeholder{
+                    font-family: 'RobotoMedium';
+                    font-size: 17px;
+                    color: #A1A1A1;
+                    text-indent: 11px;
+                    opacity: 0.60;
+                }
+            }
+        }
+    }
+
+    .tag-area{
+        width: 100%;
+        padding: 30px;
+    }
+
     .item{
         width: 100%;
         background-color: transparent;
         margin-bottom: 4px;
     }
+}
+
+.tags-label {
+	font-family: "RobotoMedium";
+	font-size: 16px;
+	color: #7B7B7B;
+	text-transform: uppercase;
+	font-weight: 100;
+	margin: 0;
+	margin-left: 8px;
+	margin-bottom: 8px;
+}
+
+.tag-list {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 7px;
+	row-gap: 10px;
+
+	.tag-button {
+		all: unset;
+		font-size: 15px;
+		font-family: "RobotoRegular";
+		padding: 6px;
+		border-radius: 16px;
+		color: #7B7B7B;
+		text-align: center;
+		cursor: pointer;
+
+		&:hover {
+			background-color: #70abd8;
+			color: #ffffff;
+		}
+
+		&.selected {
+			background-color: #2874AD;
+			color: #ffffff;
+		}
+	}
 }
