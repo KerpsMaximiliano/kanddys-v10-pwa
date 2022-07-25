@@ -68,6 +68,7 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
+import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
 
@@ -387,6 +388,10 @@ const routes: Routes = [
     component: ItemCategoryExpositionComponent
   },
   {
+    path: 'merchant-orders',
+    component: MerchantOrdersComponent
+  },
+  {
     path: 'item-reservations',
     component: ReservationsComponent
   },
@@ -466,6 +471,7 @@ const routes: Routes = [
     AdminLoginComponent,
     ItemCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
+    MerchantOrdersComponent,
     ReservationsComponent,
     GalleryStoreComponent,
   ],

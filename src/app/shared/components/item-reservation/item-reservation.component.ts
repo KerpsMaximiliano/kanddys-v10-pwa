@@ -36,6 +36,7 @@ export class ItemReservationComponent implements OnInit {
     @Input() rightSubHeadline: Text;
     @Input() rightActive: boolean;
     @Input() icon: Array<Icon>;
+    @Input() tagActive: boolean;
     @Input() tag: {
         title: Text;
         tags: testTag[];
