@@ -69,6 +69,8 @@ import { AdminLoginComponent } from './components/admin-login/admin-login.compon
 import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
 
 const routes: Routes = [
   {
@@ -388,7 +390,15 @@ const routes: Routes = [
   {
     path: 'merchant-orders',
     component: MerchantOrdersComponent
-  }
+  },
+  {
+    path: 'item-reservations',
+    component: ReservationsComponent
+  },
+  {
+    path: 'gallery-store/:id',
+    component: GalleryStoreComponent
+  },
 ];
 
 @NgModule({
@@ -462,6 +472,8 @@ const routes: Routes = [
     ItemCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
     MerchantOrdersComponent,
+    ReservationsComponent,
+    GalleryStoreComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

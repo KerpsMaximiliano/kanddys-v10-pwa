@@ -50,8 +50,8 @@
     [returnAble]="false"
     ></app-helper-headerv2>
 
-    <div class="saleflows-grid">
 
+    <div class="saleflows-grid" *ngIf="items?.length && status === 'complete'">
         <div class="capsize" *ngFor="let item of items">
             <app-saleflow-item
             [type]="3"
@@ -62,8 +62,13 @@
             [responsiveWidthVersion]="true"
             ></app-saleflow-item>
         </div>
-        
     </div>
+    <h3 class="no-results" *ngIf="status === 'complete' && (!items || !items.length)">
+        No tienes productos creados.
+    </h3>
+    <h3 class="no-results" *ngIf="status === 'loading'">
+        Cargando productos...
+    </h3>
 
 
     <app-sticky-button
