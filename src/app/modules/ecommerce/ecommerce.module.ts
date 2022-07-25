@@ -102,8 +102,9 @@ const routes: Routes = [
     path: 'error-screen',
     component: ErrorScreenComponent,
   },
+  { path: 'megaphone-v3/:id',   redirectTo: 'store/:id', pathMatch: 'full' },
   {
-    path: 'megaphone-v3/:id',
+    path: 'store/:id',
     component: MegaphoneV3Component,
   },
   {

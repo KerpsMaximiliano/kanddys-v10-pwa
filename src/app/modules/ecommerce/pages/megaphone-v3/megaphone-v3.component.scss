@@ -1,46 +1,34 @@
-.go-to-admin{
-  background-color: #27A2FC;
-  text-align: center;
-  width: 100%;
-  height: 22px;
-  color: white;
-  font-family: 'RobotoBold';
-  font-size: 14px;
+.component {
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.subheadline {
-    font-size: 14px;
-    font-family: SfProRegular;
-    color: #7b7b7b;
-    margin-top: 10px;
-    padding: 37px 24px;
-    text-transform: uppercase;
+main {
+  flex-grow: 1;
 }
 
 .header-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    font-family: "Roboto";
-    padding-left: 34px;
-    padding-right: 31px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-family: "Roboto";
+  padding-left: 34px;
+  padding-right: 31px;
 
-    .see-all-more {
-      color: #7b7b7b;
-      font-family: 'RobotoMedium';
-      font-size: 16px;
-      margin-top: 0;
-      margin-bottom: 8px;
-      cursor: pointer;
+  .see-all-more {
+    color: #7b7b7b;
+    font-family: "RobotoMedium";
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    cursor: pointer;
 
-      &:hover {
-        color: #999999;
-      }
+    &:hover {
+      color: #999999;
     }
+  }
 }
 
 .header-text {
@@ -48,7 +36,7 @@
   margin-top: 0;
   margin-bottom: 8px;
   color: #313131;
-  font-family: 'SfProMedium';
+  font-family: "SfProMedium";
   font-weight: 100;
 }
 
@@ -62,11 +50,10 @@
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: 1fr;
     gap: 9px;
-    
-  
+
     .category-item {
-      background-color: #FFFFFF;
-      color: #7B7B7B;
+      background-color: #ffffff;
+      color: #7b7b7b;
       padding: 20px;
       font-size: 19px;
       font-family: "RobotoMedium";
@@ -84,22 +71,10 @@
     }
   }
 }
-  
-.header-text-bottom {
-  font-family: "SfProRegular";
-  font-size: 14px;
-  font-weight: 200;
-  text-transform: uppercase;
-  color: #7b7b7b;
-  margin-top: 0;
-  margin-left: 19px;
-  margin-right: 19px;
-  margin-bottom: 20px;
-}
 
 .no-results {
   display: flex;
-  font-family: 'RobotoMedium';
+  font-family: "RobotoMedium";
   font-size: 24px;
   justify-content: center;
   padding: 2rem 0rem;
@@ -109,23 +84,21 @@
   max-height: 450px;
 
   @media (max-width: 410px) {
-      font-size: 18px;
-      margin: 0rem 2rem;
+    font-size: 18px;
+    margin: 0rem 2rem;
   }
 
   @media (max-height: 592px) {
-      height: auto;
+    height: auto;
   }
 
-  @media (min-height: 970px){
-      height: 75vh;
-      max-height: none;
+  @media (min-height: 970px) {
+    height: 75vh;
+    max-height: none;
   }
 }
 
 .package-list {
-/*   border-bottom: 1px solid #C9C9C9;
-  padding: 66px 0 52px 0; */
   margin: 0 0 10px;
 
   &:first-of-type {
@@ -140,15 +113,6 @@
 .content {
   padding-top: 15px;
   background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
-  // box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.08);
-  // -webkit-box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.08);
-  // -moz-box-shadow: -1px -13px 37px -7px rgba(0,0,0,0.08);
-}
-
-.header-bg {
-  padding-bottom: 27px;
-  background: rgb(255,255,255);
-  background: linear-gradient(180deg, rgba(255,255,255,1) 50%, rgba(213,213,213,0.25) 100%);
 }
 
 .item-list {
@@ -159,9 +123,22 @@
   padding-bottom: 67px;
 }
 
-.category-header{
-    font-family: 'NeueMontreal';
-    font-size: 27px;
-    color: #000000;
-    margin: 35px 0 10px 8.25%;
+.category-header {
+  font-family: "NeueMontreal";
+  font-size: 27px;
+  color: #000000;
+  margin: 35px 0 10px 8.25%;
+}
+
+footer {
+  background-color: #2874ad;
+  display: flex;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  justify-content: flex-end;
+  padding: 4px 20px;
+  align-items: center;
+  color: white;
+  z-index: 1;
 }

@@ -25,7 +25,7 @@
   <div>
     <div class="header">
       <div class="top-header">
-        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="" [ngStyle]="{ 'background-color': merchant.image ? 'transparent' : '#a1a1a1' }">
+        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="" [ngStyle]="{ 'background-color': merchant?.image ? 'transparent' : '#a1a1a1' }">
         <div class="contact-info" *ngIf="admin">
           <div class="admin-buttons">
             <button class="admin-btn">

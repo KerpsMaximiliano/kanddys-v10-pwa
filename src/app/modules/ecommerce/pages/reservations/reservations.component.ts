@@ -1,157 +1,212 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
+const reservations = [
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+  {
+    headline: { text: 'Date ID' },
+    subheadline: [{ text: 'Calendario Name ID' }],
+    rightSubHeadline: { text: 'right-subheadline' },
+    icon: [
+      {
+        src: '/person.svg',
+        width: 15,
+        height: 19,
+      },
+    ],
+  },
+];
+
 @Component({
   selector: 'app-reservations',
   templateUrl: './reservations.component.html',
-  styleUrls: ['./reservations.component.scss']
+  styleUrls: ['./reservations.component.scss'],
 })
 export class ReservationsComponent implements OnInit {
+  tabs: string[] = ['ÚLTIMAS', 'FUTURAS', 'PASADAS'];
+  active: number = 0;
+  mouseDown = false;
+  startX: any;
+  scrollLeft: any;
+  editMode: boolean;
+  env: string = environment.assetsUrl;
+  reservations: Array<any> = reservations;
 
-    tabs: string[]=['ÚLTIMAS', 'FUTURAS', 'PASADAS'];
-    active: number = 0;
-    mouseDown = false;
-    startX: any;
-    scrollLeft: any;
-    editMode: boolean;
-    env: string = environment.assetsUrl;
-    reservations: Array<any> = [{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },{
-        headline: {text: 'Date ID'},
-        subheadline:{text:'Calendario Name ID'},
-        rightSubHeadline:{ text:'right-subheadline' },
-        icon:[{
-            src:'/person.svg',
-            width: 15,
-            height: 19
-        }]
-    },];
+  constructor() {}
 
-  constructor() { }
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
+  placeholder = () => {
+    console.log('Funcion Placeholder');
+  };
 
-
-  placeholder = () =>{
-    console.log('Funcion Placeholder')
-  }
   changeTab(i: number) {
     this.active = i;
   }
@@ -176,11 +231,11 @@ export class ReservationsComponent implements OnInit {
     el.scrollLeft = this.scrollLeft - scroll;
   }
 
-  toggleEdit = () =>{
+  toggleEdit = () => {
     this.editMode = !this.editMode;
-  }
+  };
 
-  deleteOrder(){
+  deleteOrder() {
     console.log('Borra esta orden');
   }
 }
