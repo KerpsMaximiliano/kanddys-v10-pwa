@@ -12,27 +12,32 @@
       {
         src: '/search.svg',
         callback: null,
-        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
       },
       {
         src: '/upload.svg',
         callback: onShareClick,
-        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
       }
     ]"
   ></app-helper-headerv2>
   <main style="background-color: white">
-    <p class="description">Aquí el influ-seller tiene espacio para explicar de que se trata su colección.</p>
+    <p class="description">
+      Aquí el influ-seller tiene espacio para explicar de que se trata su
+      colección.
+    </p>
     <div class="itemGrid">
       <ng-container *ngFor="let item of items; index as i">
         <app-saleflow-item
-          [type]=2
+          [type]="3"
           [boxAmount]="0"
           [showBox]="false"
           [isSelected]="!hasCustomizer && item.isSelected"
           [showSelected]="true"
-          [showIcon]="isMerchant" 
-          [income]="isMerchant && 123456.55"
+          [showIcon]="isMerchant && item.status !== 'active'"
+          [quantity]="isMerchant && totalByItems?.length && totalByItems[i].itemInOrder"
           [price]="!hasCustomizer && item.pricing"
           [imgURL]="item.images ? item.images[0] : ''"
           [showPrice]="item.customizerId ? false : true"

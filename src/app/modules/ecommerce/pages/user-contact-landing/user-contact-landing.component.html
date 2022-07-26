@@ -116,7 +116,7 @@
     ">
     <div class="card-header">
       <h6>Items</h6>
-      <a *ngIf="!admin && saleflow" [routerLink]="['/ecommerce/megaphone-v3',saleflow._id]">Mas</a>
+      <a *ngIf="!admin && saleflow" [routerLink]="['/ecommerce/store',saleflow._id]">Mas</a>
       <span *ngIf="admin" class="switch-label">
         Mostrar En Contacto
         <app-switch-button

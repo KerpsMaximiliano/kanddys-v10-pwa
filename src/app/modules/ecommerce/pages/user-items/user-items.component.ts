@@ -192,22 +192,22 @@ export class UserItemsComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
           {
             text: 'Descarga el qrCode',
             mode: 'qr',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
           {
             text: 'Vista del Comprador',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflow._id}`]),
+            func: () => this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
           },
         ]
       },

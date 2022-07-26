@@ -21,7 +21,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() index3: number;
   @Input() selecteds: [];
   @Input() itemExtra: any;
-  @Input() type: number = 1
+  @Input() type: 1 | 2 | 3 = 1
   @Input() description: string
   @Input() showPrice: boolean;
   @Input() showDescription: boolean;

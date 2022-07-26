@@ -71,6 +71,7 @@ import { ItemCategoryExpositionComponent } from './pages/item-category-expositio
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
+import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 
 const routes: Routes = [
   {
@@ -397,8 +398,8 @@ const routes: Routes = [
     component: ReservationsComponent
   },
   {
-    path: 'gallery-store/:id',
-    component: GalleryStoreComponent
+    path: 'reservation/:saleflowId/:reservationId',
+    component: ReservationDetailComponent
   },
 ];
 
@@ -475,6 +476,7 @@ const routes: Routes = [
     MerchantOrdersComponent,
     ReservationsComponent,
     GalleryStoreComponent,
+    ReservationDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

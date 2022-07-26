@@ -432,12 +432,12 @@ export class ProviderStoreComponent implements OnInit {
       this.router.navigate([`ecommerce/category-items/${this.header.saleflow._id}/${this.header.categoryId}`])
     } else {
       this.router.navigate([
-        '/ecommerce/megaphone-v3/' + this.header.saleflow._id,
+        '/ecommerce/store/' + this.header.saleflow._id,
       ]);
     }*/
     //this.location.back();
     this.router.navigate([
-      '/ecommerce/megaphone-v3/' + this.header.saleflow._id,
+      '/ecommerce/store/' + this.header.saleflow._id,
     ]);
   }
 
