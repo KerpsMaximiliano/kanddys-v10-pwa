@@ -58,6 +58,7 @@ export class HelperHeaderv2Component implements OnInit {
     @Input() mainText?: Text;
     @Input() leftText?: Text;
     @Input() leftTextStyles: Record<string, any>;
+    @Input() editStyles: Record<string, any>;
     @Input() rightText?: Text;
     @Input() public rightTextCallback: () => void;
     @Input() rightTextStyles: Record<string, any>;

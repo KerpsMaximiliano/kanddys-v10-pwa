@@ -71,6 +71,7 @@ import { ItemCategoryExpositionComponent } from './pages/item-category-expositio
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
+import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 
 const routes: Routes = [
   {
@@ -399,6 +400,10 @@ const routes: Routes = [
     path: 'gallery-store/:id',
     component: GalleryStoreComponent
   },
+  {
+    path: 'order-detail',
+    component: OrderDetailComponent
+  }
 ];
 
 @NgModule({
@@ -474,6 +479,7 @@ const routes: Routes = [
     MerchantOrdersComponent,
     ReservationsComponent,
     GalleryStoreComponent,
+    OrderDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
