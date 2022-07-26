@@ -1,1 +1,24 @@
-<p>reservation-detail works!</p>
+<div class="component">
+  <header>
+    <app-helper-headerv2
+      [mainText]="{
+        text: saleflow?.headline,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+      }"
+      mode="basic"
+      bgColor="#2874AD"
+      [returnAble]="false"
+    ></app-helper-headerv2>
+  </header>
+  <main>
+    <h3>La fecha de tu reservación es:</h3>
+    <div class="date" *ngIf="date">
+      <div class="day bg-green">
+        <span>{{date.weekday}}</span>
+        <span>{{date.day}}</span>
+      </div>
+      <span class="time bg-green">{{date.time}}</span>
+    </div>
+  </main>
+</div>
