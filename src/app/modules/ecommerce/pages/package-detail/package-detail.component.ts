@@ -170,7 +170,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowData._id]);
+    this.router.navigate(['/ecommerce/store/' + this.saleflowData._id]);
   }
 
   submit() {

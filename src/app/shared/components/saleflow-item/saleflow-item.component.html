@@ -1,96 +1,179 @@
-<div class="itemContainer type{{type}}" [ngClass]="{'big-size': big, 'v2': responsiveWidthVersion}" [ngStyle]="{'border-top-left-radius': type==3? '14px':'', 'border-top-right-radius':type==3? '14px':''}">
-  <div class="marginCard" *ngIf="type == 1"> <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
-      <div
-        class="itemImg"
-        [ngStyle]="{ 'background-image': imgURL && 'url(' + imgURL + ')', 'background-size': backgroundSize }"
-        (click)="onClick()"
-      ></div>
-
-      <div class="info-area">
-          
-          <div class="flexer">
-              <span class="price">${{price | number}}</span>
-              <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
-          </div>
-          
-          <p class="income" *ngIf="income >= 0">Ingreso ${{income | number}} </p>
-
-          <div class="flexer">
-              <span class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</span>
-              <span class="stars" *ngIf="index1 >= 0">{{index1 | number}} <img [src]="env + '/star.svg'" alt="Estrellas" width="13.75px" height="13.05px" class="star-icon"></span>
-              <span class="total" *ngIf="index2 >= 0">{{index2 | number}} <img [src]="env + '/categories-list.svg'" width="9px" height="9px" class="list-icon" (click)="actionator($event)"></span>
-          </div>
-      </div>
-  </div>
-
-  <div *ngIf="type == 2"> <!--MODALIDAD CON CARRITO Y FUNCIONES -->
+<div
+  class="itemContainer type{{ type }}"
+  [ngClass]="{ 'big-size': big, v2: responsiveWidthVersion }"
+  [ngStyle]="{
+    'border-top-left-radius': type == 3 ? '14px' : '',
+    'border-top-right-radius': type == 3 ? '14px' : ''
+  }"
+>
+  <div class="marginCard" *ngIf="type == 1">
+    <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
     <div
       class="itemImg"
-      [ngStyle]="{ 'background-image': 'url(' + imgURL + ')', 'background-size': backgroundSize }"
+      [ngStyle]="{
+        'background-image': imgURL && 'url(' + imgURL + ')',
+        'background-size': backgroundSize
+      }"
+      (click)="onClick()"
+    ></div>
+
+    <div class="info-area">
+      <div class="flexer flex-row">
+        <span class="price">${{ price | number }}</span>
+        <img
+          [src]="env + '/closed-eye.svg'"
+          width="17.21px"
+          height="13.67px"
+          alt="Un ojo cerrado"
+          *ngIf="showIcon"
+          class="eyed"
+        />
+      </div>
+
+      <p class="income" *ngIf="income >= 0">Ingreso ${{ income | number }} </p>
+
+      <div class="flexer flex-row">
+        <span class="sales" *ngIf="quantity >= 0">{{ quantity }} Ventas</span>
+        <span class="stars" *ngIf="index1 >= 0"
+          >{{ index1 | number }}
+          <img
+            [src]="env + '/star.svg'"
+            alt="Estrellas"
+            width="13.75px"
+            height="13.05px"
+            class="star-icon"
+        /></span>
+        <span class="total" *ngIf="index2 >= 0"
+          >{{ index2 | number }}
+          <img
+            [src]="env + '/categories-list.svg'"
+            width="9px"
+            height="9px"
+            class="list-icon"
+            (click)="actionator($event)"
+        /></span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="type == 2">
+    <!--MODALIDAD CON CARRITO Y FUNCIONES -->
+    <div
+      class="itemImg"
+      [ngStyle]="{
+        'background-image': 'url(' + imgURL + ')',
+        'background-size': backgroundSize
+      }"
       [ngClass]="{
         'gray-shadow': shaded == true,
         borderRect: borderRadius == false
       }"
-      style="cursor: pointer;"
+      style="cursor: pointer"
       (click)="onClick()"
     >
-      <div *ngIf="showBox && boxAmount != null" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onTopBoxClick()">
-        {{boxAmount | number}}
-        <img [src]="env + '/star.svg'" alt="star-icon">
+      <div
+        *ngIf="showBox && boxAmount != null"
+        class="box"
+        [ngClass]="{ left: showIcon, right: !showIcon }"
+        (click)="onTopBoxClick()"
+      >
+        {{ boxAmount | number }}
+        <img [src]="env + '/star.svg'" alt="star-icon" />
       </div>
       <div *ngIf="showIcon" class="image-icon right" (click)="onIconClick()">
-        <img [src]="env + '/closed-eye.svg'" alt="hide-item">
+        <img [src]="env + '/closed-eye.svg'" alt="hide-item" />
       </div>
-      <div *ngIf="showSelected && isSelected && !big" class="box white middle" (click)="onBottomBoxClick()">
+      <div
+        *ngIf="showSelected && isSelected && !big"
+        class="box white middle"
+        (click)="onBottomBoxClick()"
+      >
         En el Carrito
         <i class="fas fa-check-circle icon"></i>
       </div>
     </div>
     <div class="infoContainer two">
       <div class="wrapper">
-          <div class="price {{ priceAlign }}" [style.text-align]="priceAlign" *ngIf="price && showPrice">
-            ${{price | number}}
-          </div>
-          <p class="desc" *ngIf="big && name" style="font-size: 15px;">{{name}}</p>
-          <p class="desc" *ngIf="description && showDescription">{{description}}</p>
-          <p class="income" *ngIf="income">${{income | number}} Ingreso</p>
-          <div
-            *ngIf="selectable"
-            (click)="toggleSelect($event)" 
-            [ngClass]="{ selected: isSelected }" 
-            class="checkBox" 
-            style="cursor: pointer;"
-          > 
-            <i class="fas fa-check-circle icon"></i>
-          </div>
+        <div
+          class="price {{ priceAlign }}"
+          [style.text-align]="priceAlign"
+          *ngIf="price && showPrice"
+        >
+          ${{ price | number }}
+        </div>
+        <p class="desc" *ngIf="big && name" style="font-size: 15px">
+          {{ name }}
+        </p>
+        <p class="desc" *ngIf="description && showDescription">
+          {{ description }}
+        </p>
+        <p class="income" *ngIf="income">${{ income | number }} Ingreso</p>
+        <div
+          *ngIf="selectable"
+          (click)="toggleSelect($event)"
+          [ngClass]="{ selected: isSelected }"
+          class="checkBox"
+          style="cursor: pointer"
+        >
+          <i class="fas fa-check-circle icon"></i>
+        </div>
       </div>
-      <button class="cart" [ngClass]="{'white': isSelected}" (click)="actionator($event)" *ngIf="big">
-        {{isSelected ? 'EN EL CARRITO' : 'ADICIONAR'}}
-        <img *ngIf="!isSelected" [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+      <button
+        class="cart"
+        [ngClass]="{ white: isSelected }"
+        (click)="actionator($event)"
+        *ngIf="big"
+      >
+        {{ isSelected ? "EN EL CARRITO" : "ADICIONAR" }}
+        <img
+          *ngIf="!isSelected"
+          [src]="env + '/carrito_blanco.svg'"
+          width="26px"
+          height="20px"
+          class="carrito"
+        />
         <i *ngIf="isSelected" class="fas fa-check-circle icon"></i>
       </button>
     </div>
   </div>
 
-  <div class="simpleCard" *ngIf="type == 3"> <!--MODALIDAD QUE SOLO MUESTRA LOS PRECIOS Y LAS VENTAS-->
+  <div class="simpleCard" *ngIf="type == 3">
+    <!--MODALIDAD QUE SOLO MUESTRA LOS PRECIOS Y LAS VENTAS-->
     <div
-        class="itemImg"
-        [ngStyle]="{ 'background-image': imgURL && 'url(' + imgURL + ')', 'background-size': backgroundSize }"
-        (click)="onClick()"
+      class="itemImg"
+      [ngStyle]="{
+        'background-image': imgURL && 'url(' + imgURL + ')',
+        'background-size': backgroundSize
+      }"
+      (click)="onClick()"
     ></div>
 
-    <div class="info-area">
-          
-        <div class="flexer">
-            <span class="price">${{price | number}}</span>
-            <img [src]="env + '/closed-eye.svg'" width="17.21px" height="13.67px" alt="Un ojo cerrado" *ngIf="showIcon" class="eyed" />
-        </div>
-
-        <div class="flexer" [ngStyle]="{'margin-bottom': 0, 'justify-content': quantity<=0? 'space-between' : ( icon && !quantity ? 'flex-end': '')}">
-            <p class="sales" *ngIf="quantity >= 0">{{quantity}} Ventas</p>
-            <img [src]="env + icon?.src" [alt]="icon?.alt" [width]="icon?.width" [height]="icon?.height" [ngStyle]="{'filter': icon?.color}" *ngIf="icon" class="dynamic-img">
-        </div>
-
+    <div class="info-area flex-row">
+      <div class="flex-column">
+        <span class="price" *ngIf="price >= 0 && showPrice"
+          >${{ price | number }}</span
+        >
+        <p class="sales" *ngIf="quantity >= 0">{{ quantity }} Ventas</p>
+      </div>
+      <div class="flex-column" style="margin-bottom: 0">
+        <img
+          [src]="env + '/closed-eye.svg'"
+          width="17.21px"
+          height="13.67px"
+          alt="Un ojo cerrado"
+          *ngIf="showIcon"
+          class="eyed"
+        />
+        <img
+          [src]="env + icon?.src"
+          [alt]="icon?.alt"
+          [width]="icon?.width"
+          [height]="icon?.height"
+          [ngStyle]="{ filter: icon?.color }"
+          *ngIf="icon"
+          class="dynamic-img"
+        />
+      </div>
     </div>
   </div>
 </div>

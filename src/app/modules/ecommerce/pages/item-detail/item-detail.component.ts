@@ -191,7 +191,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       else return this.router.navigate([`/ecommerce/item-creator`]);
     }
     this.items.removeTemporalItem();
-    this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflowData._id}`]);
+    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]);
   }
 
   tapping = () => {

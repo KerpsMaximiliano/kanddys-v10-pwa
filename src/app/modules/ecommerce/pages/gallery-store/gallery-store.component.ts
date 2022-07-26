@@ -295,7 +295,7 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
           this.router.navigate([
-            `ecommerce/megaphone-v3/${this.headerService.saleflow._id}`,
+            `ecommerce/store/${this.headerService.saleflow._id}`,
           ]),
       },
       customClass: 'app-dialog',

@@ -57,6 +57,7 @@
             [type]="3"
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
+            [showPrice]="true"
             [showIcon]="item.status != 'active' ? true : false"
             (click)="goToDetail(item._id)"
             [responsiveWidthVersion]="true"

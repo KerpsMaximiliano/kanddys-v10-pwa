@@ -68,8 +68,10 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
+import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
+import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 
 const routes: Routes = [
   {
@@ -102,8 +104,9 @@ const routes: Routes = [
     path: 'error-screen',
     component: ErrorScreenComponent,
   },
+  { path: 'megaphone-v3/:id',   redirectTo: 'store/:id', pathMatch: 'full' },
   {
-    path: 'megaphone-v3/:id',
+    path: 'store/:id',
     component: MegaphoneV3Component,
   },
   {
@@ -387,12 +390,16 @@ const routes: Routes = [
     component: ItemCategoryExpositionComponent
   },
   {
+    path: 'merchant-orders',
+    component: MerchantOrdersComponent
+  },
+  {
     path: 'item-reservations',
     component: ReservationsComponent
   },
   {
-    path: 'gallery-store/:id',
-    component: GalleryStoreComponent
+    path: 'reservation/:saleflowId/:reservationId',
+    component: ReservationDetailComponent
   },
 ];
 
@@ -466,8 +473,10 @@ const routes: Routes = [
     AdminLoginComponent,
     ItemCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
+    MerchantOrdersComponent,
     ReservationsComponent,
     GalleryStoreComponent,
+    ReservationDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

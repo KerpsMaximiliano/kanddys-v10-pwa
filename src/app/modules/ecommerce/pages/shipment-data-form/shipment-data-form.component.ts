@@ -263,7 +263,7 @@ export class ShipmentDataFormComponent implements OnInit {
         this.header.order = orderData;
         if (!this.header.order) {
           this.router.navigate([
-            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+            `/ecommerce/store/61b8df151e8962cdd6f30feb`,
           ]);
           return;
         }
@@ -272,19 +272,19 @@ export class ShipmentDataFormComponent implements OnInit {
         if (items && items.length > 0) this.header.items = items;
         else {
           this.router.navigate([
-            `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+            `/ecommerce/store/61b8df151e8962cdd6f30feb`,
           ]);
         }
       } else {
         this.router.navigate([
-          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
         ]);
       }
     } else {
       this.header.order = orderData;
       if (!this.header.order) {
         this.router.navigate([
-          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
         ]);
         return;
       }
@@ -292,7 +292,7 @@ export class ShipmentDataFormComponent implements OnInit {
       if (items && items.length > 0) this.header.items = items;
       else {
         this.router.navigate([
-          `/ecommerce/megaphone-v3/61b8df151e8962cdd6f30feb`,
+          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
         ]);
       }
     }

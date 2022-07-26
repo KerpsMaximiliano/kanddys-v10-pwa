@@ -11,7 +11,7 @@
 <!-- <button (click)="openDialog()">Abrir el dialog</button> -->
 <!-- <app-reservation-orderless calendarId="62ac227945c3506dfb3c87cc"></app-reservation-orderless> -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> -->
-<!-- <button (click)="openDialog()">Abrir el dialog</button> -->
+<button (click)="openDialog()">Abrir el dialog</button>
 <!-- <app-short-calendar></app-short-calendar>
 <div style="display: flex;
 gap: 5px;
@@ -36,7 +36,7 @@ flex-direction: column;">
         }"
     ></app-one-line-item>
 </div> -->
-<!-- <button (click)="openDialog()">Abrir el dialog</button> -->
+
 <!-- <div style="width: 100%; height: 450px; background-color: #fff;"> -->
     <!-- <app-form-questions
     [questions]="questions"
@@ -48,11 +48,13 @@ flex-direction: column;">
     ></app-single-item-list>   
 </div> -->
 <!-- <app-magic-link-dialog></app-magic-link-dialog> -->
+
 <!-- <app-sticky-button
     [backButton]="true"
     [mode]="'fixed'"
     [text]="'28 Visitantes en total'"
 ></app-sticky-button> -->
+
 <!-- <app-helper-headerv2
 [mode]="'center'"
 [mainText]="{
@@ -127,7 +129,7 @@ flex-direction: column;">
 ></app-enlist-display> -->
 
 
-<app-item-reservation
+<!-- <app-item-reservation
 [headline]="{
     text: 'Prueba'
 }"
@@ -151,6 +153,7 @@ flex-direction: column;">
     text:{text:'Mas'},
     arrow: false
 }"
+[tagActive]="true"
 [tag]="{
     title:{
         text: 'TAGS'
@@ -167,14 +170,14 @@ flex-direction: column;">
         icon:{
             src:'/whatsapp_verde.svg'
         }
-    }],
+    },],
     icon:{
         src:'/pencil.svg',
         width: 15,
         height: 15
     }
 }"
-></app-item-reservation>
+></app-item-reservation> -->
 <!-- [content]="{
     title:{
         text:' este es el titulo'
@@ -195,7 +198,7 @@ flex-direction: column;">
     }"
 ></app-answer-selector> -->
 
-<!-- <app-question-item
+<app-question-item
 headline="EXPUESTO EN TAB (S)"
 [headlineContainerStyles]="{
     justifyContent: 'flex-start'
@@ -227,4 +230,4 @@ headline="EXPUESTO EN TAB (S)"
 [chipMode]="2"
 [collapseTags]="false"
 [tags]="onlyTags"
-></app-question-item> -->
+></app-question-item>

@@ -126,7 +126,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
           this.router.navigate([
-            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+            `ecommerce/store/${this.header.saleflow._id}`,
           ]),
       },
       customClass: 'app-dialog',
@@ -218,7 +218,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         }
 
         this.router.navigate([
-          `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+          `ecommerce/store/${this.header.saleflow._id}`,
         ]);
       },
       showShoppingCartOnCurrentStep: true,
@@ -313,7 +313,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         }
 
         // this.router.navigate([
-        //   `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+        //   `ecommerce/store/${this.header.saleflow._id}`,
         // ]);
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue('', {
           emitEvent: false,

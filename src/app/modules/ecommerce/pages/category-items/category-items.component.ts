@@ -20,7 +20,10 @@ import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SwiperOptions } from 'swiper';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-category-items',
@@ -45,6 +48,11 @@ export class CategoryItemsComponent implements OnInit {
   canOpenCart: boolean;
   isMerchant: boolean;
   itemCartAmount: number;
+  totalByItems: {
+    item: Item;
+    itemInOrder: number;
+    total: number;
+  }[] = [];
   // public swiperConfig: SwiperOptions = {
   //   slidesPerView: 'auto',
   //   freeMode: true,
@@ -61,7 +69,7 @@ export class CategoryItemsComponent implements OnInit {
     private header: HeaderService,
     private appService: AppService,
     private authService: AuthService,
-    private merchantService: MerchantsService,
+    private merchantService: MerchantsService
   ) {}
 
   async getCategories(
@@ -108,13 +116,13 @@ export class CategoryItemsComponent implements OnInit {
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
         let productData: Item[] = this.header.getItems(this.saleflow._id);
-        const selectedItems =
-          productData?.length
-            ? productData.map((item) => item._id)
-            : [];
+        const selectedItems = productData?.length
+          ? productData.map((item) => item._id)
+          : [];
         this.items.forEach((item) => {
-          if(!item.customizerId) item.isSelected = selectedItems.includes(item._id);
-        })
+          if (!item.customizerId)
+            item.isSelected = selectedItems.includes(item._id);
+        });
         this.canOpenCart = this.items.some((item) => item.isSelected);
         this.itemInCart();
       });
@@ -124,20 +132,20 @@ export class CategoryItemsComponent implements OnInit {
       lockUI();
       this.saleflow = await this.header.fetchSaleflow(params.id);
       this.categoryId = params.categoryId;
-      this.route.queryParams.subscribe(async (queries) => {
-        if(queries.edit) {
-          const user = await this.authService.me();
-          if(user) {
-            const merchants = await this.merchantService.myMerchants();
-            if(merchants?.length > 0) {
-              const merchant = merchants.find(element => element._id === this.saleflow.merchant._id)
-              if(merchant) {
-                this.isMerchant = true;
-              }
-            }
-          }
+      // this.route.queryParams.subscribe(async (queries) => {
+      //   if (queries.edit) {
+      const user = await this.authService.me();
+      if (user) {
+        const merchants = await this.merchantService.myMerchants();
+        if (merchants?.length > 0) {
+          const merchant = merchants.find(
+            (element) => element._id === this.saleflow.merchant._id
+          );
+          if (merchant) this.isMerchant = true;
         }
-      })
+      }
+      //   }
+      // });
       const orderData = this.header.getOrder(this.saleflow._id);
       let saleflowItems: {
         item: string;
@@ -163,22 +171,29 @@ export class CategoryItemsComponent implements OnInit {
         orderData?.products?.length > 0
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-      items = (await this.item.itemsByCategory(
-        params.categoryId,
-        {
-          options: {
-            limit: 100,
+      items = (
+        await this.item.itemsByCategory(
+          params.categoryId,
+          {
+            options: {
+              limit: 100,
+            },
           },
-        },
-        this.saleflow._id
-      )).filter(item => item.status == 'active');
+          this.saleflow._id
+        )
+      ).filter((item) => item.status == 'active');
+      const totalByItems = await this.item.totalByItem(
+        this.saleflow.merchant._id,
+        items.map((item) => item._id)
+      );
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
         );
         items[i].customizerId = saleflowItem?.customizer;
         items[i].index = saleflowItem?.index;
-        if(!items[i].customizerId) items[i].isSelected = selectedItems.includes(items[i]._id);
+        if (!items[i].customizerId)
+          items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +
@@ -219,7 +234,13 @@ export class CategoryItemsComponent implements OnInit {
         merchantId
       );
       await this.getCategories(itemCategoriesList, headlines);
-      this.itemInCart()
+      this.itemInCart();
+      for (let i = 0; i < items.length; i++) {
+        const sale = totalByItems.find(
+          (item) => item.item._id === items[i]._id
+        );
+        this.totalByItems.push(sale);
+      }
       unlockUI();
     });
   }
@@ -257,9 +278,12 @@ export class CategoryItemsComponent implements OnInit {
         `/ecommerce/provider-store/${this.saleflow._id}/${itemData._id}`,
       ]);
     } else
-      this.router.navigate([
-        '/ecommerce/item-detail/'+this.saleflow._id+'/' + itemData._id, 
-      ], {queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' }});
+      this.router.navigate(
+        ['/ecommerce/item-detail/' + this.saleflow._id + '/' + itemData._id],
+        {
+          queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' },
+        }
+      );
   }
 
   // closeTagEvent(e) {
@@ -348,13 +372,13 @@ export class CategoryItemsComponent implements OnInit {
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
           this.router.navigate([
-            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+            `ecommerce/store/${this.header.saleflow._id}`,
           ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   onShareClick = () => {
     const list: StoreShareList[] = [
@@ -374,20 +398,23 @@ export class CategoryItemsComponent implements OnInit {
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`]),
+            func: () =>
+              this.router.navigate([
+                `/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+              ]),
           },
-        ]
+        ],
       },
-    ]
+    ];
     this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   itemInCart() {
     const productData = this.header.getItems(this.saleflow._id);
@@ -395,6 +422,6 @@ export class CategoryItemsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflow._id]);
+    this.router.navigate(['/ecommerce/store/' + this.saleflow._id]);
   }
 }
