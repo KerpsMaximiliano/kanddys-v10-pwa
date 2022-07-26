@@ -25,7 +25,7 @@
   <div>
     <div class="header">
       <div class="top-header">
-        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="" [ngStyle]="{ 'background-color': merchant.image ? 'transparent' : '#a1a1a1' }">
+        <img class="header-image" [src]="merchant ? merchant.image : user?.image" alt="" [ngStyle]="{ 'background-color': merchant?.image ? 'transparent' : '#a1a1a1' }">
         <div class="contact-info" *ngIf="admin">
           <div class="admin-buttons">
             <button class="admin-btn">
@@ -116,7 +116,7 @@
     ">
     <div class="card-header">
       <h6>Items</h6>
-      <a *ngIf="!admin && saleflow" [routerLink]="['/ecommerce/megaphone-v3',saleflow._id]">Mas</a>
+      <a *ngIf="!admin && saleflow" [routerLink]="['/ecommerce/store',saleflow._id]">Mas</a>
       <span *ngIf="admin" class="switch-label">
         Mostrar En Contacto
         <app-switch-button

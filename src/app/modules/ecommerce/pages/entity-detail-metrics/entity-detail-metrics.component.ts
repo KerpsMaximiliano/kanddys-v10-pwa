@@ -126,22 +126,22 @@ export class EntityDetailMetricsComponent implements OnInit {
   onShareClick = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+        qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/megaphone-v3/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/megaphone-v3/${this.saleflow._id}`]),
+            func: () => this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
           },
         ]
       },

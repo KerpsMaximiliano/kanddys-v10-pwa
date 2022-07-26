@@ -173,9 +173,6 @@
       padding: 0 8px 15px 8px;
 
       .flexer {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
         margin-bottom: 2.5px;
 
         .price {
@@ -234,10 +231,7 @@
   }
 
   .price {
-    padding: 0 10px;
     font-family: "RobotoRegular";
-    text-align: center;
-    margin-top: 16px;
     margin-bottom: 0;
     &.left {
       text-align: left;
@@ -316,16 +310,13 @@
         }
 
         .info-area {
-            padding: 0 12px 12px;
+            padding: 12px;
             box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
             border-bottom-left-radius: 14px;
             border-bottom-right-radius: 14px;
 
         
             .flexer {
-              display: flex;
-              justify-content: space-between;
-              align-items: baseline;
               margin-bottom: 5.4px;
             
               .price {
@@ -340,7 +331,6 @@
                 font-family: "RobotoMedium";
                 font-size: 14px;
                 color: #7B7B7B;
-                margin-bottom: 4px;
             }
         }
     }
@@ -355,6 +345,18 @@
     height: 408px !important;
   }
 } //Activates big size on info container
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flex-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
 
 @media (max-width: 427px) {
   .itemContainer {

@@ -312,12 +312,8 @@ export class OrderInfoComponent implements OnInit {
             this.reservation
               .getReservation(data.order.items[0].reservation._id)
               .then((data) => {
-                let dateInfo = data.getReservation.date.from.split('-');
+                let dateInfo = data.date.from.split('-');
                 let day = dateInfo[2].split('T')[0];
-                let hour =
-                  (
-                    parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset
-                  ).toString() + '00';
                 let month;
                 for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
                   if (
@@ -335,16 +331,16 @@ export class OrderInfoComponent implements OnInit {
                   ' del ' +
                   dateInfo[0] +
                   ' a las ' +
-                  this.formatHour(data.getReservation.date.from)),
+                  this.formatHour(data.date.from)),
                   (this.reservationItem = {
                     showArrow: true,
                     title: 'Fecha',
                     description: `El ${
                       this.days[
-                        moment(data.getReservation.date.from).isoWeekday() + 1
+                        moment(data.date.from).isoWeekday() + 1
                       ]
                     } ${day} de ${month}, ${this.formatHour(
-                      data.getReservation.date.from
+                      data.date.from
                     )}`,
                   });
                 this.allDone = true;
@@ -552,7 +548,7 @@ export class OrderInfoComponent implements OnInit {
   }
 
   redirectToMegaphone() {
-    this.router.navigate([`/ecommerce/megaphone-v3/${this.merchantId}`])
+    this.router.navigate([`/ecommerce/store/${this.merchantId}`])
   }
 
   wichName(e) {

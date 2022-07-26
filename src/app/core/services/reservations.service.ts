@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { createReservation, getReservation, createReservationAuthLess, validateExpirableReservation, confirmMerchantOrder, listReservations} from '../graphql/reservations.gql'
+import { Reservation } from '../models/reservation';
 @Injectable({
   providedIn: 'root',
 })
@@ -60,14 +61,15 @@ export class ReservationService {
     return result;
   }
 
-  async getReservation(id: string) {
+  async getReservation(id: string): Promise<Reservation> {
     try {
       const response = await this.graphql.query({
         query: getReservation,
         variables: {id},
         fetchPolicy: 'no-cache',
       });
-      return response;
+      if (!response || response?.errors) return undefined;
+      return response.getReservation;
     } catch (e) {
       console.log(e);
     }

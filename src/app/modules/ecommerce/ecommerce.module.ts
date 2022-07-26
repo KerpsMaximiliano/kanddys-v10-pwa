@@ -72,6 +72,7 @@ import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
+import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 
 const routes: Routes = [
   {
@@ -104,8 +105,9 @@ const routes: Routes = [
     path: 'error-screen',
     component: ErrorScreenComponent,
   },
+  { path: 'megaphone-v3/:id',   redirectTo: 'store/:id', pathMatch: 'full' },
   {
-    path: 'megaphone-v3/:id',
+    path: 'store/:id',
     component: MegaphoneV3Component,
   },
   {
@@ -397,8 +399,8 @@ const routes: Routes = [
     component: ReservationsComponent
   },
   {
-    path: 'gallery-store/:id',
-    component: GalleryStoreComponent
+    path: 'reservation/:saleflowId/:reservationId',
+    component: ReservationDetailComponent
   },
   {
     path: 'order-detail',
@@ -480,6 +482,7 @@ const routes: Routes = [
     ReservationsComponent,
     GalleryStoreComponent,
     OrderDetailComponent,
+    ReservationDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
