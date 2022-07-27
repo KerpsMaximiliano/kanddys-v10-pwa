@@ -9,6 +9,7 @@ import {
   confirmMerchantOrder,
   listReservations,
   getReservationByCalendar,
+  getReservationByMerchant,
 } from '../graphql/reservations.gql';
 import { Reservation } from '../models/reservation';
 @Injectable({
@@ -94,6 +95,20 @@ export class ReservationService {
       return response.getReservationByCalendar;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async getReservationByMerchant(merchantId: string): Promise<Reservation[]> {
+    try {
+      const response = await this.graphql.query({
+        query: getReservationByMerchant,
+        variables: { merchantId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) throw new Error();
+      return response.getReservationByMerchant;
+    } catch (e) {
+      return e;
     }
   }
 

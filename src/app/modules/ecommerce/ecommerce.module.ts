@@ -399,6 +399,10 @@ const routes: Routes = [
     component: ReservationsComponent
   },
   {
+    path: 'item-reservations',
+    component: ReservationsComponent
+  },
+  {
     path: 'reservation/:reservationId',
     component: ReservationDetailComponent
   },

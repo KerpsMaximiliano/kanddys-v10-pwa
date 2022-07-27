@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ItemOrder } from 'src/app/core/models/order';
 import { Reservation } from 'src/app/core/models/reservation';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { environment } from 'src/environments/environment';
 
@@ -30,17 +33,47 @@ export class ReservationsComponent implements OnInit {
   editMode: boolean;
   env: string = environment.assetsUrl;
   reservations: Reservation[];
+  orders: ItemOrder[];
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+  mode: 'calendar' | 'order';
 
   constructor(
     private route: ActivatedRoute,
     private reservationService: ReservationService,
+    private merchantsService: MerchantsService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(async params => {
-      this.reservations = await this.reservationService.getReservationByCalendar(params.id);
-      console.log(this.reservations);
-    })
+    this.route.params.subscribe(async (params) => {
+      this.status = 'loading';
+      const user = await this.authService.me();
+      if (!user) return;
+      const merchant = await this.merchantsService.merchantDefault();
+      if (!merchant) return;
+      if (params.id) {
+        this.mode = 'calendar';
+        this.reservations =
+          await this.reservationService.getReservationByCalendar(params.id);
+      } else {
+        this.mode = 'order';
+        this.reservations =
+          await this.reservationService.getReservationByMerchant(merchant._id);
+        if (!this.reservations?.length) return;
+        const orders = (
+          await this.merchantsService.ordersByMerchant(merchant._id, {
+            options: {
+              limit: 50,
+            },
+          })
+        )?.ordersByMerchant;
+        if (!orders?.length) return;
+        this.orders = orders.filter((order) =>
+          order.items.some((item) => item.reservation?._id)
+        );
+        this.status = 'complete';
+      }
+    });
   }
 
   placeholder = () => {
