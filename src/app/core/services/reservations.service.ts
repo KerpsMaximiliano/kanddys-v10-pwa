@@ -1,19 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { createReservation, getReservation, createReservationAuthLess, validateExpirableReservation, confirmMerchantOrder, listReservations} from '../graphql/reservations.gql'
+import {
+  createReservation,
+  getReservation,
+  createReservationAuthLess,
+  validateExpirableReservation,
+  confirmMerchantOrder,
+  listReservations,
+  getReservationByCalendar,
+} from '../graphql/reservations.gql';
 import { Reservation } from '../models/reservation';
 @Injectable({
   providedIn: 'root',
 })
 export class ReservationService {
-    constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper) {}
 
   async createReservation(input: any) {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createReservation,
-      variables: {input},
+      variables: { input },
     });
 
     if (!result || result?.errors) return undefined;
@@ -26,7 +34,7 @@ export class ReservationService {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createReservationAuthLess,
-      variables: {input},
+      variables: { input },
     });
 
     if (!result || result?.errors) return undefined;
@@ -38,7 +46,7 @@ export class ReservationService {
   async validateExpirableReservation(id: any) {
     const result = await this.graphql.mutate({
       mutation: validateExpirableReservation,
-      variables: {id},
+      variables: { id },
     });
 
     if (!result || result?.errors) return undefined;
@@ -52,7 +60,7 @@ export class ReservationService {
 
     const result = await this.graphql.mutate({
       mutation: confirmMerchantOrder,
-      variables: {merchantID, orderID},
+      variables: { merchantID, orderID },
     });
 
     if (!result || result?.errors) return undefined;
@@ -65,11 +73,25 @@ export class ReservationService {
     try {
       const response = await this.graphql.query({
         query: getReservation,
-        variables: {id},
+        variables: { id },
         fetchPolicy: 'no-cache',
       });
       if (!response || response?.errors) return undefined;
       return response.getReservation;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getReservationByCalendar(calendarId: string): Promise<Reservation[]> {
+    try {
+      const response = await this.graphql.query({
+        query: getReservationByCalendar,
+        variables: { calendarId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.getReservationByCalendar;
     } catch (e) {
       console.log(e);
     }

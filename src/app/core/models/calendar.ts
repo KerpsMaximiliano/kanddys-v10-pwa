@@ -23,7 +23,7 @@ export class Calendar extends Model<Calendar> {
   name: string;
   reservationLimits: number;
   timeChunkSize: number;
-  merchant: Merchant;
+  merchant: string;
   active: boolean;
   limits: DateModel
   breakTime: number;

@@ -56,6 +56,27 @@ export const getReservation = gql`
   }
 `;
 
+export const getReservationByCalendar = gql`
+  query getReservationByCalendar($calendarId: ObjectID!) {
+    getReservationByCalendar(calendarId: $calendarId) {
+      _id
+      createdAt
+      status
+      expiration
+      breakTime
+      calendar{
+        _id
+      }
+      date{
+        from
+        until
+        fromHour
+        toHour
+      }
+    }
+  }
+`;
+
 export const listReservations = gql`
   query listReservations($params: PaginationInput, $merchantId: ObjectID!){
     listReservations(params: $params, merchantId: $merchantId){

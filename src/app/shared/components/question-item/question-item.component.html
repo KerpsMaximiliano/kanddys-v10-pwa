@@ -5,7 +5,7 @@
         <div class="title" [ngStyle]="headlineContainerStyles ? headlineContainerStyles : null">
             <div class="headline-left-icon" *ngIf="headlineLeftIcon">
                 <img
-                    [src]="headlineLeftIcon.icon"
+                    [src]="env + headlineLeftIcon.icon"
                     alt="the left one"
                     [width]="headlineLeftIcon.width" 
                     [height]="headlineLeftIcon.height"

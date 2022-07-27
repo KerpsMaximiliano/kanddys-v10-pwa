@@ -1,22 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Reservation } from 'src/app/core/models/reservation';
-import { SaleFlow } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import * as moment from 'moment';
 import { Calendar } from 'src/app/core/models/calendar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Merchant } from 'src/app/core/models/merchant';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 const days = [
+  'Domingo',
   'Lunes',
   'Martes',
   'Miércoles',
   'Jueves',
   'Viernes',
   'Sábado',
-  'Domingo',
 ];
 
 @Component({
@@ -25,7 +25,7 @@ const days = [
   styleUrls: ['./reservation-detail.component.scss'],
 })
 export class ReservationDetailComponent implements OnInit {
-  saleflow: SaleFlow;
+  merchant: Merchant;
   reservation: Reservation;
   calendar: Calendar;
   date: {
@@ -38,22 +38,20 @@ export class ReservationDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private saleflowService: SaleFlowService,
     private reservationsService: ReservationService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private merchantsService: MerchantsService,
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       lockUI();
-      this.saleflow = (
-        await this.saleflowService.saleflow(params.saleflowId)
-      ).saleflow;
-      if (!this.saleflow) return unlockUI();
       this.reservation = await this.reservationsService.getReservation(
         params.reservationId
       );
       if (!this.reservation) return unlockUI();
+      this.calendar = (await this.calendarService.getCalendar(this.reservation.calendar._id, null, null, true))?.getCalendar;
+      this.merchant = await this.merchantsService.merchant(this.calendar?.merchant);
       const fromDate = new Date(this.reservation.date.from);
       const day = fromDate.getDate();
       const weekDay = days[fromDate.getDay()];
