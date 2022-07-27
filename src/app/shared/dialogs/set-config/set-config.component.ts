@@ -1,10 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
-interface Opcion {
-    text: string;
+interface SetOptions {
+    text: Text;
     switched?: boolean;
     callback?: () => void;
+}
+interface Text{
+    text: string;
+    styles?: Record<string, any>
 }
 
 @Component({
@@ -14,13 +18,10 @@ interface Opcion {
 })
 export class SetConfigComponent implements OnInit {
 
-    @Input() title: string;
-    @Input() subTitle: string;
-    @Input() buttonText: string;
-    @Input() options: Array<Opcion>;
-    @Input() titleStyles: Record<string, any>
-    @Input() subTitleStyles: Record<string, any>
-    @Input() optionsStyles: Record<string, any>
+    @Input() title: Text;
+    @Input() subTitle: Text;
+    @Input() buttonText: Text;
+    @Input() options: Array<SetOptions>;
     @Output() switchEvent = new EventEmitter();
 
   constructor( private ref: DialogRef ) { }
@@ -36,3 +37,7 @@ export class SetConfigComponent implements OnInit {
     this.ref.close();
   }
 }
+
+    // @Input() titleStyles: Record<string, any>
+    // @Input() subTitleStyles: Record<string, any>
+    // @Input() optionsStyles: Record<string, any>
