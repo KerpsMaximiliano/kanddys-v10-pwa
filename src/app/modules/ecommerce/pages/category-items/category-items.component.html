@@ -53,7 +53,7 @@
       </ng-container>
     </div>
   </main>
-  <footer *ngIf="!hasCustomizer || !isMerchant">
+  <footer *ngIf="!hasCustomizer && !isMerchant">
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
     <app-cart-button
       [shopCartCallback]="showShoppingCartDialog"
@@ -61,6 +61,7 @@
     ></app-cart-button>
   </footer>
   <app-sticky-button
+    *ngIf="isMerchant"
     size="small"
     [mode]="'double'"
     bgColor="#A1A1A1"
