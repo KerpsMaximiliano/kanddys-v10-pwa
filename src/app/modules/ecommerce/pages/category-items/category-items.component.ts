@@ -380,7 +380,7 @@ export class CategoryItemsComponent implements OnInit {
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
           this.router.navigate([
-            `ecommerce/store/${this.header.saleflow._id}`,
+            `/ecommerce/store/${this.header.saleflow._id}`,
           ]),
       },
       customClass: 'app-dialog',
