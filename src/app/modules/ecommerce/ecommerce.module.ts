@@ -71,6 +71,7 @@ import { ItemCategoryExpositionComponent } from './pages/item-category-expositio
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
+import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 
 const routes: Routes = [
@@ -401,6 +402,10 @@ const routes: Routes = [
     path: 'reservation/:reservationId',
     component: ReservationDetailComponent
   },
+  {
+    path: 'order-detail',
+    component: OrderDetailComponent
+  }
 ];
 
 @NgModule({
@@ -476,6 +481,7 @@ const routes: Routes = [
     MerchantOrdersComponent,
     ReservationsComponent,
     GalleryStoreComponent,
+    OrderDetailComponent,
     ReservationDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

@@ -392,10 +392,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'articleDescription',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
-          label: 'Describe aquí cómo deseas que preparemos tu arreglo',
-          placeholder: 'Escribe aquí...',
+          label: 'Describe aquí cómo deseas que preparemos tu arreglo (*)',
+          placeholder: 'Por ejemplo: Arreglo de 6 rosas con lazo blanco',
           inputType: 'textarea',
           styles: {
             labelStyles: {
