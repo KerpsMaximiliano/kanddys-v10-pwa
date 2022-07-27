@@ -394,11 +394,11 @@ const routes: Routes = [
     component: MerchantOrdersComponent
   },
   {
-    path: 'item-reservations',
+    path: 'item-reservations/:id',
     component: ReservationsComponent
   },
   {
-    path: 'reservation/:saleflowId/:reservationId',
+    path: 'reservation/:reservationId',
     component: ReservationDetailComponent
   },
 ];

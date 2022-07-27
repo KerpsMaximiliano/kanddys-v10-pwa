@@ -1,28 +1,32 @@
-<div style="min-height: 100vh;">
+<div style="min-height: 100vh">
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [icons]="admin && (saleflow ? [
-      {
-        src: '/upload.svg',
-        callback: onShareClick,
-        color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-        margin: '0 7px 0 14px'
-      }
-    ] :
-    merchant && [
-  ])"
-  (returnEvent)="back()"
-  bgColor="#2874AD"
+    [icons]="
+      admin &&
+      (saleflow
+        ? [
+            {
+              src: '/upload.svg',
+              callback: onShareClick,
+              color:
+                'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+              margin: '0 7px 0 14px'
+            }
+          ]
+        : merchant && [])
+    "
+    (returnEvent)="back()"
+    bgColor="#2874AD"
   ></app-helper-headerv2>
   <div class="header" *ngIf="merchant">
     <div
       class="header-image"
-      [ngStyle]="{backgroundImage: 'url(' + merchant.image + ')'}"
-      [ngClass]="{'placeholder': !merchant.image}"
+      [ngStyle]="{ backgroundImage: 'url(' + merchant.image + ')' }"
+      [ngClass]="{ placeholder: !merchant.image }"
     ></div>
-    <h5>{{merchant.name}}</h5>
-    <p>{{merchant.bio}}</p>
+    <h5>{{ merchant.name }}</h5>
+    <p>{{ merchant.bio }}</p>
 
     <!-- {
       src: '/pencil.svg',
@@ -52,8 +56,66 @@
       (bottomRight)="redirectMerchantItems('merchant-items')"
       bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
-      ></app-form-questions>
-      <!-- [dropdowns]="[
+    ></app-form-questions>
+
+    <ng-container *ngIf="calendars?.length">
+      <div class="section" *ngFor="let calendar of calendars">
+        <app-enlist-display
+          [headline]="{
+            icon: {
+              src: '/person.svg',
+              width: 20,
+              height: 26
+            },
+            text: {
+              text: 'CALENDARIO'
+            }
+          }"
+          [iconText]="{
+            icons: [
+              {
+                src: '/pencil.svg',
+                width: 19,
+                height: 19,
+                color:
+                  'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)'
+              },
+              {
+                src: '/upload.svg',
+                width: 15,
+                height: 19,
+                color:
+                  'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)'
+              }
+            ]
+          }"
+          [itemList]="[
+            {
+              name: {
+                text: calendar.name.toUpperCase(),
+                fontFamily: 'RobotoMedium',
+                color: '#7B7B7B',
+                fontSize: '13px'
+              },
+              subtitle: {
+                text: calendar.subtitle
+              }
+            }
+          ]"
+          [bottomText]="{
+            rightText: {
+              text:
+                (calendar.reservations?.length || '0') +
+                ' Reservaciones Futuras',
+              fontSize: '17px',
+              fontFamily: 'RobotoMedium'
+            }
+          }"
+          [showSubtitle]="true"
+        ></app-enlist-display>
+      </div>
+    </ng-container>
+    <!-- [dropdowns]="[
         {
           title: 'categorias',
           content: categories
