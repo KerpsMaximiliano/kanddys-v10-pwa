@@ -212,14 +212,14 @@ export class TestComponent implements OnInit {
   ];
 
   openDialog() {
-      const options: Array<string> = ['TAGS', 'STATUS', 'LO COMPRADO', 'COMPRADOR'];
+      const options: Array<any> = [{text:{text:'TAGS'}}, {text:{text:'STATUS'}}, {text:{text:'LO COMPRADO'}}, {text:{text:'COMPRADOR'}}];
     this.dialog.open(SetConfigComponent, {
       type: 'fullscreen-translucent',
       customClass: 'app-dialog',
       flags: ['no-header'],
       props:{
-        title: 'Preferencia de Vistas',
-        subTitle: 'Personaliza el listado de tus ventas',
+        title: {text:'Preferencia de Vistas'},
+        subTitle: {text:'Personaliza el listado de tus ventas'},
         options
       }
     });
