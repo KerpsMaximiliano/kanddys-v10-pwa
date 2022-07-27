@@ -19,11 +19,12 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { SwiperOptions } from 'swiper';
+// import { SwiperOptions } from 'swiper';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-category-items',
@@ -38,7 +39,6 @@ export class CategoryItemsComponent implements OnInit {
   categoryId: string;
   categoryName: string;
   iconImage: string;
-  merchantId: string;
   filters: any[] = [];
   loadingSwiper: boolean;
   selectedTagsIds: any = [];
@@ -53,6 +53,10 @@ export class CategoryItemsComponent implements OnInit {
     itemInOrder: number;
     total: number;
   }[] = [];
+  ordersTotal: {
+    total: number,
+    length: number
+  };
   // public swiperConfig: SwiperOptions = {
   //   slidesPerView: 'auto',
   //   freeMode: true,
@@ -69,7 +73,8 @@ export class CategoryItemsComponent implements OnInit {
     private header: HeaderService,
     private appService: AppService,
     private authService: AuthService,
-    private merchantService: MerchantsService
+    private merchantService: MerchantsService,
+    private orderService: OrderService,
   ) {}
 
   async getCategories(
@@ -182,10 +187,6 @@ export class CategoryItemsComponent implements OnInit {
           this.saleflow._id
         )
       ).filter((item) => item.status == 'active');
-      const totalByItems = await this.item.totalByItem(
-        this.saleflow.merchant._id,
-        items.map((item) => item._id)
-      );
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
@@ -235,11 +236,18 @@ export class CategoryItemsComponent implements OnInit {
       );
       await this.getCategories(itemCategoriesList, headlines);
       this.itemInCart();
-      for (let i = 0; i < items.length; i++) {
-        const sale = totalByItems.find(
-          (item) => item.item._id === items[i]._id
+      if(this.isMerchant) {
+        const totalByItems = await this.item.totalByItem(
+          this.saleflow.merchant._id,
+          items.map((item) => item._id)
         );
-        this.totalByItems.push(sale);
+        for (let i = 0; i < items.length; i++) {
+          const sale = totalByItems.find(
+            (item) => item.item._id === items[i]._id
+          );
+          this.totalByItems.push(sale);
+        }
+        this.ordersTotal = await this.orderService.ordersTotal(['completed', 'to confirm', 'verifying'], merchantId, [], this.categoryId);
       }
       unlockUI();
     });
