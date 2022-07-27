@@ -66,7 +66,7 @@ import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/enti
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
-import { ItemCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
+import { TagCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
 import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
@@ -376,11 +376,19 @@ const routes: Routes = [
   },
   {
     path: 'category-creator/:id',
-    component: ItemCategoryCreatorComponent
+    component: TagCategoryCreatorComponent
   },
   {
     path: 'category-creator',
-    component: ItemCategoryCreatorComponent
+    component: TagCategoryCreatorComponent
+  },
+  {
+    path: 'tag-creator/:id',
+    component: TagCategoryCreatorComponent
+  },
+  {
+    path: 'tag-creator',
+    component: TagCategoryCreatorComponent
   },
   {
     path: 'admin-login',
@@ -480,7 +488,7 @@ const routes: Routes = [
     NotificationsLogComponent,
     NotificationCreatorComponent,
     AdminLoginComponent,
-    ItemCategoryCreatorComponent,
+    TagCategoryCreatorComponent,
     ItemCategoryExpositionComponent,
     MerchantOrdersComponent,
     ReservationsComponent,
