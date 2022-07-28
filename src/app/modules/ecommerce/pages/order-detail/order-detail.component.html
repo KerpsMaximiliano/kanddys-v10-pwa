@@ -1,214 +1,243 @@
 <div class="container">
-
-    <app-helper-headerv2
+  <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="!tagActive"
+    [returnAble]="tagActive"
     [edit]="{
-        active: tagActive,
-        text: 'TAGS'
+      active: !tagActive,
+      text: 'TAGS'
     }"
     [editStyles]="{
-        'margin-right': '20px',
-        'font-family': 'RobotoMedium',
-        'font-size': '13px'
+      'margin-right': '20px',
+      'font-family': 'RobotoMedium',
+      'font-size': '13px'
     }"
     [mainText]="{
-        text: tagActive? 'TIENDA NAME ID' : 'TAGS',
-        fontSize: '21px',
-        fontFamily:'SfProBold'
+      text: !tagActive ? 'TIENDA NAME ID' : 'TAGS',
+      fontSize: '21px',
+      fontFamily: 'SfProBold'
     }"
     [plus]="{
-        active: !tagActive
+      active: tagActive
     }"
-    ></app-helper-headerv2>
+  ></app-helper-headerv2>
 
- <ng-container *ngIf="tagActive"> 
-   
+  <ng-container *ngIf="!tagActive">
     <app-item-reservation
-    [headline]="{
+      [headline]="{
         text: 'ORDEN ID'
-    }"
-    [rightActive]="true"
-    [rightSubHeadline]="{
-        text:'Comprador ID'
-    }"
-    [subheadlines]="[{
-        text:'Date ID'
-    },{
-        text:'Status ID'
-    },{
-        text:'Status de pago ID'
-    }]"
-    [icon]="[
-    {
-        src: '/person.svg',
-        width: 13,
-        height: 17,
-        color: 'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)'
-    }]"
-    [ctaText]="{
-        text:{text:'Pagos'},
-        arrow: true
-    }"
-    [tagActive]="tagActive"
-    [tag]="{
-        title:{
-            text: 'TAGS'
+      }"
+      [rightActive]="true"
+      [rightSubHeadline]="{
+        text: 'Comprador ID'
+      }"
+      [subheadlines]="[
+        {
+          text: 'Date ID'
         },
-        tags:[{
-            name:'Tag ID',
-            icon:{
-                src:'/whatsapp_verde.svg'
-            }
-        },{
-            name:'Tag ID'
-        },{
-            name:'Tag ID',
-            icon:{
-                src:'/whatsapp_verde.svg'
-            }
-        }],
-        icon:{
-            src:'/pencil.svg',
-            width: 15,
-            height: 15
+        {
+          text: 'Status ID'
+        },
+        {
+          text: 'Status de pago ID'
         }
-    }"
-    [content]="{
-        title:{ text: 'PRODUCTOS'},
-        images:['https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg','https://i.imgur.com/xEhQi8j.jpeg']
-    }"
+      ]"
+      [icon]="[
+        {
+          src: '/person.svg',
+          width: 13,
+          height: 17,
+          color:
+            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)'
+        }
+      ]"
+      [ctaText]="{
+        text: { text: 'PAGOS' },
+        arrow: true,
+        showEntry: true
+      }"
+      [tagActive]="tagActive"
+      [tag]="{
+        title: {
+          text: 'TAGS'
+        },
+        tags: [
+          {
+            name: 'Tag ID',
+            icon: {
+              src: '/whatsapp_verde.svg'
+            }
+          },
+          {
+            name: 'Tag ID'
+          },
+          {
+            name: 'Tag ID',
+            icon: {
+              src: '/whatsapp_verde.svg'
+            }
+          }
+        ],
+        icon: {
+          src: '/pencil.svg',
+          width: 15,
+          height: 15
+        }
+      }"
+      [content]="{
+        title: { text: 'PRODUCTOS' },
+        images: [
+          'https://i.imgur.com/xEhQi8j.jpeg',
+          'https://i.imgur.com/xEhQi8j.jpeg',
+          'https://i.imgur.com/xEhQi8j.jpeg'
+        ]
+      }"
     ></app-item-reservation>
-    
+
     <ng-container *ngIf="payments">
-        <div class="content">
-            <div class="payment-list">
-                <div class="payment-card">
-                    <div class="price">
-                        <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
-                    </div>
-                    <p class="payment-type">Total Facturado en DOP</p>
-                </div>
-                <div class="payment-card">
-                  <div class="price">
-                    <p class="total" *ngIf="totalPayed">${{ totalPayed | number: "1.0-2" }}</p>
-                  </div>
-                  <p class="payment-type">Total Pagado en DOP</p>
-                </div>
+      <div class="content">
+        <div class="payment-list">
+          <div class="payment-card">
+            <div class="price">
+              <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
             </div>
+            <p class="payment-type">Total Facturado en DOP</p>
+          </div>
+          <div class="payment-card">
+            <div class="price">
+              <p class="total" *ngIf="totalPayed">
+                ${{ totalPayed | number: "1.0-2" }}
+              </p>
+            </div>
+            <p class="payment-type">Total Pagado en DOP</p>
+          </div>
+        </div>
         <h3 class="payments-title">Pagos realizados</h3>
-    </div>
+      </div>
     </ng-container>
 
     <div class="information">
+      <div class="reservation">
+        <div class="section">
+          <h2 class="date-reservation">Fecha tu reservación es:</h2>
 
-        <div class="reservation">
-
-            <div class="section">
-                <h2 class="date-reservation">Fecha tu reservación es:</h2>
-
-                <div class="wrapper">
-                    <p class="date">Sab 11</p>
-                    <p class="text-reservation" style="width: 85%;">De 9:00am a 9:45am</p>
-                </div>
-
-            </div>
-
-            <div class="section">
-                <h2 class="address-reservation" style="margin-top: 39px;">Lugar de Entrega:</h2>
-
-                <div class="wrapper">
-                    <p class="text-reservation">Dirección de correo de Santo Domingo</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="address-reservation" style="margin-top: 54px;">Mesanje de regalo:</h2>
-
-                <div class="wrapper colored">
-
-                    <section class="message">
-                        <h3 class="sub" style="margin-top: 0px;">Mensaje a escribir:</h3>
-                            <p class="text-reservation inner">Te quiero, madre mía, te adoro y te amaré para toda la vida. Nunca dudes de lo que siento, aunque a veces no te lo demuestro, ni te lo diga. Gracias, mamá, por tu amor, paciencia, comprensión y soportar mis malcriadeces todo el tiempo. Nunca olvides que te quiero mucho.</p>
-                    </section>
-
-                    <section class="to">
-                        <h3 class="sub" style="margin-top: 59px;">Para:</h3>
-                            <p class="text-reservation inner">Madre mía.</p>
-                    </section>
-
-                    <section class="from">
-                        <h3 class="sub" style="margin-top: 32px;">De:</h3>
-                            <p class="text-reservation inner">José Amado</p>
-                    </section>
-                </div>
-            </div>
-
+          <div class="wrapper">
+            <p class="date">Sab 11</p>
+            <p class="text-reservation" style="width: 85%">
+              De 9:00am a 9:45am
+            </p>
+          </div>
         </div>
 
+        <div class="section">
+          <h2 class="address-reservation" style="margin-top: 39px">
+            Lugar de Entrega:
+          </h2>
+
+          <div class="wrapper">
+            <p class="text-reservation">Dirección de correo de Santo Domingo</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="address-reservation" style="margin-top: 54px">
+            Mesanje de regalo:
+          </h2>
+
+          <div class="wrapper colored">
+            <section class="message">
+              <h3 class="sub" style="margin-top: 0px">Mensaje a escribir:</h3>
+              <p class="text-reservation inner">
+                Te quiero, madre mía, te adoro y te amaré para toda la vida.
+                Nunca dudes de lo que siento, aunque a veces no te lo demuestro,
+                ni te lo diga. Gracias, mamá, por tu amor, paciencia,
+                comprensión y soportar mis malcriadeces todo el tiempo. Nunca
+                olvides que te quiero mucho.
+              </p>
+            </section>
+
+            <section class="to">
+              <h3 class="sub" style="margin-top: 59px">Para:</h3>
+              <p class="text-reservation inner">Madre mía.</p>
+            </section>
+
+            <section class="from">
+              <h3 class="sub" style="margin-top: 32px">De:</h3>
+              <p class="text-reservation inner">José Amado</p>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
-</ng-container>
+  </ng-container>
 
-<ng-container *ngIf="!tagActive">
-
+  <ng-container *ngIf="tagActive">
     <div class="sector">
-        <h1 class="header-tag">Tags en Order ID:</h1>
+      <h1 class="header-tag">Tags en Order ID:</h1>
 
-        <div class="tag-wrapper">
-            <div class="tag-column">
-                <h2 class="tagid">TAG ID</h2>
-                <p class="ws-message">sin mensaje de whatsapp</p>
-            </div>
-
-            <button class="edit-tag"><img [src]="env + '/pencil.svg'" alt="Icono de Lapiz"></button>
+      <div class="tag-wrapper">
+        <div class="tag-column">
+          <h2 class="tagid">TAG ID</h2>
+          <p class="ws-message">sin mensaje de whatsapp</p>
         </div>
 
-        <div class="tag-wrapper">
-            <div class="tag-column">
-                <h2 class="tagid">TAG ID</h2>
-                <p class="ws-message two">con mensaje de whatsapp</p>
-            </div>
+        <button class="edit-tag">
+          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
+        </button>
+      </div>
 
-            <button class="edit-tag"><img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" width="19px" height="19px"></button>
+      <div class="tag-wrapper">
+        <div class="tag-column">
+          <h2 class="tagid">TAG ID</h2>
+          <p class="ws-message two">con mensaje de whatsapp</p>
         </div>
 
+        <button class="edit-tag">
+          <img
+            [src]="env + '/pencil.svg'"
+            alt="Icono de Lapiz"
+            width="19px"
+            height="19px"
+          />
+        </button>
+      </div>
     </div>
 
     <div class="add-tag">
+      <h1 class="header-tag">Agregar Otros Tags:</h1>
 
-        <h1 class="header-tag">Agregar Otros Tags:</h1>
-
-        <div class="tag-wrapper">
-            <div class="tag-column2">
-                <h2 class="tagid">TAG ID</h2>
-                <p class="ws-message">con mensaje de whatsapp</p>
-            </div>
-
-            <button class="edit-tag"><img [src]="env + '/pencil.svg'" alt="Icono de Lapiz"></button>
+      <div class="tag-wrapper">
+        <div class="tag-column2">
+          <h2 class="tagid">TAG ID</h2>
+          <p class="ws-message">con mensaje de whatsapp</p>
         </div>
 
-        <div class="tag-wrapper">
-            <div class="tag-column2">
-                <h2 class="tagid">TAG ID</h2>
-                <p class="ws-message two">con mensaje de whatsapp</p>
-            </div>
+        <button class="edit-tag">
+          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
+        </button>
+      </div>
 
-            <button class="edit-tag"><img [src]="env + '/pencil.svg'" alt="Icono de Lapiz"></button>
+      <div class="tag-wrapper">
+        <div class="tag-column2">
+          <h2 class="tagid">TAG ID</h2>
+          <p class="ws-message two">con mensaje de whatsapp</p>
         </div>
 
+        <button class="edit-tag">
+          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
+        </button>
+      </div>
     </div>
 
     <app-sticky-button
-    [mode]="'double'"
-    [extra]="{
+      [mode]="'double'"
+      [extra]="{
         return: true
-    }"
-    [text]="''"
-    [text2]="''"
-    [size]="'small'"
-    [fontSize]="'17px'"
-    [bgColor]="'#2874AD'"
+      }"
+      [text]="''"
+      [text2]="''"
+      [size]="'small'"
+      [fontSize]="'17px'"
+      [bgColor]="'#2874AD'"
     ></app-sticky-button>
-</ng-container>
-
+  </ng-container>
 </div>

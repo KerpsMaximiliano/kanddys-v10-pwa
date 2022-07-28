@@ -129,7 +129,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             [],
             saleflowCategory._id
           );
-        const url = `ecommerce/category-items/${this.header.saleflow._id}/${saleflowCategory._id}`;
+        const url = `/ecommerce/category-items/${this.header.saleflow._id}/${saleflowCategory._id}`;
         this.itemsByCategory.push({
           label: saleflowCategory.name,
           items: this.items.filter((item) =>
