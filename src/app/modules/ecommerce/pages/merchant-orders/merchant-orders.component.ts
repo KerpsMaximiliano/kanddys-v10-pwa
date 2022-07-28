@@ -26,6 +26,7 @@ export class MerchantOrdersComponent implements OnInit {
         length: number;
     };
     showTags: boolean = true;
+    showSearch: boolean = true;
     mouseDown = false;
     startX: any;
     scrollLeft: any;
@@ -462,6 +463,10 @@ export class MerchantOrdersComponent implements OnInit {
   search(event){
     this.searchValue = event.target.value;
     console.log(event.target.value);
+  }
+
+  toggleSearch = ()=> {
+    this.showSearch = !this.showSearch;
   }
 
   changeTab(i: number){

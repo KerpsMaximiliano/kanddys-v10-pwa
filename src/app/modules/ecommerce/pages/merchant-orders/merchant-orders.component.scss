@@ -36,7 +36,7 @@
 
     .searchBar{
         width: 100%;
-        padding: 15px 0;
+        padding: 24px 0 30px;
         background-color: #F6F6F6;
         display: flex;
         align-items: center;
@@ -45,35 +45,30 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-
-            .search-label{
-                font-family: 'RobotoMedium';
-                font-size: 17px;
-                color: #7B7B7B;
-                margin-bottom: 5px;
-                margin-left: 5%;
-            }
+            align-items: center;
 
             .search{
                 all: unset;
-                width: 90%;
-                height: 60px;
+                width: 92%;
+                height: 66px;
                 font-family: 'RobotoMedium';
-                font-size: 17px;
+                font-size: 20px;
                 color: #7B7B7B;
                 text-indent: 11px;
-                margin-left: 5%;
                 border-radius: 9px;
                 background-color: #FFFFFF;
                 box-shadow: inset 0px 3px 7px 3px rgba(0, 0, 0, 12%);
 
                 &::placeholder{
                     font-family: 'RobotoMedium';
-                    font-size: 17px;
+                    font-size: 20px;
                     color: #A1A1A1;
                     text-indent: 11px;
                     opacity: 0.60;
+                    background: url('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search.svg') no-repeat scroll 29px 29px;
+                    opacity: 0.63;
+                    padding-left: 19px;
+                    padding-right: 17px;
                 }
             }
         }
