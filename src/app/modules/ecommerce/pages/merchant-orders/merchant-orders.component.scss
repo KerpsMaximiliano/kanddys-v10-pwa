@@ -58,6 +58,7 @@
                 border-radius: 9px;
                 background-color: #FFFFFF;
                 box-shadow: inset 0px 3px 7px 3px rgba(0, 0, 0, 12%);
+                // background: url('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search.svg') no-repeat scroll 21px 23px;
 
                 &::placeholder{
                     font-family: 'RobotoMedium';
@@ -65,10 +66,6 @@
                     color: #A1A1A1;
                     text-indent: 11px;
                     opacity: 0.60;
-                    background: url('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search.svg') no-repeat scroll 29px 29px;
-                    opacity: 0.63;
-                    padding-left: 19px;
-                    padding-right: 17px;
                 }
             }
         }
@@ -112,6 +109,7 @@
 		color: #7B7B7B;
 		text-align: center;
 		cursor: pointer;
+        border: 1px solid #2874AD;
 
 		&:hover {
 			background-color: #70abd8;
