@@ -293,7 +293,8 @@ export class TestComponent implements OnInit {
     this.dialog.open(StoreShareComponent, {
         type: 'fullscreen-translucent',
         props: {
-          list
+          list,
+          alternate: false
         },
         customClass: 'app-dialog',
         flags: ['no-header'],

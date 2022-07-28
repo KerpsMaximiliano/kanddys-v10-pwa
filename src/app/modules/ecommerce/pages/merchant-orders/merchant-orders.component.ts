@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
+import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 
 interface FakeTag{
     name: string;
@@ -450,7 +454,10 @@ export class MerchantOrdersComponent implements OnInit {
     } 
     },]; //Dummy data. Por favor eliminar al integrar, thx <3 <3 <3
 
-  constructor( private router: Router) { }
+  constructor( 
+    private router: Router,
+    private dialog: DialogService
+    ) { }
 
   ngOnInit(): void {
   }
@@ -491,9 +498,63 @@ export class MerchantOrdersComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
-  }
+  };
+
+  openSettingsDialog = () => {
+    const options: Array<any> = [{text:{text:'TAGS'}}, {text:{text:'STATUS'}}, {text:{text:'LO COMPRADO'}}, {text:{text:'COMPRADOR'}}];
+
+    this.dialog.open(SetConfigComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props:{
+        title: {text:'Preferencia de Vistas'},
+        subTitle: {text:'Personaliza el listado de tus ventas'},
+        options
+      }
+    });
+  };
+
+  openStoreShare = () => {
+
+    const list: StoreShareList[] = [
+        {
+          title:  'Crear',
+          options: [
+            {
+              text: 'Un nuevo Item',
+              mode: 'func',
+              func: () => {
+                console.log('Item');
+              }
+            },
+            {
+              text: 'Una Venta',
+              mode: 'func',
+              func: () => {
+                console.log('Categoria');
+              }
+            },
+            {
+              text: 'Un nuevo Tag',
+              mode: 'func',
+              func: () => {
+                console.log('Tag');
+              }
+            }
+          ]
+        }
+    ];
+        
+    this.dialog.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: true
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+    };
+
 }
-
-
-
-

@@ -41,6 +41,7 @@ export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
   @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
+  @Input() alternate: boolean;
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
   screenWidth: number;
