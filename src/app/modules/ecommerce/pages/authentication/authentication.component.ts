@@ -174,6 +174,12 @@ export class Authentication implements OnInit {
 
                 if(myUser) {
                   await this.authService.generateMagicLink(phoneNumber, `ecommerce/entity-detail-metrics`, myUser._id , 'MerchantAccess', null);
+                } else {
+                  const user = await this.authService.signup({
+                    phone: phoneNumber,
+                  }, 'none', null, false);
+
+                  await this.authService.generateMagicLink(phoneNumber, `ecommerce/entity-detail-metrics`, user._id , 'MerchantAccess', null);
                 }
 
                 return { ok: true };
