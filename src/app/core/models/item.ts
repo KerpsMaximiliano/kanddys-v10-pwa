@@ -63,6 +63,7 @@ export class Item extends Model<Item> {
   hasExtraPrice: boolean;
   showImages: boolean;
   status: 'draft' | 'disabled' | 'active';
+  notifications: string[];
 
   customizerId?: string;
   totalPrice?: number;

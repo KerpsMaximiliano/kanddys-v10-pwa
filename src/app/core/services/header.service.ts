@@ -518,7 +518,7 @@ export class HeaderService {
   }
 
 
-  createPreOrder = () => {
+  createPreOrder = async () => {
     const saleflow = this.saleflow || this.getSaleflow();
 
     this.order = this.getOrder(saleflow._id);
@@ -529,7 +529,7 @@ export class HeaderService {
       delete product.name;
     });
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise<string>(async (resolve, reject) => {
       let customizer = this.customizer;
 
       if (!this.customizer) {
@@ -559,7 +559,7 @@ export class HeaderService {
         this.customizerData = null;
       }
 
-      if (saleflow.module.post) {
+      if (saleflow.module?.post) {
         // if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
         if (saleflow.canBuyMultipleItems)
           this.order.products.forEach((product) => {

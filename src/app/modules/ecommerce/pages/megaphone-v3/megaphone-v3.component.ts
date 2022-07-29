@@ -487,7 +487,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         footerCallback: () =>
-          this.saleflowData.module.post
+          this.saleflowData.module?.post
             ? this.router.navigate(['/ecommerce/create-giftcard'])
             : this.router.navigate(['/ecommerce/shipment-data-form']),
       },

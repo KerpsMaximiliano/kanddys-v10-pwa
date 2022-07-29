@@ -9,20 +9,25 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
-import { Location } from '@angular/common';
+// import { Location } from '@angular/common';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { User } from 'src/app/core/models/user';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
 import { UsersService } from 'src/app/core/services/users.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SwiperOptions } from 'swiper';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { Notification } from 'src/app/core/models/notification';
 
 @Component({
   selector: 'app-new-item-display',
   templateUrl: './new-item-display.component.html',
-  styleUrls: ['./new-item-display.component.scss']
+  styleUrls: ['./new-item-display.component.scss'],
 })
 export class NewItemDisplayComponent implements OnInit {
   URI: string = environment.uri;
@@ -48,6 +53,7 @@ export class NewItemDisplayComponent implements OnInit {
   canCreateBank: boolean;
   testActive: boolean = true;
   saleflow: SaleFlow = null;
+  notifications: Notification[];
 
   constructor(
     private route: ActivatedRoute,
@@ -60,8 +66,9 @@ export class NewItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private location: Location,
-  ) { }
+    private notificationsService: NotificationsService
+  ) // private location: Location,
+  {}
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -71,22 +78,24 @@ export class NewItemDisplayComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      this.route.queryParams.subscribe(async queryParams => {
+      this.route.queryParams.subscribe(async (queryParams) => {
         const { token: magicLinkToken, mode } = queryParams;
-
 
         // this.mode = mode;
         if (params.itemId) {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
 
-          if(this.item && this.item.category.length > 0) {
-            
+          if (this.item && this.item.category.length > 0) {
           }
 
           if (!this.item) return this.redirect();
 
-          if ((this.item && !this.item.merchant) || (this.item && this.item.status === 'draft')) this.isPreItem = true;
+          if (
+            (this.item && !this.item.merchant) ||
+            (this.item && this.item.status === 'draft')
+          )
+            this.isPreItem = true;
 
           console.log(this.isPreItem);
 
@@ -108,7 +117,7 @@ export class NewItemDisplayComponent implements OnInit {
 
             if (this.user) this.loggedIn = true;
             try {
-              await this.checkBanks();              
+              await this.checkBanks();
             } catch (error) {
               console.log('hubo un error 1');
             }
@@ -118,7 +127,6 @@ export class NewItemDisplayComponent implements OnInit {
         const myUser = await this.authService.me();
 
         if (myUser && mode === 'new-item') {
-
           let defaultMerchant = null;
 
           try {
@@ -132,82 +140,137 @@ export class NewItemDisplayComponent implements OnInit {
             const merchants = await this.merchantService.myMerchants();
 
             if (merchants.length === 0) {
-              const { createMerchant: createdMerchant } = await this.merchantService.createMerchant({
-                owner: myUser._id,
-                name: myUser.name + " mechant #" + Math.floor(Math.random() * 100000)
-              });
-
-              const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
-
-              if (this.isPreItem)
-                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
-
-              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
-
-              if (!defaultSaleflow) {
-                const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-                  merchant: defaultMerchant._id,
-                  name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
-                  items: []
+              const { createMerchant: createdMerchant } =
+                await this.merchantService.createMerchant({
+                  owner: myUser._id,
+                  name:
+                    myUser.name +
+                    ' mechant #' +
+                    Math.floor(Math.random() * 100000),
                 });
 
-                const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+              const { merchantSetDefault: defaultMerchant } =
+                await this.merchantService.setDefaultMerchant(
+                  createdMerchant._id
+                );
+
+              if (this.isPreItem)
+                await this.itemsService.authItem(
+                  defaultMerchant._id,
+                  params.itemId
+                );
+
+              const defaultSaleflow =
+                await this.saleflowService.saleflowDefault(
+                  defaultMerchant?._id
+                );
+
+              if (!defaultSaleflow) {
+                const { createSaleflow: createdSaleflow } =
+                  await this.saleflowService.createSaleflow({
+                    merchant: defaultMerchant._id,
+                    name:
+                      defaultMerchant._id +
+                      ' saleflow #' +
+                      Math.floor(Math.random() * 100000),
+                    items: [],
+                  });
+
+                const { saleflowSetDefault: defaultSaleflow } =
+                  await this.saleflowService.setDefaultSaleflow(
+                    defaultMerchant._id,
+                    createdSaleflow._id
+                  );
                 this.saleflow = defaultSaleflow;
 
                 this.saleflowService.createSaleFlowModule({
-                  saleflow: createdSaleflow._id
+                  saleflow: createdSaleflow._id,
                 });
 
-                await this.saleflowService.addItemToSaleFlow({
-                  item: params.itemId
-                }, defaultSaleflow._id);
+                await this.saleflowService.addItemToSaleFlow(
+                  {
+                    item: params.itemId,
+                  },
+                  defaultSaleflow._id
+                );
 
                 this.newMerchant = true;
               }
             } else {
-              const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
+              const { merchantSetDefault: defaultMerchant } =
+                await this.merchantService.setDefaultMerchant(merchants[0]._id);
 
               if (this.isPreItem)
-                await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+                await this.itemsService.authItem(
+                  defaultMerchant._id,
+                  params.itemId
+                );
 
-              const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+              const defaultSaleflow =
+                await this.saleflowService.saleflowDefault(
+                  defaultMerchant?._id
+                );
 
               if (!defaultSaleflow) {
-                const saleflows = await this.saleflowService.saleflows(merchants[0]._id, {});
+                const saleflows = await this.saleflowService.saleflows(
+                  merchants[0]._id,
+                  {}
+                );
 
                 if (!saleflows || saleflows.length === 0) {
-                  const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-                    merchant: defaultMerchant._id,
-                    name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
-                    items: []
-                  });
+                  const { createSaleflow: createdSaleflow } =
+                    await this.saleflowService.createSaleflow({
+                      merchant: defaultMerchant._id,
+                      name:
+                        defaultMerchant._id +
+                        ' saleflow #' +
+                        Math.floor(Math.random() * 100000),
+                      items: [],
+                    });
 
-                  const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+                  const { saleflowSetDefault: defaultSaleflow } =
+                    await this.saleflowService.setDefaultSaleflow(
+                      defaultMerchant._id,
+                      createdSaleflow._id
+                    );
                   this.saleflow = defaultSaleflow;
 
                   this.saleflowService.createSaleFlowModule({
-                    saleflow: createdSaleflow._id
+                    saleflow: createdSaleflow._id,
                   });
 
-                  await this.saleflowService.addItemToSaleFlow({
-                    item: params.itemId
-                  }, defaultSaleflow._id);
+                  await this.saleflowService.addItemToSaleFlow(
+                    {
+                      item: params.itemId,
+                    },
+                    defaultSaleflow._id
+                  );
                   this.newMerchant = true;
                 } else {
-                  const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
+                  const { saleflowSetDefault: defaultSaleflow } =
+                    await this.saleflowService.setDefaultSaleflow(
+                      defaultMerchant._id,
+                      saleflows[0]._id
+                    );
                   this.saleflow = defaultSaleflow;
 
-                  await this.saleflowService.addItemToSaleFlow({
-                    item: params.itemId
-                  }, defaultSaleflow._id);
+                  await this.saleflowService.addItemToSaleFlow(
+                    {
+                      item: params.itemId,
+                    },
+                    defaultSaleflow._id
+                  );
                   this.newMerchant = true;
                 }
               } else {
                 this.saleflow = defaultSaleflow;
 
-                await this.saleflowService.addItemToSaleFlow({
-                  item: params.itemId
-                }, defaultSaleflow._id);
+                await this.saleflowService.addItemToSaleFlow(
+                  {
+                    item: params.itemId,
+                  },
+                  defaultSaleflow._id
+                );
 
                 this.newMerchant = true;
               }
@@ -215,43 +278,58 @@ export class NewItemDisplayComponent implements OnInit {
             unlockUI();
           } else {
             this.defaultMerchant = defaultMerchant;
-            if (this.defaultMerchant?._id === this.item?.merchant?._id) this.isOwner = true;
+            if (this.defaultMerchant?._id === this.item?.merchant?._id)
+              this.isOwner = true;
 
             if (this.isPreItem)
-              await this.itemsService.authItem(defaultMerchant._id, params.itemId);
+              await this.itemsService.authItem(
+                defaultMerchant._id,
+                params.itemId
+              );
 
-            const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
+            const defaultSaleflow = await this.saleflowService.saleflowDefault(
+              defaultMerchant?._id
+            );
 
             if (!defaultSaleflow) {
+              const { createSaleflow: createdSaleflow } =
+                await this.saleflowService.createSaleflow({
+                  merchant: defaultMerchant._id,
+                  name:
+                    defaultMerchant._id +
+                    ' saleflow #' +
+                    Math.floor(Math.random() * 100000),
+                  items: [],
+                });
 
-              const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-                merchant: defaultMerchant._id,
-                name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
-                items: []
-              });
-
-              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+              const { saleflowSetDefault: defaultSaleflow } =
+                await this.saleflowService.setDefaultSaleflow(
+                  defaultMerchant._id,
+                  createdSaleflow._id
+                );
 
               this.saleflowService.createSaleFlowModule({
-                saleflow: createdSaleflow._id
+                saleflow: createdSaleflow._id,
               });
 
-              await this.saleflowService.addItemToSaleFlow({
-                item: params.itemId
-              }, defaultSaleflow._id);
+              await this.saleflowService.addItemToSaleFlow(
+                {
+                  item: params.itemId,
+                },
+                defaultSaleflow._id
+              );
               unlockUI();
-              // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
               this.router.navigate([`/ecommerce/merchant-items`]);
             } else {
-              await this.saleflowService.addItemToSaleFlow({
-                item: params.itemId
-              }, defaultSaleflow._id);
+              await this.saleflowService.addItemToSaleFlow(
+                {
+                  item: params.itemId,
+                },
+                defaultSaleflow._id
+              );
               unlockUI();
-              // this.router.navigate([`/ecommerce/merchant-dashboard/${defaultMerchant._id}/my-store`]);
               this.router.navigate([`/ecommerce/merchant-items`]);
             }
-
-            // const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);        
           }
         } else {
           try {
@@ -261,47 +339,21 @@ export class NewItemDisplayComponent implements OnInit {
             console.log('hubo un error 3');
           }
 
-          if(!this.defaultMerchant) return unlockUI();;
+          if (!this.defaultMerchant) return unlockUI();
           if (this.defaultMerchant._id === this.item?.merchant?._id) {
             this.isOwner = true;
-
-            // if(this.mode === 'edit') {
-              // this.providerView = true;
-  
-              await Promise.all([
-                this.getTotalByItem(this.item._id),
-                this.getBuyersByItem(this.item._id),
-                this.getSaleflow(),
-              ]);
+            await Promise.all([
+              this.getTotalByItem(this.item._id),
+              this.getBuyersByItem(this.item._id),
+              this.getSaleflow(),
+              this.getNotifications(),
+            ]);
             // }
           }
           unlockUI();
         }
-
-        // if (params.itemId && !magicLinkToken) {
-        //   this.item = await this.itemsService.item(params.itemId);
-        //   this.shouldRedirectToPreviousPage = true;
-
-        //   if (!this.item) return this.redirect();
-
-        //   if (localStorage.getItem('session-token')) {
-        //     this.hasToken = true;
-        //   }
-
-        //   if (this.hasToken) {
-        //     const myUser = await this.authService.me();
-
-        //     if (myUser) this.loggedIn = true;
-        //   }
-        // }
-        //  else {
-        //   if (this.headerService.newTempItem) {
-        //     this.item = this.headerService.newTempItem;
-        //     this.shouldRedirectTo = this.headerService.newTempItemRoute;
-        //   }
-        // }
       });
-    })
+    });
   }
 
   async checkBanks() {
@@ -312,7 +364,22 @@ export class NewItemDisplayComponent implements OnInit {
 
   async getSaleflow() {
     try {
-      this.saleflow = await this.saleflowService.saleflowDefault(this.defaultMerchant._id);
+      this.saleflow = await this.saleflowService.saleflowDefault(
+        this.defaultMerchant._id
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getNotifications() {
+    if (!this.item.notifications?.length) return;
+    try {
+      this.notifications = await this.notificationsService.notifications(
+        {},
+        this.defaultMerchant._id,
+        this.item.notifications
+      );
     } catch (error) {
       console.log(error);
     }
@@ -320,7 +387,9 @@ export class NewItemDisplayComponent implements OnInit {
 
   async getTotalByItem(itemID: string) {
     try {
-      this.totalByItem = (await this.itemsService.totalByItem(this.defaultMerchant._id, [itemID]))[0];
+      this.totalByItem = (
+        await this.itemsService.totalByItem(this.defaultMerchant._id, [itemID])
+      )[0];
     } catch (error) {
       console.log(error);
     }
@@ -328,16 +397,24 @@ export class NewItemDisplayComponent implements OnInit {
 
   async getBuyersByItem(itemID: string) {
     try {
-      this.buyersByItem = (await this.usersService.buyersByItem(itemID))?.buyersByItem;
+      this.buyersByItem = (
+        await this.usersService.buyersByItem(itemID)
+      )?.buyersByItem;
     } catch (error) {
       console.log(error);
     }
   }
 
   goToAuth() {
-    this.router.navigate([`/ecommerce/authentication/${this.item._id}`, , {queryParams: {
-      type: 'create-item'
-    }}]);
+    this.router.navigate([
+      `/ecommerce/authentication/${this.item._id}`,
+      ,
+      {
+        queryParams: {
+          type: 'create-item',
+        },
+      },
+    ]);
   }
 
   goToMerchantStore() {
@@ -347,18 +424,27 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   goToBanksForm() {
-    if (this.canCreateBank && this.saleflow) this.router.navigate([`/ecommerce/bank-registration/${this.saleflow._id}`]);
+    if (this.canCreateBank && this.saleflow)
+      this.router.navigate([
+        `/ecommerce/bank-registration/${this.saleflow._id}`,
+      ]);
   }
 
   toggleActivateItem = () => {
-    this.itemsService.updateItem({
-      status: this.item.status === 'disabled' ? 'active' : 'disabled'
-    }, this.item._id).catch((error) => {
-      console.log(error);
-      this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
-    })
+    this.itemsService
+      .updateItem(
+        {
+          status: this.item.status === 'disabled' ? 'active' : 'disabled',
+        },
+        this.item._id
+      )
+      .catch((error) => {
+        console.log(error);
+        this.item.status =
+          this.item.status === 'disabled' ? 'active' : 'disabled';
+      });
     this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
-  }
+  };
 
   openShareDialog = () => {
     const list: StoreShareList[] = [
@@ -368,7 +454,7 @@ export class NewItemDisplayComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
@@ -378,22 +464,22 @@ export class NewItemDisplayComponent implements OnInit {
               src: '/upload.svg',
               size: {
                 width: 20,
-                height: 26
-              }
-            }
+                height: 26,
+              },
+            },
           },
-        ]
-      }
-    ]
+        ],
+      },
+    ];
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
@@ -418,13 +504,17 @@ export class NewItemDisplayComponent implements OnInit {
   }
 
   redirectTo = (route, params = null) => {
-    if(!params)
-      this.router.navigate([route]);
-    else 
-      this.router.navigate([route], params ? {
-        ...params
-      } : null);
-  }
+    if (!params) this.router.navigate([route]);
+    else
+      this.router.navigate(
+        [route],
+        params
+          ? {
+              ...params,
+            }
+          : null
+      );
+  };
 
   // toggleView() {
   //   this.providerView = !this.providerView;
@@ -433,18 +523,18 @@ export class NewItemDisplayComponent implements OnInit {
   openDialog() {
     const list: StoreShareList[] = [
       {
-        title:  'Adicionar',
+        title: 'Adicionar',
         options: [
           {
-            text: 'Mensaje Automatizado'
-          }
-        ]
-      }
-    ]
+            text: 'Mensaje Automatizado',
+          },
+        ],
+      },
+    ];
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -455,8 +545,6 @@ export class NewItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/ecommerce/item-creator/'+this.item._id]);
-  }
-  
-
+    this.router.navigate(['/ecommerce/item-creator/' + this.item._id]);
+  };
 }

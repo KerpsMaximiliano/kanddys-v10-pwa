@@ -47,7 +47,7 @@
         [formControl]="phoneNumber"
       ></ngx-intl-tel-input>
     </div>
-    <ng-container *ngIf="saleflowData && !saleflowData.module.paymentMethod?.paymentModule?._id  && (!banksInfo || !banksInfo.length)">
+    <ng-container *ngIf="saleflowData && !saleflowData.module?.paymentMethod?.paymentModule?._id  && (!banksInfo || !banksInfo.length)">
       <p
         class="label3"
         [ngStyle]="{
@@ -435,7 +435,7 @@
     *ngIf="
       step !== 'PAYMENT_INFO' &&
       saleflowData &&
-      !saleflowData.module.paymentMethod?.paymentModule?._id &&
+      !saleflowData.module?.paymentMethod?.paymentModule?._id &&
       userData && userData.name
     "
   >
