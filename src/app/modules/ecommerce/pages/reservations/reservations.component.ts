@@ -47,14 +47,21 @@ export class ReservationsComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.status = 'loading';
-      const user = await this.authService.me();
-      if (!user) return;
+      // const user = await this.authService.me();
+      // if (!user) return;
       const merchant = await this.merchantsService.merchantDefault();
       if (!merchant) return;
       if (params.id) {
         this.mode = 'calendar';
         this.reservations =
-          await this.reservationService.getReservationByCalendar(params.id);
+          await this.reservationService.getReservationByCalendar({
+            options: {
+              limit: 10
+            },
+            findBy: {
+              calendar: params.id
+            }
+          });
       } else {
         this.mode = 'order';
         this.reservations =
@@ -71,8 +78,8 @@ export class ReservationsComponent implements OnInit {
         this.orders = orders.filter((order) =>
           order.items.some((item) => item.reservation?._id)
         );
-        this.status = 'complete';
       }
+      this.status = 'complete';
     });
   }
 

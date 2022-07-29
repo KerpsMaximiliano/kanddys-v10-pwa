@@ -57,8 +57,8 @@ export const getReservation = gql`
 `;
 
 export const getReservationByCalendar = gql`
-  query getReservationByCalendar($calendarId: ObjectID!) {
-    getReservationByCalendar(calendarId: $calendarId) {
+  query getReservationByCalendar($paginate: PaginationInput!) {
+    getReservationByCalendar(paginate: $paginate) {
       _id
       createdAt
       status

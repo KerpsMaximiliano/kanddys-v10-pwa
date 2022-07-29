@@ -56,7 +56,7 @@
       <h4 class="notice" *ngIf="status === 'loading'">Cargando reservaciones...</h4>
       <ng-container *ngIf="status === 'complete'">
         <h4 class="notice" *ngIf="!reservations?.length">No se encontraron reservaciones.</h4>
-        <ng-container *ngIf="reservations.length">
+        <ng-container *ngIf="reservations?.length">
           <div *ngFor="let item of reservations; index as i" class="reservations">
             <!-- <app-item-reservation style="width: 100%;"
                   [headline]="item.headline"
