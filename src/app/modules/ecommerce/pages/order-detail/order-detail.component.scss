@@ -46,7 +46,7 @@
                         color: #174B72;    
                         margin: 0;
                         background-color: #82F18D;
-                        padding: 12px 0;
+                        padding: 12px 18px;
                         border-radius: 6px;
                     }
 
@@ -90,10 +90,16 @@
 }
 
 .sub{
-    font-family: 'RobotoMedium';
+    font-family: 'RobotoLight';
     font-size: 19px;
     color:#000000;
     margin: 0 0 18px 0;
+}
+
+.box-shadowing{
+    width: 100%;
+    height: auto;
+    box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
 }
 
 .content {
@@ -108,13 +114,13 @@
     
         .payment-card {
           width: 100%;
-          background-color: #FFFFFF;
-          padding: 20px;
+          max-width: 221px;
+          min-height: 108px;        
+          background: linear-gradient(180deg, #ffffff 50%, #f6f6f6 100%);
+          padding: 11px 19px 13px;
           border-radius: 13px;
           box-shadow: 0px 4px 10px #ddd;
           margin: auto;
-          height: 100%;
-        
           .price {
             display: flex;
 
@@ -122,7 +128,7 @@
                 font-family: 'RobotoMedium';
                 font-size: 45px;
                 color: #7B7B7B;
-                margin: 4px 0 10px;
+                margin: 0 0 6px;
             }
           }
       
@@ -135,7 +141,7 @@
           }
       
           .payment-type {
-            margin-top: 10px;
+            margin: 0;
             font-family: "RobotoLight";
             font-size: 16px;
           }
@@ -148,9 +154,15 @@
       color: #0B1F38;
       margin: 15px 0 27px;
     }
+
+    .payments-container{
+        margin-bottom: 25px;
+        padding-bottom: 17px;
+        border-bottom: 1px solid rgba(112, 112, 112, 36%);
+    }
 }
 
-.sector{
+/* .sector{
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -259,12 +271,12 @@
             }
         }
     }
-}
-
+} */
+/* 
 .edit-tag{
     all: unset;
     width: 20px;
     height: 20px;
     margin-left: 17px;
     cursor: pointer;
-}
+} */
