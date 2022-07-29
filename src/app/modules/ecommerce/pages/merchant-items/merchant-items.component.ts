@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 @Component({
   selector: 'app-merchant-items',
@@ -48,6 +49,7 @@ export class MerchantItemsComponent implements OnInit {
 
   constructor(
     private merchantsService: MerchantsService,
+    private saleflowService: SaleFlowService,
     private itemsService: ItemsService,
     private ordersService: OrderService,
     private authService: AuthService,
@@ -58,9 +60,8 @@ export class MerchantItemsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     lockUI();
     this.status = 'loading';
-    await this.authService.me().then(data => {
-      if (!data || data === undefined) this.errorScreen();
-    });
+    const user = await this.authService.me();
+    if (!user) this.errorScreen();
 
     // TODO: Replace this with a header service  call to get the merchant ID
     // const merchantID = "616a13a527bcf7b8ba3ac312";
@@ -79,6 +80,7 @@ export class MerchantItemsComponent implements OnInit {
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
+      const saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
     } catch (error) {
       this.status = 'error';
       console.log(error);

@@ -105,7 +105,7 @@
           >
             {{ item.name.text }}
           </button>
-
+          
           <p
             class="subtitle"
             [ngStyle]="{
@@ -132,6 +132,7 @@
         {{ item.cta.text }}
       </button>
     </div>
+
 
     <hr class="divider" *ngIf="bottomText || textArray" />
 
@@ -220,7 +221,7 @@
             'color': item?.color && item.color,
             'cursor': item?.pointer? 'pointer': 'unset'
         }">{{item.text}}</button>
-        
     </div>
+    
   </div>
 </div>

@@ -13,7 +13,11 @@ import { Subscription } from 'rxjs';
 import { SwiperOptions } from 'swiper';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-item-detail',
@@ -28,7 +32,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: DialogService,
     private appService: AppService,
-    private saleflowService: SaleFlowService,
+    private saleflowService: SaleFlowService
   ) {}
   itemData: Item;
   saleflowData: SaleFlow;
@@ -48,17 +52,20 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      if(!params.saleflow || !params.id) return this.previewItem();
+      if (!params.saleflow || !params.id) return this.previewItem();
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
-      if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
+      if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
       this.itemData = await this.items.item(params.id);
-      if(!this.itemData) return this.back();
+      if (!this.itemData) return this.back();
 
-      const whatsappMessage = encodeURIComponent(`Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`);
+      const whatsappMessage = encodeURIComponent(
+        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+      );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
 
-      if(this.itemData.images.length && this.itemData.showImages) this.openImageModal(this.itemData.images[0]);
+      if (this.itemData.images.length && this.itemData.showImages)
+        this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.showCartCallBack = () => this.showItems();
     });
@@ -75,13 +82,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if(!this.items.temporalItem) {
+    if (!this.items.temporalItem) {
       this.header.flowRoute = this.router.url;
-      
-      return this.router.navigate([`/ecommerce/item-creator`])
-    };
+
+      return this.router.navigate([`/ecommerce/item-creator`]);
+    }
     this.itemData = this.items.temporalItem;
-    if(!this.itemData.images.length) this.itemData.showImages = false;
+    if (!this.itemData.images.length) this.itemData.showImages = false;
     this.previewMode = true;
   }
 
@@ -94,25 +101,55 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   showItems() {
-    if(this.previewMode) return;
+    if (this.previewMode) return;
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
-      props: { 
+      props: {
         headerButton: 'Ver mas productos',
         headerCallback: () => this.back(),
         footerCallback: () => {
-          this.saleflowService.saleflow(this.saleflowData._id, true).then(data =>{
-            for (let i = 0; i < data.saleflow.items.length; i++) {
-              if (data.saleflow.items[i].item._id === this.itemData._id) {
-                if (data.saleflow.items[i].customizer) {
-                  this.router.navigate([`ecommerce/provider-store/${this.saleflowData._id}/${this.itemData._id}`])
-                }else{
-                  if (this.saleflowData.module.post) this.router.navigate(['/ecommerce/create-giftcard']);
-                  else this.router.navigate(['/ecommerce/shipment-data-form']);
+          this.saleflowService
+            .saleflow(this.saleflowData._id, true)
+            .then(async (data) => {
+              for (let i = 0; i < data.saleflow.items.length; i++) {
+                if (data.saleflow.items[i].item._id === this.itemData._id) {
+                  if (data.saleflow.items[i].customizer) {
+                    this.router.navigate([
+                      `ecommerce/provider-store/${this.saleflowData._id}/${this.itemData._id}`,
+                    ]);
+                  } else {
+                    if (this.saleflowData.module?.post)
+                      this.router.navigate(['/ecommerce/create-giftcard']);
+                    else if (this.saleflowData.module?.delivery)
+                      this.router.navigate(['/ecommerce/shipment-data-form']);
+                    else if (!this.header.orderId) {
+                      let preOrderID;
+                      let whatsappLinkQueryParams;
+                      lockUI();
+
+                      preOrderID = await this.header.createPreOrder();
+                      this.header.orderId = preOrderID;
+
+                      whatsappLinkQueryParams = {
+                        'Keyword-Order': preOrderID as string,
+                      };
+
+                      unlockUI();
+
+                      this.router.navigate([
+                        `ecommerce/flow-completion-auth-less/${preOrderID}`,
+                      ]);
+
+                      this.header.createdOrderWithoutDelivery = true;
+                    } else {
+                      this.router.navigate([
+                        `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+                      ]);
+                    }
+                  }
                 }
               }
-            }
-          })
+            });
         },
       },
       customClass: 'app-dialog',
@@ -132,11 +169,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   onCartClick() {
-    if(this.previewMode) return;
-    if(this.inCart) {
+    if (this.previewMode) return;
+    if (this.inCart) {
       this.saveProduct();
     } else {
-      if(!this.saleflowData.canBuyMultipleItems) {
+      if (!this.saleflowData.canBuyMultipleItems) {
         this.header.emptyOrderProducts(this.saleflowData._id);
         this.header.emptyItems(this.saleflowData._id);
       }
@@ -163,31 +200,34 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
             link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
           },
-        ]
-      }
-    ]
+        ],
+      },
+    ];
     this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   back() {
-    if(this.previewMode) {
+    if (this.previewMode) {
       this.header.flowRoute = this.router.url;
 
-      if(this.itemData._id) return this.router.navigate([`/ecommerce/item-creator/${this.itemData._id}`]);
+      if (this.itemData._id)
+        return this.router.navigate([
+          `/ecommerce/item-creator/${this.itemData._id}`,
+        ]);
       else return this.router.navigate([`/ecommerce/item-creator`]);
     }
     this.items.removeTemporalItem();
@@ -195,8 +235,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   tapping = () => {
-    if(this.previewMode) return;
+    if (this.previewMode) return;
     let url = this.whatsappLink;
-    window.open(url, "_blank");
-  }
+    window.open(url, '_blank');
+  };
 }

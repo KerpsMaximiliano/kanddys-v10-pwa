@@ -1,55 +1,4 @@
 <div class="container">
-  <!-- <app-helper-headerv2
-		[mode]="'basic'"
-        [mainText]="{
-            text: item?.merchant?.name,
-            fontSize: '21px'
-        }"
-        [icons]="[{
-            src: '/whatsapp_blanco.svg',
-            color: 'invert(35%) sepia(39%) saturate(2199%) hue-rotate(180deg) brightness(75%) contrast(73%)',
-            callback: tapping
-        }]"
-        [shopcart]="{
-            active: !providerView,
-            cartAmount: 1,
-            filter: 'brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)'
-        }"
-        [returnAble]="true"
-		cartColor="blue"
-		filter="brightness(0) saturate(100%) invert(40%) sepia(22%) saturate(1544%) hue-rotate(163deg) brightness(95%) contrast(92%)"
-		[bgColor]="providerView ? '#2874AD' : '#E9E371'"
-		[color]="providerView ? '#FFFFFF' : '#2874AD'"
-		(returnEvent)="redirect()"
-	></app-helper-headerv2> -->
-
-  <!-- Header with icons  -->
-  <!-- <app-helper-headerv2
-		*ngIf="item?.status === 'active'"
-		[mode]="'basic'"
-		[icons]="[
-			{
-				src: '/upload.svg',
-				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-				callback: openShareDialog
-			},
-			{
-				src: '/pencil.svg',
-				color: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-				callback: editItem
-			}
-		]"
-        [plus]="{
-            active: true
-        }"
-		[returnAble]="true"
-		bgColor="#2874AD"
-		color="#FFFFFF"
-		(returnEvent)="redirect()"
-        (plusEvent)="openDialog()"
-	></app-helper-headerv2> -->
-
-  <!-- Header without icons -->
   <app-helper-headerv2
     *ngIf="item?.status === 'active'"
     [mode]="'basic'"
@@ -98,26 +47,7 @@
     (returnEvent)="redirect()"
   ></app-helper-headerv2>
 
-  <!-- Fin de la info que ve el admin -->
-
   <div class="item-info" *ngIf="item">
-    <!-- <div class="description" *ngIf="item.description">
-			<h2 class="title-name" *ngIf="item.name && item.images?.length">
-				{{item.name}}
-			</h2>
-			<p>{{item.description}}</p>
-		</div> -->
-
-    <!-- <div *ngIf="item.name && (!item.images || !item.images?.length)">
-			<div class="grey-box">
-				<h3 class="title">{{item.name}}</h3>
-			</div>
-		</div> -->
-
-    <!-- <button *ngIf="item.images?.length" class="itemImg" (click)="openImageModal(item.images[0])">
-			<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
-		</button> -->
-
     <div class="fullScreenSwiper" *ngIf="item.images?.length">
       <div class="shadowWrapper">
         <swiper [config]="swiperConfig">
@@ -135,164 +65,106 @@
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
 
-
-    <!-- ESTO ES DE LA 4TA COLUMNA
-    <div class="categories-and-automations"
-      [ngStyle]="{
-        marginTop: '39px'
-      }"
-    >
-    
-     <app-question-item
+    <div>
+      <app-question-item
+        *ngIf="!item?.notifications?.length"
         headline="AUTOMATIZA UN MENSAJE"
         [headlineContainerStyles]="{
-            justifyContent: 'flex-start',
-            borderBottom: 'none'
+          justifyContent: 'flex-start',
+          borderBottom: 'none'
         }"
         [headlineTitleStyles]="{
-            marginLeft: '10px'
+          marginLeft: '10px'
         }"
         [headlineRightTextStyles]="{
-            color: '#2874AD',
-            fontFamily: 'SfProBold',
-            fontSize: '29px',
-            marginLeft: 'auto'
+          color: '#2874AD',
+          fontFamily: 'SfProBold',
+          fontSize: '29px',
+          marginLeft: 'auto'
         }"
         [headlineLeftIcon]="{
-            icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
-            width: 30,
-            height: 30
+          icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+          width: 30,
+          height: 30
         }"
         [headlineRightText]="{
-            text: '+',
-            color: 'darkblue',
-            fontSize: '29px',
-            fontFamily: 'Roboto',
-            callback: redirectTo,
-            callbackParams: ['ecommerce/notification-creator']
+          text: '+',
+          color: 'darkblue',
+          fontSize: '29px',
+          fontFamily: 'Roboto',
+          callback: redirectTo,
+          callbackParams: ['ecommerce/notification-creator/' + item._id]
         }"
         [tagListTextStyles]="{
-            marginRight: '5px'
+          marginRight: '5px'
         }"
         [tagListStyles]="{
-            marginTop: '15px'
+          marginTop: '15px'
         }"
         [chipMode]="2"
         [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
       ></app-question-item>
-
-      <div
-        [ngStyle]="{
-          marginTop: '3px'
-        }"
+      <ng-container
+        *ngIf="item?.notifications?.length && notifications?.length"
       >
-        <app-question-item
-          headline="EXPUESTO EN TAB (S)"
-          [shouldPreventClickEvent]="true"
-          [headlineContainerStyles]="{
-            justifyContent: 'flex-start',
-            borderBottom: 'none'
-          }"
-          [headlineTitleStyles]="{
-              marginLeft: '10px'
-          }"
-          [headlineRightTextStyles]="{
-              color: '#2874AD',
-              fontFamily: 'SfProBold',
-              fontSize: item.category && item.category.length > 0 ? '1rem' : '29px',
-              marginLeft: 'auto'
-          }"
-          [headlineLeftIcon]="{
-              icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
-              width: 30,
-              height: 30
-          }"
-          [headlineRightText]="{
-              text: item.category && item.category.length > 0 ? 'MAS' : '+',
-              color: 'darkblue',
-              fontSize: item.category && item.category.length > 0 ? '1rem' : '29px',
-              fontFamily: 'Roboto',
-              callback: redirectTo,
-              callbackParams: ['ecommerce/category-creator']
-          }"
-          [tagListTextStyles]="{
-              marginRight: '5px'
-          }"
-          [tagListStyles]="{
-              marginTop: '15px'
-          }"
-          [chipMode]="2"
-          [collapseTags]="!(item.category && item.category.length > 0)"
-          [categories]="item.category && item.category.length > 0 ? item.category : null"
-          [shadow]="'0px 5px 5px lightgrey, 0px -1px 5px lightgrey'"
-        ></app-question-item>
-      </div>
-    </div>
-
-    FIN 4TA COLUMNA -->
-
-    <!-- <div class="no-description" *ngIf="item.name && !item.description && item.images">
-			<h3 class="title">{{item.name}}</h3>
-		</div> -->
-
-    <!-- <div *ngIf="item.pricing" class="item-price">
-			<span class="vale">Vale</span>
-			<h4 class="price">${{item.pricing | number}}</h4>
-		</div> -->
-
-    <!-- <div class="client-submit-area">
-			<ng-container *ngIf="!providerView">
-				<button class="action-btn yellow">Adicionar al <span><img src="{{ env }}/carrito_blanco.svg" alt=""></span></button>
-				<img src="{{ env }}/bookmark-plus.svg" alt="">
-			</ng-container>
-			<ng-container *ngIf="providerView">
-				<button class="action-btn" [ngClass]="{'yellow': item.status === 'active', 'blue': item.status === 'disabled'}" (click)="toggleActivateItem()">
-					<ng-container *ngIf="item.status === 'active'">ACTIVO Y EN VENTA</ng-container>
-					<ng-container *ngIf="item.status === 'disabled'">EMPEZAR A VENDERLO</ng-container>
-				</button>
-				<a class="side-btn" [routerLink]="['/ecommerce/category-item-detail',item._id]">
-					<img src="{{ env }}/categories-list.svg" width="30" height="30" alt="">
-					<span [ngClass]="{'plus': !item?.category?.length}">{{item?.category?.length ? item.category.length : '+'}}</span>
-				</a>
-			</ng-container>
-		</div> -->
-
-    <!-- <ng-container *ngIf="item.content?.length">
-			<hr class="divider">
-			<div class="content">
-				<span class="includes">Incluye:</span>
-				<ul>
-					<li *ngFor="let content of item.content; index as i" class="list-content">
-						- {{content}}
-					</li>
-				</ul>
-			</div>
-		</ng-container> -->
-  </div>
-
-  <!-- Notification area -->
-
-  <!-- <div class="displayer">
-        <app-enlist-display
-        [headline]="{
-            icon:{
+        <div class="section" *ngFor="let notification of notifications">
+          <app-enlist-display
+            [headline]="{
+              icon: {
                 src: '/whatsapp_verde.svg',
                 width: 30,
                 height: 30
-            },
-            text:{
-                text: 'AUTOMATIZA UN MENSAJE'
-            }
-        }"
-        [icon]="{
-            src: '/salealt.svg',
-            width: 20,
-            height: 20,
-            color: 'invert(40%) sepia(19%) saturate(1763%) hue-rotate(163deg) brightness(96%) contrast(93%)'
-        }"
-        ></app-enlist-display>
-    </div> -->
-
+              },
+              text: {
+                text: 'AUTOMATIZACION DE MENSAJE'
+              }
+            }"
+            [iconText]="{
+              icons: [
+                {
+                  src: '/pencil.svg',
+                  width: 19,
+                  height: 19,
+                  color:
+                    'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)',
+                  callback: redirectTo,
+                  args:
+                    'ecommerce/notification-creator/' +
+                    item._id +
+                    '/' +
+                    notification._id
+                }
+              ]
+            }"
+            [itemList]="[
+              {
+                name: {
+                  text: notification.action.toUpperCase(),
+                  fontFamily: 'RobotoMedium',
+                  color: '#7B7B7B',
+                  fontSize: '13px'
+                },
+                subtitle: {
+                  text: notification.message,
+                  fontFamily: 'RobotoItalic',
+                  fontSize: '17px',
+                  color: '#000000'
+                }
+              }
+            ]"
+            [showSubtitle]="true"
+          ></app-enlist-display>
+          <!-- [bottomText]="{
+              rightText: {
+                text: 'ULTIMO HACE DATEID',
+                fontSize: '17px',
+                fontFamily: 'RobotoMedium'
+              }
+            }" -->
+        </div>
+      </ng-container>
+    </div>
+  </div>
   <app-sticky-button
     [mode]="'double'"
     [extra]="{
@@ -302,45 +174,14 @@
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="totalByItem && totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'"
-    [text2]="totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'"
+    [text]="
+      totalByItem &&
+      totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'
+    "
+    [text2]="
+      totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'
+    "
     size="small"
     (added)="redirect()"
   ></app-sticky-button>
 </div>
-
-<!-- <ng-container *ngIf="providerView">
-	<ng-container *ngIf="mode === 'new-item'">
-		<app-bubble-button [position]="'left'" [text]="'TIENDA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
-		<app-bubble-button [position]="'right'" [text]="'VISTA'" [solo]="false" (click)="toggleView()"></app-bubble-button>
-		<app-sticky-button
-			[bgColor]="'#2874AD'"
-			[text]="!newMerchant ? 'EMPIEZA A VENDERLO' : 'CUENTA DONDE PAGARAN'"
-			mode="fixed"
-			(click)="!loggedIn && !newMerchant? goToAuth() : (newMerchant && canCreateBank) ? goToBanksForm() : loggedIn && defaultMerchant ? goToMerchantStore() : null">
-		</app-sticky-button>
-	</ng-container>
-	<ng-container *ngIf="mode === 'edit'">
-		<app-bubble-button [position]="'left'" [icon]="env + '/arrow-left.svg'" [solo]="false" [routerLink]="['/ecommerce/user-items']"></app-bubble-button>
-		<app-bubble-button [position]="'right'" [icon]="env + '/upload.svg'" [solo]="false" (click)="openShareDialog()"></app-bubble-button>
-		<app-sticky-button
-			*ngIf="totalByItem && buyersByItem"
-			[bgColor]="'#2874AD'"
-			[text]="totalByItem?.itemInOrder + ' VENTAS / $' + totalByItem?.total + ' IN / ' + buyersByItem?.length + ' COMPRADORES'"
-			mode="fixed"
-			size="small"
-			color="#E9E371"
-			[routerLink]="['/ecommerce/item-sales-detail', item._id]"
-		></app-sticky-button>
-	</ng-container>
-</ng-container>
-
-<ng-container *ngIf="!providerView">
-	<app-bubble-button [position]="'left'" [return]="true" (click)="toggleView()"></app-bubble-button>
-	<app-bubble-button [position]="'right'" [icon]="'/upload.svg'"  (click)="toggleView()"></app-bubble-button>
-	<app-sticky-button
-		[text]="'TOCA DONDE PREFIERAS'"
-		[mode]="'disabled-fixed'"
-		size="small"
-	></app-sticky-button>
-</ng-container> -->
