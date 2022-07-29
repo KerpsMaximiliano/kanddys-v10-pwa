@@ -66,9 +66,9 @@ export class NewItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private notificationsService: NotificationsService
-  ) // private location: Location,
-  {}
+    private notificationsService: NotificationsService,
+    // private location: Location,
+  ) {}
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -380,6 +380,9 @@ export class NewItemDisplayComponent implements OnInit {
         this.defaultMerchant._id,
         this.item.notifications
       );
+      this.notifications.forEach((notification) => {
+        notification.action = this.notificationsService.getNotificationAction(notification).action;
+      });
     } catch (error) {
       console.log(error);
     }
@@ -503,7 +506,7 @@ export class NewItemDisplayComponent implements OnInit {
     }
   }
 
-  redirectTo = (route, params = null) => {
+  redirectTo = (route: string, params = null) => {
     if (!params) this.router.navigate([route]);
     else
       this.router.navigate(

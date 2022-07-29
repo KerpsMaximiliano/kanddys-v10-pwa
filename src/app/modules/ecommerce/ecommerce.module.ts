@@ -371,6 +371,10 @@ const routes: Routes = [
   //   component: NotificationCreatorComponent
   // },
   {
+    path: 'notification-creator/:id/:notificationId',
+    component: NotificationCreatorComponent
+  },
+  {
     path: 'notification-creator/:id',
     component: NotificationCreatorComponent
   },

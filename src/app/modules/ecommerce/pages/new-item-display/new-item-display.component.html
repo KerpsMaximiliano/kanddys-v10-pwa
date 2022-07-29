@@ -126,17 +126,20 @@
                   width: 19,
                   height: 19,
                   color:
-                    'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)'
+                    'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)',
+                  callback: redirectTo,
+                  args:
+                    'ecommerce/notification-creator/' +
+                    item._id +
+                    '/' +
+                    notification._id
                 }
               ]
             }"
             [itemList]="[
               {
                 name: {
-                  text:
-                    notification.trigger[0].key.toUpperCase() +
-                    ' - ' +
-                    notification.trigger[0].value.toUpperCase(),
+                  text: notification.action.toUpperCase(),
                   fontFamily: 'RobotoMedium',
                   color: '#7B7B7B',
                   fontSize: '13px'

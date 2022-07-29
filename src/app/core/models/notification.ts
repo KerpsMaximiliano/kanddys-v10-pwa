@@ -53,4 +53,6 @@ export class Notification extends Model<Notification> {
   entity: string;
   trigger: Trigger[];
   offsetTime: OffsetTime[];
+
+  action?: string;
 }

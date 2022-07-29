@@ -16,7 +16,8 @@ interface Icon{
     color?: string;
     width?: number;
     height?: number;
-    callback?: () => void;
+    callback?: (...args: any) => void;
+    args?: any;
 }
 
 export interface ListedItem {

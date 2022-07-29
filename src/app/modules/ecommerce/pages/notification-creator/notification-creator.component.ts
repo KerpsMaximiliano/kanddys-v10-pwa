@@ -5,6 +5,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import {
+  Notification,
   NotificationInput,
   OffsetTimeInput,
   TriggerInput,
@@ -154,6 +155,7 @@ export class NotificationCreatorComponent implements OnInit {
   notificationMessage: string;
   merchant: Merchant;
   item: Item;
+  notification: Notification;
   entity: 'item' = 'item';
 
   constructor(
@@ -170,25 +172,44 @@ export class NotificationCreatorComponent implements OnInit {
     // const user = await this.authService.me();
     // if (!user) this.router.navigate(['error-screen']);
     this.merchant = await this.merchantsService.merchantDefault();
-    if (!this.merchant) this.router.navigate(['error-screen']);
+    if (!this.merchant) {
+      this.router.navigate(['error-screen']);
+      return;
+    }
     const id = this.route.snapshot.paramMap.get('id');
     this.item = await this.itemsService.item(id);
-    if (!this.item) this.router.navigate(['error-screen']);
+    if (!this.item) {
+      this.router.navigate(['error-screen']);
+      return;
+    }
+    const notificationId = this.route.snapshot.paramMap.get('notificationId');
+    if (!notificationId) return;
+    this.notification = await this.notificationsService.notification(
+      notificationId
+    );
+    if (!this.notification) {
+      this.router.navigate(['error-screen']);
+      return;
+    }
+    this.notificationMessage = this.notification.message;
+    this.selectedAction = this.notificationsService.getNotificationAction(
+      this.notification
+    ).index;
   }
 
   async save() {
     if (!this.notificationMessage?.trim()) return;
+    const notificationInput: NotificationInput = {
+      message: this.notificationMessage,
+      merchant: this.merchant._id,
+      entity: this.entity,
+      trigger: this.getTriggers(),
+      offsetTime: this.getOffsetTime(),
+      phoneNumbers: [],
+    };
     try {
-      const notificationInput: NotificationInput = {
-        message: this.notificationMessage,
-        merchant: this.merchant._id,
-        entity: this.entity,
-        trigger: this.getTriggers(),
-        offsetTime: this.getOffsetTime(),
-        phoneNumbers: [],
-      };
-      try {
-        lockUI();
+      lockUI();
+      if (!this.notification) {
         const notification = await this.notificationsService.createNotification(
           notificationInput
         );
@@ -196,14 +217,16 @@ export class NotificationCreatorComponent implements OnInit {
           [notification._id],
           this.item._id
         );
-        unlockUI();
-        this.back();
-      } catch (error) {
-        console.log(error);
-        unlockUI();
-      }
+      } else
+        await this.notificationsService.updateNotification(
+          notificationInput,
+          this.notification._id
+        );
+      unlockUI();
+      this.back();
     } catch (error) {
       console.log(error);
+      unlockUI();
     }
   }
 
@@ -244,6 +267,7 @@ export class NotificationCreatorComponent implements OnInit {
         {
           quantity: 10,
           unit: 'minutes',
+          hour: null,
         },
       ];
     } else {

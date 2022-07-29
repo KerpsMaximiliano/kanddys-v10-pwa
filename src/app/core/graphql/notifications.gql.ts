@@ -1,5 +1,25 @@
 import gql from 'graphql-tag';
 
+const notificationData = `
+_id
+message
+entity
+trigger {
+  key
+  value
+}
+offsetTime {
+  quantity
+  unit
+  hour
+}`;
+
+export const notification = gql`
+  query notification($id: ObjectID!) {
+    notification(id: $id) { ${notificationData} }
+  }
+`;
+
 export const notifications = gql`
   query notifications(
     $paginate: PaginationInput
@@ -10,19 +30,14 @@ export const notifications = gql`
       paginate: $paginate
       merchantId: $merchantId
       notificationId: $notificationId
-    ) {
+    ) { ${notificationData} }
+  }
+`;
+
+export const updateNotification = gql`
+  mutation updateNotification($input: NotificationInput!, $id: ObjectID!) {
+    updateNotification(input: $input, id: $id) {
       _id
-      message
-      entity
-      trigger {
-        key
-        value
-      }
-      offsetTime {
-        quantity
-        unit
-        hour
-      }
     }
   }
 `;
