@@ -99,7 +99,7 @@ flex-direction: column;">
 [imagesGallery]="testItem"
 ></app-gallery-displayer> -->
 
-<!-- <app-enlist-display
+<app-enlist-display
 [headline]="{
     icon:{
         src: '/person.svg',
@@ -126,7 +126,16 @@ flex-direction: column;">
 }"
 [itemList]="testItem"
 [showSubtitle]="true"
-></app-enlist-display> -->
+[textArray]="[{
+    text: 'ingreso'
+},{
+    text: 'compras'
+},{
+    text: 'facturas'
+},{
+    text: 'reservaciones'
+}]"
+></app-enlist-display>
 
 
 <!-- <app-item-reservation

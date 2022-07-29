@@ -105,7 +105,7 @@
           >
             {{ item.name.text }}
           </button>
-
+          
           <p
             class="subtitle"
             [ngStyle]="{
@@ -133,11 +133,12 @@
       </button>
     </div>
 
-    <hr class="divider" *ngIf="bottomText" />
+
+    <hr class="divider" *ngIf="bottomText || textArray" />
 
     <div
       class="bottomText"
-      *ngIf="bottomText"
+      *ngIf="bottomText && !textArray"
       [ngStyle]="{
         'justify-content':
           !bottomText?.leftText && bottomText?.rightText ? 'flex-end' : ''
@@ -212,5 +213,15 @@
         {{ bottomText.rightText.text }}
       </button>
     </div>
+
+    <div class="text-array" *ngIf="textArray && !bottomText">
+        <button class="display array" *ngFor="let item of textArray; index as i" (click)="item.callback" [ngStyle]="{
+            'font-size': item?.fontSize && item.fontSize,
+            'font-family': item?.fontFamily && item.fontFamily,
+            'color': item?.color && item.color,
+            'cursor': item?.pointer? 'pointer': 'unset'
+        }">{{item.text}}</button>
+    </div>
+    
   </div>
 </div>
