@@ -1,9 +1,9 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
-    [returnAble]="tagActive"
+    [returnAble]="false"
     [edit]="{
-      active: !tagActive,
+      active: true,
       text: 'TAGS'
     }"
     [editStyles]="{
@@ -16,12 +16,9 @@
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
-    [plus]="{
-      active: tagActive
-    }"
   ></app-helper-headerv2>
 
-  <ng-container *ngIf="!tagActive">
+  <div class="box-shadowing">
     <app-item-reservation
       [headline]="{
         text: 'ORDEN ID'
@@ -51,9 +48,12 @@
         }
       ]"
       [ctaText]="{
-        text: { text: 'PAGOS' },
+        text: { 
+            text: 'PAGOS', 
+            callback: togglePayments 
+        },
         arrow: true,
-        showEntry: true
+        showEntry: payments
       }"
       [tagActive]="tagActive"
       [tag]="{
@@ -112,8 +112,12 @@
           </div>
         </div>
         <h3 class="payments-title">Pagos realizados</h3>
+        <div *ngFor="let item of dummyPayments" class="payments-container">
+            <app-item-status [itemListContent]="item"></app-item-status>
+        </div>
       </div>
     </ng-container>
+  </div>
 
     <div class="information">
       <div class="reservation">
@@ -168,9 +172,9 @@
         </div>
       </div>
     </div>
-  </ng-container>
 
-  <ng-container *ngIf="tagActive">
+
+  <!-- <ng-container *ngIf="tagActive">
     <div class="sector">
       <h1 class="header-tag">Tags en Order ID:</h1>
 
@@ -239,5 +243,5 @@
       [fontSize]="'17px'"
       [bgColor]="'#2874AD'"
     ></app-sticky-button>
-  </ng-container>
+  </ng-container> -->
 </div>
