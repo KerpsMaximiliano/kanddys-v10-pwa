@@ -6,10 +6,22 @@
             fontFamily:'SfProBold',
             fontSize: '21px'
         }"
-        [icons]="[{
+        [icons]="[
+        {
             src: '/search.svg',
             color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-            callback: null
+            callback: toggleSearch,
+            highlight:{
+                active: true,
+                highlighted: true,
+                color: '#E9E371',
+                filter: 'invert(43%) sepia(20%) saturate(1781%) hue-rotate(163deg) brightness(77%) contrast(87%)'
+            }
+        },
+        {
+            src: '/pencil.svg',
+            color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+            callback: openSettingsDialog
         }]"
         [plus]="{
             active: true,
@@ -24,7 +36,14 @@
         [returnAble]="false"
 		[bgColor]="'#2874AD'"
 		[color]="'#FFFFFF'"
+        (plusEvent)="openStoreShare()"
 	></app-helper-headerv2>
+
+    <div class="searchBar" *ngIf="showSearch">
+        <div class="searcher">
+            <input type="text" class="search" placeholder="Escribe lo que buscas" (keypress)="search($event)">
+        </div>
+    </div>
 
     <div class="tab-area" #elemt
     (mousedown)="startDragging($event, false, elemt)"
@@ -38,12 +57,6 @@
         </ng-container>
     </div>
 
-    <div class="searchBar">
-        <div class="searcher">
-            <label for="Buscador" class="search-label">Buscador:</label>
-            <input type="text" class="search" placeholder="Escribe lo que buscas" (keypress)="search($event)">
-        </div>
-    </div>
     
     <div class="tag-area" *ngIf="showTags">
         <h1 class="tags-label" >Tags</h1>

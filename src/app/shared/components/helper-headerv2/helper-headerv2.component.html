@@ -51,7 +51,7 @@
                             [ngStyle]="{
                                 width: icon.width? icon.width : '20px',
                                 height: icon.height? icon.height : '20px',
-                                filter: icon.color? icon.color: 'none',
+                                filter: icon.highlight?.filter && icon.highlight.highlighted? icon.highlight?.filter : (icon.color? icon.color :'none'),
                                 margin: icon.margin && icon?.margin,
                                 cursor: 'pointer'
                             }"
