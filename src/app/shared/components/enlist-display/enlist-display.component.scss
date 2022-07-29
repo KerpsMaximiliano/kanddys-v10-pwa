@@ -158,6 +158,28 @@
             }
         }
 
+        .text-array{
+            display: flex;
+            justify-content: space-between;
+            margin: 0 11px;
+
+            .display{
+                all: unset;
+                justify-content: center;
+                align-items: center;
+                font-family: 'RobotoMedium';
+                font-size: 17px;
+                color: #2874AD;
+            }
+
+            .array{
+                display: inline;
+                max-width: 10%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     }
 }
 

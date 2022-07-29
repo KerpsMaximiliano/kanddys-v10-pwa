@@ -67,9 +67,9 @@
             <button class="cta" [style.color]="item.cta?.color" *ngIf="item.cta?.text" (click)="item.cta.callback && item.cta.callback()">{{item.cta.text}}</button>
         </div>
 
-        <hr class="divider" *ngIf="bottomText">
+        <hr class="divider" *ngIf="bottomText || textArray">
 
-        <div class="bottomText" *ngIf="bottomText" [ngStyle]="{'justify-content': (!bottomText?.leftText && bottomText?.rightText)? 'flex-end': ''}">
+        <div class="bottomText" *ngIf="bottomText && !textArray" [ngStyle]="{'justify-content': (!bottomText?.leftText && bottomText?.rightText)? 'flex-end': ''}">
             
             <div style="display: flex; justify-content: space-between" *ngIf="bottomText?.leftText || bottomText?.extraText">
                 <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
@@ -99,6 +99,15 @@
               'color': bottomText.rightText?.color? bottomText.rightText?.color : '',
               'cursor': bottomText.rightText?.pointer? 'pointer' : ''
               }">{{bottomText.rightText.text}}</button>
+        </div>
+
+        <div class="text-array" *ngIf="textArray && !bottomText">
+            <button class="display array" *ngFor="let item of textArray; index as i" (click)="item.callback" [ngStyle]="{
+                'font-size': item?.fontSize && item.fontSize,
+                'font-family': item?.fontFamily && item.fontFamily,
+                'color': item?.color && item.color,
+                'cursor': item?.pointer? 'pointer': 'unset'
+            }">{{item.text}}</button>
         </div>
     </div>
 
