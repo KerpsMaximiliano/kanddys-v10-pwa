@@ -151,6 +151,11 @@ export class HeaderService {
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe((e) => {
         if (e.data) {
+          console.log("Autenticando o refrescando token");
+          console.log(e.data);
+          
+          localStorage.setItem('session-token', e.data.token);
+
           this.isLogged = true;
           this.user = e.data.user;
           this.wallet.globalWallet().then((data) => {
