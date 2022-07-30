@@ -1185,8 +1185,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           formArray.push(new FormControl(''));
         }
 
-        // this.formSteps[0].fieldsList[0].fieldControl.control.updateValueAndValidity();
-
         //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
         this.formSteps[0].embeddedComponents[0].shouldRerender = true;
 
