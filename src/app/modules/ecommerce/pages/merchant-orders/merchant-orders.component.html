@@ -1,76 +1,105 @@
 <div class="container">
-    <app-helper-headerv2
-		[mode]="'basic'"
-        [mainText]="{
-            text: 'Ventas',
-            fontFamily:'SfProBold',
-            fontSize: '21px'
-        }"
-        [icons]="[{
-            src: '/search.svg',
-            color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-            callback: null
-        }]"
-        [plus]="{
-            active: true,
-            fontSize:'33px',
-            fontFamily: 'RobotoMedium'
-        }"
-        [icon]="{
-            src:'/salealt.svg',
-            width: 24,
-            height: 24
-        }"
-        [returnAble]="false"
-		[bgColor]="'#2874AD'"
-		[color]="'#FFFFFF'"
-	></app-helper-headerv2>
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [mainText]="{
+      text: 'Ventas',
+      fontFamily: 'SfProBold',
+      fontSize: '21px'
+    }"
+    [icons]="[
+      {
+        src: '/search.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+        callback: toggleSearch,
+        highlight: {
+          active: true,
+          highlighted: true,
+          color: '#E9E371',
+          filter:
+            'invert(43%) sepia(20%) saturate(1781%) hue-rotate(163deg) brightness(77%) contrast(87%)'
+        }
+      },
+      {
+        src: '/pencil.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+        callback: openSettingsDialog
+      }
+    ]"
+    [plus]="{
+      active: true,
+      fontSize: '33px',
+      fontFamily: 'RobotoMedium'
+    }"
+    [icon]="{
+      src: '/salealt.svg',
+      width: 24,
+      height: 24
+    }"
+    [returnAble]="false"
+    [bgColor]="'#2874AD'"
+    [color]="'#FFFFFF'"
+    (plusEvent)="openStoreShare()"
+  ></app-helper-headerv2>
 
-    <div class="tab-area" #elemt
+  <div class="searchBar" *ngIf="showSearch">
+    <div class="searcher">
+      <input
+        type="text"
+        class="search"
+        placeholder="Escribe lo que buscas"
+        (keypress)="search($event)"
+      />
+    </div>
+  </div>
+
+  <div
+    class="tab-area"
+    #elemt
     (mousedown)="startDragging($event, false, elemt)"
     (mouseup)="stopDragging($event, false)"
     (mouseleave)="stopDragging($event, false)"
-    (mousemove)="moveEvent($event, elemt)">
-        <ng-container *ngFor="let item of tabs; index as i">
-            <div class="tab" [ngClass]="{'active' : active === i}" (click)="changeTab(i)">
-                {{item}} 
-            </div>
-        </ng-container>
-    </div>
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <ng-container *ngFor="let item of tabs; index as i">
+      <div
+        class="tab"
+        [ngClass]="{ active: active === i }"
+        (click)="changeTab(i)"
+      >
+        {{ item }}
+      </div>
+    </ng-container>
+  </div>
 
-    <div class="searchBar">
-        <div class="searcher">
-            <label for="Buscador" class="search-label">Buscador:</label>
-            <input type="text" class="search" placeholder="Escribe lo que buscas" (keypress)="search($event)">
-        </div>
-    </div>
-    
-    <div class="tag-area" *ngIf="showTags">
-        <h1 class="tags-label" >Tags</h1>
-            <div class="tag-list">
-                    <ng-container *ngIf="tags && tags.length > 0">
-                        <button
-                            class="tag-button" 
-                            [ngClass]="{'selected': tag.selected}" 
-                            *ngFor="let tag of tags" 
-                            (click)="tag.selected = !tag.selected"
-                            >{{tag.name}}
+  <div class="tag-area" *ngIf="showTags">
+    <h1 class="tags-label">Tags</h1>
+    <div class="tag-list">
+      <ng-container *ngIf="tags && tags.length > 0">
+        <button
+          class="tag-button"
+          [ngClass]="{ selected: tag.selected }"
+          *ngFor="let tag of tags"
+          (click)="tag.selected = !tag.selected"
+        >
+          {{ tag.name }}
 
-                            <img
-                                *ngIf="tag.icon"
-                                [src]="tag.icon.src"
-                                alt="the tag one"
-                                [width]="tag.icon.width" 
-                                [height]="tag.icon.height"
-                            >
-                        
-                        </button>
-                    </ng-container>
-            </div>
+          <img
+            *ngIf="tag.icon"
+            [src]="tag.icon.src"
+            alt="the tag one"
+            [width]="tag.icon.width"
+            [height]="tag.icon.height"
+          />
+        </button>
+      </ng-container>
     </div>
+  </div>
 
-    <div class="item" *ngFor="let item of dummyItem; index as i" >
-        <app-item-reservation 
+  <div class="reservation-list">
+    <div class="item" *ngFor="let item of dummyItem; index as i">
+      <app-item-reservation
         [headline]="item.headline"
         [subheadlines]="item.subheadlines"
         [rightActive]="item.rightActive"
@@ -79,11 +108,11 @@
         [ctaText]="item.ctaText"
         [tagActive]="showTags"
         [tag]="item.tag"
-        ></app-item-reservation>
+      ></app-item-reservation>
     </div>
-    
+  </div>
 
-    <app-sticky-button
+  <app-sticky-button
     size="small"
     [mode]="'double'"
     bgColor="#A1A1A1"
@@ -92,16 +121,17 @@
     [text2]="'$14,451 INGRESO'"
     [color]="'#FFF'"
     [extra]="{
-        icon:{
-            src: '/salealt.svg',
-            color: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
-            width: 19,
-            height: 19
-        },
-        bgColor: '#2874AD'
+      icon: {
+        src: '/salealt.svg',
+        color:
+          'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+        width: 19,
+        height: 19
+      },
+      bgColor: '#2874AD'
     }"
     (added)="goToMetrics()"
-    ></app-sticky-button>
+  ></app-sticky-button>
 </div>
 
 <!--

@@ -61,6 +61,11 @@
             [showIcon]="item.status != 'active' ? true : false"
             (click)="goToDetail(item._id)"
             [responsiveWidthVersion]="true"
+            [icon]="item.notifications?.length && {
+                src: '/whatsapp_verde.svg',
+                width: 17,
+                height: 17
+            }"
             ></app-saleflow-item>
         </div>
     </div>

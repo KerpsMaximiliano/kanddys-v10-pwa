@@ -65,6 +65,7 @@ export const itemsByMerchant = gql`
       _id
       name
       images
+      notifications
       category {
         _id
         name
@@ -128,6 +129,7 @@ export const item = gql`
       hasSelection
       status
       showImages
+      notifications
       calendar {
         _id
       }

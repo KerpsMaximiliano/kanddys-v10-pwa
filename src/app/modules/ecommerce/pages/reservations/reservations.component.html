@@ -51,32 +51,56 @@
       </div>
     </ng-container>
   </div>
-
-  <div style="margin-top: 36px" *ngIf="reservations">
-    <div *ngFor="let item of reservations; index as i" class="reservations">
-      <!-- <app-item-reservation style="width: 100%;"
-            [headline]="item.headline"
-            [subheadlines]="item.subheadline"
-            [rightSubHeadline]="item.rightSubHeadline"
-            [icon]="item.icon"
-            [content]="item.content"
-            [rightActive]="true"
-        ></app-item-reservation> -->
-
-      <div class="delete" *ngIf="editMode">
-        <button class="btn-delete">
-          <img
-            [src]="env + '/delete.svg'"
-            width="27px"
-            height="31.7px"
-            alt="Imagen de una bote de basura"
-            (click)="deleteOrder()"
-          />
-        </button>
-      </div>
-    </div>
+  <div style="margin-top: 36px">
+    <ng-container *ngIf="mode === 'calendar'">
+      <h4 class="notice" *ngIf="status === 'loading'">Cargando reservaciones...</h4>
+      <ng-container *ngIf="status === 'complete'">
+        <h4 class="notice" *ngIf="!reservations?.length">No se encontraron reservaciones.</h4>
+        <ng-container *ngIf="reservations?.length">
+          <div *ngFor="let item of reservations; index as i" class="reservations">
+            <!-- <app-item-reservation style="width: 100%;"
+                  [headline]="item.headline"
+                  [subheadlines]="item.subheadline"
+                  [rightSubHeadline]="item.rightSubHeadline"
+                  [icon]="item.icon"
+                  [content]="item.content"
+                  [rightActive]="true"
+              ></app-item-reservation> -->
+            <div class="delete" *ngIf="editMode">
+              <button class="btn-delete">
+                <img
+                  [src]="env + '/delete.svg'"
+                  width="27px"
+                  height="31.7px"
+                  alt="Imagen de una bote de basura"
+                  (click)="deleteOrder()"
+                />
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="mode === 'order'">
+      <h4 class="notice" *ngIf="status === 'loading'">Cargando reservaciones y ordenes...</h4>
+      <ng-container *ngIf="status === 'complete'">
+        <h4 class="notice" *ngIf="!reservations?.length">No se encontraron reservaciones.</h4>
+        <h4 class="notice" *ngIf="!orders?.length">No se encontraron ordenes.</h4>
+        <ng-container *ngIf="orders.length">
+          <div *ngFor="let item of orders; index as i">
+            <!-- <app-item-reservation style="width: 100%;"
+                  [headline]="item.headline"
+                  [subheadlines]="item.subheadline"
+                  [rightSubHeadline]="item.rightSubHeadline"
+                  [icon]="item.icon"
+                  [content]="item.content"
+                  [rightActive]="true"
+              ></app-item-reservation> -->
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
   </div>
-
   <app-sticky-button
     [mode]="editMode ? 'fixed' : 'double'"
     [extra]="{

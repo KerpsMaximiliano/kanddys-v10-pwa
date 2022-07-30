@@ -16,7 +16,8 @@ interface Icon{
     color?: string;
     width?: number;
     height?: number;
-    callback?: () => void;
+    callback?: (...args: any) => void;
+    args?: any;
 }
 
 export interface ListedItem {
@@ -58,6 +59,7 @@ export class EnlistDisplayComponent implements OnInit {
     @Input() plus: boolean;
     @Input() marginBottom: string;
     @Input() tMarginTop: string;
+    @Input() textArray: Text[];
     showEntry: boolean;
     @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;

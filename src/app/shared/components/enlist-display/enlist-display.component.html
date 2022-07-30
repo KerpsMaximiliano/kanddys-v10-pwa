@@ -1,105 +1,227 @@
 <div class="container">
+  <div class="body">
+    <div class="headline">
+      <div class="icon-text">
+        <img
+          [src]="env + headline.icon.src"
+          [alt]="headline.icon.alt"
+          [width]="headline.icon.width"
+          [height]="headline.icon.height"
+          [ngStyle]="{ filter: headline.icon.color }"
+          *ngIf="headline.icon?.src"
+        />
+        <h1
+          class="headline-text"
+          [ngStyle]="{
+            'font-size': headline?.text.fontSize ? headline.text.fontSize : '',
+            'font-family': headline?.text.fontFamily
+              ? headline.text.fontFamily
+              : '',
+            color: headline?.text.color ? headline.text.color : ''
+          }"
+        >
+          {{ headline.text.text }}
+        </h1>
+      </div>
 
-    <div class="body">
+      <!--ICONOS O ARRAY DE ICONOS Y TEXTO DE LA DERECHA-->
 
-        <div class="headline">
-            <div class="icon-text">
-                <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [ngStyle]="{'filter': headline.icon.color}" *ngIf="headline.icon?.src">
-                <h1 class="headline-text" [ngStyle]="{
-                    'font-size': headline?.text.fontSize? headline.text.fontSize : '', 
-                    'font-family': headline?.text.fontFamily? headline.text.fontFamily : '',
-                    'color': headline?.text.color? headline.text.color : ''
-                }">{{headline.text.text}}</h1>
-            </div>
+      <img
+        [src]="env + icon.src"
+        [alt]="icon.alt"
+        [ngStyle]="{
+          width: icon?.width ? icon.width : '',
+          height: icon?.height ? icon.height : '',
+          filter: icon?.color ? icon.color : '',
+          cursor: 'pointer'
+        }"
+        *ngIf="icon?.src"
+      />
+      <button class="plus" *ngIf="!icon && plus">+</button>
 
-            <!--ICONOS O ARRAY DE ICONOS Y TEXTO DE LA DERECHA-->
-
-            <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
-                'width': icon?.width? icon.width : '',
-                'height': icon?.height? icon.height : '',
-                'filter': icon?.color? icon.color : '',
-                'cursor': 'pointer'
-            }" *ngIf="icon?.src">
-            <button class="plus" *ngIf="!icon && plus">+</button>
-
-            <div *ngIf="iconText && !icon && !plus" style="display: flex; align-items: center;">
-                <!-- TEXTOS -->
-                <button *ngFor="let text of iconText.texts; index as i" class="btn-text" (click)="text.callback()" [ngStyle]="{
-                    'font-size':text?.fontSize && text.fontSize, 
-                    'font-family': text?.fontFamily && text.fontFamily, 
-                    'color': text?.color && text.color}">
-                    {{text.text}}
-                </button>
-                <!-- INCONOS -->
-                <button *ngFor="let icon of iconText.icons; index as i" class="btn-icon" (click)="icon.callback()">
-                    <img [src]="env + icon.src" [ngStyle]="{
-                    'width.px': icon?.width && icon.width,
-                    'height.px': icon?.height && icon.height,
-                    'filter': icon?.color && icon.color}">
-                </button>
-            </div>
-
-        </div>
-        
-        <hr class="separator" *ngIf="itemList">
-
-        <div class="item-area" *ngFor="let item of itemList; index as i; last as j" [ngStyle]="{'border-bottom': j? 'none' : '', 'margin-bottom': marginBottom? marginBottom : ''}">
-            <div class="wrapper">
-                <img [src]="item.img" alt="imagen del producto" class="item-image" *ngIf="item.img">
-                
-                <div class="title-subtitle">
-                    <button class="title" [ngStyle]="{
-                        'margin-top': tMarginTop? tMarginTop : '',
-                        'font-size': item.name.fontSize? item.name.fontSize : '',
-                        'font-family': item.name.fontFamily? item.name.fontFamily : '',
-                        'color': item.name.color? item.name.color : ''
-                        }" (click)="showSubtitle = !showSubtitle">{{item.name.text}}</button>
-                
-                    <p class="subtitle" [ngStyle]="{
-                        'font-size': item.subtitle.fontSize? item.subtitle.fontSize : '',
-                        'font-family': item.subtitle.fontFamily? item.subtitle.fontFamily : '',
-                        'color': item.subtitle.color? item.subtitle.color : '',
-                        'cursor': item.subtitle.pointer? 'pointer' : ''
-                        }" *ngIf="item?.subtitle && showSubtitle">{{item.subtitle.text}}</p>
-                </div>
-            </div>
-
-            <button class="cta" [style.color]="item.cta?.color" *ngIf="item.cta?.text" (click)="item.cta.callback && item.cta.callback()">{{item.cta.text}}</button>
-        </div>
-
-        <hr class="divider" *ngIf="bottomText">
-
-        <div class="bottomText" *ngIf="bottomText" [ngStyle]="{'justify-content': (!bottomText?.leftText && bottomText?.rightText)? 'flex-end': ''}">
-            
-            <div style="display: flex; justify-content: space-between" *ngIf="bottomText?.leftText || bottomText?.extraText">
-                <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
-                    'font-size': bottomText.leftText?.text.fontSize? bottomText.leftText.text.fontSize : '',
-                    'font-family': bottomText.leftText?.text.fontFamily? bottomText.leftText.text.fontFamily : '',
-                    'color': bottomText.leftText?.text.color? bottomText.leftText.text.color : '',
-                    'cursor': bottomText.leftText?.text.pointer? 'pointer' : ''
-                    }">
-                    {{bottomText.leftText.text.text}}
-                    <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
-                    <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
-                </button>
-
-                <button class="display" *ngIf="bottomText?.extraText" (click)="bottomText?.extraText.callback()" [ngStyle]="{
-                    'font-size': bottomText.extraText?.fontSize? bottomText.extraText.fontSize : '',
-                    'font-family': bottomText.extraText?.fontFamily? bottomText.extraText.fontFamily : '',
-                    'color': bottomText.extraText?.color? bottomText.extraText.color : '',
-                    'cursor': bottomText.extraText?.pointer? 'pointer' : ''
-                    }">
-                    {{bottomText.extraText.text}}
-                </button>
-            </div>
-
-            <button class="display" *ngIf="bottomText?.rightText" (click)="bottomText.rightText.callback()" [ngStyle]="{
-              'font-size': bottomText.rightText?.fontSize? bottomText.rightText.fontSize : '',
-              'font-family': bottomText.rightText?.fontFamily? bottomText.rightText.fontFamily : '',
-              'color': bottomText.rightText?.color? bottomText.rightText?.color : '',
-              'cursor': bottomText.rightText?.pointer? 'pointer' : ''
-              }">{{bottomText.rightText.text}}</button>
-        </div>
+      <div
+        *ngIf="iconText && !icon && !plus"
+        style="display: flex; align-items: center"
+      >
+        <!-- TEXTOS -->
+        <button
+          *ngFor="let text of iconText.texts; index as i"
+          class="btn-text"
+          (click)="text.callback()"
+          [ngStyle]="{
+            'font-size': text?.fontSize && text.fontSize,
+            'font-family': text?.fontFamily && text.fontFamily,
+            color: text?.color && text.color
+          }"
+        >
+          {{ text.text }}
+        </button>
+        <!-- INCONOS -->
+        <button
+          *ngFor="let icon of iconText.icons; index as i"
+          class="btn-icon"
+          (click)="icon.callback && icon.callback(icon.args)"
+        >
+          <img
+            [src]="env + icon.src"
+            [ngStyle]="{
+              'width.px': icon?.width && icon.width,
+              'height.px': icon?.height && icon.height,
+              filter: icon?.color && icon.color
+            }"
+          />
+        </button>
+      </div>
     </div>
 
+    <hr class="separator" *ngIf="itemList" />
+
+    <div
+      class="item-area"
+      *ngFor="let item of itemList; index as i; last as j"
+      [ngStyle]="{
+        'border-bottom': j ? 'none' : '',
+        'margin-bottom': marginBottom ? marginBottom : ''
+      }"
+    >
+      <div class="wrapper">
+        <img
+          [src]="item.img"
+          alt="imagen del producto"
+          class="item-image"
+          *ngIf="item.img"
+        />
+
+        <div class="title-subtitle">
+          <button
+            class="title"
+            [ngStyle]="{
+              'margin-top': tMarginTop ? tMarginTop : '',
+              'font-size': item.name.fontSize ? item.name.fontSize : '',
+              'font-family': item.name.fontFamily ? item.name.fontFamily : '',
+              color: item.name.color ? item.name.color : ''
+            }"
+            (click)="showSubtitle = !showSubtitle"
+          >
+            {{ item.name.text }}
+          </button>
+          
+          <p
+            class="subtitle"
+            [ngStyle]="{
+              'font-size': item.subtitle.fontSize ? item.subtitle.fontSize : '',
+              'font-family': item.subtitle.fontFamily
+                ? item.subtitle.fontFamily
+                : '',
+              color: item.subtitle.color ? item.subtitle.color : '',
+              cursor: item.subtitle.pointer ? 'pointer' : ''
+            }"
+            *ngIf="item?.subtitle && showSubtitle"
+          >
+            {{ item.subtitle.text }}
+          </p>
+        </div>
+      </div>
+
+      <button
+        class="cta"
+        [style.color]="item.cta?.color"
+        *ngIf="item.cta?.text"
+        (click)="item.cta.callback && item.cta.callback()"
+      >
+        {{ item.cta.text }}
+      </button>
+    </div>
+
+
+    <hr class="divider" *ngIf="bottomText || textArray" />
+
+    <div
+      class="bottomText"
+      *ngIf="bottomText && !textArray"
+      [ngStyle]="{
+        'justify-content':
+          !bottomText?.leftText && bottomText?.rightText ? 'flex-end' : ''
+      }"
+    >
+      <div
+        style="display: flex; justify-content: space-between"
+        *ngIf="bottomText?.leftText || bottomText?.extraText"
+      >
+        <button
+          class="display"
+          *ngIf="bottomText?.leftText"
+          (click)="showHide($event)"
+          [ngStyle]="{
+            'font-size': bottomText.leftText?.text.fontSize
+              ? bottomText.leftText.text.fontSize
+              : '',
+            'font-family': bottomText.leftText?.text.fontFamily
+              ? bottomText.leftText.text.fontFamily
+              : '',
+            color: bottomText.leftText?.text.color
+              ? bottomText.leftText.text.color
+              : '',
+            cursor: bottomText.leftText?.text.pointer ? 'pointer' : ''
+          }"
+        >
+          {{ bottomText.leftText.text.text }}
+          <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px"
+            ><i class="fas fa-chevron-right"></i
+          ></span>
+          <span *ngIf="showEntry" style="margin-left: 11px; height: 14px"
+            ><i class="fas fa-chevron-down"></i
+          ></span>
+        </button>
+
+        <button
+          class="display"
+          *ngIf="bottomText?.extraText"
+          (click)="bottomText?.extraText.callback()"
+          [ngStyle]="{
+            'font-size': bottomText.extraText?.fontSize
+              ? bottomText.extraText.fontSize
+              : '',
+            'font-family': bottomText.extraText?.fontFamily
+              ? bottomText.extraText.fontFamily
+              : '',
+            color: bottomText.extraText?.color
+              ? bottomText.extraText.color
+              : '',
+            cursor: bottomText.extraText?.pointer ? 'pointer' : ''
+          }"
+        >
+          {{ bottomText.extraText.text }}
+        </button>
+      </div>
+
+      <button
+        class="display"
+        *ngIf="bottomText?.rightText"
+        (click)="bottomText.rightText.callback()"
+        [ngStyle]="{
+          'font-size': bottomText.rightText?.fontSize
+            ? bottomText.rightText.fontSize
+            : '',
+          'font-family': bottomText.rightText?.fontFamily
+            ? bottomText.rightText.fontFamily
+            : '',
+          color: bottomText.rightText?.color ? bottomText.rightText?.color : '',
+          cursor: bottomText.rightText?.pointer ? 'pointer' : ''
+        }"
+      >
+        {{ bottomText.rightText.text }}
+      </button>
+    </div>
+
+    <div class="text-array" *ngIf="textArray && !bottomText">
+        <button class="display array" *ngFor="let item of textArray; index as i" (click)="item.callback" [ngStyle]="{
+            'font-size': item?.fontSize && item.fontSize,
+            'font-family': item?.fontFamily && item.fontFamily,
+            'color': item?.color && item.color,
+            'cursor': item?.pointer? 'pointer': 'unset'
+        }">{{item.text}}</button>
+    </div>
+    
+  </div>
 </div>

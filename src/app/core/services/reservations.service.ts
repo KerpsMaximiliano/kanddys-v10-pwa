@@ -9,8 +9,10 @@ import {
   confirmMerchantOrder,
   listReservations,
   getReservationByCalendar,
+  getReservationByMerchant,
 } from '../graphql/reservations.gql';
 import { Reservation } from '../models/reservation';
+import { PaginationInput } from '../models/saleflow';
 @Injectable({
   providedIn: 'root',
 })
@@ -83,17 +85,31 @@ export class ReservationService {
     }
   }
 
-  async getReservationByCalendar(calendarId: string): Promise<Reservation[]> {
+  async getReservationByCalendar(paginate: PaginationInput): Promise<Reservation[]> {
     try {
       const response = await this.graphql.query({
         query: getReservationByCalendar,
-        variables: { calendarId },
+        variables: { paginate },
         fetchPolicy: 'no-cache',
       });
       if (!response || response?.errors) return undefined;
       return response.getReservationByCalendar;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async getReservationByMerchant(merchantId: string): Promise<Reservation[]> {
+    try {
+      const response = await this.graphql.query({
+        query: getReservationByMerchant,
+        variables: { merchantId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) throw new Error();
+      return response.getReservationByMerchant;
+    } catch (e) {
+      return e;
     }
   }
 

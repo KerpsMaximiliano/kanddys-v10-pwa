@@ -1,7 +1,7 @@
 <div style="min-height: 100vh;">
-  <header [ngStyle]="{backgroundColor: active ? '#2874AD' : '#B17608'}">
+  <header [ngStyle]="{backgroundColor: (active || mode === 'tag') ? '#2874AD' : '#B17608'}">
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    <div>
+    <div *ngIf="mode === 'category'">
       <span>{{active ? 'TAB EXPUESTO EN TIENDA' : 'TAB INACTIVO (NO EXPUESTO)'}}</span>
       <button (click)="toggleStatus()">
         <img [src]="env + (active ? '/open-eye.svg' : '/closed-eye.svg')" alt="status" width="32" height="24">
@@ -9,9 +9,9 @@
     </div>
   </header>
   <main>
-    <h5>Sobre el Tab:</h5>
+    <h5>Sobre el {{mode === 'category' ? 'Tab' : 'Tag'}}:</h5>
     <div class="column">
-      <label class="form-label" for="name">Nombre del Tab:</label>
+      <label class="form-label" for="name">Nombre del {{mode === 'category' ? 'Tab' : 'Tag'}}:</label>
       <input class="form-input" type="text" placeholder="Escribe.." [(ngModel)]="name">
     </div>
   </main>
@@ -29,7 +29,7 @@
       [plus]="true"
     ></app-enlist-display>
   </div>
-  <main class="optional">
+  <main class="optional" *ngIf="mode === 'category'">
     <h6 class="additional-label">Contenido opcional</h6>
     <div class="additional-content">
         <button class="additional" (click)="showDescription = !showDescription">Descripcion</button>
