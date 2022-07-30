@@ -128,6 +128,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
             } else {
+              console.log("El precio", totalWithDecimal)
+
               const { createPreItem } = await this.itemService.createPreItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -668,6 +670,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
+                console.log("El precio", totalWithDecimal)
+
                 const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
@@ -1114,6 +1118,32 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
+
+        if(Number(pricing) <= 0) {
+          this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
+          this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
+        } else {
+          // this.formSteps[0].headerText = 'PREVIEW';
+          this.formSteps[0].customStickyButton.mode = 'double';
+          this.formSteps[0].customStickyButton.text = 'PREVIEW';
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
+          this.formSteps[0].customStickyButton.extra = {};      
+          this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.height = '30px';
+          this.formSteps[0].customStickyButton.customLeftButtonStyles = {
+            width: 'fit-content',
+            marginLeft: 'auto',
+            color: '#fff',
+            height: '30px'
+          };      
+          this.formSteps[0].customStickyButton.customRightButtonStyles = {
+            width: 'fit-content',
+            marginRight: '20px',
+            marginLeft: '44px',
+            color: '#fff',
+            height: '30px'
+          };      
+        }
 
         // console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
