@@ -1209,7 +1209,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         for(let formStep of this.formSteps) {
           formStep.customHelperHeaderConfig = {
-            bgcolor: '#B17608',
+            bgcolor: this.item.status === 'active' ? '#2874AD' : '#B17608',
             color: '#ffffff',
             justifyContent: 'flex-end',
             alignItems: 'center',
@@ -1272,6 +1272,18 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
+
+          formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+            this.item.status === 'active' ? 'open' : 'closed'
+          }-eye-white.svg`;
+          
+          formStep.headerText = this.item.status === 'active' ?
+            'ACTIVO (EXPUESTO EN TIENDA)' :
+            'INACTIVO (NO EXPUESTO)';
+
+          formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+            this.item.status === 'active' ? 'open' : 'closed'
+          }-eye-white.svg`;
         }
 
 
