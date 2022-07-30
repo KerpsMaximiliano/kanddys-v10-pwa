@@ -64,7 +64,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           const priceWithDecimalArray = values['1'].price.split('');
           const firstHalf = priceWithDecimalArray.slice(0, -2);
           const secondHalf = priceWithDecimalArray.slice(-2);
-          const totalArray = firstHalf.concat('.').concat(secondHalf);
+          const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
           const totalWithDecimal = Number(totalArray.join(''));
 
           if (
@@ -605,7 +605,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
             const firstHalf = priceWithDecimalArray.slice(0, -2);
             const secondHalf = priceWithDecimalArray.slice(-2);
-            const totalArray = firstHalf.concat('.').concat(secondHalf);
+            const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
             const totalWithDecimal = Number(totalArray.join(''));
   
             if (
