@@ -53,36 +53,22 @@ export class MerchantBuyersComponent implements OnInit {
     }
     ];
   dummyItem: any[] =[
-      { name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },
-          subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.', fontFamily: 'SfProRegular',
-              fontSize: '14px', color:'#7B7B7B' },
-          extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.', fontFamily: 'SfProRegular', fontSize: '14px',
-              color:'#000000' }
-      },
-      { name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },
-          subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.', fontFamily: 'SfProRegular',
-              fontSize: '14px', color:'#7B7B7B' },
-          extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.', fontFamily: 'SfProRegular', fontSize: '14px',
-              color:'#000000' }
-      },
-      { name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },
-          subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.', fontFamily: 'SfProRegular',
-              fontSize: '14px', color:'#7B7B7B' },
-          extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.', fontFamily: 'SfProRegular', fontSize: '14px',
-              color:'#000000' }
-      },
-      { name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },
-          subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.', fontFamily: 'SfProRegular',
-              fontSize: '14px', color:'#7B7B7B' },
-          extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.', fontFamily: 'SfProRegular', fontSize: '14px',
-              color:'#000000' }
-      },
-      { name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },
-          subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.', fontFamily: 'SfProRegular',
-              fontSize: '14px', color:'#7B7B7B' },
-          extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.', fontFamily: 'SfProRegular', fontSize: '14px',
-              color:'#000000' }
-      }   
+      { name:{ text: 'TOTALIDADES'},
+        subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+      },{ name:{ text: 'TOTALIDADES'},
+        subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+      },{ name:{ text: 'TOTALIDADES'},
+        subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+      },{ name:{ text: 'TOTALIDADES'},
+        subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+      },{ name:{ text: 'TOTALIDADES'},
+        subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+      },   
   ];
 
   trying: any ={ name:{ text: 'TOTALIDADES', fontFamily:'RobotoMedium', fontSize: '13px', color: '#7B7B7B' },

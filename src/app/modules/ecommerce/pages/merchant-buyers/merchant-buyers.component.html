@@ -104,12 +104,33 @@
                 height: 19}
             ]
         }"
-        [itemList]="dummy"
+        [itemList]="[{
+            name: {
+                text: dummy.name.text,
+                fontFamily:'RobotoMedium',
+                fontSize: '13px', 
+                color: '#7B7B7B'
+            },
+            subtitle:{ 
+                text: dummy.subtitle.text, 
+                fontFamily: 'SfProRegular',
+                fontSize: '14px', 
+                color:'#7B7B7B'
+            },
+            extraSub:{
+                text:dummy.extraSub.text,
+                fontFamily: 'SfProRegular', 
+                fontSize: '14px',
+                color:'#000000'
+            }
+        }]"
         [showSubtitle]="true"
         [tagActive]="showTags"
         [tag]="{
-            title:{text:'TAGS'},
-            tags: tags
+            title:{
+                text:'TAGS'
+            },
+            tags: dummy.tags
         }"
         ></app-enlist-display>
     </div>
