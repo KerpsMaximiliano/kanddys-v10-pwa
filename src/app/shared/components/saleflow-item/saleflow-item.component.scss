@@ -457,6 +457,10 @@
   }
 }
 
-.itemImg:hover {
+.opacity-hover:hover, .opacityHover:active {
   opacity: 0.75;
+}
+
+.cursor {
+  cursor: pointer;
 }

@@ -139,6 +139,10 @@
         border: none;
         border-radius: 18px;
         cursor: pointer;
+
+        &:hover, &:active {
+            background-color: #eeeeee;
+        }
     }
 }
 

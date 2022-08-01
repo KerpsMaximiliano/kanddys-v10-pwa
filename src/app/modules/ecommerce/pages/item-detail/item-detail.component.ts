@@ -193,6 +193,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   openShareDialog = () => {
+    if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
         qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,

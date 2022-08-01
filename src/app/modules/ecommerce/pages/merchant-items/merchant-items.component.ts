@@ -104,7 +104,6 @@ export class MerchantItemsComponent implements OnInit {
   async getItems(merchantID: string) {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true)).itemsByMerchant;
-      console.log(items);
       this.items = items;
     } catch (error) {
       this.status = 'error';
@@ -152,7 +151,7 @@ export class MerchantItemsComponent implements OnInit {
   openDeleteDialog(item: Item) {
     const list: StoreShareList[] = [
       {
-          title: `Eliminar ${item.name ?? 'producto'}?`,
+          title: `Eliminar ${item.name || 'producto'}?`,
           description: 'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
           message: 'Eliminar',
           messageCallback: async () => {
