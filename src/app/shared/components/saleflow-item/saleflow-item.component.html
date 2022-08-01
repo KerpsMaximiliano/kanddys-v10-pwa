@@ -171,6 +171,7 @@
           [height]="icon?.height"
           [ngStyle]="{ filter: icon?.color }"
           *ngIf="icon"
+          (click)="iconClicked.emit()"
           class="dynamic-img"
         />
       </div>

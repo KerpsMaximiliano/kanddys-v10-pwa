@@ -28,7 +28,8 @@ import {
   bestSellersByMerchant,
   totalByItem,
   itemExtras,
-  updateItem
+  updateItem,
+  deleteItem,
 } from '../graphql/items.gql';
 import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
@@ -350,6 +351,15 @@ export class ItemsService {
     if (!result || result?.errors) return undefined;
     console.log(result);
     return result;
+  }
+
+  async deleteItem(id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: deleteItem,
+      variables: { id },
+      context: { useMultipart: true },
+    });
+    return result?.deleteItem;
   }
 
   async createItemPackage(input: any) {

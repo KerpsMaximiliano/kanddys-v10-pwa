@@ -65,7 +65,7 @@
                         >+</span>
                     </button>
                 </ng-container>
-                <div class="center"><button class="confirm" *ngIf="item.message" (click)="messageCallback($event)">{{item.message}}</button></div>
+                <div class="center"><button class="confirm" *ngIf="item.message" (click)="item.messageCallback && inputFunc(item.messageCallback)">{{item.message}}</button></div>
             </div>
         </div>
         <button class="cancel" (click)="close()">Cancel</button>

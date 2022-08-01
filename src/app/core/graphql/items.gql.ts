@@ -288,6 +288,12 @@ export const addItem = gql`
   }
 `;
 
+export const deleteItem = gql`
+  mutation deleteItem($id: ObjectID!) {
+    deleteItem(id: $id)
+  }
+`;
+
 export const updateItem = gql`
   mutation updateItem($id: ObjectID!, $input: ItemInput!) {
     updateItem(id: $id, input: $input) {
