@@ -20,10 +20,22 @@ interface Icon{
     args?: any;
 }
 
+interface testTag{
+    name: string;
+    selected?: boolean;
+    icon?: {
+      src: string,
+      alt?: string;
+      callback?: () => void;
+      width: number;
+      height: number;
+    };
+}
 export interface ListedItem {
     img?: string;
     name: Text;
     subtitle?: Text;
+    extraSub?: Text;
     cta?: {
         text: string;
         color?: string;
@@ -60,6 +72,12 @@ export class EnlistDisplayComponent implements OnInit {
     @Input() marginBottom: string;
     @Input() tMarginTop: string;
     @Input() textArray: Text[];
+    @Input() tagActive: boolean;
+    @Input() tag: {
+        title: Text;
+        tags: testTag[];
+        icon?: Icon;
+    };
     showEntry: boolean;
     @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;
