@@ -84,6 +84,8 @@ export class AuthService {
       lockUI(promise);
       const result = await promise;
       this.session = new Session(result?.session, true);
+      console.log(this.session.token);
+      localStorage.setItem('session-token', this.session.token);
     } catch (e) {
       console.log(e);
       this.session?.revoke();

@@ -161,4 +161,32 @@ export class MerchantItemsComponent implements OnInit {
   back() {
     this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
+
+  openDialog = () => {
+
+    const list: StoreShareList[] = [
+        {
+          title:  'Crear',
+          options: [
+            {
+              text: 'Un nuevo Item',
+              mode: 'func',
+              func: () => {
+                this.router.navigate(['ecommerce/item-creator/']);
+              }
+            }
+          ]
+        }
+    ];
+        
+    this.dialogService.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: true
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+    };
 }
