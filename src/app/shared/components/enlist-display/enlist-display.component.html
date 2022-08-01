@@ -120,6 +120,21 @@
           >
             {{ item.subtitle.text }}
           </p>
+
+          <p
+            class="subtitle"
+            [ngStyle]="{
+              'font-size': item.extraSub.fontSize ? item. extraSub.fontSize : '',
+              'font-family': item. extraSub.fontFamily
+                ? item. extraSub.fontFamily
+                : '',
+              color: item.extraSub.color ? item.extraSub.color : '',
+              cursor: item.extraSub.pointer ? 'pointer' : ''
+            }"
+            *ngIf="item?.extraSub && showSubtitle"
+          >
+            {{ item.extraSub.text }}
+          </p>
         </div>
       </div>
 
@@ -131,6 +146,17 @@
       >
         {{ item.cta.text }}
       </button>
+    </div>
+
+    <div class="tags-area" *ngIf="tagActive && tag">
+        <div class="tags-headline">
+            <h3 class="tags-title">{{tag.title.text}}</h3>
+            <img [src]="env + tag.icon.src" [alt]="tag.icon.alt" [ngStyle]="{'width.px': tag.icon.width, 'height.px': tag.icon.height, cursor: 'pointer'}">
+        </div>
+
+        <div class="tags-displayer">
+            <p class="tag-text" *ngFor="let text of tag.tags; index as i">#{{text.name}} <img [src]="env + text.icon?.src" [alt]="text.icon?.alt" width="11px" height="11px" *ngIf="text.icon" [style.margin-left]="'3px'"></p>
+        </div>
     </div>
 
 
