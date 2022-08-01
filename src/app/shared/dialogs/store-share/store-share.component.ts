@@ -28,6 +28,7 @@ export interface StoreShareList {
   title?: string;
   description?: string;
   message?: string;
+  messageCallback?: (...args: any[]) => void;
   qrlink?: string;
   options?: StoreShareOption[];
 }
@@ -111,10 +112,6 @@ export class StoreShareComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
-  }
-
-  messageCallback(event){
-    this.messageEvent.emit(event);
   }
 
   close() {

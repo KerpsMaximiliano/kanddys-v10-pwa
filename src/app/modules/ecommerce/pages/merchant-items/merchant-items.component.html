@@ -59,14 +59,20 @@
             [price]="item.pricing"
             [showPrice]="true"
             [showIcon]="item.status != 'active' ? true : false"
-            (click)="goToDetail(item._id)"
+            (itemClicked)="goToDetail(item._id)"
+            (iconClicked)="openDeleteDialog(item)"
             [responsiveWidthVersion]="true"
-            [icon]="item.notifications?.length && {
+            [icon]="{
+                src: '/delete.svg',
+                width: 15,
+                height: 18
+            }"
+            ></app-saleflow-item>
+            <!-- [icon]="item.notifications?.length && {
                 src: '/whatsapp_verde.svg',
                 width: 17,
                 height: 17
-            }"
-            ></app-saleflow-item>
+            }" -->
         </div>
     </div>
     <h3 class="no-results" *ngIf="status === 'complete' && (!items || !items.length)">

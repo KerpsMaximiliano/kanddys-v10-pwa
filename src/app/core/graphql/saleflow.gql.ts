@@ -153,6 +153,14 @@ export const addItemToSaleFlow = gql`
   }
 `;
 
+export const removeItemFromSaleFlow = gql`
+  mutation removeItemFromSaleFlow($item: ObjectID!, $id: ObjectID!) {
+    removeItemFromSaleFlow(item: $item, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {

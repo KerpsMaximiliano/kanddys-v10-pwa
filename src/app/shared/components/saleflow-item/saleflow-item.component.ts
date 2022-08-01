@@ -49,6 +49,7 @@ export class SaleflowItemComponent implements OnInit {
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
+  @Output() iconClicked = new EventEmitter();
   @Output() action = new EventEmitter()
   
   env: string = environment.assetsUrl;
