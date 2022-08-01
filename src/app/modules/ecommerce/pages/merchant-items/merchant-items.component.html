@@ -62,7 +62,7 @@
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
             [showPrice]="true"
-            [showIcon]="item.status != 'active' ? true : false"
+            [showIcon]="true"
             (itemClicked)="goToDetail(item._id)"
             (iconClicked)="openDeleteDialog(item)"
             [responsiveWidthVersion]="true"
@@ -76,7 +76,8 @@
                 src: '/whatsapp_verde.svg',
                 width: 17,
                 height: 17
-            }" -->
+            }" 
+            [showIcon]="item.status != 'active' ? true : false"-->
         </div>
     </div>
     <h3 class="no-results" *ngIf="status === 'complete' && (!items || !items.length)">
