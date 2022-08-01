@@ -55,7 +55,26 @@ export class MerchantBuyersComponent implements OnInit {
   dummyItem: any[] =[
       { name:{ text: 'TOTALIDADES'},
         subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
-        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }
+        extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' },
+        tags:[{
+            name: 'Prueba Nº1'
+        },{
+            name: 'Prueba Nº1 ',
+            icon: {
+                src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+                width: 15,
+                height: 15
+            }
+        },{
+            name: 'Prueba Nº1 '
+        },{
+            name: 'Prueba Nº1 ',
+            icon: {
+                src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+                width: 15,
+                height: 15
+            }
+        }]
       },{ name:{ text: 'TOTALIDADES'},
         subtitle:{ text:'Ingresos: $123,456.87 DOP. Promedia $120 por factura. \n Facturas: 155. Actualmente promedia comprar c/20 días.' },
         extraSub: { text:'Ultima compra ocurrió hace 35 días. Antes de la última compra promediaba comprar cada 10 dias.' }

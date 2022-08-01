@@ -22,9 +22,15 @@ interface Icon{
 
 interface testTag{
     name: string;
-    icon?: Icon;
+    selected?: boolean;
+    icon?: {
+      src: string,
+      alt?: string;
+      callback?: () => void;
+      width: number;
+      height: number;
+    };
 }
-
 export interface ListedItem {
     img?: string;
     name: Text;

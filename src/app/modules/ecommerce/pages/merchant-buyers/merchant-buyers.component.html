@@ -47,6 +47,7 @@
 
     <div
     class="tab-area"
+    [ngStyle]="{'padding-top': showSearch? '' : '80px'}"
     #elemt
     (mousedown)="startDragging($event, elemt)"
     (mouseup)="stopDragging()"
@@ -101,8 +102,9 @@
             icons:[{
                 src: '/upload.svg',
                 width: 15,
-                height: 19}
-            ]
+                height: 19,
+                color:'invert(40%) sepia(78%) saturate(487%) hue-rotate(163deg) brightness(70%) contrast(92%)'
+            }]
         }"
         [itemList]="[{
             name: {
@@ -130,7 +132,13 @@
             title:{
                 text:'TAGS'
             },
-            tags: dummy.tags
+            icon:{
+                src:'/pencil.svg',
+                width: 15,
+                height: 15,
+                color:'brightness(80%)'
+            },
+            tags: tags
         }"
         ></app-enlist-display>
     </div>

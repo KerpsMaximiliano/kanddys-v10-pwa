@@ -114,7 +114,8 @@
                 ? item.subtitle.fontFamily
                 : '',
               color: item.subtitle.color ? item.subtitle.color : '',
-              cursor: item.subtitle.pointer ? 'pointer' : ''
+              cursor: item.subtitle.pointer ? 'pointer' : '',
+              'margin-bottom': item?.extraSub? '0px' : ''
             }"
             *ngIf="item?.subtitle && showSubtitle"
           >
@@ -122,7 +123,7 @@
           </p>
 
           <p
-            class="subtitle"
+            class="subtitle extra"
             [ngStyle]="{
               'font-size': item.extraSub.fontSize ? item. extraSub.fontSize : '',
               'font-family': item. extraSub.fontFamily
@@ -151,7 +152,12 @@
     <div class="tags-area" *ngIf="tagActive && tag">
         <div class="tags-headline">
             <h3 class="tags-title">{{tag.title.text}}</h3>
-            <img [src]="env + tag.icon.src" [alt]="tag.icon.alt" [ngStyle]="{'width.px': tag.icon.width, 'height.px': tag.icon.height, cursor: 'pointer'}">
+            <img [src]="env + tag.icon.src" [alt]="tag.icon.alt" [ngStyle]="{
+                'width.px': tag.icon.width, 
+                'height.px': tag.icon.height, cursor: 
+                'pointer', 
+                filter: tag.icon.color && tag.icon.color
+            }" *ngIf="tag?.icon">
         </div>
 
         <div class="tags-displayer">
