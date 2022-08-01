@@ -9,6 +9,9 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-merchant-items',
@@ -54,7 +57,8 @@ export class MerchantItemsComponent implements OnInit {
     private ordersService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private dialog: DialogService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -129,4 +133,32 @@ export class MerchantItemsComponent implements OnInit {
   back() {
     this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
+
+  openDialog = () => {
+
+    const list: StoreShareList[] = [
+        {
+          title:  'Crear',
+          options: [
+            {
+              text: 'Un nuevo Item',
+              mode: 'func',
+              func: () => {
+                this.router.navigate(['ecommerce/item-creator/']);
+              }
+            }
+          ]
+        }
+    ];
+        
+    this.dialog.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: true
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+    };
 }
