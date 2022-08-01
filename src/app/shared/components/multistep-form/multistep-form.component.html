@@ -1183,6 +1183,9 @@ shouldScrollBackwards &&
       return: steps[currentStep].customStickyButton.mode === 'double' && 
                   steps[currentStep].customStickyButton.extra?.return ? 
                     steps[currentStep].customStickyButton.extra?.return : null,
+      returnCallback: steps[currentStep].customStickyButton.mode === 'double' && 
+                    steps[currentStep].customStickyButton.extra?.returnCallback ? 
+                      steps[currentStep].customStickyButton.extra?.returnCallback : null,
       height: steps[currentStep].customStickyButton.mode === 'double' && 
                     steps[currentStep].customStickyButton.extra?.height ? 
                       steps[currentStep].customStickyButton.extra?.height : null,

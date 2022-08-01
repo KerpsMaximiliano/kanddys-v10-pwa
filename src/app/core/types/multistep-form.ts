@@ -232,6 +232,7 @@ export interface FormStep {
       width?: string;
       height?: string;
       return?: boolean;
+      returnCallback?(...params): any;
     }
     customLeftButtonStyles?: Record<string, any>;
     customRightButtonStyles?: Record<string, any>;

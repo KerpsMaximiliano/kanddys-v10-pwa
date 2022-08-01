@@ -11,6 +11,7 @@ interface Extra {
     height?: string;
     fontSize?: string;
     return?: boolean;
+    returnCallback?(...params): any;
     icon?:{
         src: string;
         alt?: string;

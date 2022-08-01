@@ -64,7 +64,9 @@
       *ngIf="extra?.text || extra?.icon ||extra?.return"
       >
         {{ extra?.text}} 
-        <a *ngIf="extra?.return &&!extra?.text && !extra?.icon"><i class="fas fa-chevron-left" [style.color]="'#FFF'" [style.font-size]="'14px'"></i></a>
+        <a *ngIf="extra?.return &&!extra?.text && !extra?.icon"
+          (click)="extra?.returnCallback ? extra?.returnCallback() : null"
+        ><i class="fas fa-chevron-left" [style.color]="'#FFF'" [style.font-size]="'14px'"></i></a>
         <img [src]="env + extra?.icon?.src" [alt]="extra?.icon?.alt" [width]="extra?.icon?.width" [height]="extra?.icon?.height" *ngIf="extra?.icon?.src" 
         [ngStyle]="{filter: extra?.icon?.color}">
     </button>

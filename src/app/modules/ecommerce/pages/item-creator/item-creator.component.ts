@@ -637,7 +637,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
                 // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
-                this.router.navigate([`/ecommerce/merchant-items`]);
+                this.router.navigate([this.headerService.flowRoute]);
               }
 
             } else {
@@ -776,6 +776,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
           this.formSteps[0].customStickyButton.extra = {};      
           this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.returnCallback = () => {
+            this.router.navigate([this.headerService.flowRoute]);
+          };
           this.formSteps[0].customStickyButton.extra.height = '30px';
           this.formSteps[0].customStickyButton.customLeftButtonStyles = {
             width: 'fit-content',
@@ -1086,14 +1089,17 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
-          this.router.navigate([`/ecommerce/merchant-items`]);
+          this.router.navigate([this.headerService.flowRoute]);
         };
       }
 
       if (localStorage.getItem('session-token')) {
+        lockUI();
         const data = await this.authService.me()
         this.user = data;
         if (data) this.loggedIn = true;
+
+        if(!this.loggedIn) unlockUI();
       }
 
       if (this.itemService && this.itemService.temporalItem) {
@@ -1129,6 +1135,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
           this.formSteps[0].customStickyButton.extra = {};      
           this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.returnCallback = () => {
+            this.router.navigate([this.headerService.flowRoute]);
+          };
           this.formSteps[0].customStickyButton.extra.height = '30px';
           this.formSteps[0].customStickyButton.customLeftButtonStyles = {
             width: 'fit-content',
@@ -1222,8 +1231,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (itemId && this.loggedIn) {
-        console.log("two");
-        lockUI();
         this.editMode = true;
 
         this.currentUserId = this.user._id;
