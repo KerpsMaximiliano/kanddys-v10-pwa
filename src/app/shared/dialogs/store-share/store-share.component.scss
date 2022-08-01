@@ -95,7 +95,7 @@
                 color: #2874AD;
             }
 
-            &:hover {
+            &:hover, &:active {
                 background-color: #eeeeee;
             }
         }
@@ -108,14 +108,21 @@
             
             .confirm{
                 all: unset;
-                width: fit-content;
-                height: fit-content;
-                margin: 44px 0 34px;
-                padding: 10px;
+                margin: 24px 0 12px;
+                padding: 12px;
                 font-family: "RobotoMedium";
                 font-size: 20px;
                 color: #2874AD;
+                border: 2px solid #2874AD;
+                border-radius: 8px;
                 cursor: pointer;
+                transition: all 0.2s;
+
+                &:hover, &:active {
+                    background-color: #2874AD;
+                    color: #ffffff;
+                    transition: all 0.2s;
+                }
             }
         }
     }
@@ -145,7 +152,7 @@
         color: #2874AD;
         cursor: pointer;
 
-        &:hover {
+        &:hover, &:active {
             color: #459de0;
         }
     }

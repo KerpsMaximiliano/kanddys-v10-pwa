@@ -4,14 +4,14 @@ import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-merchant-items',
@@ -21,6 +21,7 @@ import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.c
 export class MerchantItemsComponent implements OnInit {
 
   merchant: Merchant;
+  saleflow: SaleFlow;
   items: Item[] = [];
   ordersTotal: {
     total: number;
@@ -57,8 +58,8 @@ export class MerchantItemsComponent implements OnInit {
     private ordersService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private location: Location,
-    private dialog: DialogService
+    private dialogService: DialogService,
+    private location: Location
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -84,7 +85,7 @@ export class MerchantItemsComponent implements OnInit {
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
-      const saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
+      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
     } catch (error) {
       this.status = 'error';
       console.log(error);
@@ -120,6 +121,33 @@ export class MerchantItemsComponent implements OnInit {
     this.router.navigate([`ecommerce/item-display/${id}`]);
   }
 
+  openDeleteDialog(item: Item) {
+    const list: StoreShareList[] = [
+      {
+          title: `Eliminar ${item.name ?? 'producto'}?`,
+          description: 'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
+          message: 'Eliminar',
+          messageCallback: async () => {
+            const removeItemFromSaleFlow = await this.saleflowService.removeItemFromSaleFlow(item._id, this.saleflow._id);
+            if(!removeItemFromSaleFlow) return;
+            const deleteItem = await this.itemsService.deleteItem(item._id);
+            if(!deleteItem) return;
+            this.items = this.items.filter(listItem => listItem._id !== item._id);
+          }
+      },
+    ];
+
+  this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+  });
+  }
+
   errorScreen() {
     unlockUI();
     this.status = 'error';
@@ -151,7 +179,7 @@ export class MerchantItemsComponent implements OnInit {
         }
     ];
         
-    this.dialog.open(StoreShareComponent, {
+    this.dialogService.open(StoreShareComponent, {
         type: 'fullscreen-translucent',
         props: {
           list,

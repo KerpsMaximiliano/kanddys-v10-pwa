@@ -16,6 +16,7 @@ import {
   createSaleflow,
   createSaleFlowModule,
   updateSaleFlowModule,
+  removeItemFromSaleFlow,
 } from './../graphql/saleflow.gql';
 import { itemCategoriesList } from './../graphql/items.gql';
 import { Community } from './../models/community';
@@ -124,6 +125,15 @@ export class SaleFlowService {
       mutation: addItemToSaleFlow,
       variables: { item, id },
     });
+  }
+
+  async removeItemFromSaleFlow(item: string, id: string): Promise<SaleFlow> {
+    const response = await this.graphql.query({
+      query: removeItemFromSaleFlow,
+      variables: { item, id },
+      fetchPolicy: 'no-cache',
+    });
+    return response?.removeItemFromSaleFlow;
   }
 
   async createSaleflow(input: any) {
