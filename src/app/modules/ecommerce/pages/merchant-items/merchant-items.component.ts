@@ -103,8 +103,8 @@ export class MerchantItemsComponent implements OnInit {
   }
 
 
-  testing = () =>{
-    console.log('test')
+  createItem(){
+    this.router.navigate([`ecommerce/item-creator/`]);
   }
 
   async getOrderTotal(merchantID: string) {
