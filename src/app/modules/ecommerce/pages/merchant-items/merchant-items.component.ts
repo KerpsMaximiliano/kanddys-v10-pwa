@@ -6,6 +6,7 @@ import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -59,6 +60,7 @@ export class MerchantItemsComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private dialogService: DialogService,
+    private headerService: HeaderService,
     private location: Location
   ) { }
 
@@ -105,6 +107,7 @@ export class MerchantItemsComponent implements OnInit {
 
 
   createItem(){
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate([`ecommerce/item-creator/`]);
   }
 
