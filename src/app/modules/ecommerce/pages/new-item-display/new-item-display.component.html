@@ -68,6 +68,7 @@
     <div>
       <app-question-item style="cursor: pointer;"
         *ngIf="!item?.notifications?.length"
+        (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
         headline="AUTOMATIZA UN MENSAJE"
         [headlineContainerStyles]="{
           justifyContent: 'flex-start',
@@ -91,9 +92,7 @@
           text: '+',
           color: 'darkblue',
           fontSize: '29px',
-          fontFamily: 'Roboto',
-          callback: redirectTo,
-          callbackParams: ['ecommerce/notification-creator/' + item._id]
+          fontFamily: 'Roboto'
         }"
         [tagListTextStyles]="{
           marginRight: '5px'

@@ -1104,7 +1104,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         if(!this.loggedIn) unlockUI();
       }
 
-      if (this.itemService && this.itemService.temporalItem) {
+      if (this.itemService?.temporalItem) {
         console.log("one");
         const { description, name, content } = this.itemService.temporalItem;
         let { pricing, images } = this.itemService.temporalItem;
