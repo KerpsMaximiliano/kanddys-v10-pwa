@@ -9,7 +9,7 @@
   <div class="marginCard" *ngIf="type == 1">
     <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
     <div
-      class="itemImg"
+      class="itemImg opacity-hover"
       [ngStyle]="{
         'background-image': imgURL && 'url(' + imgURL + ')',
         'background-size': backgroundSize
@@ -59,7 +59,7 @@
   <div *ngIf="type == 2">
     <!--MODALIDAD CON CARRITO Y FUNCIONES -->
     <div
-      class="itemImg"
+      class="itemImg opacity-hover cursor"
       [ngStyle]="{
         'background-image': 'url(' + imgURL + ')',
         'background-size': backgroundSize
@@ -68,7 +68,6 @@
         'gray-shadow': shaded == true,
         borderRect: borderRadius == false
       }"
-      style="cursor: pointer"
       (click)="onClick()"
     >
       <div
@@ -140,7 +139,7 @@
   <div class="simpleCard" *ngIf="type == 3">
     <!--MODALIDAD QUE SOLO MUESTRA LOS PRECIOS Y LAS VENTAS-->
     <div
-      class="itemImg"
+      class="itemImg opacity-hover"
       [ngStyle]="{
         'background-image': imgURL && 'url(' + imgURL + ')',
         'background-size': backgroundSize
@@ -160,8 +159,17 @@
           [src]="env + '/closed-eye.svg'"
           width="17.21px"
           height="13.67px"
-          alt="Un ojo cerrado"
+          alt="Un ojo cerrado. El item no esta visible para clientes"
           *ngIf="showIcon"
+          class="eyed"
+        />
+        <img
+          [src]="env + '/open-eye.svg'"
+          width="17.21px"
+          height="13.67px"
+          alt="Un ojo abierto. El item esta visible para clientes"
+          style="filter: contrast(15%)"
+          *ngIf="!showIcon && displaying"
           class="eyed"
         />
         <img
@@ -172,7 +180,7 @@
           [ngStyle]="{ filter: icon?.color }"
           *ngIf="icon"
           (click)="iconClicked.emit()"
-          class="dynamic-img"
+          class="dynamic-img opacity-hover cursor"
         />
       </div>
     </div>

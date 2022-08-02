@@ -83,7 +83,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   previewItem() {
     if (!this.items.temporalItem) {
-      this.header.flowRoute = this.router.url;
+      // this.header.flowRoute = this.router.url;
 
       return this.router.navigate([`/ecommerce/item-creator`]);
     }
@@ -193,6 +193,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   openShareDialog = () => {
+    if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
         qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
@@ -222,7 +223,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   back() {
     if (this.previewMode) {
-      this.header.flowRoute = this.router.url;
+      // this.header.flowRoute = this.router.url;
 
       if (this.itemData._id)
         return this.router.navigate([

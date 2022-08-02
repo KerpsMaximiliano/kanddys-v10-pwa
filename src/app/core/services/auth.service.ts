@@ -45,9 +45,9 @@ export class AuthService {
     private readonly app: AppService,
     private readonly router: Router
   ) {
-    /*if (localStorage.getItem('session-token'))
+    if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
-    else this.ready = from([undefined]);*/
+    else this.ready = from([undefined]);
   }
 
   public async userExist(emailOrPhone: string) {
@@ -85,7 +85,6 @@ export class AuthService {
       const result = await promise;
       this.session = new Session(result?.session, true);
       console.log(this.session.token);
-      localStorage.setItem('session-token', this.session.token);
     } catch (e) {
       console.log(e);
       this.session?.revoke();
@@ -343,11 +342,15 @@ export class AuthService {
 
   public async analizeMagicLink(tempcode: String) {
     try {
-      const response = await this.graphql.query({
+      const promise = this.graphql.query({
         query: analizeMagicLink,
         variables: { tempcode },
         fetchPolicy: 'no-cache',
       });
+
+      this.ready = from(promise);
+
+      const response = await promise;
       return response;
     } catch (e) { }
   }

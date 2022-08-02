@@ -73,6 +73,7 @@ import { ReservationsComponent } from './pages/reservations/reservations.compone
 import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
+import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
 
 const routes: Routes = [
   {
@@ -423,7 +424,11 @@ const routes: Routes = [
   {
     path: 'order-detail',
     component: OrderDetailComponent
-  }
+  },
+  {
+    path:'merchant-buyers',
+    component: MerchantBuyersComponent
+  },
 ];
 
 @NgModule({
@@ -501,6 +506,7 @@ const routes: Routes = [
     GalleryStoreComponent,
     OrderDetailComponent,
     ReservationDetailComponent,
+    MerchantBuyersComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -12,7 +12,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 
 @Component({
   selector: 'app-merchant-items',
@@ -59,29 +60,35 @@ export class MerchantItemsComponent implements OnInit {
     private ordersService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private dialogService: DialogService,
-    private headerService: HeaderService,
-    private location: Location
+    private location: Location,
+    private dialog: DialogService,
+    private headerService: HeaderService
   ) { }
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.status = 'loading';
-    const user = await this.authService.me();
-    if (!user) this.errorScreen();
+    this.authService.ready.subscribe(async observer => {
+      if (observer != undefined) {
+        this.status = 'loading';
+        const user = await this.authService.me();
+        if (!user) this.errorScreen();
 
-    // TODO: Replace this with a header service  call to get the merchant ID
-    // const merchantID = "616a13a527bcf7b8ba3ac312";
+        // TODO: Replace this with a header service  call to get the merchant ID
+        // const merchantID = "616a13a527bcf7b8ba3ac312";
 
-    await this.getMerchant();
+        await this.getMerchant();
 
-    await Promise.all([
-      this.getOrderTotal(this.merchant._id),
-      this.getItems(this.merchant._id)
-    ]);
-    this.status = 'complete';
-    if (this.ordersTotal.total) this.hasSalesData = true;
-    unlockUI();
+        await Promise.all([
+          this.getOrderTotal(this.merchant._id),
+          this.getItems(this.merchant._id)
+        ]);
+        this.status = 'complete';
+        if (this.ordersTotal.total) this.hasSalesData = true;
+        unlockUI(); 
+      } else {
+        this.errorScreen();
+      }
+    });
   }
 
   async getMerchant() {
@@ -97,7 +104,6 @@ export class MerchantItemsComponent implements OnInit {
   async getItems(merchantID: string) {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true)).itemsByMerchant;
-      console.log(items);
       this.items = items;
     } catch (error) {
       this.status = 'error';
@@ -106,9 +112,8 @@ export class MerchantItemsComponent implements OnInit {
   }
 
 
-  createItem(){
-    this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`ecommerce/item-creator/`]);
+  testing = () =>{
+    console.log('test')
   }
 
   async getOrderTotal(merchantID: string) {
@@ -124,10 +129,29 @@ export class MerchantItemsComponent implements OnInit {
     this.router.navigate([`ecommerce/item-display/${id}`]);
   }
 
+  errorScreen() {
+    unlockUI();
+    this.status = 'error';
+    this.router.navigate([`ecommerce/error-screen/`]);
+  }
+
+  goToMetrics = () =>{
+    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+  }
+
+  back() {
+    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+  }
+
+  createItem(){
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate([`ecommerce/item-creator/`]);
+  }
+
   openDeleteDialog(item: Item) {
     const list: StoreShareList[] = [
       {
-          title: `Eliminar ${item.name ?? 'producto'}?`,
+          title: `Eliminar ${item.name || 'producto'}?`,
           description: 'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
           message: 'Eliminar',
           messageCallback: async () => {
@@ -140,7 +164,7 @@ export class MerchantItemsComponent implements OnInit {
       },
     ];
 
-  this.dialogService.open(StoreShareComponent, {
+  this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
         list,
@@ -149,20 +173,6 @@ export class MerchantItemsComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
   });
-  }
-
-  errorScreen() {
-    unlockUI();
-    this.status = 'error';
-    this.router.navigate([`ecommerce/error-screen/`]);
-  }
-
-   goToMetrics = () =>{
-    this.router.navigate([`ecommerce/entity-detail-metrics`]);
-  }
-
-  back() {
-    this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
 
   openDialog = () => {
@@ -182,7 +192,7 @@ export class MerchantItemsComponent implements OnInit {
         }
     ];
         
-    this.dialogService.open(StoreShareComponent, {
+    this.dialog.open(StoreShareComponent, {
         type: 'fullscreen-translucent',
         props: {
           list,

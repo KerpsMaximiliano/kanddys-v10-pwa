@@ -36,6 +36,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showBox: boolean;
   @Input() boxAmount: number;
   @Input() showIcon: boolean;
+  @Input() displaying: boolean;
   @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
   @Input() icon:{

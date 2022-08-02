@@ -51,6 +51,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   item: Item;
   imagesAlreadyLoaded: boolean = false;
   createdItem: boolean = false;
+  savingItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
   changedImages: boolean = false;
@@ -100,6 +101,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
               this.router.navigate([`/ecommerce/merchant-items`]);
             }
+
+            this.savingItem = false;
             
           } else {
             if (this.loggedIn) {
@@ -153,6 +156,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 type: 'create-item'
               }});
               this.createdItem = true;
+              this.savingItem = false;
             }
           }
 
@@ -642,12 +646,14 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   await this.itemService.addImageItem(this.files, updatedItem._id);
                 }
 
-                this.headerService.flowRoute = this.router.url;
+                // this.headerService.flowRoute = this.router.url;
                 // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
                 // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
                 this.router.navigate([`/ecommerce/merchant-items`]);
               }
+
+              this.savingItem = false;
 
             } else {
               if (this.loggedIn) {
@@ -703,6 +709,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     type: 'create-item'
                   }})
                   this.createdItem = true;
+                  this.savingItem = false;
                 };
               }
             }
@@ -815,10 +822,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         height: '30px',
         heightInactive: '30px',
         textCallback: async (params) => {
-          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);;
+          if (!this.savingItem) this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);
         },
         text2Callback: async (params) => {
           try {
+            this.savingItem = true;
             this.formSteps[0].customStickyButton.text2 = 'ESPERE...';
             await this.formSteps[0].asyncStepProcessingFunction.function(params);              
           } catch (error) {
@@ -950,6 +958,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
           },
           changeCallbackFunction: (change, params) => {
+            if(!change) return;
             this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${change})`;
           }
         },
@@ -1098,6 +1107,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
+          this.itemService.removeTemporalItem();
           this.router.navigate([this.headerService.flowRoute]);
         };
       }
@@ -1535,6 +1545,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
+    // if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }
