@@ -57,3 +57,16 @@ export const itemAddNotification = gql`
     }
   }
 `;
+
+export const notificationCheckers = gql`
+  query notificationCheckers($paginate: PaginationInput!) {
+    notificationCheckers(paginate: $paginate) {
+      user {
+        _id
+      }
+      date
+      status
+      trigger
+    }
+  }
+`;

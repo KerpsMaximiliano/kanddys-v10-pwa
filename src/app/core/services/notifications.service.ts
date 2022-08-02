@@ -5,9 +5,14 @@ import {
   createNotification,
   updateNotification,
   itemAddNotification,
+  notificationCheckers,
 } from '../graphql/notifications.gql';
 import { Item } from '../models/item';
-import { Notification, NotificationInput } from '../models/notification';
+import {
+  Notification,
+  NotificationChecker,
+  NotificationInput,
+} from '../models/notification';
 import { PaginationInput } from '../models/saleflow';
 import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
 
@@ -48,7 +53,10 @@ export class NotificationsService {
     return result?.createNotification;
   }
 
-  async updateNotification(input: NotificationInput, id: string): Promise<Notification> {
+  async updateNotification(
+    input: NotificationInput,
+    id: string
+  ): Promise<Notification> {
     const result = await this.graphql.mutate({
       mutation: updateNotification,
       variables: { input, id },
@@ -69,6 +77,17 @@ export class NotificationsService {
     return result?.itemAddNotification;
   }
 
+  async notificationCheckers(
+    paginate: PaginationInput
+  ): Promise<NotificationChecker[]> {
+    const result = await this.graphql.mutate({
+      mutation: notificationCheckers,
+      variables: { paginate },
+      context: { useMultipart: true },
+    });
+    return result?.notificationCheckers;
+  }
+
   getNotificationAction(notification: Notification) {
     let action: string;
     let index: number;
@@ -78,8 +97,7 @@ export class NotificationsService {
         if (!notification.offsetTime?.length) {
           action = 'Al venderse para comprador';
           index = 0;
-        }
-        else {
+        } else {
           const offsetTime = notification.offsetTime[0];
           const unit =
             offsetTime.unit === 'days'
@@ -102,7 +120,7 @@ export class NotificationsService {
     }
     return {
       action,
-      index
+      index,
     };
   }
 }

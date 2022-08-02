@@ -1,0 +1,22 @@
+<div class="component">
+  <header [ngStyle]="{backgroundColor: (item?.status === 'active' || !item) ? '#2874AD' : '#B17608'}">
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <div *ngIf="item">
+      <span>{{item.status === 'active' ? 'TAB EXPUESTO EN TIENDA' : 'TAB INACTIVO (NO EXPUESTO)'}}</span>
+      <button (click)="toggleStatus()">
+        <img [src]="env + (item.status === 'active' ? '/open-eye.svg' : '/closed-eye.svg')" alt="status" width="32" height="24">
+      </button>
+    </div>
+  </header>
+  <main></main>
+  <footer>
+    {{ !item && 'ADICIONA LA INFO DE LO QUE VENDES' }}
+    <ng-container *ngIf="item">
+      <button><i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i></button>
+      <div>
+        <button>Preview</button>
+        <button>Salvar</button>
+      </div>
+    </ng-container>
+  </footer>
+</div>

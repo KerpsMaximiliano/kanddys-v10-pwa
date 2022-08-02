@@ -1,0 +1,46 @@
+button {
+  all: unset;
+}
+.component {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 20px;
+  align-items: center;
+  color: white;
+  background-color: #2874ad;
+  font-family: "RobotoMedium";
+  font-size: 17px;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  img {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%)
+      contrast(102%);
+  }
+}
+main {
+  flex-grow: 1;
+}
+footer {
+  background-color: #2874ad;
+  display: flex;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  padding: 4px 20px;
+  color: white;
+  justify-content: center;
+
+  font-family: "RobotoMedium";
+  font-size: 17px;
+}
