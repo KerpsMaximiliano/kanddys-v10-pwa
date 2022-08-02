@@ -38,6 +38,7 @@ import { ListParams } from '../types/general.types';
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  hasTemporalItemNewImages: boolean = null;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

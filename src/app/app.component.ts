@@ -2,28 +2,39 @@ import { Component, HostBinding, OnDestroy, OnInit, AfterViewChecked } from '@an
 import { SwUpdate } from '@angular/service-worker';
 import * as ons from 'onsenui';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router'
+import { ChildrenOutletContexts, Router } from '@angular/router'
 import { AppService } from './app.service';
 import { DialogService } from './libs/dialog/services/dialog.service';
 import { filter } from 'rxjs/operators';
 import { IpusersService } from './core/services/ipusers.service';
+import { slideAnimations } from './core/animations/routes';
 
 @Component({
   selector: 'app-root',
   template: `
-    <main>
-      <router-outlet></router-outlet>
+    <main [ngStyle]="{overflowX: 'hidden', maxWidth: '500px !important', position: 'relative'}">
+      <div [@routeAnimations]="getRouteAnimationData()">
+        <router-outlet></router-outlet>
+      </div>
     </main>
     <!-- <app-scope-menu #scopeMenu></app-scope-menu> -->
   `,
   styleUrls: ['./app.component.scss'],
+  animations: [
+    slideAnimations
+  ]
 })
 export class AppComponent implements OnDestroy, OnInit {
   @HostBinding('class.content-fullscreen')
   isfullscreen = false;
   navsub: Subscription;
   loader: boolean = false;
-  constructor(private swUpdate: SwUpdate, public service: AppService, private router: Router, private dialog: DialogService, private ipuser: IpusersService) {
+  constructor(
+    private swUpdate: SwUpdate,
+    public service: AppService, 
+    private ipuser: IpusersService,
+    private contexts: ChildrenOutletContexts
+  ) {
     this.navsub = this.service.navend.subscribe((route) => {
       this.isfullscreen = route?.data?.fullscreen;
     });
@@ -82,6 +93,9 @@ export class AppComponent implements OnDestroy, OnInit {
     window.location.reload();
   }
 
+  getRouteAnimationData() {
+    return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
+  }
 
   ngOnDestroy(): void {
     this.navsub?.unsubscribe();
