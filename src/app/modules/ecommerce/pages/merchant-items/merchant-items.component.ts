@@ -69,7 +69,6 @@ export class MerchantItemsComponent implements OnInit {
     lockUI();
     this.authService.ready.subscribe(async observer => {
       if (observer != undefined) {
-        console.log(observer);
         this.status = 'loading';
         const user = await this.authService.me();
         if (!user) this.errorScreen();

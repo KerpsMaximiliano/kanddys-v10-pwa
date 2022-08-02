@@ -1090,6 +1090,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
+          this.itemService.removeTemporalItem();
           this.router.navigate([this.headerService.flowRoute]);
         };
       }
@@ -1524,6 +1525,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
+    // if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }

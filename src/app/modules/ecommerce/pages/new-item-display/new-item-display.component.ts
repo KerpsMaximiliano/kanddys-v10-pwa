@@ -97,8 +97,6 @@ export class NewItemDisplayComponent implements OnInit {
           )
             this.isPreItem = true;
 
-          console.log(this.isPreItem);
-
           // this.item.images = null;
           // this.item.status = 'disabled';
           // this.item.description = 'gdfgdfgdf';
@@ -119,7 +117,7 @@ export class NewItemDisplayComponent implements OnInit {
             try {
               await this.checkBanks();
             } catch (error) {
-              console.log('hubo un error 1');
+              console.log(error);
             }
           }
         }
@@ -130,10 +128,9 @@ export class NewItemDisplayComponent implements OnInit {
           let defaultMerchant = null;
 
           try {
-            console.log('one');
             defaultMerchant = await this.merchantService.merchantDefault();
           } catch (error) {
-            console.log('hubo un error 2');
+            console.log(error);
           }
 
           if (!defaultMerchant) {
@@ -333,10 +330,9 @@ export class NewItemDisplayComponent implements OnInit {
           }
         } else {
           try {
-            console.log('two');
             this.defaultMerchant = await this.merchantService.merchantDefault();
           } catch (error) {
-            console.log('hubo un error 3');
+            console.log(error);
           }
 
           if (!this.defaultMerchant) return unlockUI();
