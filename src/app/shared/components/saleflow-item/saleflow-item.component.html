@@ -159,8 +159,17 @@
           [src]="env + '/closed-eye.svg'"
           width="17.21px"
           height="13.67px"
-          alt="Un ojo cerrado"
+          alt="Un ojo cerrado. El item no esta visible para clientes"
           *ngIf="showIcon"
+          class="eyed"
+        />
+        <img
+          [src]="env + '/open-eye.svg'"
+          width="17.21px"
+          height="13.67px"
+          alt="Un ojo abierto. El item esta visible para clientes"
+          style="filter: contrast(15%)"
+          *ngIf="!showIcon && displaying"
           class="eyed"
         />
         <img
