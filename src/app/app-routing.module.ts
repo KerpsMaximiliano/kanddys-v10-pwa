@@ -24,6 +24,7 @@ const routes: Routes = [
     /*canLoad: [AuthGuard],
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
+    data: {animation: 'EcommerceModule'},
     loadChildren: () =>
       import('./modules/ecommerce/ecommerce.module').then(
         (m) => m.EcommerceModule

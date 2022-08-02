@@ -23,7 +23,6 @@ import { DecimalPipe } from '@angular/common';
   imports: [
     OnsenModule,
     BrowserModule,
-    BrowserAnimationsModule,
     SocialLoginModule,
     AppRoutingModule,
     ServiceWorkerModule.register('service-worker.js', {
@@ -32,6 +31,7 @@ import { DecimalPipe } from '@angular/common';
     SharedModule,
     GraphQLModule,
     HttpClientModule,
+    BrowserAnimationsModule,
   ],
   providers: [
     AppService,

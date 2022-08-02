@@ -261,6 +261,7 @@ const routes: Routes = [
   {
     path: 'item-creator',
     component: ItemCreatorComponent,
+    data: {animation: 'ItemCreator'}
   },
   {
     path: 'item-creator/:itemId',
@@ -360,7 +361,8 @@ const routes: Routes = [
   },
   {
     path: 'entity-detail-metrics',
-    component: EntityDetailMetricsComponent
+    component: EntityDetailMetricsComponent,
+    data: {animation: 'EntityDetailMetrics'}
   },
   {
     path: 'notifications-log',

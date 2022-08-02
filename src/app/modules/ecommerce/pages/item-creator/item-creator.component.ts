@@ -53,6 +53,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   createdItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
+  changedImages: boolean = false;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -88,9 +89,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             );
 
             if(updatedItem) {
-              await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
 
-              await this.itemService.addImageItem(this.files, updatedItem._id);
+              if(this.changedImages) {
+                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+  
+                await this.itemService.addImageItem(this.files, updatedItem._id);
+              }
 
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
               // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
@@ -231,6 +235,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           if(this.editMode) {
             this.defaultImages = [];
           }
+          
+          this.changedImages = true;
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
         },
       },
@@ -629,15 +635,18 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               );
 
               if(updatedItem) {
-                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
 
-                await this.itemService.addImageItem(this.files, updatedItem._id);
+                if(this.changedImages) {
+                  await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+  
+                  await this.itemService.addImageItem(this.files, updatedItem._id);
+                }
 
                 this.headerService.flowRoute = this.router.url;
                 // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
                 // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
-                this.router.navigate([this.headerService.flowRoute]);
+                this.router.navigate([`/ecommerce/merchant-items`]);
               }
 
             } else {
@@ -1094,18 +1103,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (localStorage.getItem('session-token')) {
-        lockUI();
+        //lockUI();
         const data = await this.authService.me()
         this.user = data;
         if (data) this.loggedIn = true;
 
-        if(!this.loggedIn) unlockUI();
+        //if(!this.loggedIn) unlockUI();
       }
 
       if (this.itemService && this.itemService.temporalItem) {
-        console.log("one");
         const { description, name, content } = this.itemService.temporalItem;
         let { pricing, images } = this.itemService.temporalItem;
+
+        if(this.itemService.hasTemporalItemNewImages) this.changedImages = true;
 
         // console.log("seteando 1")
         // console.log("what arrived", {
@@ -1406,12 +1416,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
-          unlockUI();
+          //unlockUI();
         } else {
           if (itemId) this.router.navigate(['/']);
         }
       } else {
-        unlockUI();
+        //unlockUI();
 
         if (itemId) this.router.navigate(['/'])
         else {
@@ -1442,6 +1452,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     const totalWithDecimal = Number(totalArray.join(''));
 
     // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
+
+    if(this.changedImages) this.itemService.hasTemporalItemNewImages = true;
 
     this.itemService.storeTemporalItem({
       _id: createdItemId ? createdItemId : null,
