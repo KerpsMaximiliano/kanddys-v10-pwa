@@ -633,7 +633,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 await this.itemService.addImageItem(this.files, updatedItem._id);
 
-                this.headerService.flowRoute = this.router.url;
+                // this.headerService.flowRoute = this.router.url;
                 // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
                 // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
@@ -941,6 +941,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
           },
           changeCallbackFunction: (change, params) => {
+            if(!change) return;
             this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${change})`;
           }
         },
