@@ -342,11 +342,15 @@ export class AuthService {
 
   public async analizeMagicLink(tempcode: String) {
     try {
-      const response = await this.graphql.query({
+      const promise = this.graphql.query({
         query: analizeMagicLink,
         variables: { tempcode },
         fetchPolicy: 'no-cache',
       });
+
+      this.ready = from(promise);
+
+      const response = await promise;
       return response;
     } catch (e) { }
   }
