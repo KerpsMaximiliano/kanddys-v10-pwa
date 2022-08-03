@@ -1,0 +1,100 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [icon]="{
+        src: '/salealt.svg',
+        width: 19,
+        height: 19
+    }"
+    [returnAble]="false"
+    [icons]=" !standAlone ? [
+    {
+        src:'/search.svg',
+        width: '19px',
+        height: '19px',
+        color: 'brightness(2)',
+        callback: toggleSearch
+    }
+    ] : [ {
+        src:'/search.svg',
+        width: '19px',
+        height: '19px',
+        color: 'brightness(2)',
+        callback: toggleSearch
+    },
+    {
+        src:'/search.svg',
+        width: '19px',
+        height: '19px',
+        color: 'brightness(2)',
+        callback: toggleSearch
+    }]"
+    ></app-helper-headerv2>
+
+    <div class="top-content-area">
+        <img [src]="'https://i.imgur.com/A7rA1rZ.png'" alt="Imagen del vendedor" class="top-merchant-image">
+        <button class="edit-button"><img [src]="env + '/pencil.svg'" alt="Icono de un Lapiz para editar"></button>
+
+        <h1 class="calendar-name">{{calendarName}}</h1>
+        <p class="calendar-info">
+            {{reservationsLimit}} reservas cada {{workTime}} receso <br>
+            Laboral: {{time}} <br>
+            Dias: {{days}} <br>
+            Mes: {{months}} <br>
+            Año: {{year}}
+        </p>
+    </div>
+
+    <div class="item-container" *ngFor="let item of calendars">
+        <app-item-reservation
+        [headline]="{
+            text: 'ORDEN ID'
+          }"
+        [subheadlines]="[
+          {
+            text: 'Calendario Name ID'
+          }]"
+        [rightActive]="true"
+        [rightSubHeadline]="{
+          text: 'Comprador ID'
+        }"
+        [icon]="[
+          {
+            src: '/person.svg',
+            width: 13,
+            height: 17,
+            color:'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)'
+          }
+        ]"
+        ></app-item-reservation>
+    </div>
+
+    <app-sticky-button
+    mode="double"
+    [size]="'small'"
+    [fontSize]="'17px'"
+    [text]="'123 PASADAS'"
+    [text2]="'123 FUTURAS'"
+    [extra]="{
+        bgColor: '#2874AD',
+        icon:{
+            src:'/salealt.svg',
+            width: 19,
+            height: 19
+        }
+    }"
+    [bgColor]="'#2874AD'"
+    [customLeftButtonStyles]="{
+        'border-left': '1px solid #FFFFFF',
+        'font-family': 'RobotoMedium',
+        'color': '#FFFFFF',
+        'cursor': 'unset'
+    }"
+    [customRightButtonStyles]="{
+        'border-left': '1px solid #FFFFFF',
+        'font-family': 'RobotoMedium',
+        'color': '#FFFFFF',
+        'cursor': 'unset'
+    }"
+    ></app-sticky-button>
+</div>
