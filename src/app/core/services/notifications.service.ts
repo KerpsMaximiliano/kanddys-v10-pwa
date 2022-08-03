@@ -85,6 +85,9 @@ export class NotificationsService {
       variables: { paginate },
       context: { useMultipart: true },
     });
+    (<NotificationChecker[]>result?.notificationCheckers).forEach((notification) => {
+      notification.date = new Date(notification.date);
+    });
     return result?.notificationCheckers;
   }
 

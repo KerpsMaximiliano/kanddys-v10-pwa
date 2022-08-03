@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -7,113 +8,9 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 
-const completeItems = [
-  {
-    headline: 'DATE ID PARA (000) 000 - 0000',
-    icon: '/whatsapp_verde.svg',
-    data: [
-      {
-        name: {
-          text: 'AL VENDERSE',
-          fontSize: '13px',
-          color: '#7B7B7B',
-          fontFamily: 'RobotoMedium',
-        },
-        subtitle: {
-          text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..',
-          fontSize: '17px',
-          color: '#202020',
-          fontFamily: 'RobotoItalic',
-        },
-      },
-    ],
-    showSubtitle: false,
-  },
-  {
-    headline: 'DATE ID PARA (000) 000 - 0000',
-    icon: '/whatsapp_verde.svg',
-    data: [
-      {
-        name: {
-          text: 'AL VENDERSE',
-          fontSize: '13px',
-          color: '#7B7B7B',
-          fontFamily: 'RobotoMedium',
-        },
-        subtitle: {
-          text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..',
-          fontSize: '17px',
-          color: '#202020',
-          fontFamily: 'RobotoItalic',
-        },
-      },
-    ],
-    showSubtitle: false,
-  },
-  {
-    headline: 'DATE ID PARA (000) 000 - 0000',
-    icon: '/whatsapp_verde.svg',
-    data: [
-      {
-        name: {
-          text: 'AL VENDERSE',
-          fontSize: '13px',
-          color: '#7B7B7B',
-          fontFamily: 'RobotoMedium',
-        },
-        subtitle: {
-          text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..',
-          fontSize: '17px',
-          color: '#202020',
-          fontFamily: 'RobotoItalic',
-        },
-      },
-    ],
-    showSubtitle: false,
-  },
-  {
-    headline: 'DATE ID PARA (000) 000 - 0000',
-    icon: '/whatsapp_verde.svg',
-    data: [
-      {
-        name: {
-          text: 'AL VENDERSE',
-          fontSize: '13px',
-          color: '#7B7B7B',
-          fontFamily: 'RobotoMedium',
-        },
-        subtitle: {
-          text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..',
-          fontSize: '17px',
-          color: '#202020',
-          fontFamily: 'RobotoItalic',
-        },
-      },
-    ],
-    showSubtitle: false,
-  },
-  {
-    headline: 'DATE ID PARA (000) 000 - 0000',
-    icon: '/whatsapp_verde.svg',
-    data: [
-      {
-        name: {
-          text: 'AL VENDERSE',
-          fontSize: '13px',
-          color: '#7B7B7B',
-          fontFamily: 'RobotoMedium',
-        },
-        subtitle: {
-          text: 'Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..',
-          fontSize: '17px',
-          color: '#202020',
-          fontFamily: 'RobotoItalic',
-        },
-      },
-    ],
-    showSubtitle: false,
-  },
-];
+interface ExtraNotificationChecker extends NotificationChecker {
+  showMessage?: boolean;
+}
 
 @Component({
   selector: 'app-notifications-log',
@@ -121,8 +18,7 @@ const completeItems = [
   styleUrls: ['./notifications-log.component.scss'],
 })
 export class NotificationsLogComponent implements OnInit {
-  completeItems: any[] = completeItems;
-  notifications: NotificationChecker[];
+  notifications: ExtraNotificationChecker[];
   allShow: boolean = false;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   merchant: Merchant;
@@ -131,6 +27,7 @@ export class NotificationsLogComponent implements OnInit {
     private merchantsService: MerchantsService,
     private authService: AuthService,
     private notificationsService: NotificationsService,
+    private location: Location,
     private router: Router
   ) {}
 
@@ -155,7 +52,6 @@ export class NotificationsLogComponent implements OnInit {
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
-      // this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
     } catch (error) {
       this.status = 'error';
       console.log(error);
@@ -172,6 +68,12 @@ export class NotificationsLogComponent implements OnInit {
           },
         }
       );
+      if(!this.notifications?.length) return;
+      this.notifications.forEach((notification) => {
+        notification.date = new Date(notification.date);
+        // console.log(notification.user.phone)
+      //   notification.action = this.notificationsService.getNotificationAction(notification).action;
+      });
       console.log(this.notifications);
     } catch (error) {
       this.status = 'error';
@@ -180,21 +82,18 @@ export class NotificationsLogComponent implements OnInit {
   }
 
   showAll = () => {
-    this.completeItems.forEach((item) => {
-      item.showSubtitle = true;
+    this.notifications.forEach((item) => {
+      item.showMessage = true;
     });
     this.allShow = true;
   };
 
   return() {
-    if (this.allShow) {
-      this.completeItems.forEach((item) => {
-        item.showSubtitle = false;
-      });
-      this.allShow = false;
-    } else {
-      console.log('Seria un location Back ');
-    }
+    if(!this.allShow) return this.location.back();
+    this.notifications.forEach((item) => {
+      item.showMessage = false;
+    });
+    this.allShow = false;
   }
 
   errorScreen() {

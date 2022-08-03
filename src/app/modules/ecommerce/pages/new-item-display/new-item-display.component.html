@@ -65,44 +65,46 @@
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
 
-    <!-- <div>
-      <app-question-item style="cursor: pointer;"
-        *ngIf="!item?.notifications?.length"
-        (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
-        headline="AUTOMATIZA UN MENSAJE"
-        [headlineContainerStyles]="{
-          justifyContent: 'flex-start',
-          borderBottom: 'none'
-        }"
-        [headlineTitleStyles]="{
-          marginLeft: '10px'
-        }"
-        [headlineRightTextStyles]="{
-          color: '#2874AD',
-          fontFamily: 'SfProBold',
-          fontSize: '29px',
-          marginLeft: 'auto'
-        }"
-        [headlineLeftIcon]="{
-          icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
-          width: 30,
-          height: 30
-        }"
-        [headlineRightText]="{
-          text: '+',
-          color: 'darkblue',
-          fontSize: '29px',
-          fontFamily: 'Roboto'
-        }"
-        [tagListTextStyles]="{
-          marginRight: '5px'
-        }"
-        [tagListStyles]="{
-          marginTop: '15px'
-        }"
-        [chipMode]="2"
-        [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
-      ></app-question-item>
+    <section>
+      <div class="section">
+        <app-question-item
+          style="cursor: pointer"
+          (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
+          headline="AUTOMATIZA UN MENSAJE"
+          [headlineContainerStyles]="{
+            justifyContent: 'flex-start',
+            borderBottom: 'none'
+          }"
+          [headlineTitleStyles]="{
+            marginLeft: '10px'
+          }"
+          [headlineRightTextStyles]="{
+            color: '#2874AD',
+            fontFamily: 'SfProBold',
+            fontSize: '29px',
+            marginLeft: 'auto'
+          }"
+          [headlineLeftIcon]="{
+            icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+            width: 30,
+            height: 30
+          }"
+          [headlineRightText]="{
+            text: '+',
+            color: 'darkblue',
+            fontSize: '29px',
+            fontFamily: 'Roboto'
+          }"
+          [tagListTextStyles]="{
+            marginRight: '5px'
+          }"
+          [tagListStyles]="{
+            marginTop: '15px'
+          }"
+          [chipMode]="2"
+          [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
+        ></app-question-item>
+      </div>
       <ng-container
         *ngIf="item?.notifications?.length && notifications?.length"
       >
@@ -155,7 +157,7 @@
           ></app-enlist-display>
         </div>
       </ng-container>
-    </div> -->
+    </section>
   </div>
   <app-sticky-button
     [mode]="'double'"

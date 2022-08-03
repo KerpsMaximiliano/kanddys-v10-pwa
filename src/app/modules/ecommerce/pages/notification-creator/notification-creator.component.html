@@ -27,6 +27,7 @@
         fontSize: '17px'
       }"
       (onSelector)="selectedAction = $event"
+      [activeOption]="selectedAction"
     ></app-answer-selector>
     <h3>Cuál es el destinatario del mensaje?</h3>
     <app-answer-selector
@@ -41,7 +42,7 @@
         fontSize: '17px'
       }"
       (onSelector)="selectedReceiver = $event"
-      [activeOption]="selectedAction"
+      [activeOption]="selectedReceiver"
     ></app-answer-selector>
     <div class="form-wrapper">
       <label for="form" class="input-label"> Mensaje de la plantilla: </label>
