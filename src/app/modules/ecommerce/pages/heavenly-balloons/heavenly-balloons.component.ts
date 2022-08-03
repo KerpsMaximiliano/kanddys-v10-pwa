@@ -848,7 +848,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-            if(Number(change) > Number(totalAmount) && totalAmount !== "") {
+            if(Number(change) > Number(totalAmount) && totalAmount !== "" && Number(totalAmount) !== 0) {
               this.formSteps[6].fieldsList[1].fieldControl.control.setValue(firstPayment, {
                 emitEvent: false,
               });

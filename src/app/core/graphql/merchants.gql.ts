@@ -301,12 +301,12 @@ export const uploadAirtableAttachments = gql`
 export const uploadDataToClientsAirtable = gql`
   mutation uploadDataToClientsAirtable(
     $merchantId: ObjectID!,
-    $databaseName: String!,
+    $automation: String!,
     $data: JSON!
   ) {
     uploadDataToClientsAirtable(
       merchantId: $merchantId,
-      databaseName: $databaseName,
+      automation: $automation,
       data: $data
     )
   }

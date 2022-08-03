@@ -276,13 +276,13 @@ export class MerchantsService {
 
   async uploadDataToClientsAirtable(
     merchantId: string,
-    databaseName: string,
+    automation: string,
     data: Record<string, any>
   ): Promise<boolean> {
     try {
       const result = await this.graphql.mutate({
         mutation: uploadDataToClientsAirtable,
-        variables: { merchantId, databaseName, data },
+        variables: { merchantId, automation, data },
         fetchPolicy: 'no-cache',
       });
 
