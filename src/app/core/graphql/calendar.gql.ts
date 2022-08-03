@@ -17,39 +17,6 @@ export const getCalendar = gql`
       timeChunkSize
       mode
       active
-      merchant
-      reservations {
-        reservation
-        date {
-          dateType
-          from
-          until
-          fromHour
-          toHour
-        }
-      }
-    }
-  }
-`;
-
-export const getCalendarsByMerchant = gql`
-  query getCalendarsByMerchant($merchant: ObjectID!) {
-    getCalendarsByMerchant(merchant: $merchant) {       
-      _id
-      name
-      reservationLimits
-      expirationTime
-      breakTime
-      limits {
-        dateType
-        fromDay
-        toDay
-        fromHour
-        toHour
-      }
-      timeChunkSize
-      mode
-      active
       reservations {
         reservation
         date {
@@ -104,6 +71,39 @@ export const getCalendarWithMerchantInfo = gql`
     }
   }
 `;
+
+export const getCalendarsByMerchant = gql`
+  query getCalendarsByMerchant($merchant: ObjectID!) {
+    getCalendarsByMerchant(merchant: $merchant) {       
+      _id
+      name
+      reservationLimits
+      expirationTime
+      breakTime
+      limits {
+        dateType
+        fromDay
+        toDay
+        fromHour
+        toHour
+      }
+      timeChunkSize
+      mode
+      active
+      reservations {
+        reservation
+        date {
+          dateType
+          from
+          until
+          fromHour
+          toHour
+        }
+      }
+    }
+  }
+`;
+
 
 export const identifyCalendarAdmin = gql`
 mutation identifyCalendarAdmin($id: ObjectID!) {

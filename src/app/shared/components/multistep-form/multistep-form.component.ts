@@ -251,7 +251,11 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
   SearchCountryField = SearchCountryField;
-  CountryISO = CountryISO.UnitedStates;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
   PhoneNumberFormat = PhoneNumberFormat;
   headerHeightTracker: number = 60;
 

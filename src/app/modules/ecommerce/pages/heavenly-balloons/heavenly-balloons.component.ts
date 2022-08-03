@@ -848,7 +848,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-            if(Number(change) > Number(totalAmount) && totalAmount !== "") {
+            if(Number(change) > Number(totalAmount) && totalAmount !== "" && Number(totalAmount) !== 0) {
               this.formSteps[6].fieldsList[1].fieldControl.control.setValue(firstPayment, {
                 emitEvent: false,
               });
@@ -1047,7 +1047,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs:
           {
-            calendarId: "62bbb5f545c3506dfb3d11d4",
+            calendarId: "62eadec619ae079e9283f355",
             firstLabel: "FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO",
             secondLabel: "HORARIO DE ENTREGA",
             timeOfDayMode: true

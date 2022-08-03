@@ -327,11 +327,11 @@ const routes: Routes = [
     component: Authentication
   },
   {
-    path: 'll-studio-order-form/:merchantId/:databaseName',
+    path: 'll-studio-order-form/:merchantId/:automationName',
     component: LlStudioOrderFormComponent
   },
   {
-    path: 'heavenly-balloons/:merchantId/:databaseName',
+    path: 'heavenly-balloons/:merchantId/:automationName',
     component: HeavenlyBalloonsComponent
   },
   {
