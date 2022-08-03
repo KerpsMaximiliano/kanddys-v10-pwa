@@ -7,6 +7,7 @@ import { NotificationChecker } from 'src/app/core/models/notification';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 interface ExtraNotificationChecker extends NotificationChecker {
   showMessage?: boolean;
@@ -71,10 +72,12 @@ export class NotificationsLogComponent implements OnInit {
       if(!this.notifications?.length) return;
       this.notifications.forEach((notification) => {
         notification.date = new Date(notification.date);
-        // console.log(notification.user.phone)
+        const phoneUtil = PhoneNumberUtil.getInstance();
+        const phoneNumber = phoneUtil.parse('+'+notification.user.phone);
+        const phone = phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
+        notification.user.phone = phone;
       //   notification.action = this.notificationsService.getNotificationAction(notification).action;
       });
-      console.log(this.notifications);
     } catch (error) {
       this.status = 'error';
       console.log(error);
