@@ -299,7 +299,6 @@ export class ItemsService {
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -324,7 +323,6 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -336,7 +334,6 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -350,7 +347,6 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -364,7 +360,6 @@ export class ItemsService {
   }
 
   async createItemPackage(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItemPackage,
       variables: { input },
@@ -372,12 +367,10 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
   async itemExtraByMerchant(merchantId: string) {
-    console.log(merchantId);
     try {
       const response = await this.graphql.query({
         query: itemExtraByMerchant,

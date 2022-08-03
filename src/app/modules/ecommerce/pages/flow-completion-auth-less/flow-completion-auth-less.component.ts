@@ -439,7 +439,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       switch (this.step) {
         case 'PHONE_CHECK_AND_SHOW_BANKS': {
           if (this.isAPreOrder) {
-            const foundUser = await this.checkIfUserExists();
+            const foundUser = await this.checkIfUserExists(this.orderData?.user?.phone);
 
             this.userData = foundUser;
 
@@ -708,9 +708,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
   }
 
-  async checkIfUserExists(): Promise<User | null> {
+  async checkIfUserExists(number?: string): Promise<User | null> {
     const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
-    const data = await this.authService.checkUser(phoneNumber);
+    const data = await this.authService.checkUser(number ?? phoneNumber);
 
     if (data) {
       return data;

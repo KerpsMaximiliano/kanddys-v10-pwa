@@ -68,8 +68,13 @@ export class AuthService {
   ): Promise<Session> {
     try {
       const variables = { emailOrPhone, password, remember };
-      const result = await this.graphql.mutate({ mutation: signin, variables });
+      const promise = this.graphql.mutate({ mutation: signin, variables });
+      
+      this.ready = from(promise);
+
+      const result = await promise;
       this.session = new Session(result?.session, true);
+      
     } catch (e) {
       this.session?.revoke();
       this.session = undefined;
@@ -84,7 +89,6 @@ export class AuthService {
       lockUI(promise);
       const result = await promise;
       this.session = new Session(result?.session, true);
-      console.log(this.session.token);
     } catch (e) {
       console.log(e);
       this.session?.revoke();
@@ -98,7 +102,6 @@ export class AuthService {
     input: any,
     authLogin: boolean = true
   ): Promise<Session> {
-    console.log(input);
     try {
       input.createIfNotExist = true;
       const variables = { input };
@@ -106,7 +109,6 @@ export class AuthService {
         mutation: signinSocial,
         variables,
       });
-      console.log(result);
       this.session = new Session(result?.signinSocial, true);
     } catch (e) {
       console.log(e);
@@ -121,8 +123,6 @@ export class AuthService {
     emailOrPhone: string,
     notificationMethod: string
   ) {
-    console.log(emailOrPhone, notificationMethod);
-
     const result = await this.graphql.mutate({
       mutation: simplifySignup,
       variables: { emailOrPhone, notificationMethod },

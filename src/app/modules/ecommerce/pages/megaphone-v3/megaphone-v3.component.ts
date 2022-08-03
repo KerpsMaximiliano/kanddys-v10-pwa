@@ -63,7 +63,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
-  canOpenCart: boolean;
+  // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -177,7 +177,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             item.isSelected = selectedItems.includes(item._id);
         });
         //sub.unsubscribe();
-        this.canOpenCart = this.items.some((item) => item.isSelected);
+        // this.canOpenCart = this.items.some((item) => item.isSelected);
       });
   }
 
@@ -271,8 +271,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
         this.items = items.listItems;
-        this.canOpenCart = orderData?.products?.length > 0;
-        this.itemCartAmount = orderData?.products?.length;
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
@@ -295,13 +293,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         if (orderData?.products?.length) {
+          let itemIDs: string[] = [];
           orderData.products.forEach((item) => {
             if (!this.items.some((product) => product._id === item.item)) {
+              itemIDs.push(item.item);
               this.header.removeOrderProduct(this.saleflowData._id, item.item);
               this.header.removeItem(this.saleflowData._id, item.item);
             }
           });
+          orderData.products = orderData.products.filter(product => !itemIDs.includes(product.item));
         }
+        // this.canOpenCart = orderData?.products?.length > 0;
+        this.itemCartAmount = orderData?.products?.length;
         await this.organizeItems(merchant);
         this.status = 'complete';
         unlockUI();

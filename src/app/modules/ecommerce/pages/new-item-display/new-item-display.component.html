@@ -65,7 +65,7 @@
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
 
-    <div>
+    <!-- <div>
       <app-question-item style="cursor: pointer;"
         *ngIf="!item?.notifications?.length"
         (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
@@ -153,16 +153,9 @@
             ]"
             [showSubtitle]="true"
           ></app-enlist-display>
-          <!-- [bottomText]="{
-              rightText: {
-                text: 'ULTIMO HACE DATEID',
-                fontSize: '17px',
-                fontFamily: 'RobotoMedium'
-              }
-            }" -->
         </div>
       </ng-container>
-    </div>
+    </div> -->
   </div>
   <app-sticky-button
     [mode]="'double'"

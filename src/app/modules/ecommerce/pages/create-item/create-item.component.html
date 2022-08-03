@@ -1,0 +1,107 @@
+<div class="component">
+  <header
+    [ngStyle]="{
+      backgroundColor:
+        item?.status === 'active' || !item ? '#2874AD' : '#B17608'
+    }"
+  >
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <div *ngIf="item">
+      <span>{{
+        item.status === "active"
+          ? "TAB EXPUESTO EN TIENDA"
+          : "TAB INACTIVO (NO EXPUESTO)"
+      }}</span>
+      <button (click)="toggleStatus()">
+        <img
+          [src]="
+            env +
+            (item.status === 'active' ? '/open-eye.svg' : '/closed-eye.svg')
+          "
+          alt="status"
+          width="32"
+          height="24"
+        />
+      </button>
+    </div>
+  </header>
+  <main>
+    <section class="border-bottom" *ngIf="mode === 'main'">
+      <h3 class="title">Lo que vendes</h3>
+      <section>
+        <span class="input-label">La imagen:</span>
+        <app-image-input
+          [imageField]="defaultImages?.length ? this.defaultImages : null"
+          [uploadImagesWithoutPlaceholderBox]="true"
+          [imagesAlreadyLoaded]="imagesAlreadyLoaded"
+          [allowedTypes]="['png', 'jpg', 'jpeg']"
+          innerLabel="Adiciona las imágenes"
+          [expandImage]="true"
+          [allowDeletion]="true"
+          [containerStyles]="{
+            width: '157px',
+            height: '137px !important'
+          }"
+          [fileStyles]="{
+            width: '157px',
+            height: '137px',
+            padding: '34px',
+            textAlign: 'center'
+          }"
+        ></app-image-input>
+      </section>
+      <section class="form-group">
+        <label class="input-label" for="price">Precio que te pagarán:</label>
+        <input
+          class="input-text"
+          type="text"
+          id="price"
+          name="price"
+          placeholder="$ Pagarán"
+        />
+      </section>
+    </section>
+    <section style="margin-top: 32px">
+      <div>
+        <label class="input-label" for="name">(Opcional) Nombre:</label>
+        <input
+          class="input-text"
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Escriba el nombre del producto..."
+        />
+      </div>
+      <!-- <span class="input-label">Contenido opcional</span>
+      <ul>
+        <li>
+          <button class="border-button" (click)="mode = 'name'">
+            Nombre
+          </button>
+        </li>
+      </ul> -->
+    </section>
+    <!-- <section *ngIf="mode === 'name'">
+      <h3 class="title">Nombre</h3>
+      <input
+        class="input-text"
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Escriba el nombre del producto..."
+      />
+    </section> -->
+  </main>
+  <footer [ngClass]="{ disabled: disableFooter }">
+    {{ !item && "ADICIONA LA INFO DE LO QUE VENDES" }}
+    <ng-container *ngIf="item">
+      <button>
+        <i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i>
+      </button>
+      <div>
+        <button>Preview</button>
+        <button>Salvar</button>
+      </div>
+    </ng-container>
+  </footer>
+</div>

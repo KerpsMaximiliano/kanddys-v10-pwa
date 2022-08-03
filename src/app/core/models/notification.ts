@@ -1,5 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { User } from './user';
 
 export class PhoneNumbersInput {
   phoneNumber: string;
@@ -55,4 +56,12 @@ export class Notification extends Model<Notification> {
   offsetTime: OffsetTime[];
 
   action?: string;
+}
+
+export class NotificationChecker extends Model<NotificationChecker> {
+  notification: Notification;
+  user: User;
+  date: Date;
+  status: string;
+  trigger: string;
 }
