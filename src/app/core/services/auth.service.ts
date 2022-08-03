@@ -68,8 +68,13 @@ export class AuthService {
   ): Promise<Session> {
     try {
       const variables = { emailOrPhone, password, remember };
-      const result = await this.graphql.mutate({ mutation: signin, variables });
+      const promise = this.graphql.mutate({ mutation: signin, variables });
+      
+      this.ready = from(promise);
+
+      const result = await promise;
       this.session = new Session(result?.session, true);
+      
     } catch (e) {
       this.session?.revoke();
       this.session = undefined;
