@@ -75,6 +75,7 @@ import { OrderDetailComponent } from './pages/order-detail/order-detail.componen
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
 import { CreateItemComponent } from './pages/create-item/create-item.component';
+import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 
 const routes: Routes = [
   {
@@ -438,6 +439,10 @@ const routes: Routes = [
     path:'merchant-buyers',
     component: MerchantBuyersComponent
   },
+  {
+    path: 'calendar-detail',
+    component: CalendarDetailComponent
+  },
 ];
 
 @NgModule({
@@ -517,6 +522,7 @@ const routes: Routes = [
     ReservationDetailComponent,
     MerchantBuyersComponent,
     CreateItemComponent,
+    CalendarDetailComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
