@@ -2,6 +2,10 @@
   <app-helper-headerv2
     *ngIf="item?.status === 'active'"
     [mode]="'basic'"
+    [plus]="{
+      active: item?.notifications?.length && notifications?.length > 0
+    }"
+    (plusEvent)="redirectTo('ecommerce/notification-creator/' + item._id)"
     [icons]="[
       {
         src: '/upload.svg',
@@ -68,6 +72,7 @@
     <section>
       <div class="section">
         <app-question-item
+          *ngIf="!item?.notifications?.length"
           style="cursor: pointer"
           (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
           headline="AUTOMATIZA UN MENSAJE"
