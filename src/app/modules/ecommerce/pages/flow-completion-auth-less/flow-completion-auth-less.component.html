@@ -12,7 +12,7 @@
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
     [cart]="true"
-    [cartCallback]="showCartCallBack"
+    [cartCallback]="openCart"
     [cartAmount]="itemsAmount"
     (onClose)="goBack()"
   ></app-helper-header>
@@ -83,7 +83,7 @@
         >
           <!-- <strong>(Opcional)</strong> -->
           Para completar la orden, transfiera como
-          pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
+          pago la suma de ${{ totalPrice | number: "1.0-2" }}
           DOP.
         </p>
 
@@ -223,7 +223,7 @@
       >
         <!-- <strong>(Opcional)</strong> -->
         Para completar la orden, transfiera como
-        pago la suma de ${{ orderData?.amount | number: "1.0-2" }}
+        pago la suma de ${{ totalPrice| number: "1.0-2" }}
         DOP.
       </p>
 
@@ -321,25 +321,6 @@
   </div>
   <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
-      <a
-        [href]="fixedWhatsappLink"
-        target="_blank"
-        *ngIf="shouldAllowPaymentSkipping"
-        [ngStyle]="{
-          color: 'rgb(39, 162, 255)',
-          fontFamily: 'Roboto',
-          fontSize: '17px',
-          fontStyle: 'italic',
-          margin: '0px',
-          marginTop: '60px',
-          cursor: 'pointer',
-          textDecoration: 'none'
-        }"
-      >
-        <!-- <div (click)="redirect()">
-          Completaré pagando la orden de otra manera.
-        </div> -->
-      </a>
       <p class="label1">
         Sobre la transferencia que realizó como pago:
       </p>

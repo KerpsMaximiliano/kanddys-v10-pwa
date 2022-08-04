@@ -57,7 +57,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
       this.itemData = await this.items.item(params.id);
-      if  (!this.itemData || this.itemData.status !== 'active') return this.back();
+      if (!this.itemData || this.itemData.status !== 'active')
+        return this.back();
 
       const whatsappMessage = encodeURIComponent(
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
@@ -123,23 +124,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
                     else if (this.saleflowData.module?.delivery)
                       this.router.navigate(['/ecommerce/shipment-data-form']);
                     else if (!this.header.orderId) {
-                      let preOrderID;
-                      let whatsappLinkQueryParams;
                       lockUI();
-
-                      preOrderID = await this.header.createPreOrder();
+                      const preOrderID = await this.header.newCreatePreOrder();
                       this.header.orderId = preOrderID;
-
-                      whatsappLinkQueryParams = {
-                        'Keyword-Order': preOrderID as string,
-                      };
-
                       unlockUI();
-
                       this.router.navigate([
                         `ecommerce/flow-completion-auth-less/${preOrderID}`,
                       ]);
-
                       this.header.createdOrderWithoutDelivery = true;
                     } else {
                       this.router.navigate([

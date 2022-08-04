@@ -11,6 +11,7 @@ import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 interface ExtraNotificationChecker extends NotificationChecker {
   showMessage?: boolean;
+  action?: string;
 }
 
 @Component({
@@ -76,7 +77,7 @@ export class NotificationsLogComponent implements OnInit {
         const phoneNumber = phoneUtil.parse('+'+notification.user.phone);
         const phone = phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
         notification.user.phone = phone;
-      //   notification.action = this.notificationsService.getNotificationAction(notification).action;
+        notification.action = this.notificationsService.getNotificationAction(notification)?.action;
       });
     } catch (error) {
       this.status = 'error';

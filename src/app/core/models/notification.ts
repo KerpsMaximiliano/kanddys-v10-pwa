@@ -15,10 +15,10 @@ export class OffsetTimeInput {
   hour?: number;
 }
 
-export type Triggers = 'generic' | 'status';
+export type TriggersType = 'generic' | 'status';
 
 export class TriggerInput {
-  key: Triggers;
+  key: TriggersType;
   value: string;
 }
 
@@ -42,8 +42,8 @@ export class OffsetTime {
   hour: Date;
 }
 
-export class Trigger {
-  key: Triggers;
+export class Triggers {
+  key: TriggersType;
   value: string;
 }
 
@@ -52,7 +52,7 @@ export class Notification extends Model<Notification> {
   merchant: Merchant;
   phoneNumbers: PhoneNumbers[];
   entity: string;
-  trigger: Trigger[];
+  trigger: Triggers[];
   offsetTime: OffsetTime[];
   active: boolean;
 
@@ -64,5 +64,5 @@ export class NotificationChecker extends Model<NotificationChecker> {
   user: User;
   date: Date;
   status: string;
-  trigger: string;
+  trigger: Triggers;
 }

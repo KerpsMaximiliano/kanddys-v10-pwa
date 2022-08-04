@@ -11,7 +11,7 @@ import {
   saleflows,
   addItemToSaleFlow,
   addLocation,
-  listPackages,
+  listItemPackage,
   updateSaleflow,
   createSaleflow,
   createSaleFlowModule,
@@ -82,10 +82,10 @@ export class SaleFlowService {
     }
   }
 
-  async listPackages(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
+  async listItemPackage(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
     try {
       const response = await this.graphql.query({
-        query: listPackages,
+        query: listItemPackage,
         variables: { params },
         fetchPolicy: 'no-cache',
       });

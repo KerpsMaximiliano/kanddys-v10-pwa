@@ -235,8 +235,8 @@ export class ProviderStoreComponent implements OnInit {
       let packages: string[] = [];
       if (this.header.order.itemPackage) {
         packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
+        const listItemPackage = (
+          await this.saleflow.listItemPackage({
             findBy: {
               _id: {
                 __in: ([] = packages),
@@ -244,7 +244,7 @@ export class ProviderStoreComponent implements OnInit {
             },
           })
         ).listItemPackage;
-        this.products = listPackages;
+        this.products = listItemPackage;
         this.status = 'done';
       } else {
         for (let i = 0; i < this.header.order.products.length; i++) {

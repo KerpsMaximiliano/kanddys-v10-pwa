@@ -26,6 +26,7 @@ import {
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { Item, ItemPackage } from 'src/app/core/models/item';
 
 interface BankDetails {
   status: boolean;
@@ -68,9 +69,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   isLogged: boolean;
   userId: string;
   userData: User;
-  orderData: any;
   isAPreOrder: boolean = true;
-  fakeData: ItemOrder;
+  orderData: ItemOrder;
+  products: Item[] | ItemPackage[] = [];
   reservationOrProduct: string = '';
   headerText: string;
   disableUserDataInputs: boolean = false;
@@ -96,10 +97,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     CountryISO.DominicanRepublic,
     CountryISO.UnitedStates,
   ];
-  shouldAllowPaymentSkipping: boolean = false;
-  showCartCallBack: () => void;
   buttonBlocked: boolean = false;
   itemsAmount: number;
+  totalPrice: number;
 
   constructor(
     private authService: AuthService,
@@ -124,107 +124,70 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
   }
 
-  afterOrderRequest = async (data) => {
+  afterOrderRequest = async ({ order }: { order: ItemOrder }) => {
+    if (!order) {
+      this.router.navigate(['/ecommerce/error-screen']);
+      return;
+    }
+    this.orderData = order;
+
     if (
-      data.order.orderStatus === 'cancelled' ||
-      data.order.orderStatus === 'to confirm' ||
-      data.order.orderStatus === 'completed'
+      order.orderStatus === 'cancelled' ||
+      order.orderStatus === 'to confirm' ||
+      order.orderStatus === 'completed'
     )
-      this.router.navigate([`ecommerce/order-info/${data.order._id}`]);
-    if (data.order.items[0].reservation?._id !== null) {
+      this.router.navigate([`ecommerce/order-info/${order._id}`]);
+    if (order.items[0].reservation?._id !== null)
       this.reservationOrProduct = 'reservacion';
-    } else {
-      this.reservationOrProduct = 'producto';
+    else this.reservationOrProduct = 'producto';
+    if (!this.merchantInfo) {
+      await this.getMerchant(order.merchants[0]._id);
+      if (this.merchantInfo?.name.includes('&'))
+        this.merchantInfo.name = this.merchantInfo?.name.replace('&', 'and');
     }
 
-    if (data) {
-      this.fakeData = data.order;
-      if (!this.merchantInfo) {
-        await this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
-          this.merchantInfo = this.header.merchantInfo;
-          if (this.merchantInfo?.name.includes('&')) {
-            this.merchantInfo.name = this.merchantInfo?.name.replace(
-              '&',
-              'and'
-            );
-          }
-        });
+    this.totalPrice = order.subtotals.reduce((a, b) => a + b.amount, 0);
+    if (order.items[0].customizer) this.totalPrice = this.totalPrice * 1.18;
+
+    const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+
+    this.fixedWhatsappLink2 = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+
+    this.products = order.items.map((item) => {
+      const newItem = item.item;
+      if (item.customizer) {
+        newItem.customizerId = item.customizer._id;
+        newItem.total = this.totalPrice;
+        this.customizerValueService
+          .getCustomizerValuePreview(item.customizer._id)
+          .then((value) => {
+            newItem.images[0] = value.preview;
+          });
       }
-      const totalPrice = this.fakeData.subtotals.reduce(
-        (a, b) => a + b.amount,
-        0
+      return newItem;
+    });
+
+    this.dialogProps = {
+      orderFinished: true,
+      products: this.products,
+    };
+    this.itemsAmount = this.products.length;
+
+    if (order.items[0].saleflow.module?.paymentMethod?.paymentModule?._id) {
+      await this.getExchangeData(
+        order.items[0].saleflow.module?.paymentMethod.paymentModule._id
       );
-
-      this.orderData = {
-        id: this.fakeData._id,
-        userId: this.fakeData.user ? this.fakeData.user._id : null,
-        user: this.fakeData.user ? this.fakeData.user : null,
-        itemAmount: this.fakeData.items.reduce((a, b) => a + b.amount, 0),
-        name: this.fakeData.itemPackage?.name
-          ? this.fakeData.itemPackage?.name
-          : this.fakeData.items[0].item.name,
-        amount: this.fakeData.items[0].customizer
-          ? totalPrice * 1.18
-          : totalPrice,
-        hasCustomizer: this.fakeData.items[0].customizer ? true : false,
-        isPackage: this.fakeData.itemPackage ? true : false,
-        saleflow: this.fakeData.items[0].saleflow,
-      };
-
-      const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
-
-      this.fixedWhatsappLink2 = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
-
-      this.products = this.fakeData.items.map((item) => {
-        const newItem = item.item;
-        if (item.customizer) {
-          newItem.customizerId = item.customizer._id;
-          newItem.total = totalPrice * 1.18;
-          this.customizerValueService
-            .getCustomizerValuePreview(item.customizer._id)
-            .then((value) => {
-              newItem.images[0] = value.preview;
-            });
-        }
-        return newItem;
-      });
-
-      let showProducts = [];
-      if (this.orderData.isPackage) {
-        showProducts.push(this.fakeData.itemPackage);
-      } else {
-        showProducts = this.products;
-      }
-
-      this.dialogProps = {
-        orderFinished: true,
-        products: showProducts,
-      };
-      this.itemsAmount = showProducts.length;
-      this.showCartCallBack = () => this.openCart();
-
-      if (!this.orderData) {
-        this.router.navigate(['/error-screen/?type=item']);
-      }
-      if (
-        data.order.items[0].saleflow.module?.paymentMethod?.paymentModule?._id
-      )
-        await this.getExchangeData(
-          data.order.items[0].saleflow.module?.paymentMethod.paymentModule._id
-        );
-    } else {
-      this.router.navigate(['/ecommerce/error-screen']);
     }
   };
 
-  openCart() {
+  openCart = () => {
     this.dialogService.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: this.dialogProps,
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   async getOrderData(id: string, preOrder = false) {
     if (preOrder) {
@@ -242,396 +205,274 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   async getMerchant(id: string) {
     try {
-      const merchant = await this.merchant.merchant(id);
-      this.header.merchantInfo = merchant;
+      this.merchantInfo = await this.merchant.merchant(id);
+      this.header.merchantInfo = this.merchantInfo;
     } catch (error) {
       console.log(error);
     }
   }
 
-  products: any[] = [];
-
   async ngOnInit() {
     this.localStorageFlowRoute =
       this.header.flowRoute || (localStorage.getItem('flowRoute') ?? '');
 
-    this.route.params.subscribe(async (routeParams) => {
-      const { orderId } = routeParams;
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    const { orderStatus } = await this.order.getOrderStatus(orderId);
 
-      const { orderStatus } = await this.order.getOrderStatus(orderId);
+    if (orderId) {
+      this.orderId = orderId;
 
-      if (orderId) {
-        this.orderId = orderId;
+      await this.getOrderData(orderId, orderStatus === 'draft');
 
-        await this.getOrderData(orderId, orderStatus === 'draft');
-
-        if (orderStatus === 'completed') {
-          this.redirect();
-        }
-
-        if (orderStatus !== 'draft') {
-          this.phoneNumber.setValue(this.orderData.user.phone);
-          this.name.setValue(this.orderData.user.name);
-          this.phoneNumber.disable();
-          this.name.disable();
-          this.disableUserDataInputs = true;
-        }
-        //   await this.order.authOrder(orderId);
-
-        //   await this.getOrderData(orderId, false);
-        // }
-      } else if (!this.header.isDataComplete()) {
-        this.header.resetIsComplete();
+      if (orderStatus === 'completed') {
+        this.redirect();
       }
 
-      const saleflow: SaleFlow =
-        this.header.saleflow ||
-        this.orderData.saleflow ||
-        JSON.parse(localStorage.getItem('saleflow-data'));
-      this.saleflowData = saleflow;
-
-      if (saleflow._id === '61b8df151e8962cdd6f30feb')
-        this.shouldAllowPaymentSkipping = true;
-
-      if (saleflow?.module?.paymentMethod?.paymentModule?._id) {
-        try {
-          await this.getExchangeData(
-            saleflow.module.paymentMethod.paymentModule._id
-          );
-          this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
-
-          // if (currentSession) {
-          //   await this.getExchangeData(
-          //     saleflow.module.paymentMethod.paymentModule._id
-          //   );
-          //   this.isANewUser =
-          //     currentSession.name === '' ||
-          //     String(currentSession.name) === 'null';
-          //   this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
-          // } else {
-          //   this.router.navigate(['/']);
-          // }
-        } catch (error) {
-          console.log(error);
-        }
+      if (orderStatus !== 'draft') {
+        this.phoneNumber.setValue(this.orderData.user.phone);
+        this.name.setValue(this.orderData.user.name);
+        this.phoneNumber.disable();
+        this.name.disable();
+        this.disableUserDataInputs = true;
       }
+    } else if (!this.header.isDataComplete()) {
+      this.header.resetIsComplete();
+    }
 
-      this.headerText =
-        this.saleflowData._id === '6201d72bdfeceed4d13805bc'
-          ? 'INFORMACIÓN'
-          : 'INFORMACIÓN DEL PAGO';
-      let packages: string[] = [];
-      if (this.header.order?.itemPackage) {
-        packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
-            findBy: {
-              _id: {
-                __in: ([] = packages),
-              },
+    this.saleflowData = this.orderData.items[0].saleflow;
+
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
+      try {
+        await this.getExchangeData(
+          this.saleflowData.module.paymentMethod.paymentModule._id
+        );
+        this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    this.headerText = this.saleflowData?.module?.paymentMethod?.paymentModule
+      ?._id
+      ? 'INFORMACIÓN DEL PAGO'
+      : 'INFORMACIÓN';
+    if (this.header.order?.itemPackage) {
+      const packages = [this.header.order.itemPackage];
+      const listItemPackage = (
+        await this.saleflow.listItemPackage({
+          findBy: {
+            _id: {
+              __in: ([] = packages),
             },
-          })
-        ).listItemPackage;
-        this.products = listPackages;
-      }
-
-      if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
-        this.merchantInfo =
-          this.header.merchantInfo ||
-          JSON.parse(localStorage.getItem('merchantInfo'));
-    });
-  }
-
-  findItemData(products) {
-    this.saleflow
-      .listItems({
-        findBy: {
-          _id: {
-            __in: ([] = products),
           },
-        },
-      })
-      .then((data) => {
-        this.products = data.listItems;
-      });
+        })
+      ).listItemPackage;
+      this.products = listItemPackage;
+    }
+
+    if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
+      this.merchantInfo =
+        this.header.merchantInfo ||
+        JSON.parse(localStorage.getItem('merchantInfo'));
   }
 
   async getExchangeData(id: string) {
-    const data = await this.wallet.exchangedata(id);
-
+    const data = await this.wallet.exchangeData(id);
     this.banks = data.ExchangeData.bank;
+    this.banksInfo = this.banks.map((bank) => ({
+      value: `${bank.bankName}`,
+      status: true,
+      description: {
+        typeAccount: bank.typeAccount,
+        owner: bank.ownerAccount,
+        account: bank.account,
+        routingNumber: bank.routingNumber,
+      },
+    }));
+    this.bankOptions = this.banks.map((bank) => ({
+      value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
+      status: true,
+      description: {
+        typeAccount: bank.typeAccount,
+        owner: bank.ownerAccount,
+        account: bank.account,
+        routingNumber: bank.routingNumber,
+      },
+    }));
+  }
 
-    this.banksInfo = this.banks.map((bank) => {
-      return {
-        value: `${bank.bankName}`,
-        status: true,
-        description: {
-          typeAccount: bank.typeAccount,
-          owner: bank.ownerAccount,
-          account: bank.account,
-          routingNumber: bank.routingNumber,
-        },
-      };
-    });
+  async submitPhoneCheck(fullLink: string) {
+    if (this.isAPreOrder) {
+      const foundUser = await this.checkIfUserExists(this.orderData.user?.phone);
+      this.userData = foundUser;
+      if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
+        this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+        this.buttonBlocked = false;
+        return;
+      }
 
-    this.bankOptions = this.banks.map((bank) => {
-      return {
-        value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
-        status: true,
-        description: {
-          typeAccount: bank.typeAccount,
-          owner: bank.ownerAccount,
-          account: bank.account,
-          routingNumber: bank.routingNumber,
-        },
-      };
-    });
+      if (foundUser && foundUser.name) {
+        lockUI();
 
-    // let wallets = [];
-    // for (let i = 0; i < data.ExchangeData.bank.length; i++) {
-    //   wallets.push(
-    //     await this.wallet.paymentReceiver(
-    //       data.ExchangeData.bank[i].paymentReceiver._id
-    //     )
-    //   );
-    // }
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
 
-    // Promise.all(wallets).then((values) => {
-    //   console.log(values);
-    //   let descriptions = data.ExchangeData.bank.map((value) => {
-    //     return {
-    //       owner: value.ownerAccount,
-    //       type: value.typeAccount,
-    //       account: value.account,
-    //       routingNumber: value.routingNumber,
-    //     };
-    //   });
-    //   const payments = values.map((value) => {
-    //     return {
-    //       paymenteceiver: value.PaymentReceiver,
-    //       bankdata: descriptions,
-    //     };
-    //   });
-    //   console.log(payments);
-    //   this.bankOptions = payments.map((value, index) => {
-    //     this.banks[index].name = this.titlecasePipe.transform(
-    //       value.paymenteceiver.name
-    //     );
-    //     return {
-    //       value: this.titlecasePipe.transform(`${value.paymenteceiver.name} (${value.bankdata[0].account}, ${value.bankdata[0].owner})`),
-    //       status: true,
-    //       description: {
-    //         typeAccount: value.bankdata[0].type,
-    //         owner: value.bankdata[0].owner,
-    //         account: value.bankdata[0].account,
-    //         routingNumber: value.bankdata[0].routingNumber
-    //       },
-    //     };
-    //   });
-    // });
+        if (orderStatus === 'draft') {
+          await this.order.authOrder(this.orderId, foundUser._id);
+          this.header.flowRoute = '';
+          this.localStorageFlowRoute = '';
+          localStorage.removeItem('flowRoute');
+          this.header.deleteSaleflowOrder(this.saleflowData._id);
+          this.header.resetIsComplete();
+          this.isAPreOrder = false;
+        }
+
+        await this.getOrderData(this.orderId, false);
+
+        //disable 1st step inputs to avoid further changes to existing order
+        this.phoneNumber.disable();
+
+        if (this.banks?.length === 1) this.selectedBank = this.bankOptions[0];
+        this.buttonBlocked = false;
+        unlockUI();
+      }
+    }
+
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
+      this.pastStep = this.step;
+      this.step = 'PAYMENT_INFO';
+    } else {
+      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+      lockUI();
+      window.location.href = this.whatsappLink;
+    }
+
+    this.fixedWhatsappLink = `https://wa.me/${
+      this.merchantInfo.owner.phone
+    }?text=Hola%20${
+      this.merchantInfo.name
+    },%20%20acabo%20de%20hacer%20una%20orden.${
+      String(this.userData.name) !== 'null' && this.userData.name
+        ? '%20Mi%20nombre%20es:%20' + this.userData.name
+        : ''
+    }.%20Mas%20info%20aquí%20${fullLink}`;
+
+    this.buttonBlocked = false;
+  }
+
+  async submitUpdateName(fullLink: string) {
+    if (this.isAPreOrder) {
+      const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
+
+      if (!this.name.disabled) {
+        lockUI();
+
+        let registeredNewUser: User;
+
+        let foundUser = await this.authService.checkUser(phoneNumber);
+
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+
+        if (!foundUser) {
+          registeredNewUser = await this.signUp();
+          this.userData = registeredNewUser;
+
+          if (registeredNewUser && orderStatus === 'draft') {
+            this.header.flowRoute = '';
+            this.localStorageFlowRoute = '';
+            localStorage.removeItem('flowRoute');
+            await this.order.authOrder(this.orderId, registeredNewUser._id);
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
+          }
+
+          await this.getOrderData(this.orderId, false);
+          //disable 1st step inputs to avoid further changes to existing order
+          this.name.disable();
+
+          if (this.banks?.length === 1) this.selectedBank = this.bankOptions[0];
+
+          this.buttonBlocked = false;
+          unlockUI();
+
+          if (!this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+            this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+            lockUI();
+            window.location.href = this.whatsappLink;
+          }
+        }
+
+        if (foundUser && !foundUser.name) {
+          this.userData.name = this.name.value;
+          const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+
+          if (orderStatus === 'draft') {
+            await this.order.authOrder(this.orderId, foundUser._id);
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
+          }
+
+          await this.getOrderData(this.orderId, false);
+
+          //disable 1st step inputs to avoid further changes to existing order
+          this.phoneNumber.disable();
+
+          if (this.banks.length === 1) {
+            this.selectedBank = this.bankOptions[0];
+          }
+
+          this.buttonBlocked = false;
+          unlockUI();
+        }
+      } else {
+        let registeredNewUser: User = null;
+
+        let foundUser = await this.authService.checkUser(phoneNumber);
+
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+
+        if (orderStatus === 'in progress' && !foundUser) {
+          registeredNewUser = await this.signUp();
+          this.userData = registeredNewUser;
+
+          if (registeredNewUser) {
+            this.header.flowRoute = '';
+            this.localStorageFlowRoute = '';
+            localStorage.removeItem('flowRoute');
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
+          }
+
+          await this.getOrderData(this.orderId, false);
+          //disable 1st step inputs to avoid further changes to existing order
+          this.name.disable();
+
+          if (this.banks.length === 1) {
+            this.selectedBank = this.bankOptions[0];
+          }
+
+          this.buttonBlocked = false;
+        }
+      }
+    }
+    this.pastStep = this.step;
+    this.step = 'PAYMENT_INFO';
+    this.buttonBlocked = false;
   }
 
   async submit() {
     this.buttonBlocked = true;
-
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
     try {
       switch (this.step) {
-        case 'PHONE_CHECK_AND_SHOW_BANKS': {
-          if (this.isAPreOrder) {
-            const foundUser = await this.checkIfUserExists(this.orderData?.user?.phone);
-
-            this.userData = foundUser;
-
-            if (
-              !foundUser ||
-              !foundUser.name ||
-              String(foundUser.name) === 'null'
-            ) {
-              this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
-              this.buttonBlocked = false;
-              return;
-            }
-
-            if (foundUser && foundUser.name) {
-              lockUI();
-
-              const { orderStatus } = await this.order.getOrderStatus(
-                this.orderId
-              );
-
-              if (orderStatus === 'draft') {
-                await this.order.authOrder(this.orderId, foundUser._id);
-                this.header.flowRoute = '';
-                this.localStorageFlowRoute = '';
-                localStorage.removeItem('flowRoute');
-                this.header.deleteSaleflowOrder(this.saleflowData._id);
-                this.header.resetIsComplete();
-                this.isAPreOrder = false;
-              }
-
-              await this.getOrderData(this.orderId, false);
-
-              //disable 1st step inputs to avoid further changes to existing order
-              this.phoneNumber.disable();
-
-              if (this.banks.length === 1) {
-                this.selectedBank = this.bankOptions[0];
-              }
-
-              this.buttonBlocked = false;
-              unlockUI();
-            }
-          }
-
-          if (this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
-            this.pastStep = this.step;
-            this.step = 'PAYMENT_INFO';
-          } else {
-            this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
-
-            // const link = document.getElementById(
-            //   'invisible-link'
-            // ) as HTMLAnchorElement;
-            // link.click();
-
-            // this.redirect();
-
-            lockUI();
-            window.location.href = this.whatsappLink;
-          }
-
-          this.fixedWhatsappLink = `https://wa.me/${
-            this.merchantInfo.owner.phone
-          }?text=Hola%20${
-            this.merchantInfo.name
-          },%20%20acabo%20de%20hacer%20una%20orden.${
-            String(this.userData.name) !== 'null' && this.userData.name
-              ? '%20Mi%20nombre%20es:%20' + this.userData.name
-              : ''
-          }.%20Mas%20info%20aquí%20${fullLink}`;
-
-          this.buttonBlocked = false;
+        case 'PHONE_CHECK_AND_SHOW_BANKS':
+          this.submitPhoneCheck(fullLink);
           break;
-        }
-        case 'UPDATE_NAME_AND_SHOW_BANKS': {
-          if (this.isAPreOrder) {
-            // this.totalQuestions = 2;
-            const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
-
-            if (!this.name.disabled) {
-              lockUI();
-
-              let registeredNewUser: User = null;
-
-              let foundUser = await this.authService.checkUser(phoneNumber);
-
-              const { orderStatus } = await this.order.getOrderStatus(
-                this.orderId
-              );
-
-              if (!foundUser) {
-                registeredNewUser = await this.signUp();
-                this.userData = registeredNewUser;
-
-                if (registeredNewUser && orderStatus === 'draft') {
-                  this.header.flowRoute = '';
-                  this.localStorageFlowRoute = '';
-                  localStorage.removeItem('flowRoute');
-                  await this.order.authOrder(
-                    this.orderId,
-                    registeredNewUser._id
-                  );
-                  this.header.deleteSaleflowOrder(this.saleflowData._id);
-                  this.header.resetIsComplete();
-                  this.isAPreOrder = false;
-                }
-
-                await this.getOrderData(this.orderId, false);
-                //disable 1st step inputs to avoid further changes to existing order
-                this.name.disable();
-
-                if (this.banks.length === 1) {
-                  this.selectedBank = this.bankOptions[0];
-                }
-
-                this.buttonBlocked = false;
-                unlockUI();
-
-                if (
-                  !this.saleflowData?.module?.paymentMethod?.paymentModule?._id
-                ) {
-                  this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
-                  lockUI();
-                  window.location.href = this.whatsappLink;
-                }
-              }
-
-              if (foundUser && !foundUser.name) {
-                this.userData.name = this.name.value;
-                const { orderStatus } = await this.order.getOrderStatus(
-                  this.orderId
-                );
-
-                if (orderStatus === 'draft') {
-                  await this.order.authOrder(this.orderId, foundUser._id);
-                  this.header.deleteSaleflowOrder(this.saleflowData._id);
-                  this.header.resetIsComplete();
-                  this.isAPreOrder = false;
-                }
-
-                await this.getOrderData(this.orderId, false);
-
-                //disable 1st step inputs to avoid further changes to existing order
-                this.phoneNumber.disable();
-
-                if (this.banks.length === 1) {
-                  this.selectedBank = this.bankOptions[0];
-                }
-
-                this.buttonBlocked = false;
-                unlockUI();
-              }
-            } else {
-              let registeredNewUser: User = null;
-
-              let foundUser = await this.authService.checkUser(phoneNumber);
-
-              const { orderStatus } = await this.order.getOrderStatus(
-                this.orderId
-              );
-
-              if (orderStatus === 'in progress' && !foundUser) {
-                registeredNewUser = await this.signUp();
-                this.userData = registeredNewUser;
-
-                if (registeredNewUser) {
-                  this.header.flowRoute = '';
-                  this.localStorageFlowRoute = '';
-                  localStorage.removeItem('flowRoute');
-                  this.header.deleteSaleflowOrder(this.saleflowData._id);
-                  this.header.resetIsComplete();
-                  this.isAPreOrder = false;
-                }
-
-                await this.getOrderData(this.orderId, false);
-                //disable 1st step inputs to avoid further changes to existing order
-                this.name.disable();
-
-                if (this.banks.length === 1) {
-                  this.selectedBank = this.bankOptions[0];
-                }
-
-                this.buttonBlocked = false;
-              }
-            }
-            // this.updateUser();
-          }
-          this.pastStep = this.step;
-          this.step = 'PAYMENT_INFO';
-          this.buttonBlocked = false;
+        case 'UPDATE_NAME_AND_SHOW_BANKS':
+          this.submitUpdateName(fullLink);
           break;
-        }
         case 'PAYMENT_INFO':
           this.payOrder();
           this.buttonBlocked = false;
@@ -666,17 +507,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS') {
       this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
     }
-
-    // if (
-    //   this.step === 'PHONE_CHECK_AND_SHOW_BANKS' && !this.header.orderId &&
-    //   (this.header.flowRoute || this.localStorageFlowRoute !== '')
-    // ) {
-    //   const redirectionURL = `/ecommerce/${
-    //     this.header.flowRoute || this.localStorageFlowRoute
-    //   }`;
-    //   this.router.navigate([redirectionURL]);
-    // }
-
     if (this.step === 'PAYMENT_INFO') {
       this.image = null;
       this.selectedBank = null;
@@ -708,15 +538,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
   }
 
-  async checkIfUserExists(number?: string): Promise<User | null> {
+  async checkIfUserExists(number?: string): Promise<User> {
     const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
     const data = await this.authService.checkUser(number ?? phoneNumber);
 
-    if (data) {
-      return data;
-    } else {
-      return null;
-    }
+    if (!data) return;
+    return data;
   }
 
   // PAYMENT INFO
@@ -732,12 +559,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       }
 
       this.isLogged = true;
-      // if (this.orderId) {
-      //   this.router.navigate(['ecommerce/error-screen']);
-      //   return;
-      // }
-
-      if (this.banks.length === 1) {
+      if (this.banks?.length === 1) {
         this.selectedBank = this.bankOptions[0];
       }
 
@@ -754,40 +576,32 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   // Case 7
   async payOrder() {
-    const totalPrice = this.fakeData.subtotals.reduce(
-      (a, b) => a + b.amount,
-      0
-    );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
-    // const ammount = new Intl.NumberFormat('es-MX').format(
-    //   this.ammount.value.toLocaleString('es-MX')
-    // );
-    if (this.fakeData.items[0].customizer)
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
+    if (this.orderData.items[0].customizer) {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
       },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
+        Math.round((this.totalPrice + Number.EPSILON) * 100) / 100
       }.${
         String(this.userData.name) !== 'null' && this.userData.name
           ? '%20Mi%20nombre%20es:%20' + this.userData.name
           : ''
       }.%20Mas%20info%20aquí%20${fullLink}`;
-    else
+    } else {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
       }?text=Hola%20${
         this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${totalPrice.toLocaleString(
+      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.totalPrice.toLocaleString(
         'es-MX'
       )}.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
+    }
     try {
       lockUI();
-
-      // alert(this.orderData.userId + " === " + this.orderData.user._id + " === " + this.orderData.user.name);
 
       const data = await this.order.payOrder(
         {
@@ -795,12 +609,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           platform: 'bank-transfer',
           transactionCode: this.paymentCode,
         },
-        this.orderData.userId,
+        this.orderData.user._id,
         'bank-transfer',
-        this.orderData.id
+        this.orderData._id
       );
-      // this.header.deleteSaleflowOrder(this.saleflowData._id);
-      // this.header.resetIsComplete();
       this.header.storedDeliveryLocation = null;
 
       this.orderFinished();
@@ -828,7 +640,6 @@ export class FlowCompletionAuthLessComponent implements OnInit {
             : this.saleflowData?.module?.paymentMethod?.paymentModule?._id
             ? 'CONTINUAR LA ORDEN'
             : 'COMPLETA POR WHATSAPP');
-
       case 'PAYMENT_INFO':
         return (this.stepButtonText =
           !this.image || !this.selectedBank
@@ -855,7 +666,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/order-info/${this.orderData.id}`]);
+    this.router.navigate([`ecommerce/order-info/${this.orderData._id}`]);
   }
 
   orderFinished() {

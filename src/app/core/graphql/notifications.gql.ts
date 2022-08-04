@@ -15,8 +15,8 @@ offsetTime {
 }`;
 
 export const notification = gql`
-  query notification($id: ObjectID!) {
-    notification(id: $id) { ${notificationData} }
+  query notification($merchantId: ObjectID!, $id: ObjectID!) {
+    notification(merchantId: $merchantId, id: $id) { ${notificationData} }
   }
 `;
 
@@ -61,10 +61,7 @@ export const itemAddNotification = gql`
 export const notificationCheckers = gql`
   query notificationCheckers($paginate: PaginationInput!) {
     notificationCheckers(paginate: $paginate) {
-      notification {
-        _id
-        message
-      }
+      notification { ${notificationData} }
       user {
         _id
         phone

@@ -22,10 +22,10 @@ import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
 export class NotificationsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async notification(id: string): Promise<Notification> {
+  async notification(merchantId: string, id: string): Promise<Notification> {
     const result = await this.graphql.mutate({
       mutation: notification,
-      variables: { id },
+      variables: { merchantId, id },
       context: { useMultipart: true },
     });
     return result?.notification;
@@ -85,23 +85,39 @@ export class NotificationsService {
       variables: { paginate },
       context: { useMultipart: true },
     });
-    (<NotificationChecker[]>result?.notificationCheckers).forEach((notification) => {
-      notification.date = new Date(notification.date);
-    });
+    (<NotificationChecker[]>result?.notificationCheckers).forEach(
+      (notification) => {
+        notification.date = new Date(notification.date);
+      }
+    );
     return result?.notificationCheckers;
   }
 
-  getNotificationAction(notification: Notification) {
+  getNotificationAction(notification: Notification | NotificationChecker) {
     let action: string;
     let index: number;
-    const trigger = notification.trigger[0];
+    if (
+      ('offsetTime' in notification && !notification.trigger?.length) ||
+      ('notification' in notification && !notification.trigger)
+    )
+      return;
+    const trigger =
+      'offsetTime' in notification
+        ? notification.trigger[0]
+        : notification.trigger;
     if (trigger.key === 'generic') {
       if (trigger.value === 'create') {
-        if (!notification.offsetTime?.length) {
+        if (
+          ('offsetTime' in notification && !notification.offsetTime?.length) ||
+          ('notification' in notification && !notification.trigger)
+        ) {
           action = 'Al venderse para comprador';
           index = 0;
         } else {
-          const offsetTime = notification.offsetTime[0];
+          const offsetTime =
+            'offsetTime' in notification
+              ? notification.offsetTime[0]
+              : notification.notification.offsetTime[0];
           const unit =
             offsetTime.unit === 'days'
               ? 'días'

@@ -203,7 +203,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             limit: 20,
           },
         }),
-        this.item.itemCategoryHeadlineByMerchant(this.saleflowData.merchant._id),
+        this.item.itemCategoryHeadlineByMerchant(
+          this.saleflowData.merchant._id
+        ),
         this.merchant.merchant(this.saleflowData.merchant._id),
         this.authService.me(),
       ]);
@@ -218,8 +220,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
       // Package fetching
       if (this.saleflowData.packages.length) {
-        const listPackages = (
-          await this.saleflow.listPackages({
+        const listItemPackage = (
+          await this.saleflow.listItemPackage({
             findBy: {
               _id: {
                 __in: ([] = this.saleflowData.packages.map(
@@ -229,12 +231,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             },
           })
         ).listItemPackage;
-        listPackages.forEach((itemPackage) => {
+        listItemPackage.forEach((itemPackage) => {
           itemPackage.isSelected = orderData?.itemPackage === itemPackage._id;
         });
-        this.inputPackage = listPackages;
-        this.sliderPackage = listPackages;
-        await this.itemOfPackage(listPackages);
+        this.inputPackage = listItemPackage;
+        this.sliderPackage = listItemPackage;
+        await this.itemOfPackage(listItemPackage);
         this.inputPackage = this.packageData.map((e) => e.package);
         if (
           orderData &&
@@ -301,7 +303,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
               this.header.removeItem(this.saleflowData._id, item.item);
             }
           });
-          orderData.products = orderData.products.filter(product => !itemIDs.includes(product.item));
+          orderData.products = orderData.products.filter(
+            (product) => !itemIDs.includes(product.item)
+          );
         }
         // this.canOpenCart = orderData?.products?.length > 0;
         this.itemCartAmount = orderData?.products?.length;
@@ -419,7 +423,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         item: itemData._id,
         customizer: itemData.customizerId,
         params: itemParams,
-        amount: itemData.customizerId ? undefined : 1,
+        amount: undefined,
         saleflow: this.saleflowData._id,
         name: itemData.name,
       };
@@ -497,7 +501,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   async itemOfPackage(packages: ItemPackage[]) {
     let index = 0;

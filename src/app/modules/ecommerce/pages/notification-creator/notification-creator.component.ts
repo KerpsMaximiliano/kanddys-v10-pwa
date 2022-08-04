@@ -185,6 +185,7 @@ export class NotificationCreatorComponent implements OnInit {
     const notificationId = this.route.snapshot.paramMap.get('notificationId');
     if (!notificationId) return;
     this.notification = await this.notificationsService.notification(
+      this.merchant._id,
       notificationId
     );
     if (!this.notification) {

@@ -242,7 +242,7 @@ export const listItems = gql`
   }
 `;
 
-export const listPackages = gql`
+export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
       _id
