@@ -1502,6 +1502,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
       this.automationName = automationName;
       this.calendarId = calendarId;
 
+      this.formSteps[7].embeddedComponents[0].inputs.calendarId = this.calendarId;
+      this.formSteps[7].embeddedComponents[0].shouldRerender = true;
+
       console.log("merchantId", this.merchantId);
       console.log("automationName", this.automationName);
     })

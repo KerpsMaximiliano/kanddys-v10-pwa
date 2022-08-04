@@ -197,7 +197,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             control: new FormControl('', Validators.required)
           },
           placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de cumpleaños',
+          label: 'Fecha de cumpleaños (*)',
           inputType: 'date',
           maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
@@ -1610,6 +1610,10 @@ export class LlStudioOrderFormComponent implements OnInit {
 
       this.merchantId = merchantId;
       this.calendarId = calendarId;
+      
+      this.formSteps[7].embeddedComponents[0].inputs.calendarId = this.calendarId;
+      this.formSteps[7].embeddedComponents[0].shouldRerender = true;
+
       this.automationName = automationName;
     })
   }
