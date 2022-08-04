@@ -60,6 +60,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18098718288?text=';
   whatsappLinkSteps: string[] = [];
+  calendarId: string = null;
 
   formSteps: FormStep[] = [
     {
@@ -1175,7 +1176,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs:
           {
-            calendarId: "62eade2619ae079e9283f352",
+            calendarId: this.calendarId,
             //calendarId: "62ead89938496128082e4ddd"
           },
           outputs: [
@@ -1605,9 +1606,10 @@ export class LlStudioOrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const { merchantId, automationName } = params;
+      const { merchantId, automationName, calendarId } = params;
 
       this.merchantId = merchantId;
+      this.calendarId = calendarId;
       this.automationName = automationName;
     })
   }

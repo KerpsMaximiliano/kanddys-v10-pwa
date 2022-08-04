@@ -327,7 +327,7 @@ const routes: Routes = [
     component: Authentication
   },
   {
-    path: 'll-studio-order-form/:merchantId/:automationName',
+    path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
     component: LlStudioOrderFormComponent
   },
   {
