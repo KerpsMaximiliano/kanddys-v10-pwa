@@ -848,7 +848,7 @@ export class ReservationOrderlessComponent implements OnInit {
     this.header.storeOrderProgress(this.header.saleflow._id);
 
     let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+    if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
     else preOrderID = this.header.orderId;
 
     this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);

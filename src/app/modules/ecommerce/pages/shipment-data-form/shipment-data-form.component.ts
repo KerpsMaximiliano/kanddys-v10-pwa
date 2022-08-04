@@ -101,7 +101,7 @@ export class ShipmentDataFormComponent implements OnInit {
               if (!this.header.orderId) {
                 lockUI();
 
-                preOrderID = await this.header.createPreOrder();
+                preOrderID = await this.header.newCreatePreOrder();
                 this.header.orderId = preOrderID;
 
                 whatsappLinkQueryParams = {
@@ -210,7 +210,7 @@ export class ShipmentDataFormComponent implements OnInit {
           // if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
             lockUI();
 
-            preOrderID = await this.header.createPreOrder();
+            preOrderID = await this.header.newCreatePreOrder();
             this.header.orderId = preOrderID;
 
             whatsappLinkQueryParams = {

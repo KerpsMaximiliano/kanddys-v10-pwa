@@ -34,7 +34,7 @@ export class UserInfoComponent implements OnInit {
     else {
       lockUI();
       let preOrderID;
-      if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+      if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
       else preOrderID = this.header.orderId;
 
       this.router.navigate([
@@ -72,7 +72,7 @@ export class UserInfoComponent implements OnInit {
         asyncCallback: async (whatsappLink: string) => {
           let preOrderID;
           if (!this.header.orderId)
-            preOrderID = await this.header.createPreOrder();
+            preOrderID = await this.header.newCreatePreOrder();
           else preOrderID = this.header.orderId;
           whatsappLink += `text=Keyword-Order%20${preOrderID}`;
 
