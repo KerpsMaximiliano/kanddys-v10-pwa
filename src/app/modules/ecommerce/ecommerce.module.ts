@@ -331,7 +331,7 @@ const routes: Routes = [
     component: LlStudioOrderFormComponent
   },
   {
-    path: 'heavenly-balloons/:merchantId/:automationName',
+    path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
     component: HeavenlyBalloonsComponent
   },
   {
