@@ -54,6 +54,7 @@ export class Notification extends Model<Notification> {
   entity: string;
   trigger: Trigger[];
   offsetTime: OffsetTime[];
+  active: boolean;
 
   action?: string;
 }

@@ -61,12 +61,16 @@ export const itemAddNotification = gql`
 export const notificationCheckers = gql`
   query notificationCheckers($paginate: PaginationInput!) {
     notificationCheckers(paginate: $paginate) {
+      notification {
+        _id
+        message
+      }
       user {
         _id
+        phone
       }
       date
       status
-      trigger
     }
   }
 `;

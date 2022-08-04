@@ -1,53 +1,80 @@
 <div class="container">
-    
-    <app-helper-headerv2
+  <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="true"
     [mainText]="{
-        text: allShow? 'Todos Los Envios':'LOG',
-        fontFamily: 'SfProBold',
-        fontSize: '21px'
+      text: allShow ? 'Todos Los Envios' : 'LOG',
+      fontFamily: 'SfProBold',
+      fontSize: '21px'
     }"
     [edit]="{
-        active: !allShow,
-        text:'MIRA TODOS'
+      active: !allShow,
+      text: 'MIRA TODOS'
     }"
     [editBtnCallback]="showAll"
     (returnEvent)="return()"
-    ></app-helper-headerv2>
-
-    <ng-container *ngFor="let item of completeItems; index as i">
-        <div class="item-display">
-            <app-enlist-display 
-            [headline]="{
-                icon:{
-                    src:item.icon,
-                    width: 30,
-                    height: 30
-                },
-                text:{
-                    text:item.headline
-                }
-            }"
-            [showSubtitle]="item.showSubtitle"
-            [itemList]="item.data"
-            [tMarginTop]="'12px'"
-            [marginBottom]="'0px'"
-            ></app-enlist-display>
-        </div>    
+  ></app-helper-headerv2>
+  <ng-container *ngIf="status === 'loading'">
+    <h3 class="status">Cargando notificaciones...</h3>
+  </ng-container>
+  <ng-container *ngIf="status === 'complete'">
+    <ng-container *ngIf="notifications?.length">
+      <div
+        class="item-display"
+        *ngFor="let checker of notifications; index as i"
+      >
+        <app-enlist-display
+          [headline]="{
+            icon: {
+              src: '/whatsapp_verde.svg',
+              width: 30,
+              height: 30
+            },
+            text: {
+              text:
+                checker.date.toLocaleString('es-MX') +
+                ' PARA ' +
+                checker.user.phone
+            }
+          }"
+          [showSubtitle]="checker.showMessage"
+          [itemList]="[
+            {
+              name: {
+                text: 'el trigger',
+                fontSize: '13px',
+                color: '#7B7B7B',
+                fontFamily: 'RobotoMedium'
+              },
+              subtitle: {
+                text: checker.notification.message,
+                fontSize: '17px',
+                color: '#202020',
+                fontFamily: 'RobotoItalic'
+              }
+            }
+          ]"
+          [tMarginTop]="'12px'"
+          [marginBottom]="'0px'"
+        ></app-enlist-display>
+      </div>
     </ng-container>
+    <ng-container *ngIf="!notifications?.length">
+      <h3 class="status">No se encontraron notificaciones.</h3>
+    </ng-container>
+  </ng-container>
 
-    <app-sticky-button
+  <app-sticky-button
     [mode]="'double'"
     [bgColor]="'#A1A1A1'"
     [text]="''"
     [text2]="''"
     [extra]="{
-        return: true,
-        bgColor:'#2874AD'
+      return: true,
+      bgColor: '#2874AD'
     }"
     [size]="'small'"
     [fontSize]="'17px'"
     (added)="return()"
-    ></app-sticky-button>
+  ></app-sticky-button>
 </div>
