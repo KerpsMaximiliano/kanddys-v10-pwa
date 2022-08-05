@@ -120,7 +120,6 @@ export class SaleFlowService {
   }
 
   async addItemToSaleFlow(item: { item: string, customizer?: string, index?: number }, id: string) {
-    console.log(id);
     const result = await this.graphql.mutate({
       mutation: addItemToSaleFlow,
       variables: { item, id },

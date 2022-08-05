@@ -62,23 +62,28 @@
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
             [showPrice]="true"
-            [showIcon]="item.status != 'active' ? true : false"
-            [displaying]="true"
+            [showIcon]="true"
+            [inactive]="item.status != 'active' ? true : false"
             (itemClicked)="goToDetail(item._id)"
-            (iconClicked)="openDeleteDialog(item)"
+            (iconTwoClicked)="openDeleteDialog(item)"
             [responsiveWidthVersion]="true"
-            [icon]="{
-                src: '/delete.svg',
-                width: 15,
-                height: 18
-            }"
-            ></app-saleflow-item>
-            <!-- [icon]="item.notifications?.length && {
+            [icon]="item.notifications?.length ? {
                 src: '/whatsapp_verde.svg',
                 width: 17,
                 height: 17
+            } : {
+                src: '/open-eye.svg',
+                width: 17,
+                height: 14,
+                color: 'contrast(15%)'
             }" 
-            [showIcon]="item.status != 'active' ? true : false"-->
+            [icon2]="{
+                src: '/delete.svg',
+                width: 15,
+                height: 18,
+                cursor: true
+            }"
+            ></app-saleflow-item>
         </div>
     </div>
     <h3 class="no-results" *ngIf="status === 'complete' && (!items || !items.length)">
