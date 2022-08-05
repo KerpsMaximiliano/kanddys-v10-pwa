@@ -101,7 +101,7 @@
               'font-family': item.name.fontFamily ? item.name.fontFamily : '',
               color: item.name.color ? item.name.color : ''
             }"
-            (click)="showSubtitle = !showSubtitle"
+            (click)="hideAble ? showSubtitle = !showSubtitle : null"
           >
             {{ item.name.text }}
           </button>
