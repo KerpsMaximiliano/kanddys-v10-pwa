@@ -79,6 +79,7 @@ export class EnlistDisplayComponent implements OnInit {
         icon?: Icon;
     };
     showEntry: boolean;
+    @Input() hideAble: boolean = true;
     @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;
 
