@@ -176,8 +176,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           if (!item.customizerId)
             item.isSelected = selectedItems.includes(item._id);
         });
-        //sub.unsubscribe();
-        // this.canOpenCart = this.items.some((item) => item.isSelected);
+        this.itemCartAmount = productData?.length;
       });
   }
 

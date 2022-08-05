@@ -45,7 +45,7 @@
       <div class="item-list" *ngIf="categorylessItems.length">
         <ng-container *ngFor="let item of categorylessItems; index as i">
           <app-saleflow-item
-            *ngIf="item.showImages"
+            *ngIf="item.showImages && item.images.length"
             [type]="2"
             [big]="true"
             [name]="item.name"
@@ -57,12 +57,12 @@
             [showPrice]="item.customizerId ? false : true"
             priceAlign="start"
             [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
-            (itemClicked)="onItemClick(item._id)"
+            (itemClicked)="onItemClick(item._id, true)"
             (action)="onItemClick(item._id)"
           ></app-saleflow-item>
           <app-package-item
             [clickAble]="true"
-            *ngIf="!item.showImages"
+            *ngIf="!item.showImages || !item.images.length"
             [item]="item"
             (action)="onItemClick(item._id, $event)"
           ></app-package-item>
@@ -131,42 +131,6 @@
         "
       ></app-gallery-displayer>
     </ng-container>
-    <!-- <div class="content" *ngIf="itemsByCategory.length === 1">
-      <div
-        class="header-wrapper"
-        style="margin-top: 15px;"
-      >
-        <h6
-          class="header-text"
-        >
-          {{ itemsByCategory[0].label }}
-        </h6>
-        <h6
-          class="see-all-more"
-          style="font-weight: 100"
-          (click)="seeCategories(0)"
-        >
-          Ver..
-        </h6>
-      </div>
-      <div class="itemGrid">
-        <ng-container *ngFor="let swiperItem of itemsByCategory[0].items; index as i">
-          <app-saleflow-item
-            [type]="2"
-            [showBox]="swiperItem.customizerId ? false : true"
-            [imgURL]="swiperItem.images[0]"
-            [isSelected]="swiperItem.isSelected"
-            [showSelected]="true"
-            [price]="swiperItem.pricing"
-            [showPrice]="swiperItem.customizerId ? false : true"
-            priceAlign="start"
-            [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
-            (itemClicked)="onItemClick(0, i)"
-          >
-          </app-saleflow-item>
-        </ng-container>
-      </div>
-    </div> -->
     <section
       style="margin-bottom: 73px"
       *ngIf="
@@ -210,21 +174,3 @@
   *ngIf="viewtype == 'preview'"
   (click)="onShareClick()"
 ></app-bubble-button>
-
-<!-- <ng-container *ngIf="saleflowData">
-  <ng-container *ngIf="!hasCustomizer; else noCTA">
-    <app-sticky-button
-      [mode]="canOpenCart ? 'basic' : 'disabled'"
-      [size]="canOpenCart ? 'normal' : 'small'"
-      [text]="
-        canOpenCart
-          ? 'VER CARRITO DE COMPRAS'
-          : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
-          ? 'TOCA EN TU PLAN PREFERIDO'
-          : 'TOCA DONDE PREFIERAS'
-      " (click)="showShoppingCartDialog()"></app-sticky-button>
-  </ng-container>
-  <ng-template #noCTA>
-    <app-sticky-button [mode]="'disabled'" size="small" [text]="'TOCA DONDE PREFIERAS'"></app-sticky-button>
-  </ng-template>
-</ng-container> -->
