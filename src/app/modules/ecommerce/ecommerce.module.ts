@@ -77,6 +77,7 @@ import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers
 import { CreateItemComponent } from './pages/create-item/create-item.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
+import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 
 const routes: Routes = [
   {
@@ -447,6 +448,10 @@ const routes: Routes = [
   {
     path: 'reservations-creator',
     component: ReservationsCreatorComponent
+  },
+  {
+    path: 'calendar-creator',
+    component: CalendarCreatorComponent
   }
 ];
 
