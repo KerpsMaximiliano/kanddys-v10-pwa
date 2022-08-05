@@ -93,23 +93,26 @@ export class NotificationsService {
     return result?.notificationCheckers;
   }
 
+  // This one will be deprecated soon
   getNotificationAction(notification: Notification | NotificationChecker) {
     let action: string;
     let index: number;
     if (
       ('offsetTime' in notification && !notification.trigger?.length) ||
-      ('notification' in notification && !notification.trigger)
+      ('notification' in notification &&
+        !notification.notification.trigger?.length)
     )
       return;
     const trigger =
       'offsetTime' in notification
         ? notification.trigger[0]
-        : notification.trigger;
+        : notification.notification.trigger[0];
     if (trigger.key === 'generic') {
       if (trigger.value === 'create') {
         if (
           ('offsetTime' in notification && !notification.offsetTime?.length) ||
-          ('notification' in notification && !notification.trigger)
+          ('notification' in notification &&
+            !notification.notification.offsetTime?.length)
         ) {
           action = 'Al venderse para comprador';
           index = 0;
@@ -142,4 +145,56 @@ export class NotificationsService {
       index,
     };
   }
+
+
+  // This is the correct one, stil in progress
+  // getNotificationAction(notification: Notification | NotificationChecker) {
+  //   let action: string;
+  //   let index: number;
+  //   if (
+  //     ('offsetTime' in notification && !notification.trigger?.length) ||
+  //     ('notification' in notification && !notification.trigger)
+  //   )
+  //     return;
+  //   const trigger =
+  //     'offsetTime' in notification
+  //       ? notification.trigger[0]
+  //       : notification.trigger;
+  //   if (trigger.key === 'generic') {
+  //     if (trigger.value === 'create') {
+  //       if (
+  //         ('offsetTime' in notification && !notification.offsetTime?.length) ||
+  //         ('notification' in notification && !notification.trigger)
+  //       ) {
+  //         action = 'Al venderse para comprador';
+  //         index = 0;
+  //       } else {
+  //         const offsetTime =
+  //           'offsetTime' in notification
+  //             ? notification.offsetTime[0]
+  //             : notification.notification.offsetTime[0];
+  //         const unit =
+  //           offsetTime.unit === 'days'
+  //             ? 'días'
+  //             : offsetTime.unit === 'minutes'
+  //             ? 'minutos'
+  //             : offsetTime.unit === 'weeks' && 'semanas';
+  //         action = `A los ${offsetTime.quantity} ${unit} después de la venta`;
+  //         if (offsetTime.hour) {
+  //           action = action + ` a las ${offsetTime.hour}}`;
+  //           index = 3;
+  //         } else {
+  //           index = 4;
+  //         }
+  //       }
+  //     }
+  //   } else if (trigger.key === 'status') {
+  //     action = 'status id para comprador';
+  //     index = 2;
+  //   }
+  //   return {
+  //     action,
+  //     index,
+  //   };
+  // }
 }
