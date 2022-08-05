@@ -10,38 +10,6 @@ main {
   background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  font-family: "Roboto";
-  padding-left: 34px;
-  padding-right: 31px;
-
-  .see-all-more {
-    color: #7b7b7b;
-    font-family: "RobotoMedium";
-    font-size: 16px;
-    margin-top: 0;
-    margin-bottom: 8px;
-    cursor: pointer;
-
-    &:hover {
-      color: #999999;
-    }
-  }
-}
-
-.header-text {
-  font-size: 20px;
-  margin-top: 0;
-  margin-bottom: 8px;
-  color: #313131;
-  font-family: "SfProMedium";
-  font-weight: 100;
-}
-
 .categories-wrapper {
   padding-top: 63px;
   padding-left: 34px;
