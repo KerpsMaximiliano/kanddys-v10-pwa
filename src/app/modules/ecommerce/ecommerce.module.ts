@@ -76,6 +76,7 @@ import { ReservationDetailComponent } from './pages/reservation-detail/reservati
 import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
 import { CreateItemComponent } from './pages/create-item/create-item.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
+import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
 
 const routes: Routes = [
   {
@@ -443,6 +444,10 @@ const routes: Routes = [
     path: 'calendar-detail',
     component: CalendarDetailComponent
   },
+  {
+    path: 'reservations-creator',
+    component: ReservationsCreatorComponent
+  }
 ];
 
 @NgModule({
