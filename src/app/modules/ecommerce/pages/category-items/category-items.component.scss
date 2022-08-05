@@ -52,9 +52,10 @@ main {
 footer {
   background-color: #2874AD;
   display: flex;
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  width: 100%;
+  max-width: 500px;
   justify-content: space-between;
   padding: 4px 20px;
   align-items: center;

@@ -129,7 +129,7 @@ export class NotificationsService {
               : offsetTime.unit === 'weeks' && 'semanas';
           action = `A los ${offsetTime.quantity} ${unit} después de la venta`;
           if (offsetTime.hour) {
-            action = action + ` a las ${offsetTime.hour}}`;
+            action = action + ` a las ${offsetTime.hour}`;
             index = 3;
           } else {
             index = 4;

@@ -55,9 +55,9 @@ export class ReservationsComponent implements OnInit {
         this.mode = 'calendar';
         this.reservations =
           await this.reservationService.getReservationByCalendar({
-            options: {
-              limit: 10
-            },
+            // options: {
+            //   limit: 10
+            // },
             findBy: {
               calendar: params.id
             }

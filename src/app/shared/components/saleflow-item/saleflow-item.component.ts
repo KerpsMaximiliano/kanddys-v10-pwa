@@ -46,6 +46,7 @@ export class SaleflowItemComponent implements OnInit {
     width?: number;
     height?: number;
     color?: string;
+    cursor?: boolean;
   }
   @Input() icon2:{
     src: string;
@@ -53,12 +54,14 @@ export class SaleflowItemComponent implements OnInit {
     width?: number;
     height?: number;
     color?: string;
+    cursor?: boolean;
   }
   @Input() responsiveWidthVersion: boolean = false;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
   @Output() iconClicked = new EventEmitter();
+  @Output() iconTwoClicked = new EventEmitter();
   @Output() action = new EventEmitter()
   
   env: string = environment.assetsUrl;
