@@ -120,6 +120,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 currencies: [],
                 hasExtraPrice: false,
                 purchaseLocations: [],
+                showImages: this.files && this.files.length >= 1
               });
 
 
@@ -149,6 +150,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 currencies: [],
                 hasExtraPrice: false,
                 purchaseLocations: [],
+                showImages: this.files && this.files.length >= 1
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
@@ -670,6 +672,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   currencies: [],
                   hasExtraPrice: false,
                   purchaseLocations: [],
+                  showImages: this.files && this.files.length >= 1
                 });
 
                 await this.saleflowSarvice.addItemToSaleFlow({
@@ -699,6 +702,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   currencies: [],
                   hasExtraPrice: false,
                   purchaseLocations: [],
+                  showImages: this.files && this.files.length >= 1
                 });
 
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
