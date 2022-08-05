@@ -99,11 +99,11 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     headlines: ItemCategoryHeadline
   ) {
     if (itemCategoriesList.length === 0) return;
-    const categories = headlines.itemsCategories
+    const categories = headlines && headlines.itemsCategories.length > 0 ? headlines.itemsCategories
       .map((value) =>
         itemCategoriesList.find((element) => element._id === value)
       )
-      .filter((value) => value);
+      .filter((value) => value) : [];
     return categories;
   }
 
