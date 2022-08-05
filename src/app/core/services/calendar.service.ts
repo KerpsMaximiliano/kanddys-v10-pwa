@@ -266,7 +266,7 @@ export class CalendarService {
   handleActiveDays(from: string, to: string, chunkSize: number, mode: string) {
     let brakes = false;
 
-    if (mode === 'standard' || !mode) {
+    if (mode === 'standar' || !mode) {
       let hour;
       this.hours.push(from);
       this.allHours.push(from);

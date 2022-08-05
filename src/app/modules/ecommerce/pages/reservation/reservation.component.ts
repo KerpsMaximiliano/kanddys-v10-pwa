@@ -133,6 +133,7 @@ export class ReservationComponent implements OnInit {
       this.header.flowRoute = 'reservations';
       localStorage.setItem('flowRoute', 'reservations');
       this.version = this.router.url.split('/')[2];
+
       this.calendar.setInitalState();
 
       if(this.header.getSaleflow() && (!mode || mode === 'normal')) {

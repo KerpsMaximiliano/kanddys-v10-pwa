@@ -35,12 +35,12 @@ export class Calendar extends Model<Calendar> {
 
 export class DateModelInput {
   dateType: string;
-  from: Date;
-  in: Date;
-  until: Date;
-  fromDay: string;
+  from?: Date;
+  in?: Date;
+  until?: Date;
+  fromDay?: string;
   inDays: string[];
-  toDay: string;
+  toDay?: string;
   fromHour: string;
   toHour: string;
 }

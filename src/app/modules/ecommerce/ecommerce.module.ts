@@ -533,6 +533,8 @@ const routes: Routes = [
     MerchantBuyersComponent,
     CreateItemComponent,
     CalendarDetailComponent,
+    CalendarCreatorComponent,
+    ReservationsCreatorComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

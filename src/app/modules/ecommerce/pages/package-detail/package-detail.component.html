@@ -52,11 +52,11 @@
 
   <ng-container>
     <ng-container *ngIf="selectedsQty == limitScenarios; else noCTA">
-      <app-sticky-button [mode]="'basic'" [text]="'ADICIONA LA FECHA QUE TE CONVIENE'" (click)="submit()">
+      <app-sticky-button [mode]="'fixed'" [text]="'ADICIONA LA FECHA QUE TE CONVIENE'" (click)="submit()">
       </app-sticky-button>
     </ng-container>
     <ng-template #noCTA>
-      <app-sticky-button [mode]="'disabled'" [text]="'SELECCIONA ' + (limitScenarios-selectedsQty) + ' ESCENARIOS'">
+      <app-sticky-button [mode]="'disabled-fixed'" [text]="'SELECCIONA ' + (limitScenarios-selectedsQty) + ' ESCENARIOS'">
       </app-sticky-button>
     </ng-template>
   </ng-container>

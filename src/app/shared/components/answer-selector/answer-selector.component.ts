@@ -8,12 +8,19 @@ export interface AnswerIcon {
 
 export interface OptionAnswerSelector {
   value?: string;
+  subtexts?: {
+    text: string;
+    callback?(...params): any;
+    callbackParams?: any[];
+    styles: Record<string, any>;
+  }[];
   icons?: AnswerIcon[];
   valueArray?: {text: string, highlight: boolean}[];
   isOptionAnArray?: boolean;
   status: boolean;
   click?: boolean;
   description?: string[];
+  id?: string;
 }
 
 @Component({
@@ -23,15 +30,15 @@ export interface OptionAnswerSelector {
 })
 export class AnswerSelectorComponent {
   @Input() activeOption: number;
-  activeMultipleOption: number[] = [];
+  @Input() activeMultipleOption: number[] = [];
   @Input() editable: boolean = true;
   @Input() indicator: boolean;
   @Input() showSelectedFeedback: boolean = true;
   @Input() showDescription: boolean = true;
   @Input() containerStyles: Record<string, any> | null = null;
   @Input() itemStyles: Record<string, any> | null = null;
-
   @Input() isMultipleOption: boolean = false;
+  @Input() isMultipleOption2: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
     { value: '¿Cuánto es?', status: true, click: false, description: [] },
@@ -56,18 +63,26 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption.push(option);
       this.activeMultipleOption.sort();
     } else {
-      this.activeMultipleOption.slice(option, 1);
+      this.activeMultipleOption.splice(option, 1);
       this.activeMultipleOption.sort();
     }
   }
 
   clickSelector(index: number) {
-    if (this.isMultipleOption) {
+    if (this.isMultipleOption || this.isMultipleOption2) {
       this.activateMultipleOption(index);
       this.onSelector.emit(index);
     } else {
       this.activateOption(index);
       this.onSelector.emit(index);
     }
+  }
+
+  informSelector(index: number) {
+    this.onSelector.emit(index);
+  }
+
+  spreadParams(anyFunction, params) {
+    return anyFunction(...params);
   }
 }

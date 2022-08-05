@@ -125,6 +125,7 @@ export class PackageDetailComponent implements OnInit {
   }
 
   handleSelection(event) {
+    console.log(event);
     this.scenarios.map((data) => {
       if (data._id === event.item._id) {
         if (this.selectedsQty < this.limitScenarios && !data.isActive) {
