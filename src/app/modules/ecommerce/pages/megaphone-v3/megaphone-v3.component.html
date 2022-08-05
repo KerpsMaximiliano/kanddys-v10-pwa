@@ -100,7 +100,7 @@
         </div>
       </div>
     </div>
-    <ng-container *ngIf="itemsByCategory.length >= 4 || hasCustomizer">
+    <ng-container *ngIf="itemsByCategory.length >= 4 || !hasCustomizer">
       <app-gallery-displayer
         *ngFor="let category of itemsByCategory"
         [headline]="{
@@ -131,6 +131,63 @@
         "
       ></app-gallery-displayer>
     </ng-container>
+    <!-- Only for saleflows with customizers -->
+    <ng-container *ngIf="itemsByCategory.length || hasCustomizer">
+      <div
+        *ngFor="let item of itemsByCategory; let i = index"
+        [ngStyle]="{ paddingBottom: '67px' }"
+      >
+        <div
+          class="header-wrapper"
+          [ngStyle]="{ marginTop: i == 0 ? '15px' : '0px' }"
+        >
+          <h6 class="header-text">
+            {{ item.label }}
+          </h6>
+          <h6
+            class="see-all-more"
+            style="font-weight: 100"
+            (click)="seeCategories(i)"
+          >
+            Ver..
+          </h6>
+        </div>
+        <div style="padding: 0 1.2rem">
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let swiperItem of item.items; let j = index"
+              style="max-width: 227px"
+            >
+              <app-saleflow-item
+                [type]="2"
+                [showBox]="swiperItem.customizerId ? false : true"
+                [imgURL]="swiperItem.images[0]"
+                [isSelected]="swiperItem.isSelected"
+                [showSelected]="true"
+                [price]="swiperItem.pricing"
+                [showPrice]="swiperItem.customizerId ? false : true"
+                priceAlign="start"
+                [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+                (itemClicked)="onItemClick(swiperItem._id)"
+              ></app-saleflow-item>
+            </div>
+          </swiper>
+        </div>
+        <div class="categories-wrapper" *ngIf="i === 0">
+          <h6 class="header-text">Ver mas de:</h6>
+          <div class="categories-list">
+            <div
+              *ngFor="let category of categories"
+              class="category-item"
+              (click)="seeCategories(category._id)"
+            >
+              {{ category.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <!-- Only for saleflows with customizers -->
     <section
       style="margin-bottom: 73px"
       *ngIf="
