@@ -258,7 +258,7 @@ export class NotificationCreatorComponent implements OnInit {
     if (this.selectedAction === 3) {
       return [
         {
-          quantity: 45,
+          quantity: 4,
           unit: 'days',
           hour: 9,
         },
