@@ -63,6 +63,7 @@
             [price]="item.pricing"
             [showPrice]="true"
             [showIcon]="item.status != 'active' ? true : false"
+            [inactive]="item.status != 'active' ? true : false"
             [displaying]="true"
             (itemClicked)="goToDetail(item._id)"
             (iconClicked)="openDeleteDialog(item)"

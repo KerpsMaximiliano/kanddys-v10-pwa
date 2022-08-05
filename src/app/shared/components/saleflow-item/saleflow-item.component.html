@@ -144,10 +144,11 @@
         'background-image': imgURL && 'url(' + imgURL + ')',
         'background-size': backgroundSize
       }"
+      [ngClass]="{'inactive-img': inactive}"
       (click)="onClick()"
     ></div>
 
-    <div class="info-area flex-row">
+    <div class="info-area flex-row" [ngClass]="{inactive: inactive}">
       <div class="flex-column">
         <span class="price" *ngIf="price >= 0 && showPrice"
           >${{ price | number }}</span
@@ -156,10 +157,10 @@
       </div>
       <div class="flex-column" style="margin-bottom: 0">
         <img
-          [src]="env + '/closed-eye.svg'"
-          width="17.21px"
-          height="13.67px"
-          alt="Un ojo cerrado. El item no esta visible para clientes"
+          [src]="!icon2?.src? env + '/closed-eye.svg' : env + icon2.src"
+          [width]="!icon2?.width ?'17.21' : icon2.width"
+          [height]="!icon2?.height ? '13.67': icon2.height"
+          [alt]="!icon2?.alt ? 'Un ojo cerrado. El item no esta visible para clientes' : icon2.alt"
           *ngIf="showIcon"
           class="eyed"
         />
