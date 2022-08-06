@@ -58,7 +58,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   choosedPickup: boolean = false;
   fullFormMessage: string = null;
   formMessageInitialHistory: Record<string, any> = {};
-  whatsappLink: string = 'https://wa.me/18098718288?text=';
+  whatsappLink: string = 'https://wa.me/18095083344?text=';
   whatsappLinkSteps: string[] = [];
   calendarId: string = null;
 
