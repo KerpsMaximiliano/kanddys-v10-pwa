@@ -89,7 +89,7 @@ main {
   flex-direction: column;
   padding: 10px;
   row-gap: 15px;
-  padding-bottom: 67px;
+  padding-bottom: 64px;
 }
 
 .category-header {
@@ -114,6 +114,12 @@ footer {
 }
 
 // For saleflows with customizer
+
+.header-bg {
+  padding-bottom: 24px;
+  background: rgb(255,255,255);
+  background: linear-gradient(180deg, rgba(255,255,255,1) 50%, rgba(213,213,213,0.25) 100%);
+}
 
 .header-wrapper {
   display: flex;

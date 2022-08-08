@@ -17,6 +17,7 @@
       ]"
       bgColor="#2874AD"
       [returnAble]="false"
+      *ngIf="saleflowData && !hasCustomizer"
     ></app-helper-headerv2>
     <!-- {
       src: '/search.svg',
@@ -24,6 +25,16 @@
         'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
       callback: null
     }, -->
+    <div class="header-bg">
+      <app-header-info
+        *ngIf="saleflowData && hasCustomizer"
+        [profileImage]="saleflowData.banner"
+        [title]="saleflowData.headline"
+        [description]="saleflowData.subheadline"
+        [route]="contactLandingRoute"
+        type="route"
+      ></app-header-info>
+    </div>
   </header>
   <main>
     <div
@@ -135,7 +146,7 @@
     <ng-container *ngIf="itemsByCategory.length || hasCustomizer">
       <div
         *ngFor="let item of itemsByCategory; let i = index"
-        [ngStyle]="{ paddingBottom: '67px' }"
+        [ngStyle]="{ paddingBottom: '64px' }"
       >
         <div
           class="header-wrapper"

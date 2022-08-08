@@ -399,6 +399,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
             this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
             lockUI();
             window.location.href = this.whatsappLink;
+            return;
           }
         }
 
@@ -457,9 +458,11 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         }
       }
     }
-    this.pastStep = this.step;
-    this.step = 'PAYMENT_INFO';
-    this.buttonBlocked = false;
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
+      this.pastStep = this.step;
+      this.step = 'PAYMENT_INFO';
+      this.buttonBlocked = false;
+    }
   }
 
   async submit() {
