@@ -104,6 +104,7 @@ import { EnlistDisplayComponent } from './components/enlist-display/enlist-displ
 import { GalleryDisplayerComponent } from './components/gallery-displayer/gallery-displayer.component';
 import { ItemReservationComponent } from './components/item-reservation/item-reservation.component';
 import { SetConfigComponent } from './dialogs/set-config/set-config.component';
+import { ItemSettingsComponent } from './dialogs/item-settings/item-settings.component';
 
 const imports = [
   CommonModule,
@@ -205,6 +206,7 @@ const declarations = [
   GalleryDisplayerComponent,
   ItemReservationComponent,
   SetConfigComponent,
+  ItemSettingsComponent,
 ];
 
 @NgModule({

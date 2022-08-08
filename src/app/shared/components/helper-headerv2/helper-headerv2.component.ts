@@ -8,6 +8,7 @@ interface Text {
   fontSize?: string,
   color?: string,
   pointer?: boolean
+  icon?: Icon;
 }
 
 interface ExtraText {
@@ -31,8 +32,9 @@ interface Icon {
         color?: string;
         filter?: string;
     };
-	  callback: () => void;
+	callback: () => void;
 }
+
 @Component({
   selector: 'app-helper-headerv2',
   templateUrl: './helper-headerv2.component.html',
