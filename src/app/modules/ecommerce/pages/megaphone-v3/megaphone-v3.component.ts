@@ -99,11 +99,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     headlines: ItemCategoryHeadline
   ) {
     if (itemCategoriesList.length === 0) return;
-    const categories = headlines && headlines.itemsCategories.length > 0 ? headlines.itemsCategories
-      .map((value) =>
-        itemCategoriesList.find((element) => element._id === value)
-      )
-      .filter((value) => value) : [];
+    const categories =
+      headlines?.itemsCategories.length > 0
+        ? headlines.itemsCategories
+            .map((value) =>
+              itemCategoriesList.find((element) => element._id === value)
+            )
+            .filter((value) => value)
+        : [];
     return categories;
   }
 
@@ -492,10 +495,26 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
-        footerCallback: () =>
-          this.saleflowData.module?.post
-            ? this.router.navigate(['/ecommerce/create-giftcard'])
-            : this.router.navigate(['/ecommerce/shipment-data-form']),
+        footerCallback: async () => {
+          if (this.saleflowData.module?.post)
+            this.router.navigate(['/ecommerce/create-giftcard']);
+          else if (this.saleflowData.module?.delivery)
+            this.router.navigate(['/ecommerce/shipment-data-form']);
+          else if (!this.header.orderId) {
+            lockUI();
+            const preOrderID = await this.header.newCreatePreOrder();
+            this.header.orderId = preOrderID;
+            unlockUI();
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${preOrderID}`,
+            ]);
+            this.header.createdOrderWithoutDelivery = true;
+          } else {
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+            ]);
+          }
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
