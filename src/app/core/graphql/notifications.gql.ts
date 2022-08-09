@@ -61,6 +61,7 @@ export const itemAddNotification = gql`
 export const notificationCheckers = gql`
   query notificationCheckers($paginate: PaginationInput!) {
     notificationCheckers(paginate: $paginate) {
+      _id
       notification { ${notificationData} }
       user {
         _id
