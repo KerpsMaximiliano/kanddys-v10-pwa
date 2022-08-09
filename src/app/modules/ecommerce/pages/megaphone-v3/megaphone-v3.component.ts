@@ -439,6 +439,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       ]);
     } else {
       if (!justRedirect) {
+        if (!this.saleflowData.canBuyMultipleItems) {
+          this.header.emptyOrderProducts(this.saleflowData._id);
+          this.header.emptyItems(this.saleflowData._id);
+        }
         this.header.storeOrderProduct(this.saleflowData._id, {
           item: itemData._id,
           amount: 1,

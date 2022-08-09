@@ -391,8 +391,10 @@ export class NewItemDisplayComponent implements OnInit {
       this.notifications.forEach((notification) => {
         notification.action =
           this.notificationsService.getNotificationAction(notification).action;
-        const date = notificationCheckers.find(checker => checker.notification._id === notification._id)?.date;
-        if(!date) return;
+        const date = notificationCheckers.find(
+          (checker) => checker.notification._id === notification._id
+        )?.date;
+        if (!date) return;
         notification.date = `${date
           .toLocaleString('es-MX', {
             weekday: 'long',
@@ -430,7 +432,7 @@ export class NewItemDisplayComponent implements OnInit {
 
   goToNotificationsLog = (id: string) => {
     this.router.navigate([`/ecommerce/notifications-log/${id}`]);
-  }
+  };
 
   goToAuth() {
     this.router.navigate([
@@ -498,12 +500,12 @@ export class NewItemDisplayComponent implements OnInit {
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
-            func: () =>{
-                this.router.navigate([
-                    `ecommerce/item-detail/${this.item._id}`
-                ]);
-            }
-          }
+            func: () => {
+              this.router.navigate([
+                `/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+              ]);
+            },
+          },
         ],
       },
     ];
