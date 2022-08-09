@@ -59,20 +59,32 @@
     [size]="'small'"
     [extra]="{ return: true, bgColor: '#2874AD' }"
     [fontSize]="'17px'"
-    [customLeftButtonStyles]="notificationMessage?.length > 1 ? {
-        'width': '85%',
-        'max-width': 'none',
-        'color': '#FFFFFF',
-        'background-color': '#2874AD'
-    } : {
-        'width': '85%',
-        'max-width': 'none',
-        'color': '#FFF'
-    }"
+    [customLeftButtonStyles]="
+      notificationMessage?.trim() &&
+      selectedAction != null &&
+      selectedReceiver != null
+        ? {
+            width: '85%',
+            'max-width': 'none',
+            color: '#FFFFFF',
+            'background-color': '#2874AD'
+          }
+        : {
+            width: '85%',
+            'max-width': 'none',
+            color: '#FFF'
+          }
+    "
     [customRightButtonStyles]="{
-        'width': '1px'
+      width: '1px'
     }"
-    [text]="notificationMessage?.length > 1 ? 'SALVAR' : 'ESCRIBA SU MENSAJE'"
+    [text]="
+      notificationMessage?.trim() &&
+      selectedAction != null &&
+      selectedReceiver != null
+        ? 'SALVAR'
+        : 'ESCRIBA SU MENSAJE'
+    "
     text2=""
     (added)="back()"
     (left)="save()"

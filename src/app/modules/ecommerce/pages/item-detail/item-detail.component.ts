@@ -64,9 +64,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
       );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
-
-      if (this.itemData.images.length && this.itemData.showImages)
-        this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.showCartCallBack = () => this.showItems();
     });

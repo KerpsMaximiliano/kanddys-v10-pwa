@@ -378,6 +378,10 @@ const routes: Routes = [
     data: {animation: 'EntityDetailMetrics'}
   },
   {
+    path: 'notifications-log/:id',
+    component: NotificationsLogComponent
+  },
+  {
     path: 'notifications-log',
     component: NotificationsLogComponent
   },
