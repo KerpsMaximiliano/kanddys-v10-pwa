@@ -3,6 +3,7 @@ import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { FormControl, Validators } from '@angular/forms';
 import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
+import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { DecimalPipe } from '@angular/common';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -61,7 +62,11 @@ export class LlStudioOrderFormComponent implements OnInit {
   whatsappLink: string = 'https://wa.me/18095083344?text=';
   whatsappLinkSteps: string[] = [];
   calendarId: string = null;
-
+  referenceDefaultImages: (string | ArrayBuffer)[] = [''];
+  referenceImagefiles: File[] = [];
+  proofOfPaymentDefaultImages: (string | ArrayBuffer)[] = [''];
+  proofOfPaymentImagefiles: File[] = [];
+  
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -194,10 +199,10 @@ export class LlStudioOrderFormComponent implements OnInit {
           name: 'birthday',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de cumpleaños (*)',
+          label: 'Fecha de cumpleaños',
           inputType: 'date',
           maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
@@ -273,7 +278,10 @@ export class LlStudioOrderFormComponent implements OnInit {
         this.whatsappLinkSteps.push(`*Apellido:*\n${this.formSteps[0].fieldsList[1].fieldControl.control.value}\n\n`);
         this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[0].fieldsList[2].fieldControl.control.value}\n\n`);
         this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[0].fieldsList[3].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[0].fieldsList[4].fieldControl.control.value}\n\n`);
+
+        if(this.formSteps[0].fieldsList[4].fieldControl.control.value) {
+          this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[0].fieldsList[4].fieldControl.control.value}\n\n`);
+        }
 
         return { ok: true }
       },
@@ -626,42 +634,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               height: '164px'
             },
           }
-        },
-        {
-          name: 'referenceImage',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
-          label: 'Foto de Referencia',
-          sublabel: 'Adjuntar foto de referencia de su orden.',
-          inputType: 'file',
-          placeholder: 'sube una imagen',
-          styles: {
-            containerStyles: {
-              minWidth: '281px',
-              paddingTop: '64px',
-              paddingBottom: '270px'
-            },
-            labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'lighter',
-              fontSize: '19px'
-            },
-            subLabelStyles: {
-              color: '#7B7B7B',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: 500
-            },
-            fieldStyles: {
-              minWidth: '192px',
-              maxHeight: '163px',
-              width: 'calc((100% - 35px * 2) - 55.14%)',
-              borderRadius: '7px'
-            }
-          },
-        },
+        }
       ],
       stepProcessingFunction: () => {
         this.whatsappLinkSteps.push(`*Descripción de la orden:*\n${this.formSteps[2].fieldsList[0].fieldControl.control.value}\n\n`);
@@ -671,6 +644,74 @@ export class LlStudioOrderFormComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(1, false);
       },
+      embeddedComponents: [
+        {
+          afterIndex: 0,
+          component: ImageInputComponent,
+          label: 'Foto de Referencia',
+          inputs: {
+            imageField:
+              this.referenceDefaultImages.length > 0 ? this.referenceDefaultImages : null,
+            multiple: true,
+            allowedTypes: ['png', 'jpg', 'jpeg'],
+            imagesPerView: 3,
+            innerLabel: 'Fotos de referencia',
+            expandImage: true,
+            topLabel: {
+              text: 'Adjuntar foto de referencia de su orden:',
+              styles: {
+                color: '#7B7B7B',
+                fontFamily: 'Roboto',
+                fontSize: '16px',
+                fontWeight: 500,
+                padding: '0px',
+                margin: '0px',
+                marginBottom: '18px',
+              },
+            },
+            containerStyles: {
+              width: '157px',
+              height: '137px',
+              margin: '0px'
+            },
+            fileStyles: {
+              width: '157px',
+              height: '137px',
+              paddingLeft: '20px',
+              textAlign: 'left',
+              backgroundSize: 'cover'
+            },
+          },
+          outputs: [
+            {
+              name: 'onFileInputBase64',
+              callback: (result) => {
+                this.referenceDefaultImages[result.index] = result.image;
+                this.formSteps[2].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
+                this.formSteps[2].embeddedComponents[0].shouldRerender = true;
+              },
+            },
+            {
+              name: 'onFileInput',
+              callback: (result) => {
+                this.referenceImagefiles[result.index] = result.image;
+              },
+            },
+          ],
+          containerStyles: {
+            marginTop: '0px',
+            paddingTop: '64px',
+            paddingBottom: '270px',
+          },
+          labelStyles: {
+            fontFamily: 'Roboto',
+            fontWeight: 'lighter',
+            fontSize: '19px',
+            margin: '0px',
+            marginBottom: '18px',
+          },
+        }
+      ],
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
@@ -973,42 +1014,77 @@ export class LlStudioOrderFormComponent implements OnInit {
               paddingLeft: '0px'
             }
           },
-        },
+        }
+      ],
+      embeddedComponents: [
         {
-          name: 'proofOfPayment',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
+          afterIndex: 2,
+          component: ImageInputComponent,
           label: 'Comprobante de Pago',
-          sublabel: 'Anexar el comprobante de su pago',
-          inputType: 'file',
-          placeholder: 'sube una imagen',
-          styles: {
+          inputs: {
+            imageField:
+              this.proofOfPaymentDefaultImages.length > 0 ? this.proofOfPaymentDefaultImages : null,
+            multiple: true,
+            allowedTypes: ['png', 'jpg', 'jpeg'],
+            imagesPerView: 3,
+            innerLabel: 'Comprobante de pago',
+            expandImage: true,
+            topLabel: {
+              text: 'Anexar fotos del comprobante de su pago de su orden:',
+              styles: {
+                color: '#7B7B7B',
+                fontFamily: 'Roboto',
+                fontSize: '16px',
+                fontWeight: 500,
+                padding: '0px',
+                margin: '0px',
+                marginBottom: '18px',
+              },
+            },
             containerStyles: {
-              minWidth: '281px',
+              width: '157px',
+              height: '137px',
+              margin: '0px',
               marginTop: '44px',
-              marginBottom: '269px',
+              marginBottom: '269px'
             },
-            labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'lighter',
-              fontSize: '19px'
+            fileStyles: {
+              width: '157px',
+              height: '137px',
+              paddingLeft: '20px',
+              textAlign: 'left',
+              backgroundSize: 'cover'
             },
-            subLabelStyles: {
-              color: '#7B7B7B',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: 500
-            },
-            fieldStyles: {
-              minWidth: '192px',
-              maxHeight: '163px',
-              width: 'calc((100% - 35px * 2) - 55.14%)',
-              borderRadius: '7px'
-            }
           },
-        },
+          outputs: [
+            {
+              name: 'onFileInputBase64',
+              callback: (result) => {
+                this.proofOfPaymentDefaultImages[result.index] = result.image;
+                this.formSteps[4].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
+                this.formSteps[4].embeddedComponents[0].shouldRerender = true;
+              },
+            },
+            {
+              name: 'onFileInput',
+              callback: (result) => {
+                this.proofOfPaymentImagefiles[result.index] = result.image;
+              },
+            },
+          ],
+          containerStyles: {
+            marginTop: '0px',
+            paddingTop: '64px',
+            paddingBottom: '270px',
+          },
+          labelStyles: {
+            fontFamily: 'Roboto',
+            fontWeight: 'lighter',
+            fontSize: '19px',
+            margin: '0px',
+            marginBottom: '18px',
+          },
+        }
       ],
       stepProcessingFunction: () => {
         this.whatsappLinkSteps.push(`*Monto total de Compra:*\n${this.formSteps[4].fieldsList[0].formattedValue}\n\n`);

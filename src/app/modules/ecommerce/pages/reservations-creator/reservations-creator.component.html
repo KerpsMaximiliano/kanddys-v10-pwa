@@ -61,5 +61,19 @@
                 [fontSize]="'17px'"
             ></app-sticky-button>
         </ng-container>
+
+        <ng-container *ngIf="currentStep === 'RESERVATION_CONVENIENCE'">
+            <div 
+                class="body reservationConvenience" 
+                formGroupName="reservationConvenience"
+            >
+                <h2>Para cuando te conviene hacer la reservación?</h2>
+                
+                <div class="calendar">
+                    <h3>DIA CONVENIENTE De {{ currentMonth.name }}</h3>
+                    <app-short-calendar></app-short-calendar>
+                </div>
+            </div>
+        </ng-container>
     </form>
 </div>

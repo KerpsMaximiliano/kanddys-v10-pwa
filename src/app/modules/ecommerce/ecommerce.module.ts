@@ -446,7 +446,7 @@ const routes: Routes = [
     component: CalendarDetailComponent
   },
   {
-    path: 'reservations-creator',
+    path: 'reservations-creator/:calendarId',
     component: ReservationsCreatorComponent
   },
   {
