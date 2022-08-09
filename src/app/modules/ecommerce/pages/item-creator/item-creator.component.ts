@@ -65,7 +65,14 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           const values = params.dataModel.value;
           const priceWithDecimalArray = values['1'].price.split('');
           const firstHalf = priceWithDecimalArray.slice(0, -2);
-          const secondHalf = priceWithDecimalArray.slice(-2);
+          let secondHalf;
+
+          if(priceWithDecimalArray.length > 1) {
+            secondHalf = priceWithDecimalArray.slice(-2);
+          } else {
+            secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+          }
+
           const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
           const totalWithDecimal = Number(totalArray.join(''));
 
@@ -391,6 +398,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     emitEvent: false,
                   });
                 } else {
+                  console.log(plainNumber.length, "plainNumber");
+
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
                     '1.2'
@@ -418,6 +427,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   const plainNumber = change
                     .split(',')
                     .join('');
+
+                console.log(plainNumber.length, "plainNumber");
   
                   if (plainNumber[0] === '0') {
                     const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
@@ -447,7 +458,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                       )),
                       '1.2'
                     );
-  
+
                     if (formatted === '0.00') {
                       this.formSteps[0].fieldsList[0].placeholder = '';
                     }
@@ -615,11 +626,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           try {
             const values = params.dataModel.value;
             const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
+
+            console.log(priceWithDecimalArray, "priceWithDecimalArray");
+
             const firstHalf = priceWithDecimalArray.slice(0, -2);
-            const secondHalf = priceWithDecimalArray.slice(-2);
+            let secondHalf;
+
+            if(priceWithDecimalArray.length > 1) {
+              secondHalf = priceWithDecimalArray.slice(-2);
+            } else {
+              secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+            }
+
             const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
             const totalWithDecimal = Number(totalArray.join(''));
   
+            console.log(firstHalf, secondHalf, totalArray, totalWithDecimal);
+
             if (
               this.currentUserId &&
               this.merchantOwnerId &&
@@ -1461,9 +1484,17 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
     const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
     const firstHalf = priceWithDecimalArray.slice(0, -2);
-    const secondHalf = priceWithDecimalArray.slice(-2);
+    let secondHalf;
+
+    if(priceWithDecimalArray.length > 1) {
+      secondHalf = priceWithDecimalArray.slice(-2);
+    } else {
+      secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+    }
+
     const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
     const totalWithDecimal = Number(totalArray.join(''));
+
 
     // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
 
