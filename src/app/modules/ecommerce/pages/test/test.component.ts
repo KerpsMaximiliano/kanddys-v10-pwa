@@ -11,6 +11,7 @@ import { Tag } from '../../../../core/models/tags';
 import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
 import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
+import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 
 @Component({
   selector: 'app-test',
@@ -212,8 +213,9 @@ export class TestComponent implements OnInit {
   ];
 
   openDialog() {
-      const options: Array<any> = [{text:{text:'TAGS'}}, {text:{text:'STATUS'}}, {text:{text:'LO COMPRADO'}}, {text:{text:'COMPRADOR'}}];
-    this.dialog.open(SetConfigComponent, {
+      /* const options: Array<any> = [{text:{text:'TAGS'}}, {text:{text:'STATUS'}}, {text:{text:'LO COMPRADO'}}, {text:{text:'COMPRADOR'}}];
+
+      this.dialog.open(SetConfigComponent, {
       type: 'fullscreen-translucent',
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -222,7 +224,7 @@ export class TestComponent implements OnInit {
         subTitle: {text:'Personaliza el listado de tus ventas'},
         options
       }
-    });
+    }); */
 
 
     // this.dialog.open(MagicLinkDialogComponent, {
@@ -317,6 +319,44 @@ export class TestComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     }); */
+    
+    const content: any = [
+        {
+        text: 'Adicionar nuevo artículo',
+        callback: () =>{
+            console.log('opcion 1');
+          }
+        },
+        {
+        text: 'Incluir artículos en otras categorias',
+        callback: () =>{
+            console.log('opcion 2');
+          }
+        },
+        {
+        text: 'Eliminar artículos',
+        callback: () =>{
+            console.log('opcion 3');
+          }
+        },
+        {
+        text: 'Compartir un grupo de artículos',
+        callback: () =>{
+            console.log('opcion 4');
+          }
+        },
+    ];
+
+    this.dialog.open(ItemSettingsComponent, {
+        type: 'fullscreen-translucent',
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+        props:{
+          header: {text: 'Artículos'},
+          content
+        }
+    });
+
   }
 
   log = () => {

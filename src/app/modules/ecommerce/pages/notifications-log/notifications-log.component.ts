@@ -64,20 +64,29 @@ export class NotificationsLogComponent implements OnInit {
     try {
       this.notifications = await this.notificationsService.notificationCheckers(
         {
+          options: {
+            limit: 25,
+            page: 1,
+            sortBy: 'createdAt:desc',
+          },
           findBy: {
             merchant: this.merchant._id,
             status: 'sent',
           },
         }
       );
-      if(!this.notifications?.length) return;
+      if (!this.notifications?.length) return;
       this.notifications.forEach((notification) => {
         notification.date = new Date(notification.date);
         const phoneUtil = PhoneNumberUtil.getInstance();
-        const phoneNumber = phoneUtil.parse('+'+notification.user.phone);
-        const phone = phoneUtil.format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
+        const phoneNumber = phoneUtil.parse('+' + notification.user.phone);
+        const phone = phoneUtil.format(
+          phoneNumber,
+          PhoneNumberFormat.INTERNATIONAL
+        );
         notification.user.phone = phone;
-        notification.action = this.notificationsService.getNotificationAction(notification)?.action;
+        notification.action =
+          this.notificationsService.getNotificationAction(notification)?.action;
       });
     } catch (error) {
       this.status = 'error';
@@ -93,7 +102,7 @@ export class NotificationsLogComponent implements OnInit {
   };
 
   return() {
-    if(!this.allShow) return this.location.back();
+    if (!this.allShow) return this.location.back();
     this.notifications.forEach((item) => {
       item.showMessage = false;
     });

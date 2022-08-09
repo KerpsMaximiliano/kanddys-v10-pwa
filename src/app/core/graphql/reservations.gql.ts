@@ -43,9 +43,7 @@ export const getReservation = gql`
       status
       expiration
       breakTime
-      calendar{
-        _id
-      }
+      calendar
       date{
         from
         until
