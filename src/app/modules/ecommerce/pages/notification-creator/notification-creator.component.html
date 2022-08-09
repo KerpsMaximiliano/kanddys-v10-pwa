@@ -58,10 +58,23 @@
     [bgColor]="'#A1A1A1'"
     [size]="'small'"
     [extra]="{ return: true, bgColor: '#2874AD' }"
-    text=""
+    [fontSize]="'17px'"
+    [customLeftButtonStyles]="notificationMessage?.length > 1 ? {
+        'width': '85%',
+        'max-width': 'none',
+        'color': '#FFFFFF',
+        'background-color': '#2874AD'
+    } : {
+        'width': '85%',
+        'max-width': 'none',
+        'color': '#FFF'
+    }"
+    [customRightButtonStyles]="{
+        'width': '1px'
+    }"
+    [text]="notificationMessage?.length > 1 ? 'SALVAR' : 'ESCRIBA SU MENSAJE'"
     text2=""
     (added)="back()"
     (left)="save()"
-    (right)="save()"
   ></app-sticky-button>
 </div>
