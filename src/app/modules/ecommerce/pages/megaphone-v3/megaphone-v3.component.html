@@ -4,9 +4,16 @@
       [mainText]="{
         text: saleflowData?.headline,
         fontFamily: 'SfProBold',
-        fontSize: '21px'
+        fontSize: '21px',
+        icon: admin ? {
+            src: '/pencil.svg',
+            width: '14',
+            height: '14',
+            color: 'brightness(7)',
+            callback: onShareClick
+        } : null
       }"
-      mode="basic"
+      [mode]="!admin ? 'basic': 'center'"
       [icons]="[
         {
           src: '/upload.svg',
