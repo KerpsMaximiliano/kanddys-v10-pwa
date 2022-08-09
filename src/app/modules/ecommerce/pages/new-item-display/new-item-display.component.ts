@@ -495,6 +495,15 @@ export class NewItemDisplayComponent implements OnInit {
               },
             },
           },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([
+                    `ecommerce/item-detail/${this.item._id}`
+                ]);
+            }
+          }
         ],
       },
     ];

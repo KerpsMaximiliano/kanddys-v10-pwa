@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
 interface Text{
     text: string;
@@ -18,9 +19,13 @@ export class ItemSettingsComponent implements OnInit {
     @Input() bgColor: string;
     @Input() headerStyles: Record<string, any>
 
-  constructor() { }
+  constructor( public ref: DialogRef) { }
 
   ngOnInit(): void {
+  }
+
+  close(){
+    this.ref.close();
   }
 
 }

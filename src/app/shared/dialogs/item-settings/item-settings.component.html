@@ -6,7 +6,7 @@
     
     <div class="container">
         <div class="text-container" *ngFor="let item of content; index as i">
-            <h2 class="setting-text" [ngStyle]="item.textStyles && item.textStyles" (click)="item.callback()">{{item.text}}</h2>
+            <h2 class="setting-text" [ngStyle]="item.textStyles && item.textStyles" (click)="item.callback()" (click)="close()">{{item.text}}</h2>
         </div>
     </div>
 </div>
