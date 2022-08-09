@@ -128,7 +128,7 @@
                 }">
                   {{mainText.text}} 
                   <img [src]="env + mainText.icon.src" [alt]="mainText.icon.alt" *ngIf="mainText.icon" [width]="mainText.icon.width" [height]="mainText.icon.height" 
-                  [ngStyle]="{'margin-left': '5px', filter: mainText.icon.color && mainText.icon.color, cursor: 'pointer'}">
+                  [ngStyle]="{'margin-left': '5px', filter: mainText.icon.color && mainText.icon.color, cursor: 'pointer'}" (click)="mainText.icon.callback()">
                 </p>
 
                 <!--ICONOS-->
