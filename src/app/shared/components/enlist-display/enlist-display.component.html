@@ -230,7 +230,7 @@
       <button
         class="display"
         *ngIf="bottomText?.rightText"
-        (click)="bottomText.rightText.callback()"
+        (click)="bottomText.rightText.callback(bottomText.rightText.callbackArgs)"
         [ngStyle]="{
           'font-size': bottomText.rightText?.fontSize
             ? bottomText.rightText.fontSize

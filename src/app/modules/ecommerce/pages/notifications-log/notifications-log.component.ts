@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { NotificationChecker } from 'src/app/core/models/notification';
@@ -30,11 +30,13 @@ export class NotificationsLogComponent implements OnInit {
     private authService: AuthService,
     private notificationsService: NotificationsService,
     private location: Location,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     lockUI();
+    const notificationId = this.route.snapshot.paramMap.get('id');
     this.authService.ready.subscribe(async (observer) => {
       if (observer != undefined) {
         this.status = 'loading';
@@ -42,7 +44,7 @@ export class NotificationsLogComponent implements OnInit {
         if (!user) this.errorScreen();
 
         await this.getMerchant();
-        await this.getNotifications();
+        await this.getNotifications(notificationId);
         this.status = 'complete';
         unlockUI();
       } else {
@@ -60,7 +62,7 @@ export class NotificationsLogComponent implements OnInit {
     }
   }
 
-  async getNotifications() {
+  async getNotifications(id: string) {
     try {
       this.notifications = await this.notificationsService.notificationCheckers(
         {
@@ -72,6 +74,7 @@ export class NotificationsLogComponent implements OnInit {
           findBy: {
             merchant: this.merchant._id,
             status: 'sent',
+            notification: id && [id]
           },
         }
       );

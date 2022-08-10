@@ -27,6 +27,7 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
+  titleStyles?: Record<string, any>
   description?: string;
   message?: string;
   messageCallback?: (...args: any[]) => void;

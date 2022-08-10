@@ -14,6 +14,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 
 @Component({
   selector: 'app-merchant-items',
@@ -202,4 +203,44 @@ export class MerchantItemsComponent implements OnInit {
         flags: ['no-header'],
     });
     };
+
+    editArticles = () => {
+
+        const content: any = [
+            {
+            text: 'Adicionar nuevo artículo',
+            callback: () =>{
+                this.router.navigate(['ecommerce/item-creator']);
+              }
+            },
+            {
+            text: 'Incluir artículos en otras categorias',
+            callback: () =>{
+                console.log('opcion 2');
+              }
+            },
+            {
+            text: 'Eliminar artículos',
+            callback: () =>{
+                console.log('opcion 3');
+              }
+            },
+            {
+            text: 'Compartir un grupo de artículos',
+            callback: () =>{
+                console.log('opcion 4');
+              }
+            },
+        ];
+    
+        this.dialog.open(ItemSettingsComponent, {
+            type: 'fullscreen-translucent',
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+            props:{
+              header: {text: 'Artículos'},
+              content
+            }
+        });
+    }
 }

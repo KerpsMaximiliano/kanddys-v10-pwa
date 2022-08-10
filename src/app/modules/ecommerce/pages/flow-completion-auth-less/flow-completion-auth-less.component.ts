@@ -150,8 +150,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     if (order.items[0].customizer) this.totalPrice = this.totalPrice * 1.18;
 
     const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
-
-    this.fixedWhatsappLink2 = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+    this.fixedWhatsappLink2 = `https://wa.me/${
+      this.merchantInfo.owner.phone
+    }?text=Hola%20${this.merchantInfo.name.replace(
+      /[^\w\s]/gi,
+      ''
+    )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
 
     this.products = order.items.map((item) => {
       const newItem = item.item;
@@ -303,7 +307,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   async submitPhoneCheck(fullLink: string) {
     if (this.isAPreOrder) {
-      const foundUser = await this.checkIfUserExists(this.orderData.user?.phone);
+      const foundUser = await this.checkIfUserExists(
+        this.orderData.user?.phone
+      );
       this.userData = foundUser;
       if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
         this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
@@ -341,16 +347,22 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       this.pastStep = this.step;
       this.step = 'PAYMENT_INFO';
     } else {
-      this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+      this.whatsappLink = `https://wa.me/${
+        this.merchantInfo.owner.phone
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
       lockUI();
       window.location.href = this.whatsappLink;
     }
 
     this.fixedWhatsappLink = `https://wa.me/${
       this.merchantInfo.owner.phone
-    }?text=Hola%20${
-      this.merchantInfo.name
-    },%20%20acabo%20de%20hacer%20una%20orden.${
+    }?text=Hola%20${this.merchantInfo.name.replace(
+      /[^\w\s]/gi,
+      ''
+    )},%20%20acabo%20de%20hacer%20una%20orden.${
       String(this.userData.name) !== 'null' && this.userData.name
         ? '%20Mi%20nombre%20es:%20' + this.userData.name
         : ''
@@ -396,7 +408,12 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           unlockUI();
 
           if (!this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
-            this.whatsappLink = `https://wa.me/${this.merchantInfo.owner.phone}?text=Hola%20${this.merchantInfo.name},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+            this.whatsappLink = `https://wa.me/${
+              this.merchantInfo.owner.phone
+            }?text=Hola%20${this.merchantInfo.name.replace(
+              /[^\w\s]/gi,
+              ''
+            )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
             lockUI();
             window.location.href = this.whatsappLink;
             return;
@@ -583,9 +600,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     if (this.orderData.items[0].customizer) {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
-      }?text=Hola%20${
-        this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
         Math.round((this.totalPrice + Number.EPSILON) * 100) / 100
       }.${
         String(this.userData.name) !== 'null' && this.userData.name
@@ -595,9 +613,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     } else {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
-      }?text=Hola%20${
-        this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.totalPrice.toLocaleString(
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.totalPrice.toLocaleString(
         'es-MX'
       )}.%20Mi%20nombre%20es:%20${
         this.userData.name
@@ -647,7 +666,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
         return (this.stepButtonText =
           !this.image || !this.selectedBank
             ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
-            : 'MANDA TU ORDEN A ' + this.merchantInfo.name.toUpperCase());
+            : 'MANDA TU ORDEN A ' +
+              this.merchantInfo.name.replace(/[^\w\s]/gi, '').toUpperCase());
     }
   }
 
