@@ -874,7 +874,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             ])
           },
           shouldFormatNumber: true,
-          label: 'Monto Pagado (*)',
+          label: 'Monto Pagado',
           inputType: 'number',
           placeholder: 'Si no has realizado ningún pago favor colocar "0"',
           changeCallbackFunction: (change, params) => {
@@ -968,7 +968,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro', 'BDV'],
+          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
             this.formSteps[4].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
@@ -1609,7 +1609,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               this.automationName,
               data
             );
-            
+
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
                type: 'centralized-fullscreen',
                props: {
