@@ -968,7 +968,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
+          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro', 'BDV'],
           changeCallbackFunction: (change, params) => {
             this.formSteps[4].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
@@ -1246,8 +1246,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           selectionOptions: [
             'Pick Up en Tienda (Por Citas)',
-            'Delivery Zona Metropolitana (A partir de +RD$200)',
-            'Envío al Interior (A partir de +RD$300)',
+            'Delivery Zona Metropolitana (A partir de +RD$250)',
+            'Envío al Interior (A partir de +RD$350)',
             'Envío Internacional (Cotizar)'
           ],
           inputType: 'radio',
@@ -1609,8 +1609,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               this.automationName,
               data
             );
-
-             this.dialog.open(GeneralFormSubmissionDialogComponent, {
+            
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
                type: 'centralized-fullscreen',
                props: {
                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
@@ -1621,7 +1621,7 @@ export class LlStudioOrderFormComponent implements OnInit {
              });
 
              window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-              
+            
              return { ok: true };
           } catch (error) {
              this.dialog.open(GeneralFormSubmissionDialogComponent, {
