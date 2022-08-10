@@ -36,7 +36,7 @@
       *ngIf="uploadImagesWithoutPlaceholderBox"
     >    
       <input
-        [id]="'filemultiple'"
+        [id]="(id + '-fileinput') || 'filemultiple'"
         (change)="fileProgressMultiple($event)"
         type="file"
         class="d-none"
@@ -54,7 +54,7 @@
         <label
           [style.background]="sanitize(image, expandImage)"
           [style.border]="image ? 'none' : '1px solid dodgerblue'"
-          [for]="'filemultiple'"
+          [for]="(id + '-fileinput') || 'filemultiple'"
           class="file"
           [ngStyle]="fileStyles ? fileStyles : null"
           [ngClass]="{ error: error[i], small: small }"
