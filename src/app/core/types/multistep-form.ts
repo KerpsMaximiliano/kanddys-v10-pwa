@@ -1,9 +1,7 @@
 import { FormArray, FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { Type } from '@angular/core';
-import {
-  CountryISO,
-} from 'ngx-intl-tel-input';
+import { CountryISO } from 'ngx-intl-tel-input';
 
 export interface FieldStyles {
   fieldStyles?: any;
@@ -23,12 +21,12 @@ export interface FieldStyles {
 }
 
 export interface SingleControl {
-  type: 'single',
+  type: 'single';
   control: FormControl;
 }
 
 export interface MultipleControl {
-  type: 'multiple',
+  type: 'multiple';
   control: FormArray;
 }
 
@@ -39,7 +37,7 @@ export interface FormField {
   onlyAllowPositiveNumbers?: boolean;
   phoneCountryCode?: CountryISO;
   formattedValue?: string;
-  fileObjects?: File[],
+  fileObjects?: File[];
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   statusChangeCallbackFunction?(...params): any;
@@ -72,13 +70,27 @@ export interface FormField {
     callback?: (...params) => any;
   };
   placeholder?: string;
-  inputType?: string;
+  inputType?:
+    | 'text'
+    | 'textarea'
+    | 'number'
+    | 'email'
+    | 'password'
+    | 'select'
+    | 'date'
+    | 'address'
+    | 'phone'
+    | 'file'
+    | 'file2'
+    | 'radio'
+    | 'button'
+    | 'radio-simple';
   callbackOnClick?(...params): any;
   shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
   maxDate?: string;
-  minDate?: string; 
+  minDate?: string;
   cssClass?: string;
 }
 
@@ -123,50 +135,50 @@ export interface FooterOptions {
   bubbleConfig?: {
     validStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
-      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      left?: { text?: string; icon?: string; color?: 'yellow' | 'blue' };
+      right?: { text?: string; icon?: string; color?: 'yellow' | 'blue' };
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
       function(...params): Promise<any> | any;
-    },
+    };
     invalidStep: {
       dontShow?: boolean;
-      left?: { text?: string; icon?: string; color?: "yellow" | "blue"};
-      right?: { text?: string; icon?: string; color?: "yellow" | "blue"};
+      left?: { text?: string; icon?: string; color?: 'yellow' | 'blue' };
+      right?: { text?: string; icon?: string; color?: 'yellow' | 'blue' };
       miniLeft?: { text?: string; icon?: string };
       miniRight?: { text?: string; icon?: string };
       function?(...params): Promise<any> | any;
-    }
-  },
+    };
+  };
   bgColor?: string;
   color?: string;
   enabledStyles?: {
     fontSize?: string;
     height?: string;
     padding?: string;
-  },
+  };
   disabledStyles?: {
     fontSize?: string;
     height?: string;
     padding?: string;
-  },
+  };
 }
 
 export interface HeaderInfoConfig {
   title: string;
   description: string;
   profileImage: string;
-  socials: { name: string; url: string;}[]
+  socials: { name: string; url: string }[];
   reverseInfoOrder?: boolean;
   customStyles?: any;
   fixedMode?: boolean;
-};
+}
 
 export interface FormStep {
   fieldsList: Array<FormField>;
   headerText?: string;
   headerTextLeft?: string;
-  headerTextRight?: string;  
+  headerTextRight?: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   headerTextIcon?: string;
   headerTextCallback?(...params): any;
@@ -198,12 +210,12 @@ export interface FormStep {
   hideMainStepCTA?: boolean;
   hasQrHeader?: boolean;
   qrSectionInfo?: {
-    label: string,
-    icon: string,
+    label: string;
+    icon: string;
     qrLink: string;
     width: number;
     containerStyles?: Record<string, string | number>;
-  },
+  };
   headerMode?: 'v1' | 'v2' | 'header-info-component';
   headerInfoInputs?: HeaderInfoConfig;
   footerConfig?: FooterOptions;
@@ -235,12 +247,12 @@ export interface FormStep {
       height?: string;
       return?: boolean;
       returnCallback?(...params): any;
-    }
+    };
     customLeftButtonStyles?: Record<string, any>;
     customRightButtonStyles?: Record<string, any>;
-    textCallback?( params): any;
-    text2Callback?( params): any;
-  },
+    textCallback?(params): any;
+    text2Callback?(params): any;
+  };
   customHelperHeaderConfig?: {
     bgcolor?: string;
     color?: string;
@@ -251,16 +263,16 @@ export interface FormStep {
     marginRight?: string;
     rightTextStyles?: Record<string, any>;
     icon?: {
-      src: string,
-      alt?: string,
-      cursor?: string,
-      filter?: string,
-      width?: number,
-      height?: number,
-      margin?: string,
-      callback?: () => void
+      src: string;
+      alt?: string;
+      cursor?: string;
+      filter?: string;
+      width?: number;
+      height?: number;
+      margin?: string;
+      callback?: () => void;
     };
-  }
+  };
 }
 
 export interface LinkAction {
