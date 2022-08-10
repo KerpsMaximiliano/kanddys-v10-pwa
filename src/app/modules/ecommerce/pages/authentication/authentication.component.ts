@@ -168,9 +168,11 @@ export class Authentication implements OnInit {
         type: 'promise',
         function: async (params) => {
           try {
+            this.formSteps[0].fieldsList[0].fieldControl.control.enable();
             const phoneNumber = params.dataModel
               .get('1')
               .value.phoneNumber.e164Number.split('+')[1];
+            this.formSteps[0].fieldsList[0].fieldControl.control.disable();
             const password = params.dataModel.get('1').value.password;
             try {
               if (this.type === 'create-item') {
@@ -186,7 +188,7 @@ export class Authentication implements OnInit {
                 return { ok: true };
               } else if (!this.type) {
                 const myUser = await this.authService.checkUser(phoneNumber);
-              
+
                 if (myUser) {
                   if (!password) {
                     params.scrollToStep(1);
@@ -329,6 +331,8 @@ export class Authentication implements OnInit {
   ngOnInit(): void {
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const type = this.route.snapshot.queryParamMap.get('type');
+    const phone = this.route.snapshot.queryParamMap.get('phone');
+    const hideNumber = this.route.snapshot.queryParamMap.get('hideNumber');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as
       | 'mlink'
       | 'password';
@@ -844,49 +848,72 @@ export class Authentication implements OnInit {
       };
     } else if (type === 'create-item' && itemId) {
       this.itemId = itemId;
-    } else {
-      if (this.auth === 'password') {
-        this.formSteps[0].fieldsList.splice(1, 0, {
-          name: 'password',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
+    } else if (this.auth === 'password') {
+      this.formSteps[0].fieldsList.splice(1, 0, {
+        name: 'password',
+        fieldControl: {
+          type: 'single',
+          control: new FormControl('', Validators.required),
+        },
+        label: 'Contraseña',
+        placeholder: 'Contraseña...',
+        inputType: 'password',
+        styles: {
+          containerStyles: {
+            marginTop: '38px',
           },
-          label: 'Contraseña',
-          placeholder: 'Contraseña...',
-          inputType: 'password',
-          styles: {
-            containerStyles: {
-              marginTop: '38px',
-            },
-            labelStyles: {
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              margin: '48px 0px 27px',
-              fontWeight: 'normal',
-            },
-            bottomLabelStyles: {
-              fontWeight: 'normal',
-              fontStyle: 'italic',
-              fontSize: '15px',
-              marginTop: '22px',
-              fontFamily: 'Roboto',
-              color: 'rgb(40, 116, 173)',
-            },
+          labelStyles: {
+            fontFamily: 'Roboto',
+            fontSize: '16px',
+            margin: '48px 0px 27px',
+            fontWeight: 'normal',
           },
-          bottomLabel: {
-            text: 'Olvidé mi contraseña',
-            clickable: true,
-            callback: () => {
-              console.log('Se ha clickeado el callback');
-            },
+          bottomLabelStyles: {
+            fontWeight: 'normal',
+            fontStyle: 'italic',
+            fontSize: '15px',
+            marginTop: '22px',
+            fontFamily: 'Roboto',
+            color: 'rgb(40, 116, 173)',
           },
-        });
-        this.formSteps[0].statusChangeCallbackFunction = (change) => {
-          if (change === 'VALID')
-            this.formSteps[0].fieldsList[2].disabled = false;
-          else this.formSteps[0].fieldsList[2].disabled = true;
-        };
+        },
+        bottomLabel: {
+          text: 'Olvidé mi contraseña',
+          clickable: true,
+          callback: () => {
+            console.log('Se ha clickeado el callback');
+          },
+        },
+      });
+      this.formSteps[0].statusChangeCallbackFunction = (change) => {
+        if (change === 'VALID')
+          this.formSteps[0].fieldsList[2].disabled = false;
+        else this.formSteps[0].fieldsList[2].disabled = true;
+      };
+
+      if (phone) {
+        const { nationalNumber, countryIso } =
+          this.authService.getPhoneInformation(phone);
+        this.formSteps[0].fieldsList[0].phoneCountryCode = countryIso;
+        (<FormControl>this.formSteps[0].fieldsList[0].fieldControl.control).setValue(
+          nationalNumber+''
+        );
+        this.formSteps[0].fieldsList[0].fieldControl.control.disable();
+        if (hideNumber) {
+          this.formSteps[0].fieldsList[0].styles.containerStyles = {
+            ...this.formSteps[0].fieldsList[0].styles.containerStyles,
+            visibility: 'hidden',
+            position: 'absolute',
+          };
+          this.formSteps[0].fieldsList[1].styles.labelStyles = {
+            fontFamily: 'Roboto',
+            fontWeight: 'bold',
+            fontSize: '24px',
+            margin: '0px',
+            marginTop: '48px',
+            marginBottom: '27px',
+          };
+        }
       }
     }
   }

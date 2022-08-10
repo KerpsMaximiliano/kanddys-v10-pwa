@@ -30,7 +30,9 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
 import { User } from '../models/user';
 import { refresh, verifyUser, userExists } from './../graphql/auth.gql';
-import { Logs } from 'selenium-webdriver';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { CountryISO } from 'ngx-intl-tel-input';
+// import { Logs } from 'selenium-webdriver';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +59,7 @@ export class AuthService {
         variables: { emailOrPhone },
       });
       return result?.exists as boolean;
-    } catch (e) { }
+    } catch (e) {}
     return false;
   }
 
@@ -69,12 +71,11 @@ export class AuthService {
     try {
       const variables = { emailOrPhone, password, remember };
       const promise = this.graphql.mutate({ mutation: signin, variables });
-      
+
       this.ready = from(promise);
 
       const result = await promise;
       this.session = new Session(result?.session, true);
-      
     } catch (e) {
       this.session?.revoke();
       this.session = undefined;
@@ -163,7 +164,7 @@ export class AuthService {
       const result = await this.graphql.mutate({ mutation, variables });
       session = new Session(result?.session, use);
       if (use) this.session = session;
-    } catch (e) { }
+    } catch (e) {}
     this.app.events.emit({ type: 'auth', data: this.session });
     return session;
   }
@@ -172,7 +173,6 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
-
         this.session?.revoke();
         this.session = undefined;
       }
@@ -193,7 +193,6 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
-
         this.session?.revoke();
         this.session = undefined;
       }
@@ -214,7 +213,6 @@ export class AuthService {
     try {
       const result = await this.graphql.mutate({ mutation: signout });
       if (result.success) {
-
         this.session?.revoke();
         this.session = undefined;
         // this.app.nav = [];
@@ -270,7 +268,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) { }
+    } catch (e) {}
   }
 
   public async updateMe(input: any, files?: any) {
@@ -295,7 +293,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
-    } catch (e) { }
+    } catch (e) {}
   }
 
   public async generateOTP(emailOrPhone: String) {
@@ -306,7 +304,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) { 
+    } catch (e) {
       console.log(e);
       return null;
     }
@@ -323,15 +321,15 @@ export class AuthService {
     try {
       const response = await this.graphql.mutate({
         mutation: generateMagicLink,
-        variables: { 
-          phoneNumber, 
-          redirectionRoute, 
-          redirectionRouteId, 
-          entity, 
+        variables: {
+          phoneNumber,
+          redirectionRoute,
+          redirectionRouteId,
+          entity,
           redirectionRouteQueryParams,
-          attachments
+          attachments,
         },
-        context: { useMultipart: true }
+        context: { useMultipart: true },
       });
 
       return response;
@@ -352,7 +350,7 @@ export class AuthService {
 
       const response = await promise;
       return response;
-    } catch (e) { }
+    } catch (e) {}
   }
 
   public async generatePowerMagicLink(hostPhoneNumber: string) {
@@ -364,7 +362,27 @@ export class AuthService {
       });
       return response;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
+  }
+
+  public getPhoneInformation(number: string) {
+    if (!number.trim()) throw new Error('Invalid phone number');
+    if (!number.startsWith('+')) number = '+' + number;
+    const phoneUtil = PhoneNumberUtil.getInstance();
+    const phoneNumber = phoneUtil.parse(number);
+    if (!phoneUtil.isValidNumber(phoneNumber))
+      throw new Error('Invalid phone number');
+    const countryCode = phoneNumber.getCountryCode();
+    const countryIso = phoneUtil.getRegionCodeForCountryCode(countryCode);
+    const region = Object.keys(CountryISO).find(
+      (key) => CountryISO[key] == countryIso.toLowerCase()
+    );
+    return {
+      countryCode,
+      nationalNumber: phoneNumber.getNationalNumber(),
+      countryIso: CountryISO[region],
+      region,
+    };
   }
 }
