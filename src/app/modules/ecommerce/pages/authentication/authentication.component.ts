@@ -890,8 +890,10 @@ export class Authentication implements OnInit {
           this.formSteps[0].fieldsList[2].disabled = false;
         else this.formSteps[0].fieldsList[2].disabled = true;
       };
-
+      this.formSteps[0].stepButtonValidText = "CONTINUAR";
+      this.formSteps[0].fieldsList[2].bottomLabel = null;
       if (phone) {
+        this.formSteps[0].stepButtonInvalidText = 'ESCRIBE LA CONTRASEÑA';
         const { nationalNumber, countryIso } =
           this.authService.getPhoneInformation(phone);
         this.formSteps[0].fieldsList[0].phoneCountryCode = countryIso;
