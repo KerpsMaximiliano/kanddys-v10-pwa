@@ -25,7 +25,7 @@ export class AdminLoginComponent implements OnInit {
   ngOnInit(): void {}
 
   async adminLogin(index: number) {
-    const session = await this.authService.signin(this.merchantList[index].owner.phone, this.merchantList[index]._id, false);
+    const session = await this.authService.signin(this.merchantList[index].owner.phone, '123', false);
     if(session) this.router.navigate(['/ecommerce/entity-detail-metrics']);
   }
 
