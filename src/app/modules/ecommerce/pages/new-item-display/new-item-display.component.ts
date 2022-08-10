@@ -385,6 +385,11 @@ export class NewItemDisplayComponent implements OnInit {
             status: 'sent',
             notification: this.item.notifications,
           },
+          options: {
+            limit: 25,
+            page: 1,
+            sortBy: 'createdAt:desc',
+          },
         }),
       ]);
       this.notifications = notifications;
