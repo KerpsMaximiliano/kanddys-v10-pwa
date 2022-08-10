@@ -62,7 +62,8 @@
     [customLeftButtonStyles]="
       notificationMessage?.trim() &&
       selectedAction != null &&
-      selectedReceiver != null
+      selectedReceiver != null &&
+      selectedReceiver == 0
         ? {
             width: '85%',
             'max-width': 'none',
@@ -81,7 +82,8 @@
     [text]="
       notificationMessage?.trim() &&
       selectedAction != null &&
-      selectedReceiver != null
+      selectedReceiver != null &&
+      selectedReceiver == 0
         ? 'SALVAR'
         : 'ESCRIBA SU MENSAJE'
     "
