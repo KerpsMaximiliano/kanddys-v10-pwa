@@ -43,12 +43,13 @@ export class AppComponent implements OnDestroy, OnInit {
     if (this.swUpdate?.isEnabled) {
       this.swUpdate.available.subscribe(() => {
         // localStorage.clear();
-        ons.notification.alert(`Reload to update.`, {
-          cancelable: false,
-          title: 'New version available!',
-          buttonLabel: 'Reload',
-          callback: () => this.reload(),
-        });
+        console.log("Reload ejecutado");
+        // ons.notification.alert(`Reload to update.`, {
+        //   cancelable: false,
+        //   title: 'New version available!',
+        //   buttonLabel: 'Reload',
+        //   callback: () => this.reload(),
+        // });
       });
     }
   }
