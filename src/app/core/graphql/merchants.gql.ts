@@ -64,8 +64,8 @@ export const myMerchants = gql`
 `;
 
 export const merchants = gql`
-  query merchants($params: ListParams) {
-    merchants(params: $params) { ${body} }
+  query merchants($input: PaginationInput) {
+    merchants(input: $input) { ${body} }
   }
 `;
 
