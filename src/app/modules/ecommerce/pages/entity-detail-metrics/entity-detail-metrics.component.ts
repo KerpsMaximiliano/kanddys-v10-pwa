@@ -85,7 +85,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
-      this.router.navigate([`ecommerce/error-screen/`]);
+      this.router.navigate([`ecommerce/authentication/`]);
+      unlockUI();
       return;
     }
     this.items = (
