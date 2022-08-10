@@ -1204,6 +1204,32 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputs:
           {
             calendarId: this.calendarId,
+            hourRangeInDays: {
+              'MONDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'TUESDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'WEDNESDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'THURSDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'FRIDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'SATURDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 15}
+              ],
+            },
             //calendarId: "62ead89938496128082e4ddd"
           },
           outputs: [

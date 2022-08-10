@@ -41,10 +41,14 @@ export class ReservationOrderlessComponent implements OnInit {
   @Input() firstLabel: string = 'DIA CONVENIENTE';
   @Input() secondLabel: string = 'HORA CONVENIENTE';
   @Input() timeOfDayMode: boolean = false;
+  @Input() hourRangeInDays: Record<string, Array<{
+    from: number,
+    to: number
+  }>> = null;
   timeOfDay: string = null;
   selectedDateObject: any = null;
   //FIN CAMBIOS ULTIMOS LUIS
-
+  
 
   @Input() calendarId: string;
   @Output() onReservation = new EventEmitter();
@@ -635,6 +639,57 @@ export class ReservationOrderlessComponent implements OnInit {
   }
 
   filterHours(hour) {
+    const currentDateObject = new Date();
+    const hourWithoutOffset = hour - currentDateObject.getTimezoneOffset() / 60;
+    const currentHour = currentDateObject.getHours();
+    const currentDayNumber = currentDateObject.getDate();
+
+    const daysHashTableTranslation = {
+      'Lunes': 'MONDAY',
+      'Martes': 'TUESDAY',
+      'Miercoles': 'WEDNESDAY',
+      'Jueves': 'THURSDAY',
+      'Viernes': 'FRIDAY',
+      'Sabado': 'SATURDAY',
+      'Domingo': 'SUNDAY',
+    };
+
+    if(
+      (
+        this.hourRangeInDays && !(hourWithoutOffset < currentHour) && this.datePreview && (
+          this.calendar.months[this.calendar.monthIndex].dates[
+            this.calendar.dayIndex
+          ].dayNumber === currentDayNumber
+        )
+      ) || (
+        this.hourRangeInDays && this.datePreview && (
+          this.calendar.months[this.calendar.monthIndex].dates[
+            this.calendar.dayIndex
+          ].dayNumber !== currentDayNumber
+        )        
+      )
+    ) {
+      let shouldDisableHour = false;
+      Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
+        
+        if(dayKey === daysHashTableTranslation[
+          this.calendar.months[this.calendar.monthIndex].dates[
+            this.calendar.dayIndex
+          ].dayName
+        ]) {
+
+          this.hourRangeInDays[dayKey].forEach(availabilityRange => {
+            if(availabilityRange.from <= hourWithoutOffset && availabilityRange.to >= hourWithoutOffset && !shouldDisableHour) {
+              console.log(availabilityRange, hourWithoutOffset);
+              shouldDisableHour = true
+            };
+          });
+        }
+      });
+
+      return shouldDisableHour;
+    }
+
     let today = new Date();
     let time = today.getHours();
     /*if (this.calendar.monthIndex == 0 && this.calendar.dayIndex < (this.calendar.monthDay-1)) {
