@@ -51,8 +51,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   item: Item;
   imagesAlreadyLoaded: boolean = false;
   createdItem: boolean = false;
+  savingItem: boolean = false;
   lastCharacterEnteredIsADecimal: boolean = false;
   tryingToDeleteDotDecimalCounter: number = 0;
+  changedImages: boolean = false;
 
   footerConfig: FooterOptions = {
     bubbleConfig: {
@@ -63,8 +65,15 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           const values = params.dataModel.value;
           const priceWithDecimalArray = values['1'].price.split('');
           const firstHalf = priceWithDecimalArray.slice(0, -2);
-          const secondHalf = priceWithDecimalArray.slice(-2);
-          const totalArray = firstHalf.concat('.').concat(secondHalf);
+          let secondHalf;
+
+          if(priceWithDecimalArray.length > 1) {
+            secondHalf = priceWithDecimalArray.slice(-2);
+          } else {
+            secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+          }
+
+          const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
           const totalWithDecimal = Number(totalArray.join(''));
 
           if (
@@ -88,14 +97,19 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             );
 
             if(updatedItem) {
-              await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
 
-              await this.itemService.addImageItem(this.files, updatedItem._id);
+              if(this.changedImages) {
+                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+  
+                await this.itemService.addImageItem(this.files, updatedItem._id);
+              }
 
               // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
               // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
               this.router.navigate([`/ecommerce/merchant-items`]);
             }
+
+            this.savingItem = false;
             
           } else {
             if (this.loggedIn) {
@@ -113,6 +127,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 currencies: [],
                 hasExtraPrice: false,
                 purchaseLocations: [],
+                showImages: this.files && this.files.length >= 1
               });
 
 
@@ -128,6 +143,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
               }
             } else {
+              console.log("El precio", totalWithDecimal)
+
               const { createPreItem } = await this.itemService.createPreItem({
                 name: values['4'].name,
                 description: values['3'].description !== '' ? values['3'].description : null,
@@ -140,6 +157,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 currencies: [],
                 hasExtraPrice: false,
                 purchaseLocations: [],
+                showImages: this.files && this.files.length >= 1
               });
 
               // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
@@ -147,6 +165,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 type: 'create-item'
               }});
               this.createdItem = true;
+              this.savingItem = false;
             }
           }
 
@@ -229,6 +248,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           if(this.editMode) {
             this.defaultImages = [];
           }
+          
+          this.changedImages = true;
           this.formSteps[0].embeddedComponents[0].shouldRerender = true;
         },
       },
@@ -377,6 +398,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     emitEvent: false,
                   });
                 } else {
+                  console.log(plainNumber.length, "plainNumber");
+
                   const formatted = plainNumber.length > 2 ? this.decimalPipe.transform(
                     Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
                     '1.2'
@@ -404,6 +427,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   const plainNumber = change
                     .split(',')
                     .join('');
+
+                console.log(plainNumber.length, "plainNumber");
   
                   if (plainNumber[0] === '0') {
                     const formatted = plainNumber.length > 3 ? this.decimalPipe.transform(
@@ -433,7 +458,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                       )),
                       '1.2'
                     );
-  
+
                     if (formatted === '0.00') {
                       this.formSteps[0].fieldsList[0].placeholder = '';
                     }
@@ -601,11 +626,23 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           try {
             const values = params.dataModel.value;
             const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
+
+            console.log(priceWithDecimalArray, "priceWithDecimalArray");
+
             const firstHalf = priceWithDecimalArray.slice(0, -2);
-            const secondHalf = priceWithDecimalArray.slice(-2);
-            const totalArray = firstHalf.concat('.').concat(secondHalf);
+            let secondHalf;
+
+            if(priceWithDecimalArray.length > 1) {
+              secondHalf = priceWithDecimalArray.slice(-2);
+            } else {
+              secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+            }
+
+            const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
             const totalWithDecimal = Number(totalArray.join(''));
   
+            console.log(firstHalf, secondHalf, totalArray, totalWithDecimal);
+
             if (
               this.currentUserId &&
               this.merchantOwnerId &&
@@ -627,16 +664,21 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               );
 
               if(updatedItem) {
-                await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
 
-                await this.itemService.addImageItem(this.files, updatedItem._id);
+                if(this.changedImages) {
+                  await this.itemService.deleteImageItem(this.defaultImagesPermanent, updatedItem._id);
+  
+                  await this.itemService.addImageItem(this.files, updatedItem._id);
+                }
 
-                this.headerService.flowRoute = this.router.url;
+                // this.headerService.flowRoute = this.router.url;
                 // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
                 // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
                 this.router.navigate([`/ecommerce/merchant-items`]);
               }
+
+              this.savingItem = false;
 
             } else {
               if (this.loggedIn) {
@@ -653,6 +695,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   currencies: [],
                   hasExtraPrice: false,
                   purchaseLocations: [],
+                  showImages: this.files && this.files.length >= 1
                 });
 
                 await this.saleflowSarvice.addItemToSaleFlow({
@@ -668,6 +711,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   this.router.navigate([`/ecommerce/merchant-items`]);
                 }
               } else {
+                console.log("El precio", totalWithDecimal)
+
                 const { createPreItem } = await this.itemService.createPreItem({
                   name: values['4'].name,
                   description: values['3'].description !== '' ? values['3'].description : null,
@@ -680,6 +725,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   currencies: [],
                   hasExtraPrice: false,
                   purchaseLocations: [],
+                  showImages: this.files && this.files.length >= 1
                 });
 
                 // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
@@ -690,6 +736,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                     type: 'create-item'
                   }})
                   this.createdItem = true;
+                  this.savingItem = false;
                 };
               }
             }
@@ -772,6 +819,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
           this.formSteps[0].customStickyButton.extra = {};      
           this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.returnCallback = () => {
+            this.router.navigate([this.headerService.flowRoute]);
+          };
           this.formSteps[0].customStickyButton.extra.height = '30px';
           this.formSteps[0].customStickyButton.customLeftButtonStyles = {
             width: 'fit-content',
@@ -799,10 +849,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         height: '30px',
         heightInactive: '30px',
         textCallback: async (params) => {
-          this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);;
+          if (!this.savingItem) this.saveItemInItemServiceAndRedirect(params, '/ecommerce/item-detail', this.item?._id);
         },
         text2Callback: async (params) => {
           try {
+            this.savingItem = true;
             this.formSteps[0].customStickyButton.text2 = 'ESPERE...';
             await this.formSteps[0].asyncStepProcessingFunction.function(params);              
           } catch (error) {
@@ -934,6 +985,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
             },
           },
           changeCallbackFunction: (change, params) => {
+            if(!change) return;
             this.formSteps[0].optionalLinksTo.groupOfLinksArray[0].links[0].text = `Cambiar nombre (Actual: ${change})`;
           }
         },
@@ -1082,20 +1134,25 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if(this.headerService.flowRoute) {
         this.shouldScrollBackwards = true;
         this.formSteps[0].customScrollToStepBackwards = (params) => {
-          this.router.navigate([`/ecommerce/merchant-items`]);
+          this.itemService.removeTemporalItem();
+          this.router.navigate([this.headerService.flowRoute]);
         };
       }
 
       if (localStorage.getItem('session-token')) {
+        //lockUI();
         const data = await this.authService.me()
         this.user = data;
         if (data) this.loggedIn = true;
+
+        //if(!this.loggedIn) unlockUI();
       }
 
       if (this.itemService && this.itemService.temporalItem) {
-        console.log("one");
         const { description, name, content } = this.itemService.temporalItem;
         let { pricing, images } = this.itemService.temporalItem;
+
+        if(this.itemService.hasTemporalItemNewImages) this.changedImages = true;
 
         // console.log("seteando 1")
         // console.log("what arrived", {
@@ -1114,6 +1171,35 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
         this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
           String(pricing)
         );
+
+        if(Number(pricing) <= 0) {
+          this.formSteps[0].customStickyButton.mode = 'disabled-fixed';
+          this.formSteps[0].customStickyButton.text = 'ADICIONA LA INFO DE LO QUE VENDES';
+        } else {
+          // this.formSteps[0].headerText = 'PREVIEW';
+          this.formSteps[0].customStickyButton.mode = 'double';
+          this.formSteps[0].customStickyButton.text = 'PREVIEW';
+          this.formSteps[0].customStickyButton.text2 = 'SALVAR';    
+          this.formSteps[0].customStickyButton.extra = {};      
+          this.formSteps[0].customStickyButton.extra.return = true;
+          this.formSteps[0].customStickyButton.extra.returnCallback = () => {
+            this.router.navigate([this.headerService.flowRoute]);
+          };
+          this.formSteps[0].customStickyButton.extra.height = '30px';
+          this.formSteps[0].customStickyButton.customLeftButtonStyles = {
+            width: 'fit-content',
+            marginLeft: 'auto',
+            color: '#fff',
+            height: '30px'
+          };      
+          this.formSteps[0].customStickyButton.customRightButtonStyles = {
+            width: 'fit-content',
+            marginRight: '20px',
+            marginLeft: '44px',
+            color: '#fff',
+            height: '30px'
+          };      
+        }
 
         // console.log("formatted", formatted, this.formSteps[0].fieldsList[0].fieldControl.control.value);
 
@@ -1185,8 +1271,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           formArray.push(new FormControl(''));
         }
 
-        // this.formSteps[0].fieldsList[0].fieldControl.control.updateValueAndValidity();
-
         //***************************** FORZANDO EL RERENDER DE LOS EMBEDDED COMPONENTS ********** */
         this.formSteps[0].embeddedComponents[0].shouldRerender = true;
 
@@ -1194,8 +1278,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       }
 
       if (itemId && this.loggedIn) {
-        console.log("two");
-        lockUI();
         this.editMode = true;
 
         this.currentUserId = this.user._id;
@@ -1209,7 +1291,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
         for(let formStep of this.formSteps) {
           formStep.customHelperHeaderConfig = {
-            bgcolor: '#B17608',
+            bgcolor: this.item.status === 'active' ? '#2874AD' : '#B17608',
             color: '#ffffff',
             justifyContent: 'flex-end',
             alignItems: 'center',
@@ -1272,6 +1354,18 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
+
+          formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+            this.item.status === 'active' ? 'open' : 'closed'
+          }-eye-white.svg`;
+          
+          formStep.headerText = this.item.status === 'active' ?
+            'ACTIVO (EXPUESTO EN TIENDA)' :
+            'INACTIVO (NO EXPUESTO)';
+
+          formStep.customHelperHeaderConfig.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
+            this.item.status === 'active' ? 'open' : 'closed'
+          }-eye-white.svg`;
         }
 
 
@@ -1359,12 +1453,12 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
               }
             }
           }
-          unlockUI();
+          //unlockUI();
         } else {
           if (itemId) this.router.navigate(['/']);
         }
       } else {
-        unlockUI();
+        //unlockUI();
 
         if (itemId) this.router.navigate(['/'])
         else {
@@ -1390,11 +1484,21 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
     const priceWithDecimalArray = typeof values['1'].price === 'string' ? values['1'].price.split('') : String(values['1'].price).split('');
     const firstHalf = priceWithDecimalArray.slice(0, -2);
-    const secondHalf = priceWithDecimalArray.slice(-2);
+    let secondHalf;
+
+    if(priceWithDecimalArray.length > 1) {
+      secondHalf = priceWithDecimalArray.slice(-2);
+    } else {
+      secondHalf = ['0'].concat(priceWithDecimalArray.slice(-2));
+    }
+
     const totalArray = !firstHalf.includes('.') ? firstHalf.concat('.').concat(secondHalf) : firstHalf.concat(secondHalf);
     const totalWithDecimal = Number(totalArray.join(''));
 
+
     // console.log(priceWithDecimalArray, firstHalf, secondHalf, totalArray, totalWithDecimal);
+
+    if(this.changedImages) this.itemService.hasTemporalItemNewImages = true;
 
     this.itemService.storeTemporalItem({
       _id: createdItemId ? createdItemId : null,
@@ -1476,6 +1580,6 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
+    // if(this.headerService.flowRoute && !this.createdItem) this.headerService.flowRoute = null;
   }
 }

@@ -6,6 +6,9 @@ import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { filter } from 'rxjs/operators';
 import { analizeMagicLink } from 'src/app/core/graphql/auth.gql';
+import { Session } from 'src/app/core/models/session';
+import { from } from 'rxjs';
+import { Observable } from 'apollo-link';
 
 @Component({
   selector: 'app-redirections',
@@ -14,6 +17,7 @@ import { analizeMagicLink } from 'src/app/core/graphql/auth.gql';
 })
 export class RedirectionsComponent implements OnInit {
   errored: boolean = false;
+  public session: Session;
 
   constructor(
     private router: Router,
@@ -59,7 +63,7 @@ export class RedirectionsComponent implements OnInit {
         const { session, redirectionRoute } = result;
 
         localStorage.removeItem('session-token');
-        localStorage.setItem('session-token', session.token);
+        this.session = new Session(session, true);
 
         if(redirectionRoute.includes('?')) {
           const routeParts = redirectionRoute.split('?');

@@ -36,6 +36,8 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showBox: boolean;
   @Input() boxAmount: number;
   @Input() showIcon: boolean;
+  @Input() displaying: boolean;
+  @Input() inactive: boolean;
   @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
   @Input() icon:{
@@ -44,11 +46,22 @@ export class SaleflowItemComponent implements OnInit {
     width?: number;
     height?: number;
     color?: string;
+    cursor?: boolean;
+  }
+  @Input() icon2:{
+    src: string;
+    alt?: string;
+    width?: number;
+    height?: number;
+    color?: string;
+    cursor?: boolean;
   }
   @Input() responsiveWidthVersion: boolean = false;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
+  @Output() iconClicked = new EventEmitter();
+  @Output() iconTwoClicked = new EventEmitter();
   @Output() action = new EventEmitter()
   
   env: string = environment.assetsUrl;

@@ -63,7 +63,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
-  canOpenCart: boolean;
+  // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -99,11 +99,14 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     headlines: ItemCategoryHeadline
   ) {
     if (itemCategoriesList.length === 0) return;
-    const categories = headlines.itemsCategories
-      .map((value) =>
-        itemCategoriesList.find((element) => element._id === value)
-      )
-      .filter((value) => value);
+    const categories =
+      headlines?.itemsCategories.length > 0
+        ? headlines.itemsCategories
+            .map((value) =>
+              itemCategoriesList.find((element) => element._id === value)
+            )
+            .filter((value) => value)
+        : [];
     return categories;
   }
 
@@ -176,8 +179,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           if (!item.customizerId)
             item.isSelected = selectedItems.includes(item._id);
         });
-        //sub.unsubscribe();
-        this.canOpenCart = this.items.some((item) => item.isSelected);
+        this.itemCartAmount = productData?.length;
       });
   }
 
@@ -203,7 +205,9 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             limit: 20,
           },
         }),
-        this.item.itemCategoryHeadlineByMerchant(this.saleflowData.merchant._id),
+        this.item.itemCategoryHeadlineByMerchant(
+          this.saleflowData.merchant._id
+        ),
         this.merchant.merchant(this.saleflowData.merchant._id),
         this.authService.me(),
       ]);
@@ -218,8 +222,8 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
       // Package fetching
       if (this.saleflowData.packages.length) {
-        const listPackages = (
-          await this.saleflow.listPackages({
+        const listItemPackage = (
+          await this.saleflow.listItemPackage({
             findBy: {
               _id: {
                 __in: ([] = this.saleflowData.packages.map(
@@ -229,12 +233,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             },
           })
         ).listItemPackage;
-        listPackages.forEach((itemPackage) => {
+        listItemPackage.forEach((itemPackage) => {
           itemPackage.isSelected = orderData?.itemPackage === itemPackage._id;
         });
-        this.inputPackage = listPackages;
-        this.sliderPackage = listPackages;
-        await this.itemOfPackage(listPackages);
+        this.inputPackage = listItemPackage;
+        this.sliderPackage = listItemPackage;
+        await this.itemOfPackage(listItemPackage);
         this.inputPackage = this.packageData.map((e) => e.package);
         if (
           orderData &&
@@ -271,8 +275,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
         this.items = items.listItems;
-        this.canOpenCart = orderData?.products?.length > 0;
-        this.itemCartAmount = orderData?.products?.length;
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
@@ -295,13 +297,20 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           );
         }
         if (orderData?.products?.length) {
+          let itemIDs: string[] = [];
           orderData.products.forEach((item) => {
             if (!this.items.some((product) => product._id === item.item)) {
+              itemIDs.push(item.item);
               this.header.removeOrderProduct(this.saleflowData._id, item.item);
               this.header.removeItem(this.saleflowData._id, item.item);
             }
           });
+          orderData.products = orderData.products.filter(
+            (product) => !itemIDs.includes(product.item)
+          );
         }
+        // this.canOpenCart = orderData?.products?.length > 0;
+        this.itemCartAmount = orderData?.products?.length;
         await this.organizeItems(merchant);
         this.status = 'complete';
         unlockUI();
@@ -416,7 +425,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         item: itemData._id,
         customizer: itemData.customizerId,
         params: itemParams,
-        amount: itemData.customizerId ? undefined : 1,
+        amount: undefined,
         saleflow: this.saleflowData._id,
         name: itemData.name,
       };
@@ -430,6 +439,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       ]);
     } else {
       if (!justRedirect) {
+        if (!this.saleflowData.canBuyMultipleItems) {
+          this.header.emptyOrderProducts(this.saleflowData._id);
+          this.header.emptyItems(this.saleflowData._id);
+        }
         this.header.storeOrderProduct(this.saleflowData._id, {
           item: itemData._id,
           amount: 1,
@@ -486,15 +499,31 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
-        footerCallback: () =>
-          this.saleflowData.module?.post
-            ? this.router.navigate(['/ecommerce/create-giftcard'])
-            : this.router.navigate(['/ecommerce/shipment-data-form']),
+        footerCallback: async () => {
+          if (this.saleflowData.module?.post)
+            this.router.navigate(['/ecommerce/create-giftcard']);
+          else if (this.saleflowData.module?.delivery)
+            this.router.navigate(['/ecommerce/shipment-data-form']);
+          else if (!this.header.orderId) {
+            lockUI();
+            const preOrderID = await this.header.newCreatePreOrder();
+            this.header.orderId = preOrderID;
+            unlockUI();
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${preOrderID}`,
+            ]);
+            this.header.createdOrderWithoutDelivery = true;
+          } else {
+            this.router.navigate([
+              `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+            ]);
+          }
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   async itemOfPackage(packages: ItemPackage[]) {
     let index = 0;

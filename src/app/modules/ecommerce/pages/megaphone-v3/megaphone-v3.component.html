@@ -4,16 +4,17 @@
       [mainText]="{
         text: saleflowData?.headline,
         fontFamily: 'SfProBold',
-        fontSize: '21px'
+        fontSize: '21px',
+        icon: admin ? {
+            src: '/pencil.svg',
+            width: '14',
+            height: '14',
+            color: 'brightness(7)',
+            callback: onShareClick
+        } : null
       }"
-      mode="basic"
+      [mode]="!admin ? 'basic': 'center'"
       [icons]="[
-        {
-          src: '/search.svg',
-          color:
-            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-          callback: null
-        },
         {
           src: '/upload.svg',
           color:
@@ -23,7 +24,24 @@
       ]"
       bgColor="#2874AD"
       [returnAble]="false"
+      *ngIf="saleflowData && !hasCustomizer"
     ></app-helper-headerv2>
+    <!-- {
+      src: '/search.svg',
+      color:
+        'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
+      callback: null
+    }, -->
+    <div class="header-bg">
+      <app-header-info
+        *ngIf="saleflowData && hasCustomizer"
+        [profileImage]="saleflowData.banner"
+        [title]="saleflowData.headline"
+        [description]="saleflowData.subheadline"
+        [route]="contactLandingRoute"
+        type="route"
+      ></app-header-info>
+    </div>
   </header>
   <main>
     <div
@@ -45,7 +63,7 @@
       <div class="item-list" *ngIf="categorylessItems.length">
         <ng-container *ngFor="let item of categorylessItems; index as i">
           <app-saleflow-item
-            *ngIf="item.showImages"
+            *ngIf="item.showImages && item.images.length"
             [type]="2"
             [big]="true"
             [name]="item.name"
@@ -57,12 +75,12 @@
             [showPrice]="item.customizerId ? false : true"
             priceAlign="start"
             [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
-            (itemClicked)="onItemClick(item._id)"
+            (itemClicked)="onItemClick(item._id, true)"
             (action)="onItemClick(item._id)"
           ></app-saleflow-item>
           <app-package-item
             [clickAble]="true"
-            *ngIf="!item.showImages"
+            *ngIf="!item.showImages || !item.images.length"
             [item]="item"
             (action)="onItemClick(item._id, $event)"
           ></app-package-item>
@@ -100,7 +118,7 @@
         </div>
       </div>
     </div>
-    <ng-container *ngIf="itemsByCategory.length >= 4 || hasCustomizer">
+    <ng-container *ngIf="itemsByCategory.length >= 4 || !hasCustomizer">
       <app-gallery-displayer
         *ngFor="let category of itemsByCategory"
         [headline]="{
@@ -131,42 +149,63 @@
         "
       ></app-gallery-displayer>
     </ng-container>
-    <!-- <div class="content" *ngIf="itemsByCategory.length === 1">
+    <!-- Only for saleflows with customizers -->
+    <ng-container *ngIf="itemsByCategory.length || hasCustomizer">
       <div
-        class="header-wrapper"
-        style="margin-top: 15px;"
+        *ngFor="let item of itemsByCategory; let i = index"
+        [ngStyle]="{ paddingBottom: '64px' }"
       >
-        <h6
-          class="header-text"
+        <div
+          class="header-wrapper"
+          [ngStyle]="{ marginTop: i == 0 ? '15px' : '0px' }"
         >
-          {{ itemsByCategory[0].label }}
-        </h6>
-        <h6
-          class="see-all-more"
-          style="font-weight: 100"
-          (click)="seeCategories(0)"
-        >
-          Ver..
-        </h6>
-      </div>
-      <div class="itemGrid">
-        <ng-container *ngFor="let swiperItem of itemsByCategory[0].items; index as i">
-          <app-saleflow-item
-            [type]="2"
-            [showBox]="swiperItem.customizerId ? false : true"
-            [imgURL]="swiperItem.images[0]"
-            [isSelected]="swiperItem.isSelected"
-            [showSelected]="true"
-            [price]="swiperItem.pricing"
-            [showPrice]="swiperItem.customizerId ? false : true"
-            priceAlign="start"
-            [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
-            (itemClicked)="onItemClick(0, i)"
+          <h6 class="header-text">
+            {{ item.label }}
+          </h6>
+          <h6
+            class="see-all-more"
+            style="font-weight: 100"
+            (click)="seeCategories(i)"
           >
-          </app-saleflow-item>
-        </ng-container>
+            Ver..
+          </h6>
+        </div>
+        <div style="padding: 0 1.2rem">
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let swiperItem of item.items; let j = index"
+              style="max-width: 227px"
+            >
+              <app-saleflow-item
+                [type]="2"
+                [showBox]="swiperItem.customizerId ? false : true"
+                [imgURL]="swiperItem.images[0]"
+                [isSelected]="swiperItem.isSelected"
+                [showSelected]="true"
+                [price]="swiperItem.pricing"
+                [showPrice]="swiperItem.customizerId ? false : true"
+                priceAlign="start"
+                [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+                (itemClicked)="onItemClick(swiperItem._id)"
+              ></app-saleflow-item>
+            </div>
+          </swiper>
+        </div>
+        <div class="categories-wrapper" *ngIf="i === 0">
+          <h6 class="header-text">Ver mas de:</h6>
+          <div class="categories-list">
+            <div
+              *ngFor="let category of categories"
+              class="category-item"
+              (click)="seeCategories(category._id)"
+            >
+              {{ category.name }}
+            </div>
+          </div>
+        </div>
       </div>
-    </div> -->
+    </ng-container>
+    <!-- Only for saleflows with customizers -->
     <section
       style="margin-bottom: 73px"
       *ngIf="
@@ -210,21 +249,3 @@
   *ngIf="viewtype == 'preview'"
   (click)="onShareClick()"
 ></app-bubble-button>
-
-<!-- <ng-container *ngIf="saleflowData">
-  <ng-container *ngIf="!hasCustomizer; else noCTA">
-    <app-sticky-button
-      [mode]="canOpenCart ? 'basic' : 'disabled'"
-      [size]="canOpenCart ? 'normal' : 'small'"
-      [text]="
-        canOpenCart
-          ? 'VER CARRITO DE COMPRAS'
-          : saleflowData._id === '61c3b1875c4e7c4f59d256d2'
-          ? 'TOCA EN TU PLAN PREFERIDO'
-          : 'TOCA DONDE PREFIERAS'
-      " (click)="showShoppingCartDialog()"></app-sticky-button>
-  </ng-container>
-  <ng-template #noCTA>
-    <app-sticky-button [mode]="'disabled'" size="small" [text]="'TOCA DONDE PREFIERAS'"></app-sticky-button>
-  </ng-template>
-</ng-container> -->

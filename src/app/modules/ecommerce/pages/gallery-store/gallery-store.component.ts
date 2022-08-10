@@ -129,8 +129,8 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
 
       // Package fetching
       if (this.saleflow.packages.length) {
-        const listPackages = (
-          await this.saleflowService.listPackages({
+        const listItemPackage = (
+          await this.saleflowService.listItemPackage({
             findBy: {
               _id: {
                 __in: ([] = this.saleflow.packages.map(
@@ -140,12 +140,12 @@ export class GalleryStoreComponent implements OnInit, OnDestroy {
             },
           })
         ).listItemPackage;
-        listPackages.forEach((itemPackage) => {
+        listItemPackage.forEach((itemPackage) => {
           itemPackage.isSelected = orderData?.itemPackage === itemPackage._id;
         });
-        this.inputPackage = listPackages;
-        this.sliderPackage = listPackages;
-        await this.itemOfPackage(listPackages);
+        this.inputPackage = listItemPackage;
+        this.sliderPackage = listItemPackage;
+        await this.itemOfPackage(listItemPackage);
         this.inputPackage = this.packageData.map((e) => e.package);
         if (
           orderData &&

@@ -1,5 +1,7 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { OrderStatusType } from './order';
+import { User } from './user';
 
 export class PhoneNumbersInput {
   phoneNumber: string;
@@ -14,11 +16,14 @@ export class OffsetTimeInput {
   hour?: number;
 }
 
-export type Triggers = 'generic' | 'status';
+export class GenericTriggerInput {
+  key: 'generic';
+  value: 'create';
+};
 
-export class TriggerInput {
-  key: Triggers;
-  value: string;
+export class StatusTriggerInput {
+  key: 'status';
+  value: OrderStatusType;
 }
 
 export class NotificationInput {
@@ -26,7 +31,7 @@ export class NotificationInput {
   merchant: string;
   phoneNumbers: PhoneNumbersInput[];
   entity: string;
-  trigger: TriggerInput[];
+  trigger: (GenericTriggerInput | StatusTriggerInput)[];
   offsetTime: OffsetTimeInput[];
 }
 
@@ -41,9 +46,14 @@ export class OffsetTime {
   hour: Date;
 }
 
-export class Trigger {
-  key: Triggers;
-  value: string;
+export class GenericTrigger {
+  key: 'generic';
+  value: 'create';
+};
+
+export class StatusTrigger {
+  key: 'status';
+  value: OrderStatusType;
 }
 
 export class Notification extends Model<Notification> {
@@ -51,8 +61,17 @@ export class Notification extends Model<Notification> {
   merchant: Merchant;
   phoneNumbers: PhoneNumbers[];
   entity: string;
-  trigger: Trigger[];
+  trigger: (GenericTrigger | StatusTrigger)[];
   offsetTime: OffsetTime[];
+  active: boolean;
 
   action?: string;
+}
+
+export class NotificationChecker extends Model<NotificationChecker> {
+  notification: Notification;
+  user: User;
+  date: Date;
+  status: string;
+  trigger: (GenericTrigger | StatusTrigger);
 }

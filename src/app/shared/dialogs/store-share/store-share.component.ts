@@ -3,6 +3,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Output, 
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
+import { notification } from 'onsenui';
 
 interface IconSize {
   width: number;
@@ -26,8 +27,10 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
+  titleStyles?: Record<string, any>
   description?: string;
   message?: string;
+  messageCallback?: (...args: any[]) => void;
   qrlink?: string;
   options?: StoreShareOption[];
 }
@@ -95,6 +98,7 @@ export class StoreShareComponent implements OnInit {
 
   copyLink(link: string) {
     this.clipboard.copy(link);
+    notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
     this.close();
   }
 
@@ -111,10 +115,6 @@ export class StoreShareComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
-  }
-
-  messageCallback(event){
-    this.messageEvent.emit(event);
   }
 
   close() {

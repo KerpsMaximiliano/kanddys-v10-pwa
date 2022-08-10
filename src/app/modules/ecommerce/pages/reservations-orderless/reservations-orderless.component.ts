@@ -230,12 +230,10 @@ export class ReservationOrderlessComponent implements OnInit {
       let date = new Date();
       let offset = date.getTimezoneOffset() / 60;
       let hour;
-      if (this.timeToggle) {
-        hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
-      } else {
-        hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
-      }
-      date1 =
+      hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
+      let temporalDate1 = null;
+
+      temporalDate1 =
         moment(date1)
           .set({
             year: this.calendar.year,
@@ -247,9 +245,17 @@ export class ReservationOrderlessComponent implements OnInit {
             minute: 0o0,
             seconds: 0o0,
             millisecond: 0o0,
-          })
-          .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
-      date2 =
+          });
+
+      if(hour >= 24) {
+        temporalDate1.subtract(1, "days");
+      }
+
+      date1 = temporalDate1.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+          
+      let temporalDate2 = null;
+
+      temporalDate2 =
         moment(date2)
           .set({
             year: this.calendar.year,
@@ -263,7 +269,13 @@ export class ReservationOrderlessComponent implements OnInit {
             seconds: 0o0,
             millisecond: 0o0,
           })
-          .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+      
+      if(hour + 1 >= 24) {
+        temporalDate2.subtract(1, "days");
+      }
+
+      date2 = temporalDate2.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+
       reservation = {
         calendar: this.calendarId,
         merchant: null,
@@ -281,12 +293,11 @@ export class ReservationOrderlessComponent implements OnInit {
       let hour;
       let date = new Date();
       let offset = date.getTimezoneOffset() / 60;
-      if (this.timeToggle) {
-        hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
-      } else {
-        hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
-      }
-      date1 =
+      hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset; 
+
+      let temporalDate1 = null;
+
+      temporalDate1 =
         moment(date1)
           .set({
             year: this.calendar.year,
@@ -298,9 +309,17 @@ export class ReservationOrderlessComponent implements OnInit {
             minute: 0o0,
             seconds: 0o0,
             millisecond: 0o0,
-          })
-          .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
-      date2 =
+          });
+
+      if(hour >= 24) {
+        temporalDate1.subtract(1, "days");
+      }
+
+      date1 = temporalDate1.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+
+      let temporalDate2 = null;
+      
+      temporalDate2 =
         moment(date2)
           .set({
             year: this.calendar.year,
@@ -313,8 +332,13 @@ export class ReservationOrderlessComponent implements OnInit {
             minute: 0o0,
             seconds: 0o0,
             millisecond: 0o0,
-          })
-          .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
+          });
+
+      if(hour + 1 >= 24) {
+        temporalDate2.subtract(1, "days");
+      }
+
+      date2 = temporalDate2.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
 
       reservation = {
         calendar: this.calendarId,
@@ -329,6 +353,7 @@ export class ReservationOrderlessComponent implements OnInit {
         },
       };
     }
+
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
     let dateInfo = (
@@ -823,7 +848,7 @@ export class ReservationOrderlessComponent implements OnInit {
     this.header.storeOrderProgress(this.header.saleflow._id);
 
     let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+    if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
     else preOrderID = this.header.orderId;
 
     this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);

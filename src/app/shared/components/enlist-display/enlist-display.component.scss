@@ -74,7 +74,6 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
             border-bottom: solid 2px rgba(112, 112, 112, 7%);
  
             .wrapper{
@@ -117,6 +116,8 @@
                         margin: 0;
                         margin-bottom: 21px;
                         white-space: break-spaces;
+                        word-break: break-word;
+                        line-break: anywhere;
                     }
 
                     .extra{

@@ -1,12 +1,19 @@
 <div class="container">
 
-    <!-- <app-helper-headerv2
+    <app-helper-headerv2
     [mode]="'center'"
     [mainText]="{
         text:'Artículos',
         fontFamily: 'SfProBold',
         fontSize: '21px',
-        color: '#FFF'
+        color: '#FFF',
+        icon: {
+            src: '/pencil.svg',
+            width: '14',
+            height: '14',
+            color: 'brightness(7)',
+            callback: editArticles
+        }
     }"
     [icon]="{
         src: '/salealt.svg',
@@ -20,34 +27,7 @@
     [plus]="{
         active: true
     }"
-    [icons]=" [{
-        src: '/upload.svg',
-        color: 'invert(100%) sepia(0%) saturate(1%) hue-rotate(342deg) brightness(175%) contrast(101%)',
-        callback: testing
-    },{
-        src: '/pencil.svg',
-        color: 'invert(100%) sepia(0%) saturate(1%) hue-rotate(342deg) brightness(275%) contrast(101%)',
-        callback: testing
-    }]"
-    ></app-helper-headerv2> -->
-
-    <app-helper-headerv2
-    [mode]="'center'"
-    [mainText]="{
-        text:'Artículos',
-        fontFamily: 'SfProBold',
-        fontSize: '21px',
-        color: '#FFF'
-    }"
-    [icon]="{
-        src: '/salealt.svg',
-        width: 24,
-        height: 24,
-        filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
-        callback: goToMetrics
-    }"
-    bgColor="#2874AD"
-    [returnAble]="false"
+    (plusEvent)="createItem()"
     ></app-helper-headerv2>
 
 
@@ -58,13 +38,26 @@
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
             [showPrice]="true"
-            [showIcon]="item.status != 'active' ? true : false"
-            (click)="goToDetail(item._id)"
+            [showIcon]="true"
+            [inactive]="item.status != 'active' ? true : false"
+            (itemClicked)="goToDetail(item._id)"
+            (iconTwoClicked)="openDeleteDialog(item)"
             [responsiveWidthVersion]="true"
-            [icon]="item.notifications?.length && {
+            [icon]="item.notifications?.length ? {
                 src: '/whatsapp_verde.svg',
                 width: 17,
                 height: 17
+            } : {
+                src: '/open-eye.svg',
+                width: 17,
+                height: 14,
+                color: 'contrast(15%)'
+            }" 
+            [icon2]="{
+                src: '/delete.svg',
+                width: 15,
+                height: 18,
+                cursor: true
             }"
             ></app-saleflow-item>
         </div>

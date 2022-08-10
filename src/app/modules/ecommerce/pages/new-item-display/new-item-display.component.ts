@@ -9,7 +9,6 @@ import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
-// import { Location } from '@angular/common';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { User } from 'src/app/core/models/user';
 import { SaleFlow } from 'src/app/core/models/saleflow';
@@ -23,6 +22,10 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SwiperOptions } from 'swiper';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { Notification } from 'src/app/core/models/notification';
+
+interface ExtraNotification extends Notification {
+  date?: string;
+}
 
 @Component({
   selector: 'app-new-item-display',
@@ -53,7 +56,7 @@ export class NewItemDisplayComponent implements OnInit {
   canCreateBank: boolean;
   testActive: boolean = true;
   saleflow: SaleFlow = null;
-  notifications: Notification[];
+  notifications: ExtraNotification[];
 
   constructor(
     private route: ActivatedRoute,
@@ -66,8 +69,7 @@ export class NewItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private notificationsService: NotificationsService,
-    // private location: Location,
+    private notificationsService: NotificationsService
   ) {}
 
   swiperConfig: SwiperOptions = {
@@ -97,8 +99,6 @@ export class NewItemDisplayComponent implements OnInit {
           )
             this.isPreItem = true;
 
-          console.log(this.isPreItem);
-
           // this.item.images = null;
           // this.item.status = 'disabled';
           // this.item.description = 'gdfgdfgdf';
@@ -119,7 +119,7 @@ export class NewItemDisplayComponent implements OnInit {
             try {
               await this.checkBanks();
             } catch (error) {
-              console.log('hubo un error 1');
+              console.log(error);
             }
           }
         }
@@ -130,10 +130,9 @@ export class NewItemDisplayComponent implements OnInit {
           let defaultMerchant = null;
 
           try {
-            console.log('one');
             defaultMerchant = await this.merchantService.merchantDefault();
           } catch (error) {
-            console.log('hubo un error 2');
+            console.log(error);
           }
 
           if (!defaultMerchant) {
@@ -333,10 +332,9 @@ export class NewItemDisplayComponent implements OnInit {
           }
         } else {
           try {
-            console.log('two');
             this.defaultMerchant = await this.merchantService.merchantDefault();
           } catch (error) {
-            console.log('hubo un error 3');
+            console.log(error);
           }
 
           if (!this.defaultMerchant) return unlockUI();
@@ -375,13 +373,42 @@ export class NewItemDisplayComponent implements OnInit {
   async getNotifications() {
     if (!this.item.notifications?.length) return;
     try {
-      this.notifications = await this.notificationsService.notifications(
-        {},
-        this.defaultMerchant._id,
-        this.item.notifications
-      );
+      const [notifications, notificationCheckers] = await Promise.all([
+        this.notificationsService.notifications(
+          {},
+          this.defaultMerchant._id,
+          this.item.notifications
+        ),
+        this.notificationsService.notificationCheckers({
+          findBy: {
+            merchant: this.defaultMerchant._id,
+            status: 'sent',
+            notification: this.item.notifications,
+          },
+          options: {
+            limit: 25,
+            page: 1,
+            sortBy: 'createdAt:desc',
+          },
+        }),
+      ]);
+      this.notifications = notifications;
       this.notifications.forEach((notification) => {
-        notification.action = this.notificationsService.getNotificationAction(notification).action;
+        notification.action =
+          this.notificationsService.getNotificationAction(notification).action;
+        const date = notificationCheckers.find(
+          (checker) => checker.notification._id === notification._id
+        )?.date;
+        if (!date) return;
+        notification.date = `${date
+          .toLocaleString('es-MX', {
+            weekday: 'long',
+          })
+          .toUpperCase()}, ${date.getDate()} DE ${date
+          .toLocaleString('es-MX', {
+            month: 'long',
+          })
+          .toUpperCase()} DE ${date.getFullYear()}, ${date.toLocaleTimeString()}`;
       });
     } catch (error) {
       console.log(error);
@@ -407,6 +434,10 @@ export class NewItemDisplayComponent implements OnInit {
       console.log(error);
     }
   }
+
+  goToNotificationsLog = (id: string) => {
+    this.router.navigate([`/ecommerce/notifications-log/${id}`]);
+  };
 
   goToAuth() {
     this.router.navigate([
@@ -469,6 +500,15 @@ export class NewItemDisplayComponent implements OnInit {
                 width: 20,
                 height: 26,
               },
+            },
+          },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([
+                `/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+              ]);
             },
           },
         ],

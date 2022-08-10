@@ -16,7 +16,12 @@ import { environment } from 'src/environments/environment';
 //import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import * as moment from 'moment';
 import 'moment/locale/es'; // without this line it didn't work
-import { ItemOrder, ItemSubOrder } from 'src/app/core/models/order';
+import {
+  ItemOrder,
+  ItemSubOrder,
+  OrderStatusNameType,
+  OrderStatusType,
+} from 'src/app/core/models/order';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { ItemList } from 'src/app/shared/components/item-list/item-list.component';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
@@ -25,6 +30,15 @@ import { ItemStatus } from 'src/app/shared/components/item-status/item-status.co
 import { Post } from 'src/app/core/models/post';
 import { Merchant } from 'src/app/core/models/merchant';
 moment.locale('es');
+
+type ViewTypes =
+  | 'comprado'
+  | 'escenarios'
+  | 'reservacion'
+  | 'personalizacion'
+  | 'mensajeRegalo'
+  | 'pago'
+  | 'address';
 
 @Component({
   selector: 'app-order-info',
@@ -60,26 +74,10 @@ export class OrderInfoComponent implements OnInit {
   id: string;
   linkId: string;
   price: number = 0;
-  status: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
+  status: OrderStatusNameType;
   statusList: {
-    status:
-      | 'cancelled'
-      | 'started'
-      | 'verifying'
-      | 'in progress'
-      | 'to confirm'
-      | 'completed'
-      | 'error'
-      | 'draft';
-    name:
-      | 'cancelado'
-      | 'empezado'
-      | 'verificando'
-      | 'verificado'
-      | 'en revisión'
-      | 'por confirmar'
-      | 'completado'
-      | 'error';
+    status: OrderStatusType;
+    name: OrderStatusNameType;
   }[] = [];
   paramValue: string;
   paramType: string;
@@ -99,7 +97,7 @@ export class OrderInfoComponent implements OnInit {
   allDone: boolean;
   orderId: string;
   pago: number;
-  view: 'comprado' | 'escenarios' | 'reservacion' | 'personalizacion' | 'mensajeRegalo' | 'pago' | 'address';
+  view: ViewTypes;
   dateOfOrder: string;
   existPackage: boolean = false;
   notifications: boolean = true;
@@ -128,357 +126,309 @@ export class OrderInfoComponent implements OnInit {
   ruta: string;
   merchantId: string;
   isMerchantView: boolean = false;
-  ngOnInit(): void {
-    let localLastHour = new Date();
-    let offset = localLastHour.getTimezoneOffset() / 60;
+  async ngOnInit(): Promise<void> {
     //lockUI()
-    this.route.params.subscribe((params) => {
-      this.linkId = params.id;
-      this.headerService.orderId = params.id;
-      this.orderService.order(params.id).then((data) => {
-        if (data != undefined) {
-          if (data.order.itemPackage) this.existPackage = true;
-          this.order = data.order;
-          this.ruta = `user-contact-landing/${this.order.items[0].saleflow.merchant.owner._id}`;
-          this.merchantId = data.order.items[0].saleflow._id;
-          this.notifications = data.order.userNotifications;
-          this.items = data.order.items;
-          this.showHeader = this.headerService.fromOrderSales ? true : false;
-
-          this.providerData = {
-            headline: data.order.items[0].saleflow.headline,
-            subheadline: data.order.items[0].saleflow.subheadline,
-            image: data.order.items[0].saleflow.banner,
-
-            socials: data.order.items[0].saleflow.social,
-          };
-          this.auth
-            .me()
-            .then(
-              (user) =>
-                (this.showNotificationButton =
-                  user?._id === data.order.user._id)
-            );
-          if (data.order.orderStatus === 'in progress')
-            this.status = 'en revisión';
-          else if (data.order.orderStatus === 'to confirm')
-            this.status = 'por confirmar';
-          else if (data.order.orderStatus === 'completed')
-            this.status = 'completado';
-          // data.order.ocr.status.forEach((status) => {
-          let name:
-            | 'cancelado'
-            | 'empezado'
-            | 'verificando'
-            | 'verificado'
-            | 'en revisión'
-            | 'por confirmar'
-            | 'completado'
-            | 'error';
-          switch (data.order.orderStatus) {
-            case 'cancelled':
-              name = 'cancelado';
-              break;
-            case 'started':
-              name = 'empezado';
-              break;
-            case 'verifying':
-              name = 'verificando';
-              break;
-            case 'in progress':
-              name = 'en revisión';
-              break;
-            case 'to confirm':
-              name = 'por confirmar';
-              break;
-            case 'completed':
-              name = 'completado';
-              break;
-            default:
-              name = 'error';
-          }
-          this.statusList.push({
-            status: data.order.orderStatus,
-            name,
-          });
-          // })
-          const totalPrice = data.order.subtotals.reduce(
-            (a, b) => a + b.amount,
-            0
-          );
-          this.price = data.order.items[0].customizer
-            ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
-            : totalPrice;
-          let today = moment();
-          let daysAgo = today.diff(data.order.createdAt, 'days');
-          let timeAgo = 'Hoy';
-          if (daysAgo > 0) timeAgo = 'Hace ' + daysAgo + ' dias';
-          if (data.order.ocr) {
-            this.tabsOptions.push('Pago');
-            this.view = 'pago';
-            this.totalPayed = this.price;
-            this.ocrPayments = [
-              {
-                id: data.order.ocr._id,
-                title: '$' + this.price.toLocaleString('en-US'),
-                // subtitle: 'Verificado por '+'AliciaID',
-                description: data.order.ocr.transactionCode
-                  ? 'Ultimos 4 digitos ' +
-                    data.order.ocr.transactionCode.toUpperCase()
-                  : '',
-                description2: timeAgo,
-                image: data.order.ocr.image,
-                eventImage: () => this.openImageModal(data.order.ocr.image),
-                status: this.status,
-                statusCallback: () => this.openStatusDialog(),
-              },
-            ];
-          } else this.view = 'comprado';
-          this.tabsOptions.push('Comprado');
-          if (
-            data.order.items[0].post
-          ) this.tabsOptions.push('Mensaje');
-          if (data.order.items[0].customizer)
-            this.tabsOptions.push('Personalización');
-          const hasItemExtra = data.order.items.find(
-            (item) => item.itemExtra.length > 0
-          );
-          if (hasItemExtra) {
-            this.tabsOptions.push('Sets');
-            this.itemsExtra = hasItemExtra.itemExtra;
-          }
-          if (data.order.items[0].reservation) {
-            this.tabsOptions.push('Reservación');
-            this.titleTab = 'Horario de la sesión';
-          }
-          if (data.order.items[0].deliveryLocation) {
-            if (
-              data.order.items[0].saleflow.merchant._id ===
-              '616a13a527bcf7b8ba3ac312'
-            ) {
-              this.tabsOptions.push('Lugar de la sesión');
-              this.titleTab = 'Lugar de la sesión';
-              this.fotodavitte = true;
-            } else this.tabsOptions.push('Entrega');
-            this.titleTab = 'Entrega';
-          }
-          this.phone = data.order.user.phone;
-          this.headerService.orderId = data.order._id;
-          this.id = data.order._id;
-          this.dateId = this.formatID(data.order.dateId);
-
-          this.delivery = data.order.items[0].deliveryLocation.googleMapsURL;
-          this.image = data.order.items[0].item.images;
-          this.name =
-            String(data.order.user.name) !== 'null' && data.order.user.name
-              ? data.order.user.name
-              : 'usuario';
-          this.merchantName = data.order.items[0].saleflow.headline;
-          this.orderId = data.order._id;
-          // this.date = `${moment(data.order.createdAt).format(
-          //   'YYYY-MM-DD'
-          // )} a las ${moment(data.order.createdAt).format('hh:mm A')}`;
-          this.date = `${moment(data.order.createdAt).format(
-            'LL'
-          )} a las ${moment(data.order.createdAt).format('LT')}`;
-          if (data.order.itemPackage) this.pago = data.order.itemPackage.price;
-          this.createdAt = data.order.createdAt;
-
-          // this.dateOfOrder = this.headerService.walletData.createdAt;
-
-          this.showItem = {
-            showArrow: true,
-            imageUrls: [`${environment.assetsUrl}/bee-kanddy.png`],
-          };
-          for (let i = 0; i < data.order.items[0].item.params.length; i++) {
-            if (
-              data.order.items[0].item.params[i]._id ==
-              data.order.items[0].params[0].param
-            ) {
-              this.paramValue =
-                data.order.items[0].item.params[i].values[0].name;
-              this.paramType = data.order.items[0].item.name;
-            }
-          }
-          this.packItem = {
-            showArrow: true,
-            title: data.order.items[0].item.name,
-            description: this.paramValue,
-          };
-          if (
-            data.order.items[0].reservation &&
-            data.order.items[0].reservation._id
-          ) {
-            this.reservation
-              .getReservation(data.order.items[0].reservation._id)
-              .then((data) => {
-                let dateInfo = data.date.from.split('-');
-                let day = dateInfo[2].split('T')[0];
-                let month;
-                for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
-                  if (
-                    parseInt(dateInfo[1]) - 1 ==
-                    this.calendar.allFullMonths[i].id
-                  ) {
-                    month = this.calendar.allFullMonths[i].name;
-                  }
-                }
-                (this.dateString =
-                  'El ' +
-                  day +
-                  ' de ' +
-                  month +
-                  ' del ' +
-                  dateInfo[0] +
-                  ' a las ' +
-                  this.formatHour(data.date.from)),
-                  (this.reservationItem = {
-                    showArrow: true,
-                    title: 'Fecha',
-                    description: `El ${
-                      this.days[
-                        moment(data.date.from).isoWeekday() + 1
-                      ]
-                    } ${day} de ${month}, ${this.formatHour(
-                      data.date.from
-                    )}`,
-                  });
-                this.allDone = true;
-              });
-          }
-          if (data.order.items[0].post) {
-            this.posts.getPost(data.order.items[0].post._id).then((data) => {
-              this.message = data.post;
-              if (
-                !this.message.from &&
-                !this.message.message &&
-                this.message.targets.length &&
-                !this.message.targets[0].name
-              ) {
-                const index = this.tabsOptions.indexOf('Mensaje');
-                this.tabsOptions.splice(index, 1);
-              } else {
-                this.isValidMessage = true;
-              }
-            });
-          }
-          if (data.order.items[0].customizer) {
-            this.dateId = '';
-            this.customizerValueService
-              .getCustomizerValue(data.order.items[0].customizer._id)
-              .then((value) => {
-                this.customizer = value;
-                const printType =
-                  data.order.items[0].item.params[0].values.find(
-                    (value) =>
-                      value._id === data.order.items[0].params[0].paramValue
-                  )?.name;
-                if (printType)
-                  this.customizerDetails.push({
-                    name: 'Tipo de impresión',
-                    value: printType,
-                  });
-
-                const selectedQuality =
-                  data.order.items[0].item.params[1].values.find(
-                    (value) =>
-                      value._id === data.order.items[0].params[1].paramValue
-                  )?.name;
-                if (selectedQuality)
-                  this.customizerDetails.push({
-                    name: 'Calidad de servilleta',
-                    value: selectedQuality,
-                  });
-
-                const backgroundColor = value.backgroundColor.color.name;
-                if (backgroundColor)
-                  this.customizerDetails.push({
-                    name: 'Color de fondo',
-                    value: backgroundColor,
-                  });
-
-                if(value.texts.length) {
-                  this.customizerDetails.push({
-                    name: 'Texto',
-                    value: value.texts.reduce((prev, curr) => prev + curr.text, ''),
-                  });
-                }
-
-                let selectedTypography =
-                  value.texts.length > 0 && value.texts[0].font;
-                switch (selectedTypography) {
-                  case 'Dorsa':
-                    selectedTypography = 'Empire';
-                    break;
-                  case 'Commercial-Script':
-                    selectedTypography = 'Classic';
-                    break;
-                }
-                if (selectedTypography)
-                  this.customizerDetails.push({
-                    name: 'Nombre de tipografía',
-                    value: selectedTypography,
-                  });
-
-                const typographyColorCode =
-                  value.texts.length && value.texts[0].color.name;
-                const typographyColorName =
-                  value.texts.length && value.texts[0].color.nickname;
-                if (typographyColorCode && typographyColorName) {
-                  this.customizerDetails.push({
-                    name: 'Color de tipografía',
-                    value: typographyColorName,
-                  });
-                  this.customizerDetails.push({
-                    name: 'Código de color de tipografía',
-                    value: typographyColorCode,
-                  });
-                }
-                
-                const stickerColorCode =
-                  value.stickers.length &&
-                  value.stickers[0].svgOptions.color.name;
-                const stickerColorName =
-                  value.stickers.length &&
-                  value.stickers[0].svgOptions.color.nickname;
-                if (stickerColorName) {
-                  this.customizerDetails.push({
-                    name: 'Color de sticker',
-                    value: stickerColorName,
-                  });
-                  this.customizerDetails.push({
-                    name: 'Código de color de sticker',
-                    value: stickerColorCode,
-                  });
-                }
-
-                this.items[0].item.images[0] = value.preview;
-                this.dateId = this.formatID(data.order.dateId);
-              });
-          }
-          if (params.notification) {
-            if (data.order.items[0].customizer) {
-              let url = location.href.replace(`/${params.notification}`, '');
-              const message = `https://wa.me/19188156444?text=Orden%20de%20${data.order.items[0].amount}%20servilletas,%20aquí%20el%20enlace:%20${url}`;
-              window.open(message);
-            } else {
-              let url = location.href.replace(`/${params.notification}`, '');
-              const message = `https://wa.me/19188156444?text=Orden%20de%20${data.order.items[0].amount}%20${data.order.items[0].item.name},%20aquí%20el%20enlace:%20${url}`;
-              window.open(message);
-            }
-          }
-        } else {
-          this.router.navigate([`ecommerce/error-screen/`], {
-            queryParams: { type: 'order' },
-          });
-        }
+    this.linkId = this.route.snapshot.paramMap.get('id');
+    const notification = this.route.snapshot.paramMap.get('notification');
+    this.headerService.orderId = this.linkId;
+    const order = (await this.orderService.order(this.linkId))?.order;
+    if (!order) {
+      this.router.navigate([`ecommerce/error-screen/`], {
+        queryParams: { type: 'order' },
       });
-      /* if (params.notification) {
+      return;
+    }
+    if (order.itemPackage) this.existPackage = true;
+    this.order = order;
+    this.ruta = `user-contact-landing/${this.order.items[0].saleflow.merchant.owner._id}`;
+    this.merchantId = order.items[0].saleflow._id;
+    this.notifications = order.userNotifications;
+    this.items = order.items;
+    this.showHeader = this.headerService.fromOrderSales ? true : false;
+
+    this.providerData = {
+      headline: order.items[0].saleflow.headline,
+      subheadline: order.items[0].saleflow.subheadline,
+      image: order.items[0].saleflow.banner,
+
+      socials: order.items[0].saleflow.social,
+    };
+    const user = await this.auth.me()
+    this.showNotificationButton = user?._id === order.user._id;
+    if (order.orderStatus === 'in progress') this.status = 'en revisión';
+    else if (order.orderStatus === 'to confirm') this.status = 'por confirmar';
+    else if (order.orderStatus === 'completed') this.status = 'completado';
+    // order.ocr.status.forEach((status) => {
+    let name:
+      | 'cancelado'
+      | 'empezado'
+      | 'verificando'
+      | 'verificado'
+      | 'en revisión'
+      | 'por confirmar'
+      | 'completado'
+      | 'error';
+    switch (order.orderStatus) {
+      case 'cancelled':
+        name = 'cancelado';
+        break;
+      case 'started':
+        name = 'empezado';
+        break;
+      case 'verifying':
+        name = 'verificando';
+        break;
+      case 'in progress':
+        name = 'en revisión';
+        break;
+      case 'to confirm':
+        name = 'por confirmar';
+        break;
+      case 'completed':
+        name = 'completado';
+        break;
+      default:
+        name = 'error';
+    }
+    this.statusList.push({
+      status: order.orderStatus,
+      name,
+    });
+    // })
+    const totalPrice = order.subtotals.reduce((a, b) => a + b.amount, 0);
+    this.price = order.items[0].customizer
+      ? Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
+      : totalPrice;
+    let today = moment();
+    let daysAgo = today.diff(order.createdAt, 'days');
+    let timeAgo = 'Hoy';
+    if (daysAgo > 0) timeAgo = 'Hace ' + daysAgo + ' dias';
+    if (order.ocr) {
+      this.tabsOptions.push('Pago');
+      this.view = 'pago';
+      this.totalPayed = this.price;
+      this.ocrPayments = [
+        {
+          id: order.ocr._id,
+          title: '$' + this.price.toLocaleString('en-US'),
+          // subtitle: 'Verificado por '+'AliciaID',
+          description: order.ocr.transactionCode
+            ? 'Ultimos 4 digitos ' + order.ocr.transactionCode.toUpperCase()
+            : '',
+          description2: timeAgo,
+          image: order.ocr.image,
+          eventImage: () => this.openImageModal(order.ocr.image),
+          status: this.status,
+          statusCallback: () => this.openStatusDialog(),
+        },
+      ];
+    } else this.view = 'comprado';
+    this.tabsOptions.push('Comprado');
+    if (order.items[0].post) this.tabsOptions.push('Mensaje');
+    if (order.items[0].customizer) this.tabsOptions.push('Personalización');
+    const hasItemExtra = order.items.find((item) => item.itemExtra.length > 0);
+    if (hasItemExtra) {
+      this.tabsOptions.push('Sets');
+      this.itemsExtra = hasItemExtra.itemExtra;
+    }
+    if (order.items[0].reservation) {
+      this.tabsOptions.push('Reservación');
+      this.titleTab = 'Horario de la sesión';
+    }
+    if (order.items[0].deliveryLocation) {
+      if (order.items[0].saleflow.merchant._id === '616a13a527bcf7b8ba3ac312') {
+        this.tabsOptions.push('Lugar de la sesión');
+        this.titleTab = 'Lugar de la sesión';
+        this.fotodavitte = true;
+      } else this.tabsOptions.push('Entrega');
+      this.titleTab = 'Entrega';
+    }
+    this.phone = order.user.phone;
+    this.headerService.orderId = order._id;
+    this.id = order._id;
+    this.dateId = this.formatID(order.dateId);
+
+    this.delivery = order.items[0].deliveryLocation?.googleMapsURL;
+    this.image = order.items[0].item.images;
+    this.name =
+      String(order.user.name) !== 'null' && order.user.name
+        ? order.user.name
+        : 'usuario';
+    this.merchantName = order.items[0].saleflow.headline;
+    this.orderId = order._id;
+    this.date = `${moment(order.createdAt).format('LL')} a las ${moment(
+      order.createdAt
+    ).format('LT')}`;
+    if (order.itemPackage) this.pago = order.itemPackage.price;
+    this.createdAt = order.createdAt;
+
+    this.showItem = {
+      showArrow: true,
+      imageUrls: [`${environment.assetsUrl}/bee-kanddy.png`],
+    };
+    for (let i = 0; i < order.items[0].item.params.length; i++) {
+      if (order.items[0].item.params[i]._id == order.items[0].params[0].param) {
+        this.paramValue = order.items[0].item.params[i].values[0].name;
+        this.paramType = order.items[0].item.name;
+      }
+    }
+    this.packItem = {
+      showArrow: true,
+      title: order.items[0].item.name,
+      description: this.paramValue,
+    };
+    if (order.items[0].reservation && order.items[0].reservation._id) {
+      const reservation = await this.reservation.getReservation(
+        order.items[0].reservation._id
+      );
+      let dateInfo = reservation.date.from.split('-');
+      let day = dateInfo[2].split('T')[0];
+      let month: string;
+      for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
+        if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
+          month = this.calendar.allFullMonths[i].name;
+        }
+      }
+      (this.dateString =
+        'El ' +
+        day +
+        ' de ' +
+        month +
+        ' del ' +
+        dateInfo[0] +
+        ' a las ' +
+        this.formatHour(reservation.date.from)),
+        (this.reservationItem = {
+          showArrow: true,
+          title: 'Fecha',
+          description: `El ${
+            this.days[moment(reservation.date.from).isoWeekday() + 1]
+          } ${day} de ${month}, ${this.formatHour(reservation.date.from)}`,
+        });
+      this.allDone = true;
+    }
+    if (order.items[0].post) {
+      const post = (await this.posts.getPost(order.items[0].post._id)).post;
+      this.message = post;
+      if (
+        !this.message.from &&
+        !this.message.message &&
+        this.message.targets.length &&
+        !this.message.targets[0].name
+      ) {
+        const index = this.tabsOptions.indexOf('Mensaje');
+        this.tabsOptions.splice(index, 1);
+      } else {
+        this.isValidMessage = true;
+      }
+    }
+    if (order.items[0].customizer) {
+      this.dateId = '';
+      this.customizer = await this.customizerValueService.getCustomizerValue(
+        order.items[0].customizer._id
+      );
+      const printType = order.items[0].item.params[0].values.find(
+        (value) => value._id === order.items[0].params[0].paramValue
+      )?.name;
+      if (printType)
+        this.customizerDetails.push({
+          name: 'Tipo de impresión',
+          value: printType,
+        });
+
+      const selectedQuality = order.items[0].item.params[1].values.find(
+        (value) => value._id === order.items[0].params[1].paramValue
+      )?.name;
+      if (selectedQuality)
+        this.customizerDetails.push({
+          name: 'Calidad de servilleta',
+          value: selectedQuality,
+        });
+
+      const backgroundColor = this.customizer.backgroundColor.color.name;
+      if (backgroundColor)
+        this.customizerDetails.push({
+          name: 'Color de fondo',
+          value: backgroundColor,
+        });
+
+      if (this.customizer.texts.length) {
+        this.customizerDetails.push({
+          name: 'Texto',
+          value: this.customizer.texts.reduce(
+            (prev, curr) => prev + curr.text,
+            ''
+          ),
+        });
+      }
+
+      let selectedTypography =
+        this.customizer.texts.length > 0 && this.customizer.texts[0].font;
+      switch (selectedTypography) {
+        case 'Dorsa':
+          selectedTypography = 'Empire';
+          break;
+        case 'Commercial-Script':
+          selectedTypography = 'Classic';
+          break;
+      }
+      if (selectedTypography)
+        this.customizerDetails.push({
+          name: 'Nombre de tipografía',
+          value: selectedTypography,
+        });
+
+      const typographyColorCode =
+        this.customizer.texts.length && this.customizer.texts[0].color.name;
+      const typographyColorName =
+        this.customizer.texts.length && this.customizer.texts[0].color.nickname;
+      if (typographyColorCode && typographyColorName) {
+        this.customizerDetails.push({
+          name: 'Color de tipografía',
+          value: typographyColorName,
+        });
+        this.customizerDetails.push({
+          name: 'Código de color de tipografía',
+          value: typographyColorCode,
+        });
+      }
+
+      const stickerColorCode =
+        this.customizer.stickers.length &&
+        this.customizer.stickers[0].svgOptions.color.name;
+      const stickerColorName =
+        this.customizer.stickers.length &&
+        this.customizer.stickers[0].svgOptions.color.nickname;
+      if (stickerColorName) {
+        this.customizerDetails.push({
+          name: 'Color de sticker',
+          value: stickerColorName,
+        });
+        this.customizerDetails.push({
+          name: 'Código de color de sticker',
+          value: stickerColorCode,
+        });
+      }
+
+      this.items[0].item.images[0] = this.customizer.preview;
+      this.dateId = this.formatID(order.dateId);
+    }
+    if (notification) {
+      if (order.items[0].customizer) {
+        let url = location.href.replace(`/${notification}`, '');
+        const message = `https://wa.me/19188156444?text=Orden%20de%20${order.items[0].amount}%20servilletas,%20aquí%20el%20enlace:%20${url}`;
+        window.open(message);
+      } else {
+        let url = location.href.replace(`/${notification}`, '');
+        const message = `https://wa.me/19188156444?text=Orden%20de%20${order.items[0].amount}%20${order.items[0].item.name},%20aquí%20el%20enlace:%20${url}`;
+        window.open(message);
+      }
+    }
+    /* if (params.notification) {
         window.open(`https://wa.me/19188156444?text=Pedido%20de%20Foto%20Davitte`);
       } */
-    });
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const { viewtype } = params;
       if (viewtype === 'merchant') this.isMerchantView = true;
     });
@@ -544,86 +494,25 @@ export class OrderInfoComponent implements OnInit {
   }
 
   redirectToUserContact() {
-    this.router.navigate([`/ecommerce/user-contact-landing/${this.order.user._id}`]);
+    this.router.navigate([
+      `/ecommerce/user-contact-landing/${this.order.user._id}`,
+    ]);
   }
 
   redirectToMegaphone() {
-    this.router.navigate([`/ecommerce/store/${this.merchantId}`])
+    this.router.navigate([`/ecommerce/store/${this.merchantId}`]);
   }
 
-  wichName(e) {
-    if (e === 'Reservación') {
-      this.view = 'reservacion';
-      // this.reservacion = true;
-      // this.address = false;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
-    } else if (e === 'Entrega') {
-      this.view = 'address';
-      // this.reservacion = false;
-      // this.address = true;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
-    } else if (e === 'Sets') {
-      this.view = 'escenarios';
-      // this.reservacion = false;
-      // this.address = false;
-      // this.escenarios = true;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
-    } else if (e === 'Comprado') {
-      this.view = 'comprado';
-      // this.reservacion = false;
-      // this.address = false;
-      // this.escenarios = false;
-      // this.comprado = true;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
-    } else if (e === 'Personalización') {
-      this.view = 'personalizacion';
-      // this.reservacion = false;
-      // this.address = false;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = true;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
-    } else if (e === 'Mensaje') {
-      this.view = 'mensajeRegalo';
-      // this.reservacion = false;
-      // this.address = false;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = true;
-      // this.pagoView = false;
-    } else if (e === 'Pago') {
-      this.view = 'pago';
-      // this.reservacion = false;
-      // this.address = false;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = true;
-    } else if (e === 'Lugar de la sesión') {
-      this.view = 'address';
-      // this.reservacion = false;
-      // this.address = true;
-      // this.escenarios = false;
-      // this.comprado = false;
-      // this.personalizacion = false;
-      // this.mensajeRegalo = false;
-      // this.pagoView = false;
+  wichName(e: string) {
+    switch(e) {
+      case 'Reservación': this.view = 'reservacion'; break;
+      case 'Entrega': this.view = 'address'; break;
+      case 'Sets': this.view = 'escenarios'; break;
+      case 'Comprado': this.view = 'comprado'; break;
+      case 'Personalización': this.view = 'personalizacion'; break;
+      case 'Mensaje': this.view = 'mensajeRegalo'; break;
+      case 'Pago': this.view = 'pago'; break;
+      case 'Lugar de la sesión': this.view = 'address'; break;
     }
   }
 }

@@ -11,11 +11,12 @@ import {
   saleflows,
   addItemToSaleFlow,
   addLocation,
-  listPackages,
+  listItemPackage,
   updateSaleflow,
   createSaleflow,
   createSaleFlowModule,
   updateSaleFlowModule,
+  removeItemFromSaleFlow,
 } from './../graphql/saleflow.gql';
 import { itemCategoriesList } from './../graphql/items.gql';
 import { Community } from './../models/community';
@@ -81,10 +82,10 @@ export class SaleFlowService {
     }
   }
 
-  async listPackages(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
+  async listItemPackage(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
     try {
       const response = await this.graphql.query({
-        query: listPackages,
+        query: listItemPackage,
         variables: { params },
         fetchPolicy: 'no-cache',
       });
@@ -119,11 +120,19 @@ export class SaleFlowService {
   }
 
   async addItemToSaleFlow(item: { item: string, customizer?: string, index?: number }, id: string) {
-    console.log(id);
     const result = await this.graphql.mutate({
       mutation: addItemToSaleFlow,
       variables: { item, id },
     });
+  }
+
+  async removeItemFromSaleFlow(item: string, id: string): Promise<SaleFlow> {
+    const response = await this.graphql.query({
+      query: removeItemFromSaleFlow,
+      variables: { item, id },
+      fetchPolicy: 'no-cache',
+    });
+    return response?.removeItemFromSaleFlow;
   }
 
   async createSaleflow(input: any) {

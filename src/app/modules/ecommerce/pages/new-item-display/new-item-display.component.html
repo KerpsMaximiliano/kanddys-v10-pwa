@@ -2,6 +2,10 @@
   <app-helper-headerv2
     *ngIf="item?.status === 'active'"
     [mode]="'basic'"
+    [plus]="{
+      active: item?.notifications?.length && notifications?.length > 0
+    }"
+    (plusEvent)="redirectTo('ecommerce/notification-creator/' + item._id)"
     [icons]="[
       {
         src: '/upload.svg',
@@ -65,45 +69,47 @@
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
 
-    <div>
-      <app-question-item
-        *ngIf="!item?.notifications?.length"
-        headline="AUTOMATIZA UN MENSAJE"
-        [headlineContainerStyles]="{
-          justifyContent: 'flex-start',
-          borderBottom: 'none'
-        }"
-        [headlineTitleStyles]="{
-          marginLeft: '10px'
-        }"
-        [headlineRightTextStyles]="{
-          color: '#2874AD',
-          fontFamily: 'SfProBold',
-          fontSize: '29px',
-          marginLeft: 'auto'
-        }"
-        [headlineLeftIcon]="{
-          icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
-          width: 30,
-          height: 30
-        }"
-        [headlineRightText]="{
-          text: '+',
-          color: 'darkblue',
-          fontSize: '29px',
-          fontFamily: 'Roboto',
-          callback: redirectTo,
-          callbackParams: ['ecommerce/notification-creator/' + item._id]
-        }"
-        [tagListTextStyles]="{
-          marginRight: '5px'
-        }"
-        [tagListStyles]="{
-          marginTop: '15px'
-        }"
-        [chipMode]="2"
-        [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
-      ></app-question-item>
+    <section>
+      <div class="section">
+        <app-question-item
+          *ngIf="!item?.notifications?.length"
+          style="cursor: pointer"
+          (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
+          headline="AUTOMATIZA UN MENSAJE"
+          [headlineContainerStyles]="{
+            justifyContent: 'flex-start',
+            borderBottom: 'none'
+          }"
+          [headlineTitleStyles]="{
+            marginLeft: '10px'
+          }"
+          [headlineRightTextStyles]="{
+            color: '#2874AD',
+            fontFamily: 'SfProBold',
+            fontSize: '29px',
+            marginLeft: 'auto'
+          }"
+          [headlineLeftIcon]="{
+            icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
+            width: 30,
+            height: 30
+          }"
+          [headlineRightText]="{
+            text: '+',
+            color: 'darkblue',
+            fontSize: '29px',
+            fontFamily: 'Roboto'
+          }"
+          [tagListTextStyles]="{
+            marginRight: '5px'
+          }"
+          [tagListStyles]="{
+            marginTop: '15px'
+          }"
+          [chipMode]="2"
+          [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
+        ></app-question-item>
+      </div>
       <ng-container
         *ngIf="item?.notifications?.length && notifications?.length"
       >
@@ -139,7 +145,7 @@
             [itemList]="[
               {
                 name: {
-                  text: notification.action.toUpperCase(),
+                  text: notification.action?.toUpperCase(),
                   fontFamily: 'RobotoMedium',
                   color: '#7B7B7B',
                   fontSize: '13px'
@@ -152,18 +158,23 @@
                 }
               }
             ]"
-            [showSubtitle]="true"
-          ></app-enlist-display>
-          <!-- [bottomText]="{
-              rightText: {
-                text: 'ULTIMO HACE DATEID',
-                fontSize: '17px',
-                fontFamily: 'RobotoMedium'
+            [bottomText]="
+              notification.date && {
+                rightText: {
+                  text: 'ULTIMO EL ' + notification.date,
+                  fontSize: '13px',
+                  fontFamily: 'RobotoMedium',
+                  callback: goToNotificationsLog,
+                  callbackArgs: [notification._id]
+                }
               }
-            }" -->
+            "
+            [showSubtitle]="true"
+            [hideAble]="false"
+          ></app-enlist-display>
         </div>
       </ng-container>
-    </div>
+    </section>
   </div>
   <app-sticky-button
     [mode]="'double'"
@@ -176,7 +187,7 @@
     [bgColor]="'#A1A1A1'"
     [text]="
       totalByItem &&
-      totalByItem?.itemInOrder.toLocaleString('es-MX') + ' ventas'
+      totalByItem?.itemInOrder.toLocaleString('es-MX') + ' VENTAS'
     "
     [text2]="
       totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'

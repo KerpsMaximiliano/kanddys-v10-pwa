@@ -20,7 +20,7 @@ import {
   updateExchangeData,
   paymentReceivers,
   paymentReceiverByName,
-  exchangedata,
+  exchangeData,
   paymentreceiver
 } from './../graphql/wallet.gql';
 import { Community } from './../models/community';
@@ -63,10 +63,10 @@ export class WalletService {
     }
   }
 
-  async exchangedata(id: string): Promise<{ ExchangeData: ExchangeData }>{
+  async exchangeData(id: string): Promise<{ ExchangeData: ExchangeData }>{
     try {
       const response = await this.graphql.query({
-        query: exchangedata,
+        query: exchangeData,
         variables: { id },
         fetchPolicy: 'no-cache',
       });

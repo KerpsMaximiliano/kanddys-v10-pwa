@@ -8,7 +8,8 @@ import {
   Notification,
   NotificationInput,
   OffsetTimeInput,
-  TriggerInput,
+  GenericTriggerInput,
+  StatusTriggerInput
 } from 'src/app/core/models/notification';
 // import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -16,22 +17,48 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
 
-const actionList = [
+const actionList: {
+  value?: string;
+  status: boolean;
+  trigger: (GenericTriggerInput | StatusTriggerInput);
+  valueArray?: {
+    text: string;
+    highlight: boolean;
+  }[];
+  isOptionAnArray?: boolean;
+  offsetTime?: OffsetTimeInput;
+}[] = [
   {
     value: 'Al venderse',
     status: true,
+    trigger: {
+      key: 'generic',
+      value: 'create',
+    },
   },
-  {
-    value: 'Después de la entrega',
-    status: true,
-  },
+  // {
+  //   value: 'Después de la entrega',
+  //   status: true,
+  // },
   // {
   //   value: 'AirTable Status ID',
   //   status: true,
   // },
   {
-    value: 'StatusID',
+    value: 'Al pagarse la compra',
     status: true,
+    trigger: {
+      key: 'status',
+      value: 'to confirm',
+    },
+  },
+  {
+    value: 'Al completarse la compra',
+    status: true,
+    trigger: {
+      key: 'status',
+      value: 'completed',
+    },
   },
   {
     valueArray: [
@@ -82,6 +109,15 @@ const actionList = [
     ],
     isOptionAnArray: true,
     status: true,
+    trigger: {
+      key: 'generic',
+      value: 'create',
+    },
+    offsetTime: {
+      quantity: 45,
+      unit: 'days',
+      hour: 9,
+    },
   },
   {
     valueArray: [
@@ -120,6 +156,15 @@ const actionList = [
     ],
     isOptionAnArray: true,
     status: true,
+    trigger: {
+      key: 'generic',
+      value: 'create',
+    },
+    offsetTime: {
+      quantity: 10,
+      unit: 'minutes',
+      hour: null,
+    },
   },
   // {
   //   value: 'Conectar Status de AirTable',
@@ -148,8 +193,8 @@ const receiverOptions = [
   styleUrls: ['./notification-creator.component.scss'],
 })
 export class NotificationCreatorComponent implements OnInit {
-  actionList: OptionAnswerSelector[] = actionList;
-  receiverOptions: OptionAnswerSelector[] = receiverOptions;
+  actionList = actionList;
+  receiverOptions = receiverOptions;
   selectedAction: number;
   selectedReceiver: number;
   notificationMessage: string;
@@ -185,6 +230,7 @@ export class NotificationCreatorComponent implements OnInit {
     const notificationId = this.route.snapshot.paramMap.get('notificationId');
     if (!notificationId) return;
     this.notification = await this.notificationsService.notification(
+      this.merchant._id,
       notificationId
     );
     if (!this.notification) {
@@ -195,16 +241,23 @@ export class NotificationCreatorComponent implements OnInit {
     this.selectedAction = this.notificationsService.getNotificationAction(
       this.notification
     ).index;
+    this.selectedReceiver = 0;
   }
 
   async save() {
-    if (!this.notificationMessage?.trim()) return;
+    if (
+      !this.notificationMessage?.trim() ||
+      this.selectedAction == null ||
+      this.selectedReceiver == null ||
+      this.selectedReceiver != 0
+    )
+      return;
     const notificationInput: NotificationInput = {
       message: this.notificationMessage,
       merchant: this.merchant._id,
       entity: this.entity,
-      trigger: this.getTriggers(),
-      offsetTime: this.getOffsetTime(),
+      trigger: [this.actionList[this.selectedAction]?.trigger],
+      offsetTime: this.actionList[this.selectedAction]?.offsetTime && [this.actionList[this.selectedAction]?.offsetTime],
       phoneNumbers: [],
     };
     try {
@@ -227,51 +280,6 @@ export class NotificationCreatorComponent implements OnInit {
     } catch (error) {
       console.log(error);
       unlockUI();
-    }
-  }
-
-  getTriggers(): [TriggerInput] {
-    if (
-      this.selectedAction === 0 ||
-      this.selectedAction === 3 ||
-      this.selectedAction === 4
-    ) {
-      return [
-        {
-          key: 'generic',
-          value: 'create',
-        },
-      ];
-    }
-    if (this.selectedAction === 1 || this.selectedAction === 2) {
-      return [
-        {
-          key: 'status',
-          value: 'to confirm',
-        },
-      ];
-    }
-  }
-
-  getOffsetTime(): [OffsetTimeInput] {
-    if (this.selectedAction === 3) {
-      return [
-        {
-          quantity: 45,
-          unit: 'days',
-          hour: 9,
-        },
-      ];
-    } else if (this.selectedAction === 4) {
-      return [
-        {
-          quantity: 10,
-          unit: 'minutes',
-          hour: null,
-        },
-      ];
-    } else {
-      return;
     }
   }
 

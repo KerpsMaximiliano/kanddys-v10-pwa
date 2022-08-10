@@ -1,0 +1,12 @@
+<div class="dialog-container">
+    
+    <div class="header" [ngStyle]="headerStyles? headerStyles : {'background-color': bgColor? bgColor : ''}">
+        <h1 class="header-title" [ngStyle]="header.textStyles && header.textStyles">{{header.text}}</h1>
+    </div>   
+    
+    <div class="container">
+        <div class="text-container" *ngFor="let item of content; index as i">
+            <h2 class="setting-text" [ngStyle]="item.textStyles && item.textStyles" (click)="item.callback()" (click)="close()">{{item.text}}</h2>
+        </div>
+    </div>
+</div>

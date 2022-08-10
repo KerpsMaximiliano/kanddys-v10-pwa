@@ -153,6 +153,14 @@ export const addItemToSaleFlow = gql`
   }
 `;
 
+export const removeItemFromSaleFlow = gql`
+  mutation removeItemFromSaleFlow($item: ObjectID!, $id: ObjectID!) {
+    removeItemFromSaleFlow(item: $item, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {
@@ -234,7 +242,7 @@ export const listItems = gql`
   }
 `;
 
-export const listPackages = gql`
+export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
       _id

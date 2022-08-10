@@ -1,92 +1,98 @@
-.container{
-    width: 100%;
-    min-height: 100vh;
-    max-width: 500px;
+.container {
+	width: 100%;
+	min-height: 100vh;
+	max-width: 500px;
 
-    .tab-area{
-        width: 100%;
-        height: 46px;
-        display: flex;
-        align-items: flex-end;
-        background-color: rgba(40, 113, 173, 0.22);
-        overflow-x: scroll;
-        overflow-y: hidden;
-        padding-top: 14px;
-        padding-left: 10px;
+	.tab-area {
+		width: 100%;
+		height: 46px;
+		display: flex;
+		align-items: flex-end;
+		background-color: rgba(40, 113, 173, 0.22);
+		overflow-x: scroll;
+		overflow-y: hidden;
+		padding-top: 14px;
+		padding-left: 10px;
 
-        .tab{
-            width: fit-content;
-            height: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'RobotoMedium';
-            font-size: 16px;
-            color: #174B72;
-            padding: 5.5px 16px;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+		.tab {
+			width: fit-content;
+			height: 32px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: "RobotoMedium";
+			font-size: 16px;
+			color: #174b72;
+			padding: 5.5px 16px;
+			border-top-left-radius: 16px;
+			border-top-right-radius: 16px;
 
-            &.active{
-                background-color: #2874AD;
-                color: #FFFFFF !important;
-            }
-        }
-    }
+			&.active {
+				background-color: #2874ad;
+				color: #ffffff !important;
+			}
+		}
+	}
 
-    .searchBar{
-        width: 100%;
-        padding: 24px 0 30px;
-        background-color: #F6F6F6;
-        display: flex;
-        align-items: center;
+	.searchBar {
+		width: 100%;
+		padding: 24px 0 30px;
+		background-color: #f6f6f6;
+		display: flex;
+		align-items: center;
 
-        .searcher{
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+		.searcher {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 
-            .search{
-                all: unset;
-                width: 92%;
-                height: 66px;
-                font-family: 'RobotoMedium';
-                font-size: 20px;
-                color: #7B7B7B;
-                text-indent: 11px;
-                border-radius: 9px;
-                background-color: #FFFFFF;
-                box-shadow: inset 0px 3px 7px 3px rgba(0, 0, 0, 12%);
-                // background: url('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search.svg') no-repeat scroll 21px 23px;
+			.search {
+				all: unset;
+				width: 92%;
+				height: 66px;
+				font-family: "RobotoMedium";
+				font-size: 20px;
+				color: #7b7b7b;
+				text-indent: 11px;
+				border-radius: 9px;
+				background-color: #ffffff;
+				box-shadow: inset 0px 3px 7px 3px rgba(0, 0, 0, 12%);
+				// background: url('https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search.svg') no-repeat scroll 21px 23px;
 
-                &::placeholder{
-                    font-family: 'RobotoMedium';
-                    font-size: 20px;
-                    color: #A1A1A1;
-                    text-indent: 11px;
-                    opacity: 0.60;
-                }
-            }
-        }
-    }
+				&::placeholder {
+					font-family: "RobotoMedium";
+					font-size: 20px;
+					color: #a1a1a1;
+					text-indent: 11px;
+					opacity: 0.6;
+				}
+			}
+		}
+	}
 
-    .tag-area{
-        width: 100%;
-        padding: 30px;
-    }
+	.tag-area {
+		width: 100%;
+		padding: 30px;
+	}
 
-    .item{
-        width: 100%;
-        background-color: transparent;
-        margin-bottom: 4px;
-    }
+	.reservation-list {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+
+		.item {
+			width: 100%;
+			background-color: transparent;
+			box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 12%);
+		}
+	}
 }
 
 .tags-label {
 	font-family: "RobotoMedium";
 	font-size: 16px;
-	color: #7B7B7B;
+	color: #7b7b7b;
 	text-transform: uppercase;
 	font-weight: 100;
 	margin: 0;
@@ -97,7 +103,7 @@
 .tag-list {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 7px;
+	column-gap: 7px;
 	row-gap: 10px;
 
 	.tag-button {
@@ -106,18 +112,19 @@
 		font-family: "RobotoRegular";
 		padding: 6px 11px;
 		border-radius: 16px;
-		color: #7B7B7B;
+		color: #7b7b7b;
 		text-align: center;
 		cursor: pointer;
-        border: 1px solid #2874AD;
+		border: 1px solid #2874ad;
 
-		&:hover {
+		&:hover,
+		:active {
 			background-color: #70abd8;
 			color: #ffffff;
 		}
 
 		&.selected {
-			background-color: #2874AD;
+			background-color: #2874ad;
 			color: #ffffff;
 		}
 	}

@@ -72,7 +72,7 @@ export const hotTransactionsByGlobalWallet = gql`
 }
 `;
 
-export const exchangedata = gql`
+export const exchangeData = gql`
   query exchangeData($id: ObjectID!){
     ExchangeData: exchangeData(id: $id){
       _id

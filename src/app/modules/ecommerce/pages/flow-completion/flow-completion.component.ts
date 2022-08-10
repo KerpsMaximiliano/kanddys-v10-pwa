@@ -301,8 +301,8 @@ export class FlowCompletionComponent implements OnInit {
         let packages: string[] = [];
         if (this.header.order?.itemPackage) {
           packages.push(this.header.order.itemPackage);
-          const listPackages = (
-            await this.saleflow.listPackages({
+          const listItemPackage = (
+            await this.saleflow.listItemPackage({
               findBy: {
                 _id: {
                   __in: ([] = packages),
@@ -310,7 +310,7 @@ export class FlowCompletionComponent implements OnInit {
               },
             })
           ).listItemPackage;
-          this.products = listPackages;
+          this.products = listItemPackage;
         }
 
         if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
@@ -336,7 +336,7 @@ export class FlowCompletionComponent implements OnInit {
   }
 
   async getExchangeData(id: string) {
-    const data = await this.wallet.exchangedata(id);
+    const data = await this.wallet.exchangeData(id);
 
     this.banks = data.ExchangeData.bank;
 

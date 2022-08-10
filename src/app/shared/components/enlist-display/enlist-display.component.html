@@ -101,7 +101,7 @@
               'font-family': item.name.fontFamily ? item.name.fontFamily : '',
               color: item.name.color ? item.name.color : ''
             }"
-            (click)="showSubtitle = !showSubtitle"
+            (click)="hideAble ? showSubtitle = !showSubtitle : null"
           >
             {{ item.name.text }}
           </button>
@@ -230,7 +230,7 @@
       <button
         class="display"
         *ngIf="bottomText?.rightText"
-        (click)="bottomText.rightText.callback()"
+        (click)="bottomText.rightText.callback(bottomText.rightText.callbackArgs)"
         [ngStyle]="{
           'font-size': bottomText.rightText?.fontSize
             ? bottomText.rightText.fontSize

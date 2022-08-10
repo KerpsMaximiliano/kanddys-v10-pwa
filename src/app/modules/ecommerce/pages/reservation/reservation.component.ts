@@ -133,6 +133,7 @@ export class ReservationComponent implements OnInit {
       this.header.flowRoute = 'reservations';
       localStorage.setItem('flowRoute', 'reservations');
       this.version = this.router.url.split('/')[2];
+
       this.calendar.setInitalState();
 
       if(this.header.getSaleflow() && (!mode || mode === 'normal')) {
@@ -924,7 +925,7 @@ export class ReservationComponent implements OnInit {
       this.header.storeOrderProgress(this.header.saleflow._id);
 
       let preOrderID;
-      if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
+      if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
       else preOrderID = this.header.orderId;
       unlockUI();
       this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
@@ -988,7 +989,7 @@ export class ReservationComponent implements OnInit {
   //     type: 'flat-action-sheet',
   //     props: {
   //       asyncCallback: async (whatsappLink: string) => {
-  //         let preOrderID = await this.header.createPreOrder();
+  //         let preOrderID = await this.header.newCreatePreOrder();
   //         whatsappLink += `text=Keyword-Order%20${preOrderID}`;
 
   //         return whatsappLink;

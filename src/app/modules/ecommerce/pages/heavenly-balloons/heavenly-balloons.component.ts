@@ -55,7 +55,7 @@ const footerConfig: FooterOptions = {
 export class HeavenlyBalloonsComponent implements OnInit {
   scrollableForm = true;
   merchantId: string = null;
-  databaseName: string = null;
+  automationName: string = null;
   fullFormMessage: string = null;
   formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18492068680?text=';
@@ -67,6 +67,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
   defaultImages: (string | ArrayBuffer)[] = [''];
   recalculateFormWrapperHeight = false;
   files: File[] = [];
+  calendarId: string = null;
 
   formSteps: FormStep[] = [
     {
@@ -848,7 +849,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-            if(Number(change) > Number(totalAmount) && totalAmount !== "") {
+            if(Number(change) > Number(totalAmount) && totalAmount !== "" && Number(totalAmount) !== 0) {
               this.formSteps[6].fieldsList[1].fieldControl.control.setValue(firstPayment, {
                 emitEvent: false,
               });
@@ -1047,7 +1048,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs:
           {
-            calendarId: "62bbb5f545c3506dfb3d11d4",
+            calendarId: this.calendarId,
             firstLabel: "FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO",
             secondLabel: "HORARIO DE ENTREGA",
             timeOfDayMode: true
@@ -1448,7 +1449,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             const success = await this.merchantsService.uploadDataToClientsAirtable(
               this.merchantId,
-              this.databaseName,
+              this.automationName,
               data
             );
 
@@ -1495,13 +1496,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const { merchantId, databaseName } = params;
+      const { merchantId, automationName, calendarId } = params;
 
       this.merchantId = merchantId;
-      this.databaseName = databaseName;
+      this.automationName = automationName;
+      this.calendarId = calendarId;
+
+      this.formSteps[7].embeddedComponents[0].inputs.calendarId = this.calendarId;
+      this.formSteps[7].embeddedComponents[0].shouldRerender = true;
 
       console.log("merchantId", this.merchantId);
-      console.log("databasename", this.databaseName);
+      console.log("automationName", this.automationName);
     })
   }
 

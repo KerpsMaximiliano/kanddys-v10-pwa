@@ -5,9 +5,14 @@ import {
   createNotification,
   updateNotification,
   itemAddNotification,
+  notificationCheckers,
 } from '../graphql/notifications.gql';
 import { Item } from '../models/item';
-import { Notification, NotificationInput } from '../models/notification';
+import {
+  Notification,
+  NotificationChecker,
+  NotificationInput,
+} from '../models/notification';
 import { PaginationInput } from '../models/saleflow';
 import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
 
@@ -17,10 +22,10 @@ import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
 export class NotificationsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async notification(id: string): Promise<Notification> {
+  async notification(merchantId: string, id: string): Promise<Notification> {
     const result = await this.graphql.mutate({
       mutation: notification,
-      variables: { id },
+      variables: { merchantId, id },
       context: { useMultipart: true },
     });
     return result?.notification;
@@ -48,7 +53,10 @@ export class NotificationsService {
     return result?.createNotification;
   }
 
-  async updateNotification(input: NotificationInput, id: string): Promise<Notification> {
+  async updateNotification(
+    input: NotificationInput,
+    id: string
+  ): Promise<Notification> {
     const result = await this.graphql.mutate({
       mutation: updateNotification,
       variables: { input, id },
@@ -69,18 +77,50 @@ export class NotificationsService {
     return result?.itemAddNotification;
   }
 
-  getNotificationAction(notification: Notification) {
+  async notificationCheckers(
+    paginate: PaginationInput
+  ): Promise<NotificationChecker[]> {
+    const result = await this.graphql.mutate({
+      mutation: notificationCheckers,
+      variables: { paginate },
+      context: { useMultipart: true },
+    });
+    (<NotificationChecker[]>result?.notificationCheckers).forEach(
+      (notification) => {
+        notification.date = new Date(notification.date);
+      }
+    );
+    return result?.notificationCheckers;
+  }
+
+  // This one will be deprecated soon
+  getNotificationAction(notification: Notification | NotificationChecker) {
     let action: string;
     let index: number;
-    const trigger = notification.trigger[0];
+    if (
+      ('offsetTime' in notification && !notification.trigger?.length) ||
+      ('notification' in notification &&
+        !notification.notification.trigger?.length)
+    )
+      return;
+    const trigger =
+      'offsetTime' in notification
+        ? notification.trigger[0]
+        : notification.notification.trigger[0];
     if (trigger.key === 'generic') {
       if (trigger.value === 'create') {
-        if (!notification.offsetTime?.length) {
+        if (
+          ('offsetTime' in notification && !notification.offsetTime?.length) ||
+          ('notification' in notification &&
+            !notification.notification.offsetTime?.length)
+        ) {
           action = 'Al venderse para comprador';
           index = 0;
-        }
-        else {
-          const offsetTime = notification.offsetTime[0];
+        } else {
+          const offsetTime =
+            'offsetTime' in notification
+              ? notification.offsetTime[0]
+              : notification.notification.offsetTime[0];
           const unit =
             offsetTime.unit === 'days'
               ? 'días'
@@ -89,7 +129,7 @@ export class NotificationsService {
               : offsetTime.unit === 'weeks' && 'semanas';
           action = `A los ${offsetTime.quantity} ${unit} después de la venta`;
           if (offsetTime.hour) {
-            action = action + ` a las ${offsetTime.hour}}`;
+            action = action + ` a las ${offsetTime.hour}`;
             index = 3;
           } else {
             index = 4;
@@ -102,7 +142,59 @@ export class NotificationsService {
     }
     return {
       action,
-      index
+      index,
     };
   }
+
+
+  // This is the correct one, stil in progress
+  // getNotificationAction(notification: Notification | NotificationChecker) {
+  //   let action: string;
+  //   let index: number;
+  //   if (
+  //     ('offsetTime' in notification && !notification.trigger?.length) ||
+  //     ('notification' in notification && !notification.trigger)
+  //   )
+  //     return;
+  //   const trigger =
+  //     'offsetTime' in notification
+  //       ? notification.trigger[0]
+  //       : notification.trigger;
+  //   if (trigger.key === 'generic') {
+  //     if (trigger.value === 'create') {
+  //       if (
+  //         ('offsetTime' in notification && !notification.offsetTime?.length) ||
+  //         ('notification' in notification && !notification.trigger)
+  //       ) {
+  //         action = 'Al venderse para comprador';
+  //         index = 0;
+  //       } else {
+  //         const offsetTime =
+  //           'offsetTime' in notification
+  //             ? notification.offsetTime[0]
+  //             : notification.notification.offsetTime[0];
+  //         const unit =
+  //           offsetTime.unit === 'days'
+  //             ? 'días'
+  //             : offsetTime.unit === 'minutes'
+  //             ? 'minutos'
+  //             : offsetTime.unit === 'weeks' && 'semanas';
+  //         action = `A los ${offsetTime.quantity} ${unit} después de la venta`;
+  //         if (offsetTime.hour) {
+  //           action = action + ` a las ${offsetTime.hour}}`;
+  //           index = 3;
+  //         } else {
+  //           index = 4;
+  //         }
+  //       }
+  //     }
+  //   } else if (trigger.key === 'status') {
+  //     action = 'status id para comprador';
+  //     index = 2;
+  //   }
+  //   return {
+  //     action,
+  //     index,
+  //   };
+  // }
 }

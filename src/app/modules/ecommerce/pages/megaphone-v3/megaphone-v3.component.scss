@@ -2,42 +2,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
 main {
   flex-grow: 1;
-}
-
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  font-family: "Roboto";
-  padding-left: 34px;
-  padding-right: 31px;
-
-  .see-all-more {
-    color: #7b7b7b;
-    font-family: "RobotoMedium";
-    font-size: 16px;
-    margin-top: 0;
-    margin-bottom: 8px;
-    cursor: pointer;
-
-    &:hover {
-      color: #999999;
-    }
-  }
-}
-
-.header-text {
-  font-size: 20px;
-  margin-top: 0;
-  margin-bottom: 8px;
-  color: #313131;
-  font-family: "SfProMedium";
-  font-weight: 100;
+  background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
 .categories-wrapper {
@@ -112,15 +82,14 @@ main {
 
 .content {
   padding-top: 15px;
-  background: linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%);
 }
 
 .item-list {
   display: flex;
   flex-direction: column;
-  padding: 10px;
   row-gap: 15px;
-  padding-bottom: 67px;
+  padding: 10px;
+  padding-bottom: 36px;
 }
 
 .category-header {
@@ -133,12 +102,53 @@ main {
 footer {
   background-color: #2874ad;
   display: flex;
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  width: 100%;
+  max-width: 500px;
   justify-content: flex-end;
   padding: 4px 20px;
   align-items: center;
   color: white;
   z-index: 1;
+}
+
+// For saleflows with customizer
+
+.header-bg {
+  padding-bottom: 24px;
+  background: rgb(255,255,255);
+  background: linear-gradient(180deg, rgba(255,255,255,1) 50%, rgba(213,213,213,0.25) 100%);
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-family: "Roboto";
+  padding-left: 34px;
+  padding-right: 31px;
+
+  .see-all-more {
+    color: #7b7b7b;
+    font-family: 'RobotoMedium';
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    cursor: pointer;
+
+    &:hover {
+      color: #999999;
+    }
+  }
+}
+
+.header-text {
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #313131;
+  font-family: 'SfProMedium';
+  font-weight: 100;
 }

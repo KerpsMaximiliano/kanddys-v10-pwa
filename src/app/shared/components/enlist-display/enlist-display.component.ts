@@ -7,7 +7,8 @@ interface Text {
     fontFamily?: string;
     fontSize?: string;
     pointer?: boolean;
-    callback?: () => void;
+    callback?: (...args: any[]) => void;
+    callbackArgs?: any[];
 }
 
 interface Icon{
@@ -79,6 +80,7 @@ export class EnlistDisplayComponent implements OnInit {
         icon?: Icon;
     };
     showEntry: boolean;
+    @Input() hideAble: boolean = true;
     @Input() showSubtitle: boolean;
     env: string = environment.assetsUrl;
 

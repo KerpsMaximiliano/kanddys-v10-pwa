@@ -74,6 +74,10 @@ import { GalleryStoreComponent } from './pages/gallery-store/gallery-store.compo
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
+import { CreateItemComponent } from './pages/create-item/create-item.component';
+import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
+import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
+import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 
 const routes: Routes = [
   {
@@ -262,10 +266,19 @@ const routes: Routes = [
   {
     path: 'item-creator',
     component: ItemCreatorComponent,
+    data: {animation: 'ItemCreator'}
   },
   {
     path: 'item-creator/:itemId',
     component: ItemCreatorComponent,
+  },
+  {
+    path: 'create-item',
+    component: CreateItemComponent,
+  },
+  {
+    path: 'create-item/:itemId',
+    component: CreateItemComponent,
   },
   {
     path: 'user-dashboard',
@@ -316,11 +329,11 @@ const routes: Routes = [
     component: Authentication
   },
   {
-    path: 'll-studio-order-form/:merchantId/:databaseName',
+    path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
     component: LlStudioOrderFormComponent
   },
   {
-    path: 'heavenly-balloons/:merchantId/:databaseName',
+    path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
     component: HeavenlyBalloonsComponent
   },
   {
@@ -361,7 +374,12 @@ const routes: Routes = [
   },
   {
     path: 'entity-detail-metrics',
-    component: EntityDetailMetricsComponent
+    component: EntityDetailMetricsComponent,
+    data: {animation: 'EntityDetailMetrics'}
+  },
+  {
+    path: 'notifications-log/:id',
+    component: NotificationsLogComponent
   },
   {
     path: 'notifications-log',
@@ -427,6 +445,18 @@ const routes: Routes = [
     path:'merchant-buyers',
     component: MerchantBuyersComponent
   },
+  {
+    path: 'calendar-detail',
+    component: CalendarDetailComponent
+  },
+  {
+    path: 'reservations-creator/:calendarId',
+    component: ReservationsCreatorComponent
+  },
+  {
+    path: 'calendar-creator',
+    component: CalendarCreatorComponent
+  }
 ];
 
 @NgModule({
@@ -505,6 +535,10 @@ const routes: Routes = [
     OrderDetailComponent,
     ReservationDetailComponent,
     MerchantBuyersComponent,
+    CreateItemComponent,
+    CalendarDetailComponent,
+    CalendarCreatorComponent,
+    ReservationsCreatorComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

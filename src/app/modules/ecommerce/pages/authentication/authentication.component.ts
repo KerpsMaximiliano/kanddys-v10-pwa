@@ -164,7 +164,7 @@ export class Authentication implements OnInit {
 
             try {
               if(this.type === 'create-item') {
-                await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', null);
+                await this.authService.generateMagicLink(phoneNumber, `ecommerce/item-display`, this.itemId, 'NewItem', {});
                 params.scrollToStep(1);
 
                 return { ok: true };

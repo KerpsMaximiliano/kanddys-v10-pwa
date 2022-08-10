@@ -15,7 +15,10 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 import { SwiperOptions } from 'swiper';
@@ -27,12 +30,12 @@ const socialNames = [
   'tiktok',
   'web',
   'facebook',
-]
+];
 
 @Component({
   selector: 'app-user-contact-landing',
   templateUrl: './user-contact-landing.component.html',
-  styleUrls: ['./user-contact-landing.component.scss']
+  styleUrls: ['./user-contact-landing.component.scss'],
 })
 export class UserContactLandingComponent implements OnInit {
   URI: string = environment.uri;
@@ -50,128 +53,17 @@ export class UserContactLandingComponent implements OnInit {
   hasSocials: boolean;
   showSocials: boolean;
   regex = /\D/g;
-
-  singleItems: Array<any> = [{
-    name:'respuestas',
-    image: '/activo1.svg'
-  },{
-    name:'banners',
-    image: '/bullhorn.svg'
-  },
-  {
-    name:'simbolos',
-    image: '/composer-edit.svg'
-  },
-  {
-    name: 'enlaces',
-    image: '/signpost-split.svg'
-  },
-  {
-    name:'trivias',
-    image: ''
-  },
-  {
-    name: 'votos',
-    image: ''
-  }
-  ];
   imagesGallery: any[] = [];
 
-  defaultImage: string = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/default.jpg';
-
-    testItem: Array<any> = [{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Creating Happiness one gift at a time.'},
-        subtitle: {text: '5 ARTICULOS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Cy')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Creating Happiness one gift at a time.'},
-        subtitle: {text: '5 ARTICULOS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Cy')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Creating Happiness one gift at a time.'},
-        subtitle: {text: '5 ARTICULOS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Cy')} 
-        }
-      }];
-
-      testItem1: Array<any> = [{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Nombre del WebForm #1'},
-        subtitle: {text: '5 PREGUNTAS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Ño')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Nombre del WebForm #2'},
-        subtitle: {text: '5 PREGUNTAS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Ño')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'Nombre del WebForm #3'},
-        subtitle: {text: '5 PREGUNTAS'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Ño')} 
-        }
-      }];
-
-      testItem2: Array<any> = [{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'SIMBOLO #1'},
-        subtitle: {text: 'ALGO DEL SIMBOLO'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Quizas')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'SIMBOLO #2'},
-        subtitle: {text: 'ALGO DEL SIMBOLO'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Quizas')} 
-        }
-      },{
-        img: 'https://i.imgur.com/pC7xVnn.png',
-        name: {text: 'SIMBOLO #3'},
-        subtitle: {text: 'ALGO DEL SIMBOLO'},
-        cta: {
-            text: 'Mas',
-            color: '#2874AD',
-            callback: () => {console.log('Quizas')} 
-        }
-      }];
+  defaultImage: string =
+    'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/default.jpg';
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 24,
     followFinger: true,
-    resistanceRatio: 0.4
+    resistanceRatio: 0.4,
   };
 
   constructor(
@@ -187,14 +79,14 @@ export class UserContactLandingComponent implements OnInit {
     private location: Location,
     private headerService: HeaderService,
     private itemsService: ItemsService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { 
-          type, 
-          merchantId, 
+        const {
+          type,
+          merchantId,
           venmo,
           paypal,
           cashapp,
@@ -203,177 +95,211 @@ export class UserContactLandingComponent implements OnInit {
           ownerAccount,
           socialID,
           jsondata,
-          file0
+          file0,
         } = queryParams;
-        const urlWithoutQueryParams = this.router.url.split('?')[0]
+        const urlWithoutQueryParams = this.router.url.split('?')[0];
 
-        if(type === 'from-user-creation') {
+        if (type === 'from-user-creation') {
           const parsedData = JSON.parse(decodeURIComponent(jsondata));
 
           const relevantData = deleteIrrelevantDataFromObject(parsedData);
 
-          if(
-            relevantData.exchangeData && (
-              Object.keys(relevantData.exchangeData.bank[0]).length > 4 ||
-              (relevantData.exchangeData.electronicPayment?.length > 0) 
-            ) 
+          if (
+            relevantData.exchangeData &&
+            (Object.keys(relevantData.exchangeData.bank[0]).length > 4 ||
+              relevantData.exchangeData.electronicPayment?.length > 0)
           ) {
-            await this.walletService.createExchangeData(relevantData.exchangeData);
+            await this.walletService.createExchangeData(
+              relevantData.exchangeData
+            );
           }
         }
 
-        if(type === 'from-merchant-creation' && merchantId) {
-          const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
+        if (type === 'from-merchant-creation' && merchantId) {
+          const { merchantAuthorize: merchant } =
+            await this.merchantsService.merchantAuthorize(merchantId);
 
-          const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-            merchant: merchant._id,
-            name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
-            items: []
-          });
+          const { createSaleflow: createdSaleflow } =
+            await this.saleflowService.createSaleflow({
+              merchant: merchant._id,
+              name:
+                merchantId + ' saleflow #' + Math.floor(Math.random() * 100000),
+              items: [],
+            });
 
           await this.merchantsService.setDefaultMerchant(merchant._id);
-          await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+          await this.saleflowService.setDefaultSaleflow(
+            merchantId,
+            createdSaleflow._id
+          );
 
-          console.log(bankName, accountNumber, ownerAccount, socialID);
-
-          
-          if(bankName && accountNumber && ownerAccount && socialID) {
+          if (bankName && accountNumber && ownerAccount && socialID) {
             const electronicPayment = [];
 
             [venmo, paypal, cashapp].forEach((paymentMethod, index) => {
-              if(paymentMethod) {
-                console.log(paymentMethod);
+              if (paymentMethod) {
                 electronicPayment.push({
                   link: paymentMethod,
-                  name: index === 0 ? 'venmo' : index === 1 ? 'paypal' : index === 2 ? 'cashapp' : null
+                  name:
+                    index === 0
+                      ? 'venmo'
+                      : index === 1
+                      ? 'paypal'
+                      : index === 2
+                      ? 'cashapp'
+                      : null,
                 });
               }
-            })
+            });
 
             await this.walletService.createExchangeData({
-              bank: [{
-                bankName: decodeURIComponent(bankName),
-                ownerAccount: decodeURIComponent(ownerAccount),
-                routingNumber: parseInt(socialID),
-                isActive: true,
-                account: accountNumber
-              }],
-              electronicPayment
+              bank: [
+                {
+                  bankName: decodeURIComponent(bankName),
+                  ownerAccount: decodeURIComponent(ownerAccount),
+                  routingNumber: parseInt(socialID),
+                  isActive: true,
+                  account: accountNumber,
+                },
+              ],
+              electronicPayment,
             });
           }
 
           window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
         }
 
-        if(type === 'from-user-creation-update') {
-
+        if (type === 'from-user-creation-update') {
           try {
             const parsedData = JSON.parse(decodeURIComponent(jsondata));
             const userImage = file0 ? decodeURIComponent(file0) : null;
-  
+
             const relevantData = deleteIrrelevantDataFromObject(parsedData);
-  
-            if(userImage) relevantData.image = userImage;
 
-            const exchangeDataInInput = 'exchangeData' in relevantData ? relevantData.exchangeData : null;
+            if (userImage) relevantData.image = userImage;
 
-            if(exchangeDataInInput) delete relevantData.exchangeData;
+            const exchangeDataInInput =
+              'exchangeData' in relevantData ? relevantData.exchangeData : null;
+
+            if (exchangeDataInInput) delete relevantData.exchangeData;
 
             const updatedUser = await this.authService.updateMe(relevantData);
 
-            const exchangeData = await this.walletService.exchangeDataByUser(updatedUser._id);
+            const exchangeData = await this.walletService.exchangeDataByUser(
+              updatedUser._id
+            );
 
-            if(updatedUser && exchangeDataInInput) {
-              const {bank, electronicPayment: electronicPaymentStored } = exchangeDataInInput;
+            if (updatedUser && exchangeDataInInput) {
+              const { bank, electronicPayment: electronicPaymentStored } =
+                exchangeDataInInput;
               const electronicPayment = [];
-  
-              electronicPaymentStored.forEach(paymentMethod => {
-                if(paymentMethod) {
+
+              electronicPaymentStored.forEach((paymentMethod) => {
+                if (paymentMethod) {
                   electronicPayment.push({
                     name: paymentMethod.name,
-                    link: paymentMethod.link
+                    link: paymentMethod.link,
                   });
                 }
-              })
-  
-              if(exchangeData) {
+              });
 
-                await this.walletService.updateExchangeData({
-                  bank: [{
-                    bankName: bank[0].bankName,
-                    ownerAccountAccount: bank[0].ownerAccount,
-                    routingNumber: parseInt(bank[0].routingNumber),
-                    isActive: true,
-                    account: bank[0].account
-                  }],
-                  electronicPayment
-                }, exchangeData._id);
+              if (exchangeData) {
+                await this.walletService.updateExchangeData(
+                  {
+                    bank: [
+                      {
+                        bankName: bank[0].bankName,
+                        ownerAccountAccount: bank[0].ownerAccount,
+                        routingNumber: parseInt(bank[0].routingNumber),
+                        isActive: true,
+                        account: bank[0].account,
+                      },
+                    ],
+                    electronicPayment,
+                  },
+                  exchangeData._id
+                );
               } else {
                 await this.walletService.createExchangeData({
-                  bank: [{
-                    bankName: decodeURIComponent(bank[0].bankName),
-                    ownerAccount: decodeURIComponent(bank[0].ownerAccount),
-                    routingNumber: parseInt(bank[0].routingNumber),
-                    isActive: true,
-                    account: bank[0].account
-                  }],
-                  electronicPayment
-                });    
+                  bank: [
+                    {
+                      bankName: decodeURIComponent(bank[0].bankName),
+                      ownerAccount: decodeURIComponent(bank[0].ownerAccount),
+                      routingNumber: parseInt(bank[0].routingNumber),
+                      isActive: true,
+                      account: bank[0].account,
+                    },
+                  ],
+                  electronicPayment,
+                });
               }
             }
-            
+
             window.history.replaceState({}, 'Saleflow', urlWithoutQueryParams);
           } catch (error) {
             console.log(error);
           }
         }
 
-        if(type === 'from-merchant-creation-user-exists' && merchantId) {
+        if (type === 'from-merchant-creation-user-exists' && merchantId) {
           try {
             const parsedData = JSON.parse(decodeURIComponent(jsondata));
             const merchantImage = file0 ? decodeURIComponent(file0) : null;
-  
+
             const relevantData = deleteIrrelevantDataFromObject(parsedData);
-            
-            const { merchantAuthorize: merchant} = await this.merchantsService.merchantAuthorize(merchantId);
-            
-            const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
-              merchant: merchant._id,
-              name: merchantId + " saleflow #" + Math.floor(Math.random() * 100000),
-              items: []
-            });
+
+            const { merchantAuthorize: merchant } =
+              await this.merchantsService.merchantAuthorize(merchantId);
+
+            const { createSaleflow: createdSaleflow } =
+              await this.saleflowService.createSaleflow({
+                merchant: merchant._id,
+                name:
+                  merchantId +
+                  ' saleflow #' +
+                  Math.floor(Math.random() * 100000),
+                items: [],
+              });
 
             await this.merchantsService.setDefaultMerchant(merchant._id);
-            await this.saleflowService.setDefaultSaleflow(merchantId, createdSaleflow._id);
+            await this.saleflowService.setDefaultSaleflow(
+              merchantId,
+              createdSaleflow._id
+            );
 
-            if(merchant) {
-              if(file0) {
+            if (merchant) {
+              if (file0) {
                 relevantData.userData.image = merchantImage;
-              };
+              }
               await this.authService.updateMe(relevantData.userData);
-              console.log(relevantData.exchangeData);
               // await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
-              await this.walletService.createExchangeData(relevantData.exchangeData);
+              await this.walletService.createExchangeData(
+                relevantData.exchangeData
+              );
             }
-
           } catch (error) {
             console.log(error);
           }
         }
 
-        if(type === 'update-merchant' && merchantId) {
+        if (type === 'update-merchant' && merchantId) {
           try {
             const parsedData = JSON.parse(decodeURIComponent(jsondata));
             const merchantImage = file0 ? decodeURIComponent(file0) : null;
-  
+
             const relevantData = deleteIrrelevantDataFromObject(parsedData);
-            
-            if(file0) relevantData.merchantData.image = merchantImage;
-            if(file0) relevantData.userData.image = merchantImage;
+
+            if (file0) relevantData.merchantData.image = merchantImage;
+            if (file0) relevantData.userData.image = merchantImage;
 
             await this.authService.updateMe(relevantData.userData);
-            await this.merchantsService.updateMerchant(relevantData.merchantData, merchantId);
-            await this.walletService.createExchangeData(relevantData.exchangeData);
+            await this.merchantsService.updateMerchant(
+              relevantData.merchantData,
+              merchantId
+            );
+            await this.walletService.createExchangeData(
+              relevantData.exchangeData
+            );
           } catch (error) {
             console.log(error);
           }
@@ -383,27 +309,34 @@ export class UserContactLandingComponent implements OnInit {
         const [user, currentUser] = await Promise.all([
           this.usersService.user(params.id),
           this.authService.me(),
-        ])
-        if(!user) return unlockUI();
+        ]);
+        if (!user) return unlockUI();
         this.user = user;
-        if(user._id === currentUser?._id) this.admin = true;
-        this.merchant = await this.merchantsService.merchantDefault(this.user._id);
-        if(!this.merchant) return unlockUI();
+        if (user._id === currentUser?._id) this.admin = true;
+        this.merchant = await this.merchantsService.merchantDefault(
+          this.user._id
+        );
+        if (!this.merchant) return unlockUI();
         this.checkSocials(this.merchant.social);
-        this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
-        if(!this.saleflow) return unlockUI();
-        if(this.admin && this.saleflow?.items?.length) {
+        this.saleflow = await this.saleflowService.saleflowDefault(
+          this.merchant._id
+        );
+        if (!this.saleflow) return unlockUI();
+        if (this.admin && this.saleflow?.items?.length) {
           const [total, users] = await Promise.all([
-            this.orderService.ordersTotal(['completed', 'in progress', 'to confirm'], this.merchant._id),
+            this.orderService.ordersTotal(
+              ['completed', 'in progress', 'to confirm'],
+              this.merchant._id
+            ),
             this.merchantsService.usersOrderMerchant(this.merchant._id),
-            this.getItems()
+            this.getItems(),
           ]);
           this.ordersTotal = total;
           this.users = users;
-        } else if(this.saleflow?.items?.length) this.getItems();
+        } else if (this.saleflow?.items?.length) this.getItems();
         unlockUI();
-      })
-    })
+      });
+    });
   }
 
   back() {
@@ -411,28 +344,34 @@ export class UserContactLandingComponent implements OnInit {
   }
 
   checkSocials(socials: SocialMediaModel[]) {
-    if(!socials) return;
-    if(socials.some((social) => socialNames.includes(social.name))) this.hasSocials = true;
+    if (!socials) return;
+    if (socials.some((social) => socialNames.includes(social.name)))
+      this.hasSocials = true;
   }
 
   async getItems() {
     try {
-      this.items = (await this.saleflowService.listItems({
-        findBy: {
-          _id: {
-            __in: ([] = this.saleflow.items?.slice(0,6).map((items) => items.item._id)),
+      this.items = (
+        await this.saleflowService.listItems({
+          findBy: {
+            _id: {
+              __in: ([] = this.saleflow.items
+                ?.slice(0, 6)
+                .map((items) => items.item._id)),
+            },
+            status: 'active',
           },
-          status: "active"
-        },
-      }))?.listItems;
-
-      console.log(this.items);
-      this.imagesGallery = this.items.map(item => ({
+        })
+      )?.listItems;
+      this.imagesGallery = this.items.map((item) => ({
         src: item.images.length ? item.images[0] : this.defaultImage,
-        callback: () => this.router.navigate([`/ecommerce/item-detail/${this.saleflow._id}/${item._id}`])
+        callback: () =>
+          this.router.navigate([
+            `/ecommerce/item-detail/${this.saleflow._id}/${item._id}`,
+          ]),
       }));
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -440,9 +379,12 @@ export class UserContactLandingComponent implements OnInit {
     const showItems = !this.merchant.showItems;
     try {
       this.merchant.showItems = showItems;
-      await this.merchantsService.updateMerchant({
-        showItems
-      }, this.merchant._id);
+      await this.merchantsService.updateMerchant(
+        {
+          showItems,
+        },
+        this.merchant._id
+      );
     } catch (error) {
       console.log(error);
     }
@@ -471,15 +413,16 @@ export class UserContactLandingComponent implements OnInit {
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
+            func: () =>
+              this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
           },
-        ]
+        ],
       },
-    ]
+    ];
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -502,13 +445,13 @@ export class UserContactLandingComponent implements OnInit {
             },
             plus: true,
           },
-        ]
+        ],
       },
-    ]
+    ];
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -517,14 +460,13 @@ export class UserContactLandingComponent implements OnInit {
 
   contactCallback = () => {
     this.showSocials = !this.showSocials;
-  }
+  };
 
   shareCallback = () => {
     this.openShareDialog();
-  }
+  };
 
   goToStore = () => {
     this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]);
-  }
-
+  };
 }

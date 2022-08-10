@@ -1,49 +1,48 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-admin-login',
   templateUrl: './admin-login.component.html',
-  styleUrls: ['./admin-login.component.scss']
+  styleUrls: ['./admin-login.component.scss'],
 })
 export class AdminLoginComponent implements OnInit {
-
+  admin: boolean;
   constructor(
     private authService: AuthService,
-  ) { }
+    private router: Router,
+    ) {}
 
-  testItem: Array<any> = [{
-    img: 'https://i.imgur.com/pC7xVnn.png', //Imagen del merchant si tiene
-    name: { text: 'Foto Davitte' }, //Nombre
-    cta: {
-      text: 'Acceder =>',
-      color: '#2874AD',
-      callback: () => this.adminLogin('19188156444')
-    }
-  }, {
-    img: 'https://i.imgur.com/pC7xVnn.png',
-    name: { text: 'Caffaro' },
-    cta: {
-      text: 'Acceder =>',
-      color: '#2874AD',
-      callback: () => this.adminLogin('18492203488')
-    }
-  }, {
-    img: 'https://i.imgur.com/pC7xVnn.png',
-    name: { text: 'Cecilia' },
-    cta: {
-      text: 'Acceder =>',
-      color: '#2874AD',
-      callback: () => this.adminLogin('18095636780')
-    }
-  }];
+  merchantList = [
+    {
+      name: 'Foto Davitte',
+      phone: '19188156444',
+      password: '123'
+    },
+    {
+      name: 'Caffaro',
+      phone: '18492203488',
+      password: '123'
+    },
+    {
+      name: 'Cecilia',
+      phone: '18095636780',
+      password: '123'
+    },
+  ];
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  async adminLogin(index: number) {
+    const session = await this.authService.signin(this.merchantList[index].phone, this.merchantList[index].password, false);
+    if(session) this.router.navigate(['/ecommerce/entity-detail-metrics']);
   }
 
-  async adminLogin(phoneNumber: string) {
-    const result = await this.authService.generatePowerMagicLink(phoneNumber);
-    console.log(result);
+  async onSubmit(form?: NgForm) {
+    if(!form.value.password?.trim()) return;
+    const session = await this.authService.signin('19188156444', form.value.password, false);
+    if(session) this.admin = true;
   }
-
 }

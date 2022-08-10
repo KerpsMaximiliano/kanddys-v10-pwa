@@ -1,0 +1,79 @@
+<div class="wrapper">
+    <app-helper-headerv2
+        [mode]="'options'"
+        [bgColor]="headerConfiguration.bgcolor"
+        [color]="headerConfiguration.color"
+        [justifyContent]="headerConfiguration.justifyContent"
+        [alignItems]="headerConfiguration.alignItems"
+        [rightTextStyles]="headerConfiguration.rightTextStyles"
+        [leftText]="{text: headerConfiguration.headerTextSide === 'LEFT' ? headerConfiguration.headerText : ''}" 
+        [rightText]="{text: headerConfiguration.headerTextSide === 'RIGHT' ? headerConfiguration.headerText : ''}" [returnAble]="true"
+        (agnosticAction)="headerConfiguration.headerTextSide === 'RIGHT' ? headerConfiguration.headerTextCallback() : null"
+        [returnAble]="true"
+    >
+    </app-helper-headerv2>
+
+    <form [formGroup]="reservationCreatorForm">
+        <ng-container *ngIf="currentStep === 'USER_INFO'">
+            <div 
+                class="body userInfo" 
+                formGroupName="userInfo"
+            >
+                <h2>Para la Reservación:</h2>
+
+                <label for="howManyReservations" class="input-label">
+                    ¿Cuál es tu Nombre?
+                </label>
+                <input class="input customWidth" type="text" min="1" formControlName="userName" placeholder="Escribe..."/>    
+
+                <label for="howManyReservations" class="input-label">
+                    Cuál Es Tu Número De Whatsapp?
+                </label>
+
+                <div class="phone-input-wrapper" [ngStyle]="{width: '86.89%'}">
+                    <ngx-intl-tel-input [cssClass]="'custom'"
+                        [enableAutoCountrySelect]="true" 
+                        [enablePlaceholder]="true" 
+                        [searchCountryFlag]="true"
+                        [selectFirstCountry]="false" 
+                        [preferredCountries]="preferredCountries"
+                        [selectedCountryISO]="CountryISO" 
+                        maxLength="15"
+                        [phoneValidation]="true" 
+                        [separateDialCode]="true" 
+                        [customPlaceholder]="'Escribe..'"
+                        [numberFormat]="PhoneNumberFormat.International"
+                        tabindex="-1"
+                        formControlName="whatsAppPhoneNumber"
+                    ></ngx-intl-tel-input>
+                </div>
+            </div>
+            
+
+            <app-sticky-button
+                *ngIf="stickyButton"
+                [mode]="stickyButton.mode"
+                [text]="stickyButton.text"
+                (click)="stickyButton.callback()"
+                [bgColor]="'#2874AD'"
+                [color]="'#fff'"
+                [height]="'30px'"
+                [fontSize]="'17px'"
+            ></app-sticky-button>
+        </ng-container>
+
+        <ng-container *ngIf="currentStep === 'RESERVATION_CONVENIENCE'">
+            <div 
+                class="body reservationConvenience" 
+                formGroupName="reservationConvenience"
+            >
+                <h2>Para cuando te conviene hacer la reservación?</h2>
+                
+                <div class="calendar">
+                    <h3>DIA CONVENIENTE De {{ currentMonth.name }}</h3>
+                    <app-short-calendar></app-short-calendar>
+                </div>
+            </div>
+        </ng-container>
+    </form>
+</div>

@@ -8,6 +8,7 @@ import {
 export interface FieldStyles {
   fieldStyles?: any;
   containerStyles?: any;
+  innerContainerStyles?: any;
   topLabelActionStyles?: any;
   topSubLabelActionStyles?: any;
   labelsContainerStyles?: any;
@@ -38,6 +39,7 @@ export interface FormField {
   onlyAllowPositiveNumbers?: boolean;
   phoneCountryCode?: CountryISO;
   formattedValue?: string;
+  fileObjects?: File[],
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   statusChangeCallbackFunction?(...params): any;
@@ -232,6 +234,7 @@ export interface FormStep {
       width?: string;
       height?: string;
       return?: boolean;
+      returnCallback?(...params): any;
     }
     customLeftButtonStyles?: Record<string, any>;
     customRightButtonStyles?: Record<string, any>;

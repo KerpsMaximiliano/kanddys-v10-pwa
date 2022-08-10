@@ -4,11 +4,17 @@ import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 
 @Component({
   selector: 'app-merchant-items',
@@ -18,6 +24,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 export class MerchantItemsComponent implements OnInit {
 
   merchant: Merchant;
+  saleflow: SaleFlow;
   items: Item[] = [];
   ordersTotal: {
     total: number;
@@ -54,33 +61,41 @@ export class MerchantItemsComponent implements OnInit {
     private ordersService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private dialog: DialogService,
+    private headerService: HeaderService
   ) { }
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.status = 'loading';
-    const user = await this.authService.me();
-    if (!user) this.errorScreen();
+    this.authService.ready.subscribe(async observer => {
+      if (observer != undefined) {
+        this.status = 'loading';
+        const user = await this.authService.me();
+        if (!user) this.errorScreen();
 
-    // TODO: Replace this with a header service  call to get the merchant ID
-    // const merchantID = "616a13a527bcf7b8ba3ac312";
+        // TODO: Replace this with a header service  call to get the merchant ID
+        // const merchantID = "616a13a527bcf7b8ba3ac312";
 
-    await this.getMerchant();
+        await this.getMerchant();
 
-    await Promise.all([
-      this.getOrderTotal(this.merchant._id),
-      this.getItems(this.merchant._id)
-    ]);
-    this.status = 'complete';
-    if (this.ordersTotal.total) this.hasSalesData = true;
-    unlockUI();
+        await Promise.all([
+          this.getOrderTotal(this.merchant._id),
+          this.getItems(this.merchant._id)
+        ]);
+        this.status = 'complete';
+        if (this.ordersTotal.total) this.hasSalesData = true;
+        unlockUI(); 
+      } else {
+        this.errorScreen();
+      }
+    });
   }
 
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
-      const saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
+      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
     } catch (error) {
       this.status = 'error';
       console.log(error);
@@ -90,7 +105,6 @@ export class MerchantItemsComponent implements OnInit {
   async getItems(merchantID: string) {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true)).itemsByMerchant;
-      console.log(items);
       this.items = items;
     } catch (error) {
       this.status = 'error';
@@ -122,11 +136,111 @@ export class MerchantItemsComponent implements OnInit {
     this.router.navigate([`ecommerce/error-screen/`]);
   }
 
-   goToMetrics = () =>{
+  goToMetrics = () =>{
     this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
 
   back() {
     this.router.navigate([`ecommerce/entity-detail-metrics`]);
   }
+
+  createItem(){
+    this.headerService.flowRoute = this.router.url;
+    this.router.navigate([`ecommerce/item-creator/`]);
+  }
+
+  openDeleteDialog(item: Item) {
+    const list: StoreShareList[] = [
+      {
+          title: `Eliminar ${item.name || 'producto'}?`,
+          description: 'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
+          message: 'Eliminar',
+          messageCallback: async () => {
+            const removeItemFromSaleFlow = await this.saleflowService.removeItemFromSaleFlow(item._id, this.saleflow._id);
+            if(!removeItemFromSaleFlow) return;
+            const deleteItem = await this.itemsService.deleteItem(item._id);
+            if(!deleteItem) return;
+            this.items = this.items.filter(listItem => listItem._id !== item._id);
+          }
+      },
+    ];
+
+  this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+  });
+  }
+
+  openDialog = () => {
+
+    const list: StoreShareList[] = [
+        {
+          title:  'Crear',
+          options: [
+            {
+              text: 'Un nuevo Item',
+              mode: 'func',
+              func: () => {
+                this.router.navigate(['ecommerce/item-creator/']);
+              }
+            }
+          ]
+        }
+    ];
+        
+    this.dialog.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: true
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+    };
+
+    editArticles = () => {
+
+        const content: any = [
+            {
+            text: 'Adicionar nuevo artículo',
+            callback: () =>{
+                this.router.navigate(['ecommerce/item-creator']);
+              }
+            },
+            {
+            text: 'Incluir artículos en otras categorias',
+            callback: () =>{
+                console.log('opcion 2');
+              }
+            },
+            {
+            text: 'Eliminar artículos',
+            callback: () =>{
+                console.log('opcion 3');
+              }
+            },
+            {
+            text: 'Compartir un grupo de artículos',
+            callback: () =>{
+                console.log('opcion 4');
+              }
+            },
+        ];
+    
+        this.dialog.open(ItemSettingsComponent, {
+            type: 'fullscreen-translucent',
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+            props:{
+              header: {text: 'Artículos'},
+              content
+            }
+        });
+    }
 }

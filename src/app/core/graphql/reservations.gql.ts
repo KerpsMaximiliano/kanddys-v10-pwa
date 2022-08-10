@@ -43,9 +43,7 @@ export const getReservation = gql`
       status
       expiration
       breakTime
-      calendar{
-        _id
-      }
+      calendar
       date{
         from
         until
@@ -57,15 +55,16 @@ export const getReservation = gql`
 `;
 
 export const getReservationByCalendar = gql`
-  query getReservationByCalendar($calendarId: ObjectID!) {
-    getReservationByCalendar(calendarId: $calendarId) {
+  query getReservationByCalendar($paginate: PaginationInput!) {
+    getReservationByCalendar(paginate: $paginate) {
       _id
       createdAt
       status
       expiration
       breakTime
-      calendar{
+      user {
         _id
+        name
       }
       date{
         from
@@ -85,8 +84,10 @@ export const getReservationByMerchant = gql`
       status
       expiration
       breakTime
-      calendar{
+      calendar
+      user {
         _id
+        name
       }
       date{
         from

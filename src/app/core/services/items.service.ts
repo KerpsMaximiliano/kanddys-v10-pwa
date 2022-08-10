@@ -28,7 +28,8 @@ import {
   bestSellersByMerchant,
   totalByItem,
   itemExtras,
-  updateItem
+  updateItem,
+  deleteItem,
 } from '../graphql/items.gql';
 import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
@@ -37,6 +38,7 @@ import { ListParams } from '../types/general.types';
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  hasTemporalItemNewImages: boolean = null;
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -297,7 +299,6 @@ export class ItemsService {
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -322,7 +323,6 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -334,7 +334,6 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
@@ -348,12 +347,19 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
+  async deleteItem(id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: deleteItem,
+      variables: { id },
+      context: { useMultipart: true },
+    });
+    return result?.deleteItem;
+  }
+
   async createItemPackage(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItemPackage,
       variables: { input },
@@ -361,12 +367,10 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
   async itemExtraByMerchant(merchantId: string) {
-    console.log(merchantId);
     try {
       const response = await this.graphql.query({
         query: itemExtraByMerchant,

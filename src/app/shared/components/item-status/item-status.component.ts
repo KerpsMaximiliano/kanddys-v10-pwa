@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { OrderStatusNameType } from 'src/app/core/models/order';
 import { environment } from 'src/environments/environment';
 
 export interface ItemStatus {
@@ -9,7 +10,7 @@ export interface ItemStatus {
   subtitle?: string;
   image?: string;
   eventImage?: () => void;
-  status?: 'verificado' | 'en revisión' | 'por confirmar' | 'completado';
+  status?: OrderStatusNameType;
   statusCallback?: () => void,
 }
 

@@ -1,33 +1,26 @@
 <div class="container">
-
-    <app-helper-headerv2
+  <app-helper-headerv2
     [mode]="'center'"
     [mainText]="{
-        text: 'Pick Your Merchant'
+      text: 'Pick Your Merchant'
     }"
     [icon]="{
-        src:'/person.svg',
-        width: 23,
-        height: 23,
-        filter: 'invert(100%) sepia(100%) saturate(2%) hue-rotate(96deg) brightness(125%) contrast(201%)',
-        cursor: 'none'
+      src: '/person.svg',
+      width: 23,
+      height: 23,
+      filter:
+        'invert(100%) sepia(100%) saturate(2%) hue-rotate(96deg) brightness(125%) contrast(201%)',
+      cursor: 'none'
     }"
     [returnAble]="false"
-    ></app-helper-headerv2>
-
-    <hr class="linea">
-
-    <app-enlist-display
-        [headline]="{
-            text: {text: 'NUESTROS MERCHANTS ;)'},
-            icon:{
-                src: '/person.svg',
-                width: 32,
-                height: 32,
-                color:'invert(72%) sepia(0%) saturate(412%) hue-rotate(137deg) brightness(91%) contrast(86%)'
-            }
-        }"
-        [itemList]="testItem"
-    ></app-enlist-display>
-
+  ></app-helper-headerv2>
+  <form (ngSubmit)="onSubmit(form)" #form="ngForm" *ngIf="!admin">
+    <input type="password" id="password" name="password" placeholder="Password.." ngModel required>
+    <button type="submit">Submit</button>
+  </form>
+  <div class="merchant-list" *ngIf="admin">
+    <button class="btn-click" (click)="adminLogin(i)" *ngFor="let merchant of merchantList; index as i">
+        <h1>{{merchant.name}}</h1>
+    </button>
+  </div>
 </div>

@@ -57,15 +57,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
       this.itemData = await this.items.item(params.id);
-      if (!this.itemData) return this.back();
+      if (!this.itemData || this.itemData.status !== 'active')
+        return this.back();
 
       const whatsappMessage = encodeURIComponent(
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
       );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
-
-      if (this.itemData.images.length && this.itemData.showImages)
-        this.openImageModal(this.itemData.images[0]);
       this.itemInCart();
       this.showCartCallBack = () => this.showItems();
     });
@@ -83,7 +81,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   previewItem() {
     if (!this.items.temporalItem) {
-      this.header.flowRoute = this.router.url;
+      // this.header.flowRoute = this.router.url;
 
       return this.router.navigate([`/ecommerce/item-creator`]);
     }
@@ -113,39 +111,23 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             .then(async (data) => {
               for (let i = 0; i < data.saleflow.items.length; i++) {
                 if (data.saleflow.items[i].item._id === this.itemData._id) {
-                  if (data.saleflow.items[i].customizer) {
+                  if (this.saleflowData.module?.post)
+                    this.router.navigate(['/ecommerce/create-giftcard']);
+                  else if (this.saleflowData.module?.delivery)
+                    this.router.navigate(['/ecommerce/shipment-data-form']);
+                  else if (!this.header.orderId) {
+                    lockUI();
+                    const preOrderID = await this.header.newCreatePreOrder();
+                    this.header.orderId = preOrderID;
+                    unlockUI();
                     this.router.navigate([
-                      `ecommerce/provider-store/${this.saleflowData._id}/${this.itemData._id}`,
+                      `ecommerce/flow-completion-auth-less/${preOrderID}`,
                     ]);
+                    this.header.createdOrderWithoutDelivery = true;
                   } else {
-                    if (this.saleflowData.module?.post)
-                      this.router.navigate(['/ecommerce/create-giftcard']);
-                    else if (this.saleflowData.module?.delivery)
-                      this.router.navigate(['/ecommerce/shipment-data-form']);
-                    else if (!this.header.orderId) {
-                      let preOrderID;
-                      let whatsappLinkQueryParams;
-                      lockUI();
-
-                      preOrderID = await this.header.createPreOrder();
-                      this.header.orderId = preOrderID;
-
-                      whatsappLinkQueryParams = {
-                        'Keyword-Order': preOrderID as string,
-                      };
-
-                      unlockUI();
-
-                      this.router.navigate([
-                        `ecommerce/flow-completion-auth-less/${preOrderID}`,
-                      ]);
-
-                      this.header.createdOrderWithoutDelivery = true;
-                    } else {
-                      this.router.navigate([
-                        `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-                      ]);
-                    }
+                    this.router.navigate([
+                      `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
+                    ]);
                   }
                 }
               }
@@ -193,6 +175,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   openShareDialog = () => {
+    if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
         qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
@@ -222,7 +205,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   back() {
     if (this.previewMode) {
-      this.header.flowRoute = this.router.url;
+      // this.header.flowRoute = this.router.url;
 
       if (this.itemData._id)
         return this.router.navigate([
