@@ -233,6 +233,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         ],
       },
     ];
+    
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -242,6 +243,44 @@ export class EntityDetailMetricsComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  shareCalendar = () =>{
+    const list: StoreShareList[] = [
+        {
+          title: 'Sobre Calendario ID',
+          titleStyles: {'margin-bottom': '54px'},
+          qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+          options: [
+            {
+              text: 'Copia el link',
+              mode: 'clipboard',
+              link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            },
+            {
+              text: 'Comparte el link',
+              mode: 'share',
+              link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            },
+            {
+              text: 'Ir a la vista del visitante',
+              mode: 'func',
+              func: () =>
+                this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
+            },
+          ],
+        },
+      ];
+
+    this.dialogService.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: true
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+  }
 
   onPencilClick = () => {
     this.router.navigate(['ecommerce/user-creator']);

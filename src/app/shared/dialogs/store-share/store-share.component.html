@@ -2,7 +2,8 @@
     <div class="container">
         <div class="dialog-card">
             <div *ngFor="let item of list">
-                <div class="qr-container" *ngIf="item.qrlink && !item.title">
+                <h1 class="title" *ngIf="item.title" [ngStyle]="item.titleStyles && item.titleStyles" [ngClass]="{'alternate': alternate}">{{item.title}}</h1>
+                <div class="qr-container" *ngIf="item.qrlink">
                     <qrcode
                     #qrcode
                     [qrdata]="item.qrlink"
@@ -16,7 +17,6 @@
                     ></qrcode>
                     <button (click)="downloadQr()">Descarga el qrCode</button>
                 </div>
-                <h2 class="title" *ngIf="!item.qrlink" [ngClass]="{'alternate': alternate}">{{item.title}}</h2>
                 <p class="description" *ngIf="item.description && !item.options">{{item.description}}</p>
                 <ng-container *ngFor="let option of item.options">
                     <qrcode
