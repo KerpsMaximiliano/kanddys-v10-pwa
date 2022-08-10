@@ -22,24 +22,6 @@ export class AdminLoginComponent implements OnInit {
     private merchant: MerchantsService,
     ) {}
 
- /*  merchantList = [
-    {
-      name: 'Foto Davitte',
-      phone: '19188156444',
-      password: '123'
-    },
-    {
-      name: 'Caffaro',
-      phone: '18492203488',
-      password: '123'
-    },
-    {
-      name: 'Cecilia',
-      phone: '18095636780',
-      password: '123'
-    },
-  ]; */
-
   ngOnInit(): void {}
 
   async adminLogin(index: number) {
@@ -56,7 +38,6 @@ export class AdminLoginComponent implements OnInit {
         const merchAll = await this.merchant.merchants({options: {sortBy:'createdAt:desc', limit: 135}});
         merchAll.splice(1, 0, merchAll.splice(118, 1)[0], merchAll.splice(119, 1)[0]);
         this.merchantList = merchAll;
-        // this.merchantList = [this.merchantsMain, ...merchAll];
         console.log(this.merchantList);
         
      } catch(error) {
@@ -65,6 +46,6 @@ export class AdminLoginComponent implements OnInit {
   }
 }
 
-//Fotodavite id:62ed55eecd8fc9d59c8d7b6b 0
-//D'Licianthus id: 622662c9b510731e1329a1af 118
-//Gift á Box ID: 62262b38b510731e13295be9 121
+//Fotodavite id:62ed55eecd8fc9d59c8d7b6b
+//D'Licianthus id: 622662c9b510731e1329a1af 
+//Gift á Box ID: 62262b38b510731e13295be9 
