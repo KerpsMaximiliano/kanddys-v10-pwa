@@ -380,7 +380,7 @@ export class AuthService {
     );
     return {
       countryCode,
-      nationalNumber: phoneNumber.getNationalNumber(),
+      nationalNumber: `${phoneNumber.getNationalNumber()}`,
       countryIso: CountryISO[region],
       region,
     };
