@@ -91,7 +91,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   env: string = environment.assetsUrl;
   separateDialCode = true;
   SearchCountryField = SearchCountryField;
-  CountryISO = CountryISO;
+  CountryISO = CountryISO.DominicanRepublic;
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [
     CountryISO.DominicanRepublic,
@@ -233,7 +233,9 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       }
 
       if (orderStatus !== 'draft') {
-        this.phoneNumber.setValue(this.orderData.user.phone);
+        const {countryIso, nationalNumber} = this.authService.getPhoneInformation(this.orderData.user.phone);
+        this.phoneNumber.setValue(nationalNumber);
+        this.CountryISO = countryIso;
         this.name.setValue(this.orderData.user.name);
         this.phoneNumber.disable();
         this.name.disable();

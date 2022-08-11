@@ -89,11 +89,14 @@ export class RedirectionsComponent implements OnInit {
           });
         } else {
           this.router.navigate([redirectionRoute]);
+          
 
           unlockUI();
         }
       } catch (error) {
-        console.error(error);
+        this.router.navigate([`ecommerce/entity-detail-metrics`]);
+        unlockUI();
+        // console.error(error);
       }
     });
   }

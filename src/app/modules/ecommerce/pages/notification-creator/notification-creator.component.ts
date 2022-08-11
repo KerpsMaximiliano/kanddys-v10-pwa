@@ -241,13 +241,15 @@ export class NotificationCreatorComponent implements OnInit {
     this.selectedAction = this.notificationsService.getNotificationAction(
       this.notification
     ).index;
+    this.selectedReceiver = 0;
   }
 
   async save() {
     if (
       !this.notificationMessage?.trim() ||
       this.selectedAction == null ||
-      this.selectedReceiver == null
+      this.selectedReceiver == null ||
+      this.selectedReceiver != 0
     )
       return;
     const notificationInput: NotificationInput = {

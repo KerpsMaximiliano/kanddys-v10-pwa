@@ -36,117 +36,33 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
     {
       fieldsList: [
         {
-          name: 'phoneNumber',
+          name: 'referenceImage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl([''], Validators.required)
           },
-          label: 'Con cuál número de WhatsApp harás esta orden?',
-          inputType: 'phone',
-          placeholder: 'Mi # de WhatsApp es..',
-          styles: {
-            containerStyles: {
-              marginTop: '150px',
-            },
-          },
-          bottomLabel: {
-            text: '¿No tienes un número?',
-            clickable: true,
-            callback: () => {
-              console.log('Se ha clickeado el callback');
-            },
-          },
-        },
-        {
-          name: 'address',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
-          label: 'Dirección?',
-          inputType: 'textarea',
-          placeholder: 'Calle, número(nombre del edificio)',
-          styles: {
-            containerStyles: {
-              marginTop: '74px',
-            },
-          },
-        },
-        // {
-        //   name: 'email',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Email',
-        //   inputType: 'email',
-        //   placeholder: 'Email',
-        //   fieldStyles: {
-        //     color: 'green',
-        //     marginTop: '10px',
-        //   },
-        // },
-        {
-          name: 'imageExample',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('')
-          },
-          label: 'Sube una imagen',
-          inputType: 'file',
+          label: 'Adjunta aquí tu comprobante de Pago(*)',
+          inputType: 'file2',
+          fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
+            labelStyles: {
+              paddingBottom: '26px',
+              paddingTop: '65px'
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
             containerStyles: {
-              width: '60%',
+              paddingBottom: '4rem',
             },
-          },
-        },
-        // {
-        //   name: 'imageExample2',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Sube una imagen',
-        //   inputType: 'file',
-        //   placeholder: 'sube una imagen',
-        // },
-      ],
-      embeddedComponents: [
-        {
-          component: ActivitiesOptionComponent,
-          inputs: {
-            lightTextAtTheTop: 'arriba',
-            boldTextAtTheBottom: 'abajo',
-            backgroundColor: 'orange',
-            textColor: 'black',
-          },
-          outputs: [
-            {
-              name: 'exampleEvent',
-              callback: (result) => {
-                console.log('event emiitedaxsadaq', result);
-              },
-            },
-          ],
-          afterIndex: 0,
-          containerStyles: {
-            marginTop: '10px',
-          },
-        },
-        {
-          component: ActivitiesOptionComponent,
-          inputs: {
-            lightTextAtTheTop: 'arriba',
-            boldTextAtTheBottom: 'abajo',
-            backgroundColor: 'red',
-            textColor: 'white',
-          },
-          outputs: [
-            {
-              name: 'exampleEvent',
-              callback: (result) => {
-                console.log('event 222 emiitedaxsadaq', result);
-              },
-            },
-          ],
-          afterIndex: 1,
-          containerStyles: {
-            marginTop: '80px',
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            }
           },
         },
       ],
@@ -648,6 +564,42 @@ export class MultistepFormComponent implements OnInit, AfterViewInit, OnDestroy 
 
   handleAddressChange(change) {
     console.log(change);
+  }
+
+  handleImageInput = (result: any, fieldName: string, currentField: FormField) => {
+    console.log(fieldName);
+    console.log(currentField);
+    currentField.fileObjects = result;
+  }
+
+  handleImageInputBase64 = (result: any, fieldName: string, fieldControl) => {
+    console.log(fieldName);
+    console.log(fieldControl);
+    const arrayOfImages = fieldControl.control.value;
+
+    arrayOfImages[result.index] = result.image;
+    fieldControl.control.setValue(arrayOfImages);
+  }
+  
+  handleFileDeletion = (result: any, currentField: FormField) => {
+    const { index } = result;
+    const arrayOfImages = currentField.fieldControl.control.value;
+
+    const files: any = currentField.fileObjects;
+    const filesArray = [];
+
+    for (let i = 0; i < files.length; i++) {
+        let file = 'item' in files ? files.item(i) : files[i];
+
+        filesArray.push(file);
+    }
+
+    filesArray.splice(index, 1);
+    arrayOfImages.splice(index, 1);
+
+    currentField.fieldControl.control.setValue(arrayOfImages);
+
+    currentField.fileObjects = filesArray;
   }
 
   executeStepDataProcessing = () => {

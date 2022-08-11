@@ -279,7 +279,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[0].fieldsList[2].fieldControl.control.value}\n\n`);
         this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[0].fieldsList[3].fieldControl.control.value}\n\n`);
 
-        if(this.formSteps[0].fieldsList[4].fieldControl.control.value) {
+        if(this.formSteps[0].fieldsList[4].fieldControl.control.value && this.formSteps[0].fieldsList[4].fieldControl.control.value.length > 0) {
           this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[0].fieldsList[4].fieldControl.control.value}\n\n`);
         }
 
@@ -634,7 +634,52 @@ export class LlStudioOrderFormComponent implements OnInit {
               height: '164px'
             },
           }
-        }
+        },
+        {
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl([''])
+          },
+          label: 'Foto de referencia',
+          sublabel: 'Adjuntar foto de referencia de su orden:',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'lighter',
+              fontSize: '19px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'Roboto',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingTop: '64px',
+              paddingBottom: '270px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            }
+          },
+        },
       ],
       stepProcessingFunction: () => {
         this.whatsappLinkSteps.push(`*Descripción de la orden:*\n${this.formSteps[2].fieldsList[0].fieldControl.control.value}\n\n`);
@@ -644,74 +689,6 @@ export class LlStudioOrderFormComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         params.scrollToStep(1, false);
       },
-      embeddedComponents: [
-        {
-          afterIndex: 0,
-          component: ImageInputComponent,
-          label: 'Foto de Referencia',
-          inputs: {
-            imageField:
-              this.referenceDefaultImages.length > 0 ? this.referenceDefaultImages : null,
-            multiple: true,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Fotos de referencia',
-            expandImage: true,
-            topLabel: {
-              text: 'Adjuntar foto de referencia de su orden:',
-              styles: {
-                color: '#7B7B7B',
-                fontFamily: 'Roboto',
-                fontSize: '16px',
-                fontWeight: 500,
-                padding: '0px',
-                margin: '0px',
-                marginBottom: '18px',
-              },
-            },
-            containerStyles: {
-              width: '157px',
-              height: '137px',
-              margin: '0px'
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-              backgroundSize: 'cover'
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.referenceDefaultImages[result.index] = result.image;
-                this.formSteps[2].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
-                this.formSteps[2].embeddedComponents[0].shouldRerender = true;
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.referenceImagefiles[result.index] = result.image;
-              },
-            },
-          ],
-          containerStyles: {
-            marginTop: '0px',
-            paddingTop: '64px',
-            paddingBottom: '270px',
-          },
-          labelStyles: {
-            fontFamily: 'Roboto',
-            fontWeight: 'lighter',
-            fontSize: '19px',
-            margin: '0px',
-            marginBottom: '18px',
-          },
-        }
-      ],
       footerConfig,
       stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
       stepButtonValidText: 'CONFIRMA TU PAGO'
@@ -893,12 +870,11 @@ export class LlStudioOrderFormComponent implements OnInit {
           fieldControl: {
             type: 'single',
             control: new FormControl(0, [
-              Validators.required,
-              Validators.min(0.01)
+              Validators.min(0)
             ])
           },
           shouldFormatNumber: true,
-          label: 'Monto Pagado (*)',
+          label: 'Monto Pagado',
           inputType: 'number',
           placeholder: 'Si no has realizado ningún pago favor colocar "0"',
           changeCallbackFunction: (change, params) => {
@@ -1014,77 +990,52 @@ export class LlStudioOrderFormComponent implements OnInit {
               paddingLeft: '0px'
             }
           },
-        }
-      ],
-      embeddedComponents: [
+        },
         {
-          afterIndex: 2,
-          component: ImageInputComponent,
+          name: 'proofOfPayment',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl([''])
+          },
           label: 'Comprobante de Pago',
-          inputs: {
-            imageField:
-              this.proofOfPaymentDefaultImages.length > 0 ? this.proofOfPaymentDefaultImages : null,
-            multiple: true,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Comprobante de pago',
-            expandImage: true,
-            topLabel: {
-              text: 'Anexar fotos del comprobante de su pago de su orden:',
-              styles: {
-                color: '#7B7B7B',
-                fontFamily: 'Roboto',
-                fontSize: '16px',
-                fontWeight: 500,
-                padding: '0px',
-                margin: '0px',
-                marginBottom: '18px',
-              },
+          sublabel: 'Adjuntar foto de referencia de su orden:',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'lighter',
+              fontSize: '19px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'Roboto',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
             },
             containerStyles: {
+              marginTop: '0px',
+              paddingTop: '64px',
+              paddingBottom: '270px',
+            },
+            innerContainerStyles: {
               width: '157px',
-              height: '137px',
-              margin: '0px',
-              marginTop: '44px',
-              marginBottom: '269px'
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-              backgroundSize: 'cover'
-            },
+              textAlign: 'center',
+            }
           },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.proofOfPaymentDefaultImages[result.index] = result.image;
-                this.formSteps[4].embeddedComponents[0].inputs.innerLabel = "Adiciona otra imagen (opcional)";
-                this.formSteps[4].embeddedComponents[0].shouldRerender = true;
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.proofOfPaymentImagefiles[result.index] = result.image;
-              },
-            },
-          ],
-          containerStyles: {
-            marginTop: '0px',
-            paddingTop: '64px',
-            paddingBottom: '270px',
-          },
-          labelStyles: {
-            fontFamily: 'Roboto',
-            fontWeight: 'lighter',
-            fontSize: '19px',
-            margin: '0px',
-            marginBottom: '18px',
-          },
-        }
+        },
       ],
       stepProcessingFunction: () => {
         this.whatsappLinkSteps.push(`*Monto total de Compra:*\n${this.formSteps[4].fieldsList[0].formattedValue}\n\n`);
@@ -1295,8 +1246,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           selectionOptions: [
             'Pick Up en Tienda (Por Citas)',
-            'Delivery Zona Metropolitana (A partir de +RD$200)',
-            'Envío al Interior (A partir de +RD$300)',
+            'Delivery Zona Metropolitana (A partir de +RD$250)',
+            'Envío al Interior (A partir de +RD$350)',
             'Envío Internacional (Cotizar)'
           ],
           inputType: 'radio',
@@ -1567,15 +1518,38 @@ export class LlStudioOrderFormComponent implements OnInit {
           this.whatsappLinkSteps.push(`*Podemos mencionarte en nuestra sección "Veo, Veo":*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`);
 
           try {
-            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(
-              [
-                base64ToFile(this.formSteps[2].fieldsList[1].fieldControl.control.value),
-                base64ToFile(this.formSteps[4].fieldsList[3].fieldControl.control.value),
-              ]
-            );
+            let fileRoutesReferenceImages = null;
+            let proofOfPaymentImages = null;
 
-            this.whatsappLinkSteps.push(`*Foto de Referencia:*\n${fileRoutes[0]}\n\n`);
-            this.whatsappLinkSteps.push(`*Comprobante de Pago:*\n${fileRoutes[1]}\n\n`);
+            if(this.formSteps[2].fieldsList[1].fieldControl.control.value.length > 0 && (
+              this.formSteps[2].fieldsList[1].fieldControl.control.value[0] !== ""
+            )) {
+              fileRoutesReferenceImages = await this.merchantsService.uploadAirtableAttachments(
+                this.formSteps[2].fieldsList[1].fieldControl.control.value.map(base64string => base64ToFile(base64string))
+              );
+
+              this.whatsappLinkSteps.push(`*Foto de Referencia:*\n`);
+
+              for(let route of fileRoutesReferenceImages) {
+                this.whatsappLinkSteps.push(`${route}\n`);
+              }
+              this.whatsappLinkSteps.push(`\n`);
+            }
+
+            if(this.formSteps[4].fieldsList[3].fieldControl.control.value.length > 0 && (
+              this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !== ""
+            )) {
+              proofOfPaymentImages = await this.merchantsService.uploadAirtableAttachments(
+                this.formSteps[4].fieldsList[3].fieldControl.control.value.map(base64string => base64ToFile(base64string))
+              );              
+
+              this.whatsappLinkSteps.push(`*Comprobante de pago:*\n`);
+
+              for(let route of proofOfPaymentImages) {
+                this.whatsappLinkSteps.push(`${route}\n`);
+              }
+              this.whatsappLinkSteps.push(`\n`);
+            }
 
             const convertedTotalAmount = Number(
               this.formSteps[4].fieldsList[0].formattedValue
@@ -1597,11 +1571,11 @@ export class LlStudioOrderFormComponent implements OnInit {
                 phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.control.value,
                 details: this.formSteps[2].fieldsList[0].fieldControl.control.value,
                 wouldYourOrderIncludeAGiftWrap: this.formSteps[3].fieldsList[0].fieldControl.control.value,
-                referenceImage: fileRoutes[0],
+                referenceImage: fileRoutesReferenceImages,
                 totalAmount: convertedTotalAmount,
                 payedAmount: convertedPayedAmount,
                 paymentMethod: this.formSteps[4].fieldsList[2].fieldControl.control.value,
-                proofOfPayment: fileRoutes[1],
+                proofOfPayment: proofOfPaymentImages,
                 fromWhereAreYouPaying: this.formSteps[5].fieldsList[0].fieldControl.control.value,
                 dateConfirmation: this.formSteps[6].fieldsList[0].fieldControl.control.value,
                 reservation: this.reservation ? new Date(
@@ -1627,13 +1601,16 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             this.fullFormMessage = this.whatsappLinkSteps.join('');
 
+            console.log("full form message", this.fullFormMessage);
+            console.log("data", data);
+
             const success = await this.merchantsService.uploadDataToClientsAirtable(
               this.merchantId,
               this.automationName,
               data
             );
 
-             this.dialog.open(GeneralFormSubmissionDialogComponent, {
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
                type: 'centralized-fullscreen',
                props: {
                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
@@ -1644,7 +1621,7 @@ export class LlStudioOrderFormComponent implements OnInit {
              });
 
              window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-
+            
              return { ok: true };
           } catch (error) {
              this.dialog.open(GeneralFormSubmissionDialogComponent, {

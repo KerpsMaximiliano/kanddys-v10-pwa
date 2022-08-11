@@ -85,7 +85,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
-      this.router.navigate([`ecommerce/error-screen/`]);
+      this.router.navigate([`ecommerce/authentication/`]);
+      unlockUI();
       return;
     }
     this.items = (
@@ -230,8 +231,13 @@ export class EntityDetailMetricsComponent implements OnInit {
             func: () =>
               this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
           },
-        ],
-      },
+          {
+            text: 'Copiar link de acceso al admin',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/authentication?auth=password&phone=${this.merchant.owner.phone}&hide=all`
+          }
+        ]
+      }
     ];
     
     this.dialogService.open(StoreShareComponent, {

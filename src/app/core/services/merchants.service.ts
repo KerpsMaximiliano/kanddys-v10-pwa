@@ -118,13 +118,13 @@ export class MerchantsService {
   }
 
   async merchants(
-    params: ListParams = {},
+    input: PaginationInput = {},
     isHot?: boolean
   ): Promise<Merchant[]> {
     if (isHot) {
       const { merchants: result = [] } = await this.graphql.query({
         query: hotMerchants,
-        variables: { params },
+        variables: { input },
         fetchPolicy: 'no-cache',
       });
       console.log(result);
@@ -132,7 +132,7 @@ export class MerchantsService {
     } else {
       const { merchants: result = [] } = await this.graphql.query({
         query: merchants,
-        variables: { params },
+        variables: { input },
         fetchPolicy: 'no-cache',
       });
       console.log(result);

@@ -46,6 +46,7 @@ export class ImageInputComponent implements OnInit {
   @Input() expandImage: boolean = false;
   @Input() imagesAlreadyLoaded: boolean = false;
   @Input() allowDeletion: boolean = false;
+  @Input() id: string = null;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',

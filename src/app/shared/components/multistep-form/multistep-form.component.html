@@ -1,73 +1,153 @@
-<div [ngStyle]="{
-  overflowY: scrollableForm && !disableSmoothScroll ? 'hidden' : null,
-  height: scrollableForm && !disableSmoothScroll && formWrapperHeight ? formWrapperHeight + 'px' : null
-}"
+<div
+  [ngStyle]="{
+    overflowY: scrollableForm && !disableSmoothScroll ? 'hidden' : null,
+    height:
+      scrollableForm && !disableSmoothScroll && formWrapperHeight
+        ? formWrapperHeight + 'px'
+        : null
+  }"
   class="fullform-wrapper"
   (window:resize)="resizeFormWrapper()"
 >
-
   <app-helper-header
-    *ngIf="!steps[currentStep].hideHeader && (!steps[currentStep].headerMode || steps[currentStep].headerMode === 'v1')"
+    *ngIf="
+      !steps[currentStep].hideHeader &&
+      (!steps[currentStep].headerMode || steps[currentStep].headerMode === 'v1')
+    "
     [middleText]="
-  !steps[currentStep].headerTextSide ||
-  steps[currentStep].headerTextSide === 'CENTER'
-    ? steps[currentStep].headerText
-    : null
-" [searchAble]="false" bgcolor="#ffffff" [basic]="false" position="fixed" [leftIconText]="
-  steps[currentStep].headerTextSide === 'LEFT'
-    ? steps[currentStep].headerText
-    : null
-" [middleTextFontFamily]="'SfProRegular'" [middleTextFontSize]="'17px'" middleTextColor="#7b7b7b"
-    [cart]="steps[currentStep].showShoppingCartOnCurrentStep" [cartCallback]="steps[currentStep].shoppingCartCallback"
-    [shadow]="false" (onClose)="
-  currentStep > 0 &&
-  shouldScrollBackwards &&
-  !steps[currentStep].customScrollToStepBackwards
-    ? scrollToStep(this.currentStep - 1, false)
-    : steps[currentStep].customScrollToStepBackwards
-    ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
-    : null
-"></app-helper-header>
+      !steps[currentStep].headerTextSide ||
+      steps[currentStep].headerTextSide === 'CENTER'
+        ? steps[currentStep].headerText
+        : null
+    "
+    [searchAble]="false"
+    bgcolor="#ffffff"
+    [basic]="false"
+    position="fixed"
+    [leftIconText]="
+      steps[currentStep].headerTextSide === 'LEFT'
+        ? steps[currentStep].headerText
+        : null
+    "
+    [middleTextFontFamily]="'SfProRegular'"
+    [middleTextFontSize]="'17px'"
+    middleTextColor="#7b7b7b"
+    [cart]="steps[currentStep].showShoppingCartOnCurrentStep"
+    [cartCallback]="steps[currentStep].shoppingCartCallback"
+    [shadow]="false"
+    (onClose)="
+      currentStep > 0 &&
+      shouldScrollBackwards &&
+      !steps[currentStep].customScrollToStepBackwards
+        ? scrollToStep(this.currentStep - 1, false)
+        : steps[currentStep].customScrollToStepBackwards
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+        : null
+    "
+  ></app-helper-header>
 
-  <app-helper-headerv2 [mode]="'options'" [fixed]="true"
+  <app-helper-headerv2
+    [mode]="'options'"
+    [fixed]="true"
     [extraTexts]="{
-        billId: '',
-        itemId: !steps[currentStep].headerTextSide ||
+      billId: '',
+      itemId:
+        !steps[currentStep].headerTextSide ||
         steps[currentStep].headerTextSide === 'CENTER'
           ? steps[currentStep].headerText
           : null
     }"
     [leftText]="{
-        text: ''
+      text: ''
     }"
-    [bgColor]="steps[currentStep].customHelperHeaderConfig?.bgcolor ? steps[currentStep].customHelperHeaderConfig?.bgcolor : null"
-    [color]="steps[currentStep].customHelperHeaderConfig?.color ? steps[currentStep].customHelperHeaderConfig?.color : null"
-    [flexDirection]="steps[currentStep].customHelperHeaderConfig?.flexDirection ? steps[currentStep].customHelperHeaderConfig?.flexDirection : null"
-    [justifyContent]="steps[currentStep].customHelperHeaderConfig?.justifyContent ? steps[currentStep].customHelperHeaderConfig?.justifyContent : null"
-    [alignItems]="steps[currentStep].customHelperHeaderConfig?.alignItems ? steps[currentStep].customHelperHeaderConfig?.alignItems : null"
-    [rmargin]="steps[currentStep].customHelperHeaderConfig?.marginRight ? steps[currentStep].customHelperHeaderConfig?.marginRight : null"
-    [icon]="steps[currentStep].customHelperHeaderConfig?.icon ? steps[currentStep].customHelperHeaderConfig?.icon : null"
-    [rightTextStyles]="steps[currentStep].customHelperHeaderConfig?.rightTextStyles ? steps[currentStep].customHelperHeaderConfig?.rightTextStyles : null"
+    [bgColor]="
+      steps[currentStep].customHelperHeaderConfig?.bgcolor
+        ? steps[currentStep].customHelperHeaderConfig?.bgcolor
+        : null
+    "
+    [color]="
+      steps[currentStep].customHelperHeaderConfig?.color
+        ? steps[currentStep].customHelperHeaderConfig?.color
+        : null
+    "
+    [flexDirection]="
+      steps[currentStep].customHelperHeaderConfig?.flexDirection
+        ? steps[currentStep].customHelperHeaderConfig?.flexDirection
+        : null
+    "
+    [justifyContent]="
+      steps[currentStep].customHelperHeaderConfig?.justifyContent
+        ? steps[currentStep].customHelperHeaderConfig?.justifyContent
+        : null
+    "
+    [alignItems]="
+      steps[currentStep].customHelperHeaderConfig?.alignItems
+        ? steps[currentStep].customHelperHeaderConfig?.alignItems
+        : null
+    "
+    [rmargin]="
+      steps[currentStep].customHelperHeaderConfig?.marginRight
+        ? steps[currentStep].customHelperHeaderConfig?.marginRight
+        : null
+    "
+    [icon]="
+      steps[currentStep].customHelperHeaderConfig?.icon
+        ? steps[currentStep].customHelperHeaderConfig?.icon
+        : null
+    "
+    [rightTextStyles]="
+      steps[currentStep].customHelperHeaderConfig?.rightTextStyles
+        ? steps[currentStep].customHelperHeaderConfig?.rightTextStyles
+        : null
+    "
     [returnAble]="shouldScrollBackwards"
-    *ngIf="!steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'" [returnAble]="true" [billId]="''"
-    [itemId]="!steps[currentStep].headerTextSide ||
-steps[currentStep].headerTextSide === 'CENTER'
-  ? steps[currentStep].headerText
-  : null" 
-  [leftText]="{text: steps[currentStep].headerTextSide === 'LEFT' ? steps[currentStep].headerText : ''}" 
-  [rightText]="{text: steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerText : ''}" [returnAble]="shouldScrollBackwards"
-  (agnosticAction)="steps[currentStep].headerTextSide === 'RIGHT' ? steps[currentStep].headerTextCallback(stepFunctionParams) : null"
-  (returnEvent)="currentStep > 0 &&
-shouldScrollBackwards &&
-!steps[currentStep].customScrollToStepBackwards
-  ? scrollToStep(this.currentStep - 1, false)
-  : steps[currentStep].customScrollToStepBackwards
-  ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
-  : null" [bgColor]="'#2874ad'">
+    *ngIf="
+      !steps[currentStep].hideHeader && steps[currentStep].headerMode === 'v2'
+    "
+    [returnAble]="true"
+    [billId]="''"
+    [itemId]="
+      !steps[currentStep].headerTextSide ||
+      steps[currentStep].headerTextSide === 'CENTER'
+        ? steps[currentStep].headerText
+        : null
+    "
+    [leftText]="{
+      text:
+        steps[currentStep].headerTextSide === 'LEFT'
+          ? steps[currentStep].headerText
+          : ''
+    }"
+    [rightText]="{
+      text:
+        steps[currentStep].headerTextSide === 'RIGHT'
+          ? steps[currentStep].headerText
+          : ''
+    }"
+    [returnAble]="shouldScrollBackwards"
+    (agnosticAction)="
+      steps[currentStep].headerTextSide === 'RIGHT'
+        ? steps[currentStep].headerTextCallback(stepFunctionParams)
+        : null
+    "
+    (returnEvent)="
+      currentStep > 0 &&
+      shouldScrollBackwards &&
+      !steps[currentStep].customScrollToStepBackwards
+        ? scrollToStep(this.currentStep - 1, false)
+        : steps[currentStep].customScrollToStepBackwards
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+        : null
+    "
+    [bgColor]="'#2874ad'"
+  >
   </app-helper-headerv2>
-  
+
   <app-header-info
-    *ngIf="steps[currentStep].hideHeader && steps[currentStep].headerMode === 'header-info-component'"
+    *ngIf="
+      steps[currentStep].hideHeader &&
+      steps[currentStep].headerMode === 'header-info-component'
+    "
     [title]="steps[currentStep].headerInfoInputs.title"
     [description]="steps[currentStep].headerInfoInputs.description"
     [profileImage]="steps[currentStep].headerInfoInputs.profileImage"
@@ -84,117 +164,188 @@ shouldScrollBackwards &&
     (changeValue)="steps[currentStep].tabsCallback($event, stepFunctionParams)"
   ></app-page-component-tabs>
 
-  <div class="form-wrapper" [ngStyle]="{
-    transform: scrollableForm && !disableSmoothScroll ? 'translateY(' + currentYPosition + 'px)' : null
-  }">
-    <ng-container *ngFor="let currentStepObject of steps; let currentStepIndex = index">
-      <div class="form-step" [ngStyle]="!steps[currentStepIndex].hideHeader || (
-        steps[currentStepIndex].hideHeader && steps[currentStep].headerMode === 'header-info-component'
-      ) ? {
-      paddingTop: headerHeightTracker ? headerHeightTracker  + 'px' : '0px',
-      minHeight: steps[currentStepIndex].customStickyButton ?
-      'calc(100vh - ' + steps[currentStepIndex].customStickyButton?.height + ')' :
-        steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'VALID' ?
-          'calc(100vh - ' + steps[currentStepIndex].footerConfig.enabledStyles?.height + ')' :
-            steps[currentStepIndex].footerConfig && dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' ?
-              'calc(100vh - ' + steps[currentStepIndex].footerConfig.disabledStyles?.height + ')' :
-                dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
+  <div
+    class="form-wrapper"
+    [ngStyle]="{
+      transform:
+        scrollableForm && !disableSmoothScroll
+          ? 'translateY(' + currentYPosition + 'px)'
+          : null
+    }"
+  >
+    <ng-container
+      *ngFor="let currentStepObject of steps; let currentStepIndex = index"
+    >
+      <div
+        class="form-step"
+        [ngStyle]="
+          !steps[currentStepIndex].hideHeader ||
+          (steps[currentStepIndex].hideHeader &&
+            steps[currentStep].headerMode === 'header-info-component')
+            ? {
+                paddingTop: headerHeightTracker
+                  ? headerHeightTracker + 'px'
+                  : '0px',
+                minHeight: steps[currentStepIndex].customStickyButton
+                  ? 'calc(100vh - ' +
+                    steps[currentStepIndex].customStickyButton?.height +
+                    ')'
+                  : steps[currentStepIndex].footerConfig &&
+                    dataModel.get(currentStepIndex + 1 + '').status === 'VALID'
+                  ? 'calc(100vh - ' +
+                    steps[currentStepIndex].footerConfig.enabledStyles?.height +
+                    ')'
+                  : steps[currentStepIndex].footerConfig &&
+                    dataModel.get(currentStepIndex + 1 + '').status ===
+                      'INVALID'
+                  ? 'calc(100vh - ' +
+                    steps[currentStepIndex].footerConfig.disabledStyles
+                      ?.height +
+                    ')'
+                  : dataModel.get(currentStepIndex + 1 + '').status === 'VALID'
                   ? 'calc(100vh - 55px)'
                   : 'calc(100vh - 38px)'
-    } : steps[currentStepIndex].styles ? spreadOperator(steps[currentStepIndex].styles, {
-      paddingTop: '0px'
-    }) : null" 
-        [id]="'step-' + currentStepIndex" *ngIf="
-        scrollableForm || (!scrollableForm && currentStepIndex === currentStep)
+              }
+            : steps[currentStepIndex].styles
+            ? spreadOperator(steps[currentStepIndex].styles, {
+                paddingTop: '0px'
+              })
+            : null
+        "
+        [id]="'step-' + currentStepIndex"
+        *ngIf="
+          scrollableForm ||
+          (!scrollableForm && currentStepIndex === currentStep)
         "
       >
-        <div 
-          *ngIf="steps[currentStep].hasQrHeader && steps[currentStep].qrSectionInfo"
-          [ngStyle]="steps[currentStep].qrSectionInfo.containerStyles ? steps[currentStep].qrSectionInfo.containerStyles : null"
+        <div
+          *ngIf="
+            steps[currentStep].hasQrHeader && steps[currentStep].qrSectionInfo
+          "
+          [ngStyle]="
+            steps[currentStep].qrSectionInfo.containerStyles
+              ? steps[currentStep].qrSectionInfo.containerStyles
+              : null
+          "
           class="qrsection"
         >
           <qrcode
             #qrcode
             [qrdata]="steps[currentStep].qrSectionInfo.qrLink"
             [elementType]="'svg'"
-            [width]="steps[currentStep]?.qrSectionInfo?.width ? steps[currentStep]?.qrSectionInfo?.width : null"
+            [width]="
+              steps[currentStep]?.qrSectionInfo?.width
+                ? steps[currentStep]?.qrSectionInfo?.width
+                : null
+            "
             [errorCorrectionLevel]="'M'"
             [allowEmptyString]="true"
             colorDark="#2874AD"
           ></qrcode>
-      
+
           <span>
-            {{steps[currentStep].qrSectionInfo.label}}
+            {{ steps[currentStep].qrSectionInfo.label }}
           </span>
-      
-          <img  width="36px" height="30px" [src]="steps[currentStep].qrSectionInfo.icon"/>
+
+          <img
+            width="36px"
+            height="30px"
+            [src]="steps[currentStep].qrSectionInfo.icon"
+          />
         </div>
 
         <ng-container *ngIf="currentStepObject.pageHeader">
-          <div [ngStyle]="
-          currentStepObject.pageHeader?.styles
-            ? currentStepObject.pageHeader?.styles
-            : null
-        " (click)="
-            currentStepObject.pageHeader.callback ? 
-              currentStepObject.pageHeader.callback(stepFunctionParams) : 
-              null
-          ">
-            {{currentStepObject.pageHeader.text}}
+          <div
+            [ngStyle]="
+              currentStepObject.pageHeader?.styles
+                ? currentStepObject.pageHeader?.styles
+                : null
+            "
+            (click)="
+              currentStepObject.pageHeader.callback
+                ? currentStepObject.pageHeader.callback(stepFunctionParams)
+                : null
+            "
+          >
+            {{ currentStepObject.pageHeader.text }}
           </div>
         </ng-container>
 
         <ng-container *ngIf="currentStepObject.pageSubHeader">
-          <div [ngStyle]="
-          currentStepObject.pageSubHeader?.styles
-            ? currentStepObject.pageSubHeader?.styles
-            : null
-        " (click)="
-            currentStepObject.pageSubHeader.callback ? 
-              currentStepObject.pageSubHeader.callback(stepFunctionParams) : 
-              null
-          ">
-            {{currentStepObject.pageSubHeader.text}}
+          <div
+            [ngStyle]="
+              currentStepObject.pageSubHeader?.styles
+                ? currentStepObject.pageSubHeader?.styles
+                : null
+            "
+            (click)="
+              currentStepObject.pageSubHeader.callback
+                ? currentStepObject.pageSubHeader.callback(stepFunctionParams)
+                : null
+            "
+          >
+            {{ currentStepObject.pageSubHeader.text }}
           </div>
         </ng-container>
 
-        <form [formGroup]="dataModel" [ngStyle]="{padding: '0px', height: 'fit-content'}">
-          <ng-container *ngFor="
-            let currentField of currentStepObject['fieldsList'];
-            let currentFieldIndex = index
-          " [formGroupName]="currentStepIndex + 1">
-
-
+        <form
+          [formGroup]="dataModel"
+          [ngStyle]="{ padding: '0px', height: 'fit-content' }"
+        >
+          <ng-container
+            *ngFor="
+              let currentField of currentStepObject['fieldsList'];
+              let currentFieldIndex = index
+            "
+            [formGroupName]="currentStepIndex + 1"
+          >
             <!-- LINKS OPCIONALES, PERO ANTES DE UN FIELD -->
-            <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
-              !currentStepObject['optionalLinksTo']['afterIndex']
-              currentStepObject['optionalLinksTo']['beforeIndex']
-            ">
+            <ng-container
+              *ngIf="
+                currentStepObject['optionalLinksTo'] &&
+                  !currentStepObject['optionalLinksTo']['afterIndex'];
+                currentStepObject: ['optionalLinksTo']['beforeIndex']
+              "
+            >
               <ng-container
                 *ngIf="
-                  currentStepObject['optionalLinksTo']['beforeIndex'] === currentFieldIndex
+                  currentStepObject['optionalLinksTo']['beforeIndex'] ===
+                  currentFieldIndex
                 "
               >
-                <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" 
-                  class="optional-links" 
+                <div
+                  *ngFor="
+                    let groupOfLinks of currentStepObject['optionalLinksTo']
+                      .groupOfLinksArray
+                  "
+                  class="optional-links"
                   [ngStyle]="
                     groupOfLinks?.styles?.containerStyles
                       ? groupOfLinks?.styles?.containerStyles
                       : null
-                ">
-                  <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
-                    groupOfLinks?.styles?.labelStyles
-                      ? groupOfLinks?.styles?.labelStyles
-                      : null
-                  ">
-                    {{groupOfLinks.topLabel}}:
+                  "
+                >
+                  <span
+                    class="title"
+                    *ngIf="groupOfLinks.topLabel"
+                    [ngStyle]="
+                      groupOfLinks?.styles?.labelStyles
+                        ? groupOfLinks?.styles?.labelStyles
+                        : null
+                    "
+                  >
+                    {{ groupOfLinks.topLabel }}:
                   </span>
                   <ng-container *ngFor="let link of groupOfLinks.links">
-                    <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
-                      groupOfLinks?.styles?.fieldStyles
-                        ? groupOfLinks?.styles?.fieldStyles
-                        : null
-                    ">
+                    <span
+                      class="link"
+                      (click)="link.action(stepFunctionParams)"
+                      [ngStyle]="
+                        groupOfLinks?.styles?.fieldStyles
+                          ? groupOfLinks?.styles?.fieldStyles
+                          : null
+                      "
+                    >
                       {{ link.text }}
                     </span>
                   </ng-container>
@@ -204,189 +355,289 @@ shouldScrollBackwards &&
 
             <!-- EMBEDDED COMPONENTS ANTES DE UN FIELD -->
             <ng-container *ngIf="currentStepObject['embeddedComponents']">
-              <ng-container *ngFor="
-                let currentEmbeddedComponent of currentStepObject[
-                  'embeddedComponents'
-                ]
-              ">
-                <div *ngIf="
-                  currentEmbeddedComponent.beforeIndex === currentFieldIndex
-                " [ngStyle]="
-                  currentEmbeddedComponent.containerStyles
-                    ? currentEmbeddedComponent.containerStyles
-                    : null
-                ">
-                  <label *ngIf="currentField.label" class="input-label" [ngStyle]="
-                    currentEmbeddedComponent.labelStyles
-                      ? currentEmbeddedComponent.labelStyles
+              <ng-container
+                *ngFor="
+                  let currentEmbeddedComponent of currentStepObject[
+                    'embeddedComponents'
+                  ]
+                "
+              >
+                <div
+                  *ngIf="
+                    currentEmbeddedComponent.beforeIndex === currentFieldIndex
+                  "
+                  [ngStyle]="
+                    currentEmbeddedComponent.containerStyles
+                      ? currentEmbeddedComponent.containerStyles
                       : null
-                  ">
+                  "
+                >
+                  <label
+                    *ngIf="currentField.label"
+                    class="input-label"
+                    [ngStyle]="
+                      currentEmbeddedComponent.labelStyles
+                        ? currentEmbeddedComponent.labelStyles
+                        : null
+                    "
+                  >
                     {{ currentEmbeddedComponent.label }}
                   </label>
 
-                  <label *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-                  currentEmbeddedComponent.sublabelStyles
-                    ? currentEmbeddedComponent.sublabelStyles
-                    : null
-                  ">
+                  <label
+                    *ngIf="currentField.sublabel"
+                    class="input-label"
+                    [ngStyle]="
+                      currentEmbeddedComponent.sublabelStyles
+                        ? currentEmbeddedComponent.sublabelStyles
+                        : null
+                    "
+                  >
                     {{ currentEmbeddedComponent.sublabel }}
                   </label>
 
-                  <app-dynamic-component [component]="currentEmbeddedComponent.component"
+                  <app-dynamic-component
+                    [component]="currentEmbeddedComponent.component"
                     [componentInputs]="currentEmbeddedComponent.inputs"
                     [componentOutputs]="currentEmbeddedComponent.outputs"
-                    [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
-                    ></app-dynamic-component>
+                    [shouldRemoveItFromTheView]="
+                      currentEmbeddedComponent.shouldRerender
+                    "
+                  >
+                    ></app-dynamic-component
+                  >
                 </div>
               </ng-container>
             </ng-container>
 
             <!-- STANDARD INPUTS LIKE TEXT NUMBER EMAIL PASSWORDS ARE RENDERED HERE     -->
-            <div *ngIf="
-              ['text', 'number', 'email', 'password'].includes(
-                currentField.inputType
-              ) || !currentField.inputType
-            " [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
+            <div
+              *ngIf="
+                ['text', 'number', 'email', 'password'].includes(
+                  currentField.inputType
+                ) || !currentField.inputType
+              "
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
               <!-- SINGLE INPUTS GO HERE -->
               <ng-container *ngIf="!currentField.multiple">
-                <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topLabelActionStyles
-                    ? currentField.styles.topLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topLabelAction.clickable
-                    ? currentField.topLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.topLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topLabelActionStyles
+                      ? currentField.styles.topLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topLabelAction.clickable
+                      ? currentField.topLabelAction.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.topLabelAction.text }}
                 </span>
 
-                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topSubLabelActionStyles
-                    ? currentField.styles.topSubLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topSubLabelAction.clickable
-                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.topSubLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topSubLabelActionStyles
+                      ? currentField.styles.topSubLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topSubLabelAction.clickable
+                      ? currentField.topSubLabelAction.callback(
+                          stepFunctionParams
+                        )
+                      : null
+                  "
+                >
                   {{ currentField.topSubLabelAction.text }}
                 </span>
 
-                <label [for]="currentField.name" class="input-label" [ngStyle]="
-                  currentField.styles.labelStyles
-                    ? currentField.styles.labelStyles
-                    : null
-                ">
+                <label
+                  [for]="currentField.name"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
                   {{ currentField.label }}
                 </label>
 
-                <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-                currentField.styles.subLabelStyles
-                  ? currentField.styles.subLabelStyles
-                  : null
-                ">
+                <label
+                  [for]="currentField.name"
+                  *ngIf="currentField.sublabel"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.subLabelStyles
+                      ? currentField.styles.subLabelStyles
+                      : null
+                  "
+                >
                   {{ currentField.sublabel }}
                 </label>
 
-                <div *ngIf="currentField.shouldFormatNumber" [ngStyle]="{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  backgroundColor: 'white'
-                }" [ngClass]="{inputFocused: currentField.focused, input: true}">
-
-                  <span *ngFor="let letter of currentField.formattedValue.split(''); let i = index">
+                <div
+                  *ngIf="currentField.shouldFormatNumber"
+                  [ngStyle]="{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    backgroundColor: 'white'
+                  }"
+                  [ngClass]="{
+                    inputFocused: currentField.focused,
+                    input: true
+                  }"
+                >
+                  <span
+                    *ngFor="
+                      let letter of currentField.formattedValue.split('');
+                      let i = index
+                    "
+                  >
                     {{ letter }}
                   </span>
 
-                  <div class="cursor" [ngStyle]="currentField.styles.formattedInputCaretStyles"
-                    [ngClass]="{'blinking-cursor': currentField.focused}">
-                  </div>
+                  <div
+                    class="cursor"
+                    [ngStyle]="currentField.styles.formattedInputCaretStyles"
+                    [ngClass]="{ 'blinking-cursor': currentField.focused }"
+                  ></div>
                 </div>
 
-                <input [id]="currentField.name" [name]="currentField.name" [formControlName]="currentField.name"
-                  [type]="currentField.inputType || 'text'" [min]="
-                  currentField.inputType === 'number' &&
-                  currentField.onlyAllowPositiveNumbers
-                    ? 0
-                    : null
-                " tabindex="-1" [placeholder]="currentField.placeholder"
-                  [ngClass]="{input: true, formatCurrency: currentField.inputType === 'number' && currentField.shouldFormatNumber, focused: currentField.focused}"
-                  (focus)="currentField.focused = true" (blur)="currentField.focused = false" [ngStyle]="
-                  currentField.styles.fieldStyles &&
-                  !currentField.styles.customClassName
-                    ? currentField.styles.fieldStyles
-                    : null
-                " />
+                <input
+                  [id]="currentField.name"
+                  [name]="currentField.name"
+                  [formControlName]="currentField.name"
+                  [type]="currentField.inputType || 'text'"
+                  [min]="
+                    currentField.inputType === 'number' &&
+                    currentField.onlyAllowPositiveNumbers
+                      ? 0
+                      : null
+                  "
+                  tabindex="-1"
+                  [placeholder]="currentField.placeholder"
+                  [ngClass]="{
+                    input: true,
+                    formatCurrency:
+                      currentField.inputType === 'number' &&
+                      currentField.shouldFormatNumber,
+                    focused: currentField.focused
+                  }"
+                  (focus)="currentField.focused = true"
+                  (blur)="currentField.focused = false"
+                  [ngStyle]="
+                    currentField.styles.fieldStyles &&
+                    !currentField.styles.customClassName
+                      ? currentField.styles.fieldStyles
+                      : null
+                  "
+                />
 
-                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-                  currentField.styles.bottomLabelStyles
-                    ? currentField.styles.bottomLabelStyles
-                    : null
-                " (click)="
-                  currentField.bottomLabel.clickable
-                    ? currentField.bottomLabel.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.bottomLabel"
+                  class="input-label-bottom"
+                  [ngStyle]="
+                    currentField.styles.bottomLabelStyles
+                      ? currentField.styles.bottomLabelStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.bottomLabel.clickable
+                      ? currentField.bottomLabel.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
 
               <!-- MULTIPLE INPUTS GO HERE -->
-              <div [formArrayName]="currentField.name" *ngIf="currentField.fieldControl.type === 'multiple'">
-                <h3 class="input-label" [ngStyle]="
-                  currentField.styles.labelStyles
-                    ? currentField.styles.labelStyles
-                    : null
-                ">
+              <div
+                [formArrayName]="currentField.name"
+                *ngIf="currentField.fieldControl.type === 'multiple'"
+              >
+                <h3
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
                   {{ currentField.label }}
                 </h3>
 
-                <ng-container *ngFor="
-                  let field of currentField.fieldControl.control.controls;
-                  let i = index
-                ">
-                  <div [ngStyle]="{
-                    position: 'relative',
-                    width: '100%',
-                    margin: '0px'
-                  }">
-                    <input [formControlName]="i" tabindex="-1" [type]="currentField.inputType || 'text'"
-                      [placeholder]="currentField.placeholder" class="input" id="{{ currentField.name }}-{{ i }}"
+                <ng-container
+                  *ngFor="
+                    let field of currentField.fieldControl.control.controls;
+                    let i = index
+                  "
+                >
+                  <div
+                    [ngStyle]="{
+                      position: 'relative',
+                      width: '100%',
+                      margin: '0px'
+                    }"
+                  >
+                    <input
+                      [formControlName]="i"
+                      tabindex="-1"
+                      [type]="currentField.inputType || 'text'"
+                      [placeholder]="currentField.placeholder"
+                      class="input"
+                      id="{{ currentField.name }}-{{ i }}"
                       [ngStyle]="
-                      currentField.styles.fieldStyles
-                        ? currentField.styles.fieldStyles
-                        : null
-                    " (keyup)="
-                      onMultipleInputEnterPress(
-                        $event,
-                        addOneMoreInputToCurrentFormArray,
-                        currentField.fieldControl.control,
-                        currentField.name,
-                        i
-                      )
-                    " />
-                    <div class="close-button" *ngIf="currentField.fieldControl.control.length > 1" (click)="
-                      removeInputToCurrentFormArray(
-                        currentField.fieldControl.control,
-                        currentField.name,
-                        i
-                      )
-                    ">
+                        currentField.styles.fieldStyles
+                          ? currentField.styles.fieldStyles
+                          : null
+                      "
+                      (keyup)="
+                        onMultipleInputEnterPress(
+                          $event,
+                          addOneMoreInputToCurrentFormArray,
+                          currentField.fieldControl.control,
+                          currentField.name,
+                          i
+                        )
+                      "
+                    />
+                    <div
+                      class="close-button"
+                      *ngIf="currentField.fieldControl.control.length > 1"
+                      (click)="
+                        removeInputToCurrentFormArray(
+                          currentField.fieldControl.control,
+                          currentField.name,
+                          i
+                        )
+                      "
+                    >
                       X
                     </div>
                   </div>
 
-                  <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-                    currentField.styles.bottomLabelStyles
-                      ? currentField.styles.bottomLabelStyles
-                      : null
-                  ">
+                  <span
+                    *ngIf="currentField.bottomLabel"
+                    class="input-label-bottom"
+                    [ngStyle]="
+                      currentField.styles.bottomLabelStyles
+                        ? currentField.styles.bottomLabelStyles
+                        : null
+                    "
+                  >
                     {{ currentField.bottomLabel.text }}
                   </span>
                 </ng-container>
@@ -394,284 +645,430 @@ shouldScrollBackwards &&
             </div>
 
             <!-- TEXTAREA GOES HERE -->
-            <div *ngIf="currentField.inputType === 'textarea'" [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
+            <div
+              *ngIf="currentField.inputType === 'textarea'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
               <ng-container *ngIf="!currentField.multiple">
-                <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topLabelActionStyles
-                    ? currentField.styles.topLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topLabelAction.clickable
-                    ? currentField.topLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.topLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topLabelActionStyles
+                      ? currentField.styles.topLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topLabelAction.clickable
+                      ? currentField.topLabelAction.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.topLabelAction.text }}
                 </span>
 
-                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topSubLabelActionStyles
-                    ? currentField.styles.topSubLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topSubLabelAction.clickable
-                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.topSubLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topSubLabelActionStyles
+                      ? currentField.styles.topSubLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topSubLabelAction.clickable
+                      ? currentField.topSubLabelAction.callback(
+                          stepFunctionParams
+                        )
+                      : null
+                  "
+                >
                   {{ currentField.topSubLabelAction.text }}
                 </span>
 
-                <label [for]="currentField.name" class="input-label" [ngStyle]="
-                  currentField.styles.labelStyles
-                    ? currentField.styles.labelStyles
-                    : null
-                ">
+                <label
+                  [for]="currentField.name"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
                   {{ currentField.label }}
                 </label>
 
-                <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-                  currentField.styles.subLabelStyles
-                    ? currentField.styles.subLabelStyles
-                    : null
-                ">
+                <label
+                  [for]="currentField.name"
+                  *ngIf="currentField.sublabel"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.subLabelStyles
+                      ? currentField.styles.subLabelStyles
+                      : null
+                  "
+                >
                   {{ currentField.sublabel }}
                 </label>
 
-                <textarea 
-                  [id]="currentField.name" 
+                <textarea
+                  [id]="currentField.name"
                   tabindex="-1"
-                  [placeholder]="currentField.placeholder" [name]="currentField.name"
-                  [formControlName]="currentField.name" [placeholder]="currentField.placeholder" class="textarea"
+                  [placeholder]="currentField.placeholder"
+                  [name]="currentField.name"
+                  [formControlName]="currentField.name"
+                  [placeholder]="currentField.placeholder"
+                  class="textarea"
                   [ngStyle]="
-                  currentField.styles.fieldStyles
-                    ? currentField.styles.fieldStyles
-                    : null
-                "></textarea>
+                    currentField.styles.fieldStyles
+                      ? currentField.styles.fieldStyles
+                      : null
+                  "
+                ></textarea>
 
-                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-                  currentField.styles.bottomLabelStyles
-                    ? currentField.styles.bottomLabelStyles
-                    : null
-                " (click)="
-                  currentField.bottomLabel.clickable
-                    ? currentField.bottomLabel.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.bottomLabel"
+                  class="input-label-bottom"
+                  [ngStyle]="
+                    currentField.styles.bottomLabelStyles
+                      ? currentField.styles.bottomLabelStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.bottomLabel.clickable
+                      ? currentField.bottomLabel.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
             </div>
 
             <!-- PHONE INPUTS GO HERE -->
-            <div *ngIf="currentField.inputType === 'phone'" [ngStyle]="
-          currentField.styles.containerStyles
-            ? currentField.styles.containerStyles
-            : null
-        ">
-              <ng-container *ngIf="currentField.fieldControl.type !== 'multiple'">
-                <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topLabelActionStyles
-                    ? currentField.styles.topLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topLabelAction.clickable
-                    ? currentField.topLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+            <div
+              *ngIf="currentField.inputType === 'phone'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <ng-container
+                *ngIf="currentField.fieldControl.type !== 'multiple'"
+              >
+                <span
+                  *ngIf="currentField.topLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topLabelActionStyles
+                      ? currentField.styles.topLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topLabelAction.clickable
+                      ? currentField.topLabelAction.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.topLabelAction.text }}
                 </span>
 
-                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topSubLabelActionStyles
-                    ? currentField.styles.topSubLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topSubLabelAction.clickable
-                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
+                <span
+                  *ngIf="currentField.topSubLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topSubLabelActionStyles
+                      ? currentField.styles.topSubLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topSubLabelAction.clickable
+                      ? currentField.topSubLabelAction.callback(
+                          stepFunctionParams
+                        )
+                      : null
+                  "
+                >
                   {{ currentField.topSubLabelAction.text }}
                 </span>
 
-                <label [for]="currentField.name" class="input-label" [ngStyle]="
-                  currentField.styles.labelStyles
-                    ? currentField.styles.labelStyles
-                    : null
-                ">
+                <label
+                  [for]="currentField.name"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
                   {{ currentField.label }}
                 </label>
 
-                <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-              currentField.styles.subLabelStyles
-                ? currentField.styles.subLabelStyles
-                : null
-              ">
+                <label
+                  [for]="currentField.name"
+                  *ngIf="currentField.sublabel"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.subLabelStyles
+                      ? currentField.styles.subLabelStyles
+                      : null
+                  "
+                >
                   {{ currentField.sublabel }}
                 </label>
 
-                <ngx-intl-tel-input [cssClass]="currentField.cssClass ? currentField.cssClass : null"
-                  [enableAutoCountrySelect]="true" 
-                  [enablePlaceholder]="true" 
+                <ngx-intl-tel-input
+                  [cssClass]="
+                    currentField.cssClass ? currentField.cssClass : null
+                  "
+                  [disabled]="currentField.fieldControl.control.disabled"
+                  [enableAutoCountrySelect]="true"
+                  [enablePlaceholder]="true"
                   [searchCountryFlag]="true"
-                  [selectFirstCountry]="false" 
+                  [selectFirstCountry]="false"
                   [preferredCountries]="preferredCountries"
-                  [selectedCountryISO]="!currentField.phoneCountryCode ? CountryISO : currentField.phoneCountryCode" 
+                  [selectedCountryISO]="
+                    !currentField.phoneCountryCode
+                      ? CountryISO
+                      : currentField.phoneCountryCode
+                  "
                   maxLength="15"
-                  [phoneValidation]="true" 
-                  [separateDialCode]="true" 
-                  [customPlaceholder]="currentField.placeholder ? currentField.placeholder : 'El # de WhatsApp es..'"
+                  [phoneValidation]="true"
+                  [separateDialCode]="true"
+                  [customPlaceholder]="
+                    currentField.placeholder
+                      ? currentField.placeholder
+                      : 'El # de WhatsApp es..'
+                  "
                   [numberFormat]="PhoneNumberFormat.International"
                   tabindex="-1"
                   [formControl]="currentField.fieldControl.control"
                 ></ngx-intl-tel-input>
 
-                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-              currentField.styles.bottomLabelStyles
-                ? currentField.styles.bottomLabelStyles
-                : null
-            " (click)="
-              currentField.bottomLabel.clickable
-                ? currentField.bottomLabel.callback(stepFunctionParams)
-                : null
-            ">
+                <span
+                  *ngIf="currentField.bottomLabel"
+                  class="input-label-bottom"
+                  [ngStyle]="
+                    currentField.styles.bottomLabelStyles
+                      ? currentField.styles.bottomLabelStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.bottomLabel.clickable
+                      ? currentField.bottomLabel.callback(stepFunctionParams)
+                      : null
+                  "
+                >
                   {{ currentField.bottomLabel.text }}
                 </span>
               </ng-container>
             </div>
 
-            <div *ngIf="currentField.inputType === 'address'" [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-              ">
-                  <ng-container *ngIf="currentField.fieldControl.type !== 'multiple'">
-                    <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                      currentField.styles.topLabelActionStyles
-                        ? currentField.styles.topLabelActionStyles
-                        : null
-                    " (click)="
-                      currentField.topLabelAction.clickable
-                        ? currentField.topLabelAction.callback(stepFunctionParams)
-                        : null
-                    ">
-                      {{ currentField.topLabelAction.text }}
-                    </span>
+            <div
+              *ngIf="currentField.inputType === 'address'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <ng-container
+                *ngIf="currentField.fieldControl.type !== 'multiple'"
+              >
+                <span
+                  *ngIf="currentField.topLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topLabelActionStyles
+                      ? currentField.styles.topLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topLabelAction.clickable
+                      ? currentField.topLabelAction.callback(stepFunctionParams)
+                      : null
+                  "
+                >
+                  {{ currentField.topLabelAction.text }}
+                </span>
 
-                    <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
-                      currentField.styles.topSubLabelActionStyles
-                        ? currentField.styles.topSubLabelActionStyles
-                        : null
-                    " (click)="
-                      currentField.topSubLabelAction.clickable
-                        ? currentField.topSubLabelAction.callback(stepFunctionParams)
-                        : null
-                    ">
-                      {{ currentField.topSubLabelAction.text }}
-                    </span>
-    
-                    <label [for]="currentField.name" class="input-label" [ngStyle]="
-                      currentField.styles.labelStyles
-                        ? currentField.styles.labelStyles
-                        : null
-                    ">
-                      {{ currentField.label }}
-                    </label>
-    
-                    <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
+                <span
+                  *ngIf="currentField.topSubLabelAction"
+                  class="input-label-top-action"
+                  [ngStyle]="
+                    currentField.styles.topSubLabelActionStyles
+                      ? currentField.styles.topSubLabelActionStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.topSubLabelAction.clickable
+                      ? currentField.topSubLabelAction.callback(
+                          stepFunctionParams
+                        )
+                      : null
+                  "
+                >
+                  {{ currentField.topSubLabelAction.text }}
+                </span>
+
+                <label
+                  [for]="currentField.name"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.labelStyles
+                      ? currentField.styles.labelStyles
+                      : null
+                  "
+                >
+                  {{ currentField.label }}
+                </label>
+
+                <label
+                  [for]="currentField.name"
+                  *ngIf="currentField.sublabel"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.subLabelStyles
+                      ? currentField.styles.subLabelStyles
+                      : null
+                  "
+                >
+                  {{ currentField.sublabel }}
+                </label>
+
+                <input
+                  ngx-google-places-autocomplete
+                  [options]="{
+                    types: [],
+                    bounds: null,
+                    strictBounds: null,
+                    fields: null,
+                    origin: null,
+                    componentRestrictions: { country: 'VE' }
+                  }"
+                  #placesRef="ngx-places"
+                  [formControl]="currentField.fieldControl.control"
+                  (onAddressChange)="handleAddressChange($event)"
+                />
+                <span
+                  *ngIf="currentField.bottomLabel"
+                  class="input-label-bottom"
+                  [ngStyle]="
+                    currentField.styles.bottomLabelStyles
+                      ? currentField.styles.bottomLabelStyles
+                      : null
+                  "
+                  (click)="
+                    currentField.bottomLabel.clickable
+                      ? currentField.bottomLabel.callback(stepFunctionParams)
+                      : null
+                  "
+                >
+                  {{ currentField.bottomLabel.text }}
+                </span>
+              </ng-container>
+            </div>
+
+            <!-- SELECT INPUTS GO HERE -->
+            <div
+              *ngIf="currentField.inputType === 'select'"
+              class="dropdown"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <label
+                [for]="currentField.name"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+                >{{ currentField.label }}</label
+              >
+
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
                   currentField.styles.subLabelStyles
                     ? currentField.styles.subLabelStyles
                     : null
-                  ">
-                      {{ currentField.sublabel }}
-                    </label>
-    
-                    <input ngx-google-places-autocomplete [options]="{
-                      types: [],
-                      bounds: null,
-                      strictBounds: null,
-                      fields: null,
-                      origin: null,
-                      componentRestrictions: { country: 'VE' }
-                    }" #placesRef="ngx-places"
-                    [formControl]="currentField.fieldControl.control"
-                    (onAddressChange)="handleAddressChange($event)"
-                    />
-                    <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-                      currentField.styles.bottomLabelStyles
-                        ? currentField.styles.bottomLabelStyles
-                        : null
-                    " (click)="
-                      currentField.bottomLabel.clickable
-                        ? currentField.bottomLabel.callback(stepFunctionParams)
-                        : null
-                    ">
-                      {{ currentField.bottomLabel.text }}
-                    </span>
-                </ng-container>
-              </div>
-
-            <!-- SELECT INPUTS GO HERE -->
-            <div *ngIf="currentField.inputType === 'select'" class="dropdown" [ngStyle]="
-            currentField.styles.containerStyles
-              ? currentField.styles.containerStyles
-              : null
-          ">
-              <label [for]="currentField.name" class="input-label" [ngStyle]="
-              currentField.styles.labelStyles
-                ? currentField.styles.labelStyles
-                : null
-            ">{{ currentField.label }}</label>
-
-              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-              currentField.styles.subLabelStyles
-                ? currentField.styles.subLabelStyles
-                : null
-            ">
+                "
+              >
                 {{ currentField.sublabel }}
               </label>
 
-              <select [formControlName]="currentField.name" class="input select" [ngStyle]="currentField.styles.fieldStyles
+              <select
+                [formControlName]="currentField.name"
+                class="input select"
+                [ngStyle]="
+                  currentField.styles.fieldStyles
                     ? currentField.styles.fieldStyles
-                    : null">
-                <option *ngFor="let option of currentField.selectionOptions" [value]="option">{{option}}
+                    : null
+                "
+              >
+                <option
+                  *ngFor="let option of currentField.selectionOptions"
+                  [value]="option"
+                >
+                  {{ option }}
                 </option>
               </select>
 
               <div class="arrow-icon">
-                <img src="{{ env }}/arrow-left.svg" alt="arrow down">
+                <img src="{{ env }}/arrow-left.svg" alt="arrow down" />
               </div>
             </div>
 
             <!-- RADIO INPUTS WITH GREEN BACKGROUND GO HERE -->
-            <div *ngIf="currentField.inputType === 'radio'" class="selector" [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
-              <label [for]="currentField.name" class="input-label" [ngStyle]="
-                currentField.styles.labelStyles
-                  ? currentField.styles.labelStyles
+            <div
+              *ngIf="currentField.inputType === 'radio'"
+              class="selector"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
                   : null
-              ">{{ currentField.label }}</label>
+              "
+            >
+              <label
+                [for]="currentField.name"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+                >{{ currentField.label }}</label
+              >
 
-              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-              currentField.styles.subLabelStyles
-                ? currentField.styles.subLabelStyles
-                : null
-              ">
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                "
+              >
                 {{ currentField.sublabel }}
               </label>
 
-
-
-              <ng-container
-                *ngIf="currentField.collapsed"
-              >
-                <ng-container *ngFor="let option of currentField.selectionOptions">
-                  <div 
+              <ng-container *ngIf="currentField.collapsed">
+                <ng-container
+                  *ngFor="let option of currentField.selectionOptions"
+                >
+                  <div
                     [ngStyle]="{
                       backgroundColor: '#82f18d',
                       borderRadius: '5px',
@@ -697,8 +1094,8 @@ shouldScrollBackwards &&
                     </div>
                     <div
                       [ngStyle]="{
-                        width: 0, 
-                        height: 0, 
+                        width: 0,
+                        height: 0,
                         borderLeft: '8px solid transparent',
                         borderRight: '8px solid transparent',
                         borderTop: '9px solid #fff'
@@ -708,22 +1105,30 @@ shouldScrollBackwards &&
                 </ng-container>
               </ng-container>
 
-
-              <ng-container
-                *ngIf="!currentField.collapsed"
-              >
-                <ng-container *ngFor="let option of currentField.selectionOptions">
-                  <label [ngClass]="
-                    option === currentField.fieldControl.control.value
-                      ? 'selector-option active'
-                      : 'selector-option'
-                  " [ngStyle]="
-                    currentField.styles.fieldStyles
-                    ? currentField.styles.fieldStyles
-                    : null
-                  " (click)="currentField.fieldControl.control.setValue(option)">
+              <ng-container *ngIf="!currentField.collapsed">
+                <ng-container
+                  *ngFor="let option of currentField.selectionOptions"
+                >
+                  <label
+                    [ngClass]="
+                      option === currentField.fieldControl.control.value
+                        ? 'selector-option active'
+                        : 'selector-option'
+                    "
+                    [ngStyle]="
+                      currentField.styles.fieldStyles
+                        ? currentField.styles.fieldStyles
+                        : null
+                    "
+                    (click)="currentField.fieldControl.control.setValue(option)"
+                  >
                     <div class="background"></div>
-                    <input type="radio" [value]="option" [formControlName]="currentField.name" tabindex="-1" />
+                    <input
+                      type="radio"
+                      [value]="option"
+                      [formControlName]="currentField.name"
+                      tabindex="-1"
+                    />
                     <span>{{ option }}</span>
                   </label>
                 </ng-container>
@@ -731,7 +1136,8 @@ shouldScrollBackwards &&
             </div>
 
             <!-- RADIO INPUTS WITH SIMPLE STYLES GO HERE -->
-            <div *ngIf="currentField.inputType === 'radio-simple'" 
+            <div
+              *ngIf="currentField.inputType === 'radio-simple'"
               class="radio-simple"
               [ngStyle]="
                 currentField.styles.containerStyles
@@ -739,16 +1145,17 @@ shouldScrollBackwards &&
                   : null
               "
             >
-              <label 
-                [for]="currentField.name" 
-                class="input-label" 
+              <label
+                [for]="currentField.name"
+                class="input-label"
                 [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
                     : null
                 "
                 *ngIf="!currentField.shouldWrapLabelAndSublabelInsideADiv"
-              >{{ currentField.label }}</label>
+                >{{ currentField.label }}</label
+              >
 
               <div
                 *ngIf="currentField.shouldWrapLabelAndSublabelInsideADiv"
@@ -759,9 +1166,9 @@ shouldScrollBackwards &&
                     : null
                 "
               >
-                <label 
-                  [for]="currentField.name" 
-                  class="input-label" 
+                <label
+                  [for]="currentField.name"
+                  class="input-label"
                   [ngStyle]="
                     currentField.styles.labelStyles
                       ? currentField.styles.labelStyles
@@ -771,220 +1178,368 @@ shouldScrollBackwards &&
                   {{ currentField.label }}
                 </label>
 
-                <span *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-                  currentField.styles.subLabelStyles
-                    ? currentField.styles.subLabelStyles
-                    : null
+                <span
+                  *ngIf="currentField.sublabel"
+                  class="input-label"
+                  [ngStyle]="
+                    currentField.styles.subLabelStyles
+                      ? currentField.styles.subLabelStyles
+                      : null
                   "
                 >
                   {{ currentField.sublabel }}
                 </span>
               </div>
 
-              <input 
+              <input
                 type="radio"
                 [checked]="currentField.fieldControl.control.value"
-                (change)="currentField.fieldControl.control.setValue(!currentField.fieldControl.control.value)"
-                [formControlName]="currentField.name" 
-                tabindex="-1" 
+                (change)="
+                  currentField.fieldControl.control.setValue(
+                    !currentField.fieldControl.control.value
+                  )
+                "
+                [formControlName]="currentField.name"
+                tabindex="-1"
               />
-            </div>          
-
-            <!-- FILE INPUTS GO HERE -->
-            <div *ngIf="currentField.inputType === 'file'" [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
-              <span class="input-label" [ngStyle]="
-                currentField.styles.labelStyles
-                  ? currentField.styles.labelStyles
-                  : null
-              ">
-                {{ currentField.label }}
-              </span>
-
-              <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-            currentField.styles.subLabelStyles
-              ? currentField.styles.subLabelStyles
-              : null
-            ">
-                {{ currentField.sublabel }}
-              </label>
-
-              <label class="file" [for]="currentField.name" [ngStyle]="applyStylesToImages(currentField)">
-                <span *ngIf="currentField.fieldControl.control.value === ''">{{
-                  currentField.placeholder || "Upload / Image"
-                  }}</span>
-              </label>
-
-              <div *ngIf="currentField.showImageBottomLabel" class="showImageBottomLabel" [ngStyle]="
-                currentField.styles.bottomLabelStyles
-                  ? currentField.styles.bottomLabelStyles
-                  : null
-              " (click)="openInputTypeFileSelector(currentField.name)">
-                {{ currentField.showImageBottomLabel }}
-              </div>
-
-              <input type="file" [id]="currentField.name" [style.display]="'none'"
-                (change)="loadFile(currentField, $event)" tabindex="-1" />
             </div>
 
-            <!-- DATE INPUTS GO HERE     -->
-            <div *ngIf="
-              currentField.inputType === 'date' && !currentField.multiple
-            " [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
-              
-                <span *ngIf="currentField.topLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topLabelActionStyles
-                    ? currentField.styles.topLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topLabelAction.clickable
-                    ? currentField.topLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
-                  {{ currentField.topLabelAction.text }}
-                </span>
-
-                <span *ngIf="currentField.topSubLabelAction" class="input-label-top-action" [ngStyle]="
-                  currentField.styles.topSubLabelActionStyles
-                    ? currentField.styles.topSubLabelActionStyles
-                    : null
-                " (click)="
-                  currentField.topSubLabelAction.clickable
-                    ? currentField.topSubLabelAction.callback(stepFunctionParams)
-                    : null
-                ">
-                  {{ currentField.topSubLabelAction.text }}
-                </span>
-
-                <label [for]="currentField.name" class="input-label" [ngStyle]="
+            <!-- FILE INPUTS GO HERE -->
+            <div
+              *ngIf="currentField.inputType === 'file'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <span
+                class="input-label"
+                [ngStyle]="
                   currentField.styles.labelStyles
                     ? currentField.styles.labelStyles
                     : null
-                ">
-                  {{ currentField.label }}
-                </label>
+                "
+              >
+                {{ currentField.label }}
+              </span>
 
-                <label [for]="currentField.name" *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-              currentField.styles.subLabelStyles
-                ? currentField.styles.subLabelStyles
-                : null
-              ">
-                  {{ currentField.sublabel }}
-                </label>
-
-                <input 
-                  type="date" 
-                  [formControlName]="currentField.name" 
-                  class="date-inputs"
-                  [min]="currentField?.minDate"
-                  [max]="currentField?.maxDate"
-                  [ngStyle]="
-                  currentField.styles.fieldStyles
-                    ? currentField.styles.fieldStyles
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
                     : null
-                  "
-                  tabindex="-1"
-                />
+                "
+              >
+                {{ currentField.sublabel }}
+              </label>
 
-                <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
+              <label
+                class="file"
+                [for]="currentField.name"
+                [ngStyle]="applyStylesToImages(currentField)"
+              >
+                <span *ngIf="currentField.fieldControl.control.value === ''">{{
+                  currentField.placeholder || "Upload / Image"
+                }}</span>
+              </label>
+
+              <div
+                *ngIf="currentField.showImageBottomLabel"
+                class="showImageBottomLabel"
+                [ngStyle]="
                   currentField.styles.bottomLabelStyles
                     ? currentField.styles.bottomLabelStyles
                     : null
-                " (click)="
+                "
+                (click)="openInputTypeFileSelector(currentField.name)"
+              >
+                {{ currentField.showImageBottomLabel }}
+              </div>
+
+              <input
+                type="file"
+                [id]="currentField.name"
+                [style.display]="'none'"
+                (change)="loadFile(currentField, $event)"
+                tabindex="-1"
+              />
+            </div>
+
+            <!-- FILE INPUTS GO HERE -->
+            <div
+              *ngIf="currentField.inputType === 'file2'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <span
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+              >
+                {{ currentField.label }}
+              </span>
+
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                "
+              >
+                {{ currentField.sublabel }}
+              </label>
+
+              <div [id]="currentField.name">
+                <app-image-input
+                  [id]="currentField.name"
+                  [allowedTypes]="['png', 'jpg', 'jpeg']"
+                  [imagesPerView]="3"
+                  [multiple]="true"
+                  [innerLabel]="currentField.placeholder"
+                  [expandImage]="true"
+                  [imageField]="currentField.fieldControl.control.value"
+                  [uploadImagesWithoutPlaceholderBox]="true"
+                  [allowDeletion]="true"
+                  [containerStyles]="currentField.styles.innerContainerStyles"
+                  [fileStyles]="currentField.styles.fieldStyles"
+                  (onFileInputMultiple)="
+                    handleImageInput($event, currentField.name, currentField)
+                  "
+                  (onFileInputBase64Multiple)="
+                    handleImageInputBase64(
+                      $event,
+                      currentField.name,
+                      currentField.fieldControl
+                    )
+                  "
+                  (onFileDeletion)="handleFileDeletion($event, currentField)"
+                ></app-image-input>
+              </div>
+            </div>
+
+            <!-- DATE INPUTS GO HERE     -->
+            <div
+              *ngIf="
+                currentField.inputType === 'date' && !currentField.multiple
+              "
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <span
+                *ngIf="currentField.topLabelAction"
+                class="input-label-top-action"
+                [ngStyle]="
+                  currentField.styles.topLabelActionStyles
+                    ? currentField.styles.topLabelActionStyles
+                    : null
+                "
+                (click)="
+                  currentField.topLabelAction.clickable
+                    ? currentField.topLabelAction.callback(stepFunctionParams)
+                    : null
+                "
+              >
+                {{ currentField.topLabelAction.text }}
+              </span>
+
+              <span
+                *ngIf="currentField.topSubLabelAction"
+                class="input-label-top-action"
+                [ngStyle]="
+                  currentField.styles.topSubLabelActionStyles
+                    ? currentField.styles.topSubLabelActionStyles
+                    : null
+                "
+                (click)="
+                  currentField.topSubLabelAction.clickable
+                    ? currentField.topSubLabelAction.callback(
+                        stepFunctionParams
+                      )
+                    : null
+                "
+              >
+                {{ currentField.topSubLabelAction.text }}
+              </span>
+
+              <label
+                [for]="currentField.name"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+              >
+                {{ currentField.label }}
+              </label>
+
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                "
+              >
+                {{ currentField.sublabel }}
+              </label>
+
+              <input
+                type="date"
+                [formControlName]="currentField.name"
+                class="date-inputs"
+                [min]="currentField?.minDate"
+                [max]="currentField?.maxDate"
+                [ngStyle]="
+                  currentField.styles.fieldStyles
+                    ? currentField.styles.fieldStyles
+                    : null
+                "
+                tabindex="-1"
+              />
+
+              <span
+                *ngIf="currentField.bottomLabel"
+                class="input-label-bottom"
+                [ngStyle]="
+                  currentField.styles.bottomLabelStyles
+                    ? currentField.styles.bottomLabelStyles
+                    : null
+                "
+                (click)="
                   currentField.bottomLabel.clickable
                     ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
-                ">
-                  {{ currentField.bottomLabel.text }}
-                </span>
-            
+                "
+              >
+                {{ currentField.bottomLabel.text }}
+              </span>
             </div>
 
             <!-- BUTTON INPUTS GO HERE -->
-            <div *ngIf="currentField.inputType === 'button'" [ngStyle]="
-              currentField.styles.containerStyles
-                ? currentField.styles.containerStyles
-                : null
-            ">
-              <button 
+            <div
+              *ngIf="currentField.inputType === 'button'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <button
                 tabindex="-1"
                 [ngStyle]="
-                  currentField.styles.fieldStyles && !currentField.hovered && !currentField.disabled
+                  currentField.styles.fieldStyles &&
+                  !currentField.hovered &&
+                  !currentField.disabled
                     ? currentField.styles.fieldStyles
-                    : currentField.hovered && !currentField.disabled 
-                     ? currentField.styles.hoverStyles
-                     : currentField.disabled
-                      ? currentField.styles.disabledStyles
-                        : null
+                    : currentField.hovered && !currentField.disabled
+                    ? currentField.styles.hoverStyles
+                    : currentField.disabled
+                    ? currentField.styles.disabledStyles
+                    : null
                 "
                 (mouseenter)="changeStylesOnHover(currentField, true)"
                 (mouseleave)="changeStylesOnHover(currentField, false)"
                 [disabled]="currentField.disabled"
                 (click)="
-                  currentField.callbackOnClick ? 
-                    currentField.callbackOnClick(stepFunctionParams) :
-                    !steps[currentStep].justExecuteCustomScrollToStep
-                      ? executeStepDataProcessing()
-                      : steps[currentStep].customScrollToStep(stepFunctionParams)
+                  currentField.callbackOnClick
+                    ? currentField.callbackOnClick(stepFunctionParams)
+                    : !steps[currentStep].justExecuteCustomScrollToStep
+                    ? executeStepDataProcessing()
+                    : steps[currentStep].customScrollToStep(stepFunctionParams)
                 "
               >
-                {{currentField.label || (
-                  !currentField.disabled ? 
-                    steps[currentStepIndex].stepButtonValidText : 
-                    steps[currentStepIndex].stepButtonInvalidText
-                )}}
+                {{
+                  currentField.label ||
+                    (!currentField.disabled
+                      ? steps[currentStepIndex].stepButtonValidText
+                      : steps[currentStepIndex].stepButtonInvalidText)
+                }}
               </button>
 
-              <span *ngIf="currentField.bottomLabel" class="input-label-bottom" [ngStyle]="
-                currentField.styles.bottomLabelStyles
-                  ? currentField.styles.bottomLabelStyles
-                  : null
-                " (click)="
+              <span
+                *ngIf="currentField.bottomLabel"
+                class="input-label-bottom"
+                [ngStyle]="
+                  currentField.styles.bottomLabelStyles
+                    ? currentField.styles.bottomLabelStyles
+                    : null
+                "
+                (click)="
                   currentField.bottomLabel.clickable
                     ? currentField.bottomLabel.callback(stepFunctionParams)
                     : null
-              ">
+                "
+              >
                 {{ currentField.bottomLabel.text }}
               </span>
             </div>
 
             <!-- LINKS OPCIONALES, PERO DESPUES DE UN FIELD -->
-            <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
-              !currentStepObject['optionalLinksTo']['beforeIndex'] &&
-              currentStepObject['optionalLinksTo']['afterIndex'] !== null
-            ">
+            <ng-container
+              *ngIf="
+                currentStepObject['optionalLinksTo'] &&
+                !currentStepObject['optionalLinksTo']['beforeIndex'] &&
+                currentStepObject['optionalLinksTo']['afterIndex'] !== null
+              "
+            >
               <ng-container
                 *ngIf="
-                  currentStepObject['optionalLinksTo']['afterIndex'] === currentFieldIndex
+                  currentStepObject['optionalLinksTo']['afterIndex'] ===
+                  currentFieldIndex
                 "
               >
-                <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" 
-                  class="optional-links" 
+                <div
+                  *ngFor="
+                    let groupOfLinks of currentStepObject['optionalLinksTo']
+                      .groupOfLinksArray
+                  "
+                  class="optional-links"
                   [ngStyle]="
                     groupOfLinks?.styles?.containerStyles
                       ? groupOfLinks?.styles?.containerStyles
                       : null
-                ">
-                  <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
-                    groupOfLinks?.styles?.labelStyles
-                      ? groupOfLinks?.styles?.labelStyles
-                      : null
-                  ">
-                    {{groupOfLinks.topLabel}}:
+                  "
+                >
+                  <span
+                    class="title"
+                    *ngIf="groupOfLinks.topLabel"
+                    [ngStyle]="
+                      groupOfLinks?.styles?.labelStyles
+                        ? groupOfLinks?.styles?.labelStyles
+                        : null
+                    "
+                  >
+                    {{ groupOfLinks.topLabel }}:
                   </span>
                   <ng-container *ngFor="let link of groupOfLinks.links">
-                    <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
-                      groupOfLinks?.styles?.fieldStyles
-                        ? groupOfLinks?.styles?.fieldStyles
-                        : null
-                    ">
+                    <span
+                      class="link"
+                      (click)="link.action(stepFunctionParams)"
+                      [ngStyle]="
+                        groupOfLinks?.styles?.fieldStyles
+                          ? groupOfLinks?.styles?.fieldStyles
+                          : null
+                      "
+                    >
                       {{ link.text }}
                     </span>
                   </ng-container>
@@ -994,39 +1549,57 @@ shouldScrollBackwards &&
 
             <!-- EMBEDDED COMPONENTS DESPUES DE UN FIELD -->
             <ng-container *ngIf="currentStepObject['embeddedComponents']">
-              <ng-container *ngFor="
-                let currentEmbeddedComponent of currentStepObject[
-                  'embeddedComponents'
-                ]
-              ">
-                <div *ngIf="
-                  currentEmbeddedComponent.afterIndex === currentFieldIndex
-                " [ngStyle]="
-                  currentEmbeddedComponent.containerStyles
-                    ? currentEmbeddedComponent.containerStyles
-                    : null
-                ">
-                  <label *ngIf="currentField.label" class="input-label" [ngStyle]="
-                    currentEmbeddedComponent.labelStyles
-                      ? currentEmbeddedComponent.labelStyles
+              <ng-container
+                *ngFor="
+                  let currentEmbeddedComponent of currentStepObject[
+                    'embeddedComponents'
+                  ]
+                "
+              >
+                <div
+                  *ngIf="
+                    currentEmbeddedComponent.afterIndex === currentFieldIndex
+                  "
+                  [ngStyle]="
+                    currentEmbeddedComponent.containerStyles
+                      ? currentEmbeddedComponent.containerStyles
                       : null
-                  ">
+                  "
+                >
+                  <label
+                    *ngIf="currentField.label"
+                    class="input-label"
+                    [ngStyle]="
+                      currentEmbeddedComponent.labelStyles
+                        ? currentEmbeddedComponent.labelStyles
+                        : null
+                    "
+                  >
                     {{ currentEmbeddedComponent.label }}
                   </label>
 
-                  <label *ngIf="currentField.sublabel" class="input-label" [ngStyle]="
-                  currentEmbeddedComponent.sublabelStyles
-                    ? currentEmbeddedComponent.sublabelStyles
-                    : null
-                  ">
+                  <label
+                    *ngIf="currentField.sublabel"
+                    class="input-label"
+                    [ngStyle]="
+                      currentEmbeddedComponent.sublabelStyles
+                        ? currentEmbeddedComponent.sublabelStyles
+                        : null
+                    "
+                  >
                     {{ currentEmbeddedComponent.sublabel }}
                   </label>
 
-                  <app-dynamic-component [component]="currentEmbeddedComponent.component"
+                  <app-dynamic-component
+                    [component]="currentEmbeddedComponent.component"
                     [componentInputs]="currentEmbeddedComponent.inputs"
                     [componentOutputs]="currentEmbeddedComponent.outputs"
-                    [shouldRemoveItFromTheView]="currentEmbeddedComponent.shouldRerender">
-                    ></app-dynamic-component>
+                    [shouldRemoveItFromTheView]="
+                      currentEmbeddedComponent.shouldRerender
+                    "
+                  >
+                    ></app-dynamic-component
+                  >
                 </div>
               </ng-container>
             </ng-container>
@@ -1034,47 +1607,85 @@ shouldScrollBackwards &&
         </form>
 
         <!-- LINKS OPCIONALES -->
-        <ng-container *ngIf="currentStepObject['optionalLinksTo'] && 
-          !currentStepObject['optionalLinksTo']['beforeIndex'] &&
-          !currentStepObject['optionalLinksTo']['afterIndex']
-        ">
-          <div *ngFor="let groupOfLinks of currentStepObject['optionalLinksTo'].groupOfLinksArray" class="optional-links" [ngStyle]="
-            groupOfLinks?.styles?.containerStyles
-              ? groupOfLinks?.styles?.containerStyles
-              : null
-          ">
-            <span class="title" *ngIf="groupOfLinks.topLabel" [ngStyle]="
-              groupOfLinks?.styles?.labelStyles
-                ? groupOfLinks?.styles?.labelStyles
+        <ng-container
+          *ngIf="
+            currentStepObject['optionalLinksTo'] &&
+            !currentStepObject['optionalLinksTo']['beforeIndex'] &&
+            !currentStepObject['optionalLinksTo']['afterIndex']
+          "
+        >
+          <div
+            *ngFor="
+              let groupOfLinks of currentStepObject['optionalLinksTo']
+                .groupOfLinksArray
+            "
+            class="optional-links"
+            [ngStyle]="
+              groupOfLinks?.styles?.containerStyles
+                ? groupOfLinks?.styles?.containerStyles
                 : null
-            ">{{groupOfLinks.topLabel}}:</span>
-            <ng-container *ngFor="let link of groupOfLinks.links">
-              <span class="link" (click)="link.action(stepFunctionParams)" [ngStyle]="
-                groupOfLinks?.styles?.fieldStyles
-                  ? groupOfLinks?.styles?.fieldStyles
+            "
+          >
+            <span
+              class="title"
+              *ngIf="groupOfLinks.topLabel"
+              [ngStyle]="
+                groupOfLinks?.styles?.labelStyles
+                  ? groupOfLinks?.styles?.labelStyles
                   : null
-              ">{{ link.text }}</span>
+              "
+              >{{ groupOfLinks.topLabel }}:</span
+            >
+            <ng-container *ngFor="let link of groupOfLinks.links">
+              <span
+                class="link"
+                (click)="link.action(stepFunctionParams)"
+                [ngStyle]="
+                  groupOfLinks?.styles?.fieldStyles
+                    ? groupOfLinks?.styles?.fieldStyles
+                    : null
+                "
+                >{{ link.text }}</span
+              >
             </ng-container>
           </div>
         </ng-container>
 
         <!-- FOOTER PARA EL CONTADOR DE PREGUNTAS Y LINKS HACIA OTRAS PÁGINAS -->
-        <div class="footer"
-          *ngIf="currentStepObject['linkFooter'] || currentStepObject['bottomLeftAction'] || showStepNumbers">
-          <span *ngIf="currentStepObject['bottomLeftAction']" class="bottom-left-action" (click)="
-            currentStepObject['bottomLeftAction'].execute(stepFunctionParams)
-          ">
+        <div
+          class="footer"
+          *ngIf="
+            currentStepObject['linkFooter'] ||
+            currentStepObject['bottomLeftAction'] ||
+            showStepNumbers
+          "
+        >
+          <span
+            *ngIf="currentStepObject['bottomLeftAction']"
+            class="bottom-left-action"
+            (click)="
+              currentStepObject['bottomLeftAction'].execute(stepFunctionParams)
+            "
+          >
             {{ currentStepObject["bottomLeftAction"].text }}
           </span>
 
-          <span *ngIf="currentStepObject['linkFooter']"
-            (click)="currentStepObject['linkFooter'].execute(stepFunctionParams)"
-            [ngStyle]="currentStepObject['linkFooter'].styles">
+          <span
+            *ngIf="currentStepObject['linkFooter']"
+            (click)="
+              currentStepObject['linkFooter'].execute(stepFunctionParams)
+            "
+            [ngStyle]="currentStepObject['linkFooter'].styles"
+          >
             {{ currentStepObject["linkFooter"].text }}
           </span>
 
           <div class="steps" *ngIf="showStepNumbers">
-            <img src="{{ env }}/arrow-down.svg" class="step-icon" alt="questions" />
+            <img
+              src="{{ env }}/arrow-down.svg"
+              class="step-icon"
+              alt="questions"
+            />
             {{ currentStepIndex + 1 }} / {{ steps.length }} PASOS
           </div>
         </div>
@@ -1082,19 +1693,21 @@ shouldScrollBackwards &&
         <!-- SEPARADOR INFERIOR -->
         <div
           [ngStyle]="{
-            height: dataModel.get((currentStepIndex + 1) + '').status === 'VALID' && (
+            height:
+              dataModel.get(currentStepIndex + 1 + '').status === 'VALID' &&
               steps[currentStepIndex].footerConfig?.enabledStyles
-            ) ? steps[currentStepIndex].footerConfig?.enabledStyles.height 
-              : dataModel.get((currentStepIndex + 1) + '').status === 'INVALID' && (
-                steps[currentStepIndex].footerConfig?.disabledStyles
-              ) ? steps[currentStepIndex].footerConfig?.disabledStyles.height :
-                steps[currentStepIndex].customStickyButton ? 
-                  steps[currentStepIndex].customStickyButton.height :
-                    steps[currentStepIndex].hideMainStepCTA ? 
-                      '0px' :
-                        dataModel.get((currentStepIndex + 1) + '').status === 'VALID'
-                        ? '55px'
-                        : '38px'
+                ? steps[currentStepIndex].footerConfig?.enabledStyles.height
+                : dataModel.get(currentStepIndex + 1 + '').status ===
+                    'INVALID' &&
+                  steps[currentStepIndex].footerConfig?.disabledStyles
+                ? steps[currentStepIndex].footerConfig?.disabledStyles.height
+                : steps[currentStepIndex].customStickyButton
+                ? steps[currentStepIndex].customStickyButton.height
+                : steps[currentStepIndex].hideMainStepCTA
+                ? '0px'
+                : dataModel.get(currentStepIndex + 1 + '').status === 'VALID'
+                ? '55px'
+                : '38px'
           }"
         ></div>
       </div>
@@ -1102,55 +1715,95 @@ shouldScrollBackwards &&
   </div>
 
   <!-- BOTON PARA PASAR AL SIGUIENTE PASO O PARA SUBIR EL FORMULARIO -->
-  <app-sticky-button *ngIf="
-      !steps[currentStep].stepAnchorURL && 
+  <app-sticky-button
+    *ngIf="
+      !steps[currentStep].stepAnchorURL &&
       !steps[currentStep].customStickyButton &&
-      !steps[currentStep].hideMainStepCTA" 
-      [text]="
-        dataModel.get(currentStepString).valid
-          ? steps[currentStep].stepButtonValidText
-          : steps[currentStep].stepButtonInvalidText
-      " 
-      [bgColor]="steps[currentStep].footerConfig?.bgColor"
-      [color]="steps[currentStep].footerConfig?.color"
-      [mode]="
-        dataModel.get(currentStepString).status !== 'INVALID'
-          ? 'fixed'
-          : 'disabled-fixed'
-      " (click)="
-        !steps[currentStep].justExecuteCustomScrollToStep
-          ? executeStepDataProcessing()
-          : steps[currentStep].customScrollToStep(stepFunctionParams)
-      "
-    [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
-    [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null"
-    [padding]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.padding : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.padding : null"
+      !steps[currentStep].hideMainStepCTA
+    "
+    [text]="
+      dataModel.get(currentStepString).valid
+        ? steps[currentStep].stepButtonValidText
+        : steps[currentStep].stepButtonInvalidText
+    "
+    [bgColor]="steps[currentStep].footerConfig?.bgColor"
+    [color]="steps[currentStep].footerConfig?.color"
+    [mode]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? 'fixed'
+        : 'disabled-fixed'
+    "
+    (click)="
+      !steps[currentStep].justExecuteCustomScrollToStep
+        ? executeStepDataProcessing()
+        : steps[currentStep].customScrollToStep(stepFunctionParams)
+    "
+    [height]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig?.enabledStyles?.height
+        : dataModel.get(currentStepString).status === 'INVALID'
+        ? steps[currentStep].footerConfig?.disabledStyles?.height
+        : null
+    "
+    [fontSize]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig?.enabledStyles?.fontSize
+        : dataModel.get(currentStepString).status === 'INVALID'
+        ? steps[currentStep].footerConfig?.disabledStyles?.fontSize
+        : null
+    "
+    [padding]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig?.enabledStyles?.padding
+        : dataModel.get(currentStepString).status === 'INVALID'
+        ? steps[currentStep].footerConfig?.disabledStyles?.padding
+        : null
+    "
     [injectBottomSeparator]="true"
   >
   </app-sticky-button>
 
-  <a [href]="steps[currentStep].stepAnchorURL" target="_blank"
+  <a
+    [href]="steps[currentStep].stepAnchorURL"
+    target="_blank"
     *ngIf="
-      steps[currentStep].stepAnchorURL && 
+      steps[currentStep].stepAnchorURL &&
       !steps[currentStep].customStickyButton &&
-      !steps[currentStep].hideMainStepCTA 
-    ">
-    <app-sticky-button [text]="
+      !steps[currentStep].hideMainStepCTA
+    "
+  >
+    <app-sticky-button
+      [text]="
         dataModel.get(currentStepString).valid
           ? steps[currentStep].stepButtonValidText
           : steps[currentStep].stepButtonInvalidText
-      " [bgColor]="steps[currentStep].footerConfig?.bgColor" [mode]="
+      "
+      [bgColor]="steps[currentStep].footerConfig?.bgColor"
+      [mode]="
         dataModel.get(currentStepString).status !== 'INVALID'
           ? 'fixed'
           : 'disabled-fixed'
-      " (click)="
+      "
+      (click)="
         !steps[currentStep].justExecuteCustomScrollToStep
           ? executeStepDataProcessing()
           : steps[currentStep].customScrollToStep(stepFunctionParams)
       "
-      [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.height : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.height : null"
-      [fontSize]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].footerConfig?.enabledStyles?.fontSize : dataModel.get(currentStepString).status === 'INVALID' ? steps[currentStep].footerConfig?.disabledStyles?.fontSize : null"
-      [injectBottomSeparator]="true"  
+      [height]="
+        dataModel.get(currentStepString).status !== 'INVALID'
+          ? steps[currentStep].footerConfig?.enabledStyles?.height
+          : dataModel.get(currentStepString).status === 'INVALID'
+          ? steps[currentStep].footerConfig?.disabledStyles?.height
+          : null
+      "
+      [fontSize]="
+        dataModel.get(currentStepString).status !== 'INVALID'
+          ? steps[currentStep].footerConfig?.enabledStyles?.fontSize
+          : dataModel.get(currentStepString).status === 'INVALID'
+          ? steps[currentStep].footerConfig?.disabledStyles?.fontSize
+          : null
+      "
+      [injectBottomSeparator]="true"
     >
     </app-sticky-button>
   </a>
@@ -1161,109 +1814,174 @@ shouldScrollBackwards &&
     [mode]="steps[currentStep].customStickyButton.mode"
     [text]="steps[currentStep].customStickyButton.text"
     (left)="
-      steps[currentStep].customStickyButton.mode === 'double' && 
-        (steps[currentStep].customStickyButton.text && steps[currentStep].customStickyButton.textCallback) ? 
-          steps[currentStep].customStickyButton.textCallback(stepFunctionParams) : null
+      steps[currentStep].customStickyButton.mode === 'double' &&
+      steps[currentStep].customStickyButton.text &&
+      steps[currentStep].customStickyButton.textCallback
+        ? steps[currentStep].customStickyButton.textCallback(stepFunctionParams)
+        : null
     "
     (right)="
-      steps[currentStep].customStickyButton.mode === 'double' && 
-        (steps[currentStep].customStickyButton.text2 && steps[currentStep].customStickyButton.text2Callback) ? 
-          steps[currentStep].customStickyButton.text2Callback(stepFunctionParams) : null
+      steps[currentStep].customStickyButton.mode === 'double' &&
+      steps[currentStep].customStickyButton.text2 &&
+      steps[currentStep].customStickyButton.text2Callback
+        ? steps[currentStep].customStickyButton.text2Callback(
+            stepFunctionParams
+          )
+        : null
     "
     [text2]="
-      steps[currentStep].customStickyButton.mode === 'double' && 
-      steps[currentStep].customStickyButton.text2 ? 
-        steps[currentStep].customStickyButton.text2 : null"
+      steps[currentStep].customStickyButton.mode === 'double' &&
+      steps[currentStep].customStickyButton.text2
+        ? steps[currentStep].customStickyButton.text2
+        : null
+    "
     [extra]="{
-      text: steps[currentStep].customStickyButton.mode === 'double' && 
-              steps[currentStep].customStickyButton.extra?.text ? 
-                steps[currentStep].customStickyButton.extra?.text : null,
-      icon: steps[currentStep].customStickyButton.mode === 'double' && 
-                steps[currentStep].customStickyButton.extra?.icon ? 
-                  steps[currentStep].customStickyButton.extra?.icon : null,
-      return: steps[currentStep].customStickyButton.mode === 'double' && 
-                  steps[currentStep].customStickyButton.extra?.return ? 
-                    steps[currentStep].customStickyButton.extra?.return : null,
-      returnCallback: steps[currentStep].customStickyButton.mode === 'double' && 
-                    steps[currentStep].customStickyButton.extra?.returnCallback ? 
-                      steps[currentStep].customStickyButton.extra?.returnCallback : null,
-      height: steps[currentStep].customStickyButton.mode === 'double' && 
-                    steps[currentStep].customStickyButton.extra?.height ? 
-                      steps[currentStep].customStickyButton.extra?.height : null,
-      width: steps[currentStep].customStickyButton.mode === 'double' && 
-                      steps[currentStep].customStickyButton.extra?.width ? 
-                        steps[currentStep].customStickyButton.extra?.width : null    
+      text:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.text
+          ? steps[currentStep].customStickyButton.extra?.text
+          : null,
+      icon:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.icon
+          ? steps[currentStep].customStickyButton.extra?.icon
+          : null,
+      return:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.return
+          ? steps[currentStep].customStickyButton.extra?.return
+          : null,
+      returnCallback:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.returnCallback
+          ? steps[currentStep].customStickyButton.extra?.returnCallback
+          : null,
+      height:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.height
+          ? steps[currentStep].customStickyButton.extra?.height
+          : null,
+      width:
+        steps[currentStep].customStickyButton.mode === 'double' &&
+        steps[currentStep].customStickyButton.extra?.width
+          ? steps[currentStep].customStickyButton.extra?.width
+          : null
     }"
     [customLeftButtonStyles]="
-      steps[currentStep].customStickyButton.mode === 'double' && 
-        steps[currentStep].customStickyButton.customLeftButtonStyles ? 
-          steps[currentStep].customStickyButton.customLeftButtonStyles : null
+      steps[currentStep].customStickyButton.mode === 'double' &&
+      steps[currentStep].customStickyButton.customLeftButtonStyles
+        ? steps[currentStep].customStickyButton.customLeftButtonStyles
+        : null
     "
     [customRightButtonStyles]="
-      steps[currentStep].customStickyButton.mode === 'double' && 
-        steps[currentStep].customStickyButton.customRightButtonStyles ? 
-          steps[currentStep].customStickyButton.customRightButtonStyles : null
+      steps[currentStep].customStickyButton.mode === 'double' &&
+      steps[currentStep].customStickyButton.customRightButtonStyles
+        ? steps[currentStep].customStickyButton.customRightButtonStyles
+        : null
     "
-    [bgColor]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.bgcolor : steps[currentStep].customStickyButton.bgcolorInactive"
-    [color]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.color : steps[currentStep].customStickyButton.colorInactive"
-    [height]="dataModel.get(currentStepString).status !== 'INVALID' ? steps[currentStep].customStickyButton.height : steps[currentStep].customStickyButton.heightInactive"
+    [bgColor]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].customStickyButton.bgcolor
+        : steps[currentStep].customStickyButton.bgcolorInactive
+    "
+    [color]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].customStickyButton.color
+        : steps[currentStep].customStickyButton.colorInactive
+    "
+    [height]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].customStickyButton.height
+        : steps[currentStep].customStickyButton.heightInactive
+    "
   ></app-sticky-button>
 
-  <app-bubble-button *ngIf="
-      currentStep === currentStep && 
-      steps[currentStep].footerConfig?.bubbleConfig
-      && (
-        dataModel.get(currentStepString).status !== 'INVALID' ?
-          !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.left
-      :
-          !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left
-      )
-      " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53" [position]="'left'"
-    [text]="
-        dataModel.get(currentStepString).status !== 'INVALID' ?
-          steps[currentStep].footerConfig.bubbleConfig.validStep.left && steps[currentStep].footerConfig.bubbleConfig.validStep.left.text :
-          steps[currentStep].footerConfig.bubbleConfig.invalidStep.left && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.text
-        " [icon]="
-          dataModel.get(currentStepString).status !== 'INVALID' ?
-            steps[currentStep].footerConfig.bubbleConfig.validStep.left && steps[currentStep].footerConfig.bubbleConfig.validStep.left.icon :
-            steps[currentStep].footerConfig.bubbleConfig.invalidStep.left && steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.icon
-        " [solo]="false" (click)="currentStep > 0 && shouldScrollBackwards &&
-        !steps[currentStep].customScrollToStepBackwards
-          ? scrollToStep(this.currentStep - 1, false)
-          : steps[currentStep].customScrollToStepBackwards
-          ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
-          : null"
-          [color]="
-            dataModel.get(currentStepString).status !== 'INVALID' ?
-              steps[currentStep].footerConfig.bubbleConfig.validStep?.left?.color :
-              steps[currentStep].footerConfig.bubbleConfig.invalidStep?.left?.color
-          "
-          ></app-bubble-button>
-
-  <app-bubble-button *ngIf="
-          currentStep === currentStep && 
-          steps[currentStep].footerConfig?.bubbleConfig
-          && (
-            dataModel.get(currentStepString).status !== 'INVALID' ?
-              !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.validStep.right :
-              !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right
-          )
-          " [bubblesMarginBottom]="dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53"
-    [position]="'right'" [text]="
-        dataModel.get(currentStepString).status !== 'INVALID' ?
-          steps[currentStep].footerConfig.bubbleConfig.validStep.right && steps[currentStep].footerConfig.bubbleConfig.validStep.right.text :
-          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.text
-        " [icon]="
-        dataModel.get(currentStepString).status !== 'INVALID' ?
-          steps[currentStep].footerConfig.bubbleConfig.validStep.right && steps[currentStep].footerConfig.bubbleConfig.validStep.right.icon :
-          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right && steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.icon
-        " [solo]="false"
-    (click)="steps[currentStep].footerConfig.bubbleConfig.validStep.function ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(stepFunctionParams) : null"
-    [color]="
-      dataModel.get(currentStepString).status !== 'INVALID' ?
-        steps[currentStep].footerConfig.bubbleConfig.validStep?.right?.color :
-        steps[currentStep].footerConfig.bubbleConfig.invalidStep?.right?.color
+  <app-bubble-button
+    *ngIf="
+      currentStep === currentStep &&
+      steps[currentStep].footerConfig?.bubbleConfig &&
+      (dataModel.get(currentStepString).status !== 'INVALID'
+        ? !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.left
+        : !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.left)
     "
-    >
+    [bubblesMarginBottom]="
+      dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53
+    "
+    [position]="'left'"
+    [text]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep.left &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.left.text
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep.left &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.text
+    "
+    [icon]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep.left &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.left.icon
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep.left &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.left.icon
+    "
+    [solo]="false"
+    (click)="
+      currentStep > 0 &&
+      shouldScrollBackwards &&
+      !steps[currentStep].customScrollToStepBackwards
+        ? scrollToStep(this.currentStep - 1, false)
+        : steps[currentStep].customScrollToStepBackwards
+        ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
+        : null
+    "
+    [color]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep?.left?.color
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep?.left?.color
+    "
+  ></app-bubble-button>
+
+  <app-bubble-button
+    *ngIf="
+      currentStep === currentStep &&
+      steps[currentStep].footerConfig?.bubbleConfig &&
+      (dataModel.get(currentStepString).status !== 'INVALID'
+        ? !steps[currentStep].footerConfig.bubbleConfig.validStep.dontShow &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.right
+        : !steps[currentStep].footerConfig.bubbleConfig.invalidStep.dontShow &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right)
+    "
+    [bubblesMarginBottom]="
+      dataModel.get(currentStepString).status !== 'INVALID' ? 30 : 53
+    "
+    [position]="'right'"
+    [text]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep.right &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.right.text
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep.right &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.text
+    "
+    [icon]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep.right &&
+          steps[currentStep].footerConfig.bubbleConfig.validStep.right.icon
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep.right &&
+          steps[currentStep].footerConfig.bubbleConfig.invalidStep.right.icon
+    "
+    [solo]="false"
+    (click)="
+      steps[currentStep].footerConfig.bubbleConfig.validStep.function
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep.function(
+            stepFunctionParams
+          )
+        : null
+    "
+    [color]="
+      dataModel.get(currentStepString).status !== 'INVALID'
+        ? steps[currentStep].footerConfig.bubbleConfig.validStep?.right?.color
+        : steps[currentStep].footerConfig.bubbleConfig.invalidStep?.right?.color
+    "
+  >
   </app-bubble-button>
 </div>

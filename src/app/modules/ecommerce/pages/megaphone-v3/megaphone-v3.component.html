@@ -32,9 +32,8 @@
         'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
       callback: null
     }, -->
-    <div class="header-bg">
+    <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
       <app-header-info
-        *ngIf="saleflowData && hasCustomizer"
         [profileImage]="saleflowData.banner"
         [title]="saleflowData.headline"
         [description]="saleflowData.subheadline"

@@ -158,16 +158,17 @@
                 }
               }
             ]"
-            [bottomText]="notification.date && {
-              rightText: {
-                text:
-                  'ULTIMO EL ' + notification.date,
-                fontSize: '13px',
-                fontFamily: 'RobotoMedium',
-                callback: goToNotificationsLog,
-                callbackArgs: [notification._id]
+            [bottomText]="
+              notification.date && {
+                rightText: {
+                  text: 'ULTIMO EL ' + notification.date,
+                  fontSize: '13px',
+                  fontFamily: 'RobotoMedium',
+                  callback: goToNotificationsLog,
+                  callbackArgs: [notification._id]
+                }
               }
-            }"
+            "
             [showSubtitle]="true"
             [hideAble]="false"
           ></app-enlist-display>
