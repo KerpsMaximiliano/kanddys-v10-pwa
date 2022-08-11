@@ -332,7 +332,7 @@ export class Authentication implements OnInit {
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const type = this.route.snapshot.queryParamMap.get('type');
     const phone = this.route.snapshot.queryParamMap.get('phone');
-    const hideNumber = this.route.snapshot.queryParamMap.get('hideNumber');
+    const hide = this.route.snapshot.queryParamMap.get('hide') as 'all' | 'number';
     this.auth = this.route.snapshot.queryParamMap.get('auth') as
       | 'mlink'
       | 'password';
@@ -901,7 +901,7 @@ export class Authentication implements OnInit {
           nationalNumber
         );
         this.formSteps[0].fieldsList[0].fieldControl.control.disable();
-        if (hideNumber) {
+        if (hide === 'number') {
           this.formSteps[0].fieldsList[0].styles.containerStyles = {
             ...this.formSteps[0].fieldsList[0].styles.containerStyles,
             visibility: 'hidden',
@@ -914,6 +914,40 @@ export class Authentication implements OnInit {
             margin: '0px',
             marginTop: '48px',
             marginBottom: '27px',
+          };
+        }
+        if (hide === 'all') {
+          this.formSteps[0].customScrollToStepBackwards = null;
+          this.formSteps[0].customStickyButton = null;
+          this.formSteps[0].footerConfig = null;
+          this.formSteps[0].fieldsList[0].label = null;
+          this.formSteps[0].fieldsList[0].styles = {
+            containerStyles: {
+              marginTop: '38px',
+              visibility: 'hidden',
+              position: 'absolute',
+            },
+            labelStyles: {
+              fontFamily: 'Roboto',
+              fontWeight: 'bold',
+              fontSize: '24px',
+              margin: '0px',
+              marginTop: '48px',
+              marginBottom: '27px',
+            },
+          };
+          this.formSteps[0].fieldsList[0].bottomLabel = null;
+          this.formSteps[0].fieldsList[1].label = null;
+          this.formSteps[0].fieldsList[1].bottomLabel = null;
+          this.formSteps[0].fieldsList[1].styles = {
+            containerStyles: {
+              marginTop: '38px',
+            },
+          };
+          this.formSteps[0].fieldsList[2].bottomLabel = null;
+          this.formSteps[0].fieldsList[2].styles.containerStyles = {
+            margin: '0px',
+            marginTop: '24px',
           };
         }
       }

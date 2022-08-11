@@ -61,7 +61,7 @@ export interface FormField {
     clickable?: boolean;
     callback?: (...params) => any | Promise<any>;
   };
-  label: string;
+  label?: string;
   sublabel?: string;
   shouldWrapLabelAndSublabelInsideADiv?: boolean;
   bottomLabel?: {
