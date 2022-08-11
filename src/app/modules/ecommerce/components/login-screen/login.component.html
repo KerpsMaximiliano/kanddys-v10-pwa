@@ -1,4 +1,3 @@
-
 <div class="container">
 
     <app-helper-headerv2
@@ -36,7 +35,7 @@
                     tabindex="1"
                 ></ngx-intl-tel-input> 
 
-                <button class="confirm"><i class="fas fa-chevron-right"></i></button>
+                <button class="confirm" (click)="submitPhone()"><i class="fas fa-chevron-right"></i></button>
             </div>
 
             <button class="adiciona">¿No tienes usuario? Crear Usuario</button>
@@ -45,7 +44,7 @@
 
         <div class="password-input" *ngIf="loggin">
 
-            <input class="pass" type="password" placeholder="Adiciona la Clave">
+            <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password">
 
             <button class="confirm"><i class="fas fa-chevron-right"></i></button>
 
