@@ -71,6 +71,12 @@ export class ImageInputComponent implements OnInit {
     );
   }
 
+  clearFiles() {
+    this.imageField = [];
+    this.imageField.push('');
+    this.error = [];
+  }
+
   fileProgress(e: Event, index: number) {
     const files = (e.target as HTMLInputElement).files;
 
