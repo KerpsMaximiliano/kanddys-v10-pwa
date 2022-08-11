@@ -78,7 +78,7 @@ import { CreateItemComponent } from './pages/create-item/create-item.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
-import { LoginScreenComponent } from './components/login-screen/login-screen.component';
+import { LoginComponent } from './components/login-screen/login.component';
 
 const routes: Routes = [
   {
@@ -460,7 +460,7 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginScreenComponent
+    component: LoginComponent
   },
 ];
 
@@ -544,7 +544,7 @@ const routes: Routes = [
     CalendarDetailComponent,
     CalendarCreatorComponent,
     ReservationsCreatorComponent,
-    LoginScreenComponent
+    LoginComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

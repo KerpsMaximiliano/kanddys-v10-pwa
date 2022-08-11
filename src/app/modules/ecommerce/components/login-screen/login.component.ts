@@ -7,11 +7,11 @@ import {
 } from 'ngx-intl-tel-input';
 
 @Component({
-  selector: 'app-login-screen',
-  templateUrl: './login-screen.component.html',
-  styleUrls: ['./login-screen.component.scss']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class LoginScreenComponent implements OnInit {
+export class LoginComponent implements OnInit {
 
     merchantNumber: string = '(000) 000-0000';
     phoneNumber = new FormControl('', [Validators.minLength(10)]);
