@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from './../../shared/shared.module';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ErrorScreenComponent } from './components/error-screen/error-screen.component';
+import { LoginScreenComponent } from './components/login-screen/login-screen.component';
 import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
 import { Authentication } from './pages/authentication/authentication.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
@@ -108,7 +109,7 @@ const routes: Routes = [
     path: 'error-screen',
     component: ErrorScreenComponent,
   },
-  { path: 'megaphone-v3/:id',   redirectTo: 'store/:id', pathMatch: 'full' },
+  { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
   {
     path: 'store/:id',
     component: MegaphoneV3Component,
@@ -252,7 +253,7 @@ const routes: Routes = [
   {
     path: 'item-creator',
     component: ItemCreatorComponent,
-    data: {animation: 'ItemCreator'}
+    data: { animation: 'ItemCreator' },
   },
   {
     path: 'item-creator/:itemId',
@@ -292,84 +293,84 @@ const routes: Routes = [
   },
   {
     path: 'item-gallery',
-    component: ItemGalleryComponent
+    component: ItemGalleryComponent,
   },
   {
     path: 'item-display/:itemId',
-    component: NewItemDisplayComponent
+    component: NewItemDisplayComponent,
   },
   {
     path: 'item-display',
-    component: NewItemDisplayComponent
+    component: NewItemDisplayComponent,
   },
   {
     path: 'bank-registration/:saleflowId',
-    component: BankRegistrationComponent
+    component: BankRegistrationComponent,
   },
   {
     path: 'authentication',
-    component: Authentication
+    component: Authentication,
   },
   {
     path: 'authentication/:itemId',
-    component: Authentication
+    component: Authentication,
   },
   {
     path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
-    component: LlStudioOrderFormComponent
+    component: LlStudioOrderFormComponent,
   },
   {
     path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
-    component: HeavenlyBalloonsComponent
+    component: HeavenlyBalloonsComponent,
   },
   {
     path: 'category-items-admin/:categoryId',
-    component: CategoryItemsAdminComponent
+    component: CategoryItemsAdminComponent,
   },
   {
     path: 'category-item-detail/:itemId',
-    component: CategoryItemDetailComponent
+    component: CategoryItemDetailComponent,
   },
   {
     path: 'sale-detail/:orderId',
-    component: SaleDetailComponent
+    component: SaleDetailComponent,
   },
   {
     path: 'item-sales-detail/:itemId',
-    component: ItemSalesDetailComponent
+    component: ItemSalesDetailComponent,
   },
   {
     path: 'user-items',
-    component: UserItemsComponent
+    component: UserItemsComponent,
   },
   {
     path: 'my-customers',
-    component: MyCustomersComponent
+    component: MyCustomersComponent,
   },
   {
     path: 'user-creator',
-    component: UserCreatorComponent
+    component: UserCreatorComponent,
   },
   {
     path: 'user-contact-landing/:id',
-    component: UserContactLandingComponent
+    component: UserContactLandingComponent,
   },
   {
     path: 'merchant-items',
-    component: MerchantItemsComponent
+    component: MerchantItemsComponent,
   },
   {
     path: 'entity-detail-metrics',
     component: EntityDetailMetricsComponent,
-    data: {animation: 'EntityDetailMetrics'}
+    data: { animation: 'EntityDetailMetrics' },
   },
   {
     path: 'notifications-log/:id',
-    component: NotificationsLogComponent
+    component: NotificationsLogComponent,
   },
   {
     path: 'notifications-log',
-    component: NotificationsLogComponent
+    component: NotificationsLogComponent,
   },
   // {
   //   path: 'notification-creator',
@@ -377,72 +378,76 @@ const routes: Routes = [
   // },
   {
     path: 'notification-creator/:id/:notificationId',
-    component: NotificationCreatorComponent
+    component: NotificationCreatorComponent,
   },
   {
     path: 'notification-creator/:id',
-    component: NotificationCreatorComponent
+    component: NotificationCreatorComponent,
   },
   {
     path: 'category-creator/:id',
-    component: TagCategoryCreatorComponent
+    component: TagCategoryCreatorComponent,
   },
   {
     path: 'category-creator',
-    component: TagCategoryCreatorComponent
+    component: TagCategoryCreatorComponent,
   },
   {
     path: 'tag-creator/:id',
-    component: TagCategoryCreatorComponent
+    component: TagCategoryCreatorComponent,
   },
   {
     path: 'tag-creator',
-    component: TagCategoryCreatorComponent
+    component: TagCategoryCreatorComponent,
   },
   {
     path: 'admin-login',
-    component: AdminLoginComponent
+    component: AdminLoginComponent,
   },
   {
     path: 'item-category-exposition',
-    component: ItemCategoryExpositionComponent
+    component: ItemCategoryExpositionComponent,
   },
   {
     path: 'merchant-orders',
-    component: MerchantOrdersComponent
+    component: MerchantOrdersComponent,
   },
   {
     path: 'item-reservations/:id',
-    component: ReservationsComponent
+    component: ReservationsComponent,
   },
   {
     path: 'item-reservations',
-    component: ReservationsComponent
+    component: ReservationsComponent,
   },
   {
     path: 'reservation/:reservationId',
-    component: ReservationDetailComponent
+    component: ReservationDetailComponent,
   },
   {
     path: 'order-detail',
-    component: OrderDetailComponent
+    component: OrderDetailComponent,
   },
   {
-    path:'merchant-buyers',
-    component: MerchantBuyersComponent
+    path: 'merchant-buyers',
+    component: MerchantBuyersComponent,
   },
   {
     path: 'calendar-detail',
-    component: CalendarDetailComponent
+    component: CalendarDetailComponent,
   },
   {
     path: 'reservations-creator/:calendarId',
-    component: ReservationsCreatorComponent
+    component: ReservationsCreatorComponent,
   },
   {
     path: 'calendar-creator',
-    component: CalendarCreatorComponent
-  }
+    component: CalendarCreatorComponent,
+  },
+  {
+    path: 'login',
+    component: LoginScreenComponent,
+  },
 ];
 
 @NgModule({
@@ -452,7 +457,6 @@ const routes: Routes = [
     CustomizerRedirectComponent,
     ErrorScreenComponent,
     ProviderStoreComponent,
-    CategoryItemsComponent,
     MegaphoneV3Component,
     OrderInfoComponent,
     ShipmentDataFormComponent,
@@ -522,8 +526,9 @@ const routes: Routes = [
     CreateItemComponent,
     CalendarDetailComponent,
     CalendarCreatorComponent,
-    ReservationsCreatorComponent
+    ReservationsCreatorComponent,
+    LoginScreenComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
-export class EcommerceModule { }
+export class EcommerceModule {}

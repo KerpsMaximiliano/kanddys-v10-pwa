@@ -1,0 +1,90 @@
+.container{
+    width: 100%;
+    min-height: 100vh;
+
+    .input-area{
+        width: 100%;
+        margin-top: 9vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .phone-input-wrapper{
+            width: 85%;
+            height: auto;   
+
+            .wrapper{
+                position: relative;
+                
+                .confirm{
+                    top: 27px;
+                    right: 6%;
+                }
+            }
+        
+            .adiciona{
+                all: unset;
+                color: #2874AD;
+                font-family: 'SfProBold';
+                font-size: 14px;
+                margin-top: 25px;
+                margin-left: 19px;
+                cursor: pointer;
+            }
+        }
+
+        .password-input{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+
+            .pass{
+                all: unset;
+                width: 85%;
+                height: 72px;
+                text-indent: 16px;
+                background-color: #FFFFFF;
+
+                &::placeholder{
+                    font-family: 'RobotoMedium';
+                    font-size: 20px;
+                    text-indent: 16px;
+                    color: rgba(161, 161, 161, 60%);
+                }
+            }
+
+            .confirm{
+                right: 11%;
+            }
+        }
+    }
+}
+
+.confirm{
+    all: unset;
+    position: absolute;
+    width: 45px;
+    height: 21px;
+    padding-bottom: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2874AD;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #FFFFFF;
+    z-index: 2;
+}
+
+.fas{
+    width: 5px;
+    height: 9px;
+}
+
+.custom, .pass{
+    border-radius: 9px !important;
+    box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+}
