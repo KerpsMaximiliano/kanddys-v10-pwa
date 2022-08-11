@@ -1328,7 +1328,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         {
           name: 'whereToDeliver',
           label: 'Dirección o Destino de Entrega',
-          sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y varía de RD$200 a RD$350 aproximadamente. El envío al interior se hace vía courrier, a partir de RD$300',
+          sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y su costo es a partir de RD$250. El envío al interior se hace vía courrier, a partir de RD$350',
           inputType: 'textarea',
           fieldControl: {
             type: 'single',
