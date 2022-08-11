@@ -76,7 +76,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Nombre (*)',
           topLabelAction: {
@@ -111,7 +111,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -190,7 +190,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'birthday',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: 'YYYY-MM-DD',
           label: 'Fecha de nacimiento',
@@ -291,7 +291,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'phoneNumber',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Número de teléfono (*)',
           inputType: 'phone',
@@ -393,7 +393,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'articleDescription',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Describe aquí cómo deseas que preparemos tu arreglo (*)',
           placeholder: 'Por ejemplo: Arreglo de 6 rosas con lazo blanco',
@@ -519,7 +519,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'receiver',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Destinatario (Quién recibe este arreglo) (*)',
           placeholder: 'Escribe aquí',
@@ -573,7 +573,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'wantToAddADedication',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
@@ -584,7 +584,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
             if (change === 'Si') {
               this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '1';
               this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft = '0px';              
-              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators(Validators.required);
               this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();
             } else {
               this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '0';
@@ -667,7 +666,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: ['Whatsapp', 'Instagram', 'E-Mail', 'Website', 'Personal'],
           changeCallbackFunction: (change, params) => {
@@ -838,7 +837,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
           fieldControl: {
             type: 'single',
             control: new FormControl(0, [
-              Validators.required,
               Validators.min(0.01)
             ])
           },
@@ -935,7 +933,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'paymentMethod',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: ['Efectivo', 'Cuenta Banreservas', 'Cuenta BHD', 'Cuenta Banco Popular', 'Yoyo App', 'Otro'],
           changeCallbackFunction: (change, params) => {
@@ -964,7 +962,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'referenceImage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Adjunta aquí tu comprobante de Pago(*)',
           inputType: 'file',
@@ -1031,7 +1029,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         {
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           name: 'reservation',
           label: '',
@@ -1096,7 +1094,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: '¿Cómo deseas que sea entregado tu arreglo? (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: [
             'Pick Up',
@@ -1122,7 +1120,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Indica el tipo de Edificación (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: [
             'Casa',
@@ -1147,7 +1145,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'deliveryAddress',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           label: 'Dirección en la que deseas que sea entregado tu arreglo (*)',
           placeholder: 'Escribe aquí...',
@@ -1268,7 +1266,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Tipo de Factura',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           selectionOptions: [
             'Sin Comprobante',
@@ -1374,14 +1372,21 @@ export class HeavenlyBalloonsComponent implements OnInit {
             const convertedFirstPayment = Number(
               firstPayment
                 .split('').filter(char => char !== ',' && char !== '$').join(''));
-  
-            let [birthYear, birthMonth, birthDay] = birthday.split('-');
+            
+            let birthYear, birthMonth, birthDay;
+            let birthDayISOString = new Date().toISOString();
 
-            birthYear = Number(birthYear);
-            birthMonth = Number(birthMonth);
-            birthDay = Number(birthDay);
+            if(birthDay) {
+              const birthDayArray = birthday.split('-');
+              birthYear = birthDayArray[0],
+              birthMonth = birthDayArray[1],
+              birthDay = birthDayArray[2]
+              birthYear = Number(birthYear);
+              birthMonth = Number(birthMonth);
+              birthDay = Number(birthDay);
 
-            const birthDayISOString = new Date(birthYear, birthMonth - 1, birthDay).toISOString();
+              birthDayISOString = new Date(birthYear, birthMonth - 1, birthDay).toISOString();
+           }
 
             const { reservation: delivery } = params.dataModel.value['8'];
             const { 
@@ -1399,24 +1404,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             const files = [];
 
-            files.push(base64ToFile(referenceImage));
-
-            this.defaultImages.forEach(image => {
-              if(image !== "") {
-                files.push(base64ToFile(image as string))
-              }
-            });
-
-            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(files);
-
-            this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
-            this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
-
-            const deliveryISOString = new Date(new Date().getFullYear(), delivery.monthNumber - 1, delivery.dayNumber).toISOString();
-
-            console.log(deliveryISOString);
-
-            const data = {
+            const data: any = {
               instagramUser,
               name,
               lastname,
@@ -1431,8 +1419,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               wantToAddADedication,
               orderMedium,
               paymentMethod,
-              referenceImage: fileRoutes[0],
-              delivery: deliveryISOString,
               timeOfDay: delivery.timeOfDay,
               addressReference,
               deliveryAddress,
@@ -1442,36 +1428,62 @@ export class HeavenlyBalloonsComponent implements OnInit {
               billType,
               totalAmount: convertedTotalAmount,
               firstPayment: convertedFirstPayment,
-              articlePhotos: fileRoutes.slice(1,),
               howDidYouFindUs,
               birthday: birthDayISOString,
             };
 
-            const success = await this.merchantsService.uploadDataToClientsAirtable(
-              this.merchantId,
-              this.automationName,
-              data
-            );
+            if(referenceImage) {
+              files.push(base64ToFile(referenceImage));
 
-            this.dialog.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                message: success ? null : 'Ocurrió un problema'
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
+              this.defaultImages.forEach(image => {
+                if(image !== "") {
+                  files.push(base64ToFile(image as string))
+                }
+              });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+              const fileRoutes = await this.merchantsService.uploadAirtableAttachments(files);
+              this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
+              this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
+
+              data.referenceImage = fileRoutes[0];
+              data.articlePhotos = fileRoutes.slice(1,);
+            }
+
+            if(delivery) {
+              const deliveryISOString = new Date(new Date().getFullYear(), delivery.monthNumber - 1, delivery.dayNumber).toISOString();
+              data.delivery = deliveryISOString;              
+            }
+
+            if(window.navigator.onLine) {
+              const success = await this.merchantsService.uploadDataToClientsAirtable(
+                this.merchantId,
+                this.automationName,
+                data
+              );
+  
+              this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                type: 'centralized-fullscreen',
+                props: {
+                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                  message: success ? null : 'Ocurrió un problema'
+                },
+                customClass: 'app-dialog',
+                flags: ['no-header'],
+              });
+  
+              window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            } else {
+              throw new Error("Se perdió la conexion a internet");
+            }
 
             return { ok: true };
           } catch (error) {
+            console.log("El error ", error)
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
               props: {
                 icon: 'sadFace.svg',
-                message: 'Ocurrió un problema'
+                message: window.navigator.onLine ? 'Ocurrió un problema: ' + error : 'Se perdió la conexion a internet'
               },
               customClass: 'app-dialog',
               flags: ['no-header'],
