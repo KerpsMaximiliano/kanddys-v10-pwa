@@ -193,7 +193,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl('', Validators.required)
           },
           placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de nacimiento',
+          label: 'Fecha de nacimiento (*)',
           inputType: 'date',
           maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
@@ -839,7 +839,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(0, [
               Validators.required,
-              Validators.min(0.01)
+              Validators.min(0.01) 
             ])
           },
           shouldFormatNumber: true,
@@ -1374,14 +1374,21 @@ export class HeavenlyBalloonsComponent implements OnInit {
             const convertedFirstPayment = Number(
               firstPayment
                 .split('').filter(char => char !== ',' && char !== '$').join(''));
-  
-            let [birthYear, birthMonth, birthDay] = birthday.split('-');
+            
+            let birthYear, birthMonth, birthDay;
+            let birthDayISOString = new Date().toISOString();
 
-            birthYear = Number(birthYear);
-            birthMonth = Number(birthMonth);
-            birthDay = Number(birthDay);
+            if(birthDay) {
+              const birthDayArray = birthday.split('-');
+              birthYear = birthDayArray[0],
+              birthMonth = birthDayArray[1],
+              birthDay = birthDayArray[2]
+              birthYear = Number(birthYear);
+              birthMonth = Number(birthMonth);
+              birthDay = Number(birthDay);
 
-            const birthDayISOString = new Date(birthYear, birthMonth - 1, birthDay).toISOString();
+              birthDayISOString = new Date(birthYear, birthMonth - 1, birthDay).toISOString();
+           }
 
             const { reservation: delivery } = params.dataModel.value['8'];
             const { 
@@ -1399,24 +1406,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             const files = [];
 
-            files.push(base64ToFile(referenceImage));
-
-            this.defaultImages.forEach(image => {
-              if(image !== "") {
-                files.push(base64ToFile(image as string))
-              }
-            });
-
-            const fileRoutes = await this.merchantsService.uploadAirtableAttachments(files);
-
-            this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
-            this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
-
-            const deliveryISOString = new Date(new Date().getFullYear(), delivery.monthNumber - 1, delivery.dayNumber).toISOString();
-
-            console.log(deliveryISOString);
-
-            const data = {
+            const data: any = {
               instagramUser,
               name,
               lastname,
@@ -1431,8 +1421,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               wantToAddADedication,
               orderMedium,
               paymentMethod,
-              referenceImage: fileRoutes[0],
-              delivery: deliveryISOString,
               timeOfDay: delivery.timeOfDay,
               addressReference,
               deliveryAddress,
@@ -1442,36 +1430,62 @@ export class HeavenlyBalloonsComponent implements OnInit {
               billType,
               totalAmount: convertedTotalAmount,
               firstPayment: convertedFirstPayment,
-              articlePhotos: fileRoutes.slice(1,),
               howDidYouFindUs,
               birthday: birthDayISOString,
             };
 
-            const success = await this.merchantsService.uploadDataToClientsAirtable(
-              this.merchantId,
-              this.automationName,
-              data
-            );
+            if(referenceImage) {
+              files.push(base64ToFile(referenceImage));
 
-            this.dialog.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                message: success ? null : 'Ocurrió un problema'
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
+              this.defaultImages.forEach(image => {
+                if(image !== "") {
+                  files.push(base64ToFile(image as string))
+                }
+              });
 
-            window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+              const fileRoutes = await this.merchantsService.uploadAirtableAttachments(files);
+              this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
+              this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes.slice(1,).join('\n')}\n\n`;
+
+              data.referenceImage = fileRoutes[0];
+              data.articlePhotos = fileRoutes.slice(1,);
+            }
+
+            if(delivery) {
+              const deliveryISOString = new Date(new Date().getFullYear(), delivery.monthNumber - 1, delivery.dayNumber).toISOString();
+              data.delivery = deliveryISOString;              
+            }
+
+            if(window.navigator.onLine) {
+              const success = await this.merchantsService.uploadDataToClientsAirtable(
+                this.merchantId,
+                this.automationName,
+                data
+              );
+  
+              this.dialog.open(GeneralFormSubmissionDialogComponent, {
+                type: 'centralized-fullscreen',
+                props: {
+                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                  message: success ? null : 'Ocurrió un problema'
+                },
+                customClass: 'app-dialog',
+                flags: ['no-header'],
+              });
+  
+              window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            } else {
+              throw new Error("Se perdió la conexion a internet");
+            }
 
             return { ok: true };
           } catch (error) {
+            console.log("El error ", error)
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
               props: {
                 icon: 'sadFace.svg',
-                message: 'Ocurrió un problema'
+                message: window.navigator.onLine ? 'Ocurrió un problema: ' + error : 'Se perdió la conexion a internet'
               },
               customClass: 'app-dialog',
               flags: ['no-header'],

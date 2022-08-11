@@ -1204,6 +1204,32 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputs:
           {
             calendarId: this.calendarId,
+            hourRangeInDays: {
+              'MONDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'TUESDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'WEDNESDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'THURSDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'FRIDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 18}
+              ],
+              'SATURDAY': [
+                {from: 9, to: 11},
+                {from: 14, to: 15}
+              ],
+            },
             //calendarId: "62ead89938496128082e4ddd"
           },
           outputs: [
@@ -1302,7 +1328,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         {
           name: 'whereToDeliver',
           label: 'Dirección o Destino de Entrega',
-          sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y varía de RD$200 a RD$350 aproximadamente. El envío al interior se hace vía courrier, a partir de RD$300',
+          sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y su costo es a partir de RD$250. El envío al interior se hace vía courrier, a partir de RD$350',
           inputType: 'textarea',
           fieldControl: {
             type: 'single',
