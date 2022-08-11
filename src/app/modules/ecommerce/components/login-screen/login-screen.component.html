@@ -1,0 +1,55 @@
+
+<div class="container">
+
+    <app-helper-headerv2
+    [mode]="'basic'"
+    [mainText]="{
+        text: loggin? merchantNumber : 'Acceder a Usuario',
+        fontFamily: 'SfProBold',
+        fontSize: '21px',
+        color: '#FFF'
+    }"
+    bgColor="#2874AD"
+    [returnAble]="loggin? true : false"
+    (returnEvent)="toggleLog()"
+    ></app-helper-headerv2>
+
+    <div class="input-area">
+
+        <div class="phone-input-wrapper" *ngIf="!loggin">
+
+            <div class="wrapper">
+                <ngx-intl-tel-input 
+                    [cssClass]="'custom'"
+                    [enableAutoCountrySelect]="true" 
+                    [enablePlaceholder]="true" 
+                    [searchCountryFlag]="true"
+                    [selectFirstCountry]="false" 
+                    [preferredCountries]="preferredCountries"
+                    [selectedCountryISO]="CountryISO" 
+                    maxLength="13"
+                    [phoneValidation]="true" 
+                    [separateDialCode]="true" 
+                    [customPlaceholder]="'(000) 000-0000'"
+                    [numberFormat]="PhoneNumberFormat.International"
+                    [formControl]="phoneNumber"
+                    tabindex="1"
+                ></ngx-intl-tel-input> 
+
+                <button class="confirm"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <button class="adiciona">¿No tienes usuario? Crear Usuario</button>
+        </div>
+        
+
+        <div class="password-input" *ngIf="loggin">
+
+            <input class="pass" type="password" placeholder="Adiciona la Clave">
+
+            <button class="confirm"><i class="fas fa-chevron-right"></i></button>
+
+        </div>
+    </div>
+    
+</div>

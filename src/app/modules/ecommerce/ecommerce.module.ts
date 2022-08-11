@@ -78,6 +78,7 @@ import { CreateItemComponent } from './pages/create-item/create-item.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
+import { LoginScreenComponent } from './components/login-screen/login-screen.component';
 
 const routes: Routes = [
   {
@@ -456,7 +457,11 @@ const routes: Routes = [
   {
     path: 'calendar-creator',
     component: CalendarCreatorComponent
-  }
+  },
+  {
+    path: 'login',
+    component: LoginScreenComponent
+  },
 ];
 
 @NgModule({
@@ -538,7 +543,8 @@ const routes: Routes = [
     CreateItemComponent,
     CalendarDetailComponent,
     CalendarCreatorComponent,
-    ReservationsCreatorComponent
+    ReservationsCreatorComponent,
+    LoginScreenComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
