@@ -1,6 +1,5 @@
 import { Form, Control } from '@mukuve/ngx-forms';
 import { Community } from 'src/app/core/models/community';
-import { CardData } from './../../shared/components/card/card.component';
 import { Model } from './../objects/model';
 import { DeliveryLocation, SocialMediaModel } from './saleflow';
 import { Tag } from './tags';
@@ -42,22 +41,6 @@ export class User extends Model<User> {
 
   hasRoles(...roles: string[]): boolean {
     return (this.roles || []).some((r) => roles.includes(r.code));
-  }
-
-  toCard(): CardData {
-    let title = this.name;
-    if (!title.trim()) title = `Unnamed user`;
-    return {
-      title,
-      image: this.image,
-      content: `
-        <b> Phone: </b> ${this.phone || 'n/a'} <br/>
-        <b> Email: </b> ${this.email || 'n/a'} <br/>
-      `,
-      metadata: {
-        recordId: this._id,
-      },
-    };
   }
 }
 

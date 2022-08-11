@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
-import { notification } from 'onsenui';
+import { ToastrService } from 'ngx-toastr';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -62,7 +62,8 @@ export class ReservationOrderlessComponent implements OnInit {
     public header: HeaderService,
     public saleflow: SaleFlowService,
     private location: Location,
-    private app: AppService
+    private app: AppService,
+    private toastr: ToastrService
   ) { }
 
   slides: any = ['1', '2', '3'];
@@ -561,7 +562,7 @@ export class ReservationOrderlessComponent implements OnInit {
     copyText(
       `${uri}/appointments/calendar-reservation-v4/${this.saleflowData._id}`
     );
-    notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
+    this.toastr.info('Enlace copiado en el clipboard');
   }
 
   formatHour(hour: string) {

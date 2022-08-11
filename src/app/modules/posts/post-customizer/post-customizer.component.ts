@@ -1,46 +1,43 @@
+import { Platform } from '@angular/cdk/platform';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { LocationStrategy } from '@angular/common';
 import {
-  Component,
-  OnInit,
   AfterViewInit,
-  ViewChild,
+  Component,
   ElementRef,
   HostListener,
   NgZone,
+  OnInit,
+  ViewChild
 } from '@angular/core';
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Customizer } from 'src/app/core/models/customizer';
-import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
-import { CustomizerService } from 'src/app/core/services/customizer.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { CustomizerStickersComponent } from './customizer-stickers/customizer-stickers.component';
+import { take } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { Platform } from '@angular/cdk/platform';
-import { environment } from 'src/environments/environment';
+import { Customizer } from 'src/app/core/models/customizer';
 import {
+  BackgroundImageInput,
   CustomizerValue,
   CustomizerValueInput,
-  Position,
-  BackgroundImageInput,
-  StickerInput,
-  TextInput,
   LinePoints,
-  LinesInput,
-  Texts,
-  Stickers,
   Lines,
-  BackgroundColor,
-  BackgroundImage,
-  Canvas,
+  LinesInput,
+  Position,
+  StickerInput,
+  Stickers,
+  TextInput,
+  Texts
 } from 'src/app/core/models/customizer-value';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { take } from 'rxjs/operators';
-import { LocationStrategy } from '@angular/common';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { ItemsService } from 'src/app/core/services/items.service';
 import { Item } from 'src/app/core/models/item';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
+import { CustomizerService } from 'src/app/core/services/customizer.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { environment } from 'src/environments/environment';
+import { CustomizerStickersComponent } from './customizer-stickers/customizer-stickers.component';
 
 interface CanvasElement {
   // ------- General properties -----------
@@ -90,10 +87,10 @@ interface TextData {
   imageText: string;
   fontSize: string;
   fontStyle: string;
-  fontColor: { name: string; fixedValue: string, nickname: string };
+  fontColor: { name: string; fixedValue: string; nickname: string };
 }
 
-const allColors: { name: string; fixedValue: string, nickname: string }[] = [
+const allColors: { name: string; fixedValue: string; nickname: string }[] = [
   {
     name: 'Default',
     fixedValue: '#D5D5D5',
@@ -106,9 +103,7 @@ const allColors: { name: string; fixedValue: string, nickname: string }[] = [
   templateUrl: './post-customizer.component.html',
   styleUrls: ['./post-customizer.component.scss'],
 })
-export class PostCustomizerComponent
-  implements OnInit, AfterViewInit
-{
+export class PostCustomizerComponent implements OnInit, AfterViewInit {
   @ViewChild('myCanvas', { static: false })
   canvasRef: ElementRef<HTMLCanvasElement>;
   public context: CanvasRenderingContext2D;
@@ -132,7 +127,13 @@ export class PostCustomizerComponent
   customizerRuleID: string;
   customizeOptions: string[] = [];
   selectedOption: 'tipografía' | 'stickers' | 'lápiz' | 'bgColor' | '';
-  selectedElementOption: '' | 'tamaño' | 'angulo' | 'color' | 'tipografia' | 'input';
+  selectedElementOption:
+    | ''
+    | 'tamaño'
+    | 'angulo'
+    | 'color'
+    | 'tipografia'
+    | 'input';
   textOptions: string = 'texto';
   backgroundImageOptions: string[] = [
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253670596.jpeg',
@@ -190,7 +191,8 @@ export class PostCustomizerComponent
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253683952.svg',
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/item-images/1644253684463.svg',
   ];
-  stickerColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
+  stickerColors: { name: string; fixedValue: string; nickname: string }[] =
+    allColors;
   currentStickersAmount: number = 0;
   stickerMax: boolean = false;
   stickerColor: string = '';
@@ -201,7 +203,8 @@ export class PostCustomizerComponent
   canDraw: boolean = false;
   lineWidth: number = 2;
   lineColor: string = '#D5D5D5';
-  lineColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
+  lineColors: { name: string; fixedValue: string; nickname: string }[] =
+    allColors;
   // LÁPIZ
 
   // TIPOGRAFIA
@@ -239,12 +242,14 @@ export class PostCustomizerComponent
     },
     {
       // fileName: 'CheltenhamStdBold.otf',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf',
       fontName: 'Cheltenham',
     },
     {
       // fileName: 'Dorsa-Regular.ttf',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Dorsa-Regular.ttf',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Dorsa-Regular.ttf',
       fontName: 'Dorsa',
     },
     {
@@ -253,21 +258,19 @@ export class PostCustomizerComponent
     },
     {
       // fileName: 'AirForce45-Regular.ttf',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf',
       fontName: 'AirForce45-Regular',
     },
     {
       // fileName: 'PomfritDandyNFRegular.ttf',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf',
       fontName: 'PomfritDandyNFRegular',
     },
     {
       fileName: `HorsDoeuvresTheGarter.otf`,
       fontName: 'HorsDoeuvresTheGarter',
-    },
-    {
-      fileName: 'CheltenhamStdBoldCondIt.otf',
-      fontName: 'CheltenhamStdBoldCondIt',
     },
     {
       fileName: 'CheltenhamStd-HdtooledBold.otf',
@@ -278,25 +281,24 @@ export class PostCustomizerComponent
       fontName: 'CFCraigRobinson-Regular',
     },
     {
-      fileName: 'TypoOvalRegularDemo.otf',
-      fontName: 'TypoOvalRegularDemo',
-    },
-    {
       fileName: 'empire-bt.ttf',
       fontName: 'Empire',
     },
     {
       // fileName: 'Commercial-Script.ttf',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf',
       fontName: 'Commercial-Script',
     },
     {
       // fileName: 'ONYX.TTF',
-      fileName: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF',
+      fileName:
+        'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF',
       fontName: 'Onyx',
     },
   ];
-  fontColors: { name: string; fixedValue: string, nickname: string }[] = allColors;
+  fontColors: { name: string; fixedValue: string; nickname: string }[] =
+    allColors;
   currentTextsAmount: number = 0;
   currentMaxLength: number;
   textMax: boolean = false;
@@ -384,15 +386,19 @@ export class PostCustomizerComponent
 
   getCustomizerRules(customizer: Customizer) {
     this.customizerRules = customizer;
-    const { canvas, backgroundColor, backgroundImage, stickers, texts, lines } = customizer;
+    const { canvas, backgroundColor, backgroundImage, stickers, texts, lines } =
+      customizer;
     if (canvas.onlyFixed) {
       this.canvasHeight = canvas.fixedSize.height;
       this.canvasRatio = canvas.fixedSize.ratio;
       // this.canvasRatio = '1:1';
-      if(canvas.fixedSize.ratio === '1:1') this.canvasHeight = this.canvasWidth;
-      if(canvas.fixedSize.ratio === '3:4') this.canvasHeight = Math.floor(this.canvasWidth * 1.33);
+      if (canvas.fixedSize.ratio === '1:1')
+        this.canvasHeight = this.canvasWidth;
+      if (canvas.fixedSize.ratio === '3:4')
+        this.canvasHeight = Math.floor(this.canvasWidth * 1.33);
       // if(canvas.fixedSize.ratio === '9:16') this.canvasHeight = Math.floor(this.canvasWidth * 1.78);
-      if(canvas.fixedSize.ratio === '9:16') this.canvasHeight = Math.floor(this.canvasWidth * 1.5);
+      if (canvas.fixedSize.ratio === '9:16')
+        this.canvasHeight = Math.floor(this.canvasWidth * 1.5);
       this.canvasRef.nativeElement.height = this.canvasHeight;
       // this.canvasHeight = this.canvasWidth;
       // this.canvasRef.nativeElement.height = this.canvasWidth;
@@ -450,16 +456,22 @@ export class PostCustomizerComponent
       }
     } else if (this.route.snapshot.url[0].path === 'post-customizer') {
       if (backgroundColor.active && backgroundColor.onlyFixed) {
-        if(this.header.paramHasColor) {
+        if (this.header.paramHasColor) {
           this.backgroundColorActive = true;
           this.selectedBackgroundColor = backgroundColor.fixed[0];
           this.drawBackgroundColor();
         } else {
-          this.selectedBackgroundColor = backgroundColor.fixed.find((value) => value.name === 'Blanco');
+          this.selectedBackgroundColor = backgroundColor.fixed.find(
+            (value) => value.name === 'Blanco'
+          );
         }
       }
-      if (backgroundImage.active && backgroundImage.onlyFixed && this.header.paramHasImage) {
-        this.onChangeBackgroundImage(backgroundImage.fixed[0])
+      if (
+        backgroundImage.active &&
+        backgroundImage.onlyFixed &&
+        this.header.paramHasImage
+      ) {
+        this.onChangeBackgroundImage(backgroundImage.fixed[0]);
       }
       if (stickers.fixedAmountItems) {
         const urlList: string[] = stickers.itemsRule.map((sticker) => {
@@ -506,7 +518,11 @@ export class PostCustomizerComponent
               fontSize: text.fixSizeOnly ? text.fixSize + '' : '24',
               fontColor: text.onlyFixedColor
                 ? text.fixedColors[0]
-                : { fixedValue: '#ffffff', name: 'Default', nickname: 'Default' },
+                : {
+                    fixedValue: '#ffffff',
+                    name: 'Default',
+                    nickname: 'Default',
+                  },
               fontStyle: text.onlyFixedFonts ? text.fixedFonts[0] : 'Arial',
             };
             this.typographyData = textData;
@@ -817,7 +833,10 @@ export class PostCustomizerComponent
           this.elementList[elementIndex].typography.font
       );
       if (fontElement) {
-        let myFont = new FontFace(fontElement.fontName, `url(${fontElement.fileName})`);
+        let myFont = new FontFace(
+          fontElement.fontName,
+          `url(${fontElement.fileName})`
+        );
 
         myFont.load().then((font) => {
           (document as any).fonts.add(font);
@@ -894,9 +913,11 @@ export class PostCustomizerComponent
     this.canvasHeight = this.canvasRef.nativeElement.offsetWidth;
     this.canvasRef.nativeElement.height = this.canvasWidth;
 
-    if(this.canvasRatio === '1:1') this.canvasHeight = this.canvasWidth;
-    if(this.canvasRatio === '3:4') this.canvasHeight = Math.floor(this.canvasWidth * 1.33);
-    if(this.canvasRatio === '9:16') this.canvasHeight = Math.floor(this.canvasWidth * 1.78);
+    if (this.canvasRatio === '1:1') this.canvasHeight = this.canvasWidth;
+    if (this.canvasRatio === '3:4')
+      this.canvasHeight = Math.floor(this.canvasWidth * 1.33);
+    if (this.canvasRatio === '9:16')
+      this.canvasHeight = Math.floor(this.canvasWidth * 1.78);
     this.canvasRef.nativeElement.height = this.canvasHeight;
 
     if (!this.canvasHeight) {
@@ -960,7 +981,10 @@ export class PostCustomizerComponent
   }
 
   // Logic for changing Customizer modules
-  changeCustomizer(option: 'stickers' | 'tipografía' | 'lápiz', ignore?: boolean) {
+  changeCustomizer(
+    option: 'stickers' | 'tipografía' | 'lápiz',
+    ignore?: boolean
+  ) {
     const { left, top } = this.canvasRef.nativeElement.getBoundingClientRect();
     this.offsetX = left;
     this.offsetY = top;
@@ -1049,7 +1073,9 @@ export class PostCustomizerComponent
     return options;
   }
 
-  changeElementOption(option: "" | "tamaño" | "angulo" | "color" | "tipografia") {
+  changeElementOption(
+    option: '' | 'tamaño' | 'angulo' | 'color' | 'tipografia'
+  ) {
     if (this.selectedOption === 'stickers') {
       this.modifyingSticker =
         this.elementList[this.modifyingElement]?.sticker?.number;
@@ -1112,7 +1138,7 @@ export class PostCustomizerComponent
     return !this.elementList[this.modifyingElement].fixPositionOnly;
   }
 
-  getStickerColors(): { name: string; fixedValue: string, nickname: string }[] {
+  getStickerColors(): { name: string; fixedValue: string; nickname: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.stickers.fixedAmountItems) {
         const element = this.elementList[this.modifyingElement].sticker.number;
@@ -1198,7 +1224,11 @@ export class PostCustomizerComponent
   }
 
   // Changes sticker color, only should work on unicolor stickers
-  onChangeStickerColor(color: { name: string; fixedValue: string, nickname: string }) {
+  onChangeStickerColor(color: {
+    name: string;
+    fixedValue: string;
+    nickname: string;
+  }) {
     this.elementList.forEach((element) => {
       if (element.sticker) {
         const newSticker = element.sticker;
@@ -1255,7 +1285,7 @@ export class PostCustomizerComponent
 
   // Encondes SVG HTML into a readable image source
   encodeSVG(data: string): string {
-    if(!data) return;
+    if (!data) return;
     if (data.indexOf(`http://www.w3.org/2000/svg`) < 0) {
       data = data.replace(/<svg/g, `<svg xmlns='http://www.w3.org/2000/svg'`);
     }
@@ -1270,7 +1300,7 @@ export class PostCustomizerComponent
     url: string,
     element: CanvasElement,
     srcUrl: string,
-    color?: { name: string; fixedValue: string, nickname: string }
+    color?: { name: string; fixedValue: string; nickname: string }
   ) {
     element.sticker.url = srcUrl;
     let canvasSticker = new Image();
@@ -1311,7 +1341,7 @@ export class PostCustomizerComponent
       element.sticker.color = {
         fixedValue: '#' + currentColor[0],
         name: color.name,
-        nickname: color.nickname
+        nickname: color.nickname,
       };
     }
     // Temporal
@@ -1340,7 +1370,7 @@ export class PostCustomizerComponent
   // Sends a sticker for modification or adds a new one
   addSticker(url: string, id: number) {
     let srcUrl: string;
-    let specifiedColor: { name: string; fixedValue: string, nickname: string };
+    let specifiedColor: { name: string; fixedValue: string; nickname: string };
     if (this.customizerRules.stickers.fixedAmountItems) {
       if (this.modifyingSticker >= 0) {
         if (
@@ -1542,7 +1572,7 @@ export class PostCustomizerComponent
         stickerElements[current].sticker.color = {
           fixedValue: '#' + currentColor[0],
           name: 'color',
-          nickname: 'nickname'
+          nickname: 'nickname',
         };
       }
     };
@@ -1569,29 +1599,40 @@ export class PostCustomizerComponent
   }
 
   onIconColorClick() {
-    this.modifyingElement = this.elementList.findIndex((element) => element.sticker);
-    this.modifyingSticker = this.elementList[this.modifyingElement].sticker.number;
+    this.modifyingElement = this.elementList.findIndex(
+      (element) => element.sticker
+    );
+    this.modifyingSticker =
+      this.elementList[this.modifyingElement].sticker.number;
     this.selectedOption = 'stickers';
     this.selectedElementOption = 'color';
   }
 
   onTextColorClick() {
-    this.modifyingElement = this.elementList.findIndex((element) => element.typography);
-    this.modifyingText = this.elementList[this.modifyingElement].typography.number;
+    this.modifyingElement = this.elementList.findIndex(
+      (element) => element.typography
+    );
+    this.modifyingText =
+      this.elementList[this.modifyingElement].typography.number;
     this.selectedOption = 'tipografía';
     this.selectedElementOption = 'color';
   }
 
   onTypographyClick() {
-    this.modifyingElement = this.elementList.findIndex((element) => element.typography);
-    this.modifyingText = this.elementList[this.modifyingElement].typography.number;
+    this.modifyingElement = this.elementList.findIndex(
+      (element) => element.typography
+    );
+    this.modifyingText =
+      this.elementList[this.modifyingElement].typography.number;
     this.selectedOption = 'tipografía';
     this.selectedElementOption = 'tipografia';
   }
 
   sanitizeImageUrl(imageUrl: string): SafeUrl {
     const encodedSVG = this.encodeSVG(imageUrl);
-    return this.sanitizer.bypassSecurityTrustUrl("data:image/svg+xml;charset=UTF-8," + encodedSVG);
+    return this.sanitizer.bypassSecurityTrustUrl(
+      'data:image/svg+xml;charset=UTF-8,' + encodedSVG
+    );
   }
 
   // Temporal
@@ -1717,7 +1758,7 @@ export class PostCustomizerComponent
     }
   }
 
-  getFontColors(): { name: string; fixedValue: string, nickname: string }[] {
+  getFontColors(): { name: string; fixedValue: string; nickname: string }[] {
     if (this.modifyingElement >= 0) {
       if (this.customizerRules.texts.fixedAmountItems) {
         const element =
@@ -1749,7 +1790,11 @@ export class PostCustomizerComponent
   }
 
   // Changes font color. If not editing text, draws the new color
-  onChangeFontColor(color: { name: string; fixedValue: string, nickname: string }) {
+  onChangeFontColor(color: {
+    name: string;
+    fixedValue: string;
+    nickname: string;
+  }) {
     this.typographyData.fontColor = color;
     if (this.isEditing) return;
     const element = this.elementList[this.modifyingElement];
@@ -1817,7 +1862,10 @@ export class PostCustomizerComponent
             t.position.y + t.position.height / 2
           );
           this.context.rotate(t.position.rotation);
-          if (t.typography.color.fixedValue === this.selectedBackgroundColor.fixedValue) {
+          if (
+            t.typography.color.fixedValue ===
+            this.selectedBackgroundColor.fixedValue
+          ) {
             if (t.typography.color.fixedValue !== '#000000')
               this.context.fillStyle = 'black';
             else this.context.fillStyle = 'white';
@@ -1930,33 +1978,36 @@ export class PostCustomizerComponent
       letters.forEach((letter, index) => {
         this.context.font = `${textElements[index].typography.size}px ${textElements[index].typography.font}`;
         let width = this.context.measureText(letter).width;
-        if(threeLetters) {
-          if(this.hiddenFontText.length === 3) {
+        if (threeLetters) {
+          if (this.hiddenFontText.length === 3) {
             textElements[index].typography.text = letter.toUpperCase();
             textElements[index].position.width = width;
             textElements[index].position.x = Math.floor(
               this.canvasWidth *
-                (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+                (this.customizerRules.texts.itemsRule[index].fixPosition.x /
+                  100) -
                 width / 2
             );
           }
-          if(this.hiddenFontText.length === 2) {
-            if(index === 0) {
+          if (this.hiddenFontText.length === 2) {
+            if (index === 0) {
               textElements[0].position.x = Math.floor(
                 this.canvasWidth *
-                  ((this.customizerRules.texts.itemsRule[0].fixPosition.x + 3) / 100) -
+                  ((this.customizerRules.texts.itemsRule[0].fixPosition.x + 3) /
+                    100) -
                   width / 2
               );
             }
-            if(index === 1) {
+            if (index === 1) {
               index = 2;
               textElements[2].position.x = Math.floor(
                 this.canvasWidth *
-                  ((this.customizerRules.texts.itemsRule[2].fixPosition.x - 3) / 100) -
+                  ((this.customizerRules.texts.itemsRule[2].fixPosition.x - 3) /
+                    100) -
                   width / 2
               );
             }
-            if(index != 1) {
+            if (index != 1) {
               textElements[index].typography.text = letter.toUpperCase();
               textElements[index].position.width = width;
             }
@@ -1964,7 +2015,7 @@ export class PostCustomizerComponent
           } else {
             textElements[1].typography.hidden = false;
           }
-          if(this.hiddenFontText.length === 1) {
+          if (this.hiddenFontText.length === 1) {
             this.context.font = `${textElements[1].typography.size}px ${textElements[1].typography.font}`;
             let width = this.context.measureText(letter).width;
             textElements[1].typography.text = letter.toUpperCase();
@@ -1986,7 +2037,8 @@ export class PostCustomizerComponent
           textElements[index].position.width = width;
           textElements[index].position.x = Math.floor(
             this.canvasWidth *
-              (this.customizerRules.texts.itemsRule[index].fixPosition.x / 100) -
+              (this.customizerRules.texts.itemsRule[index].fixPosition.x /
+                100) -
               width / 2
           );
         }
@@ -2068,7 +2120,7 @@ export class PostCustomizerComponent
       },
       position: {
         width,
-        height
+        height,
       },
       originalSize: width,
     };
@@ -2079,19 +2131,22 @@ export class PostCustomizerComponent
       );
     let threeLetters = textElements.length === 3;
     if (text.fixPositionOnly) {
-      const textRules = this.customizerRules.texts.itemsRule[text.typography.number];
+      const textRules =
+        this.customizerRules.texts.itemsRule[text.typography.number];
       textElement.position['x'] =
         this.canvasWidth * (textRules.fixPosition.x / 100) - width / 2;
-      textElement.position['y'] = 
+      textElement.position['y'] =
         this.canvasHeight * (textRules.fixPosition.y / 100) - height / 2;
-      if(threeLetters && this.hiddenFontText.length === 2) {
-        if(index === 0) {
+      if (threeLetters && this.hiddenFontText.length === 2) {
+        if (index === 0) {
           textElement.position['x'] =
-            this.canvasWidth * ((textRules.fixPosition.x + 3) / 100) - width / 2;
+            this.canvasWidth * ((textRules.fixPosition.x + 3) / 100) -
+            width / 2;
         }
-        if(index === 2) {
+        if (index === 2) {
           textElement.position['x'] =
-            this.canvasWidth * ((textRules.fixPosition.x - 3) / 100) - width / 2;
+            this.canvasWidth * ((textRules.fixPosition.x - 3) / 100) -
+            width / 2;
         }
       }
     }
@@ -2157,7 +2212,7 @@ export class PostCustomizerComponent
       width = getWidth(text);
       height = Math.floor(y * parseInt(fontSize));
     }
-    return {height, width}
+    return { height, width };
   }
 
   // Exits exit mode and sends the text for modification or creates a new element
@@ -2184,14 +2239,16 @@ export class PostCustomizerComponent
           a.position.z > b.position.z ? 1 : b.position.z > a.position.z ? -1 : 0
         );
       let threeLetters = textElements.length === 3;
-      const textRules = this.customizerRules.texts.itemsRule[this.modifyingText];
-      if(threeLetters && fontStyle === 'Cheltenham') {
-        fontSize = (textRules.fixSize - 30)+'';
-      } else if(threeLetters && fontStyle === 'Commercial-Script') {
-        if(textRules.fixedFonts[0] === "Dorsa") fontSize = (textRules.fixSize - 30)+'';
-        else fontSize = (textRules.fixSize - 25)+'';
+      const textRules =
+        this.customizerRules.texts.itemsRule[this.modifyingText];
+      if (threeLetters && fontStyle === 'Cheltenham') {
+        fontSize = textRules.fixSize - 30 + '';
+      } else if (threeLetters && fontStyle === 'Commercial-Script') {
+        if (textRules.fixedFonts[0] === 'Dorsa')
+          fontSize = textRules.fixSize - 30 + '';
+        else fontSize = textRules.fixSize - 25 + '';
       } else {
-        fontSize = textRules.fixSize+'';
+        fontSize = textRules.fixSize + '';
       }
     }
     /// Reduce font size when font is Cheltenham
@@ -2355,7 +2412,7 @@ export class PostCustomizerComponent
     this.imageElement.crossOrigin = 'Anonymous';
     this.imageElement.onload = () => {
       this.draw();
-    }
+    };
     this.selectedBackgroundImage = url;
     this.imageFile = null;
   }
@@ -2542,8 +2599,17 @@ export class PostCustomizerComponent
           this.header.saleflow.module.post &&
           this.header.saleflow.module.post.isActive
         )
-          this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/gift-message`]);
-        else this.router.navigate([`ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/user-info`]);
+          this.router.navigate([
+            `ecommerce/provider-store/${
+              this.header.saleflow?._id || this.header.getSaleflow()?._id
+            }/${this.itemId}/gift-message`,
+          ]);
+        else
+          this.router.navigate([
+            `ecommerce/provider-store/${
+              this.header.saleflow?._id || this.header.getSaleflow()?._id
+            }/${this.itemId}/user-info`,
+          ]);
       } else {
         await this.customizerValueService.updateCustomizerValue(
           customizerValues,
@@ -2587,7 +2653,10 @@ export class PostCustomizerComponent
       id: this.customizerRuleID,
     };
 
-    this.header.storeCustomizer(this.header.saleflow?._id ?? this.header.getSaleflow()._id, customizerValues);
+    this.header.storeCustomizer(
+      this.header.saleflow?._id ?? this.header.getSaleflow()._id,
+      customizerValues
+    );
 
     this.header.isComplete.customizer = true;
   }
@@ -2596,7 +2665,11 @@ export class PostCustomizerComponent
     if (this.customizerValueID)
       this.router.navigate([`/ecommerce/order-info/${this.itemId}`]);
     else
-      this.router.navigate([`/ecommerce/provider-store/${this.header.saleflow?._id || this.header.getSaleflow()?._id}/${this.itemId}/quantity-and-quality`]);
+      this.router.navigate([
+        `/ecommerce/provider-store/${
+          this.header.saleflow?._id || this.header.getSaleflow()?._id
+        }/${this.itemId}/quantity-and-quality`,
+      ]);
   }
 
   // Searches Stickers, currently doing nothing
@@ -2656,16 +2729,6 @@ export class PostCustomizerComponent
   drawOutline(position: Position, isText?: boolean) {
     // Returning here to simply disable the method
     return;
-    if(this.currentStickersAmount > 1) return;
-    this.context.strokeStyle = '#820AE8';
-    const additonalWidth = isText ? position.width * 0.1 : 0;
-    const additonalHeight = isText ? position.height * 0.1 : 0;
-    this.context.strokeRect(
-      position.x - additonalWidth,
-      position.y - additonalHeight,
-      position.width + additonalWidth,
-      position.height
-    );
   }
 
   // Draws everything on the canvas
@@ -2764,7 +2827,7 @@ export class PostCustomizerComponent
       props: {
         imageSourceURL,
         buttonText: 'Continuar con la orden',
-        buttonFunc: () => this.onSave()
+        buttonFunc: () => this.onSave(),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

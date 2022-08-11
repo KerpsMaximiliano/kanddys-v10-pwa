@@ -1,24 +1,32 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
-import { notification } from 'onsenui';
-import {environment} from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 interface Extra {
-    text?: string;
-    bgColor?: string;
-    width?: string;
-    height?: string;
-    fontSize?: string;
-    return?: boolean;
-    returnCallback?(...params): any;
-    icon?:{
-        src: string;
-        alt?: string;
-        width: number;
-        height: number;
-        color?: string;
-    };
+  text?: string;
+  bgColor?: string;
+  width?: string;
+  height?: string;
+  fontSize?: string;
+  return?: boolean;
+  returnCallback?(...params): any;
+  icon?: {
+    src: string;
+    alt?: string;
+    width: number;
+    height: number;
+    color?: string;
+  };
 }
 
 @Component({
@@ -33,44 +41,48 @@ export class StickyButtonComponent implements OnInit {
   @Input() auxText: string;
   @Input() link: string = 'linktest.com';
   @Input() icon: string;
-  @Input() bgColor: string = "#27a2ff";
+  @Input() bgColor: string = '#27a2ff';
   @Input() padding: string = null;
   @Input() color: string;
-  @Input() height: string = null;  
-  @Input() fontSize: string = null;  
-  @Input() size: 'small' | 'normal' = "normal";
+  @Input() height: string = null;
+  @Input() fontSize: string = null;
+  @Input() size: 'small' | 'normal' = 'normal';
   @Input() customLeftButtonStyles: Record<string, any> = null;
   @Input() customRightButtonStyles: Record<string, any> = null;
   @Input() addBottomSeparator: boolean = false;
   @Input() backButton: boolean;
   @Input() backButtonCallback: () => void;
   @Input() textCallback: () => void;
-  
-  @Input() extra: Extra;//Usado en modo "Double", inserta config
+
+  @Input() extra: Extra; //Usado en modo "Double", inserta config
 
   @Output() left = new EventEmitter();
   @Output() right = new EventEmitter();
   @Output() added = new EventEmitter();
 
-  env: string = environment.assetsUrl; 
+  env: string = environment.assetsUrl;
   private ngNavigatorShareService: NgNavigatorShareService;
 
+  constructor(
+    ngNavigatorShareService: NgNavigatorShareService,
+    private toastr: ToastrService
+  ) {
+    this.ngNavigatorShareService = ngNavigatorShareService;
+  }
 
-  constructor(ngNavigatorShareService: NgNavigatorShareService){
-      this.ngNavigatorShareService = ngNavigatorShareService;
-    }
-
-  @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
+  @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   ngOnInit(): void {}
 
-  downloadQr(){
-    const parentElement = this.qr.nativeElement.querySelector("img").src;
+  downloadQr() {
+    const parentElement = this.qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) { //IE
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
       (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
-    } else { // chrome
-      const blob = new Blob([blobData], { type: "image/png" });
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
       const url = window.URL.createObjectURL(blob);
       // window.open(url);
       const link = document.createElement('a');
@@ -101,10 +113,10 @@ export class StickyButtonComponent implements OnInit {
     await copyText(this.link);
   }
 
-  async share(){
+  async share() {
     if (!this.ngNavigatorShareService.canShare()) {
       copyText(`${this.link}`);
-      notification.toast('Enlace copiado en el clipboard');
+      this.toastr.info('Enlace copiado en el clipboard');
     }
 
     await this.ngNavigatorShareService
@@ -120,17 +132,16 @@ export class StickyButtonComponent implements OnInit {
         console.log(error);
       });
   }
-  
-  leftButton(){
+
+  leftButton() {
     this.left.emit();
   }
 
-  rightButton(){
+  rightButton() {
     this.right.emit();
   }
 
-  extraButton(){
+  extraButton() {
     this.added.emit();
   }
-
 }

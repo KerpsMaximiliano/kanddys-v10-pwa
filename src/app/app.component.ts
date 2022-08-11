@@ -1,6 +1,5 @@
 import { Component, HostBinding, OnDestroy, OnInit, AfterViewChecked } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import * as ons from 'onsenui';
 import { Subscription } from 'rxjs';
 import { ChildrenOutletContexts, Router } from '@angular/router'
 import { AppService } from './app.service';

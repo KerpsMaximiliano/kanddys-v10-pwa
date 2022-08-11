@@ -1,4 +1,3 @@
-import { AuthGuard } from './core/guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -24,7 +23,7 @@ const routes: Routes = [
     /*canLoad: [AuthGuard],
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
-    data: {animation: 'EcommerceModule'},
+    data: { animation: 'EcommerceModule' },
     loadChildren: () =>
       import('./modules/ecommerce/ecommerce.module').then(
         (m) => m.EcommerceModule
@@ -36,9 +35,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
     loadChildren: () =>
-      import('./modules/posts/posts.module').then(
-        (m) => m.PostsModule
-      ),
+      import('./modules/posts/posts.module').then((m) => m.PostsModule),
   },
   {
     path: 'webforms',
@@ -50,7 +47,7 @@ const routes: Routes = [
         (m) => m.WebformsModule
       ),
   },
-  { path: '**', redirectTo, pathMatch: 'full' }
+  { path: '**', redirectTo, pathMatch: 'full' },
 ];
 
 @NgModule({

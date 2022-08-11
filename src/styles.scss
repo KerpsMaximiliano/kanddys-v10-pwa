@@ -1,24 +1,31 @@
-@import "theme";
+// @import "theme";
 @import "mixins";
 @import "~normalize.css";
-@import "~onsenui/css/onsenui.css";
-@import "~onsenui/css/onsen-css-components.css";
+
+// @import "~onsenui/css/onsenui.css";
+// @import "~onsenui/css/onsen-css-components.css";
+
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,400;0,700;0,900;1,100;1,400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap");
-@import "helpers";
-@import "components/control";
+// @import "helpers";
+// @import "components/control";
 @import "components/phone-input";
-@import "~swiper/swiper-bundle";
+// @import "~swiper/swiper-bundle";
+
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~ngx-toastr/toastr-bs4-alert';
 
 :root {
   --dialog-header-background: #{get-color("dark")};
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
   font-size: 14px;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
   // background-image: url(https://storage.needpix.com/rsynced_images/geometric-pattern-3d-blocks.jpg);
   background-attachment: fixed;
   background-blend-mode: soft-light;
@@ -39,40 +46,25 @@ body {
   }*/
 }
 
-ngx-form {
-  @include flex(column, center);
-  flex: 1 1;
-  .form-content {
-    width: 100%;
-    max-width: 500px;
-  }
+// ngx-form {
+//   @include flex(column, center);
+//   flex: 1 1;
+//   .form-content {
+//     width: 100%;
+//     max-width: 500px;
+//   }
 
-  label {
-    color: get-color("dark", 0.6) !important;
-    font-size: 1rem !important;
-  }
-  input,
-  textarea {
-    border: 1px solid get-color("dark", 0.1) !important;
-    background-color: rgba(white, 0.6) !important;
-    width: 100%;
-  }
-}
-
-.rect-dialog
-{
-  .dialog-frame {
-    width: 100vw !important;
-    max-width: 500px !important;
-    min-width: unset !important;
-    padding: 0px !important;
-    border-radius: 0 !important;
-
-    .dialog-frame-content {
-      padding: 0px !important;
-    }
-  }
-}
+//   label {
+//     color: get-color("dark", 0.6) !important;
+//     font-size: 1rem !important;
+//   }
+//   input,
+//   textarea {
+//     border: 1px solid get-color("dark", 0.1) !important;
+//     background-color: rgba(white, 0.6) !important;
+//     width: 100%;
+//   }
+// }
 
 .app-dialog {
   .dialog-frame {
@@ -101,35 +93,15 @@ ngx-form {
     background: none !important;
   }
   .dialog-frame {
-    background-color: rgba(0,0,0,0.6) !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
     backdrop-filter: blur(20px);
   }
 }
 
-@supports (-moz-appearance:none) {
+@supports (-moz-appearance: none) {
   .transparent {
     .backdrop {
       background: #2228 !important;
-    }
-  }
-}
-
-.big-app-dialog {
-  .dialog-frame {
-    width: 100vw !important;
-    max-width: 500px !important;
-    min-width: unset !important;
-    padding: 0px !important;
-    height: 90vh !important;
-    .dialog-frame-content {
-      padding: 0px !important;
-    }
-  }
-  @media (max-width: 500px) {
-    .dialog-frame {
-      border-radius: 0 !important;
-      border-top-right-radius: 30px !important;
-      border-top-left-radius: 30px !important;
     }
   }
 }
@@ -146,16 +118,6 @@ ngx-form {
 }
 
 @font-face {
-  font-family: "AvenirMedium";
-  src: url("../src/assets/fonts/AvenirNextCondensedMedium.ttf");
-}
-
-@font-face {
-  font-family: "AvenirDemiBold";
-  src: url("../src/assets/fonts/AvenirNextCondensedDemiBold.ttf");
-}
-
-@font-face {
   font-family: "Empire";
   src: url("../src/assets/fonts/empire-bt.ttf");
 }
@@ -164,11 +126,6 @@ ngx-form {
   font-family: "Dorsa";
   src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Dorsa-Regular.ttf");
   // src: url("../src/assets/fonts/Dorsa-Regular.ttf");
-}
-
-@font-face {
-  font-family: "Rubik";
-  src: url("../src/assets/fonts/Rubik.ttf");
 }
 @font-face {
   font-family: "RobotoMedium";
@@ -190,9 +147,9 @@ ngx-form {
   src: url("../src/assets/fonts/Roboto-Italic.ttf");
 }
 
-@font-face{
-  font-family: 'RobotoLightItalic';
-  src: url('../src/assets/fonts/Roboto-LightItalic.ttf');
+@font-face {
+  font-family: "RobotoLightItalic";
+  src: url("../src/assets/fonts/Roboto-LightItalic.ttf");
 }
 
 @font-face {
@@ -210,7 +167,7 @@ ngx-form {
   src: url("../src/assets/fonts/GraphikRegular.otf") format("opentype");
 }
 
-@font-face{
+@font-face {
   font-family: "GiddyupStd";
   src: url("../src/assets/fonts/GiddyupStd.otf") format("opentype");
 }
@@ -247,29 +204,29 @@ ngx-form {
   src: url("../src/assets/fonts/SFProDisplay-Light.ttf") format("truetype");
 }
 
-@font-face{
-  font-family: 'SfProMedium';
-  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf') format("truetype");
+@font-face {
+  font-family: "SfProMedium";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: 'SfProBold';
-    src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf') format("truetype");
+  font-family: "SfProBold";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf") format("truetype");
 }
 
-@font-face{
-  font-family: 'SfProDisplayBold';
-  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf');
+@font-face {
+  font-family: "SfProDisplayBold";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf");
 }
 
-@font-face{
-  font-family: 'ProDisplaySemiBold';
-  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf');
+@font-face {
+  font-family: "ProDisplaySemiBold";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Semibold.ttf");
 }
 
-@font-face{
-  font-family: 'ProDisplayRegular';
-  src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf');
+@font-face {
+  font-family: "ProDisplayRegular";
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf");
 }
 
 @font-face {
@@ -289,7 +246,8 @@ ngx-form {
 
 @font-face {
   font-family: "PomfritDandyNFRegular";
-  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf") format("truetype");
+  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/PomfritDandyNFRegular.ttf")
+    format("truetype");
   // src: url("../src/assets/fonts/PomfritDandyNFRegular.ttf") format("truetype");
 }
 
@@ -312,164 +270,9 @@ ngx-form {
 @font-face {
   font-family: "AirForce45-Regular";
   src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf") format("truetype");
-  // src: url("../src/assets/fonts/AirForce45-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "NeueMontreal";
   src: url("../src/assets/fonts/NeueMontreal-Regular.otf") format("truetype");
 }
-
-// @font-face {
-//   font-family: "AvenirBold";
-//   src: url("../src/assets/fonts/AvenirNextCondensedBold.ttf");
-// }
-
-// @font-face {
-//   font-family: "Quicksand";
-//   src: url("../src/assets/fonts/Quicksand.ttf");
-// }
-
-// @font-face {
-//   font-family: "AvenirCondensed";
-//   src: url("../src/assets/fonts/AvenirNextCondensed.ttf");
-// }
-
-// @font-face {
-//   font-family: "AvenirRegular";
-//   src: url("../src/assets/fonts/AvenirNextRegular.otf");
-// }
-
-// @font-face {
-//   font-family: "AvenirBook";
-//   src: url("../src/assets/fonts/AvenirBook.ttf");
-// }
-
-// @font-face {
-//   font-family: "AvenirNext";
-//   src: url("../src/assets/fonts/AvenirNext.ttc");
-// }
-
-// @font-face {
-//   font-family: "NunitoSans";
-//   src: url("../src/assets/fonts/NunitoSans-Regular.ttf");
-// }
-
-// @font-face {
-//   font-family: "RalewaySemiBold";
-//   src: url("../src/assets/fonts/RalewaySemiBold.ttf");
-// }
-
-// @font-face {
-//   font-family: "BadbadScript";
-//   src: url("../src/assets/fonts/BadbadScript-BWYoB.otf") format("opentype");
-// }
-// @font-face {
-  //   font-family: "GraphikBold";
-  //   src: url("../src/assets/fonts/GraphikBold.otf") format("opentype");
-// }
-
-// @font-face {
-  //   font-family: "GraphikSemiBold";
-//   src: url("../src/assets/fonts/GraphikSemibold.otf") format("opentype");
-// }
-
-// @font-face {
-  //   font-family: "GraphikMedium";
-//   src: url("../src/assets/fonts/GraphikMedium.otf") format("opentype");
-// }
-// @font-face {
-//   font-family: "GraphikLight";
-//   src: url("../src/assets/fonts/GraphikLight.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Jost";
-//   src: url("../src/assets/fonts/Jost-VariableFont_wght.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Luxia";
-//   src: url("../src/assets/fonts/Luxia-Regular.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "LuxiaDisplay";
-//   src: url("../src/assets/fonts/Luxia-Display.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Monschone";
-//   src: url("../src/assets/fonts/monschone.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "NeatoSerifRough";
-//   src: url("../src/assets/fonts/NeatoSerifRough-Regular.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Palatino";
-//   src: url("../src/assets/fonts/palatino-linotype.ttf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "Palitoon";
-//   src: url("../src/assets/fonts/palitoon.otf") format("opentype");
-// }
-
-// @font-face{
-  //   font-family: 'SfProBold';
-  //   src: url('../src/assets/fonts/FontsFree-Net-SFProDisplay-Black.ttf');
-  // }
-  
-  // @font-face{
-//   font-family: 'SfProRoundedBold';
-//   src: url('../src/assets/fonts/SF-Pro-Rounded-Bold.otf');
-// }
-
-// .flex-space-between {
-  //   display: flex;
-  //   justify-content: space-between;
-  // }
-  
-  // .flex-center {
-    //   display: flex;
-    //   justify-content: center;
-    // }
-    
-    // .flex {
-      //   display: flex;
-      // }
-
-      
-      
-
-      // @font-face {
-        //   font-family: "Neorf";
-        //   src: url("../src/assets/fonts/NEORF___.TTF") format("truetype");
-        // }
-        
-// @font-face {
-//   font-family: "CheltenhamStdBoldCondIt";
-//   src: url("../src/assets/fonts/CheltenhamStdBoldCondIt.otf") format("opentype");
-// }
-
-// @font-face {
-//   font-family: "TypoOvalRegularDemo";
-//   src: url("../src/assets/fonts/TypoOvalRegularDemo.otf") format("opentype");
-// }
-
-// .flex-space-between {
-//   display: flex;
-//   justify-content: space-between;
-// }
-
-// .flex-center {
-//   display: flex;
-//   justify-content: center;
-// }
-
-// .flex {
-//   display: flex;
-// }
