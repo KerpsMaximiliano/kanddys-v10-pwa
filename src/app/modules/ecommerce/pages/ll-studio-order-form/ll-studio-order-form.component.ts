@@ -1646,7 +1646,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                flags: ['no-header'],
              });
 
-             //window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+             window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
             
              return { ok: true };
           } catch (error) {
