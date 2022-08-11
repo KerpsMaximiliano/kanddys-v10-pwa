@@ -81,6 +81,7 @@ export const merchantDefault = gql`
       bio
       owner {
         _id
+        phone
       }
       social {
         name
