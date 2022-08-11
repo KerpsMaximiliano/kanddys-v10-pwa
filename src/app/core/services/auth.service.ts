@@ -1,37 +1,19 @@
-import { lockUI } from 'src/app/core/helpers/ui.helpers';
-import { Observable, from } from 'rxjs';
-import { Router } from '@angular/router';
-import { AppService } from 'src/app/app.service';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { from, Observable } from 'rxjs';
+import { AppService } from 'src/app/app.service';
+import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { CountryISO } from 'ngx-intl-tel-input';
 import {
-  FacebookLoginProvider,
-  GoogleLoginProvider,
-  SocialAuthService,
-} from 'angularx-social-login';
-
-import {
-  me,
-  signin,
-  signout,
-  signup,
-  signupSocial,
-  updateme,
-  checkUser,
-  userData,
-  generateOTP,
-  generateMagicLink,
-  generatePowerMagicLink,
-  analizeMagicLink,
-  signinSocial,
-  simplifySignup,
-  getTempCodeData,
+  analizeMagicLink, checkUser, generateMagicLink, generateOTP, generatePowerMagicLink, getTempCodeData, me,
+  signin, signinSocial, signout,
+  signup, simplifySignup, updateme, userData
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
 import { User } from '../models/user';
-import { refresh, verifyUser, userExists } from './../graphql/auth.gql';
-import { PhoneNumberUtil } from 'google-libphonenumber';
-import { CountryISO } from 'ngx-intl-tel-input';
+import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
 // import { Logs } from 'selenium-webdriver';
 
 @Injectable({
@@ -43,7 +25,7 @@ export class AuthService {
 
   constructor(
     private readonly graphql: GraphQLWrapper,
-    private readonly social: SocialAuthService,
+    // private readonly social: SocialAuthService,
     private readonly app: AppService,
     private readonly router: Router
   ) {
@@ -222,33 +204,6 @@ export class AuthService {
     } catch (e) {
       return false;
     }
-  }
-
-  public async socialAccess(social: 'google' | 'facebook'): Promise<Session> {
-    const configs = {
-      google: {
-        id: GoogleLoginProvider.PROVIDER_ID,
-        tokenKey: 'idToken',
-      },
-      facebook: {
-        id: FacebookLoginProvider.PROVIDER_ID,
-        tokenKey: '',
-      },
-    };
-    const { id, tokenKey } = configs[social];
-    const socialUser = await this.social.signIn(id);
-    const token = socialUser[tokenKey];
-    try {
-      const variables = { token, social };
-      const mutation = signupSocial;
-      const result = await this.graphql.mutate({ mutation, variables });
-      this.session = new Session(result?.session, true);
-    } catch (e) {
-      this.session?.revoke();
-      this.session = undefined;
-    }
-    this.app.events.emit({ type: 'auth', data: this.session });
-    return this.session;
   }
 
   // USER QUERIES

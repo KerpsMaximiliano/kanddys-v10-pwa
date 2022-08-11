@@ -29,7 +29,6 @@
     "@types/three": "^0.141.0",
     "@zxing/library": "^0.19.1",
     "angularx-qrcode": "^10.0.10",
-    "angularx-social-login": "^3.1.1",
     "apollo-angular": "^1.9.1",
     "apollo-angular-link-http": "^1.10.0",
     "apollo-cache-inmemory": "^1.6.0",

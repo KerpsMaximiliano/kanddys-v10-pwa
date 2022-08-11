@@ -10,7 +10,6 @@ import { AppService } from './app.service';
 import { DecimalPipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SocialLoginModule } from 'angularx-social-login';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,7 +20,7 @@ import { SharedModule } from './shared/shared.module';
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    SocialLoginModule,
+    // SocialLoginModule,
     AppRoutingModule,
     ServiceWorkerModule.register('service-worker.js', {
       enabled: environment.production,
