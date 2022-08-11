@@ -38,6 +38,7 @@
       <input
         [id]="(id + '-fileinput') || 'filemultiple'"
         (change)="fileProgressMultiple($event)"
+        (click)="clearFiles()"
         type="file"
         class="d-none"
         accept="image/*"
