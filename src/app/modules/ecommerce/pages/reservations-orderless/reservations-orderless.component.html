@@ -146,7 +146,9 @@
                   calendar.monthIndex == 0 && calendar.dayIndex == 0;
                   else notToday
                 ">
-                <div class="swiper-slide" (click)="
+                <div class="swiper-slide" 
+                  *ngIf="!isHourBeforeOrBeyondLimits(num(slide) + offset)"
+                  (click)="
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
                   " [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#949494' }
@@ -184,7 +186,9 @@
                 </div>
               </ng-container>
               <ng-template #notToday>
-                <div class="swiper-slide" (click)="
+                <div class="swiper-slide"
+                  *ngIf="!isHourBeforeOrBeyondLimits(num(slide) + offset)"
+                  (click)="
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
                   " [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#C6C6C8' }
