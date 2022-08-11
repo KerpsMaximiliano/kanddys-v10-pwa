@@ -76,7 +76,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Nombre (*)',
           topLabelAction: {
@@ -111,7 +111,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -190,10 +190,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'birthday',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de nacimiento',
+          label: 'Fecha de nacimiento (*)',
           inputType: 'date',
           maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
@@ -291,7 +291,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'phoneNumber',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Número de teléfono (*)',
           inputType: 'phone',
@@ -393,7 +393,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'articleDescription',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Describe aquí cómo deseas que preparemos tu arreglo (*)',
           placeholder: 'Por ejemplo: Arreglo de 6 rosas con lazo blanco',
@@ -519,7 +519,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'receiver',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Destinatario (Quién recibe este arreglo) (*)',
           placeholder: 'Escribe aquí',
@@ -573,7 +573,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'wantToAddADedication',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
@@ -584,6 +584,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             if (change === 'Si') {
               this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '1';
               this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft = '0px';              
+              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators(Validators.required);
               this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();
             } else {
               this.formSteps[4].fieldsList[1].styles.containerStyles.opacity = '0';
@@ -666,7 +667,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Whatsapp', 'Instagram', 'E-Mail', 'Website', 'Personal'],
           changeCallbackFunction: (change, params) => {
@@ -837,7 +838,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
           fieldControl: {
             type: 'single',
             control: new FormControl(0, [
-              Validators.min(0.01)
+              Validators.required,
+              Validators.min(0.01) 
             ])
           },
           shouldFormatNumber: true,
@@ -933,7 +935,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'paymentMethod',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: ['Efectivo', 'Cuenta Banreservas', 'Cuenta BHD', 'Cuenta Banco Popular', 'Yoyo App', 'Otro'],
           changeCallbackFunction: (change, params) => {
@@ -962,7 +964,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'referenceImage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Adjunta aquí tu comprobante de Pago(*)',
           inputType: 'file',
@@ -1029,7 +1031,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         {
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           name: 'reservation',
           label: '',
@@ -1094,7 +1096,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: '¿Cómo deseas que sea entregado tu arreglo? (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Pick Up',
@@ -1120,7 +1122,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Indica el tipo de Edificación (*)',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Casa',
@@ -1145,7 +1147,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'deliveryAddress',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           label: 'Dirección en la que deseas que sea entregado tu arreglo (*)',
           placeholder: 'Escribe aquí...',
@@ -1266,7 +1268,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Tipo de Factura',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl('', Validators.required)
           },
           selectionOptions: [
             'Sin Comprobante',
