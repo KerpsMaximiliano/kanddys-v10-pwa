@@ -41,14 +41,16 @@ export class ReservationOrderlessComponent implements OnInit {
   @Input() firstLabel: string = 'DIA CONVENIENTE';
   @Input() secondLabel: string = 'HORA CONVENIENTE';
   @Input() timeOfDayMode: boolean = false;
-  @Input() hourRangeInDays: Record<string, Array<{
-    from: number,
-    to: number
-  }>> = null;
+  @Input() hourRangeInDays: Record<
+    string,
+    Array<{
+      from: number;
+      to: number;
+    }>
+  > = null;
   timeOfDay: string = null;
   selectedDateObject: any = null;
   //FIN CAMBIOS ULTIMOS LUIS
-  
 
   @Input() calendarId: string;
   @Output() onReservation = new EventEmitter();
@@ -130,7 +132,7 @@ export class ReservationOrderlessComponent implements OnInit {
   checkCalendar() {
     this.calendar.getCalendar(this.calendarId).then((data) => {
       this.merchant = null;
-      this.merchantName = "";
+      this.merchantName = '';
       this.getAmAndPm();
       // Logic for default date
       if (!this.sliders) {
@@ -238,45 +240,41 @@ export class ReservationOrderlessComponent implements OnInit {
       hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
       let temporalDate1 = null;
 
-      temporalDate1 =
-        moment(date1)
-          .set({
-            year: this.calendar.year,
-            month: this.calendar.months[this.calendar.monthIndex].id,
-            date: this.calendar.months[this.calendar.monthIndex].dates[
-              this.calendar.dayIndex
-            ].dayNumber,
-            hour: hour,
-            minute: 0o0,
-            seconds: 0o0,
-            millisecond: 0o0,
-          });
+      temporalDate1 = moment(date1).set({
+        year: this.calendar.year,
+        month: this.calendar.months[this.calendar.monthIndex].id,
+        date: this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber,
+        hour: hour,
+        minute: 0o0,
+        seconds: 0o0,
+        millisecond: 0o0,
+      });
 
-      if(hour >= 24) {
-        temporalDate1.subtract(1, "days");
+      if (hour >= 24) {
+        temporalDate1.subtract(1, 'days');
       }
 
       date1 = temporalDate1.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
-          
+
       let temporalDate2 = null;
 
-      temporalDate2 =
-        moment(date2)
-          .set({
-            year: this.calendar.year,
-            month: this.calendar.months[this.calendar.monthIndex].id,
-            date: this.calendar.months[this.calendar.monthIndex].dates[
-              this.calendar.dayIndex
-            ].dayNumber,
-            hour: hour + 1,
-            // + 1
-            minute: 0o0,
-            seconds: 0o0,
-            millisecond: 0o0,
-          })
-      
-      if(hour + 1 >= 24) {
-        temporalDate2.subtract(1, "days");
+      temporalDate2 = moment(date2).set({
+        year: this.calendar.year,
+        month: this.calendar.months[this.calendar.monthIndex].id,
+        date: this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber,
+        hour: hour + 1,
+        // + 1
+        minute: 0o0,
+        seconds: 0o0,
+        millisecond: 0o0,
+      });
+
+      if (hour + 1 >= 24) {
+        temporalDate2.subtract(1, 'days');
       }
 
       date2 = temporalDate2.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
@@ -298,49 +296,45 @@ export class ReservationOrderlessComponent implements OnInit {
       let hour;
       let date = new Date();
       let offset = date.getTimezoneOffset() / 60;
-      hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset; 
+      hour = parseInt(this.todayHours[this.calendar.hourIndex]) + offset;
 
       let temporalDate1 = null;
 
-      temporalDate1 =
-        moment(date1)
-          .set({
-            year: this.calendar.year,
-            month: this.calendar.months[this.calendar.monthIndex].id,
-            date: this.calendar.months[this.calendar.monthIndex].dates[
-              this.calendar.dayIndex
-            ].dayNumber,
-            hour: hour,
-            minute: 0o0,
-            seconds: 0o0,
-            millisecond: 0o0,
-          });
+      temporalDate1 = moment(date1).set({
+        year: this.calendar.year,
+        month: this.calendar.months[this.calendar.monthIndex].id,
+        date: this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber,
+        hour: hour,
+        minute: 0o0,
+        seconds: 0o0,
+        millisecond: 0o0,
+      });
 
-      if(hour >= 24) {
-        temporalDate1.subtract(1, "days");
+      if (hour >= 24) {
+        temporalDate1.subtract(1, 'days');
       }
 
       date1 = temporalDate1.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
 
       let temporalDate2 = null;
-      
-      temporalDate2 =
-        moment(date2)
-          .set({
-            year: this.calendar.year,
-            month: this.calendar.months[this.calendar.monthIndex].id,
-            date: this.calendar.months[this.calendar.monthIndex].dates[
-              this.calendar.dayIndex
-            ].dayNumber,
-            hour: hour + 1,
-            // + 1
-            minute: 0o0,
-            seconds: 0o0,
-            millisecond: 0o0,
-          });
 
-      if(hour + 1 >= 24) {
-        temporalDate2.subtract(1, "days");
+      temporalDate2 = moment(date2).set({
+        year: this.calendar.year,
+        month: this.calendar.months[this.calendar.monthIndex].id,
+        date: this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber,
+        hour: hour + 1,
+        // + 1
+        minute: 0o0,
+        seconds: 0o0,
+        millisecond: 0o0,
+      });
+
+      if (hour + 1 >= 24) {
+        temporalDate2.subtract(1, 'days');
       }
 
       date2 = temporalDate2.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
@@ -361,9 +355,7 @@ export class ReservationOrderlessComponent implements OnInit {
 
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
-    let dateInfo = (
-      reservation.date.from as string
-    ).split('-');
+    let dateInfo = (reservation.date.from as string).split('-');
     let day = dateInfo[2].split('T')[0];
     let hour =
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
@@ -380,9 +372,7 @@ export class ReservationOrderlessComponent implements OnInit {
       day,
       month,
       monthNumber,
-      hour: this.formatHour3(
-        reservation.date.from as string
-      ),
+      hour: this.formatHour3(reservation.date.from as string),
       hourNumber: this.formatHour5(reservation.date.from).hour,
       minutesNumber: this.formatHour5(reservation.date.from).minutes,
       dateInfo: dateInfo[0],
@@ -390,32 +380,39 @@ export class ReservationOrderlessComponent implements OnInit {
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayName,
-      until: this.formatHour3(
-        reservation.date.until as string
-      ),
+      until: this.formatHour3(reservation.date.until as string),
     };
 
     const hoursStringLast2Digits = this.datePreview.hour.slice(-2);
     const hoursStringFirst2Digits = this.datePreview.hour.slice(0, 2);
 
-    const hourIn24HoursHumanFormat = hoursStringLast2Digits === 'pm' ? (
-      hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) + 12 : (
-        hoursStringFirst2Digits !== '12' ?
-          Number(hoursStringFirst2Digits) + 12
+    const hourIn24HoursHumanFormat =
+      hoursStringLast2Digits === 'pm'
+        ? hoursStringFirst2Digits[1] === ':'
+          ? Number(this.datePreview.hour.slice(0, 1)) + 12
+          : hoursStringFirst2Digits !== '12'
+          ? Number(hoursStringFirst2Digits) + 12
           : 12
-      )
-    ) : (
-      hoursStringFirst2Digits[1] === ':' ? Number(this.datePreview.hour.slice(0, 1)) :
-        hoursStringFirst2Digits !== '12' ? Number(hoursStringFirst2Digits) : 0
-    );
+        : hoursStringFirst2Digits[1] === ':'
+        ? Number(this.datePreview.hour.slice(0, 1))
+        : hoursStringFirst2Digits !== '12'
+        ? Number(hoursStringFirst2Digits)
+        : 0;
 
-    const hourStringIn24HourFormat = hourIn24HoursHumanFormat < 10 ? '0' + hourIn24HoursHumanFormat + ':00' : hourIn24HoursHumanFormat + ':00';
+    const hourStringIn24HourFormat =
+      hourIn24HoursHumanFormat < 10
+        ? '0' + hourIn24HoursHumanFormat + ':00'
+        : hourIn24HoursHumanFormat + ':00';
 
-    this.reservationMessage = `${this.datePreview.dayName} ${this.datePreview.day} de ${this.datePreview.month}, entre ${this.datePreview.hour} - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
+    this.reservationMessage = `${this.datePreview.dayName} ${
+      this.datePreview.day
+    } de ${this.datePreview.month}, entre ${
+      this.datePreview.hour
+    } - ${this.formatDayHourToAmOrPm(hourStringIn24HourFormat, true)}`;
 
     this.onReservation.emit({
       message: this.reservationMessage,
-      data: this.datePreview
+      data: this.datePreview,
     });
 
     // Logic for default date
@@ -490,7 +487,7 @@ export class ReservationOrderlessComponent implements OnInit {
       string = string.toString() + ':' + '00' + ' ' + 'pm';
     } else {
       string = string.toString() + ':' + '00' + ' ' + 'pm';
-    };
+    }
 
     return string;
   }
@@ -512,7 +509,7 @@ export class ReservationOrderlessComponent implements OnInit {
     this.timeOfDay = change;
     this.onTimeOfDaySelection.emit({
       timeOfDay: this.timeOfDay,
-      ...this.selectedDateObject
+      ...this.selectedDateObject,
     });
   }
 
@@ -521,17 +518,21 @@ export class ReservationOrderlessComponent implements OnInit {
       monthNumber: change.calendar.id + 1,
       monthName: change.calendar.name,
       dayNumber: change.day.dayNumber,
-      dayName: change.day.dayName
+      dayName: change.day.dayName,
     };
 
-    if(this.timeOfDay)
+    if (this.timeOfDay)
       this.onTimeOfDaySelection.emit({
         ...this.selectedDateObject,
-        timeOfDay: this.timeOfDay 
-      })
+        timeOfDay: this.timeOfDay,
+      });
   }
 
-  formatDayHourToAmOrPm(hourString: string, addOne: boolean = false, minutes: number = 0): string {
+  formatDayHourToAmOrPm(
+    hourString: string,
+    addOne: boolean = false,
+    minutes: number = 0
+  ): string {
     let hourInteger: number | string = parseInt(hourString.split(':')[0]);
     let formattedHour: string;
     let minutesString: string;
@@ -546,16 +547,15 @@ export class ReservationOrderlessComponent implements OnInit {
       hourInteger = hourInteger - 12;
 
       if (hourInteger !== 12)
-        formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
-      else
-        formattedHour = '00' + ':' + minutesString + ' ' + 'am';
+        formattedHour =
+          hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+      else formattedHour = '00' + ':' + minutesString + ' ' + 'am';
     } else {
       formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
-    };
+    }
 
     return formattedHour;
   }
-
 
   num(number) {
     return parseInt(number);
@@ -595,7 +595,7 @@ export class ReservationOrderlessComponent implements OnInit {
   }
 
   getId(id, slide) {
-    console.log("GET ID!!!")
+    console.log('GET ID!!!');
 
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
     if (!this.getReservations(slide)) {
@@ -617,7 +617,7 @@ export class ReservationOrderlessComponent implements OnInit {
       );
       if (
         this.calendar.months[this.calendar.monthIndex].id ==
-        reservationMonthFrom &&
+          reservationMonthFrom &&
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayNumber == reservationDayFrom
@@ -646,44 +646,47 @@ export class ReservationOrderlessComponent implements OnInit {
     const currentDayNumber = currentDateObject.getDate();
 
     const daysHashTableTranslation = {
-      'Lunes': 'MONDAY',
-      'Martes': 'TUESDAY',
-      'Miercoles': 'WEDNESDAY',
-      'Jueves': 'THURSDAY',
-      'Viernes': 'FRIDAY',
-      'Sabado': 'SATURDAY',
-      'Domingo': 'SUNDAY',
+      Lunes: 'MONDAY',
+      Martes: 'TUESDAY',
+      Miercoles: 'WEDNESDAY',
+      Jueves: 'THURSDAY',
+      Viernes: 'FRIDAY',
+      Sabado: 'SATURDAY',
+      Domingo: 'SUNDAY',
     };
 
-    if(
-      (
-        this.hourRangeInDays && !(hourWithoutOffset < currentHour) && this.datePreview && (
-          this.calendar.months[this.calendar.monthIndex].dates[
-            this.calendar.dayIndex
-          ].dayNumber === currentDayNumber
-        )
-      ) || (
-        this.hourRangeInDays && this.datePreview && (
-          this.calendar.months[this.calendar.monthIndex].dates[
-            this.calendar.dayIndex
-          ].dayNumber !== currentDayNumber
-        )        
-      )
+    if (
+      (this.hourRangeInDays &&
+        !(hourWithoutOffset < currentHour) &&
+        this.datePreview &&
+        this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber === currentDayNumber) ||
+      (this.hourRangeInDays &&
+        this.datePreview &&
+        this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber !== currentDayNumber)
     ) {
       let shouldDisableHour = false;
       Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
-        
-        if(dayKey === daysHashTableTranslation[
-          this.calendar.months[this.calendar.monthIndex].dates[
-            this.calendar.dayIndex
-          ].dayName
-        ]) {
-
-          this.hourRangeInDays[dayKey].forEach(availabilityRange => {
-            if(availabilityRange.from <= hourWithoutOffset && availabilityRange.to >= hourWithoutOffset && !shouldDisableHour) {
-              console.log(availabilityRange, hourWithoutOffset);
-              shouldDisableHour = true
-            };
+        if (
+          dayKey ===
+          daysHashTableTranslation[
+            this.calendar.months[this.calendar.monthIndex].dates[
+              this.calendar.dayIndex
+            ].dayName
+          ]
+        ) {
+          this.hourRangeInDays[dayKey].forEach((availabilityRange) => {
+            if (
+              availabilityRange.from <= hourWithoutOffset &&
+              availabilityRange.to >= hourWithoutOffset &&
+              !shouldDisableHour
+            ) {
+              //console.log(availabilityRange, hourWithoutOffset);
+              shouldDisableHour = true;
+            }
           });
         }
       });
@@ -721,6 +724,54 @@ export class ReservationOrderlessComponent implements OnInit {
     } else {
       return true;
     }
+  }
+
+  isHourBeforeOrBeyondLimits(hour) {
+    const currentDateObject = new Date();
+    const hourWithoutOffset = hour - currentDateObject.getTimezoneOffset() / 60;
+    const currentHour = currentDateObject.getHours();
+    const currentDayNumber = currentDateObject.getDate();
+    let returnValue = false;
+
+    if(!this.hourRangeInDays) return false;//garantiza que si no hay limites de horario, todo se vea sin restricciones
+
+    const daysHashTableTranslation = {
+      Lunes: 'MONDAY',
+      Martes: 'TUESDAY',
+      Miercoles: 'WEDNESDAY',
+      Jueves: 'THURSDAY',
+      Viernes: 'FRIDAY',
+      Sabado: 'SATURDAY',
+      Domingo: 'SUNDAY',
+    };
+
+
+    Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
+      if (
+        dayKey ===
+        daysHashTableTranslation[
+          this.calendar.months[this.calendar.monthIndex].dates[
+            this.calendar.dayIndex
+          ].dayName
+        ]
+      ) {
+        this.hourRangeInDays[dayKey].forEach((availabilityRange, index) => {
+          if (index === this.hourRangeInDays[dayKey].length - 1) {
+            if (hourWithoutOffset > availabilityRange.to) {
+              returnValue = true;
+            }
+          }
+
+          if (index === 0) {
+            if (hourWithoutOffset < availabilityRange.from) {
+              returnValue = true;
+            }
+          }
+        });
+      }
+    });
+
+    return returnValue;
   }
 
   test(e) {
@@ -904,7 +955,8 @@ export class ReservationOrderlessComponent implements OnInit {
     this.header.storeOrderProgress(this.header.saleflow._id);
 
     let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
+    if (!this.header.orderId)
+      preOrderID = await this.header.newCreatePreOrder();
     else preOrderID = this.header.orderId;
 
     this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
@@ -933,6 +985,8 @@ export class ReservationOrderlessComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate([`/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`]);
+    this.router.navigate([
+      `/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`,
+    ]);
   }
 }

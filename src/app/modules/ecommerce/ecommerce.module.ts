@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from './../../shared/shared.module';
 import { AdminLoginComponent } from './components/admin-login/admin-login.component';
 import { ErrorScreenComponent } from './components/error-screen/error-screen.component';
-import { LoginScreenComponent } from './components/login-screen/login-screen.component';
 import { AdminOptionsComponent } from './pages/admin-options/admin-options.component';
 import { Authentication } from './pages/authentication/authentication.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
@@ -77,6 +76,7 @@ import { UserCreatorComponent } from './pages/user-creator/user-creator.componen
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
+import { LoginComponent } from './components/login-screen/login.component';
 
 const routes: Routes = [
   {
@@ -446,7 +446,7 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginScreenComponent,
+    component: LoginComponent,
   },
 ];
 
@@ -527,7 +527,7 @@ const routes: Routes = [
     CalendarDetailComponent,
     CalendarCreatorComponent,
     ReservationsCreatorComponent,
-    LoginScreenComponent,
+    LoginComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
