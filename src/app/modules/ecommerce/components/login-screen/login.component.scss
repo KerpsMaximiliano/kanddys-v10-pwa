@@ -88,3 +88,7 @@
     border-radius: 9px !important;
     box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
 }
+
+.ng-invalid.ng-touched{
+    border: 1px solid #c0392b !important;
+}
