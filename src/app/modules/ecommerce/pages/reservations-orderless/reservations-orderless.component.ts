@@ -662,7 +662,6 @@ export class ReservationOrderlessComponent implements OnInit {
           this.calendar.dayIndex
         ].dayNumber === currentDayNumber) ||
       (this.hourRangeInDays &&
-        this.datePreview &&
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayNumber !== currentDayNumber)
