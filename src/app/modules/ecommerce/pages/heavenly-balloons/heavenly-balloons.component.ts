@@ -14,6 +14,7 @@ import {
 } from 'ngx-intl-tel-input';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -1480,7 +1481,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             return { ok: true };
           } catch (error) {
-            console.log("El error ", error)
+            console.log("El error ", error.message)
+            
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
               props: {
@@ -1491,7 +1493,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
               flags: ['no-header'],
             });
 
-            console.log(error);
+            this.frontendLogsService.createFrontendLog({
+              route: window.location.href,
+              log: JSON.stringify({
+                error: error.message
+              })
+            });
 
             return { ok: false };
           }
@@ -1504,7 +1511,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
     private route: ActivatedRoute,
     private decimalPipe: DecimalPipe,
     private dialog: DialogService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private frontendLogsService: FrontendLogsService
   ) { }
   
 
