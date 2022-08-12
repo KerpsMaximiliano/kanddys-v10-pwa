@@ -655,6 +655,8 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
+    
+
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
@@ -669,6 +671,8 @@ export class ReservationOrderlessComponent implements OnInit {
     ) {
       let shouldDisableHour = false;
       Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
+        if(hourWithoutOffset === currentHour) return true;
+
         if (
           dayKey ===
           daysHashTableTranslation[
