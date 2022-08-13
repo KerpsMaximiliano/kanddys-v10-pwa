@@ -528,6 +528,7 @@ export class ReservationOrderlessComponent implements OnInit {
       });
   }
 
+
   formatDayHourToAmOrPm(
     hourString: string,
     addOne: boolean = false,
@@ -655,6 +656,8 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
+    
+
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
@@ -663,13 +666,14 @@ export class ReservationOrderlessComponent implements OnInit {
           this.calendar.dayIndex
         ].dayNumber === currentDayNumber) ||
       (this.hourRangeInDays &&
-        this.datePreview &&
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayNumber !== currentDayNumber)
     ) {
       let shouldDisableHour = false;
       Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
+        if(hourWithoutOffset === currentHour) return true;
+
         if (
           dayKey ===
           daysHashTableTranslation[
@@ -790,6 +794,9 @@ export class ReservationOrderlessComponent implements OnInit {
 
   test2(e) {
     //this.getMonthId(0);
+    this.activeHour = null;
+    console.log("Dia seleccionado")
+    console.log(this.activeHour);
 
     this.getDayId(
       e.calendar.dates.findIndex(

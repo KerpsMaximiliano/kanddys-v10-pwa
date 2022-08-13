@@ -73,22 +73,40 @@ export class LoginComponent implements OnInit {
 
   toggleLog(){
     this.loggin = !this.loggin;
+    this.phoneNumber.setValue(null);
+    this.merchantNumber = '';
   }
 
   async submitPhone(){
     console.log(this.phoneNumber);
-    
+
     try{
         const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(this.phoneNumber.value.e164Number);
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.phoneNumber.setValue(nationalNumber);
         this.CountryISO = countryIso;
+        this.loggin = true;
 
     } catch (error) {
-        notification.toast('Número no registrado o Inválido', {timeout: 2000});
+        notification.toast('Número no registrado o Inválido', {timeout: 1500});
         console.log(error);
     }
-
   };
+
+  async signIn(){
+    if (this.password.invalid){
+        notification.toast('Contraseña invalida', {timeout: 1500});
+    } else {
+        const signin = await this.authService.signin( this.merchantNumber, this.password.value, true );
+
+        if(!signin){
+            notification.toast('Contraseña incorrecta', {timeout: 1500})
+            console.log('error');
+
+            return
+        }
+        this.router.navigate([`ecommerce/entity-detail-metrics`]);  
+    }       
+  }
 
 }

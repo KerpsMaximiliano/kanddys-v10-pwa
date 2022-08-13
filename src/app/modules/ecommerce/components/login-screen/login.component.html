@@ -44,9 +44,9 @@
 
         <div class="password-input" *ngIf="loggin">
 
-            <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password">
+            <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" required>
 
-            <button class="confirm"><i class="fas fa-chevron-right"></i></button>
+            <button class="confirm" (click)="signIn()" ><i class="fas fa-chevron-right"></i></button>
 
         </div>
     </div>
