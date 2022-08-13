@@ -152,7 +152,7 @@
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
                   " [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#949494' }
-                  " [ngClass]="{ 'btn-add': i == activeHour }">
+                  " [ngClass]="{ 'btn-add': filterHours(num(slide) + offset) && i == activeHour }">
                   <ng-container *ngIf="calendar">
                     <ng-container *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available">
                       <div class="slide-content">
@@ -192,7 +192,7 @@
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
                   " [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#C6C6C8' }
-                  " [ngClass]="{ 'btn-add': i == activeHour }">
+                  " [ngClass]="{ 'btn-add': filterHours(num(slide) + offset) && i == activeHour }">
                   <ng-container *ngIf="calendar">
                     <ng-container *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available">
                       <div class="slide-content">

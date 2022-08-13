@@ -527,6 +527,7 @@ export class ReservationOrderlessComponent implements OnInit {
       });
   }
 
+
   formatDayHourToAmOrPm(
     hourString: string,
     addOne: boolean = false,
@@ -788,6 +789,9 @@ export class ReservationOrderlessComponent implements OnInit {
 
   test2(e) {
     //this.getMonthId(0);
+    this.activeHour = null;
+    console.log("Dia seleccionado")
+    console.log(this.activeHour);
 
     this.getDayId(
       e.calendar.dates.findIndex(
