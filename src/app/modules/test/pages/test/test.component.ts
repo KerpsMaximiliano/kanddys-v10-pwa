@@ -51,5 +51,54 @@ export class TestComponent implements OnInit {
   ngOnInit(): void { 
     console.log(this.hourRangeInDays);
   }
+
+  openDialog(){
+    const list: StoreShareList[] = [
+        {
+            title: 'ITEM ID',
+            label: 'VISIBLE',
+            options: [
+                {
+                    text: 'CREA UN NUEVO ARTICULO',
+                    mode: 'func',
+                    func() {
+                        console.log('Este mueve la maraca');
+                        // this.router.navigate([`admin/item-creator`]);
+                    },
+                },
+                {
+                    text: 'VENDE ONLINE. COMPARTE EL LINK',
+                    icon: {
+                        src: '/upload.svg',
+                        alt: 'icono de de compartir',
+                        size:{
+                            width: 14,
+                            height: 14
+                        }
+                    },
+                    mode: 'clipboard'
+                },
+                {
+                    text: 'CERRAR SESIÓN',
+                    mode: 'func',
+                    func() {
+                        console.log('aqui cierra sesión');
+                        //this.authService.signout();
+                    }
+                }
+            ]
+        },
+    ];
+
+    this.dialog.open(StoreShareComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          list,
+          alternate: false
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+    });
+  }
 }
 
