@@ -62,9 +62,9 @@
 
 
                     <div class="dot-trio" *ngIf="dots?.active" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'0'}">
-                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none'}"> </div>
-                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none'}"> </div>
-                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none'}"> </div>
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 4px'}"> </div>
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 4px'}"> </div>
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 4px'}"> </div>
                     </div>
 
                     <button class="edit-button"  *ngIf="edit?.active || edit?.batch"  [ngStyle]="editStyles? editStyles : {

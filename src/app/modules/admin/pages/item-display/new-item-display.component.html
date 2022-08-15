@@ -6,21 +6,10 @@
       active: item?.notifications?.length && notifications?.length > 0
     }"
     (plusEvent)="redirectTo('admin/notification-creator/' + item._id)"
-    [icons]="[
-      {
-        src: '/upload.svg',
-        color:
-          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-        callback: openShareDialog
-      },
-      {
-        src: '/pencil.svg',
-        color:
-          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-        callback: editItem,
-        margin: '0 7px 0 6px'
-      }
-    ]"
+    [dots]="{
+        active: true,
+        func: openShareDialog
+    }"
     [returnAble]="true"
     bgColor="#2874AD"
     color="#FFFFFF"
@@ -53,6 +42,7 @@
 
   <div class="item-info" *ngIf="item">
     <div class="fullScreenSwiper" *ngIf="item.images?.length">
+        <button class="swiper-button"> <img [src]="env + '/upload.svg' " width="15" height="19" (click)="openImageModal(item[0].image)"> </button>
       <div class="shadowWrapper">
         <swiper [config]="swiperConfig">
           <div
@@ -65,12 +55,32 @@
       </div>
     </div>
     <div class="flex-box" style="color: #4f4f4f; margin-top: 32px">
-      <h6 class="small-title">{{ item.name }}</h6>
+      <h1 class="small-title">{{ item.name }}</h1>
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
 
     <section>
-      <div class="section">
+        
+        <p class="item-detail">Sobre {{item.name}}</p>
+
+        <div class="grid-details">
+            <div class="info-card">
+                <h2 class="amount quantity">
+                    {{totalByItem && totalByItem?.itemInOrder.toLocaleString('es-MX')}}
+                </h2>
+
+                <h2 class="amount">FACTURADOS</h2>
+            </div>
+
+            <div class="info-card">
+                <h2 class="amount quantity">
+                    {{totalByItem && totalByItem?.total.toLocaleString('es-MX')}}
+                </h2>
+
+                <h2 class="amount">EN INGRESOS TOTALES</h2>
+            </div>
+        </div>
+      <!-- <div class="section">
         <app-question-item
           *ngIf="!item?.notifications?.length"
           style="cursor: pointer"
@@ -173,9 +183,10 @@
             [hideAble]="false"
           ></app-enlist-display>
         </div>
-      </ng-container>
+      </ng-container> -->
     </section>
   </div>
+
   <app-sticky-button
     [mode]="'double'"
     [extra]="{
@@ -185,6 +196,26 @@
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
+    [text]=" ' FACTURAR ' "
+    [customLeftButtonStyles]="{
+        'width': '85%',
+        'max-width': 'none',
+        'border-left': '1px solid #FFFFFF',
+        'background-color': '#2874AD',
+        'color': '#FFFFFF'
+    }"
+    [customRightButtonStyles]="{
+        'width': '1px',
+        'heigth': '1px',
+        'background-color': '#2874AD'
+    }" 
+    [text2]=" '' "
+    size="small"
+    (added)="redirect()"
+  ></app-sticky-button>
+</div>
+
+<!--    
     [text]="
       totalByItem &&
       totalByItem?.itemInOrder.toLocaleString('es-MX') + ' VENTAS'
@@ -192,7 +223,4 @@
     [text2]="
       totalByItem && totalByItem?.total.toLocaleString('es-MX') + ' INGRESO'
     "
-    size="small"
-    (added)="redirect()"
-  ></app-sticky-button>
-</div>
+-->
