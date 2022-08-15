@@ -164,7 +164,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               params.scrollToStep(1);
             }
             if (change === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
-              this.router.navigate(['ecommerce/post-edit'], {
+              this.router.navigate(['others/post-edit'], {
                 queryParams: { viewtype: "order" }
               });
             }

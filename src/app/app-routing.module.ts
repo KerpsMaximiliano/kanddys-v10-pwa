@@ -1,4 +1,3 @@
-import { AuthGuard } from './core/guards/auth.guard';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -20,15 +19,49 @@ const routes: Routes = [
   // component: LandingComponent
   // },
   {
+    path: 'admin',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/admin/admin.module').then((m) => m.AdminModule),
+  },
+  {
+    path: 'airtable',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/airtable/airtable.module').then(
+        (m) => m.AirtableModule
+      ),
+  },
+  {
+    path: 'auth',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
+  },
+  {
     path: 'ecommerce',
     /*canLoad: [AuthGuard],
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
-    data: {animation: 'EcommerceModule'},
+    data: { animation: 'EcommerceModule' },
     loadChildren: () =>
       import('./modules/ecommerce/ecommerce.module').then(
         (m) => m.EcommerceModule
       ),
+  },
+  {
+    path: 'others',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/others/others.module').then((m) => m.OthersModule),
   },
   {
     path: 'posts',
@@ -36,9 +69,15 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
     loadChildren: () =>
-      import('./modules/posts/posts.module').then(
-        (m) => m.PostsModule
-      ),
+      import('./modules/posts/posts.module').then((m) => m.PostsModule),
+  },
+  {
+    path: 'test',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/test/test.module').then((m) => m.TestModule),
   },
   {
     path: 'webforms',
@@ -50,7 +89,7 @@ const routes: Routes = [
         (m) => m.WebformsModule
       ),
   },
-  { path: '**', redirectTo, pathMatch: 'full' }
+  { path: '**', redirectTo, pathMatch: 'full' },
 ];
 
 @NgModule({

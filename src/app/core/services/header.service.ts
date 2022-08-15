@@ -75,7 +75,6 @@ export class HeaderService {
   pack: any;
   packId: number;
   post: PostInput;
-  comingFromPayments: boolean = false;
   checkData: any;
   flowId: string;
   saleflow: SaleFlow;

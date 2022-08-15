@@ -14,17 +14,14 @@
             & .title{
                 display: inline-block;
                 width: 51%;
-                font-family: 'AvenirDemiBold';
                 font-size: 18px;
                 color:#A17928;
                 & .category{
-                    font-family: 'AvenirMedium';
                     font-size: 15px;
                     color: #707070;
                     margin-bottom: 15px;
                 }
                 & .description-text{
-                    font-family: 'AvenirMedium';
                     font-size: 18px;
                     text-align: start;
                     color: #235067;
@@ -35,13 +32,11 @@
     & .section{
         margin-top: 51px;
         & .title{
-            font-family: 'AvenirDemiBold';
             font-size: 15px;
             color: #235067;
         }
         & .text{
             margin-top: 14px;
-            font-family: 'Avenir';
             font-size: 15px;
             font-weight: lighter;
             color: #707070;

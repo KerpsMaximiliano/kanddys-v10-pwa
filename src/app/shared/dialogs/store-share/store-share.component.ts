@@ -1,9 +1,18 @@
 import { Clipboard } from '@angular/cdk/clipboard';
-import { Component, OnInit, Input, ViewChild, ElementRef, HostListener, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ElementRef,
+  HostListener,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 import { environment } from 'src/environments/environment';
-import { notification } from 'onsenui';
+import { ToastrService } from 'ngx-toastr';
 
 interface IconSize {
   width: number;
@@ -27,7 +36,7 @@ interface StoreShareOption {
 
 export interface StoreShareList {
   title?: string;
-  titleStyles?: Record<string, any>
+  titleStyles?: Record<string, any>;
   description?: string;
   message?: string;
   messageCallback?: (...args: any[]) => void;
@@ -38,11 +47,11 @@ export interface StoreShareList {
 @Component({
   selector: 'app-store-share',
   templateUrl: './store-share.component.html',
-  styleUrls: ['./store-share.component.scss']
+  styleUrls: ['./store-share.component.scss'],
 })
 export class StoreShareComponent implements OnInit {
   env: string = environment.assetsUrl;
-  @ViewChild("qrcode", { read: ElementRef }) qr: ElementRef;
+  @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
   @Input() alternate: boolean;
   size: number = 150;
@@ -53,22 +62,26 @@ export class StoreShareComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
     private ref: DialogRef,
+    private toastr: ToastrService
   ) {
-    // this.onResize(); /* actualiza dinamicamente el tamaño del qr */ 
+    // this.onResize(); /* actualiza dinamicamente el tamaño del qr */
   }
 
   ngOnInit(): void {
-    if(!this.list || !this.list.length) throw new Error('Ingresa opciones para mostrar'); 
+    if (!this.list || !this.list.length)
+      throw new Error('Ingresa opciones para mostrar');
   }
 
   downloadQr() {
-    const parentElement = this.qr.nativeElement.querySelector("img").src;
+    const parentElement = this.qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) { //IE
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
       (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
       this.close();
-    } else { // chrome
-      const blob = new Blob([blobData], { type: "image/png" });
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
       const url = window.URL.createObjectURL(blob);
       // window.open(url);
       const link = document.createElement('a');
@@ -98,7 +111,7 @@ export class StoreShareComponent implements OnInit {
 
   copyLink(link: string) {
     this.clipboard.copy(link);
-    notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
+    this.toastr.info('Enlace copiado en el clipboard');
     this.close();
   }
 
@@ -125,5 +138,4 @@ export class StoreShareComponent implements OnInit {
     callback();
     this.close();
   }
-
 }

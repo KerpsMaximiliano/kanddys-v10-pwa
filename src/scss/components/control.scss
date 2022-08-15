@@ -58,12 +58,6 @@
       @include flex(row, center, flex-end);
       background: transparent;
       font-size: inherit;
-      app-button {
-        @include size(2rem);
-        flex: 0 0 2rem;
-        cursor: pointer;
-        padding: 0.6rem;
-      }
     }
 
     .control-input--prefix + .control-input--control {

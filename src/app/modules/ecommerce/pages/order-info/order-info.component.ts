@@ -133,7 +133,7 @@ export class OrderInfoComponent implements OnInit {
     this.headerService.orderId = this.linkId;
     const order = (await this.orderService.order(this.linkId))?.order;
     if (!order) {
-      this.router.navigate([`ecommerce/error-screen/`], {
+      this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
       });
       return;
@@ -472,7 +472,7 @@ export class OrderInfoComponent implements OnInit {
 
   back() {
     this.router.navigate([
-      'ecommerce/order-sales/' + this.headerService.fromOrderSales,
+      'admin/order-sales/' + this.headerService.fromOrderSales,
     ]);
     this.headerService.fromOrderSales = undefined;
   }
@@ -495,7 +495,7 @@ export class OrderInfoComponent implements OnInit {
 
   redirectToUserContact() {
     this.router.navigate([
-      `/ecommerce/user-contact-landing/${this.order.user._id}`,
+      `/others/user-contact-landing/${this.order.user._id}`,
     ]);
   }
 

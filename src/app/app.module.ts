@@ -1,29 +1,26 @@
-import { AppService } from './app.service';
 import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  NgModule,
-  APP_INITIALIZER,
+  APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA,
+  NgModule
 } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { OnsenModule } from 'ngx-onsenui';
+import { ToastrModule } from 'ngx-toastr';
+import { AppService } from './app.service';
 
+import { DecimalPipe } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SharedModule } from './shared/shared.module';
 import { GraphQLModule } from './graphql.module';
-import { HttpClientModule } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SocialLoginModule } from 'angularx-social-login';
-import { DecimalPipe } from '@angular/common';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    OnsenModule,
     BrowserModule,
-    SocialLoginModule,
+    // SocialLoginModule,
     AppRoutingModule,
     ServiceWorkerModule.register('service-worker.js', {
       enabled: environment.production,
@@ -32,6 +29,10 @@ import { DecimalPipe } from '@angular/common';
     GraphQLModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-center',
+      preventDuplicates: true,
+    }),
   ],
   providers: [
     AppService,

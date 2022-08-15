@@ -25,7 +25,6 @@ export class CommunityPreviewComponent implements OnInit {
       height: '47px',
       background: '#F4F4F4',
       color: '#A17928',
-      fontFamily: 'AvenirDemiBold',
       fontSize: '17px',
       borderRadius: '5px',
       textDecoration: 'none',

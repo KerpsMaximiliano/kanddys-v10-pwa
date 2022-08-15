@@ -5,7 +5,6 @@ import {
   NavigationEnd,
   Router,
 } from '@angular/router';
-import * as ons from 'onsenui';
 import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/internal/operators/filter';
 
@@ -39,7 +38,6 @@ export class AppService {
 
   ngOnAppInit() {
     this.initRoute();
-    this.initOnsenUI();
   }
 
   initRoute() {
@@ -51,24 +49,5 @@ export class AppService {
         while (route.firstChild) route = route.firstChild;
         this.navend.next(route);
       });
-  }
-
-  initOnsenUI() {
-    ons.disableAutoStyling();
-    ons.platform.select('ios');
-    ons.forcePlatformStyling('ios');
-    ons.orientation.on('change', () => {
-      const { documentElement } = document;
-      if (ons.platform.isIPhoneX()) {
-        if (ons.orientation.isPortrait()) {
-          documentElement.setAttribute('onsflag-iphonex-portrait', '');
-          documentElement.removeAttribute('onsflag-iphonex-landscape');
-        }
-        if (ons.orientation.isLandscape()) {
-          documentElement.setAttribute('onsflag-iphonex-landscape', '');
-          documentElement.removeAttribute('onsflag-iphonex-portrait');
-        }
-      }
-    });
   }
 }
