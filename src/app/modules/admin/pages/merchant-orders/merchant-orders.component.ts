@@ -464,7 +464,7 @@ export class MerchantOrdersComponent implements OnInit {
 
 
   goToMetrics = () =>{
-    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+    this.router.navigate([`admin/entity-detail-metrics`]);
   }
 
   search(event){

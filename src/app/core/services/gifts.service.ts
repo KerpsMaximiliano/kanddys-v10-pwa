@@ -70,7 +70,7 @@ export class GiftsService {
       return result;
     } catch (e) {
       console.log(e);
-      this.router.navigate(['ecommerce/error-screen']);
+      this.router.navigate(['others/error-screen']);
     }
   }
 }

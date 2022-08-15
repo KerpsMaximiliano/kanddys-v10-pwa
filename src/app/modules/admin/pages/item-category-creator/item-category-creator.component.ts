@@ -37,12 +37,12 @@ export class TagCategoryCreatorComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const user = await this.authService.me();
     if (!user) {
-      this.router.navigate([`ecommerce/error-screen/`]);
+      this.router.navigate([`others/error-screen/`]);
       return;
     }
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
-      this.router.navigate([`ecommerce/error-screen/`]);
+      this.router.navigate([`others/error-screen/`]);
       return;
     }
     const id = this.route.snapshot.paramMap.get('id');

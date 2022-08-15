@@ -2,7 +2,7 @@
 	<div class="topbar">
 		<a class="cancel" (click)="cancel()">{{previewMode ? 'Editar' :  'Cancel'}}</a>
 		<button (click)="save()" class="right" *ngIf="currentContent && (editText || image)">Salvar</button>
-		<!-- <a class="right" *ngIf="!currentContent && content.length" routerLink="/ecommerce/post-preview">Preview</a> -->
+		<!-- <a class="right" *ngIf="!currentContent && content.length" routerLink="/others/post-preview">Preview</a> -->
 		<button
 			class="right"
 			*ngIf="!previewMode && !currentContent && content.length"

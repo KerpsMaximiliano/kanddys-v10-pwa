@@ -45,7 +45,7 @@ export class MerchantDashboardComponent implements OnInit {
 
   redirect() {
     unlockUI();
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   whichName(e){

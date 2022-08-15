@@ -5,7 +5,7 @@
     [plus]="{
       active: item?.notifications?.length && notifications?.length > 0
     }"
-    (plusEvent)="redirectTo('ecommerce/notification-creator/' + item._id)"
+    (plusEvent)="redirectTo('admin/notification-creator/' + item._id)"
     [icons]="[
       {
         src: '/upload.svg',
@@ -74,7 +74,7 @@
         <app-question-item
           *ngIf="!item?.notifications?.length"
           style="cursor: pointer"
-          (click)="redirectTo('ecommerce/notification-creator/' + item._id)"
+          (click)="redirectTo('admin/notification-creator/' + item._id)"
           headline="AUTOMATIZA UN MENSAJE"
           [headlineContainerStyles]="{
             justifyContent: 'flex-start',
@@ -135,7 +135,7 @@
                     'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)',
                   callback: redirectTo,
                   args:
-                    'ecommerce/notification-creator/' +
+                    'admin/notification-creator/' +
                     item._id +
                     '/' +
                     notification._id

@@ -218,7 +218,7 @@ export class CalendarCreatorComponent implements OnInit {
 
       if(merchantDefault) this.merchantDefault = merchantDefault;
       else {
-        this.router.navigate(['ecommerce/error-screen']);
+        this.router.navigate(['others/error-screen']);
       }
     }
   }

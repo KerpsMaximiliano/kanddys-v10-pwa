@@ -64,7 +64,7 @@ export class HeaderInfoComponent implements OnInit {
       // }
 
     if(!this.type || this.type === 'route')
-      this.router.navigate([`/ecommerce/${this.route}`]);
+      this.router.navigate([`/others/${this.route}`]);
 
     if(this.type === 'dialog'){
       this.dialogService.open(MerchantInfoComponent, {
@@ -83,7 +83,7 @@ export class HeaderInfoComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate(['/ecommerce/user-creator']);
+    this.router.navigate(['/auth/user-creator']);
   }
 
   triggerFeaturedText() {

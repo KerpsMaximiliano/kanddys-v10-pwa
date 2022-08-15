@@ -209,7 +209,7 @@ export class BankRegistrationComponent implements OnInit {
           marginTop: '31px'
         },
         callback: async (params) => {
-          this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+          this.router.navigate([`/admin/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
         },
       },
       stepButtonValidText: "SALVA ESTA CUENTA PARA RECIBIR LOS PAGOS",

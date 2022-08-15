@@ -147,7 +147,7 @@ export class OrderSalesComponent implements OnInit {
         phone: order.user.phone,
         tags: order.tags,
         add_tag: true,
-        tag_function: () => this.router.navigate([`ecommerce/data-list/${order._id}`], { queryParams: { viewtype: 'merchant', mode: 'tag' } }),
+        tag_function: () => this.router.navigate([`others/data-list/${order._id}`], { queryParams: { viewtype: 'merchant', mode: 'tag' } }),
       }
     });
   }
@@ -176,7 +176,7 @@ export class OrderSalesComponent implements OnInit {
   }
 
   goToOderinfo(orderID: string) {
-    this.router.navigate([`ecommerce/sale-detail/${orderID}`]);
+    this.router.navigate([`admin/sale-detail/${orderID}`]);
   }
 
   searchToggle() {
@@ -192,11 +192,11 @@ export class OrderSalesComponent implements OnInit {
   }
 
   tagFunction() {
-    this.router.navigate([`ecommerce/tags-edit`]);
+    this.router.navigate([`admin/tags-edit`]);
   }
 
   back() {
-    this.router.navigate([`/ecommerce/user-items`]);
+    this.router.navigate([`/admin/user-items`]);
   }
 
   toggleNotification() {
@@ -213,7 +213,7 @@ export class OrderSalesComponent implements OnInit {
 
   errorScreen() {
     unlockUI();
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   activeTag: number;

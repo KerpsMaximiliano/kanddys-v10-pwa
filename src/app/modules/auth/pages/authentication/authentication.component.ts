@@ -178,7 +178,7 @@ export class Authentication implements OnInit {
               if (this.type === 'create-item') {
                 await this.authService.generateMagicLink(
                   phoneNumber,
-                  `ecommerce/item-display`,
+                  `admin/item-display`,
                   this.itemId,
                   'NewItem',
                   {}
@@ -194,7 +194,7 @@ export class Authentication implements OnInit {
                     params.scrollToStep(1);
                     await this.authService.generateMagicLink(
                       phoneNumber,
-                      `ecommerce/entity-detail-metrics`,
+                      `admin/entity-detail-metrics`,
                       myUser._id,
                       'MerchantAccess',
                       null
@@ -206,7 +206,7 @@ export class Authentication implements OnInit {
                       false
                     );
                     if (!signin) return;
-                    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+                    this.router.navigate([`admin/entity-detail-metrics`]);
                   }
                 } else {
                   params.scrollToStep(1);
@@ -220,7 +220,7 @@ export class Authentication implements OnInit {
                   );
                   await this.authService.generateMagicLink(
                     phoneNumber,
-                    `ecommerce/entity-detail-metrics`,
+                    `admin/entity-detail-metrics`,
                     user._id,
                     'MerchantAccess',
                     null
@@ -343,7 +343,7 @@ export class Authentication implements OnInit {
         this.multistepService.getMultiStepFormData('user-creation');
 
       if (!this.storedFormData)
-        this.router.navigate(['ecommerce/error-screen']);
+        this.router.navigate(['others/error-screen']);
 
       this.formSteps[0].fieldsList[0].label =
         '¿En cuál # de WhatsApp guardarás el contacto?';
@@ -422,7 +422,7 @@ export class Authentication implements OnInit {
 
               const magicLinkCreated = await this.authService.generateMagicLink(
                 createdUser.phone,
-                '/ecommerce/user-contact-landing',
+                '/others/user-contact-landing',
                 createdUser._id,
                 'NewUser',
                 {
@@ -495,7 +495,7 @@ export class Authentication implements OnInit {
 
               const magicLinkCreated = await this.authService.generateMagicLink(
                 phoneNumber,
-                '/ecommerce/user-contact-landing',
+                '/others/user-contact-landing',
                 foundUser._id,
                 'UserUpdate',
                 {
@@ -557,7 +557,7 @@ export class Authentication implements OnInit {
               }
             }
 
-            // await this.authService.generateMagicLink(phoneNumber, `ecommerce/user-contact-landing/`, null, 'NewUser', {
+            // await this.authService.generateMagicLink(phoneNumber, `others/user-contact-landing/`, null, 'NewUser', {
 
             // });
           }
@@ -631,7 +631,7 @@ export class Authentication implements OnInit {
 
               const magicLinkCreated = await this.authService.generateMagicLink(
                 createdUser.phone,
-                '/ecommerce/user-contact-landing',
+                '/others/user-contact-landing',
                 createdUser._id,
                 'NewMerchant',
                 {
@@ -707,7 +707,7 @@ export class Authentication implements OnInit {
                 const magicLinkCreated =
                   await this.authService.generateMagicLink(
                     phoneNumber,
-                    '/ecommerce/user-contact-landing',
+                    '/others/user-contact-landing',
                     foundUser._id,
                     'NewMerchantToExistingUser',
                     {
@@ -767,7 +767,7 @@ export class Authentication implements OnInit {
                 const magicLinkCreated =
                   await this.authService.generateMagicLink(
                     phoneNumber,
-                    '/ecommerce/user-contact-landing',
+                    '/others/user-contact-landing',
                     foundUser._id,
                     'UpdateExistingMerchant',
                     {

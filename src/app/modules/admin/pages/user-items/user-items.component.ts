@@ -134,14 +134,14 @@ export class UserItemsComponent implements OnInit {
               this.headerService.flowRoute = this.router.url;
 
               this.itemsService.temporalItem = null;
-              this.router.navigate(['/ecommerce/item-creator'])
+              this.router.navigate(['/admin/item-creator'])
             }
           },
           {
             text: 'Categoria',
             mode: 'func',
             func: () => {
-              this.router.navigate(['/ecommerce/data-list'], {
+              this.router.navigate(['/others/data-list'], {
                 queryParams: { mode: 'category', viewtype: 'merchant' }
               })
             },
@@ -224,25 +224,25 @@ export class UserItemsComponent implements OnInit {
 
   errorScreen() {
     unlockUI();
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   editItem(id: string) {
-    this.router.navigate([`/ecommerce/item-display/${id}`], {
+    this.router.navigate([`/admin/item-display/${id}`], {
       queryParams: { mode: 'edit' }
     })
   }
 
   goToCategoryItemDetail(id: string) {
-    this.router.navigate([`/ecommerce/category-item-detail/${id}`]);
+    this.router.navigate([`/admin/category-item-detail/${id}`]);
   }
 
   goToDashBoard() {
-    this.router.navigate([`/ecommerce/user-dashboard`]);
+    this.router.navigate([`/others/user-dashboard`]);
   }
 
   goToSales() {
-    this.router.navigate([`/ecommerce/order-sales/${this.merchant._id}`]);
+    this.router.navigate([`/admin/order-sales/${this.merchant._id}`]);
   }
 
   activeCategory: number;

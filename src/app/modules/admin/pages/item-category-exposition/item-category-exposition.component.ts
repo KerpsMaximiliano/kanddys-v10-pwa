@@ -96,11 +96,11 @@ export class ItemCategoryExpositionComponent implements OnInit {
       };
 
       itemCategory.icons[1].callback = () => {
-        this.router.navigate([`ecommerce/notification-creator/${category._id}`]);
+        this.router.navigate([`admin/notification-creator/${category._id}`]);
       }
 
       itemCategory.icons[2].callback = () => {
-        this.router.navigate([`ecommerce/category-creator/${category._id}`]);
+        this.router.navigate([`admin/category-creator/${category._id}`]);
       }
 
       this.listOfOptions.push(itemCategory);
@@ -109,7 +109,7 @@ export class ItemCategoryExpositionComponent implements OnInit {
 
   optionClicked(index) {
     if(index === 0) {
-      this.router.navigate([`ecommerce/category-creator`]);
+      this.router.navigate([`admin/category-creator`]);
     }
   }
 

@@ -115,6 +115,6 @@ export class NotificationsLogComponent implements OnInit {
   errorScreen() {
     unlockUI();
     this.status = 'error';
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 }

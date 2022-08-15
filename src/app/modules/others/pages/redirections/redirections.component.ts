@@ -94,7 +94,7 @@ export class RedirectionsComponent implements OnInit {
           unlockUI();
         }
       } catch (error) {
-        this.router.navigate([`ecommerce/entity-detail-metrics`]);
+        this.router.navigate([`admin/entity-detail-metrics`]);
         unlockUI();
         // console.error(error);
       }

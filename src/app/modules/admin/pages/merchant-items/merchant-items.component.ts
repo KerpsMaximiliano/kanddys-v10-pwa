@@ -127,26 +127,26 @@ export class MerchantItemsComponent implements OnInit {
   }
 
   goToDetail(id: string) {
-    this.router.navigate([`ecommerce/item-display/${id}`]);
+    this.router.navigate([`admin/item-display/${id}`]);
   }
 
   errorScreen() {
     unlockUI();
     this.status = 'error';
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   goToMetrics = () =>{
-    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+    this.router.navigate([`admin/entity-detail-metrics`]);
   }
 
   back() {
-    this.router.navigate([`ecommerce/entity-detail-metrics`]);
+    this.router.navigate([`admin/entity-detail-metrics`]);
   }
 
   createItem(){
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`ecommerce/item-creator/`]);
+    this.router.navigate([`admin/item-creator/`]);
   }
 
   openDeleteDialog(item: Item) {
@@ -186,7 +186,7 @@ export class MerchantItemsComponent implements OnInit {
               text: 'Un nuevo Item',
               mode: 'func',
               func: () => {
-                this.router.navigate(['ecommerce/item-creator/']);
+                this.router.navigate(['admin/item-creator/']);
               }
             }
           ]
@@ -210,7 +210,7 @@ export class MerchantItemsComponent implements OnInit {
             {
             text: 'Adicionar nuevo artículo',
             callback: () =>{
-                this.router.navigate(['ecommerce/item-creator']);
+                this.router.navigate(['admin/item-creator']);
               }
             },
             {

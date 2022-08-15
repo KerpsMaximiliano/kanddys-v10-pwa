@@ -122,11 +122,11 @@ export class SaleDetailComponent implements OnInit {
 
   errorScreen() {
     unlockUI();
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/order-sales/${this.merchant._id}`]);
+    this.router.navigate([`admin/order-sales/${this.merchant._id}`]);
   }
 
 }

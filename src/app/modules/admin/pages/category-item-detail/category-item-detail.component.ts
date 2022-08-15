@@ -92,10 +92,10 @@ export class CategoryItemDetailComponent implements OnInit {
 
   redirectToItemCreator = () => {
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`ecommerce/item-creator/${this.item._id}`]);
+    this.router.navigate([`admin/item-creator/${this.item._id}`]);
   }
 
   toData(){
-    this.router.navigate([`ecommerce/data-list/${this.item._id}`],{ queryParams: {viewtype: "merchant", mode: "category"} });
+    this.router.navigate([`others/data-list/${this.item._id}`],{ queryParams: {viewtype: "merchant", mode: "category"} });
   }
 }

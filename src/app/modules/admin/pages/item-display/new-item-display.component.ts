@@ -318,7 +318,7 @@ export class ItemDisplayComponent implements OnInit {
                 defaultSaleflow._id
               );
               unlockUI();
-              this.router.navigate([`/ecommerce/merchant-items`]);
+              this.router.navigate([`/admin/merchant-items`]);
             } else {
               await this.saleflowService.addItemToSaleFlow(
                 {
@@ -327,7 +327,7 @@ export class ItemDisplayComponent implements OnInit {
                 defaultSaleflow._id
               );
               unlockUI();
-              this.router.navigate([`/ecommerce/merchant-items`]);
+              this.router.navigate([`/admin/merchant-items`]);
             }
           }
         } else {
@@ -436,12 +436,12 @@ export class ItemDisplayComponent implements OnInit {
   }
 
   goToNotificationsLog = (id: string) => {
-    this.router.navigate([`/ecommerce/notifications-log/${id}`]);
+    this.router.navigate([`/admin/notifications-log/${id}`]);
   };
 
   goToAuth() {
     this.router.navigate([
-      `/ecommerce/authentication/${this.item._id}`,
+      `/auth/authentication/${this.item._id}`,
       ,
       {
         queryParams: {
@@ -453,14 +453,14 @@ export class ItemDisplayComponent implements OnInit {
 
   goToMerchantStore() {
     if (this.defaultMerchant)
-      // this.router.navigate([`/ecommerce/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
-      this.router.navigate([`/ecommerce/merchant-items`]);
+      // this.router.navigate([`/admin/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
+      this.router.navigate([`/admin/merchant-items`]);
   }
 
   goToBanksForm() {
     if (this.canCreateBank && this.saleflow)
       this.router.navigate([
-        `/ecommerce/bank-registration/${this.saleflow._id}`,
+        `/admin/bank-registration/${this.saleflow._id}`,
       ]);
   }
 
@@ -538,11 +538,11 @@ export class ItemDisplayComponent implements OnInit {
   redirect() {
     unlockUI();
     if (!this.shouldRedirectToPreviousPage) {
-      this.router.navigate([`ecommerce/error-screen/`], {
+      this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'item' },
       });
     } else {
-      this.router.navigate([`/ecommerce/merchant-items`]);
+      this.router.navigate([`/admin/merchant-items`]);
     }
   }
 
@@ -588,6 +588,6 @@ export class ItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/ecommerce/item-creator/' + this.item._id]);
+    this.router.navigate(['/admin/item-creator/' + this.item._id]);
   };
 }

@@ -33,7 +33,7 @@
           RESULTADOS PARECIDOS
         </ng-container>
         <ng-template #noTags>
-          <a class="addButton" [routerLink]="['/ecommerce/tags-edit']">
+          <a class="addButton" [routerLink]="['/admin/tags-edit']">
             Añadir Nuevo Tag
           </a>
         </ng-template>
@@ -74,7 +74,7 @@
 
       <div *ngIf="mode === 'tag' else categoryMode">
         <div [ngStyle]="{ margin: '0 38px 21px'}">
-          <a class="addButton" *ngIf="keyword && filteredTagList.length === 0" [routerLink]="['/ecommerce/tags-edit']"
+          <a class="addButton" *ngIf="keyword && filteredTagList.length === 0" [routerLink]="['/admin/tags-edit']"
             [queryParams]="{tagName: keyword}">
             Añadir Nuevo Tag
           </a>

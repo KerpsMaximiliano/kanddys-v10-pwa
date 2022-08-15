@@ -85,7 +85,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
-      this.router.navigate([`ecommerce/authentication/`]);
+      this.router.navigate([`auth/authentication/`]);
       unlockUI();
       return;
     }
@@ -234,7 +234,7 @@ export class EntityDetailMetricsComponent implements OnInit {
           {
             text: 'Copiar link de acceso al admin',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/authentication?auth=password&phone=${this.merchant.owner.phone}&hide=all`
+            link: `${this.URI}/auth/authentication?auth=password&phone=${this.merchant.owner.phone}&hide=all`
           }
         ]
       }
@@ -289,17 +289,17 @@ export class EntityDetailMetricsComponent implements OnInit {
   }
 
   onPencilClick = () => {
-    this.router.navigate(['ecommerce/user-creator']);
+    this.router.navigate(['auth/user-creator']);
   };
 
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
     this.itemsService.temporalItem = null;
-    this.router.navigate(['ecommerce/item-creator']);
+    this.router.navigate(['admin/item-creator']);
   };
 
   redirectMerchantItems = (url: string) => {
-    this.router.navigate(['/ecommerce/' + url]);
+    this.router.navigate(['/admin/' + url]);
   };
 
   back() {

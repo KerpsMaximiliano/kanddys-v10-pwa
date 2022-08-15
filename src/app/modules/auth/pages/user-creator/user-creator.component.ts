@@ -493,7 +493,7 @@ export class UserCreatorComponent implements OnInit {
           }
           
           if(!this.loggedIn) {
-            this.router.navigate(['ecommerce/authentication'], {queryParams: {
+            this.router.navigate(['auth/authentication'], {queryParams: {
               type: 'create-user'
             }});
           } else {
@@ -583,7 +583,7 @@ export class UserCreatorComponent implements OnInit {
                 }
               }
 
-              this.router.navigate([`/ecommerce/user-contact-landing/${updatedUser._id}`]);
+              this.router.navigate([`/others/user-contact-landing/${updatedUser._id}`]);
             }
 
             if(this.isMerchant) {
@@ -679,7 +679,7 @@ export class UserCreatorComponent implements OnInit {
                 }
 
                 if(createdMerchant && createdSaleflow) {
-                  this.router.navigate([`/ecommerce/user-contact-landing/${createdMerchant.owner._id}`]);
+                  this.router.navigate([`/others/user-contact-landing/${createdMerchant.owner._id}`]);
                 }
               } else {
                 const updateMeInput = deleteIrrelevantDataFromObject({
@@ -771,7 +771,7 @@ export class UserCreatorComponent implements OnInit {
                 }
 
                 if(updatedUser && updatedMerchant) {
-                  this.router.navigate([`/ecommerce/user-contact-landing/${defaultMerchant.owner._id}`]);
+                  this.router.navigate([`/others/user-contact-landing/${defaultMerchant.owner._id}`]);
                 }
               }
             }

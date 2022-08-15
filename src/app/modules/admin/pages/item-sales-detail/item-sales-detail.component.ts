@@ -183,7 +183,7 @@ export class ItemSalesDetailComponent implements OnInit {
   }
 
   redirect(customRoute?: string) {
-    if(customRoute == "error") this.router.navigate(['/ecommerce/error-screen']);
+    if(customRoute == "error") this.router.navigate(['/others/error-screen']);
     else this.router.navigate(['/']);
   }
 

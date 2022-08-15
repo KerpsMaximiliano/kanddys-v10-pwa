@@ -70,7 +70,7 @@ export class UserOrdersComponent implements OnInit {
         text_style: true,
         phone: order.user.phone,
         add_tag: true,
-        tag_function: () => this.router.navigate([`ecommerce/data-list/${order._id}`], { queryParams: { viewtype: 'user', mode: 'tag' } }),
+        tag_function: () => this.router.navigate([`others/data-list/${order._id}`], { queryParams: { viewtype: 'user', mode: 'tag' } }),
       });
     });
   }

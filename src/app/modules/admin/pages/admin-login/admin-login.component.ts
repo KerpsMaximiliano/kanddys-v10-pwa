@@ -26,7 +26,7 @@ export class AdminLoginComponent implements OnInit {
 
   async adminLogin(index: number) {
     const session = await this.authService.signin(this.merchantList[index].owner.phone, '123', false);
-    if(session) this.router.navigate(['/ecommerce/entity-detail-metrics']);
+    if(session) this.router.navigate(['/admin/entity-detail-metrics']);
   }
 
   async onSubmit(form?: NgForm) {

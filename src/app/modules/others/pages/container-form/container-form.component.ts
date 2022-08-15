@@ -33,9 +33,9 @@ export class ContainerFormComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
       this.merchantInfo = await this.merchantService.merchant(params.merchantId);
-      if(!this.merchantInfo) return this.router.navigate(['ecommerce/error-screen']);;
+      if(!this.merchantInfo) return this.router.navigate(['others/error-screen']);;
       this.tag = (await this.tagService.tag(params.tagId))?.tag;
-      if(!this.tag) return this.router.navigate(['ecommerce/error-screen']);
+      if(!this.tag) return this.router.navigate(['others/error-screen']);
     })
   }
 

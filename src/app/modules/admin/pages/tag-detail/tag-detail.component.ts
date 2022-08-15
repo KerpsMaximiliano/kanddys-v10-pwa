@@ -216,12 +216,12 @@ export class TagDetailComponent implements OnInit {
         }
         else{
           console.log("entre")
-        //   this.router.navigate(['/ecommerce/admin-dashboard/affiliated-to-be']);
+        //   this.router.navigate(['/admin/admin-dashboard/affiliated-to-be']);
         }
       } 
       else {
           console.log('No entre')
-        // this.router.navigate(['/ecommerce/admin-dashboard/affiliated-to-be']);
+        // this.router.navigate(['/admin/admin-dashboard/affiliated-to-be']);
       }
     });
   }

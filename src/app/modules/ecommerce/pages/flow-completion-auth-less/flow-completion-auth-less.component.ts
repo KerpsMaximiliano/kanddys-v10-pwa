@@ -126,7 +126,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   afterOrderRequest = async ({ order }: { order: ItemOrder }) => {
     if (!order) {
-      this.router.navigate(['/ecommerce/error-screen']);
+      this.router.navigate(['/others/error-screen']);
       return;
     }
     this.orderData = order;

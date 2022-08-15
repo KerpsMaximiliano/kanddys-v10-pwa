@@ -104,9 +104,9 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 await this.itemService.addImageItem(this.files, updatedItem._id);
               }
 
-              // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-              // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
-              this.router.navigate([`/ecommerce/merchant-items`]);
+              // this.router.navigate([`/admin/item-display/${this.currentItemId}`]);
+              // this.router.navigate([`/auth/authentication/${this.currentItemId}`]);
+              this.router.navigate([`/admin/merchant-items`]);
             }
 
             this.savingItem = false;
@@ -136,11 +136,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
-                // this.router.navigate([`/ecommerce/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
+                // this.router.navigate([`/admin/merchant-dashboard/${this.loggedUserDefaultMerchant._id}/my-store`]);
 
-                this.router.navigate([`/ecommerce/merchant-items`]);
+                this.router.navigate([`/admin/merchant-items`]);
 
-                // this.router.navigate([`/ecommerce/item-display/${createItem?._id}`]);
+                // this.router.navigate([`/admin/item-display/${createItem?._id}`]);
               }
             } else {
               console.log("El precio", totalWithDecimal)
@@ -160,8 +160,8 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 showImages: this.files && this.files.length >= 1
               });
 
-              // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
-              if ('_id' in createPreItem) this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+              // if ('_id' in createPreItem) this.router.navigate([`/admin/item-display/${createPreItem?._id}`]);
+              if ('_id' in createPreItem) this.router.navigate([`/auth/authentication/${createPreItem?._id}`], {queryParams: {
                 type: 'create-item'
               }});
               this.createdItem = true;
@@ -177,7 +177,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           //   images: this.defaultImages.length > 1 ? this.defaultImages : null
           // }, this.router.url);
 
-          // this.router.navigate(['/ecommerce/item-display']);
+          // this.router.navigate(['/admin/item-display']);
         }
       },
       invalidStep: {
@@ -672,10 +672,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                 }
 
                 // this.headerService.flowRoute = this.router.url;
-                // this.router.navigate([`/ecommerce/item-display/${this.currentItemId}`]);
-                // this.router.navigate([`/ecommerce/authentication/${this.currentItemId}`]);
+                // this.router.navigate([`/admin/item-display/${this.currentItemId}`]);
+                // this.router.navigate([`/auth/authentication/${this.currentItemId}`]);
                 this.itemService.removeTemporalItem();
-                this.router.navigate([`/ecommerce/merchant-items`]);
+                this.router.navigate([`/admin/merchant-items`]);
               }
 
               this.savingItem = false;
@@ -705,10 +705,10 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
                 if ('_id' in createItem) {
                   this.headerService.flowRoute = this.router.url;
-                  // this.router.navigate([`/ecommerce/item-display/${createItem._id}`]);
-                  // this.router.navigate([`/ecommerce/authentication/${createItem._id}`]);
+                  // this.router.navigate([`/admin/item-display/${createItem._id}`]);
+                  // this.router.navigate([`/auth/authentication/${createItem._id}`]);
                   this.itemService.removeTemporalItem();
-                  this.router.navigate([`/ecommerce/merchant-items`]);
+                  this.router.navigate([`/admin/merchant-items`]);
                 }
               } else {
                 console.log("El precio", totalWithDecimal)
@@ -728,11 +728,11 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   showImages: this.files && this.files.length >= 1
                 });
 
-                // if ('_id' in createPreItem) this.router.navigate([`/ecommerce/item-display/${createPreItem?._id}`]);
+                // if ('_id' in createPreItem) this.router.navigate([`/admin/item-display/${createPreItem?._id}`]);
                 if ('_id' in createPreItem) {
                   this.headerService.flowRoute = this.router.url;
                   this.itemService.removeTemporalItem();
-                  this.router.navigate([`/ecommerce/authentication/${createPreItem?._id}`], {queryParams: {
+                  this.router.navigate([`/auth/authentication/${createPreItem?._id}`], {queryParams: {
                     type: 'create-item'
                   }})
                   this.createdItem = true;

@@ -201,7 +201,7 @@ export class DataListComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   onTagClick(tag: Tag) {
@@ -339,7 +339,7 @@ export class DataListComponent implements OnInit {
   }
 
   back() {
-    // const route = `/ecommerce/${this.viewtype === 'merchant' ? 'order-sales/' + this.merchantId : 'user-dashboard/tiendas'}`
+    // const route = `/admin/${this.viewtype === 'merchant' ? 'order-sales/' + this.merchantId : 'user-dashboard/tiendas'}`
     // this.router.navigate([route]);
     this.location.back();
   }

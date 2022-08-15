@@ -441,7 +441,7 @@ export class UserContactLandingComponent implements OnInit {
               this.headerService.flowRoute = this.router.url;
 
               this.itemsService.temporalItem = null;
-              this.router.navigate([`/ecommerce/item-creator`]);
+              this.router.navigate([`/admin/item-creator`]);
             },
             plus: true,
           },

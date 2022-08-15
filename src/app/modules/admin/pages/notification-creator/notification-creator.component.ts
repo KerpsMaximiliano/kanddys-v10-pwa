@@ -215,16 +215,16 @@ export class NotificationCreatorComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     // const user = await this.authService.me();
-    // if (!user) this.router.navigate(['error-screen']);
+    // if (!user) this.router.navigate(['/others/error-screen']);
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
-      this.router.navigate(['error-screen']);
+      this.router.navigate(['/others/error-screen']);
       return;
     }
     const id = this.route.snapshot.paramMap.get('id');
     this.item = await this.itemsService.item(id);
     if (!this.item) {
-      this.router.navigate(['error-screen']);
+      this.router.navigate(['/others/error-screen']);
       return;
     }
     const notificationId = this.route.snapshot.paramMap.get('notificationId');
@@ -234,7 +234,7 @@ export class NotificationCreatorComponent implements OnInit {
       notificationId
     );
     if (!this.notification) {
-      this.router.navigate(['error-screen']);
+      this.router.navigate(['/others/error-screen']);
       return;
     }
     this.notificationMessage = this.notification.message;

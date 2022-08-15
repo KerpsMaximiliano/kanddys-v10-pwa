@@ -57,9 +57,9 @@ export class UserDashboardComponent implements OnInit {
       line: false,
       callback: () => {
         this.itemsService.temporalItem = null;
-        this.router.navigate([`/ecommerce/item-creator`])
+        this.router.navigate([`/admin/item-creator`])
 
-        this.headerService.flowRoute = '/ecommerce/user-dashboard';
+        this.headerService.flowRoute = '/others/user-dashboard';
       }
     }
   ];
@@ -99,11 +99,11 @@ export class UserDashboardComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate([`ecommerce/error-screen/`]);
+    this.router.navigate([`others/error-screen/`]);
   }
 
   goToItems() {
-    this.router.navigate([`/ecommerce/user-items`]);
+    this.router.navigate([`/admin/user-items`]);
   }
 
   openShare() {
@@ -114,22 +114,22 @@ export class UserDashboardComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+            link: `${this.URI}/others/user-contact-landing/${this.userData._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+            link: `${this.URI}/others/user-contact-landing/${this.userData._id}`,
           },
           {
             text: 'Descarga el qrCode',
             mode: 'qr',
-            link: `${this.URI}/ecommerce/user-contact-landing/${this.userData._id}`,
+            link: `${this.URI}/others/user-contact-landing/${this.userData._id}`,
           },
           {
             text: 'Vista del Comprador',
             mode: 'func',
-            func: () => this.router.navigate([`/ecommerce/user-contact-landing/${this.userData._id}`]),
+            func: () => this.router.navigate([`/others/user-contact-landing/${this.userData._id}`]),
           },
         ]
       },
