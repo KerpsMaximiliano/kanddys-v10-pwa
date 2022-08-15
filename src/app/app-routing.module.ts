@@ -19,6 +19,32 @@ const routes: Routes = [
   // component: LandingComponent
   // },
   {
+    path: 'admin',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/admin/admin.module').then((m) => m.AdminModule),
+  },
+  {
+    path: 'airtable',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/airtable/airtable.module').then(
+        (m) => m.AirtableModule
+      ),
+  },
+  {
+    path: 'auth',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
+  },
+  {
     path: 'ecommerce',
     /*canLoad: [AuthGuard],
     canActivate: [AuthGuard],
@@ -30,12 +56,28 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'others',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/others/others.module').then((m) => m.OthersModule),
+  },
+  {
     path: 'posts',
     /*canLoad: [AuthGuard],
     canActivate: [AuthGuard],
     canActivateChild: [AuthGuard],*/
     loadChildren: () =>
       import('./modules/posts/posts.module').then((m) => m.PostsModule),
+  },
+  {
+    path: 'test',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/test/test.module').then((m) => m.TestModule),
   },
   {
     path: 'webforms',
