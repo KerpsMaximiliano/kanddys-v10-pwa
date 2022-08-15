@@ -216,6 +216,34 @@ export class EntityDetailMetricsComponent implements OnInit {
         qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         options: [
           {
+            text: 'Crea un nuevo artículo',
+            mode: 'func',
+            func: () => {
+                this.router.navigate([`admin/item-creator`]);
+            },
+          },
+          {
+            text: 'Vende online. Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            icon: {
+                src: '/upload.svg',
+                alt: 'icono de de compartir',
+                size:{
+                    width: 14,
+                    height: 14
+                },
+                color: 'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)'
+            },
+          },
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: () => {
+                this.authService.signouttwo();
+            }
+          },
+          /* {
             text: 'Copia el link',
             mode: 'clipboard',
             link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
@@ -235,7 +263,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Copiar link de acceso al admin',
             mode: 'clipboard',
             link: `${this.URI}/auth/authentication?auth=password&phone=${this.merchant.owner.phone}&hide=all`
-          }
+          } */
         ]
       }
     ];
