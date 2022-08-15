@@ -20,8 +20,9 @@ export class LoginComponent implements OnInit {
     auth: 'phone' | 'password';
     merchantNumber: string = '(000) 000-0000';
     loggin: boolean;
+    signUp: boolean;
     phoneNumber = new FormControl('', [Validators.minLength(10)]);
-    password = new FormControl('', [Validators.required, Validators.minLength(3)] )
+    password = new FormControl('', [Validators.required, Validators.minLength(3)]);
     SearchCountryField = SearchCountryField;
     CountryISO = CountryISO.DominicanRepublic;
     preferredCountries: CountryISO[] = [
@@ -77,6 +78,12 @@ export class LoginComponent implements OnInit {
     this.merchantNumber = '';
   }
 
+  toSignUp(){
+    this.signUp = !this.signUp;
+    this.phoneNumber.reset();
+    this.password.reset()
+  }
+
   async submitPhone(){
     console.log(this.phoneNumber);
 
@@ -106,7 +113,29 @@ export class LoginComponent implements OnInit {
             return
         }
         this.router.navigate([`ecommerce/entity-detail-metrics`]);  
-    }       
+    };
   }
 
+  async signMeUp(){
+    this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+
+    const valid = await this.authService.checkUser(this.merchantNumber);
+
+    if(!valid) {
+        const newUser = await this.authService.signup( { phone: this.merchantNumber, password: this.password.value}, 'none', null, false );
+
+        if(!newUser){
+            console.log('Algo salio mal');
+            return;
+        } else {
+            // console.log(newUser);
+            await this.authService.generateMagicLink(this.merchantNumber, `ecommerce/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
+            this.toSignUp();
+        }
+
+    } else {
+        notification.toast('Ese Usuario ya esta registrado', {timeout: 1500});
+        return;
+    }
+  }
 }
