@@ -672,7 +672,9 @@ export class ReservationOrderlessComponent implements OnInit {
     ) {
       let shouldDisableHour = false;
       Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
-        if(hourWithoutOffset === currentHour) return true;
+        if(hourWithoutOffset === currentHour && this.calendar.months[this.calendar.monthIndex].dates[
+          this.calendar.dayIndex
+        ].dayNumber === currentDayNumber) return true;
 
         if (
           dayKey ===

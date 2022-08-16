@@ -777,7 +777,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
+          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro', 'Banco de Venezuela'],
           changeCallbackFunction: (change, params) => {
             this.formSteps[4].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
