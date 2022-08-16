@@ -27,7 +27,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: DialogService,
     private post: PostsService
-  ) { }
+  ) {}
   //added create-giftcard again because the merge was deleted??????
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
@@ -125,9 +125,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         footerCallback: () =>
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
-          this.router.navigate([
-            `ecommerce/store/${this.header.saleflow._id}`,
-          ]),
+          this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -145,27 +143,34 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'writeMessage',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('', Validators.required),
           },
-          selectionOptions:
-            [
-              'Sin mensaje y sin tarjetita',
-              // 'Recibes la tarjetita vacía y escribes tu el mensajito',
-              'Nosotros escribiremos el mensaje en una tarjetita',
-              // 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
-            ],
+          selectionOptions: [
+            'Sin mensaje y sin tarjetita',
+            // 'Recibes la tarjetita vacía y escribes tu el mensajito',
+            'Nosotros escribiremos el mensaje en una tarjetita',
+            // 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
+          ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(change, {
-              emitEvent: false,
-            });
+            this.formSteps[0].fieldsList[0].fieldControl.control.setValue(
+              change,
+              {
+                emitEvent: false,
+              }
+            );
 
             this.formSteps[0].stepProcessingFunction(params);
-            if (change === 'Nosotros escribiremos el mensaje en una tarjetita') {
+            if (
+              change === 'Nosotros escribiremos el mensaje en una tarjetita'
+            ) {
               params.scrollToStep(1);
             }
-            if (change === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
+            if (
+              change ===
+              'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
+            ) {
               this.router.navigate(['others/post-edit'], {
-                queryParams: { viewtype: "order" }
+                queryParams: { viewtype: 'order' },
               });
             }
           },
@@ -176,7 +181,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               marginTop: '32px',
             },
             fieldStyles: {
-              marginTop: '14px'
+              marginTop: '14px',
             },
           },
         },
@@ -194,13 +199,21 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           }, 500);
         }
 
-        if (params.dataModel.value['1'].writeMessage === 'Nosotros escribiremos el mensaje en una tarjetita')
+        if (
+          params.dataModel.value['1'].writeMessage ===
+          'Nosotros escribiremos el mensaje en una tarjetita'
+        )
           return { ok: true };
-        else if (params.dataModel.value['1'].writeMessage === 'Sin mensaje y sin tarjetita') {
+        else if (
+          params.dataModel.value['1'].writeMessage ===
+          'Sin mensaje y sin tarjetita'
+        ) {
           this.storeEmptyMessageAndGoToShipmentDataForm(params);
           return { ok: false };
-        }
-        else if (params.dataModel.value['1'].writeMessage === 'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.') {
+        } else if (
+          params.dataModel.value['1'].writeMessage ===
+          'Tarjeta con qrCode para un mensaje privado que incluye texto, audio, video y fotos.'
+        ) {
           return { ok: false };
         }
       },
@@ -217,9 +230,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollBeforeCurrentStep();
         }
 
-        this.router.navigate([
-          `ecommerce/store/${this.header.saleflow._id}`,
-        ]);
+        this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]);
       },
       showShoppingCartOnCurrentStep: true,
       shoppingCartCallback: () => {
@@ -235,7 +246,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'receiver',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl(''),
           },
           label: '¿Para quién es?',
           placeholder: 'Type...',
@@ -264,7 +275,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'sender',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl(''),
           },
           label: '¿De parte de quién o quienes?',
           placeholder: 'Type...',
@@ -280,7 +291,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'message',
           fieldControl: {
             type: 'single',
-            control: new FormControl('')
+            control: new FormControl(''),
           },
           label: '¿Que mensaje escribiremos?',
           inputType: 'textarea',
@@ -301,6 +312,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               // border: '2px solid #31a4f9',
               borderRadius: '10px',
               backgroundColor: '#fff',
+              border: 'none',
             },
             labelStyles: lightLabelStyles,
           },

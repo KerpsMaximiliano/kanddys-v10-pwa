@@ -22,7 +22,7 @@ import { MerchantDashboardv2Component } from './pages/merchant-dashboardv2/merch
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
 import { MyCustomersComponent } from './pages/my-customers/my-customers.component';
-import { ItemDisplayComponent } from './pages/item-display/new-item-display.component';
+import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
