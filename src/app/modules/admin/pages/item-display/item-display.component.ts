@@ -28,9 +28,9 @@ interface ExtraNotification extends Notification {
 }
 
 @Component({
-  selector: 'app-new-item-display',
-  templateUrl: './new-item-display.component.html',
-  styleUrls: ['./new-item-display.component.scss'],
+  selector: 'app-item-display',
+  templateUrl: './item-display.component.html',
+  styleUrls: ['./item-display.component.scss'],
 })
 export class ItemDisplayComponent implements OnInit {
   URI: string = environment.uri;
