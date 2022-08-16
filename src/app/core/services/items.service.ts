@@ -98,7 +98,7 @@ export class ItemsService {
   }
 
   async addImageItem(
-    images: any,
+    images: File[],
     id: string
   ) {
     const result = await this.graphql.mutate({
@@ -114,7 +114,7 @@ export class ItemsService {
   }
 
   async deleteImageItem(
-    images: any,
+    images: string[],
     id: string
   ) {
     const result = await this.graphql.mutate({

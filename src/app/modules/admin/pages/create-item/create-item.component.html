@@ -1,14 +1,14 @@
 <div class="component">
-  <header
-    [ngStyle]="{
-      backgroundColor:
-        item?.status === 'active' || !item ? '#2874AD' : '#B17608'
-    }"
-  >
+  <header>
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <button class="dot-trio">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </button>
   </header>
   <main>
-    <form [formGroup]="itemForm">
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
       <section>
         <div class="fullScreenSwiper" *ngIf="imageField.length">
           <div class="shadowWrapper">
@@ -32,7 +32,7 @@
           multiple
           [accept]="['.png', '.jpg', '.jpeg']"
         />
-        <input formControlName="images" style="display: none;">
+        <input formControlName="images" style="display: none" />
         <ng-container *ngIf="!imageField.length">
           <label
             [style.background]="sanitize('')"
@@ -45,8 +45,20 @@
         </ng-container>
       </section>
       <section class="form-group p-side">
-        <div class="grid" style="margin-bottom: 16px">
-          <div class="grid-8">
+        <div style="margin-bottom: 16px">
+          <div style="margin-bottom: 16px">
+            <input
+              class="input-text"
+              type="number"
+              id="pricing"
+              name="pricing"
+              min="0"
+              placeholder="$ Pagarán"
+              required
+              formControlName="pricing"
+            />
+          </div>
+          <div>
             <input
               class="input-text"
               type="text"
@@ -56,37 +68,18 @@
               formControlName="name"
             />
           </div>
-          <div class="grid-4">
-            <input
-              class="input-text"
-              type="number"
-              id="price"
-              name="price"
-              min="0"
-              placeholder="$ Pagarán"
-              required
-              formControlName="price"
-            />
-          </div>
         </div>
         <textarea
           placeholder="Descripción (opcional)"
           class="textarea"
           formControlName="description"
         ></textarea>
+        <div>
+          <button type="submit" class="submit" [disabled]="!itemForm.valid">
+            Salvar
+          </button>
+        </div>
       </section>
     </form>
   </main>
-  <footer [ngClass]="{ disabled: disableFooter }">
-    {{ item && "ADICIONA LA INFO DE LO QUE VENDES" }}
-    <ng-container *ngIf="!item">
-      <button>
-        <i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i>
-      </button>
-      <div>
-        <button>Preview</button>
-        <button (click)="onSubmit()">Salvar</button>
-      </div>
-    </ng-container>
-  </footer>
 </div>

@@ -153,11 +153,18 @@ export class ItemDisplayComponent implements OnInit {
                   createdMerchant._id
                 );
 
-              if (this.isPreItem)
+              if (this.isPreItem) {
                 await this.itemsService.authItem(
                   defaultMerchant._id,
                   params.itemId
                 );
+                await this.itemsService.updateItem(
+                  {
+                    status: 'active',
+                  },
+                  params.itemId
+                );
+              }
 
               const defaultSaleflow =
                 await this.saleflowService.saleflowDefault(
@@ -199,11 +206,18 @@ export class ItemDisplayComponent implements OnInit {
               const { merchantSetDefault: defaultMerchant } =
                 await this.merchantService.setDefaultMerchant(merchants[0]._id);
 
-              if (this.isPreItem)
+              if (this.isPreItem) {
                 await this.itemsService.authItem(
                   defaultMerchant._id,
                   params.itemId
                 );
+                await this.itemsService.updateItem(
+                  {
+                    status: 'active',
+                  },
+                  params.itemId
+                );
+              }
 
               const defaultSaleflow =
                 await this.saleflowService.saleflowDefault(
@@ -280,11 +294,18 @@ export class ItemDisplayComponent implements OnInit {
             if (this.defaultMerchant?._id === this.item?.merchant?._id)
               this.isOwner = true;
 
-            if (this.isPreItem)
+            if (this.isPreItem) {
               await this.itemsService.authItem(
                 defaultMerchant._id,
                 params.itemId
               );
+              await this.itemsService.updateItem(
+                {
+                  status: 'active',
+                },
+                params.itemId
+              );
+            }
 
             const defaultSaleflow = await this.saleflowService.saleflowDefault(
               defaultMerchant?._id
@@ -459,9 +480,7 @@ export class ItemDisplayComponent implements OnInit {
 
   goToBanksForm() {
     if (this.canCreateBank && this.saleflow)
-      this.router.navigate([
-        `/admin/bank-registration/${this.saleflow._id}`,
-      ]);
+      this.router.navigate([`/admin/bank-registration/${this.saleflow._id}`]);
   }
 
   toggleActivateItem = () => {
