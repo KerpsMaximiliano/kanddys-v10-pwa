@@ -17,12 +17,14 @@ const user = `
     googleMapsURL
     city
     street
+    nickName
     houseNumber
     note
   }
   social {
     name
     url
+    userName
   }
 `;
 const sessionBody = `

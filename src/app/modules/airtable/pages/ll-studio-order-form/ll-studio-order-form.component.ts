@@ -10,6 +10,9 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ActivatedRoute } from '@angular/router'
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { User } from 'src/app/core/models/user';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px'
@@ -66,162 +69,119 @@ export class LlStudioOrderFormComponent implements OnInit {
   referenceImagefiles: File[] = [];
   proofOfPaymentDefaultImages: (string | ArrayBuffer)[] = [''];
   proofOfPaymentImagefiles: File[] = [];
+  newUser = true;
+  existingUserData: User = null;
+  loading = true;
+  logo = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp';
   
   formSteps: FormStep[] = [
     {
+      headerText: '',
       fieldsList: [
         {
-          name: 'name',
+          name: 'phoneNumber',
           fieldControl: {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          label: 'Nombre (*)',
-          topLabelAction: {
-            text: 'Cuéntanos sobre ti',
-            clickable: false
-          },
-          placeholder: 'Me llamo..',
+          label: 'Ayudanos a identifícarte usando tu número de teléfono',
+          inputType: 'phone',
           styles: {
             containerStyles: {
-              display: 'inline-block',
-              width: 'calc(100% / 2)',
-              paddingRight: '6px',
+              paddingTop: '44px',
               paddingLeft: '33px',
-              marginTop: '36px',
-              // width: '83.70%',
+              paddingRight: '33px',
+              paddingBottom: '200px'
             },
-            topLabelActionStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+            labelStyles: {
+              fontFamily: 'RobotoBold',
               fontSize: '24px',
+              margin: '0px',
+              paddingBottom: '25px',
               color: "#faa4a4"
             },
-            fieldStyles: {
-              width: '100%',
-              marginTop: '26px',
-            },
-            labelStyles: {
-              ...labelStyles,
-            },
-          },
-        },
-        {
-          name: 'lastname',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
-          label: 'Apellido (*)',
-          placeholder: 'Mi apellido es..',
-          styles: {
-            containerStyles: {
-              display: 'inline-block',
-              width: 'calc(100% / 2)',
-              paddingLeft: '6px',
-              paddingRight: '33px',
-              // width: '83.70%',
-            },
-            fieldStyles: {
-              marginTop: '26px',
-              width: '100%',
-            },
-            labelStyles: {
-              ...labelStyles,
-            },
-          },
-        },
-        {
-          name: 'instagramUser',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
-          placeholder: 'Ejemplo: @_heavenlyballoons',
-          label: 'Instagram User (*)',
-          styles: {
-            containerStyles: {
-              width: '100%',
-              padding: '0px 33px'
-            },
-            fieldStyles: {
-              marginTop: '21px',
-              width: '100%',
-            },
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-              backgroundPositionX: '8px',
-              backgroundPositionY: '60.5px',
-              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram.svg)',
-              backgroundRepeat: 'no-repeat',
-              paddingLeft: '40px',
-              paddingBottom: '5px',
-              display: 'flex',
-              alignItems: 'center',
+            bottomLabelStyles: {
+              fontWeight: 'normal',
+              fontStyle: 'italic',
+              fontSize: '15px',
+              paddingTop: '22px',
+              fontFamily: 'RobotoRegular'
             }
           },
-        },
-        {
-          name: 'email',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.compose([Validators.required, Validators.email]))
-          },
-          placeholder: 'ejemplo@hotmail.com...',
-          label: 'E-Mail (*)',
-          inputType: 'email',
-          styles: {
-            containerStyles: {
-              width: '100%',
-              padding: '0px 33px'
-            },
-            fieldStyles: {
-              marginTop: '21px',
-              width: '100%',
-            },
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-              backgroundPositionX: '8px',
-              backgroundPositionY: '64.5px',
-              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mail-gray.svg)',
-              backgroundRepeat: 'no-repeat',
-              paddingLeft: '40px',
-              paddingBottom: '5px',
-              display: 'flex',
-              alignItems: 'center',
-              backgroundSize: '1.7rem'
-            }
-          },
-        },
-        {
-          name: 'birthday',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('')
-          },
-          placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de cumpleaños',
-          inputType: 'date',
-          maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
-          styles: {
-            containerStyles: {
-              width: '100%',
-              padding: '0px 33px',
-              paddingBottom: '60px'
-            },
-            fieldStyles: {
-              marginTop: '26px',
-              width: '100%',
-            },
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
+          bottomLabel: {
+            text: 'Otras maneras de recibir las notificaciones >',
+            clickable: true,
+            callback: () => {
+              console.log('Se ha clickeado el callback');
             },
           },
         },
       ],
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          console.log(params.dataModel.value['1'].phoneNumber);
+          const phoneNumber = params.dataModel.value['1'].phoneNumber.e164Number.split('+')[1];
+          try {
+            const response = await this.authService.checkUser(phoneNumber);
+
+            localStorage.setItem("lastLoggedPhone", JSON.stringify(params.dataModel.value['1'].phoneNumber));
+
+            if(response) {
+              this.existingUserData = response;
+              this.newUser = false;
+
+              if(this.existingUserData.name) {
+                this.formSteps[1].fieldsList[0].fieldControl.control.setValue(this.existingUserData.name);
+                this.formSteps[1].fieldsList[0].fieldControl.control.disable();
+              }
+              
+              if(this.existingUserData.lastname){
+                this.formSteps[1].fieldsList[1].fieldControl.control.setValue(this.existingUserData.lastname);
+                this.formSteps[1].fieldsList[1].fieldControl.control.disable();
+              }
+
+              for(let social of this.existingUserData.social) {
+                if(social.name === 'instagram') {
+                  this.formSteps[1].fieldsList[2].fieldControl.control.setValue(social.userName || '');
+                  this.formSteps[1].fieldsList[2].fieldControl.control.disable();
+                }
+
+                if(social.name === 'location') {
+                  this.formSteps[9].fieldsList[1].fieldControl.control.setValue(social.url || '');
+                  this.formSteps[9].fieldsList[1].fieldControl.control.disable();
+                }
+              }
+
+              let birthdayValue: any = this.existingUserData.birthdate;
+
+              if(birthdayValue !== '' && birthdayValue) {
+                birthdayValue = new Date(birthdayValue);
+                birthdayValue = birthdayValue.getFullYear() + '-' + '0' + (Number(birthdayValue.getMonth()) + 1) + '-' + (Number(birthdayValue.getDate()) + 1);
+                this.formSteps[1].fieldsList[4].fieldControl.control.setValue(birthdayValue);              
+                this.formSteps[1].fieldsList[4].fieldControl.control.disable();
+              } else {
+                this.formSteps[1].fieldsList[4].fieldControl.control.setValue('');              
+              }
+
+              if(this.existingUserData.email){
+                this.formSteps[1].fieldsList[3].fieldControl.control.setValue(this.existingUserData.email);              
+                this.formSteps[1].fieldsList[3].fieldControl.control.disable();
+              }
+
+              if(this.existingUserData.deliveryLocations.length > 0 && this.existingUserData.deliveryLocations[0].nickName !== ''){
+                this.formSteps[9].fieldsList[0].fieldControl.control.setValue(this.existingUserData.deliveryLocations[0].nickName);              
+                this.formSteps[9].fieldsList[0].fieldControl.control.disable();
+              }
+            }
+          } catch (error) {
+            this.newUser = true;
+            console.log("nuevo usuario");
+          }
+
+          return {ok: true};
+        }
+      },
       embeddedComponents: [
         {
           component: HeaderInfoComponent,
@@ -230,7 +190,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             title: 'LL Studio',
             description: 'Formulario de Ordenes',
             type: 'dialog',
-            profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
+            profileImage: this.logo,
             socials: [
               {
                 name: 'instagram',
@@ -269,18 +229,176 @@ export class LlStudioOrderFormComponent implements OnInit {
           outputs: [],
         }
       ],
+      styles: {
+        padding: '0px',
+      },
       hideHeader: true,
+      footerConfig,
+      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+    },
+    {
+      fieldsList: [
+        {
+          name: 'name',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'Nombre (*)',
+          topLabelAction: {
+            text: 'Cuéntanos sobre ti',
+            clickable: false
+          },
+          placeholder: 'Me llamo..',
+          styles: {
+            containerStyles: {
+              display: 'inline-block',
+              width: 'calc(100% / 2)',
+              paddingRight: '6px',
+              marginTop: '36px',
+              // width: '83.70%',
+            },
+            topLabelActionStyles: {
+              fontFamily: 'RobotoBold',
+              fontSize: '24px',
+              color: "#faa4a4"
+            },
+            fieldStyles: {
+              width: '100%',
+              marginTop: '26px',
+            },
+            labelStyles: {
+              ...labelStyles,
+            },
+          },
+        },
+        {
+          name: 'lastname',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          label: 'Apellido (*)',
+          placeholder: 'Mi apellido es..',
+          styles: {
+            containerStyles: {
+              display: 'inline-block',
+              width: 'calc(100% / 2)',
+              paddingLeft: '6px',
+              // width: '83.70%',
+            },
+            fieldStyles: {
+              marginTop: '26px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+            },
+          },
+        },
+        {
+          name: 'instagramUser',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required)
+          },
+          placeholder: 'Ejemplo: @_heavenlyballoons',
+          label: 'Instagram User (*)',
+          styles: {
+            containerStyles: {
+              width: '100%',
+              padding: '0px'
+            },
+            fieldStyles: {
+              marginTop: '21px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+              backgroundPositionX: '8px',
+              backgroundPositionY: '60.5px',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/instagram.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '40px',
+              paddingBottom: '5px',
+              display: 'flex',
+              alignItems: 'center',
+            }
+          },
+        },
+        {
+          name: 'email',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.compose([Validators.required, Validators.email]))
+          },
+          placeholder: 'ejemplo@hotmail.com...',
+          label: 'E-Mail (*)',
+          inputType: 'email',
+          styles: {
+            containerStyles: {
+              width: '100%',
+              padding: '0px'
+            },
+            fieldStyles: {
+              marginTop: '21px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+              backgroundPositionX: '8px',
+              backgroundPositionY: '64.5px',
+              backgroundImage: 'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/mail-gray.svg)',
+              backgroundRepeat: 'no-repeat',
+              paddingLeft: '40px',
+              paddingBottom: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundSize: '1.7rem'
+            }
+          },
+        },
+        {
+          name: 'birthday',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('')
+          },
+          placeholder: 'YYYY-MM-DD',
+          label: 'Fecha de cumpleaños',
+          inputType: 'date',
+          maxDate: `${new Date().getFullYear()}-${('0' + (new Date().getMonth() + 1)).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
+          styles: {
+            containerStyles: {
+              width: '100%',
+              padding: '0px',
+              paddingBottom: '60px'
+            },
+            fieldStyles: {
+              marginTop: '26px',
+              width: '100%',
+            },
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+            },
+          },
+        },
+      ],
       styles: {
         padding: '0px',
       },
       stepProcessingFunction: () => {
-        this.whatsappLinkSteps.push(`*Nombre:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*Apellido:*\n${this.formSteps[0].fieldsList[1].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[0].fieldsList[2].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[0].fieldsList[3].fieldControl.control.value}\n\n`);
+        this.whatsappLinkSteps.push(`*Nombre:*\n${this.formSteps[1].fieldsList[0].fieldControl.control.value}\n\n`);
+        this.whatsappLinkSteps.push(`*Apellido:*\n${this.formSteps[1].fieldsList[1].fieldControl.control.value}\n\n`);
+        this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[1].fieldsList[2].fieldControl.control.value}\n\n`);
+        this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[1].fieldsList[3].fieldControl.control.value}\n\n`);
 
-        if(this.formSteps[0].fieldsList[4].fieldControl.control.value && this.formSteps[0].fieldsList[4].fieldControl.control.value.length > 0) {
-          this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[0].fieldsList[4].fieldControl.control.value}\n\n`);
+        if(this.formSteps[1].fieldsList[4].fieldControl.control.value && this.formSteps[1].fieldsList[4].fieldControl.control.value.length > 0) {
+          this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[1].fieldsList[4].fieldControl.control.value}\n\n`);
         }
 
         return { ok: true }
@@ -288,320 +406,6 @@ export class LlStudioOrderFormComponent implements OnInit {
       footerConfig,
       stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
-    },
-    // {
-    //   fieldsList: [
-    //     {
-    //       name: 'details',
-    //       label: 'Sobre tu orden *',
-    //       sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
-    //       inputType: 'textarea',
-    //       fieldControl: {
-    //         type: 'single',
-    //         control: new FormControl('', Validators.required)
-    //       },
-    //       placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
-    //       styles: {
-    //         containerStyles: {
-    //           ...commonContainerStyles,
-    //           marginTop: '0px',
-    //           paddingTop: '60px'
-    //         },
-    //         fieldStyles: {
-    //           borderRadius: '10px',
-    //           padding: '23px 26px 23px 16px',
-    //           background: 'white',
-    //           height: '120px'
-    //         },
-    //         subLabelStyles: {
-    //           color: '#7B7B7B',
-    //           fontSize: '1rem',
-    //           margin: '19px 0px',
-    //           fontFamily: 'Roboto',
-    //           fontWeight: 500
-    //         },
-    //       }
-    //     },
-    //     {
-    //       name: 'referenceImage',
-    //       fieldControl: {
-    //         type: 'single',
-    //         control: new FormControl('', Validators.required)
-    //       },
-    //       label: 'Foto de Referencia',
-    //       sublabel: 'Adjuntar foto de referencia de su orden.',
-    //       inputType: 'file',
-    //       placeholder: 'sube una imagen',
-    //       styles: {
-    //         containerStyles: {
-    //           ...commonContainerStyles,
-    //           minWidth: '281px',
-    //           paddingTop: '64px',
-    //           paddingBottom: '270px'
-    //         },
-    //         labelStyles: {
-    //           fontFamily: 'Roboto',
-    //           fontWeight: 'lighter',
-    //           fontSize: '19px'
-    //         },
-    //         subLabelStyles: {
-    //           color: '#7B7B7B',
-    //           fontFamily: 'Roboto',
-    //           fontSize: '16px',
-    //           fontWeight: 500
-    //         },
-    //         fieldStyles: {
-    //           minWidth: '192px',
-    //           maxHeight: '163px',
-    //           width: 'calc((100% - 35px * 2) - 55.14%)',
-    //           borderRadius: '7px'
-    //         }
-    //       },
-    //     },
-    //   ],
-    //   embeddedComponents: [
-    //     {
-    //       component: HeaderInfoComponent,
-    //       beforeIndex: 0,
-    //       inputs: {
-    //         title: 'LL Studio',
-    //         description: 'Formulario de Ordenes',
-    //         type: 'dialog',
-    //         profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
-    //         socials: [
-    //           {
-    //             name: 'instagram',
-    //             url: 'https://instagram.com/llstudiord?igshid=YmMyMTA2M2Y='
-    //           },
-    //           {
-    //             name: 'phone',
-    //             url: '18098718288'
-    //           }
-    //         ],
-    //         reverseInfoOrder: true,
-    //         customStyles: {
-    //           wrapper: {
-    //             margin: '0px',
-    //             backgroundColor: 'white',
-    //             background: 'linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%)',
-    //             padding: '0px 20px',
-    //             paddingTop: '24px',
-    //             paddingBottom: '35.8px',
-    //           },
-    //           leftInnerWrapper: {
-    //             margin: '0px'
-    //           },
-    //           pictureWrapper: {
-    //             alignSelf: 'center'
-    //           },
-    //           infoWrapper: {
-    //             justifyContent: 'center',
-    //             marginLeft: '21px'
-    //           }
-    //         }
-    //       },
-    //       outputs: [],
-    //     }
-    //   ],
-    //   hideHeader: true,
-    //   styles: {
-    //     padding: '0px',
-    //   },
-    //   stepProcessingFunction: () => {
-    //     this.whatsappLinkSteps.push(
-    //       `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`
-    //     )
-
-    //     return { ok: true }
-    //   },
-    //   footerConfig,
-    //   stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
-    //   stepButtonValidText: 'CONTINUA CON TU ORDEN'
-    // },
-    // {
-    //   fieldsList: [
-    //     {
-    //       name: 'details',
-    //       label: 'Sobre tu orden *',
-    //       sublabel: 'Especifica todos los detalles. En base a esta información se trabajará tu pedido.',
-    //       inputType: 'textarea',
-    //       fieldControl: {
-    //         type: 'single',
-    //         control: new FormControl('', Validators.required)
-    //       },
-    //       placeholder: 'Cuál es el artículo? Color? Material? Personalización, aclaraciones y demás datos relevantes a tu orden.',
-    //       styles: {
-    //         containerStyles: {
-    //           ...commonContainerStyles,
-    //           marginTop: '0px',
-    //           paddingTop: '60px'
-    //         },
-    //         fieldStyles: {
-    //           borderRadius: '10px',
-    //           padding: '23px 26px 23px 16px',
-    //           background: 'white',
-    //           height: '120px'
-    //         },
-    //         subLabelStyles: {
-    //           color: '#7B7B7B',
-    //           fontSize: '1rem',
-    //           margin: '19px 0px',
-    //           fontFamily: 'Roboto',
-    //           fontWeight: 500
-    //         },
-    //       }
-    //     },
-    //     {
-    //       name: 'referenceImage',
-    //       fieldControl: {
-    //         type: 'single',
-    //         control: new FormControl('', Validators.required)
-    //       },
-    //       label: 'Foto de Referencia',
-    //       sublabel: 'Adjuntar foto de referencia de su orden.',
-    //       inputType: 'file',
-    //       placeholder: 'sube una imagen',
-    //       styles: {
-    //         containerStyles: {
-    //           ...commonContainerStyles,
-    //           minWidth: '281px',
-    //           paddingTop: '64px',
-    //           paddingBottom: '270px'
-    //         },
-    //         labelStyles: {
-    //           fontFamily: 'Roboto',
-    //           fontWeight: 'lighter',
-    //           fontSize: '19px'
-    //         },
-    //         subLabelStyles: {
-    //           color: '#7B7B7B',
-    //           fontFamily: 'Roboto',
-    //           fontSize: '16px',
-    //           fontWeight: 500
-    //         },
-    //         fieldStyles: {
-    //           minWidth: '192px',
-    //           maxHeight: '163px',
-    //           width: 'calc((100% - 35px * 2) - 55.14%)',
-    //           borderRadius: '7px'
-    //         }
-    //       },
-    //     },
-    //   ],
-    //   embeddedComponents: [
-    //     {
-    //       component: HeaderInfoComponent,
-    //       beforeIndex: 0,
-    //       inputs: {
-    //         title: 'LL Studio',
-    //         description: 'Formulario de Ordenes',
-    //         type: 'dialog',
-    //         profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp',
-    //         socials: [
-    //           {
-    //             name: 'instagram',
-    //             url: 'https://instagram.com/llstudiord?igshid=YmMyMTA2M2Y='
-    //           },
-    //           {
-    //             name: 'phone',
-    //             url: '18098718288'
-    //           }
-    //         ],
-    //         reverseInfoOrder: true,
-    //         customStyles: {
-    //           wrapper: {
-    //             margin: '0px',
-    //             backgroundColor: 'white',
-    //             background: 'linear-gradient(180deg, white 50%, rgba(213, 213, 213, 0.25) 100%)',
-    //             padding: '0px 20px',
-    //             paddingTop: '24px',
-    //             paddingBottom: '35.8px',
-    //           },
-    //           leftInnerWrapper: {
-    //             margin: '0px'
-    //           },
-    //           pictureWrapper: {
-    //             alignSelf: 'center'
-    //           },
-    //           infoWrapper: {
-    //             justifyContent: 'center',
-    //             marginLeft: '21px'
-    //           }
-    //         }
-    //       },
-    //       outputs: [],
-    //     }
-    //   ],
-    //   hideHeader: true,
-    //   styles: {
-    //     padding: '0px',
-    //   },
-    //   stepProcessingFunction: () => {
-    //     this.whatsappLinkSteps.push(
-    //       `*Sobre tu orden:*\n${this.formSteps[0].fieldsList[0].fieldControl.control.value}\n\n`
-    //     )
-
-    //     return { ok: true }
-    //   },
-    //   footerConfig,
-    //   stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
-    //   stepButtonValidText: 'CONTINUA CON TU ORDEN'
-    // },
-    {
-      headerText: '',
-      fieldsList: [
-        {
-          name: 'phoneNumber',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required)
-          },
-          label: '¿Donde recibirás las notificaciones de esta orden??',
-          inputType: 'phone',
-          styles: {
-            containerStyles: {
-              marginTop: '44px',
-            },
-            labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
-              fontSize: '24px',
-              margin: '0px',
-              marginBottom: '25px',
-              color: "#faa4a4"
-            },
-            bottomLabelStyles: {
-              fontWeight: 'normal',
-              fontStyle: 'italic',
-              fontSize: '15px',
-              marginTop: '22px',
-              fontFamily: 'Roboto'
-            }
-          },
-          bottomLabel: {
-            text: 'Otras maneras de recibir las notificaciones >',
-            clickable: true,
-            callback: () => {
-              console.log('Se ha clickeado el callback');
-            },
-          },
-        },
-      ],
-      stepProcessingFunction: () => {
-        return { ok: true }
-      },
-      customScrollToStepBackwards: (params) => {
-        this.whatsappLinkSteps.pop();
-        this.whatsappLinkSteps.pop();
-        this.whatsappLinkSteps.pop();
-        this.whatsappLinkSteps.pop();
-        this.whatsappLinkSteps.pop();
-        
-        params.scrollToStep(0, false);
-      },
-      footerConfig,
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
     },
     {
       headerText: '',
@@ -617,8 +421,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           inputType: 'textarea',
           styles: {
             labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               fontSize: '24px',
               margin: '0px',
               marginBottom: '25px',
@@ -648,8 +451,8 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'sube una imagen',
           styles: {
             labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'lighter',
+              fontFamily: 'RobotoLight',
+              fontWeight: 300,
               fontSize: '19px',
               margin: '0px',
               marginBottom: '18px',
@@ -662,7 +465,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
             subLabelStyles: {
               color: '#7B7B7B',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontSize: '16px',
               fontWeight: 500,
               padding: '0px',
@@ -687,6 +490,12 @@ export class LlStudioOrderFormComponent implements OnInit {
         return { ok: true }
       },
       customScrollToStepBackwards: (params) => {
+        this.whatsappLinkSteps.pop();
+        this.whatsappLinkSteps.pop();
+        this.whatsappLinkSteps.pop();
+        this.whatsappLinkSteps.pop();
+        this.whatsappLinkSteps.pop();
+
         params.scrollToStep(1, false);
       },
       footerConfig,
@@ -713,14 +522,14 @@ export class LlStudioOrderFormComponent implements OnInit {
               emitEvent: false,
             });
           },
-          label: '¿Su orden llevaría envoltura de regalo?',
+          label: '¿Su orden llevaría envoltura de regalo? (*)',
           inputType: 'radio',
           styles: {
             containerStyles: {
               marginTop: '48px',
             },
             labelStyles: {
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoBold',
               fontWeight: 'bold',
               fontSize: '24px',
               margin: '0px',
@@ -974,7 +783,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               emitEvent: false,
             });
           },
-          label: 'Via de Pago (*)',
+          label: 'Vía de Pago (*)',
           inputType: 'radio',
           styles: {
             containerStyles: {
@@ -983,7 +792,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             labelStyles: {
               marginBottom: '21px',
               fontSize: '19px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
             fieldStyles: {
@@ -1004,15 +813,15 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'sube una imagen',
           styles: {
             labelStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'lighter',
+              fontFamily: 'RobotoLight',
+              fontWeight: 300,
               fontSize: '19px',
               margin: '0px',
               marginBottom: '18px',
             },
             subLabelStyles: {
               color: '#7B7B7B',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontSize: '16px',
               fontWeight: 500,
               padding: '0px',
@@ -1082,8 +891,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             labelStyles: {
               marginBottom: '21px',
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               color: "#faa4a4"
             },
             subLabelStyles: {
@@ -1092,7 +900,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               margin: '0px',
               marginTop: '20px',
               marginBottom: '34px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
           },
@@ -1154,8 +962,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               color: "#faa4a4"
             },
             subLabelStyles: {
@@ -1164,7 +971,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               margin: '0px',
               marginTop: '30px',
               marginBottom: '25px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
           },
@@ -1289,8 +1096,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               margin: '0px',
               color: "#faa4a4"
             },
@@ -1300,7 +1106,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               margin: '0px',
               marginTop: '16px',
               marginBottom: '27px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
           }
@@ -1327,7 +1133,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'whereToDeliver',
-          label: 'Dirección o Destino de Entrega',
+          label: 'Dirección o Destino de Entrega (*)',
           sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y su costo es a partir de RD$250. El envío al interior se hace vía courrier, a partir de RD$350',
           inputType: 'textarea',
           fieldControl: {
@@ -1346,7 +1152,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               height: '164px'
             },
             labelStyles: {
-              color: "#faa4a4"
+              color: "#faa4a4",
+              fontFamily: 'RobotoBold'
             },
             subLabelStyles: {
               color: '#7B7B7B',
@@ -1354,7 +1161,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               margin: '0px',
               marginTop: '17px',
               marginBottom: '40px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
           }
@@ -1418,8 +1225,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               color: "#faa4a4"
             },
             subLabelStyles: {
@@ -1473,7 +1279,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               height: '164px'
             },
             labelStyles: {
-              color: "#faa4a4"
+              color: "#faa4a4",
+              fontFamily: 'RobotoBold'
             },
             subLabelStyles: {
               color: '#7B7B7B',
@@ -1522,8 +1329,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               color: "#faa4a4"
             },
             subLabelStyles: {
@@ -1532,7 +1338,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               margin: '0px',
               marginTop: '30px',
               marginBottom: '25px',
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               fontWeight: 500
             },
           },
@@ -1544,9 +1350,53 @@ export class LlStudioOrderFormComponent implements OnInit {
           this.whatsappLinkSteps.push(`*Podemos mencionarte en nuestra sección "Veo, Veo":*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`);
 
           try {
+            const { phoneNumber } = params.dataModel.value['1'];
+            const name = this.formSteps[1].fieldsList[0].fieldControl.control.value;
+            const lastname = this.formSteps[1].fieldsList[1].fieldControl.control.value;
+            const instagramUser = this.formSteps[1].fieldsList[2].fieldControl.control.value;
+            const email = this.formSteps[1].fieldsList[3].fieldControl.control.value;
+            const birthday = this.formSteps[1].fieldsList[4].fieldControl.control.value;
+
+
             let fileRoutesReferenceImages = null;
             let proofOfPaymentImages = null;
 
+            if(this.newUser) {
+              const requestData: any = {
+                phone: phoneNumber.e164Number.split('+')[1],
+                name,
+                lastname,
+                email,
+                birthdate: birthday,
+                social: [
+                  {
+                    name: 'instagram',
+                    url: 'https://www.instagram.com/' + instagramUser,
+                    userName: instagramUser
+                  },
+                ],
+                deliveryLocations: [
+                  {
+                    nickName: this.formSteps[9].fieldsList[0].fieldControl.control.value
+                  }
+                ],
+                instagram: 'https://www.instagram.com/' + instagramUser,
+                clientOfMerchants: [
+                  this.merchantId
+                ]
+              };
+
+              if(this.formSteps[9].fieldsList[1].fieldControl.control.value !== '') {
+                requestData.social.push({
+                  name: 'location',
+                  url: this.formSteps[9].fieldsList[1].fieldControl.control.value
+                })
+              }
+
+              await this.authService.signup(requestData, 'none', null, false);
+            }
+
+            
             if(this.formSteps[2].fieldsList[1].fieldControl.control.value.length > 0 && (
               this.formSteps[2].fieldsList[1].fieldControl.control.value[0] !== ""
             )) {
@@ -1589,12 +1439,12 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             const data = {
               data: encodeURIComponent(JSON.stringify({
-                name: this.formSteps[0].fieldsList[0].fieldControl.control.value,
-                lastname: this.formSteps[0].fieldsList[1].fieldControl.control.value,
-                instagramUser: this.formSteps[0].fieldsList[2].fieldControl.control.value,
-                email: this.formSteps[0].fieldsList[3].fieldControl.control.value,
-                birthday: this.formSteps[0].fieldsList[4].fieldControl.control.value,
-                phoneNumber: this.formSteps[1].fieldsList[0].fieldControl.control.value,
+                phoneNumber: this.formSteps[0].fieldsList[0].fieldControl.control.value,
+                name: this.formSteps[1].fieldsList[0].fieldControl.control.value,
+                lastname: this.formSteps[1].fieldsList[1].fieldControl.control.value,
+                instagramUser: this.formSteps[1].fieldsList[2].fieldControl.control.value,
+                email: this.formSteps[1].fieldsList[3].fieldControl.control.value,
+                birthday: this.formSteps[1].fieldsList[4].fieldControl.control.value,
                 details: this.formSteps[2].fieldsList[0].fieldControl.control.value,
                 wouldYourOrderIncludeAGiftWrap: this.formSteps[3].fieldsList[0].fieldControl.control.value,
                 referenceImage: fileRoutesReferenceImages,
@@ -1650,19 +1500,26 @@ export class LlStudioOrderFormComponent implements OnInit {
             
              return { ok: true };
           } catch (error) {
-             this.dialog.open(GeneralFormSubmissionDialogComponent, {
-               type: 'centralized-fullscreen',
-               props: {
-                 icon: 'sadFace.svg',
-                 message: 'Ocurrió un problema'
-               },
-               customClass: 'app-dialog',
-               flags: ['no-header'],
-             });
+            console.log("El error ", error.message)
+            
+            this.dialog.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'sadFace.svg',
+                message: window.navigator.onLine ? 'Ocurrió un problema: ' + error : 'Se perdió la conexion a internet'
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
 
-             console.log(error);
+            this.frontendLogsService.createFrontendLog({
+              route: window.location.href,
+              log: JSON.stringify({
+                error: error.message
+              })
+            });
 
-             return { ok: false };
+            return { ok: false };
           }
         },
       },
@@ -1680,7 +1537,9 @@ export class LlStudioOrderFormComponent implements OnInit {
     private decimalPipe: DecimalPipe,
     private merchantsService: MerchantsService,
     private route: ActivatedRoute,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private frontendLogsService: FrontendLogsService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -1689,12 +1548,24 @@ export class LlStudioOrderFormComponent implements OnInit {
 
       this.merchantId = merchantId;
       this.calendarId = calendarId;
+
+      let lastLoggedPhone: any = localStorage.getItem('lastLoggedPhone');
+
+      if(lastLoggedPhone) {
+        lastLoggedPhone = JSON.parse(lastLoggedPhone);
+        this.formSteps[0].fieldsList[0].fieldControl.control.setValue(lastLoggedPhone);
+        this.formSteps[0].fieldsList[0].phoneCountryCode = lastLoggedPhone.countryCode;
+      }
       
       this.formSteps[7].embeddedComponents[0].inputs.calendarId = this.calendarId;
       this.formSteps[7].embeddedComponents[0].shouldRerender = true;
 
       this.automationName = automationName;
     })
+
+    setTimeout(() => {
+      this.loading = false;
+    }, 1000);
   }
 
 }

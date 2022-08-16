@@ -87,6 +87,7 @@ import { StatusListComponent } from './dialogs/status-list/status-list.component
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
+import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
 
 const imports = [
   CommonModule,
@@ -180,6 +181,7 @@ const declarations = [
   ItemReservationComponent,
   SetConfigComponent,
   ItemSettingsComponent,
+  LoadingScreenComponent
 ];
 
 @NgModule({
