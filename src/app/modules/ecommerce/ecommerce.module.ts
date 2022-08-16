@@ -5,7 +5,9 @@ import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
 import { FlowCompletionAuthLessComponent } from './pages/flow-completion-auth-less/flow-completion-auth-less.component';
+import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
+import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { MegaphoneV3Component } from './pages/megaphone-v3/megaphone-v3.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { OrderInfoComponent } from './pages/order-info/order-info.component';
@@ -92,6 +94,14 @@ const routes: Routes = [
   {
     path: 'redirections',
     component: RedirectionsComponent,
+  },
+  {
+    path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
+    component: HeavenlyBalloonsComponent,
+  },
+  {
+    path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
+    component: LlStudioOrderFormComponent,
   },
 ];
 

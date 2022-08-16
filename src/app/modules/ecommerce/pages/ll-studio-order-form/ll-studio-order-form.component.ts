@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { FormControl, Validators } from '@angular/forms';
-import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
+import { ReservationOrderlessComponent } from 'src/app/modules/airtable/pages/reservations-orderless/reservations-orderless.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { DecimalPipe } from '@angular/common';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
@@ -777,7 +777,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro', 'Banco de Venezuela'],
+          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
             this.formSteps[4].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
