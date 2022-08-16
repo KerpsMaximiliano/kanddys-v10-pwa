@@ -1,44 +1,19 @@
 <div style="min-height: 100vh">
   <app-helper-headerv2
     [mode]="'basic'"
+    [mainText]="{
+        text: merchant.name,
+        fontSize: '21px',
+        fontFamily: 'SfProBold'
+    }"
     [returnAble]="false"
-    [icons]="
-      admin &&
-      (saleflow
-        ? [
-            {
-              src: '/upload.svg',
-              callback: onShareClick,
-              color:
-                'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-              margin: '0 7px 0 14px'
-            }
-          ]
-        : merchant && [])
-    "
+    [dots]="{
+        active: true
+    }"
     (returnEvent)="back()"
     bgColor="#2874AD"
   ></app-helper-headerv2>
-  <div class="header" *ngIf="merchant">
-    <div
-      class="header-image"
-      [ngStyle]="{ backgroundImage: 'url(' + merchant.image + ')' }"
-      [ngClass]="{ placeholder: !merchant.image }"
-    ></div>
-    <h5>{{ merchant.name }}</h5>
-    <p>{{ merchant.bio }}</p>
 
-    <!-- {
-      src: '/pencil.svg',
-      callback: onPencilClick,
-      color: 'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-      margin: '0 7px 0 14px'
-    } -->
-    <!-- Activar/Desactivar la tienda -->
-    <!-- <button class="header-btn" *ngIf="admin">
-      publica y activa <i class="fas fa-chevron-right"></i>
-    </button> -->
-  </div>
   <div *ngIf="!ordersTotal && mode === 'store'">
     <app-form-questions
       [topBar]="items?.length + ' artículos'"
@@ -48,17 +23,94 @@
       (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
   </div>
+
   <div *ngIf="admin">
-    <app-form-questions
+    <div class="about-products" style="margin-top: 36px;">
+        <div class="wrapper"> 
+            <h2 class="about-name">Sobre las facturas</h2>
+
+            <div class="dot-trio" (click)="shareCalendar">
+                <div class="dot"> </div>
+                <div class="dot"> </div>
+                <div class="dot"> </div>
+            </div>
+        </div>
+
+        <div class="grid-details">
+            <div class="info-card">
+              <h2 class="amount quantity">
+                {{ (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') }}
+              </h2>
+    
+              <h2 class="amount">INGRESOS TOTALES</h2>
+            </div>
+    
+            <div class="info-card">
+                <h2 class="amount quantity">
+                  {{ (ordersTotal ? ordersTotal.length : '0') }}
+                </h2>
+      
+                <h2 class="amount">FACTURAS</h2>
+            </div>
+    
+            <div class="info-card">
+              <h2 class="amount quantity">
+                {{(users?.length >= 1?  users.length : '0')}}
+              </h2>
+    
+              <h2 class="amount">COMPRADORES</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="about-items" style="margin-top: 70px;">
+        <div class="wrapper"> 
+            <h2 class="about-name">Sobre los artículos</h2>
+
+            <div class="dot-trio" (click)="shareCalendar">
+                <div class="dot"> </div>
+                <div class="dot"> </div>
+                <div class="dot"> </div>
+            </div>          
+        </div>
+
+        <div class="grid-details">
+            <div class="info-card">
+              <h2 class="amount quantity">
+                {{(items?.length >= 1? items.length : '0')}}
+              </h2>
+    
+              <h2 class="amount">EN TOTAL</h2>
+            </div>
+    
+            <div class="info-card">
+                <h2 class="amount quantity">
+                  2 <!-- {{ (ordersTotal ? ordersTotal.length : '0') }} -->
+                </h2>
+      
+                <h2 class="amount">VISIBLES</h2>
+            </div>
+    
+            <div class="info-card">
+              <h2 class="amount quantity">
+                2 <!-- {{users.length}} -->
+              </h2>
+    
+              <h2 class="amount">INVISIBLES</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- <app-form-questions
       *ngIf="items"
       [topBar]="items?.length + ' artículos'"
       bottomRightBtn="MÁS"
       (bottomRight)="redirectMerchantItems('merchant-items')"
       bottomLeftBtn="adicionar nuevo artículo"
       (bottomLeft)="redirectToCreateItem()"
-    ></app-form-questions>
+    ></app-form-questions> -->
 
-    <ng-container *ngIf="calendars?.length">
+    <!-- <ng-container *ngIf="calendars?.length">
       <div class="section" *ngFor="let calendar of calendars">
         <app-enlist-display
           [headline]="{
@@ -115,7 +167,8 @@
           [showSubtitle]="true"
         ></app-enlist-display>
       </div>
-    </ng-container>
+    </ng-container> -->
+
     <!-- [dropdowns]="[
         {
           title: 'categorias',
@@ -177,15 +230,17 @@
       ]"
     ></app-form-questions> -->
   </div>
+
 </div>
-<app-bubble-button
+
+<!-- <app-bubble-button
   *ngIf="admin && mode === 'collections'"
   position="left"
   [solo]="false"
   [return]="true"
   color="blue"
-></app-bubble-button>
-<app-sticky-button
+></app-bubble-button> -->
+<!-- <app-sticky-button
   *ngIf="admin && mode === 'collections'"
   mode="double"
   text="POSIBILIDADES"
@@ -194,3 +249,4 @@
   [backButton]="true"
   bgColor="#2874AD"
 ></app-sticky-button>
+ -->

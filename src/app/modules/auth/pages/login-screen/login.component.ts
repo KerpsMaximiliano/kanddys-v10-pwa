@@ -47,19 +47,28 @@ export class LoginComponent implements OnInit {
         lockUI();
 
         if(phone) {
-            try {
-                const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(phone);
-                this.phoneNumber.setValue(nationalNumber);
-                this.CountryISO = countryIso;
-                this.loggin = true;
-                this.merchantNumber = phone;
-                
-            } catch(e){
+            const exists = await this.authService.checkUser(phone);
+
+            if(exists){
+                try {
+                    const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(phone);
+                    this.phoneNumber.setValue(nationalNumber);
+                    this.CountryISO = countryIso;
+                    this.loggin = true;
+                    this.merchantNumber = phone;
+                    
+                } catch(e){
+                    unlockUI();
+                    this.toastr.info('Número no registrado o inválido', null, {
+                      timeOut: 1500
+                    });
+                }
+            }else{
                 unlockUI();
                 this.toastr.info('Número no registrado o inválido', null, {
-                  timeOut: 1500
+                timeOut: 1500
                 });
-            }
+            }           
 
             unlockUI();
         } else {
