@@ -2,7 +2,10 @@
     <div class="container">
         <div class="dialog-card">
             <div *ngFor="let item of list">
-                <h1 class="title" *ngIf="item.title" [ngStyle]="item.titleStyles && item.titleStyles" [ngClass]="{'alternate': alternate}">{{item.title}}</h1>
+                <div class="title-wrapper" [ngStyle]="{'display': 'flex', 'justify-content': item.label? 'space-between' : 'center'}">
+                    <h1 class="title" *ngIf="item.title" [ngStyle]="item.titleStyles && item.titleStyles" [ngClass]="{'alternate': alternate}">{{item.title}}</h1>
+                    <p class="added-label" [ngStyle]="item.labelStyles && item.labelStyles">{{item.label}}</p>
+                </div>
                 <div class="qr-container" *ngIf="item.qrlink">
                     <qrcode
                     #qrcode
@@ -68,6 +71,6 @@
                 <div class="center"><button class="confirm" *ngIf="item.message" (click)="item.messageCallback && inputFunc(item.messageCallback)">{{item.message}}</button></div>
             </div>
         </div>
-        <button class="cancel" (click)="close()">Cancel</button>
+        <button class="cancel" (click)="close()">{{buttonText}}</button>
     </div>
 </div>

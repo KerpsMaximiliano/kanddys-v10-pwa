@@ -37,6 +37,8 @@ interface StoreShareOption {
 export interface StoreShareList {
   title?: string;
   titleStyles?: Record<string, any>;
+  label?: string;
+  labelStyles?: Record<string, any>;
   description?: string;
   message?: string;
   messageCallback?: (...args: any[]) => void;
@@ -54,6 +56,7 @@ export class StoreShareComponent implements OnInit {
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
   @Input() list: StoreShareList[] = [];
   @Input() alternate: boolean;
+  @Input() buttonText: string = 'Cancel';
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
   screenWidth: number;

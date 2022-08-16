@@ -35,18 +35,33 @@
             align-items: center;
         }
 
-        .title{
-            font-family: 'RobotoBold';
-            font-size: 17px;
-            color: #202020;
-            margin: 20px;
+        .title-wrapper{
+           align-items: center;           
 
-            &.alternate{
+            .title{
                 font-family: 'RobotoBold';
-                font-size: 29px;
-                color: #0B1F38;
-                text-align: center;
+                font-size: 17px;
+                color: #202020;
+                margin: 20px;
+
+                &.alternate{
+                    font-family: 'RobotoBold';
+                    font-size: 29px;
+                    color: #0B1F38;
+                    text-align: center;
+                }
             }
+
+            .added-label{
+                padding: 2px 28px;
+                font-family: 'SfProBold';
+                font-size: 14px;
+                color: #174B72;
+                background-color: #82F18D;
+                border-radius: 6px;
+                margin: 0 20px;
+            }
+            
         }
 
         .description{
