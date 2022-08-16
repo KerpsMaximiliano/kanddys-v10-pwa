@@ -132,7 +132,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
 
 
               if ('_id' in createItem) {
-                await this.saleflowSarvice.addItemToSaleFlow({
+                await this.saleflowService.addItemToSaleFlow({
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
@@ -698,7 +698,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
                   showImages: this.files && this.files.length >= 1
                 });
 
-                await this.saleflowSarvice.addItemToSaleFlow({
+                await this.saleflowService.addItemToSaleFlow({
                   item: createItem._id
                 }, this.loggedUserDefaultSaleflow._id);
 
@@ -1121,7 +1121,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private decimalPipe: DecimalPipe,
     private merchantService: MerchantsService,
-    private saleflowSarvice: SaleFlowService,
+    private saleflowService: SaleFlowService,
     private headerService: HeaderService,
     private applicationRef: ApplicationRef
   ) { }
@@ -1526,7 +1526,7 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
       if (defaultMerchant) {
         this.loggedUserDefaultMerchant = defaultMerchant;
 
-        const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+        const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
         
         if(defaultSaleflow)
           this.loggedUserDefaultSaleflow = defaultSaleflow;
@@ -1542,33 +1542,33 @@ export class ItemCreatorComponent implements OnInit, OnDestroy {
           const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(createdMerchant._id);
           this.loggedUserDefaultMerchant = defaultMerchant;
   
-          const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+          const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
             merchant: defaultMerchant._id,
             name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
             items: []
           });
-          const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+          const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
           this.loggedUserDefaultSaleflow = defaultSaleflow;
         } else {
           const { merchantSetDefault: defaultMerchant } = await this.merchantService.setDefaultMerchant(merchants[0]._id);
           this.loggedUserDefaultMerchant = defaultMerchant;
 
-          const defaultSaleflow = await this.saleflowSarvice.saleflowDefault(defaultMerchant?._id);
+          const defaultSaleflow = await this.saleflowService.saleflowDefault(defaultMerchant?._id);
 
           if (!defaultSaleflow) {
-            const saleflows = await this.saleflowSarvice.saleflows(merchants[0]._id, {});
+            const saleflows = await this.saleflowService.saleflows(merchants[0]._id, {});
 
             if(!saleflows || saleflows.length === 0) {
-              const { createSaleflow: createdSaleflow } = await this.saleflowSarvice.createSaleflow({
+              const { createSaleflow: createdSaleflow } = await this.saleflowService.createSaleflow({
                 merchant: defaultMerchant._id,
                 name: defaultMerchant._id + " saleflow #" + Math.floor(Math.random() * 100000),
                 items: []
               });
 
-              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
+              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, createdSaleflow._id);
               this.loggedUserDefaultSaleflow = defaultSaleflow;
             } else {
-              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowSarvice.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
+              const { saleflowSetDefault: defaultSaleflow } = await this.saleflowService.setDefaultSaleflow(defaultMerchant._id, saleflows[0]._id);
               this.loggedUserDefaultSaleflow = defaultSaleflow;
             }
           } else {

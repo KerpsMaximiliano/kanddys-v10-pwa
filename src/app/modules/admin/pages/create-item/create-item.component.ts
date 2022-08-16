@@ -1,7 +1,17 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Item } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -13,18 +23,21 @@ import { SwiperOptions } from 'swiper';
 export class CreateItemComponent implements OnInit {
   env = environment.assetsUrl;
   defaultImages: (string | ArrayBuffer)[] = [''];
-  imagesAlreadyLoaded: boolean;
+  imageField: (string | ArrayBuffer)[] = [];
   item: Item;
   disableFooter = true;
+  user: User;
+  merchant: Merchant;
+  saleflow: SaleFlow;
+  changedImages = false;
 
-  imageField: (string | ArrayBuffer)[] = [];
   error: boolean[] = [];
   itemForm = new FormGroup({
     images: new FormControl([]),
     name: new FormControl(),
     description: new FormControl(),
-    price: new FormControl(0, Validators.required)
-  })
+    pricing: new FormControl(null, Validators.required),
+  });
 
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -32,20 +45,126 @@ export class CreateItemComponent implements OnInit {
     spaceBetween: 5,
   };
 
-  constructor(protected _DomSanitizer: DomSanitizer) {}
+  constructor(
+    protected _DomSanitizer: DomSanitizer,
+    private authService: AuthService,
+    private merchantService: MerchantsService,
+    private saleflowService: SaleFlowService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private itemService: ItemsService,
+    private headerService: HeaderService,
+    private location: Location
+  ) {}
 
-  ngOnInit(): void {}
+  async ngOnInit(): Promise<void> {
+    const itemId = this.route.snapshot.paramMap.get('itemId');
+    const promises: Promise<User | Merchant | Item>[] = [
+      this.authService.me(),
+      this.merchantService.merchantDefault(),
+    ];
+    if (itemId) promises.push(this.itemService.item(itemId));
+    const [user, userMerchant, item] = await Promise.all(promises);
+    if (!user || !userMerchant) return;
+    this.user = user as User;
+    this.merchant = userMerchant as Merchant;
+    this.saleflow = await this.saleflowService.saleflowDefault(
+      this.merchant._id
+    );
+    if (!item) return;
+    this.item = item as Item;
+    const { images, name, content, description, merchant } = this.item;
+    let { pricing } = this.item;
+    if (this.user._id !== merchant.owner._id)
+      throw new Error('No eres el merchant dueño de este item');
+    this.imageField = images;
+    this.itemForm.get('name').setValue(name);
+    this.itemForm.get('pricing').setValue(pricing);
+    this.itemForm.get('description').setValue(description);
+  }
 
   goBack() {
-    //
+    this.location.back();
   }
 
   toggleStatus() {
     //
   }
 
-  onSubmit() {
-    console.log(this.itemForm.value);
+  async onSubmit() {
+    const { images, name, pricing, description } = this.itemForm.value;
+    try {
+      if (this.item) {
+        const itemInput = {
+          name: name || null,
+          description: description || null,
+          pricing,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+        };
+        const { updateItem: updatedItem } = await this.itemService.updateItem(
+          itemInput,
+          this.item._id
+        );
+
+        if (updatedItem) {
+          if (this.changedImages) {
+            await this.itemService.deleteImageItem(this.item.images, updatedItem._id);
+            await this.itemService.addImageItem(images, updatedItem._id);
+          }
+          this.itemService.removeTemporalItem();
+          this.router.navigate([`/admin/merchant-items`]);
+        }
+      } else {
+        const itemInput = {
+          name: name || null,
+          description: description || null,
+          pricing,
+          images: images,
+          merchant: this.merchant?._id,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          purchaseLocations: [],
+          showImages: images.length > 0,
+        };
+        if (this.user) {
+          const { createItem } = await this.itemService.createItem(itemInput);
+          await this.saleflowService.addItemToSaleFlow(
+            {
+              item: createItem._id,
+            },
+            this.saleflow._id
+          );
+          if ('_id' in createItem) {
+            this.headerService.flowRoute = this.router.url;
+            this.itemService.removeTemporalItem();
+            this.router.navigate([`/admin/merchant-items`]);
+          }
+        } else {
+          const { createPreItem } = await this.itemService.createPreItem(
+            itemInput
+          );
+
+          if ('_id' in createPreItem) {
+            this.headerService.flowRoute = this.router.url;
+            this.itemService.removeTemporalItem();
+            this.router.navigate(
+              [`/auth/authentication/${createPreItem?._id}`],
+              {
+                queryParams: {
+                  type: 'create-item',
+                },
+              }
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   fileProgressMultiple(e: Event) {
@@ -68,6 +187,7 @@ export class CreateItemComponent implements OnInit {
         };
         reader.readAsDataURL(file);
       }
+      this.changedImages = true;
       return;
     }
   }
