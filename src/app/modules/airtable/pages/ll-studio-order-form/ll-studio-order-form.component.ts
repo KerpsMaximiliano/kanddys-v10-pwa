@@ -1366,7 +1366,6 @@ export class LlStudioOrderFormComponent implements OnInit {
                 phone: phoneNumber.e164Number.split('+')[1],
                 name,
                 lastname,
-                birthdate: birthday,
                 social: [
                   {
                     name: 'instagram',
@@ -1388,6 +1387,10 @@ export class LlStudioOrderFormComponent implements OnInit {
               
               if(email && email !== '')
                 requestData.email = email;
+
+              if(birthday && birthday !== "") {
+                requestData['birthdate'] = birthday;
+              }
 
               if(this.formSteps[9].fieldsList[1].fieldControl.control.value !== '') {
                 requestData.social.push({
