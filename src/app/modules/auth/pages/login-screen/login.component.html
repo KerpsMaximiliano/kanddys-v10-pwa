@@ -86,7 +86,14 @@
 
             <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
 
-            <button class="signUp-btn" (click)="signMeUp()" [hidden]="password.invalid || password.pristine" [ngClass]="{'disabled': password.invalid || password.pristine}">Registrarme</button>
+            <button class="signUp-btn" (click)="signMeUp()" 
+            [ngClass]="{'disabled': password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid}"
+            [disabled]="password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid"
+            >
+              Registrarme
+            </button>
+
+            <p class="clarification">Te llegará una confirmación a tu # de WhatsApp</p>
 
         </div>
 
