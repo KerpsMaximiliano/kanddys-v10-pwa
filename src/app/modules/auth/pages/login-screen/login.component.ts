@@ -100,11 +100,11 @@ export class LoginComponent implements OnInit {
             this.loggin = true;
     
         } catch (error) {
-            this.toastr.info('Número inválido', null, {timeOut: 1500});
+            this.toastr.info('Número inválido', null, {timeOut: 2000});
             console.log(error);
         }
     } else {
-        this.toastr.info('Número no registrado', null, {timeOut: 1500});
+        this.toastr.info('Número no registrado', null, {timeOut: 2000});
         return
     }
   };
@@ -116,12 +116,10 @@ export class LoginComponent implements OnInit {
         });
     } else {
         const signin = await this.authService.signin( this.merchantNumber, this.password.value, true );
-        console.log(this.merchantNumber);
-        console.log(this.password);
 
         if(!signin){
-            this.toastr.info('Contraseña invalida o usuario no registrado', null, {
-              timeOut: 1500
+            this.toastr.info('Contraseña invalida o usuario no verficado', null, {
+              timeOut: 2500
             });
             console.log('error');
 
@@ -133,7 +131,7 @@ export class LoginComponent implements OnInit {
 
   async signMeUp(){
     if(this.phoneNumber === null || undefined) {
-        this.toastr.info('Por favor, introduzca un número válido', null, {timeOut: 1500});
+        this.toastr.info('Por favor, introduzca un número válido', null, {timeOut: 2000});
         return
     }
 
@@ -151,12 +149,12 @@ export class LoginComponent implements OnInit {
             // console.log(newUser);
             await this.authService.generateMagicLink(this.merchantNumber, `admin/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
             this.toSignUp();
-            this.toastr.info('¡Usuario registrado con exito!', null, {timeOut: 1500});
+            this.toastr.info('¡Usuario registrado con exito!', null, {timeOut: 2000});
         }
 
     } else {
         this.toastr.info('Ese Usuario ya esta registrado', null, {
-          timeOut: 1500
+          timeOut: 2200
         });
         return;
     }
