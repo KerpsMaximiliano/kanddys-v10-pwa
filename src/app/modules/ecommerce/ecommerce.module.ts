@@ -123,6 +123,8 @@ const routes: Routes = [
     ReservationComponent,
     OrderDetailComponent,
     RedirectionsComponent,
+    HeavenlyBalloonsComponent,
+    LlStudioOrderFormComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
