@@ -4,7 +4,7 @@ import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
 import { FormControl, Validators } from '@angular/forms';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
-import { ReservationOrderlessComponent } from '../reservations-orderless/reservations-orderless.component';
+import { ReservationOrderlessComponent } from 'src/app/modules/airtable/pages/reservations-orderless/reservations-orderless.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { CalendarComponent } from 'src/app/shared/components/calendar/calendar.component';
 import { DecimalPipe } from '@angular/common';
