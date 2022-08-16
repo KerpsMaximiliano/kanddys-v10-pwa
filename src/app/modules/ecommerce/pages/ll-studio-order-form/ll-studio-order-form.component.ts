@@ -777,7 +777,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro', 'Banco de Venezuela'],
+          selectionOptions: ['Banco Popular', 'Banreservas', 'Banco BHD', 'Yoyo App', 'PayPal', 'Otro'],
           changeCallbackFunction: (change, params) => {
             this.formSteps[4].fieldsList[2].fieldControl.control.setValue(change, {
               emitEvent: false,
@@ -1366,7 +1366,6 @@ export class LlStudioOrderFormComponent implements OnInit {
                 phone: phoneNumber.e164Number.split('+')[1],
                 name,
                 lastname,
-                birthdate: birthday,
                 social: [
                   {
                     name: 'instagram',
@@ -1388,6 +1387,10 @@ export class LlStudioOrderFormComponent implements OnInit {
               
               if(email && email !== '')
                 requestData.email = email;
+
+              if(birthday && birthday !== "") {
+                requestData['birthdate'] = birthday;
+              }
 
               if(this.formSteps[9].fieldsList[1].fieldControl.control.value !== '') {
                 requestData.social.push({
