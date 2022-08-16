@@ -14,6 +14,7 @@ import { CustomItemDetailComponent } from './pages/provider-store/custom-item-de
 import { CustomizerRedirectComponent } from './pages/provider-store/customizer-redirect/customizer-redirect.component';
 import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
 import { UserInfoComponent } from './pages/provider-store/user-info/user-info.component';
+import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
 
@@ -40,7 +41,6 @@ const routes: Routes = [
       },
     ],
   },
-
   { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
   {
     path: 'store/:id',
@@ -89,6 +89,10 @@ const routes: Routes = [
     path: 'order-detail',
     component: OrderDetailComponent,
   },
+  {
+    path: 'redirections',
+    component: RedirectionsComponent,
+  },
 ];
 
 @NgModule({
@@ -108,6 +112,7 @@ const routes: Routes = [
     PackageDetailComponent,
     ReservationComponent,
     OrderDetailComponent,
+    RedirectionsComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

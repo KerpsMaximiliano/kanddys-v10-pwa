@@ -12,7 +12,6 @@ import { PostCreatorComponent } from './pages/post-creator/post-creator.componen
 import { PostEditComponent } from './pages/post-edit/post-edit.component';
 import { PostPreviewComponent } from './pages/post-preview/post-preview.component';
 import { PrivacyPolicyComponent } from './pages/privacy-policy/privacy-policy.component';
-import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { UserContactLandingComponent } from './pages/user-contact-landing/user-contact-landing.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-orders.component';
@@ -70,10 +69,6 @@ const routes: Routes = [
     component: PrivacyPolicyComponent,
   },
   {
-    path: 'redirections',
-    component: RedirectionsComponent,
-  },
-  {
     path: 'user-contact-landing/:id',
     component: UserContactLandingComponent,
   },
@@ -115,7 +110,6 @@ const routes: Routes = [
     PostEditComponent,
     PostPreviewComponent,
     PrivacyPolicyComponent,
-    RedirectionsComponent,
     UserContactLandingComponent,
     UserDashboardComponent,
     UserOrdersComponent,

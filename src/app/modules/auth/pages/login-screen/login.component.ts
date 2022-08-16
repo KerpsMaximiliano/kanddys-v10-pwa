@@ -136,7 +136,7 @@ export class LoginComponent implements OnInit {
             return;
         } else {
             // console.log(newUser);
-            await this.authService.generateMagicLink(this.merchantNumber, `ecommerce/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
+            await this.authService.generateMagicLink(this.merchantNumber, `admin/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
             this.toSignUp();
         }
 
