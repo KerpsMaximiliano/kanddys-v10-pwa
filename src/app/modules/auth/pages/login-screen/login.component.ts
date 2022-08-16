@@ -78,6 +78,7 @@ export class LoginComponent implements OnInit {
   toggleLog(){
     this.loggin = !this.loggin;
     this.phoneNumber.setValue(null);
+    this.password.reset();
     this.merchantNumber = '';
   }
 
@@ -88,32 +89,37 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone(){
-    console.log(this.phoneNumber);
-
-    try{
-        const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(this.phoneNumber.value.e164Number);
-        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-        this.phoneNumber.setValue(nationalNumber);
-        this.CountryISO = countryIso;
-        this.loggin = true;
-
-    } catch (error) {
-        this.toastr.info('Número no registrado o inválido');
-        console.log(error);
+    const validUser = await this.authService.checkUser(this.phoneNumber.value.e164Number.split('+')[1]);
+    
+    if(validUser){
+        try{
+            const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(this.phoneNumber.value.e164Number);
+            this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+            this.phoneNumber.setValue(nationalNumber);
+            this.CountryISO = countryIso;
+            this.loggin = true;
+    
+        } catch (error) {
+            this.toastr.info('Número inválido', null, {timeOut: 2000});
+            console.log(error);
+        }
+    } else {
+        this.toastr.info('Número no registrado', null, {timeOut: 2000});
+        return
     }
   };
 
   async signIn(){
     if (this.password.invalid){
-        this.toastr.info('Contraseña invalida', null, {
+        this.toastr.info('Error en campo de contraseña', null, {
           timeOut: 1500
         });
     } else {
         const signin = await this.authService.signin( this.merchantNumber, this.password.value, true );
 
         if(!signin){
-            this.toastr.info('Contraseña invalida', null, {
-              timeOut: 1500
+            this.toastr.info('Contraseña invalida o usuario no verficado', null, {
+              timeOut: 2500
             });
             console.log('error');
 
@@ -124,6 +130,11 @@ export class LoginComponent implements OnInit {
   }
 
   async signMeUp(){
+    if(this.phoneNumber === null || undefined) {
+        this.toastr.info('Por favor, introduzca un número válido', null, {timeOut: 2000});
+        return
+    }
+
     this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
 
     const valid = await this.authService.checkUser(this.merchantNumber);
@@ -138,11 +149,12 @@ export class LoginComponent implements OnInit {
             // console.log(newUser);
             await this.authService.generateMagicLink(this.merchantNumber, `admin/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
             this.toSignUp();
+            this.toastr.info('¡Usuario registrado con exito!', null, {timeOut: 2000});
         }
 
     } else {
         this.toastr.info('Ese Usuario ya esta registrado', null, {
-          timeOut: 1500
+          timeOut: 2200
         });
         return;
     }
