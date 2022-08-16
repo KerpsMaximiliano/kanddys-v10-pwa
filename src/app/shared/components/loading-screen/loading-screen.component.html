@@ -1,0 +1,26 @@
+<div class="wrapper" [ngStyle]="{
+    backgroundColor: backgroundColor,
+    height: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+}">
+    <div class="main" [ngStyle]="{
+        textAlign: 'center',
+        width: '200px'
+    }">
+        <div class="logo-wrapper" [ngStyle]="{
+            backgroundColor: '#fff',
+            position: 'relative',
+            borderRadius: '50%',
+            height: '200px',
+            width: '100%',
+            backgroundImage: 'url(' + logo + ')',
+            backgroundPosition: 'center',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat'
+        }">
+        </div>
+        <h1 [ngStyle]="titleStyles">{{title | uppercase}}</h1>
+    </div>
+</div>

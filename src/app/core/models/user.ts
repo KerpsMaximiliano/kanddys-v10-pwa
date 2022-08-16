@@ -38,6 +38,7 @@ export class User extends Model<User> {
   bio: string;
   deliveryLocations: DeliveryLocation[];
   tags?: string[];
+  clientOfMerchants?: string[];
 
   hasRoles(...roles: string[]): boolean {
     return (this.roles || []).some((r) => roles.includes(r.code));

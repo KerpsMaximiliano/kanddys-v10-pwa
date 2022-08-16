@@ -47,6 +47,7 @@ export class SaleFlowModule extends Model<SaleFlowModule> {
 export class SocialMediaModel {
   name?: string;
   url?: string;
+  userName?: string;
 }
 
 export class SocialMediaModelInput {

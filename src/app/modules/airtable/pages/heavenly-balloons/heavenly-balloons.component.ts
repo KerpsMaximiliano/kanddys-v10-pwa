@@ -69,6 +69,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
   recalculateFormWrapperHeight = false;
   files: File[] = [];
   calendarId: string = null;
+  logo: string = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/merchants-images/heavenlyballoons.webp';
+  loading: boolean = true;
 
   formSteps: FormStep[] = [
     {
@@ -95,8 +97,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               // width: '83.70%',
             },
             topLabelActionStyles: {
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               fontSize: '24px',
             },
             fieldStyles: {
@@ -220,7 +221,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           inputs: {
             title: 'Heavenly Balloons',
             description: 'Formulario de Ordenes',
-            profileImage: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/merchants-images/heavenlyballoons.webp',
+            profileImage: this.logo,
             type: 'dialog',
             socials: [
               {
@@ -376,8 +377,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: '¿Donde recibirás las notificaciones de esta orden?',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -487,8 +487,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: 'Sobre el arreglo',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -556,8 +555,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: 'Sobre la entrega',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -606,8 +604,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold'
+              fontFamily: 'RobotoBold',
             }
           },
         },
@@ -684,8 +681,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
             labelStyles: {
               fontSize: '24px',
-              fontFamily: 'Roboto',
-              fontWeight: 'bold',
+              fontFamily: 'RobotoBold',
               marginBottom: '0px',
               paddingBottom: '26px'
             },
@@ -949,7 +945,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               color: 'black',
               fontWeight: 500,
               fontSize: '19px',
@@ -1016,8 +1012,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: 'Sobre el pago',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -1110,7 +1105,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               color: 'black',
               fontWeight: 500,
               fontSize: '19px',
@@ -1135,7 +1130,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           styles: {
             labelStyles: {
               ...labelStyles,
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               color: 'black',
               fontWeight: 500,
               fontSize: '19px',
@@ -1251,8 +1246,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: 'Cuéntanos más sobre la entrega',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -1283,8 +1277,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
             labelStyles: {
               ...labelStyles,
-              ...labelStyles,
-              fontFamily: 'Roboto',
+              fontFamily: 'RobotoRegular',
               color: 'black',
               fontWeight: 500,
               fontSize: '19px',
@@ -1343,8 +1336,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       pageHeader: {
         text: '¿Cómo nos conociste?',
         styles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
+          fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
@@ -1530,6 +1522,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
       console.log("merchantId", this.merchantId);
       console.log("automationName", this.automationName);
     })
+
+    setTimeout(() => {
+      this.loading = false;
+    }, 1000);
   }
 
 }
