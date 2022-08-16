@@ -14,7 +14,7 @@
     bgColor="#2874AD"
   ></app-helper-headerv2>
 
-  <div *ngIf="!ordersTotal && mode === 'store'">
+  <!-- <div *ngIf="!ordersTotal && mode === 'store'">
     <app-form-questions
       [topBar]="items?.length + ' artículos'"
       bottomLeftBtn="adicionar nuevo artículo"
@@ -22,7 +22,7 @@
       bottomRightBtn="ver más"
       (bottomRight)="redirectMerchantItems('merchant-items')"
     ></app-form-questions>
-  </div>
+  </div> -->
 
   <div *ngIf="admin">
     <div class="about-products" style="margin-top: 36px;">
