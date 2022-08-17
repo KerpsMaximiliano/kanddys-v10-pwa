@@ -88,8 +88,10 @@ export class EntityDetailMetricsComponent implements OnInit {
       this.items = (
         await this.merchantsService.itemsByMerchant(this.merchant._id)
       )?.itemsByMerchant;
-      this.activeItems = this.items.filter(item => item.status === 'active');
-      this.inactiveItems = this.items.filter(item => item.status === 'disabled');
+      this.activeItems = this.items.filter((item) => item.status === 'active');
+      this.inactiveItems = this.items.filter(
+        (item) => item.status === 'disabled'
+      );
     } catch (error) {
       console.log(error);
     }
@@ -199,7 +201,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   onOptionsClick = () => {
     const list: StoreShareList[] = [
       {
-        title: "Sobre "+this.merchant.name,
+        title: 'Sobre ' + this.merchant.name,
         options: [
           {
             text: 'Crea un nuevo artículo',
@@ -212,16 +214,6 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Vende online. Comparte el link',
             mode: 'share',
             link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-            icon: {
-              src: '/upload.svg',
-              alt: 'icono de de compartir',
-              size: {
-                width: 14,
-                height: 14,
-              },
-              color:
-                'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)',
-            },
           },
           {
             text: 'Cerrar sesión',
@@ -285,16 +277,6 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Vende online. Comparte el link',
             mode: 'share',
             link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-            icon: {
-              src: '/upload.svg',
-              alt: 'icono de de compartir',
-              size: {
-                width: 14,
-                height: 14,
-              },
-              color:
-                'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)',
-            },
           },
         ],
       },

@@ -46,17 +46,28 @@
       </section>
       <section class="form-group p-side">
         <div style="margin-bottom: 16px">
-          <div style="margin-bottom: 16px">
+          <div style="margin-bottom: 16px; position: relative">
+            <!-- Input Number Format -->
+            <div class="formatted-price">
+              <span *ngFor="let letter of formattedPricing.split('')">
+                {{ letter }}
+              </span>
+
+              <div class="cursor blinking-cursor" [ngClass]="{ 'blinking-cursor': curencyFocused }" style="width: 1px; height: 1rem"></div>
+            </div>
             <input
-              class="input-text"
+              class="formatted-input"
               type="number"
               id="pricing"
               name="pricing"
-              min="0"
-              placeholder="$ Pagarán"
+              min="1"
               required
               formControlName="pricing"
+              (focus)="curencyFocused = true"
+              (blur)="curencyFocused = false"
+              (input)="formatNumber($event)"
             />
+            <!-- Input Number Format -->
           </div>
           <div>
             <input

@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { DecimalPipe, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -30,15 +30,15 @@ export class CreateItemComponent implements OnInit {
   merchant: Merchant;
   saleflow: SaleFlow;
   changedImages = false;
-
   error: boolean[] = [];
   itemForm = new FormGroup({
     images: new FormControl([]),
     name: new FormControl(),
     description: new FormControl(),
-    pricing: new FormControl(null, Validators.required),
+    pricing: new FormControl(null, [Validators.required, Validators.min(1)]),
   });
-
+  formattedPricing = '$0.00';
+  curencyFocused = false;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -54,7 +54,8 @@ export class CreateItemComponent implements OnInit {
     private router: Router,
     private itemService: ItemsService,
     private headerService: HeaderService,
-    private location: Location
+    private location: Location,
+    private decimalPipe: DecimalPipe
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -92,7 +93,8 @@ export class CreateItemComponent implements OnInit {
   }
 
   async onSubmit() {
-    const { images, name, pricing, description } = this.itemForm.value;
+    const { images, name, description } = this.itemForm.value;
+    const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
       if (this.item) {
         const itemInput = {
@@ -111,7 +113,10 @@ export class CreateItemComponent implements OnInit {
 
         if (updatedItem) {
           if (this.changedImages) {
-            await this.itemService.deleteImageItem(this.item.images, updatedItem._id);
+            await this.itemService.deleteImageItem(
+              this.item.images,
+              updatedItem._id
+            );
             await this.itemService.addImageItem(images, updatedItem._id);
           }
           this.itemService.removeTemporalItem();
@@ -164,6 +169,54 @@ export class CreateItemComponent implements OnInit {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  formatNumber(event: Event) {
+    let value = (<HTMLInputElement>event.target).value;
+    if (value.includes('.')) {
+      value = value
+        .split('')
+        .filter((char) => char !== '.')
+        .join('');
+      const convertedNumber = Number(value);
+      this.itemForm.get('pricing').setValue(convertedNumber, {
+        emitEvent: false,
+      });
+    }
+    const plainNumber = value.split(',').join('');
+    if (plainNumber[0] === '0') {
+      const formatted =
+        plainNumber.length > 3
+          ? this.decimalPipe.transform(
+              Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+              '1.2'
+            )
+          : this.decimalPipe.transform(
+              Number(
+                '0.' +
+                  (plainNumber.length <= 2
+                    ? '0' + plainNumber.slice(1)
+                    : plainNumber.slice(1))
+              ),
+              '1.2'
+            );
+      this.formattedPricing = '$' + formatted;
+    } else {
+      const formatted =
+        plainNumber.length > 2
+          ? this.decimalPipe.transform(
+              Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
+              '1.2'
+            )
+          : this.decimalPipe.transform(
+              Number(
+                '0.' +
+                  (plainNumber.length === 1 ? '0' + plainNumber : plainNumber)
+              ),
+              '1.2'
+            );
+      this.formattedPricing = '$' + formatted;
     }
   }
 
