@@ -7,6 +7,7 @@ export const getCalendar = gql`
       name
       reservationLimits
       expirationTime
+      breakTime
       limits {
         dateType
         fromDay

@@ -4,11 +4,11 @@ import { User } from "./user";
 export class DateModelInput {
     dateType: string;
     from: Date | string;
-    in: Date;
+    in?: Date;
     until: Date | string;
-    fromDay: string;
-    inDays: string[];
-    toDay: string;
+    fromDay?: string;
+    inDays?: string[];
+    toDay?: string;
     fromHour: string;
     toHour: string;
 }
