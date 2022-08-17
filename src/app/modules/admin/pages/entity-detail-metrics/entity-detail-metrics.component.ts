@@ -215,13 +215,13 @@ export class EntityDetailMetricsComponent implements OnInit {
             mode: 'share',
             link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
           },
-          {
+          /* {
             text: 'Cerrar sesión',
             mode: 'func',
             func: () => {
               this.authService.signouttwo();
             },
-          },
+          }, */
         ],
       },
     ];
@@ -230,6 +230,11 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+            this.authService.signoutThree();
+            this.router.navigate([`auth/login`])
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -293,7 +298,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onPencilClick = () => {
-    this.router.navigate(['auth/user-creator']);
+    this.router.navigate(['admin/create-item']);
   };
 
   redirectToCreateItem = () => {

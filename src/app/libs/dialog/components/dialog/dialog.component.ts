@@ -95,6 +95,13 @@ export class DialogComponent implements AfterViewInit, OnDestroy {
     setTimeout(() => this.closed.emit(result), 180);
   }
 
+  closeOnOverlayClick(event) {
+    this.state = 'hidden';
+    if(event.target.className.includes('dialog-frame-content')) {
+      setTimeout(() => this.closed.emit(), 180);
+    }
+  }
+
   private embed() {
     if (!this.childType) return undefined;
     this.frame.clear();

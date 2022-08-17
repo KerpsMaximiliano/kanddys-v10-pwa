@@ -114,7 +114,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 27px 22px;
+            padding: 27px 10%;
             border-radius: 13px;
 
             &.pointer {
@@ -137,9 +137,20 @@
     
             .quantity{
                 margin-bottom: 15px;
-                font-size: 23px;
+                font-size: 23px !important;
             }
         }
     }
 }
 
+@media only screen and(min-width:309px) and (max-width: 327px){
+    .amount{
+        font-size: 1em !important;
+    }
+}
+
+@media only screen and(max-width: 308px){
+    .amount{
+        font-size: 0.88em !important;
+    }
+}

@@ -57,6 +57,7 @@ export class StoreShareComponent implements OnInit {
   @Input() list: StoreShareList[] = [];
   @Input() alternate: boolean;
   @Input() buttonText: string = 'Cancel';
+  @Input() public buttonCallback : () => void;
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
   screenWidth: number;
@@ -141,4 +142,14 @@ export class StoreShareComponent implements OnInit {
     callback();
     this.close();
   }
+
+  defaultButton(){
+    if(this.buttonCallback){
+        this.buttonCallback();
+        this.close()
+    } else{
+        this.close();
+    }
+  }
+
 }

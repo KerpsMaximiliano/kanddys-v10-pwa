@@ -28,6 +28,7 @@
                     [preferredCountries]="preferredCountries"
                     [selectedCountryISO]="CountryISO" 
                     maxLength="13"
+                    minlength="10"
                     [phoneValidation]="true" 
                     [separateDialCode]="true" 
                     [customPlaceholder]="'(000) 000-0000'"
@@ -36,8 +37,8 @@
                     tabindex="1"
                     ></ngx-intl-tel-input> 
                     
-                    <button class="confirm" (click)="submitPhone()" [disabled]="!phoneNumber.valid || phoneNumber.untouched"
-                    [ngClass]="{disabled: !phoneNumber.valid || phoneNumber.untouched}"><i class="fas fa-chevron-right"></i></button>
+                    <button class="confirm" (click)="submitPhone()" [disabled]="(phoneNumber.invalid || phoneNumber.untouched) && !phoneNumber.valid"
+                    [ngClass]="{disabled: (phoneNumber.invalid || phoneNumber.untouched) && !phoneNumber.valid}"><i class="fas fa-chevron-right"></i></button>
                 </div>
                 
                 <button class="adiciona" (click)="toSignUp()">¿No tienes usuario? Crear Usuario</button>
@@ -50,7 +51,8 @@
 
                 <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
                 
-                <button class="confirm" (click)="signIn()" ><i class="fas fa-chevron-right"></i></button>
+                <button class="confirm" (click)="signIn()" [disabled]="(password.invalid || password.pristine || password.untouched) && !password.valid"
+                [ngClass]="{disabled : (password.invalid || password.pristine || password.untouched) && !password.valid}"><i class="fas fa-chevron-right"></i></button>
             </div>
         </ng-container>
         
@@ -72,6 +74,7 @@
                 [preferredCountries]="preferredCountries"
                 [selectedCountryISO]="CountryISO" 
                 maxLength="13"
+                minlength="10"
                 [phoneValidation]="true" 
                 [separateDialCode]="true" 
                 [customPlaceholder]="'Mi # de WhatsApp es....'"

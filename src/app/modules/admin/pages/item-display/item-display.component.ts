@@ -599,26 +599,33 @@ export class ItemDisplayComponent implements OnInit {
         labelStyles: (this.item.status === 'disabled' ? {'background-color': '#B17608', 'color' : '#FFFFFF'} : null),
         options: [
           {
+            text: 'Editar producto',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+            }
+          },
+          {
             text: 'Adicionar nuevo Item',
             mode: 'func',
             func: () => {
               this.router.navigate([`/admin/create-item`]);
             }
           },
-          {
-            text: 'Adiciona una venta',
-            mode: 'func',
-            func: () =>{
-                this.router.navigate([`/admin/entity-detail-metrics`]);
-            } 
-          },
-          {
-            text: 'Adiciona un Nuevo tag',
-            mode: 'func',
-            func: () =>{
-                this.router.navigate([`admin/tag-creator`])
-            }
-          },
+          // {
+          //   text: 'Adiciona una venta',
+          //   mode: 'func',
+          //   func: () =>{
+          //       this.router.navigate([`/admin/entity-detail-metrics`]);
+          //   } 
+          // },
+          // {
+          //   text: 'Adiciona un Nuevo tag',
+          //   mode: 'func',
+          //   func: () =>{
+          //       this.router.navigate([`admin/tag-creator`])
+          //   }
+          // }
             /* {
             text:'Ocultar item',
             mode: 'func',
