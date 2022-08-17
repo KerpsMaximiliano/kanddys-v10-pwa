@@ -2,13 +2,8 @@
   <app-helper-headerv2
     *ngIf="item?.status === 'active'"
     [mode]="'basic'"
-    [plus]="{
-      active: item?.notifications?.length && notifications?.length > 0
-    }"
-    (plusEvent)="redirectTo('admin/notification-creator/' + item._id)"
     [dots]="{
-      active: true,
-      func: openShareDialog
+      active: true
     }"
     [returnAble]="true"
     bgColor="#2874AD"
