@@ -73,6 +73,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   existingUserData: User = null;
   loading = true;
   logo = 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/LL_Studio_logo_version_principal-fondo_transparente_180x.webp';
+  emailAlreadyOnDatabase: boolean = false;
   
   formSteps: FormStep[] = [
     {
@@ -134,22 +135,34 @@ export class LlStudioOrderFormComponent implements OnInit {
               if(this.existingUserData.name) {
                 this.formSteps[1].fieldsList[0].fieldControl.control.setValue(this.existingUserData.name);
                 this.formSteps[1].fieldsList[0].fieldControl.control.disable();
+              } else {
+                this.formSteps[1].fieldsList[0].fieldControl.control.reset();
               }
               
               if(this.existingUserData.lastname){
                 this.formSteps[1].fieldsList[1].fieldControl.control.setValue(this.existingUserData.lastname);
                 this.formSteps[1].fieldsList[1].fieldControl.control.disable();
+              } else {
+                this.formSteps[1].fieldsList[1].fieldControl.control.reset();
               }
 
               for(let social of this.existingUserData.social) {
                 if(social.name === 'instagram') {
-                  this.formSteps[1].fieldsList[2].fieldControl.control.setValue(social.userName || '');
-                  this.formSteps[1].fieldsList[2].fieldControl.control.disable();
+                  if(social.userName && social.userName.length > 0) {
+                    this.formSteps[1].fieldsList[2].fieldControl.control.setValue(social.userName);
+                    this.formSteps[1].fieldsList[2].fieldControl.control.disable();
+                  } else {
+                    this.formSteps[1].fieldsList[2].fieldControl.control.reset();
+                  }
                 }
 
                 if(social.name === 'location') {
-                  this.formSteps[9].fieldsList[1].fieldControl.control.setValue(social.url || '');
-                  this.formSteps[9].fieldsList[1].fieldControl.control.disable();
+                  if(social.url && social.url.length > 0) {
+                    this.formSteps[9].fieldsList[1].fieldControl.control.setValue(social.url || '');
+                    this.formSteps[9].fieldsList[1].fieldControl.control.disable();
+                  } else {
+                    this.formSteps[9].fieldsList[1].fieldControl.control.reset();
+                  }
                 }
               }
 
@@ -161,17 +174,21 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[4].fieldControl.control.setValue(birthdayValue);              
                 this.formSteps[1].fieldsList[4].fieldControl.control.disable();
               } else {
-                this.formSteps[1].fieldsList[4].fieldControl.control.setValue('');              
+                this.formSteps[1].fieldsList[4].fieldControl.control.reset();              
               }
 
               if(this.existingUserData.email){
                 this.formSteps[1].fieldsList[3].fieldControl.control.setValue(this.existingUserData.email);              
                 this.formSteps[1].fieldsList[3].fieldControl.control.disable();
+              } else {
+                this.formSteps[1].fieldsList[3].fieldControl.control.reset();
               }
 
               if(this.existingUserData.deliveryLocations.length > 0 && this.existingUserData.deliveryLocations[0].nickName !== ''){
                 this.formSteps[9].fieldsList[0].fieldControl.control.setValue(this.existingUserData.deliveryLocations[0].nickName);              
                 this.formSteps[9].fieldsList[0].fieldControl.control.disable();
+              } else {
+                this.formSteps[9].fieldsList[0].fieldControl.control.reset();
               }
             }
           } catch (error) {
@@ -391,17 +408,30 @@ export class LlStudioOrderFormComponent implements OnInit {
       styles: {
         padding: '0px',
       },
-      stepProcessingFunction: () => {
-        this.whatsappLinkSteps.push(`*Nombre:*\n${this.formSteps[1].fieldsList[0].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*Apellido:*\n${this.formSteps[1].fieldsList[1].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[1].fieldsList[2].fieldControl.control.value}\n\n`);
-        this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[1].fieldsList[3].fieldControl.control.value}\n\n`);
+      asyncStepProcessingFunction: {
+        type: 'promise',
+        function: async (params) => {
+          this.whatsappLinkSteps.push(`*Nombre:*\n${this.formSteps[1].fieldsList[0].fieldControl.control.value}\n\n`);
+          this.whatsappLinkSteps.push(`*Apellido:*\n${this.formSteps[1].fieldsList[1].fieldControl.control.value}\n\n`);
+          this.whatsappLinkSteps.push(`*Instagram User:*\n${this.formSteps[1].fieldsList[2].fieldControl.control.value}\n\n`);
+          this.whatsappLinkSteps.push(`*E-Mail:*\n${this.formSteps[1].fieldsList[3].fieldControl.control.value}\n\n`);
 
-        if(this.formSteps[1].fieldsList[4].fieldControl.control.value && this.formSteps[1].fieldsList[4].fieldControl.control.value.length > 0) {
-          this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[1].fieldsList[4].fieldControl.control.value}\n\n`);
-        }
+          if(this.formSteps[1].fieldsList[4].fieldControl.control.value && this.formSteps[1].fieldsList[4].fieldControl.control.value.length > 0) {
+            this.whatsappLinkSteps.push(`*Fecha de Cumpleaños:*\n${this.formSteps[1].fieldsList[4].fieldControl.control.value}\n\n`);
+          }
 
-        return { ok: true }
+          try {
+            const foundEmail = await this.authService.checkUser(
+              this.formSteps[1].fieldsList[3].fieldControl.control.value
+            );
+
+            if(foundEmail) this.emailAlreadyOnDatabase = true;
+          } catch (error) {
+            this.emailAlreadyOnDatabase = false;
+          }
+
+          return { ok: true }
+        },
       },
       footerConfig,
       stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
@@ -1383,9 +1413,8 @@ export class LlStudioOrderFormComponent implements OnInit {
                   this.merchantId
                 ]
               };
-
               
-              if(email && email !== '')
+              if(email && email !== '' && !this.emailAlreadyOnDatabase)
                 requestData.email = email;
 
               if(birthday && birthday !== "") {
@@ -1496,7 +1525,8 @@ export class LlStudioOrderFormComponent implements OnInit {
                type: 'centralized-fullscreen',
                props: {
                  icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                 message: success ? null : 'Ocurrió un problema'
+                 message: success ? null : 'Ocurrió un problema',
+                 showCloseButton: success ? false : true
                },
                customClass: 'app-dialog',
                flags: ['no-header'],
@@ -1512,6 +1542,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               type: 'centralized-fullscreen',
               props: {
                 icon: 'sadFace.svg',
+                showCloseButton: true,
                 message: window.navigator.onLine ? 'Ocurrió un problema: ' + error : 'Se perdió la conexion a internet'
               },
               customClass: 'app-dialog',
