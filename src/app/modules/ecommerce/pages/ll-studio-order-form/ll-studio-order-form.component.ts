@@ -85,7 +85,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          label: 'Ayudanos a identifícarte usando tu número de teléfono',
+          label: 'Ayudanos a identificarte usando tu número de teléfono',
           inputType: 'phone',
           styles: {
             containerStyles: {
@@ -268,8 +268,8 @@ export class LlStudioOrderFormComponent implements OnInit {
       },
       hideHeader: true,
       footerConfig,
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+      stepButtonInvalidText: 'ESCRIBE TU NÚMERO DE TELÉFONO',
+      stepButtonValidText: 'CONTINÚA CON TU ORDEN'
     },
     {
       fieldsList: [
@@ -451,7 +451,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
       },
       footerConfig,
-      stepButtonInvalidText: 'ADICIONA LA INFO DE TU ORDEN',
+      stepButtonInvalidText: 'ADICIONA TUS DATOS PERSONALES',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
@@ -546,8 +546,8 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(1, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      stepButtonInvalidText: 'AÑADE LA DESCRIPCIÓN DE TU ORDEN',
+      stepButtonValidText: 'CONTINÚA CON TU ORDEN'
     },
     {
       headerText: '',
@@ -600,8 +600,8 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(1, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'ESCRIBE QUIÉN ERES Y COMO TE CONTACTAMOS',
-      stepButtonValidText: 'CONFIRMA TU PAGO'
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINÚA CON TU ORDEN'
     },
     {
       headerText: '',
@@ -1092,7 +1092,11 @@ export class LlStudioOrderFormComponent implements OnInit {
               callback: (reservationOutput) => {
                 this.reservation = reservationOutput;
                 
-                this.formSteps[7].fieldsList[0].fieldControl.control.setValue(reservationOutput.message);
+                if(reservationOutput) {
+                  this.formSteps[7].fieldsList[0].fieldControl.control.setValue(reservationOutput.message);
+                } else {
+                  this.formSteps[7].fieldsList[0].fieldControl.control.setValue('');
+                }
               },
             }
           ]
@@ -1173,19 +1177,19 @@ export class LlStudioOrderFormComponent implements OnInit {
         return { ok: true }
       },
       footerConfig,
-      stepButtonInvalidText: 'TOCA PARA RESPONDER',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN'
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINÚA CON TU ORDEN'
     },
     {
       fieldsList: [
         {
           name: 'whereToDeliver',
-          label: 'Dirección o Destino de Entrega (*)',
+          label: 'Dirección o Destino de Entrega',
           sublabel: 'El delivery en Santo Domingo sólo aplica a la zona metropolitana y su costo es a partir de RD$250. El envío al interior se hace vía courrier, a partir de RD$350',
           inputType: 'textarea',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required)
+            control: new FormControl('')
           },
           placeholder: 'Escriba la Calle, número, (nombre del edificio).',
           styles: {
@@ -1233,15 +1237,12 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
         },
       ],
-      asyncStepProcessingFunction: {
-        type: 'promise',
-        function: async (params) => {
-          if (this.formSteps[9].fieldsList[0].fieldControl.control.value.length > 1) {
-            this.whatsappLinkSteps.push(`*¿Donde entregaremos?:*\n${this.formSteps[9].fieldsList[0].fieldControl.control.value}\n\n`);
-          }
+      stepProcessingFunction: () => {
+        if (this.formSteps[9].fieldsList[0].fieldControl.control.value && this.formSteps[9].fieldsList[0].fieldControl.control.value.length > 1) {
+          this.whatsappLinkSteps.push(`*¿Donde entregaremos?:*\n${this.formSteps[9].fieldsList[0].fieldControl.control.value}\n\n`);
+        }
 
-          return {ok: true};
-        },
+        return {ok: true};
       },
       customScrollToStepBackwards: (params) => {
         this.whatsappLinkSteps.pop();
