@@ -619,6 +619,13 @@ export class ItemDisplayComponent implements OnInit {
                 this.router.navigate([`admin/tag-creator`])
             }
           },
+          {
+            text: 'Editar producto',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+            }
+          }
             /* {
             text:'Ocultar item',
             mode: 'func',

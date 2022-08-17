@@ -51,7 +51,8 @@
 
                 <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
                 
-                <button class="confirm" (click)="signIn()" ><i class="fas fa-chevron-right"></i></button>
+                <button class="confirm" (click)="signIn()" [disabled]="password.invalid || password.pristine || password.untouched"
+                [ngClass]="{disabled : password.invalid || password.pristine || password.untouched}"><i class="fas fa-chevron-right"></i></button>
             </div>
         </ng-container>
         
