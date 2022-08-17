@@ -206,7 +206,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/item-creator`]);
+              this.router.navigate([`admin/create-item`]);
             },
           },
           {
@@ -279,7 +279,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/item-creator`]);
+              this.router.navigate([`admin/create-item`]);
             },
           },
           {
@@ -318,7 +318,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
     this.itemsService.temporalItem = null;
-    this.router.navigate(['admin/item-creator']);
+    this.router.navigate(['admin/create-item']);
   };
 
   redirectMerchantItems = (url: string) => {

@@ -134,7 +134,7 @@ export class UserItemsComponent implements OnInit {
               this.headerService.flowRoute = this.router.url;
 
               this.itemsService.temporalItem = null;
-              this.router.navigate(['/admin/item-creator'])
+              this.router.navigate(['/admin/create-item'])
             }
           },
           {

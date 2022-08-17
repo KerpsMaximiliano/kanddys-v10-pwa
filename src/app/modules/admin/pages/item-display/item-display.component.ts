@@ -611,7 +611,7 @@ export class ItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/admin/item-creator/' + this.item._id]);
+    this.router.navigate(['/admin/create-item/' + this.item._id]);
   };
 
   copyLink() {
