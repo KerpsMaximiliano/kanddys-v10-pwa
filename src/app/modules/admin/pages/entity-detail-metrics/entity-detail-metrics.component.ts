@@ -21,29 +21,9 @@ import {
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
-const days = [
-  'Domingo',
-  'Lunes',
-  'Martes',
-  'Miércoles',
-  'Jueves',
-  'Viernes',
-  'Sábado',
-];
-
-const dayNames = [
-  "SUNDAY",
-  "MONDAY",
-  "TUESDAY",
-  "WEDNESDAY",
-  "THURSDAY",
-  "FRIDAY",
-  "SATURDAY",
-];
-
-interface ExtraCalendar extends Calendar {
-  subtitle?: string;
-}
+// interface ExtraCalendar extends Calendar {
+//   subtitle?: string;
+// }
 
 @Component({
   selector: 'app-entity-detail-metrics',
@@ -54,18 +34,19 @@ export class EntityDetailMetricsComponent implements OnInit {
   URI: string = environment.uri;
   merchant: Merchant;
   items: Item[];
-  user: User;
+  activeItems: Item[];
+  inactiveItems: Item[];
+  // user: User;
   users: User[];
   mode: 'collections' | 'store' = 'store';
   ordersTotal: {
     total: number;
     length: number;
   };
-  tags: { text: string }[];
-  categories: { text: string }[];
-  admin: boolean;
+  // tags: { text: string }[];
+  // categories: { text: string }[];
   saleflow: SaleFlow;
-  calendars: ExtraCalendar[];
+  // calendars: ExtraCalendar[];
 
   constructor(
     private merchantsService: MerchantsService,
@@ -89,54 +70,59 @@ export class EntityDetailMetricsComponent implements OnInit {
       unlockUI();
       return;
     }
-    this.items = (
-      await this.merchantsService.itemsByMerchant(this.merchant._id)
-    )?.itemsByMerchant;
 
-    this.user = await this.authService.me();
-    if (this.user) {
-      if (this.merchant.owner._id !== this.user._id) return unlockUI();
-      this.admin = true;
-      await Promise.all([
-        this.getOrderTotal(),
-        this.getMerchantBuyers(),
-        this.getTags(),
-        this.getCategories(),
-        this.getSaleflow(),
-        this.getCalendars(),
-      ]);
-    }
+    await Promise.all([
+      this.getItemsByMerchant(),
+      this.getOrderTotal(),
+      this.getMerchantBuyers(),
+      // this.getTags(),
+      // this.getCategories(),
+      this.getSaleflow(),
+      // this.getCalendars(),
+    ]);
     unlockUI();
   }
 
-  async getCalendars() {
+  async getItemsByMerchant() {
     try {
-      this.calendars = await this.calendarService.getCalendarsByMerchant(
-        this.merchant._id
-      );
-      this.calendars = this.calendars.map((calendar) => {
-        calendar.subtitle =
-          calendar.reservationLimits +
-          ' reservaciones cada ' +
-          (calendar.timeChunkSize - calendar.breakTime) +
-          ' min + ' +
-          calendar.breakTime +
-          ' min receso \nLaboral: ' +
-          (calendar.limits
-            ? this.changeHourFormat(calendar.limits.fromHour) +
-              ' a ' +
-              this.changeHourFormat(calendar.limits.toHour) +
-              '\nDias: ' +
-              calendar.limits.fromDay +
-              ' a ' +
-              calendar.limits.toDay
-            : 'Todo el dia' + '\nDias: Todos los días');
-        return calendar;
-      });
+      this.items = (
+        await this.merchantsService.itemsByMerchant(this.merchant._id)
+      )?.itemsByMerchant;
+      this.activeItems = this.items.filter(item => item.status === 'active');
+      this.inactiveItems = this.items.filter(item => item.status === 'disabled');
     } catch (error) {
       console.log(error);
     }
   }
+
+  // async getCalendars() {
+  //   try {
+  //     this.calendars = await this.calendarService.getCalendarsByMerchant(
+  //       this.merchant._id
+  //     );
+  //     this.calendars = this.calendars.map((calendar) => {
+  //       calendar.subtitle =
+  //         calendar.reservationLimits +
+  //         ' reservaciones cada ' +
+  //         (calendar.timeChunkSize - calendar.breakTime) +
+  //         ' min + ' +
+  //         calendar.breakTime +
+  //         ' min receso \nLaboral: ' +
+  //         (calendar.limits
+  //           ? this.changeHourFormat(calendar.limits.fromHour) +
+  //             ' a ' +
+  //             this.changeHourFormat(calendar.limits.toHour) +
+  //             '\nDias: ' +
+  //             calendar.limits.fromDay +
+  //             ' a ' +
+  //             calendar.limits.toDay
+  //           : 'Todo el dia' + '\nDias: Todos los días');
+  //       return calendar;
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   changeHourFormat(hour: string) {
     return new Date('1970-01-01T' + hour + 'Z').toLocaleTimeString('en-US', {
@@ -168,37 +154,37 @@ export class EntityDetailMetricsComponent implements OnInit {
     }
   }
 
-  async getTags() {
-    try {
-      const tags = (
-        await this.merchantsService.tagsByMerchant(this.merchant._id)
-      )?.tagsByMerchant;
-      if (!tags) return;
-      this.tags = tags
-        .filter((tag) => tag.tags?.name)
-        .map((tag) => ({ text: tag.tags.name }));
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async getTags() {
+  //   try {
+  //     const tags = (
+  //       await this.merchantsService.tagsByMerchant(this.merchant._id)
+  //     )?.tagsByMerchant;
+  //     if (!tags) return;
+  //     this.tags = tags
+  //       .filter((tag) => tag.tags?.name)
+  //       .map((tag) => ({ text: tag.tags.name }));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
-  async getCategories() {
-    try {
-      const categories = (
-        await this.itemsService.itemCategories(this.merchant._id, {
-          options: {
-            limit: 1000,
-          },
-        })
-      )?.itemCategoriesList;
-      if (!categories) return;
-      this.categories = categories
-        .filter((category) => category.name)
-        .map((category) => ({ text: category.name }));
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async getCategories() {
+  //   try {
+  //     const categories = (
+  //       await this.itemsService.itemCategories(this.merchant._id, {
+  //         options: {
+  //           limit: 1000,
+  //         },
+  //       })
+  //     )?.itemCategoriesList;
+  //     if (!categories) return;
+  //     this.categories = categories
+  //       .filter((category) => category.name)
+  //       .map((category) => ({ text: category.name }));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   async getSaleflow() {
     try {
@@ -210,16 +196,17 @@ export class EntityDetailMetricsComponent implements OnInit {
     }
   }
 
-  onShareClick = () => {
+  onOptionsClick = () => {
     const list: StoreShareList[] = [
       {
+        title: "Sobre "+this.merchant.name,
         qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         options: [
           {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
-                this.router.navigate([`admin/item-creator`]);
+              this.router.navigate([`admin/item-creator`]);
             },
           },
           {
@@ -227,47 +214,27 @@ export class EntityDetailMetricsComponent implements OnInit {
             mode: 'share',
             link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
             icon: {
-                src: '/upload.svg',
-                alt: 'icono de de compartir',
-                size:{
-                    width: 14,
-                    height: 14
-                },
-                color: 'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)'
+              src: '/upload.svg',
+              alt: 'icono de de compartir',
+              size: {
+                width: 14,
+                height: 14,
+              },
+              color:
+                'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)',
             },
           },
           {
             text: 'Cerrar sesión',
             mode: 'func',
             func: () => {
-                this.authService.signouttwo();
-            }
+              this.authService.signouttwo();
+            },
           },
-          /* {
-            text: 'Copia el link',
-            mode: 'clipboard',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          },
-          {
-            text: 'Comparte el link',
-            mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          },
-          {
-            text: 'Ir a la vista del visitante',
-            mode: 'func',
-            func: () =>
-              this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
-          },
-          {
-            text: 'Copiar link de acceso al admin',
-            mode: 'clipboard',
-            link: `${this.URI}/auth/authentication?auth=password&phone=${this.merchant.owner.phone}&hide=all`
-          } */
-        ]
-      }
+        ],
+      },
     ];
-    
+
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -278,43 +245,71 @@ export class EntityDetailMetricsComponent implements OnInit {
     });
   };
 
-  shareCalendar = () =>{
+  onShareOrdersClick = () => {
     const list: StoreShareList[] = [
-        {
-          title: 'Sobre Calendario ID',
-          titleStyles: {'margin-bottom': '54px'},
-          qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          options: [
-            {
-              text: 'Copia el link',
-              mode: 'clipboard',
-              link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-            },
-            {
-              text: 'Comparte el link',
-              mode: 'share',
-              link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-            },
-            {
-              text: 'Ir a la vista del visitante',
-              mode: 'func',
-              func: () =>
-                this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
-            },
-          ],
-        },
-      ];
+      {
+        title: 'Sobre las facturas',
+        options: [
+          {
+            text: 'Vende online. Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+          },
+        ],
+      },
+    ];
 
     this.dialogService.open(StoreShareComponent, {
-        type: 'fullscreen-translucent',
-        props: {
-          list,
-          alternate: true
-        },
-        customClass: 'app-dialog',
-        flags: ['no-header'],
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
-  }
+  };
+
+  onShareItemsClick = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Sobre los articulos',
+        options: [
+          {
+            text: 'Crea un nuevo artículo',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`admin/item-creator`]);
+            },
+          },
+          {
+            text: 'Vende online. Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            icon: {
+              src: '/upload.svg',
+              alt: 'icono de de compartir',
+              size: {
+                width: 14,
+                height: 14,
+              },
+              color:
+                'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)',
+            },
+          },
+        ],
+      },
+    ];
+
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 
   onPencilClick = () => {
     this.router.navigate(['auth/user-creator']);

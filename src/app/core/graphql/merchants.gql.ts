@@ -195,6 +195,7 @@ export const itemsByMerchant = gql`
       description
       createdAt
       images
+      status
     }
   }
 `;
