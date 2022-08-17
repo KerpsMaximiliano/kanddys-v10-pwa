@@ -59,8 +59,8 @@ export class ReservationsComponent implements OnInit {
             //   limit: 10
             // },
             findBy: {
-              calendar: params.id
-            }
+              calendar: params.id,
+            },
           });
       } else {
         this.mode = 'order';

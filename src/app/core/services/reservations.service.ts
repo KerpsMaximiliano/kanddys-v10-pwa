@@ -10,8 +10,9 @@ import {
   listReservations,
   getReservationByCalendar,
   getReservationByMerchant,
+  updateReservation,
 } from '../graphql/reservations.gql';
-import { Reservation } from '../models/reservation';
+import { Reservation, ReservationInput } from '../models/reservation';
 import { PaginationInput } from '../models/saleflow';
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,7 @@ import { PaginationInput } from '../models/saleflow';
 export class ReservationService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async createReservation(input: any) {
+  async createReservation(input: ReservationInput) {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createReservation,
@@ -32,7 +33,7 @@ export class ReservationService {
     return result;
   }
 
-  async createReservationAuthLess(input: any) {
+  async createReservationAuthLess(input: ReservationInput) {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createReservationAuthLess,
@@ -42,6 +43,16 @@ export class ReservationService {
     if (!result || result?.errors) return undefined;
 
     console.log(result);
+    return result;
+  }
+
+  async updateReservation(input: ReservationInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateReservation,
+      variables: { input, id },
+    });
+
+    if (!result || result?.errors) return undefined;
     return result;
   }
 
@@ -57,7 +68,7 @@ export class ReservationService {
     return result;
   }
 
-  async confirmationMerchantOrder(merchantID: any, orderID: any) {
+  async confirmationMerchantOrder(merchantID: string, orderID: string) {
     console.log(merchantID, orderID);
 
     const result = await this.graphql.mutate({
@@ -85,7 +96,9 @@ export class ReservationService {
     }
   }
 
-  async getReservationByCalendar(paginate: PaginationInput): Promise<Reservation[]> {
+  async getReservationByCalendar(
+    paginate: PaginationInput
+  ): Promise<Reservation[]> {
     try {
       const response = await this.graphql.query({
         query: getReservationByCalendar,
@@ -113,7 +126,7 @@ export class ReservationService {
     }
   }
 
-  async listReservations(merchantId: any, params?: any) {
+  async listReservations(merchantId: string, params?: any) {
     const response = await this.graphql.query({
       query: listReservations,
       variables: { params, merchantId },

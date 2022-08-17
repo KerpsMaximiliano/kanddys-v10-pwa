@@ -83,7 +83,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (!this.items.temporalItem) {
       // this.header.flowRoute = this.router.url;
 
-      return this.router.navigate([`/admin/item-creator`]);
+      return this.router.navigate([`/admin/create-item`]);
     }
     this.itemData = this.items.temporalItem;
     if (!this.itemData.images.length) this.itemData.showImages = false;
@@ -209,9 +209,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
       if (this.itemData._id)
         return this.router.navigate([
-          `/admin/item-creator/${this.itemData._id}`,
+          `/admin/create-item/${this.itemData._id}`,
         ]);
-      else return this.router.navigate([`/admin/item-creator`]);
+      else return this.router.navigate([`/admin/create-item`]);
     }
     this.items.removeTemporalItem();
     this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]);

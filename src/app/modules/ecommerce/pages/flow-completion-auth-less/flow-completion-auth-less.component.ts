@@ -233,7 +233,8 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       }
 
       if (orderStatus !== 'draft') {
-        const {countryIso, nationalNumber} = this.authService.getPhoneInformation(this.orderData.user.phone);
+        const { countryIso, nationalNumber } =
+          this.authService.getPhoneInformation(this.orderData.user.phone);
         this.phoneNumber.setValue(nationalNumber);
         this.CountryISO = countryIso;
         this.name.setValue(this.orderData.user.name);

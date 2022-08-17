@@ -22,6 +22,8 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SwiperOptions } from 'swiper';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { Notification } from 'src/app/core/models/notification';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -69,7 +71,9 @@ export class ItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private clipboard: Clipboard,
+    private toastr: ToastrService
   ) {}
 
   swiperConfig: SwiperOptions = {
@@ -502,17 +506,22 @@ export class ItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+        title: 'Sobre '+ (this.item.name || 'el artículo'),
+        label: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+        labelStyles: this.item.status !== 'active' && {
+          backgroundColor: '#B17608',
+          color: '#fff'
+        },
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -585,11 +594,47 @@ export class ItemDisplayComponent implements OnInit {
   openDialog() {
     const list: StoreShareList[] = [
       {
-        title: 'Adicionar',
+        title: this.item.name,
+        label: (this.item.status ==='active' ? 'Visible' : 'No visible'),
+        labelStyles: (this.item.status === 'disabled' ? {'background-color': '#B17608', 'color' : '#FFFFFF'} : null),
         options: [
           {
-            text: 'Mensaje Automatizado',
+            text: 'Adicionar nuevo Item',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`/admin/create-item`]);
+            }
           },
+          {
+            text: 'Adiciona una venta',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`/admin/entity-detail-metrics`]);
+            } 
+          },
+          {
+            text: 'Adiciona un Nuevo tag',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`admin/tag-creator`])
+            }
+          },
+          {
+            text: 'Editar producto',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+            }
+          }
+            /* {
+            text:'Ocultar item',
+            mode: 'func',
+            func: async () =>{
+                await this.itemsService.updateItem({status: 'disabled'}, this.item._id);
+                this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+                this.toastr.info('Producto oculto', null, {timeOut: 2500});
+            }
+          } */
         ],
       },
     ];
@@ -607,6 +652,11 @@ export class ItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/admin/item-creator/' + this.item._id]);
+    this.router.navigate(['/admin/create-item/' + this.item._id]);
   };
+
+  copyLink() {
+    this.clipboard.copy(`${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`);
+    this.toastr.info('Enlace del producto copiado en el clipboard', null, {timeOut: 2000});
+  }
 }

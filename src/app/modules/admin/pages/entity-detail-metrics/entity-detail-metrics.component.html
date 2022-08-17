@@ -1,252 +1,93 @@
-<div style="min-height: 100vh">
+<div style="min-height: 100vh; padding-bottom: 30px;">
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-        text: merchant.name,
-        fontSize: '21px',
-        fontFamily: 'SfProBold'
+      text: merchant ? merchant.name : 'Merchant',
+      fontSize: '21px',
+      fontFamily: 'SfProBold'
     }"
     [returnAble]="false"
     [dots]="{
-        active: true
+      active: true
     }"
     (returnEvent)="back()"
+    (dotEvent)="onOptionsClick()"
     bgColor="#2874AD"
   ></app-helper-headerv2>
-
-  <!-- <div *ngIf="!ordersTotal && mode === 'store'">
-    <app-form-questions
-      [topBar]="items?.length + ' artículos'"
-      bottomLeftBtn="adicionar nuevo artículo"
-      (bottomLeft)="redirectToCreateItem()"
-      bottomRightBtn="ver más"
-      (bottomRight)="redirectMerchantItems('merchant-items')"
-    ></app-form-questions>
-  </div> -->
-
-  <div *ngIf="admin">
-    <div class="about-products" style="margin-top: 36px;">
-        <div class="wrapper"> 
-            <h2 class="about-name">Sobre las facturas</h2>
-
-            <div class="dot-trio" (click)="shareCalendar">
-                <div class="dot"> </div>
-                <div class="dot"> </div>
-                <div class="dot"> </div>
-            </div>
-        </div>
-
-        <div class="grid-details">
-            <div class="info-card">
-              <h2 class="amount quantity">
-                {{ (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') }}
-              </h2>
-    
-              <h2 class="amount">INGRESOS TOTALES</h2>
-            </div>
-    
-            <div class="info-card">
-                <h2 class="amount quantity">
-                  {{ (ordersTotal ? ordersTotal.length : '0') }}
-                </h2>
-      
-                <h2 class="amount">FACTURAS</h2>
-            </div>
-    
-            <div class="info-card">
-              <h2 class="amount quantity">
-                {{(users?.length >= 1?  users.length : '0')}}
-              </h2>
-    
-              <h2 class="amount">COMPRADORES</h2>
-            </div>
-        </div>
-    </div>
-    
-    <div class="about-items" style="margin-top: 70px;">
-        <div class="wrapper"> 
-            <h2 class="about-name">Sobre los artículos</h2>
-
-            <div class="dot-trio" (click)="shareCalendar">
-                <div class="dot"> </div>
-                <div class="dot"> </div>
-                <div class="dot"> </div>
-            </div>          
-        </div>
-
-        <div class="grid-details">
-            <div class="info-card">
-              <h2 class="amount quantity">
-                {{(items?.length >= 1? items.length : '0')}}
-              </h2>
-    
-              <h2 class="amount">EN TOTAL</h2>
-            </div>
-    
-            <div class="info-card">
-                <h2 class="amount quantity">
-                  2 <!-- {{ (ordersTotal ? ordersTotal.length : '0') }} -->
-                </h2>
-      
-                <h2 class="amount">VISIBLES</h2>
-            </div>
-    
-            <div class="info-card">
-              <h2 class="amount quantity">
-                2 <!-- {{users.length}} -->
-              </h2>
-    
-              <h2 class="amount">INVISIBLES</h2>
-            </div>
-        </div>
-    </div>
-
-    <!-- <app-form-questions
-      *ngIf="items"
-      [topBar]="items?.length + ' artículos'"
-      bottomRightBtn="MÁS"
-      (bottomRight)="redirectMerchantItems('merchant-items')"
-      bottomLeftBtn="adicionar nuevo artículo"
-      (bottomLeft)="redirectToCreateItem()"
-    ></app-form-questions> -->
-
-    <!-- <ng-container *ngIf="calendars?.length">
-      <div class="section" *ngFor="let calendar of calendars">
-        <app-enlist-display
-          [headline]="{
-            icon: {
-              src: '/person.svg',
-              width: 20,
-              height: 26
-            },
-            text: {
-              text: 'CALENDARIO'
-            }
-          }"
-          [iconText]="{
-            icons: [
-              {
-                src: '/pencil.svg',
-                width: 19,
-                height: 19,
-                color:
-                  'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)'
-              },
-              {
-                src: '/upload.svg',
-                width: 15,
-                height: 19,
-                color:
-                  'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)',
-                callback: shareCalendar
-              }
-            ]
-          }"
-          [itemList]="[
-            {
-              name: {
-                text: calendar.name.toUpperCase(),
-                fontFamily: 'RobotoMedium',
-                color: '#7B7B7B',
-                fontSize: '13px'
-              },
-              subtitle: {
-                text: calendar.subtitle
-              }
-            }
-          ]"
-          [bottomText]="{
-            rightText: {
-              text:
-                (calendar.reservations?.length || '0') +
-                ' Reservaciones Futuras',
-              fontSize: '17px',
-              fontFamily: 'RobotoMedium'
-            }
-          }"
-          [showSubtitle]="true"
-        ></app-enlist-display>
+  <div class="about-products" style="margin-top: 36px">
+    <div class="wrapper">
+      <h2 class="about-name">Sobre las facturas</h2>
+ 
+      <div class="dot-trio" (click)="onShareOrdersClick()">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
       </div>
-    </ng-container> -->
+    </div>
 
-    <!-- [dropdowns]="[
-        {
-          title: 'categorias',
-          content: categories
-        }
-      ]" -->
+    <div class="grid-details">
+      <div class="info-card">
+        <h2 class="amount quantity">
+          ${{ ordersTotal ? ordersTotal.total.toLocaleString("es-MX") : "0" }}
+        </h2>
 
-    <!-- VENTAS -->
-    <!-- <app-form-questions
-      *ngIf="ordersTotal"
-      [topBar]="ordersTotal.length + ' ordenes / ventas'"
-      bottomRightBtn="MAS"
-      (bottomRight)="redirectMerchantItems('order-sales/'+merchant._id)"
-      [questions]="[
-        {
-          text: 'Promedio de ventas mensual',
-          any: ordersTotal.length
-        },
-        {
-          text: 'Promedio de ingreso mensual',
-          any: ordersTotal.length
-        }
-      ]"
-      [dropdowns]="[
-        {
-          title: 'TAGS',
-          content: tags
-        },
-        {
-          title: 'STATUS ID',
-          content: [
-            {
-              text: 'Lorem ipsum 2'
-            }
-          ]
-        }
-      ]"
-    ></app-form-questions> -->
+        <h2 class="amount">INGRESOS TOTALES</h2>
+      </div>
 
-    <!-- COMPRADORES -->
-    <!-- <app-form-questions
-      *ngIf="users"
-      [topBar]="users.length + ' COMPRADORES'"
-      [questions]="[
-        {
-          text: 'Promedio de Veces que Repiten',
-          any: users.length
-        },
-        {
-          text: 'Promedio de Dias que Repiten',
-          any: users.length
-        }
-      ]"
-      [dropdowns]="[
-        {
-          title: 'TAGS',
-          content: tags
-        }
-      ]"
-    ></app-form-questions> -->
+      <div class="info-card">
+        <h2 class="amount quantity">
+          {{ ordersTotal ? ordersTotal.length : "0" }}
+        </h2>
+
+        <h2 class="amount">FACTURAS</h2>
+      </div>
+
+      <div class="info-card">
+        <h2 class="amount quantity">
+          {{ users ? users.length : "0" }}
+        </h2>
+
+        <h2 class="amount">COMPRADORES</h2>
+      </div>
+    </div>
   </div>
 
-</div>
+  <div class="about-items" style="margin-top: 70px">
+    <div class="wrapper">
+      <h2 class="about-name">Sobre los artículos</h2>
 
-<!-- <app-bubble-button
-  *ngIf="admin && mode === 'collections'"
-  position="left"
-  [solo]="false"
-  [return]="true"
-  color="blue"
-></app-bubble-button> -->
-<!-- <app-sticky-button
-  *ngIf="admin && mode === 'collections'"
-  mode="double"
-  text="POSIBILIDADES"
-  text2="WEBAPP STORE"
-  size="small"
-  [backButton]="true"
-  bgColor="#2874AD"
-></app-sticky-button>
- -->
+      <div class="dot-trio" (click)="onShareItemsClick()">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </div>
+    </div>
+
+    <div class="grid-details">
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
+        <h2 class="amount quantity">
+          {{ items ? items.length : "0" }}
+        </h2>
+        <h2 class="amount">EN TOTAL</h2>
+      </div>
+
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
+        <h2 class="amount quantity">
+          {{ activeItems ? activeItems.length : "0" }}
+          <!-- {{ (ordersTotal ? ordersTotal.length : '0') }} -->
+        </h2>
+
+        <h2 class="amount">VISIBLES</h2>
+      </div>
+
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
+        <h2 class="amount quantity">
+          {{ inactiveItems ? inactiveItems.length : "0" }}
+          <!-- {{users.length}} -->
+        </h2>
+
+        <h2 class="amount">INVISIBLES</h2>
+      </div>
+    </div>
+  </div>
+</div>

@@ -16,6 +16,14 @@ export const createReservationAuthLess = gql`
   }
 `;
 
+export const updateReservation = gql`
+  mutation createReservation($input: ReservationInput!, $id: ObjectID!) {
+    createReservation(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const validateExpirableReservation  = gql`
   mutation validateExpirableReservation ($id: ObjectID!) {
     validateExpirableReservation (id: $id) {

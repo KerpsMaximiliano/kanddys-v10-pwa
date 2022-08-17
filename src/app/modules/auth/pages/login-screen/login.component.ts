@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
     merchantNumber: string = '(000) 000-0000';
     loggin: boolean;
     signUp: boolean;
-    phoneNumber = new FormControl('', [Validators.minLength(10)]);
+    phoneNumber = new FormControl('', [Validators.minLength(10), Validators.required]);
     password = new FormControl('', [Validators.required, Validators.minLength(3)]);
     SearchCountryField = SearchCountryField;
     CountryISO = CountryISO.DominicanRepublic;
@@ -98,22 +98,26 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone(){
+    if(this.phoneNumber.value != undefined || null){
     const validUser = await this.authService.checkUser(this.phoneNumber.value.e164Number.split('+')[1]);
     
-    if(validUser){
-        try{
-            const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(this.phoneNumber.value.e164Number);
-            this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-            this.phoneNumber.setValue(nationalNumber);
-            this.CountryISO = countryIso;
-            this.loggin = true;
-    
-        } catch (error) {
-            this.toastr.info('Número inválido', null, {timeOut: 2000});
-            console.log(error);
+        if(validUser){
+            try{
+                const {countryIso, nationalNumber} = await this.authService.getPhoneInformation(this.phoneNumber.value.e164Number);
+                this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+                this.phoneNumber.setValue(nationalNumber);
+                this.CountryISO = countryIso;
+                this.loggin = true;
+            
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            this.toastr.info('Número no registrado', null, {timeOut: 2000});
+            return
         }
     } else {
-        this.toastr.info('Número no registrado', null, {timeOut: 2000});
+        this.toastr.info('Introduzca un número válido', null, {timeOut: 2000});
         return
     }
   };

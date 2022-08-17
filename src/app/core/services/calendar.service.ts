@@ -481,7 +481,7 @@ export class CalendarService {
         fetchPolicy: 'no-cache',
       });
 
-      if(onlyReturn) return response;
+      if (onlyReturn) return response;
       this.getCalendarResult = response.getCalendar;
       this.reservations = response.getCalendar.reservations;
       this.reservationLimit = response.getCalendar.reservationLimits;

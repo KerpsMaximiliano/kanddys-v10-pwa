@@ -146,7 +146,7 @@ export class MerchantItemsComponent implements OnInit {
 
   createItem(){
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate([`admin/item-creator/`]);
+    this.router.navigate([`admin/create-item/`]);
   }
 
   openDeleteDialog(item: Item) {
@@ -186,7 +186,7 @@ export class MerchantItemsComponent implements OnInit {
               text: 'Un nuevo Item',
               mode: 'func',
               func: () => {
-                this.router.navigate(['admin/item-creator/']);
+                this.router.navigate(['admin/create-item/']);
               }
             }
           ]
@@ -210,7 +210,7 @@ export class MerchantItemsComponent implements OnInit {
             {
             text: 'Adicionar nuevo artículo',
             callback: () =>{
-                this.router.navigate(['admin/item-creator']);
+                this.router.navigate(['admin/create-item']);
               }
             },
             {
