@@ -27,11 +27,16 @@
     }
 
     .dot-trio{
-        width: 23px;
-        height: 5px;
+        // width: 23px;
+        // height: 5px;
+        padding: 5px;
         display: flex;
         justify-content: space-evenly;
         cursor: pointer;
+
+        &:hover, &:active {
+            background-color: #2c89d1;
+        }
 
         .dot{
             width: 5px;
