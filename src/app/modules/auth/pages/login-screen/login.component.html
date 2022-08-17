@@ -36,7 +36,8 @@
                     tabindex="1"
                     ></ngx-intl-tel-input> 
                     
-                    <button class="confirm" (click)="submitPhone()"><i class="fas fa-chevron-right"></i></button>
+                    <button class="confirm" (click)="submitPhone()" [disabled]="!phoneNumber.valid || phoneNumber.untouched"
+                    [ngClass]="{disabled: !phoneNumber.valid || phoneNumber.untouched}"><i class="fas fa-chevron-right"></i></button>
                 </div>
                 
                 <button class="adiciona" (click)="toSignUp()">¿No tienes usuario? Crear Usuario</button>
