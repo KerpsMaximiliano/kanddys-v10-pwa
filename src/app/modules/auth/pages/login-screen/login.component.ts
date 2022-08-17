@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
     merchantNumber: string = '(000) 000-0000';
     loggin: boolean;
     signUp: boolean;
-    phoneNumber = new FormControl('', [Validators.minLength(10)]);
+    phoneNumber = new FormControl('', [Validators.minLength(10), Validators.required]);
     password = new FormControl('', [Validators.required, Validators.minLength(3)]);
     SearchCountryField = SearchCountryField;
     CountryISO = CountryISO.DominicanRepublic;
