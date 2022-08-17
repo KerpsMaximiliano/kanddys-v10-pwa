@@ -223,13 +223,13 @@ export class EntityDetailMetricsComponent implements OnInit {
                 'invert(38%) sepia(19%) saturate(1848%) hue-rotate(163deg) brightness(101%) contrast(89%)',
             },
           },
-          {
+          /* {
             text: 'Cerrar sesión',
             mode: 'func',
             func: () => {
               this.authService.signouttwo();
             },
-          },
+          }, */
         ],
       },
     ];
@@ -238,6 +238,11 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+            this.authService.signoutThree();
+            this.router.navigate([`auth/login`])
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
