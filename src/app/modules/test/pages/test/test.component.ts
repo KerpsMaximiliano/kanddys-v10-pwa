@@ -53,7 +53,7 @@ export class TestComponent implements OnInit {
   }
 
   openDialog(){
-    const list: StoreShareList[] = [
+ /*   const list: StoreShareList[] = [
         {
             title: 'ITEM ID',
             label: 'VISIBLE',
@@ -98,6 +98,17 @@ export class TestComponent implements OnInit {
         },
         customClass: 'app-dialog',
         flags: ['no-header'],
+    });*/
+    
+    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+      type: 'centralized-fullscreen',
+      props: {
+        icon: 'sadFace.svg',
+        message: 'Ocurrió un problema',
+        showCloseButton: true
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
   }
 }

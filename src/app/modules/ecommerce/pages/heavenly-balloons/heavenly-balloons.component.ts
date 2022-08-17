@@ -1460,6 +1460,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 type: 'centralized-fullscreen',
                 props: {
                   icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                  showCloseButton: success ? false : true,
                   message: success ? null : 'Ocurrió un problema'
                 },
                 customClass: 'app-dialog',
@@ -1479,6 +1480,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               type: 'centralized-fullscreen',
               props: {
                 icon: 'sadFace.svg',
+                showCloseButton: true,
                 message: window.navigator.onLine ? 'Ocurrió un problema: ' + error : 'Se perdió la conexion a internet'
               },
               customClass: 'app-dialog',

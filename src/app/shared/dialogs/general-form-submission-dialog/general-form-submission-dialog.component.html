@@ -4,4 +4,6 @@
     <div class="icon">
         <img [src]="env + '/' + icon" alt="">
     </div>
+
+    <div class="close-button" (click)="closeDialog()" *ngIf="showCloseButton">Cerrar</div>
 </div>
