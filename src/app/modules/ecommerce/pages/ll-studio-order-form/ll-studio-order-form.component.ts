@@ -1438,12 +1438,14 @@ export class LlStudioOrderFormComponent implements OnInit {
                 requestData['birthdate'] = birthday;
               }
 
-              if(this.formSteps[9].fieldsList[1].fieldControl.control.value !== '') {
+              if(this.formSteps[9].fieldsList[1].fieldControl.control.value && this.formSteps[9].fieldsList[1].fieldControl.control.value !== '') {
                 requestData.social.push({
                   name: 'location',
                   url: this.formSteps[9].fieldsList[1].fieldControl.control.value
                 })
               }
+
+              console.log(requestData);
 
               await this.authService.signup(requestData, 'none', null, false);
             }
