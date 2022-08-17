@@ -200,7 +200,6 @@ export class EntityDetailMetricsComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: "Sobre "+this.merchant.name,
-        qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         options: [
           {
             text: 'Crea un nuevo artículo',

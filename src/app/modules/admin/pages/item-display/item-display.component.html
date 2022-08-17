@@ -1,6 +1,5 @@
 <div class="container">
   <app-helper-headerv2
-    *ngIf="item?.status === 'active'"
     [mode]="'basic'"
     [dots]="{
       active: true
@@ -10,30 +9,6 @@
     color="#FFFFFF"
     (returnEvent)="redirect()"
     (dotEvent)="openDialog()"
-  ></app-helper-headerv2>
-
-  <app-helper-headerv2
-    *ngIf="item?.status !== 'active'"
-    mode="center"
-    [mainText]="{
-      text: 'INACTIVO (NO EXPUESTO)',
-      fontFamily: 'RobotoMedium',
-      fontSize: '17px'
-    }"
-    [icons]="[
-      {
-        src: '/closed-eye.svg',
-        color:
-          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(287deg) brightness(108%) contrast(104%)',
-        callback: toggleActivateItem
-      }
-    ]"
-    flexDirection="flex-end"
-    [returnAble]="true"
-    rmargin="46px"
-    bgColor="#B17608"
-    color="#FFFFFF"
-    (returnEvent)="redirect()"
   ></app-helper-headerv2>
 
   <div class="item-info" *ngIf="item">
