@@ -19,7 +19,10 @@
           width="15"
           height="19"
           (click)="openShareDialog()"
-          style="filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);"
+          style="
+            filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
+              brightness(80%) contrast(104%);
+          "
         />
       </button>
       <div class="shadowWrapper">
@@ -37,9 +40,26 @@
       <h1 class="small-title">{{ item.name }}</h1>
       <span class="small-price">${{ item.pricing | number }}</span>
     </div>
+    <div
+      *ngIf="!item.images?.length"
+      style="
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 16px;
+      "
+    >
+      <button class="nonswiper-button" (click)="openShareDialog()">
+        <img
+          [src]="env + '/upload.svg'"
+          width="15"
+          height="19"
+        />
+        Compartir
+      </button>
+    </div>
 
     <section>
-      <p class="item-detail">Sobre {{ item.name }}</p>
+      <p class="item-detail">Sobre {{ item.name || "el producto" }}</p>
 
       <div class="grid-details">
         <div class="info-card">
@@ -60,110 +80,6 @@
           <h2 class="amount">EN INGRESOS TOTALES</h2>
         </div>
       </div>
-      <!-- <div class="section">
-        <app-question-item
-          *ngIf="!item?.notifications?.length"
-          style="cursor: pointer"
-          (click)="redirectTo('admin/notification-creator/' + item._id)"
-          headline="AUTOMATIZA UN MENSAJE"
-          [headlineContainerStyles]="{
-            justifyContent: 'flex-start',
-            borderBottom: 'none'
-          }"
-          [headlineTitleStyles]="{
-            marginLeft: '10px'
-          }"
-          [headlineRightTextStyles]="{
-            color: '#2874AD',
-            fontFamily: 'SfProBold',
-            fontSize: '29px',
-            marginLeft: 'auto'
-          }"
-          [headlineLeftIcon]="{
-            icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/whatsapp_verde.svg',
-            width: 30,
-            height: 30
-          }"
-          [headlineRightText]="{
-            text: '+',
-            color: 'darkblue',
-            fontSize: '29px',
-            fontFamily: 'Roboto'
-          }"
-          [tagListTextStyles]="{
-            marginRight: '5px'
-          }"
-          [tagListStyles]="{
-            marginTop: '15px'
-          }"
-          [chipMode]="2"
-          [shadow]="'0px 5px 5px lightgrey, 0px -0.5px 3px lightgrey'"
-        ></app-question-item>
-      </div>
-      <ng-container
-        *ngIf="item?.notifications?.length && notifications?.length"
-      >
-        <div class="section" *ngFor="let notification of notifications">
-          <app-enlist-display
-            [headline]="{
-              icon: {
-                src: '/whatsapp_verde.svg',
-                width: 30,
-                height: 30
-              },
-              text: {
-                text: 'AUTOMATIZACION DE MENSAJE'
-              }
-            }"
-            [iconText]="{
-              icons: [
-                {
-                  src: '/pencil.svg',
-                  width: 19,
-                  height: 19,
-                  color:
-                    'brightness(0) saturate(100%) invert(37%) sepia(28%) saturate(1252%) hue-rotate(163deg) brightness(101%) contrast(91%)',
-                  callback: redirectTo,
-                  args:
-                    'admin/notification-creator/' +
-                    item._id +
-                    '/' +
-                    notification._id
-                }
-              ]
-            }"
-            [itemList]="[
-              {
-                name: {
-                  text: notification.action?.toUpperCase(),
-                  fontFamily: 'RobotoMedium',
-                  color: '#7B7B7B',
-                  fontSize: '13px'
-                },
-                subtitle: {
-                  text: notification.message,
-                  fontFamily: 'RobotoItalic',
-                  fontSize: '17px',
-                  color: '#000000'
-                }
-              }
-            ]"
-            [bottomText]="
-              notification.date && {
-                rightText: {
-                  text: 'ULTIMO EL ' + notification.date,
-                  fontSize: '13px',
-                  fontFamily: 'RobotoMedium',
-                  callback: goToNotificationsLog,
-                  callbackArgs: [notification._id]
-                }
-              }
-            "
-            [showSubtitle]="true"
-            [hideAble]="false"
-          ></app-enlist-display>
-        </div>
-      </ng-container> -->
     </section>
   </div>
 
@@ -182,12 +98,12 @@
       'max-width': 'none',
       'border-left': '1px solid #FFFFFF',
       color: '#FFFFFF',
-      'cursor': 'unset'
+      cursor: 'unset'
     }"
     [customRightButtonStyles]="{
       width: '1px',
       heigth: '1px',
-      'cursor': 'unset'
+      cursor: 'unset'
     }"
     [text2]="''"
     size="small"
