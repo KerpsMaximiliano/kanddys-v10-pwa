@@ -22,6 +22,8 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SwiperOptions } from 'swiper';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { Notification } from 'src/app/core/models/notification';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -69,7 +71,9 @@ export class ItemDisplayComponent implements OnInit {
     private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private clipboard: Clipboard,
+    private toastr: ToastrService
   ) {}
 
   swiperConfig: SwiperOptions = {
@@ -502,17 +506,17 @@ export class ItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+        qrlink: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -526,7 +530,7 @@ export class ItemDisplayComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate([
-                `/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+                `/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
               ]);
             },
           },
@@ -609,4 +613,9 @@ export class ItemDisplayComponent implements OnInit {
     this.itemsService.temporalItem = null;
     this.router.navigate(['/admin/item-creator/' + this.item._id]);
   };
+
+  copyLink() {
+    this.clipboard.copy(`${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`);
+    this.toastr.info('Enlace del producto copiado en el clipboard', null, {timeOut: 2000});
+  }
 }
