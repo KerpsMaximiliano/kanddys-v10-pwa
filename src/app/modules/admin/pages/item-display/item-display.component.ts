@@ -506,7 +506,12 @@ export class ItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
+        title: 'Sobre '+ (this.item.name || 'el artículo'),
+        label: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+        labelStyles: this.item.status !== 'active' && {
+          backgroundColor: '#B17608',
+          color: '#fff'
+        },
         options: [
           {
             text: 'Copia el link',
