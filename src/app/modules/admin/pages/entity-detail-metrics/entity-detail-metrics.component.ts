@@ -311,7 +311,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onPencilClick = () => {
-    this.router.navigate(['auth/user-creator']);
+    this.router.navigate(['admin/create-item']);
   };
 
   redirectToCreateItem = () => {

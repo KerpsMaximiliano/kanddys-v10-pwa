@@ -1,4 +1,4 @@
-<div style="min-height: 100vh">
+<div style="min-height: 100vh; padding-bottom: 30px;">
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
@@ -6,6 +6,12 @@
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
+    [icons]="[{
+        src:'/pencil.svg',
+        width: '14px',
+        height: '14px',
+        callback: onPencilClick
+    }]"
     [returnAble]="false"
     [dots]="{
       active: true
