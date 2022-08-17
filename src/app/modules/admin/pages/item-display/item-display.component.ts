@@ -613,7 +613,16 @@ export class ItemDisplayComponent implements OnInit {
             func: () =>{
                 this.router.navigate([`admin/tag-creator`])
             }
-          }
+          },
+            /* {
+            text:'Ocultar item',
+            mode: 'func',
+            func: async () =>{
+                await this.itemsService.updateItem({status: 'disabled'}, this.item._id);
+                this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+                this.toastr.info('Producto oculto', null, {timeOut: 2500});
+            }
+          } */
         ],
       },
     ];
