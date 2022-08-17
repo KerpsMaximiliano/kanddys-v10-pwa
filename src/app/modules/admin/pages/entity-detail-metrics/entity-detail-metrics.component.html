@@ -64,14 +64,14 @@
     </div>
 
     <div class="grid-details">
-      <div class="info-card">
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
         <h2 class="amount quantity">
           {{ items ? items.length : "0" }}
         </h2>
         <h2 class="amount">EN TOTAL</h2>
       </div>
 
-      <div class="info-card">
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
         <h2 class="amount quantity">
           {{ activeItems ? activeItems.length : "0" }}
           <!-- {{ (ordersTotal ? ordersTotal.length : '0') }} -->
@@ -80,7 +80,7 @@
         <h2 class="amount">VISIBLES</h2>
       </div>
 
-      <div class="info-card">
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
         <h2 class="amount quantity">
           {{ inactiveItems ? inactiveItems.length : "0" }}
           <!-- {{users.length}} -->
