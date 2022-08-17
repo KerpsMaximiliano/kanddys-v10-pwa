@@ -8,7 +8,7 @@
     bgColor="#2874AD"
     color="#FFFFFF"
     (returnEvent)="redirect()"
-    (dotEvent)="openShareDialog()"
+    (dotEvent)="openDialog()"
   ></app-helper-headerv2>
 
   <div class="item-info" *ngIf="item">
@@ -18,7 +18,7 @@
           [src]="env + '/upload.svg'"
           width="15"
           height="19"
-          (click)="copyLink()"
+          (click)="openShareDialog()"
           style="filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);"
         />
       </button>

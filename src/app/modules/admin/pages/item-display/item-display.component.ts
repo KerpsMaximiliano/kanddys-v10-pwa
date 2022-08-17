@@ -535,7 +535,7 @@ export class ItemDisplayComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate([
-                `/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
+                `/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
               ]);
             },
           },
@@ -594,11 +594,40 @@ export class ItemDisplayComponent implements OnInit {
   openDialog() {
     const list: StoreShareList[] = [
       {
-        title: 'Adicionar',
+        title: this.item.name,
+        label: (this.item.status ==='active' ? 'Visible' : 'No visible'),
+        labelStyles: (this.item.status === 'disabled' ? {'background-color': '#B17608', 'color' : '#FFFFFF'} : null),
         options: [
           {
-            text: 'Mensaje Automatizado',
+            text: 'Adicionar nuevo Item',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`/admin/create-item`]);
+            }
           },
+          {
+            text: 'Adiciona una venta',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`/admin/entity-detail-metrics`]);
+            } 
+          },
+          {
+            text: 'Adiciona un Nuevo tag',
+            mode: 'func',
+            func: () =>{
+                this.router.navigate([`admin/tag-creator`])
+            }
+          },
+            /* {
+            text:'Ocultar item',
+            mode: 'func',
+            func: async () =>{
+                await this.itemsService.updateItem({status: 'disabled'}, this.item._id);
+                this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+                this.toastr.info('Producto oculto', null, {timeOut: 2500});
+            }
+          } */
         ],
       },
     ];
