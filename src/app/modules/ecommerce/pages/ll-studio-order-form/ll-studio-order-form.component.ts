@@ -137,6 +137,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[0].fieldControl.control.disable();
               } else {
                 this.formSteps[1].fieldsList[0].fieldControl.control.reset();
+                this.formSteps[1].fieldsList[0].fieldControl.control.enable();
               }
               
               if(this.existingUserData.lastname){
@@ -144,6 +145,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[1].fieldControl.control.disable();
               } else {
                 this.formSteps[1].fieldsList[1].fieldControl.control.reset();
+                this.formSteps[1].fieldsList[1].fieldControl.control.enable();
               }
 
               for(let social of this.existingUserData.social) {
@@ -153,6 +155,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                     this.formSteps[1].fieldsList[2].fieldControl.control.disable();
                   } else {
                     this.formSteps[1].fieldsList[2].fieldControl.control.reset();
+                    this.formSteps[1].fieldsList[2].fieldControl.control.enable();
                   }
                 }
 
@@ -162,6 +165,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                     this.formSteps[9].fieldsList[1].fieldControl.control.disable();
                   } else {
                     this.formSteps[9].fieldsList[1].fieldControl.control.reset();
+                    this.formSteps[9].fieldsList[1].fieldControl.control.enable();
                   }
                 }
               }
@@ -174,7 +178,8 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[4].fieldControl.control.setValue(birthdayValue);              
                 this.formSteps[1].fieldsList[4].fieldControl.control.disable();
               } else {
-                this.formSteps[1].fieldsList[4].fieldControl.control.reset();              
+                this.formSteps[1].fieldsList[4].fieldControl.control.reset();    
+                this.formSteps[1].fieldsList[4].fieldControl.control.enable();
               }
 
               if(this.existingUserData.email){
@@ -182,6 +187,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[3].fieldControl.control.disable();
               } else {
                 this.formSteps[1].fieldsList[3].fieldControl.control.reset();
+                this.formSteps[1].fieldsList[3].fieldControl.control.enable();
               }
 
               if(this.existingUserData.deliveryLocations.length > 0 && this.existingUserData.deliveryLocations[0].nickName !== ''){
@@ -189,7 +195,18 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[9].fieldsList[0].fieldControl.control.disable();
               } else {
                 this.formSteps[9].fieldsList[0].fieldControl.control.reset();
+                this.formSteps[9].fieldsList[0].fieldControl.control.enable();
               }
+            } else {
+              this.formSteps[1].fieldsList.forEach(field => {
+                field.fieldControl.control.reset()
+                field.fieldControl.control.enable()
+              });
+
+              this.formSteps[9].fieldsList.forEach(field => {
+                field.fieldControl.control.reset()
+                field.fieldControl.control.enable()
+              });
             }
           } catch (error) {
             this.newUser = true;
