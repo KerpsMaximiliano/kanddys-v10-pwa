@@ -34,10 +34,15 @@ interface StoreShareOption {
   mode?: 'clipboard' | 'share' | 'func' | 'qr';
 }
 
+interface Label{
+    text: string;
+    func?: () => void;
+}
+
 export interface StoreShareList {
   title?: string;
   titleStyles?: Record<string, any>;
-  label?: string;
+  label?: Label;
   labelStyles?: Record<string, any>;
   description?: string;
   message?: string;
@@ -141,6 +146,10 @@ export class StoreShareComponent implements OnInit {
   inputFunc(callback: () => void) {
     callback();
     this.close();
+  }
+
+  secondInput(callback: () => void){
+    callback();
   }
 
   defaultButton(){
