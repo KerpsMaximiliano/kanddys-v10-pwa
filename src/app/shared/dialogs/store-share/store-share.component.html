@@ -17,13 +17,14 @@
           >
             {{ item.title }}
           </h1>
-          <p
+          <button
             class="added-label"
             *ngIf="item.label"
             [ngStyle]="item.labelStyles && item.labelStyles"
+            (click)="item.label.func && secondInput(item.label.func)"
           >
-            {{ item.label }}
-          </p>
+            {{ item.label.text }}
+        </button>
         </div>
         <div class="qr-container" *ngIf="item.qrlink">
           <qrcode

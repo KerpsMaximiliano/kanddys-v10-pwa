@@ -132,6 +132,8 @@ export class LlStudioOrderFormComponent implements OnInit {
               this.existingUserData = response;
               this.newUser = false;
 
+              console.log(response);
+
               if(this.existingUserData.name) {
                 this.formSteps[1].fieldsList[0].fieldControl.control.setValue(this.existingUserData.name);
                 this.formSteps[1].fieldsList[0].fieldControl.control.disable();
@@ -148,6 +150,8 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[1].fieldsList[1].fieldControl.control.enable();
               }
 
+              const socialsFound = {};
+
               for(let social of this.existingUserData.social) {
                 if(social.name === 'instagram') {
                   if(social.userName && social.userName.length > 0) {
@@ -158,7 +162,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                     this.formSteps[1].fieldsList[2].fieldControl.control.enable();
                   }
                 }
-
+                
                 if(social.name === 'location') {
                   if(social.url && social.url.length > 0) {
                     this.formSteps[9].fieldsList[1].fieldControl.control.setValue(social.url || '');
@@ -168,6 +172,18 @@ export class LlStudioOrderFormComponent implements OnInit {
                     this.formSteps[9].fieldsList[1].fieldControl.control.enable();
                   }
                 }
+
+                socialsFound[social.name] = true;
+              }
+
+              if(!socialsFound['instagram']) {
+                this.formSteps[1].fieldsList[2].fieldControl.control.reset();
+                this.formSteps[1].fieldsList[2].fieldControl.control.enable();
+              }
+              
+              if(!socialsFound['location']) {
+                this.formSteps[9].fieldsList[1].fieldControl.control.reset();
+                this.formSteps[9].fieldsList[1].fieldControl.control.enable();
               }
 
               let birthdayValue: any = this.existingUserData.birthdate;
@@ -1113,6 +1129,11 @@ export class LlStudioOrderFormComponent implements OnInit {
 
         return { ok: false };
       },
+      customScrollToStepBackwards: (params) => {
+        this.formSteps[6].fieldsList[0].fieldControl.control.setValue('');
+
+        params.scrollToStep(6, false);
+      },
       footerConfig,
       stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
@@ -1164,9 +1185,15 @@ export class LlStudioOrderFormComponent implements OnInit {
         }
       ],
       customScrollToStepBackwards: (params) => {
-        if (!this.choosedReservation)
+
+        if (!this.choosedReservation) {
+          this.formSteps[6].fieldsList[0].fieldControl.control.setValue('');
+          this.formSteps[7].fieldsList[0].fieldControl.control.setValue('');  
           params.scrollToStep(6, false);
-        else {
+        } else {
+          this.formSteps[6].fieldsList[0].fieldControl.control.setValue('');
+          this.formSteps[7].fieldsList[0].fieldControl.control.setValue('');  
+
           this.whatsappLinkSteps.pop();
           params.scrollToStep(7, false);
         }

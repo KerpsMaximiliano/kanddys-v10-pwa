@@ -1734,9 +1734,9 @@
         : 'disabled-fixed'
     "
     (click)="
-      !steps[currentStep].justExecuteCustomScrollToStep
+      !steps[currentStep].justExecuteCustomScrollToStep && finishedExecutingStepProcessingFunction
         ? executeStepDataProcessing()
-        : steps[currentStep].customScrollToStep(stepFunctionParams)
+        : finishedExecutingStepProcessingFunction ? steps[currentStep].customScrollToStep(stepFunctionParams) : null
     "
     [height]="
       dataModel.get(currentStepString).status !== 'INVALID'
@@ -1785,9 +1785,9 @@
           : 'disabled-fixed'
       "
       (click)="
-        !steps[currentStep].justExecuteCustomScrollToStep
+        !steps[currentStep].justExecuteCustomScrollToStep && finishedExecutingStepProcessingFunction
           ? executeStepDataProcessing()
-          : steps[currentStep].customScrollToStep(stepFunctionParams)
+          : finishedExecutingStepProcessingFunction ? steps[currentStep].customScrollToStep(stepFunctionParams) : null
       "
       [height]="
         dataModel.get(currentStepString).status !== 'INVALID'

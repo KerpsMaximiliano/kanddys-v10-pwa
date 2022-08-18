@@ -514,7 +514,9 @@ export class ItemDisplayComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
-        label: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+        label: {
+          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+        },
         labelStyles: this.item.status !== 'active' && {
           backgroundColor: '#B17608',
           color: '#fff',
@@ -602,7 +604,10 @@ export class ItemDisplayComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: this.item.name,
-        label: this.item.status === 'active' ? 'Visible' : 'No visible',
+        label: {
+          text: this.item.status === 'active' ? 'Visible' : 'No visible',
+          func: this.toggleActivateItem,
+        },
         labelStyles:
           this.item.status === 'disabled'
             ? { 'background-color': '#B17608', color: '#FFFFFF' }
