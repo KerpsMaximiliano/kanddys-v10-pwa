@@ -1,4 +1,4 @@
-import { DecimalPipe, Location } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -59,7 +59,6 @@ export class CreateItemComponent implements OnInit {
     private router: Router,
     private itemService: ItemsService,
     private headerService: HeaderService,
-    private location: Location,
     private decimalPipe: DecimalPipe,
     private dialogService: DialogService
   ) {}
@@ -89,8 +88,8 @@ export class CreateItemComponent implements OnInit {
     this.imageField = images;
     if (this.itemService.temporalItem?.images) this.changedImages = true;
     if (
-      this.item.images.length > 1 ||
-      this.itemService.temporalItem?.images.length > 1
+      this.item?.images?.length > 1 ||
+      this.itemService.temporalItem?.images?.length > 1
     )
       this.swiperConfig.pagination = {
         el: '.swiper-pagination',
@@ -104,7 +103,7 @@ export class CreateItemComponent implements OnInit {
   }
 
   goBack() {
-    this.location.back();
+    this.router.navigate(['/admin/merchant-items']);
   }
 
   toggleStatus() {
