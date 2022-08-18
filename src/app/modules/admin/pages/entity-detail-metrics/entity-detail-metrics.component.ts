@@ -232,8 +232,9 @@ export class EntityDetailMetricsComponent implements OnInit {
         list,
         buttonText: 'Cerrar Sesión',
         buttonCallback: () => {
-            this.authService.signoutThree();
-            this.router.navigate([`auth/login`])
+          // TODO: replace the signout function
+          this.authService.signoutThree();
+          this.router.navigate([`auth/login`])
         }
       },
       customClass: 'app-dialog',
