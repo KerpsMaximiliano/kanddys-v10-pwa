@@ -103,6 +103,7 @@ export class CreateItemComponent implements OnInit {
   }
 
   goBack() {
+    this.itemService.removeTemporalItem();
     this.router.navigate(['/admin/merchant-items']);
   }
 
