@@ -81,6 +81,7 @@ export class CreateItemComponent implements OnInit {
     this.imageField = images;
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('pricing').setValue(pricing);
+    this.formatNumber(pricing);
     this.itemForm.get('description').setValue(description);
   }
 
@@ -172,8 +173,10 @@ export class CreateItemComponent implements OnInit {
     }
   }
 
-  formatNumber(event: Event) {
-    let value = (<HTMLInputElement>event.target).value;
+  formatNumber(event: Event | number) {
+    let value: string;
+    if (typeof event === 'number') value = `${event}`;
+    else value = (<HTMLInputElement>event.target).value;
     if (value.includes('.')) {
       value = value
         .split('')

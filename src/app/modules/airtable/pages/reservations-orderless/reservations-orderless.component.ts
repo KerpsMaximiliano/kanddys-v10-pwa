@@ -141,7 +141,7 @@ export class ReservationOrderlessComponent implements OnInit {
             if (this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
               const slide = this.todayHours[i];
               if (this.filterHours(this.num(slide) + this.offset)) {
-                this.getId(i, slide);
+                //this.getId(i, slide);
                 break;
               }
             }
