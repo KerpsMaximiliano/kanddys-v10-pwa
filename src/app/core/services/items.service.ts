@@ -31,13 +31,24 @@ import {
   updateItem,
   deleteItem,
 } from '../graphql/items.gql';
-import { Item, ItemCategory, ItemCategoryHeadline, ItemCategoryInput, ItemInput, ItemPackage } from '../models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemCategoryHeadline,
+  ItemCategoryInput,
+  ItemInput,
+  ItemPackage,
+} from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  temporalImages: {
+    old: string[];
+    new: File[];
+  };
   hasTemporalItemNewImages: boolean = null;
 
   storeTemporalItem(item: any) {
@@ -46,9 +57,11 @@ export class ItemsService {
 
   removeTemporalItem() {
     this.temporalItem = null;
+    this.temporalImages = null;
+    this.hasTemporalItemNewImages = null;
   }
 
-  constructor(private graphql: GraphQLWrapper) { }
+  constructor(private graphql: GraphQLWrapper) {}
 
   async item(id: string): Promise<Item> {
     const result = await this.graphql.query({
@@ -97,10 +110,7 @@ export class ItemsService {
     return response;
   }
 
-  async addImageItem(
-    images: File[],
-    id: string
-  ) {
+  async addImageItem(images: File[], id: string) {
     const result = await this.graphql.mutate({
       mutation: addImageItem,
       variables: { images, id },
@@ -113,10 +123,7 @@ export class ItemsService {
     return result;
   }
 
-  async deleteImageItem(
-    images: string[],
-    id: string
-  ) {
+  async deleteImageItem(images: string[], id: string) {
     const result = await this.graphql.mutate({
       mutation: deleteImageItem,
       variables: { images, id },
@@ -139,7 +146,10 @@ export class ItemsService {
     return result;
   }
 
-  async itemsByMerchant(id: string, sort?: boolean): Promise<{ itemsByMerchant: Item[] }> {
+  async itemsByMerchant(
+    id: string,
+    sort?: boolean
+  ): Promise<{ itemsByMerchant: Item[] }> {
     try {
       const response = await this.graphql.query({
         query: itemsByMerchant,
@@ -159,24 +169,31 @@ export class ItemsService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) { }
+    } catch (e) {}
   }
 
-  async itemsByCategory(categoryID: string, params?: PaginationInput, saleflowID?: string): Promise<Item[]> {
+  async itemsByCategory(
+    categoryID: string,
+    params?: PaginationInput,
+    saleflowID?: string
+  ): Promise<Item[]> {
     try {
       const response = await this.graphql.query({
         query: itemsByCategory,
         variables: { categoryID, params, saleflowID },
         fetchPolicy: 'no-cache',
       });
-      if(!response || response?.errors) return undefined;
+      if (!response || response?.errors) return undefined;
       return response.itemsByCategory;
     } catch (e) {
       console.log(e);
     }
   }
 
-  async bestSellersByMerchant(limit: number, merchantID: string): Promise<string[]> {
+  async bestSellersByMerchant(
+    limit: number,
+    merchantID: string
+  ): Promise<string[]> {
     try {
       const response = await this.graphql.query({
         query: bestSellersByMerchant,
@@ -189,14 +206,17 @@ export class ItemsService {
     }
   }
 
-  async totalByItem(merchantId: string, itemId?: string[]): Promise<{item: Item, itemInOrder: number, total: number}[]> {
+  async totalByItem(
+    merchantId: string,
+    itemId?: string[]
+  ): Promise<{ item: Item; itemInOrder: number; total: number }[]> {
     try {
       const response = await this.graphql.query({
         query: totalByItem,
         variables: { merchantId, itemId },
         fetchPolicy: 'no-cache',
       });
-      if(!response || response?.errors) return undefined;
+      if (!response || response?.errors) return undefined;
       return response.totalByItem;
     } catch (e) {
       console.log(e);
@@ -255,8 +275,10 @@ export class ItemsService {
     }
   }
 
-
-  async itemCategories(merchantId: string, params: PaginationInput): Promise<{ itemCategoriesList: ItemCategory[] }> {
+  async itemCategories(
+    merchantId: string,
+    params: PaginationInput
+  ): Promise<{ itemCategoriesList: ItemCategory[] }> {
     try {
       const response = await this.graphql.query({
         query: itemCategoriesList,
@@ -281,7 +303,10 @@ export class ItemsService {
   }
 
   // Actualizar categoria
-  async updateItemCategory(input: ItemCategoryInput, id: string): Promise<ItemCategory> {
+  async updateItemCategory(
+    input: ItemCategoryInput,
+    id: string
+  ): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: updateItemCategory,
       variables: { input, id },
@@ -302,7 +327,9 @@ export class ItemsService {
     return result;
   }
 
-  async itemCategoryHeadlineByMerchant(merchant: string): Promise<ItemCategoryHeadline[]> {
+  async itemCategoryHeadlineByMerchant(
+    merchant: string
+  ): Promise<ItemCategoryHeadline[]> {
     try {
       const response = await this.graphql.query({
         query: itemCategoryHeadlineByMerchant,
@@ -336,7 +363,6 @@ export class ItemsService {
     if (!result || result?.errors) return undefined;
     return result;
   }
-
 
   async addItem(input: any) {
     console.log(input);

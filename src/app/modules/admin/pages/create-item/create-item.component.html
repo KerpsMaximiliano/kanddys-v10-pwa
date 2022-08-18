@@ -1,7 +1,7 @@
 <div class="component">
   <header>
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    <button class="dot-trio">
+    <button class="dot-trio" *ngIf="itemForm.valid" (click)="onOpenDialog()">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
@@ -53,7 +53,11 @@
                 {{ letter }}
               </span>
 
-              <div class="cursor blinking-cursor" [ngClass]="{ 'blinking-cursor': curencyFocused }" style="width: 1px; height: 1rem"></div>
+              <div
+                class="cursor blinking-cursor"
+                [ngClass]="{ 'blinking-cursor': curencyFocused }"
+                style="width: 1px; height: 1rem"
+              ></div>
             </div>
             <input
               class="formatted-input"
@@ -85,12 +89,18 @@
           class="textarea"
           formControlName="description"
         ></textarea>
-        <div>
-          <button type="submit" class="submit" [disabled]="!itemForm.valid">
+        <!-- <div>
+          <button type="submit" class="submit" >
             Salvar
           </button>
-        </div>
+        </div> -->
       </section>
     </form>
   </main>
+  <footer [ngClass]="{disabled: !itemForm.valid}">
+    <button class="back">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="save" (click)="onSubmit()">Salvar</button>
+  </footer>
 </div>

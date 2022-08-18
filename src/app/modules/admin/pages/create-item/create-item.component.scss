@@ -151,7 +151,8 @@ main {
     background-repeat: no-repeat;
     cursor: pointer;
 
-    &:hover {
+    &:hover,
+    &:active {
       opacity: 0.75;
     }
   }
@@ -171,31 +172,58 @@ main {
   border: none;
 }
 
-.submit {
-  border: solid 2px #2874ad;
-  background-color: #fff;
-  color: #2874ad;
-  width: 100%;
-  text-align: center;
-  font-size: 1.5rem;
-  padding: 1rem 0;
-  font-family: "RobotoMedium";
-  border-radius: 0.5rem;
-  transition: all 0.2s;
-  margin-top: 1rem;
+// .submit {
+//   border: solid 2px #2874ad;
+//   background-color: #fff;
+//   color: #2874ad;
+//   width: 100%;
+//   text-align: center;
+//   font-size: 1.5rem;
+//   padding: 1rem 0;
+//   font-family: "RobotoMedium";
+//   border-radius: 0.5rem;
+//   transition: all 0.2s;
+//   margin-top: 1rem;
 
-  &:hover,
-  &:active {
-    background-color: #2874ad;
-    color: #fff;
-    transition: all 0.2s;
+//   &:hover,
+//   &:active {
+//     background-color: #2874ad;
+//     color: #fff;
+//     transition: all 0.2s;
+//   }
+
+//   &:disabled,
+//   &[disabled] {
+//     background-color: #cccccc;
+//     color: #999999;
+//     border: solid 2px #999999;
+//   }
+// }
+
+footer {
+  background-color: #2874ad;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 500px;
+  padding: 4px 20px;
+  color: white;
+  font-family: "RobotoMedium";
+  font-size: 17px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+
+  &.disabled {
+    background-color: #7b7b7b;
   }
 
-  &:disabled,
-  &[disabled] {
-    background-color: #cccccc;
-    color: #999999;
-    border: solid 2px #999999;
+  .back {
+    border-right: solid 2px #fff;
+  }
+
+  .save {
+    grid-column: 2 / span 11;
+    text-align: center;
   }
 }
 

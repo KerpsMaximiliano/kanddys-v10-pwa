@@ -12,6 +12,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -55,7 +60,8 @@ export class CreateItemComponent implements OnInit {
     private itemService: ItemsService,
     private headerService: HeaderService,
     private location: Location,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
+    private dialogService: DialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -64,7 +70,8 @@ export class CreateItemComponent implements OnInit {
       this.authService.me(),
       this.merchantService.merchantDefault(),
     ];
-    if (itemId) promises.push(this.itemService.item(itemId));
+    if (itemId && !this.itemService.temporalItem)
+      promises.push(this.itemService.item(itemId));
     const [user, userMerchant, item] = await Promise.all(promises);
     if (!user || !userMerchant) return;
     this.user = user as User;
@@ -72,13 +79,24 @@ export class CreateItemComponent implements OnInit {
     this.saleflow = await this.saleflowService.saleflowDefault(
       this.merchant._id
     );
-    if (!item) return;
+    if (!item && !this.itemService.temporalItem) return;
     this.item = item as Item;
-    const { images, name, content, description, merchant } = this.item;
-    let { pricing } = this.item;
-    if (this.user._id !== merchant.owner._id)
+    const { images, name, description, merchant } =
+      this.item || this.itemService.temporalItem;
+    let { pricing } = this.item || this.itemService.temporalItem;
+    if (merchant && this.user._id !== merchant.owner._id)
       throw new Error('No eres el merchant dueño de este item');
     this.imageField = images;
+    if (this.itemService.temporalItem?.images) this.changedImages = true;
+    if (
+      this.item.images.length > 1 ||
+      this.itemService.temporalItem?.images.length > 1
+    )
+      this.swiperConfig.pagination = {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true,
+      };
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('pricing').setValue(pricing);
     this.formatNumber(pricing);
@@ -97,7 +115,7 @@ export class CreateItemComponent implements OnInit {
     const { images, name, description } = this.itemForm.value;
     const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
-      if (this.item) {
+      if (this.item || this.itemService.temporalItem?._id) {
         const itemInput = {
           name: name || null,
           description: description || null,
@@ -106,19 +124,27 @@ export class CreateItemComponent implements OnInit {
           currencies: [],
           hasExtraPrice: false,
           purchaseLocations: [],
+          showImages: this.changedImages
+            ? this.itemService.temporalImages?.new.length > 0 ||
+              images.length > 0
+            : this.itemService.temporalItem?.images?.length > 0 ||
+              this.item.images.length > 0,
         };
         const { updateItem: updatedItem } = await this.itemService.updateItem(
           itemInput,
-          this.item._id
+          this.item?._id || this.itemService.temporalItem?._id
         );
 
         if (updatedItem) {
           if (this.changedImages) {
             await this.itemService.deleteImageItem(
-              this.item.images,
+              this.item?.images || this.itemService.temporalImages.old,
               updatedItem._id
             );
-            await this.itemService.addImageItem(images, updatedItem._id);
+            await this.itemService.addImageItem(
+              images.length ? images : this.itemService.temporalImages.new,
+              updatedItem._id
+            );
           }
           this.itemService.removeTemporalItem();
           this.router.navigate([`/admin/merchant-items`]);
@@ -134,7 +160,8 @@ export class CreateItemComponent implements OnInit {
           currencies: [],
           hasExtraPrice: false,
           purchaseLocations: [],
-          showImages: images.length > 0,
+          showImages:
+            images.length > 0 || this.itemService.temporalImages.new.length > 0,
         };
         if (this.user) {
           const { createItem } = await this.itemService.createItem(itemInput);
@@ -244,6 +271,17 @@ export class CreateItemComponent implements OnInit {
         reader.readAsDataURL(file);
       }
       this.changedImages = true;
+      if (fileList.length > 1)
+        this.swiperConfig.pagination = {
+          el: '.swiper-pagination',
+          type: 'bullets',
+          clickable: true,
+        };
+      else
+        this.swiperConfig = {
+          ...this.swiperConfig,
+          pagination: {},
+        };
       return;
     }
   }
@@ -253,4 +291,51 @@ export class CreateItemComponent implements OnInit {
       `url(${image}) no-repeat center center / cover #E9E371`
     );
   }
+
+  onOpenDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Sobre ' + this.merchant.name,
+        options: [
+          {
+            text: 'Vista del comprador',
+            mode: 'func',
+            func: () => {
+              const { images, name, description } = this.itemForm.value;
+              const pricing = parseFloat(
+                this.formattedPricing.replace(/\$|,/g, '')
+              );
+              this.itemService.storeTemporalItem({
+                ...this.item,
+                _id: this.item?._id,
+                name,
+                description,
+                images: this.imageField,
+                pricing: pricing,
+              });
+              this.itemService.temporalImages = {
+                old: this.item?.images,
+                new: images,
+              };
+              this.router.navigate(['/ecommerce/item-detail']);
+            },
+          },
+        ],
+      },
+    ];
+
+    this.dialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+          this.authService.signoutThree();
+          this.router.navigate([`auth/login`]);
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 }
