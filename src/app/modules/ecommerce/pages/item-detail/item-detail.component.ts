@@ -60,6 +60,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       if (!this.itemData || this.itemData.status !== 'active')
         return this.back();
 
+      if (this.itemData.images.length > 1)
+        this.swiperConfig.pagination = {
+          el: '.swiper-pagination',
+          type: 'bullets',
+          clickable: true,
+        };
+
       const whatsappMessage = encodeURIComponent(
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
       );

@@ -108,6 +108,13 @@ export class ItemDisplayComponent implements OnInit {
           // this.item.description = 'gdfgdfgdf';
           // this.item.content = ["fdsdfsdf", "ggggggggg"]
 
+          if (this.item.images.length > 1)
+            this.swiperConfig.pagination = {
+              el: '.swiper-pagination',
+              type: 'bullets',
+              clickable: true,
+            };
+
           this.shouldRedirectToPreviousPage = true;
 
           this.categories = this.item.category;
@@ -506,11 +513,11 @@ export class ItemDisplayComponent implements OnInit {
   openShareDialog = () => {
     const list: StoreShareList[] = [
       {
-        title: 'Sobre '+ (this.item.name || 'el artículo'),
+        title: 'Sobre ' + (this.item.name || 'el artículo'),
         label: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
         labelStyles: this.item.status !== 'active' && {
           backgroundColor: '#B17608',
-          color: '#fff'
+          color: '#fff',
         },
         options: [
           {
@@ -595,29 +602,32 @@ export class ItemDisplayComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: this.item.name,
-        label: (this.item.status ==='active' ? 'Visible' : 'No visible'),
-        labelStyles: (this.item.status === 'disabled' ? {'background-color': '#B17608', 'color' : '#FFFFFF'} : null),
+        label: this.item.status === 'active' ? 'Visible' : 'No visible',
+        labelStyles:
+          this.item.status === 'disabled'
+            ? { 'background-color': '#B17608', color: '#FFFFFF' }
+            : null,
         options: [
           {
             text: 'Editar producto',
             mode: 'func',
-            func: () =>{
-                this.router.navigate([`admin/create-item/${this.item._id}`]);
-            }
+            func: () => {
+              this.router.navigate([`admin/create-item/${this.item._id}`]);
+            },
           },
           {
             text: 'Adicionar nuevo Item',
             mode: 'func',
             func: () => {
               this.router.navigate([`/admin/create-item`]);
-            }
+            },
           },
           // {
           //   text: 'Adiciona una venta',
           //   mode: 'func',
           //   func: () =>{
           //       this.router.navigate([`/admin/entity-detail-metrics`]);
-          //   } 
+          //   }
           // },
           // {
           //   text: 'Adiciona un Nuevo tag',
@@ -626,7 +636,7 @@ export class ItemDisplayComponent implements OnInit {
           //       this.router.navigate([`admin/tag-creator`])
           //   }
           // }
-            /* {
+          /* {
             text:'Ocultar item',
             mode: 'func',
             func: async () =>{
@@ -656,7 +666,11 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   copyLink() {
-    this.clipboard.copy(`${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`);
-    this.toastr.info('Enlace del producto copiado en el clipboard', null, {timeOut: 2000});
+    this.clipboard.copy(
+      `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`
+    );
+    this.toastr.info('Enlace del producto copiado en el clipboard', null, {
+      timeOut: 2000,
+    });
   }
 }
