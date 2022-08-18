@@ -327,12 +327,7 @@ export class CreateItemComponent implements OnInit {
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: () => {
-          this.authService.signoutThree();
-          this.router.navigate([`auth/login`]);
-        },
+        list
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
