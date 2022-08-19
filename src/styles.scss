@@ -108,7 +108,8 @@ body {
 
 * {
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
+  user-select: initial;
+  -webkit-user-select: initial;
   -webkit-tap-highlight-color: transparent;
 }
 
