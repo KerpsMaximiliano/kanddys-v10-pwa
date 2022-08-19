@@ -1,6 +1,6 @@
-import { Location } from '@angular/common';
+// import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -19,10 +19,9 @@ import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item
 @Component({
   selector: 'app-merchant-items',
   templateUrl: './merchant-items.component.html',
-  styleUrls: ['./merchant-items.component.scss']
+  styleUrls: ['./merchant-items.component.scss'],
 })
 export class MerchantItemsComponent implements OnInit {
-
   merchant: Merchant;
   saleflow: SaleFlow;
   items: Item[] = [];
@@ -34,25 +33,32 @@ export class MerchantItemsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   // Dummy Data
-  itemList: Array<any> = [{
-    price: 0.00,
-    quantity: 0
-  },{
-    price: 0.01,
-    quantity: 0
-  },{
-    price: 0.02,
-    quantity: 0
-  },{
-    price: 0.03,
-    quantity: 0
-  },{
-    price: 0.04,
-    quantity: 0
-  },{
-    price: 0.05,
-    quantity: 0
-  }];
+  itemList: Array<any> = [
+    {
+      price: 0.0,
+      quantity: 0,
+    },
+    {
+      price: 0.01,
+      quantity: 0,
+    },
+    {
+      price: 0.02,
+      quantity: 0,
+    },
+    {
+      price: 0.03,
+      quantity: 0,
+    },
+    {
+      price: 0.04,
+      quantity: 0,
+    },
+    {
+      price: 0.05,
+      quantity: 0,
+    },
+  ];
 
   constructor(
     private merchantsService: MerchantsService,
@@ -61,14 +67,18 @@ export class MerchantItemsComponent implements OnInit {
     private ordersService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private location: Location,
+    private route: ActivatedRoute,
+    // private location: Location,
     private dialog: DialogService,
     private headerService: HeaderService
-  ) { }
+  ) {}
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.authService.ready.subscribe(async observer => {
+    const status = this.route.snapshot.queryParamMap.get('status') as
+      | 'active'
+      | 'disabled';
+    this.authService.ready.subscribe(async (observer) => {
       if (observer != undefined) {
         this.status = 'loading';
         const user = await this.authService.me();
@@ -81,11 +91,11 @@ export class MerchantItemsComponent implements OnInit {
 
         await Promise.all([
           this.getOrderTotal(this.merchant._id),
-          this.getItems(this.merchant._id)
+          this.getItems(this.merchant._id, status),
         ]);
         this.status = 'complete';
         if (this.ordersTotal.total) this.hasSalesData = true;
-        unlockUI(); 
+        unlockUI();
       } else {
         this.errorScreen();
       }
@@ -95,31 +105,40 @@ export class MerchantItemsComponent implements OnInit {
   async getMerchant() {
     try {
       this.merchant = await this.merchantsService.merchantDefault();
-      this.saleflow = await this.saleflowService.saleflowDefault(this.merchant._id);
+      this.saleflow = await this.saleflowService.saleflowDefault(
+        this.merchant._id
+      );
     } catch (error) {
       this.status = 'error';
       console.log(error);
     }
   }
 
-  async getItems(merchantID: string) {
+  async getItems(merchantID: string, status?: 'active' | 'disabled') {
     try {
-      const items = (await this.itemsService.itemsByMerchant(merchantID, true)).itemsByMerchant;
-      this.items = items;
+      const items = (await this.itemsService.itemsByMerchant(merchantID, true))
+        .itemsByMerchant;
+      if (status === 'active')
+        this.items = items.filter((item) => item.status === 'active');
+      else if (status === 'disabled')
+        this.items = items.filter((item) => item.status === 'disabled');
+      else this.items = items;
     } catch (error) {
       this.status = 'error';
       console.log(error);
     }
   }
 
-
-  testing = () =>{
-    console.log('test')
-  }
+  testing = () => {
+    console.log('test');
+  };
 
   async getOrderTotal(merchantID: string) {
     try {
-      this.ordersTotal = await this.ordersService.ordersTotal(['in progress', 'to confirm', 'completed'], merchantID);
+      this.ordersTotal = await this.ordersService.ordersTotal(
+        ['in progress', 'to confirm', 'completed'],
+        merchantID
+      );
     } catch (error) {
       this.status = 'error';
       console.log(error);
@@ -136,15 +155,15 @@ export class MerchantItemsComponent implements OnInit {
     this.router.navigate([`others/error-screen/`]);
   }
 
-  goToMetrics = () =>{
+  goToMetrics = () => {
     this.router.navigate([`admin/entity-detail-metrics`]);
-  }
+  };
 
   back() {
     this.router.navigate([`admin/entity-detail-metrics`]);
   }
 
-  createItem(){
+  createItem() {
     this.headerService.flowRoute = this.router.url;
     this.router.navigate([`admin/create-item/`]);
   }
@@ -152,95 +171,100 @@ export class MerchantItemsComponent implements OnInit {
   openDeleteDialog(item: Item) {
     const list: StoreShareList[] = [
       {
-          title: `Eliminar ${item.name || 'producto'}?`,
-          description: 'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
-          message: 'Eliminar',
-          messageCallback: async () => {
-            const removeItemFromSaleFlow = await this.saleflowService.removeItemFromSaleFlow(item._id, this.saleflow._id);
-            if(!removeItemFromSaleFlow) return;
-            const deleteItem = await this.itemsService.deleteItem(item._id);
-            if(!deleteItem) return;
-            this.items = this.items.filter(listItem => listItem._id !== item._id);
-          }
+        title: `Eliminar ${item.name || 'producto'}?`,
+        description:
+          'Esta acción es irreversible, estás seguro que deseas eliminar este producto?',
+        message: 'Eliminar',
+        messageCallback: async () => {
+          const removeItemFromSaleFlow =
+            await this.saleflowService.removeItemFromSaleFlow(
+              item._id,
+              this.saleflow._id
+            );
+          if (!removeItemFromSaleFlow) return;
+          const deleteItem = await this.itemsService.deleteItem(item._id);
+          if (!deleteItem) return;
+          this.items = this.items.filter(
+            (listItem) => listItem._id !== item._id
+          );
+        },
       },
     ];
 
-  this.dialog.open(StoreShareComponent, {
+    this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
         list,
-        alternate: true
+        alternate: true,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-  });
+    });
   }
 
   openDialog = () => {
-
     const list: StoreShareList[] = [
-        {
-          title:  'Crear',
-          options: [
-            {
-              text: 'Un nuevo Item',
-              mode: 'func',
-              func: () => {
-                this.router.navigate(['admin/create-item/']);
-              }
-            }
-          ]
-        }
+      {
+        title: 'Crear',
+        options: [
+          {
+            text: 'Un nuevo Item',
+            mode: 'func',
+            func: () => {
+              this.router.navigate(['admin/create-item/']);
+            },
+          },
+        ],
+      },
     ];
-        
+
     this.dialog.open(StoreShareComponent, {
-        type: 'fullscreen-translucent',
-        props: {
-          list,
-          alternate: true
-        },
-        customClass: 'app-dialog',
-        flags: ['no-header'],
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
     });
-    };
+  };
 
-    editArticles = () => {
+  editArticles = () => {
+    const content: any = [
+      {
+        text: 'Adicionar nuevo artículo',
+        callback: () => {
+          this.router.navigate(['admin/create-item']);
+        },
+      },
+      {
+        text: 'Incluir artículos en otras categorias',
+        callback: () => {
+          console.log('opcion 2');
+        },
+      },
+      {
+        text: 'Eliminar artículos',
+        callback: () => {
+          console.log('opcion 3');
+        },
+      },
+      {
+        text: 'Compartir un grupo de artículos',
+        callback: () => {
+          console.log('opcion 4');
+        },
+      },
+    ];
 
-        const content: any = [
-            {
-            text: 'Adicionar nuevo artículo',
-            callback: () =>{
-                this.router.navigate(['admin/create-item']);
-              }
-            },
-            {
-            text: 'Incluir artículos en otras categorias',
-            callback: () =>{
-                console.log('opcion 2');
-              }
-            },
-            {
-            text: 'Eliminar artículos',
-            callback: () =>{
-                console.log('opcion 3');
-              }
-            },
-            {
-            text: 'Compartir un grupo de artículos',
-            callback: () =>{
-                console.log('opcion 4');
-              }
-            },
-        ];
-    
-        this.dialog.open(ItemSettingsComponent, {
-            type: 'fullscreen-translucent',
-            customClass: 'app-dialog',
-            flags: ['no-header'],
-            props:{
-              header: {text: 'Artículos'},
-              content
-            }
-        });
-    }
+    this.dialog.open(ItemSettingsComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props: {
+        header: { text: 'Artículos' },
+        content,
+      },
+    });
+  };
 }
