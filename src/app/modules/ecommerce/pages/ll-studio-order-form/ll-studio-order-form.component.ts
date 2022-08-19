@@ -353,7 +353,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl('', Validators.required)
           },
-          placeholder: 'Ejemplo: @_heavenlyballoons',
+          placeholder: 'Ejemplo: @llstudiord',
           label: 'Instagram User (*)',
           styles: {
             containerStyles: {
