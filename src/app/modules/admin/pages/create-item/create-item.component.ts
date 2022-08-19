@@ -86,7 +86,7 @@ export class CreateItemComponent implements OnInit {
     if (merchant && this.user._id !== merchant.owner._id)
       throw new Error('No eres el merchant dueño de este item');
     this.imageField = images;
-    if (this.itemService.temporalItem?.images) this.changedImages = true;
+    if (this.itemService.temporalImages?.new?.length) this.changedImages = true;
     if (
       this.item?.images?.length > 1 ||
       this.itemService.temporalItem?.images?.length > 1
@@ -96,6 +96,7 @@ export class CreateItemComponent implements OnInit {
         type: 'bullets',
         clickable: true,
       };
+    if (pricing % 1 === 0) pricing = pricing * 100;
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('pricing').setValue(pricing);
     this.formatNumber(pricing);
@@ -327,7 +328,7 @@ export class CreateItemComponent implements OnInit {
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list
+        list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

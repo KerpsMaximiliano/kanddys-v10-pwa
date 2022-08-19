@@ -99,7 +99,7 @@
     </form>
   </main>
   <footer [ngClass]="{ disabled: !itemForm.valid }">
-    <button class="back">
+    <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
     <button class="save" (click)="onSubmit()">Salvar</button>
