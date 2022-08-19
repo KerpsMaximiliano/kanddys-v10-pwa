@@ -8,7 +8,7 @@ import {
   HostListener,
   NgZone,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,7 +26,7 @@ import {
   StickerInput,
   Stickers,
   TextInput,
-  Texts
+  Texts,
 } from 'src/app/core/models/customizer-value';
 import { Item } from 'src/app/core/models/item';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -3034,18 +3034,18 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
   // Mouse scroll events
   isMouseDown: boolean;
   scrollStartX: number;
-  scrollLeft: any;
-  startDragging(e, flag, el) {
+  scrollLeft: number;
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.isMouseDown = true;
     this.scrollStartX = e.pageX - el.offsetLeft;
     this.scrollLeft = el.scrollLeft;
   }
 
-  stopDragging(e, flag) {
+  stopDragging() {
     this.isMouseDown = false;
   }
 
-  moveEvent(e, el) {
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
     e.preventDefault();
     if (!this.isMouseDown) {
       return;
