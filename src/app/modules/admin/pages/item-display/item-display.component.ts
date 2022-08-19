@@ -516,10 +516,10 @@ export class ItemDisplayComponent implements OnInit {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
         label: {
           text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
-        },
-        labelStyles: this.item.status !== 'active' && {
-          backgroundColor: '#B17608',
-          color: '#fff',
+          labelStyles: this.item.status !== 'active' && {
+            backgroundColor: '#B17608',
+            color: '#fff',
+          },
         },
         options: [
           {
@@ -596,22 +596,22 @@ export class ItemDisplayComponent implements OnInit {
       );
   };
 
-  // toggleView() {
-  //   this.providerView = !this.providerView;
-  // }
-
   openDialog() {
+    const styles = [{'background-color': '#82F18D', color: '#174B72' }, {'background-color': '#B17608', color: '#FFFFFF'}];
     const list: StoreShareList[] = [
       {
         title: this.item.name,
         label: {
-          text: this.item.status === 'active' ? 'Visible' : 'No visible',
+          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+          textArray: ['VISIBLE', 'INVISIBLE'],
           func: this.toggleActivateItem,
+          valueUpdate: () =>{
+            return this.item.status === 'active' ? 1 : 0
+          },
+          stylesArray: styles,
+          labelStyles:
+            this.item.status === 'disabled' ? styles[1] : styles[0],
         },
-        labelStyles:
-          this.item.status === 'disabled'
-            ? { 'background-color': '#B17608', color: '#FFFFFF' }
-            : null,
         options: [
           {
             text: 'Editar producto',

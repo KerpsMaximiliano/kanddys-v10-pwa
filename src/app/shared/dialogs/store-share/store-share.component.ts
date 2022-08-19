@@ -8,6 +8,8 @@ import {
   HostListener,
   Output,
   EventEmitter,
+  SimpleChanges,
+  SimpleChange,
 } from '@angular/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
@@ -37,13 +39,16 @@ interface StoreShareOption {
 interface Label{
     text: string;
     func?: () => void;
+    textArray?: Array<string>;
+    labelStyles?: Record<string, any>;
+    stylesArray?: Array<Record<string, any>>;
+    valueUpdate?: () => any;
 }
 
 export interface StoreShareList {
   title?: string;
   titleStyles?: Record<string, any>;
   label?: Label;
-  labelStyles?: Record<string, any>;
   description?: string;
   message?: string;
   messageCallback?: (...args: any[]) => void;
@@ -81,6 +86,13 @@ export class StoreShareComponent implements OnInit {
       throw new Error('Ingresa opciones para mostrar');
   }
 
+  ngOnChanges(changes: SimpleChanges){
+    console.log(changes)
+    const list: SimpleChange = changes.list;
+    console.log('Old value:', list.previousValue);
+    console.log('New value:', list.currentValue);
+  }
+  
   downloadQr() {
     const parentElement = this.qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
@@ -149,6 +161,9 @@ export class StoreShareComponent implements OnInit {
   }
 
   secondInput(callback: () => void){
+    let label = this.list[0].label;
+    label.text = label.textArray[label.valueUpdate()];
+    label.labelStyles = label.stylesArray[label.valueUpdate()];
     callback();
   }
 

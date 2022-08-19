@@ -20,7 +20,7 @@
           <button
             class="added-label"
             *ngIf="item.label"
-            [ngStyle]="item.labelStyles && item.labelStyles"
+            [ngStyle]="item.label.labelStyles && item.label.labelStyles"
             (click)="item.label.func && secondInput(item.label.func)"
           >
             {{ item.label.text }}
