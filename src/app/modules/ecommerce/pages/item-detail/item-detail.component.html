@@ -3,10 +3,6 @@
     <div style="position: sticky; top: 0; z-index: 2">
       <app-helper-headerv2
         [mode]="'basic'"
-        [mainText]="{
-          text: itemData ? itemData.merchant?.name : 'TIENDA NAME ID',
-          fontSize: '21px,'
-        }"
         [returnAble]="true"
         cartColor="blue"
         bgColor="#2874ad"
@@ -17,12 +13,12 @@
     </div>
 
     <div class="item-info" *ngIf="itemData">
-      <div class="description" *ngIf="itemData.description">
-        <!-- <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
+      <!-- <div class="description" *ngIf="itemData.description">
+        <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
           {{ itemData.name }}
-        </h2> -->
+        </h2>
         <p>{{ itemData.description }}</p>
-      </div>
+      </div> -->
       <!-- <div
         *ngIf="itemData.name && (!itemData.images || !itemData.images?.length)"
       >
@@ -81,20 +77,20 @@
          </h2>
 
          <div class="wrapper">
-            <span class="vale">A Pagar </span>
+            <span class="vale">A PAGAR </span>
             <h3 class="price">RD$ {{ itemData.pricing | number }}</h3>
          </div>
       </div>
 
       <div class="client-submit-area">
-        <button
+        <!-- <button
           class="action-btn"
           [ngClass]="{ yellow: !inCart, blue: inCart }"
           (click)="onCartClick()"
         >
           {{ inCart ? "En el carrito " : "Adicionar al carrito "
           }}<span><img src="{{ env }}/carrito_blanco.svg" alt="" /></span>
-        </button>
+        </button> -->
         <!-- <button class="side-btn"><img src="{{ env }}/bookmark-plus.svg" alt=""></button> -->
       </div>
       <ng-container *ngIf="itemData.content?.length">
@@ -132,11 +128,16 @@
       bgColor="#2874AD"
     ></app-sticky-button> -->
 
-   <app-sticky-button style="position: sticky; top: 100vh; z-index: 2"
+   <app-sticky-button *ngIf="!itemCartAmount" style="position: sticky; top: 100vh; z-index: 2"
    [mode]="'basic'"
    [text]="'ADD AL CARRITO DE COMPRAS'"
    [size]="'small'"
    [bgColor]="'#2874AD'"
+   [customLeftButtonStyles]="{
+      'font-size': '17px',
+      'font-family': 'RobotoMedium',
+      'letter-spacing': '1px'
+   }"
    ></app-sticky-button>
   </div>
 </ng-container>

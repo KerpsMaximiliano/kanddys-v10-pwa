@@ -2,7 +2,7 @@
   <button
     class="button"
     [ngClass]="{ 'with-icon': icon, 'small': size === 'small' }"
-    [ngStyle]="{color: color && color}"
+    [ngStyle]="customLeftButtonStyles? customLeftButtonStyles : {color: color && color}"
     [style.background-color]="bgColor"
   >
     <a class="back-btn" *ngIf="backButton" (click)="backButtonCallback && backButtonCallback()">
