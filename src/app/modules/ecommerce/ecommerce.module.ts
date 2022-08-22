@@ -19,94 +19,107 @@ import { UserInfoComponent } from './pages/provider-store/user-info/user-info.co
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
+import { NewAddressComponent } from './pages/new-address/new-address.component';
+import { EcommerceComponent } from './ecommerce/ecommerce.component';
 
 const routes: Routes = [
   {
-    path: 'category-items/:id/:categoryId',
-    component: CategoryItemsComponent,
-  },
-  {
-    path: 'provider-store/:saleflowId/:itemId',
-    component: ProviderStoreComponent,
+    path: '',
+    component: EcommerceComponent,
     children: [
       {
-        path: 'quantity-and-quality',
-        component: CustomItemDetailComponent,
+        path: 'category-items/:id/:categoryId',
+        component: CategoryItemsComponent,
       },
       {
-        path: 'redirect-to-customizer',
-        component: CustomizerRedirectComponent,
+        path: 'provider-store/:saleflowId/:itemId',
+        component: ProviderStoreComponent,
+        children: [
+          {
+            path: 'quantity-and-quality',
+            component: CustomItemDetailComponent,
+          },
+          {
+            path: 'redirect-to-customizer',
+            component: CustomizerRedirectComponent,
+          },
+          {
+            path: 'user-info',
+            component: UserInfoComponent,
+          },
+        ],
+      },
+      { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
+      {
+        path: 'store/:id',
+        component: MegaphoneV3Component,
       },
       {
-        path: 'user-info',
-        component: UserInfoComponent,
+        path: 'order-info/:id',
+        component: OrderInfoComponent,
+      },
+      {
+        path: 'shipment-data-form',
+        component: ShipmentDataFormComponent,
+      },
+      {
+        path: 'new-address',
+        component: NewAddressComponent,
+      },
+      {
+        path: 'item-detail',
+        component: ItemDetailComponent,
+      },
+      {
+        path: 'item-detail/:saleflow/:id',
+        component: ItemDetailComponent,
+      },
+      {
+        path: 'flow-completion-auth-less',
+        component: FlowCompletionAuthLessComponent,
+      },
+      {
+        path: 'flow-completion-auth-less/:orderId',
+        component: FlowCompletionAuthLessComponent,
+      },
+
+      {
+        path: 'create-giftcard',
+        component: CreateGiftcardComponent,
+      },
+
+      {
+        path: 'package-detail/:saleflowId/:packageId',
+        component: PackageDetailComponent,
+      },
+      {
+        path: 'reservations',
+        component: ReservationComponent,
+      },
+
+      {
+        path: 'order-detail',
+        component: OrderDetailComponent,
+      },
+      {
+        path: 'redirections',
+        component: RedirectionsComponent,
+      },
+      {
+        path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
+        component: HeavenlyBalloonsComponent,
+      },
+      {
+        path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
+        component: LlStudioOrderFormComponent,
       },
     ],
-  },
-  { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
-  {
-    path: 'store/:id',
-    component: MegaphoneV3Component,
-  },
-  {
-    path: 'order-info/:id',
-    component: OrderInfoComponent,
-  },
-  {
-    path: 'shipment-data-form',
-    component: ShipmentDataFormComponent,
-  },
-  {
-    path: 'item-detail',
-    component: ItemDetailComponent,
-  },
-  {
-    path: 'item-detail/:saleflow/:id',
-    component: ItemDetailComponent,
-  },
-  {
-    path: 'flow-completion-auth-less',
-    component: FlowCompletionAuthLessComponent,
-  },
-  {
-    path: 'flow-completion-auth-less/:orderId',
-    component: FlowCompletionAuthLessComponent,
-  },
-
-  {
-    path: 'create-giftcard',
-    component: CreateGiftcardComponent,
-  },
-
-  {
-    path: 'package-detail/:saleflowId/:packageId',
-    component: PackageDetailComponent,
-  },
-  {
-    path: 'reservations',
-    component: ReservationComponent,
-  },
-
-  {
-    path: 'order-detail',
-    component: OrderDetailComponent,
-  },
-  {
-    path: 'redirections',
-    component: RedirectionsComponent,
-  },
-  {
-    path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
-    component: HeavenlyBalloonsComponent,
-  },
-  {
-    path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
-    component: LlStudioOrderFormComponent,
   },
 ];
 
 @NgModule({
   declarations: [
+    EcommerceComponent,
     CategoryItemsComponent,
     CustomItemDetailComponent,
     CustomizerRedirectComponent,
@@ -124,7 +137,8 @@ const routes: Routes = [
     OrderDetailComponent,
     RedirectionsComponent,
     HeavenlyBalloonsComponent,
-    LlStudioOrderFormComponent
+    LlStudioOrderFormComponent,
+    NewAddressComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

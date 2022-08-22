@@ -12,10 +12,11 @@
         <div class="selector-flex-wrapper">
           <div
             [class]="
-              !indicator ? (i === activeOption && showSelectedFeedback)
-                ? 'option selected'
-                : 'option'
-              : (i === activeOption && showSelectedFeedback)
+              !indicator
+                ? i === activeOption && showSelectedFeedback
+                  ? 'option selected'
+                  : 'option'
+                : i === activeOption && showSelectedFeedback
                 ? 'selector-option active'
                 : 'selector-option'
             "
@@ -23,7 +24,7 @@
             (click)="editable && option.status && clickSelector(i)"
           >
             <div class="background"></div>
-            
+
             <ng-container *ngIf="!option.isOptionAnArray">
               <span>{{ option.value }}</span>
             </ng-container>
@@ -31,29 +32,40 @@
             <ng-container *ngIf="option.isOptionAnArray && option.valueArray">
               <span>
                 <ng-container *ngFor="let part of option.valueArray">
-                  <span *ngIf="part.highlight" [ngStyle]="{
-                    display: 'inline-block',
-                    margin: '0px 10px',
-                    marginBottom: '10px',
-                    backgroundColor: '#2874AD',
-                    color: '#fff',
-                    borderRadius: '5px',
-                    padding: '5px 10px'
-                  }">{{part.text}}</span>
+                  <span
+                    *ngIf="part.highlight"
+                    [ngStyle]="{
+                      display: 'inline-block',
+                      margin: '0px 10px',
+                      marginBottom: '10px',
+                      backgroundColor: '#2874AD',
+                      color: '#fff',
+                      borderRadius: '5px',
+                      padding: '5px 10px'
+                    }"
+                    >{{ part.text }}</span
+                  >
 
-                  <span *ngIf="!part.highlight" [ngStyle]="{
-                    display: 'inline-block',
-                    margin: '0px 4px',
-                    marginBottom: '10px'
-                  }">{{part.text}}</span>
+                  <span
+                    *ngIf="!part.highlight"
+                    [ngStyle]="{
+                      display: 'inline-block',
+                      margin: '0px 4px',
+                      marginBottom: '10px'
+                    }"
+                    >{{ part.text }}</span
+                  >
                 </ng-container>
               </span>
             </ng-container>
           </div>
-          <div class="icons-flex-wrapper" *ngIf="option.icons && option.icons.length > 0">
+          <div
+            class="icons-flex-wrapper"
+            *ngIf="option.icons && option.icons.length > 0"
+          >
             <ng-container *ngFor="let icon of option.icons">
-              <img 
-                [src]="icon.src" 
+              <img
+                [src]="icon.src"
                 (click)="icon.callback ? icon.callback() : null"
                 [ngStyle]="icon.styles ? icon.styles : null"
               />
