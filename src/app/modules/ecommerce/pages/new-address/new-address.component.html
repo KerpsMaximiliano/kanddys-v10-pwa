@@ -1,0 +1,30 @@
+<div class="component">
+  <header>
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <button class="dot-trio" (click)="onOpenDialog()">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </button>
+  </header>
+  <main>
+    <h3 class="title">Seleccione entre:</h3>
+    <div>
+      <app-answer-selector
+        [options]="addressesOptions"
+        [indicator]="true"
+        (onSelector)="selectAddress($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </div>
+  </main>
+</div>
+<app-bubble-button
+  position="right"
+  color="blue"
+  [solo]="false"
+  [cart]="true"
+  [cartAmount]="1"
+></app-bubble-button>
