@@ -13,6 +13,7 @@
 			flex-direction: column;
 			background-color: #ffffff;
 			padding: 24px 32px;
+         border: 1px solid #c5c5c5;
 
 			.title-name {
 				font-family: "RobotoBold";
@@ -58,21 +59,35 @@
 
 		.item-price {
 			display: flex;
-			flex-direction: column;
-			margin: 16px 32px;
+			justify-content: space-between;
+         align-items: center;
+			margin: 19px 32px;
+         
+         .title-name{
+            font-family: 'SfProMedium';
+            font-size: 19px;
+            color: #4F4F4F;
+         }
 
-			.vale {
-				font-family: "SfProRegular";
-				font-size: 17px;
-				color: #7b7b7b;
-			}
+         .wrapper{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
 
-			.price {
-				font-family: "SfProBold";
-				font-size: 28px;
-				color: #3f3f3f;
-				margin: 0;
-			}
+            .vale {
+               font-family: "SfProLight";
+               font-size: 17px;
+               color: #4F4F4F;
+            }
+   
+            .price {
+               font-family: "SfProLight";
+               font-size: 17px;
+               color: #4F4F4F;
+               margin: 0 0 0 5px;
+            }
+         }
+			
 		}
 
 		.content {
@@ -216,6 +231,18 @@
 			border-radius: 100%;
 		}
 	}
+   .swiper-button {
+		all: unset;
+		position: absolute;
+		top: 8px;
+		right: 14px;
+		padding: 9px 11px;
+		background-color: #ffffff;
+		border-radius: 50%;
+		cursor: pointer;
+		z-index: 2;
+      box-shadow: 0px 3px 6px 3px rgb(0 0 0 / 10%);
+	}
 	.text {
 		padding-left: 28px;
 		padding-right: 28px;
@@ -229,11 +256,40 @@
 	border-radius: 4px !important;
 }
 
-@media only screen and (max-width: 374px) {
+.nonswiper-button {
+	all: unset;
+	padding: 9px 11px;
+	background-color: #ffffff;
+	border-radius: 8px;
+	cursor: pointer;
+	color: #2874ad;
+	border: solid 1px #2874ad;
+	display: flex;
+	align-items: flex-end;
+	gap: 8px;
+   margin-top: 25px;
+
+	img {
+		filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);
+	}
+
+	&:hover, &:active {
+		color: #ffffff;
+		background-color: #2874ad;
+		border: solid 1px #fff;
+		outline: solid 1px #2874ad;
+		img {
+			filter: brightness(0) saturate(100%) invert(100%) sepia(1%) saturate(0%) hue-rotate(289deg) brightness(102%)
+				contrast(103%);
+		}
+	}
+}
+
+/* @media only screen and (max-width: 374px) {
 	.container {
 		padding-bottom: 95px;
 	}
-}
+} */
 @media (max-width: 420px) {
 	.fullScreenSwiper {
 		.item {

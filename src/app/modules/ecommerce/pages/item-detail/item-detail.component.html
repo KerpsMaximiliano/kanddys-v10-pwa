@@ -8,20 +8,6 @@
           fontSize: '21px,'
         }"
         [returnAble]="true"
-        [icons]="[
-          {
-            src: '/whatsapp_blanco.svg',
-            color:
-              'invert(10%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)',
-            callback: tapping
-          },
-          {
-            src: '/upload.svg',
-            color:
-              'invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
-            callback: openShareDialog
-          }
-        ]"
         cartColor="blue"
         bgColor="#2874ad"
         [color]="'#FFF'"
@@ -29,21 +15,30 @@
         (returnEvent)="back()"
       ></app-helper-headerv2>
     </div>
+
     <div class="item-info" *ngIf="itemData">
       <div class="description" *ngIf="itemData.description">
-        <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
+        <!-- <h2 class="title-name" *ngIf="itemData.name && itemData.images?.length">
           {{ itemData.name }}
-        </h2>
+        </h2> -->
         <p>{{ itemData.description }}</p>
       </div>
-      <div
+      <!-- <div
         *ngIf="itemData.name && (!itemData.images || !itemData.images?.length)"
       >
         <div class="grey-box">
           <h3 class="title">{{ itemData.name }}</h3>
         </div>
-      </div>
+      </div> -->
       <div class="fullScreenSwiper" *ngIf="itemData.images?.length">
+         <button class="swiper-button" (click)="openShareDialog()">
+            <img
+              [src]="env + '/upload.svg'"
+              width="15"
+              height="19"
+              style="filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);"
+            />
+          </button>
         <div class="shadowWrapper">
           <swiper [config]="swiperConfig">
             <div
@@ -56,17 +51,41 @@
         </div>
       </div>
       <div
+      *ngIf="!itemData.images?.length"
+      style="
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 16px;
+      "
+    >
+      <button class="nonswiper-button" (click)="openShareDialog()">
+        <img
+          [src]="env + '/upload.svg'"
+          width="15"
+          height="19"
+        />
+        Compartir
+      </button>
+    </div>
+      <!-- <div
         class="no-description"
         *ngIf="
           itemData.name && !itemData.description && itemData.images?.length
         "
       >
         <h3 class="title">{{ itemData.name }}</h3>
-      </div>
+      </div> -->
       <div *ngIf="itemData.pricing" class="item-price">
-        <span class="vale">Vale</span>
-        <h4 class="price">${{ itemData.pricing | number }}</h4>
+         <h2 class="title-name" *ngIf="itemData.name">
+            {{ itemData.name }}
+         </h2>
+
+         <div class="wrapper">
+            <span class="vale">A Pagar </span>
+            <h3 class="price">RD$ {{ itemData.pricing | number }}</h3>
+         </div>
       </div>
+
       <div class="client-submit-area">
         <button
           class="action-btn"
@@ -112,5 +131,12 @@
       size="small"
       bgColor="#2874AD"
     ></app-sticky-button> -->
+
+   <app-sticky-button style="position: sticky; top: 100vh; z-index: 2"
+   [mode]="'basic'"
+   [text]="'ADD AL CARRITO DE COMPRAS'"
+   [size]="'small'"
+   [bgColor]="'#2874AD'"
+   ></app-sticky-button>
   </div>
 </ng-container>
