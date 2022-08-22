@@ -7,6 +7,7 @@ import { DialogService } from './libs/dialog/services/dialog.service';
 import { filter } from 'rxjs/operators';
 import { IpusersService } from './core/services/ipusers.service';
 import { slideAnimations } from './core/animations/routes';
+import { ReloadComponent } from './shared/dialogs/reload/reload.component';
 
 @Component({
   selector: 'app-root',
@@ -32,7 +33,8 @@ export class AppComponent implements OnDestroy, OnInit {
     private swUpdate: SwUpdate,
     public service: AppService, 
     private ipuser: IpusersService,
-    private contexts: ChildrenOutletContexts
+    private contexts: ChildrenOutletContexts,
+    private dialog: DialogService
   ) {
     this.navsub = this.service.navend.subscribe((route) => {
       this.isfullscreen = route?.data?.fullscreen;
@@ -43,6 +45,7 @@ export class AppComponent implements OnDestroy, OnInit {
       this.swUpdate.available.subscribe(() => {
         // localStorage.clear();
         console.log("Reload ejecutado");
+        this.openReloadDialog();
         // ons.notification.alert(`Reload to update.`, {
         //   cancelable: false,
         //   title: 'New version available!',
@@ -101,4 +104,18 @@ export class AppComponent implements OnDestroy, OnInit {
     this.navsub?.unsubscribe();
     delete this.navsub;
   }
+
+  openReloadDialog() {
+   this.dialog.open(ReloadComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+         closeEvent: ()=> {
+            this.reload();
+         }
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true
+   });
+ }
 }
