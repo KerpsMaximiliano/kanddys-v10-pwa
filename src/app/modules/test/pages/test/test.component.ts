@@ -12,6 +12,7 @@ import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/
 import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
+import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
 
 @Component({
   selector: 'app-test',
@@ -111,5 +112,49 @@ export class TestComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+openDeleteDialog() {
+   const list: StoreShareList[] = [
+     {
+       title: `Hay una nueva versión disponible`,
+       description:
+         'Se ha encontrado una nueva version de la pagina. ¿Desea actualizar?',
+       message: 'Recargar Página',
+       messageCallback: async () => {
+         this.reload();
+       },
+     },
+   ];
+
+   this.dialog.open(StoreShareComponent, {
+     type: 'fullscreen-translucent',
+     props: {
+       list,
+       alternate: true,
+       buttonText: 'Cerrar'
+     },
+     customClass: 'app-dialog',
+     flags: ['no-header'],
+     notCancellable: true
+   });
+ }
+ 
+ reloadDialog(){
+   this.dialog.open(ReloadComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+         closeEvent: ()=> {
+            this.reload();
+         }
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true
+   });
+ }
+
+ reload() {
+   window.location.reload();
+ }
 }
 
