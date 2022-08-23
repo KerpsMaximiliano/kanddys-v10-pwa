@@ -19,6 +19,7 @@ button {
   height: 12rem;
   width: 100%;
   background-color: #c7c7c7;
+  -webkit-user-drag: none;
 }
 .item-info {
   margin-top: -3px;

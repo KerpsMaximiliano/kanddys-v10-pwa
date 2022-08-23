@@ -159,15 +159,7 @@ export class OrderInfoComponent implements OnInit {
     else if (order.orderStatus === 'to confirm') this.status = 'por confirmar';
     else if (order.orderStatus === 'completed') this.status = 'completado';
     // order.ocr.status.forEach((status) => {
-    let name:
-      | 'cancelado'
-      | 'empezado'
-      | 'verificando'
-      | 'verificado'
-      | 'en revisión'
-      | 'por confirmar'
-      | 'completado'
-      | 'error';
+    let name: OrderStatusNameType;
     switch (order.orderStatus) {
       case 'cancelled':
         name = 'cancelado';
