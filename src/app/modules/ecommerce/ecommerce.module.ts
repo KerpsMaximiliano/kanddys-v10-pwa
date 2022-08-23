@@ -21,6 +21,7 @@ import { ReservationComponent } from './pages/reservation/reservation.component'
 import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
 import { NewAddressComponent } from './pages/new-address/new-address.component';
 import { EcommerceComponent } from './ecommerce/ecommerce.component';
+import { CheckoutComponent } from './pages/checkout/checkout.component';
 
 const routes: Routes = [
   {
@@ -113,6 +114,10 @@ const routes: Routes = [
         path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
         component: LlStudioOrderFormComponent,
       },
+      {
+        path: 'checkout',
+        component: CheckoutComponent
+      },
     ],
   },
 ];
@@ -139,6 +144,7 @@ const routes: Routes = [
     HeavenlyBalloonsComponent,
     LlStudioOrderFormComponent,
     NewAddressComponent,
+    CheckoutComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

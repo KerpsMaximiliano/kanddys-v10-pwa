@@ -35,8 +35,8 @@ export class AdminLoginComponent implements OnInit {
     if(session) this.admin = true;
 
     try{
-        const merchAll = await this.merchant.merchants({options: {sortBy:'createdAt:desc', limit: 135}});
-        merchAll.splice(1, 0, merchAll.splice(118, 1)[0], merchAll.splice(119, 1)[0]);
+        const merchAll = await this.merchant.merchants({options: {sortBy:'createdAt:desc', limit: 200}});
+        merchAll.splice(1, 0, merchAll.splice(138, 1)[0], merchAll.splice(139, 1)[0], merchAll.splice(20, 1)[0]);
         this.merchantList = merchAll;
         console.log(this.merchantList);
         
