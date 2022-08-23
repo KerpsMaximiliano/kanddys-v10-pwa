@@ -15,7 +15,7 @@
   <div class="box-shadowing">
     <app-item-reservation
       [headline]="{
-        text: order?.dateId
+        text: formatId(order?.dateId)
       }"
       [rightActive]="true"
       [rightSubHeadline]="{
