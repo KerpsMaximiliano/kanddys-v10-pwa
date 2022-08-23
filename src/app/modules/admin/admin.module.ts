@@ -34,6 +34,7 @@ import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
+import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 
 const routes: Routes = [
   {
@@ -139,6 +140,10 @@ const routes: Routes = [
     component: MerchantItemsComponent,
   },
   {
+    path: 'merchant-shared/:merchantId',
+    component: MerchantSharedComponent,
+  },
+  {
     path: 'merchant-orders',
     component: MerchantOrdersComponent,
   },
@@ -242,6 +247,7 @@ const routes: Routes = [
     TagDetailComponent,
     TagsEditComponent,
     UserItemsComponent,
+    MerchantSharedComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
