@@ -1,11 +1,3 @@
-input, input:before, input:after {
-    -webkit-user-select: initial !important;
-    -khtml-user-select: initial !important;
-    -moz-user-select: initial !important;
-    -ms-user-select: initial !important;
-    user-select: initial !important;
-}
-
 .container{
     width: 100%;
     min-height: 100vh;
@@ -36,6 +28,7 @@ input, input:before, input:after {
                 color: #2874AD;
                 font-family: 'SfProBold';
                 font-size: 14px;
+                letter-spacing: 1px;
                 margin-top: 25px;
                 margin-left: 19px;
                 cursor: pointer;
@@ -51,19 +44,19 @@ input, input:before, input:after {
             position: relative;
 
             .pass{
-                all: unset;
-                width: 85%;
-                height: 72px;
-                text-indent: 16px;
-                background-color: #FFFFFF;
-                z-index: 2;
+               all: unset;
+               width: 85%;
+               height: 72px;
+               text-indent: 16px;
+               background-color: #FFFFFF;
+               z-index: 2;
 
-                &::placeholder{
-                    font-family: 'RobotoMedium';
-                    font-size: 20px;
-                    text-indent: 16px;
-                    color: rgba(161, 161, 161, 60%);
-                }
+               &::placeholder{
+                 font-family: 'RobotoMedium';
+                 font-size: 20px;
+                 text-indent: 16px;
+                 color: rgba(161, 161, 161, 60%);
+               }
             }
 
             .invalid-pass{
@@ -72,37 +65,50 @@ input, input:before, input:after {
             }
 
             .confirm{
-                right: 11%;
-                top: 25px;
+               right: 11%;
+               top: 25px;
+            }
+
+            .alternate{
+               all: unset;
+               width: 100%;
+               max-width: 249px;
+               margin-top: 33px;
+               margin-right: auto;
+               margin-left: 8%;
+               font-family: 'SfProBold';
+               font-size: 14px;
+               color: #2874AD;
+               cursor: pointer;
             }
         }
     }
 }
 
 .confirm{
-    all: unset;
-    position: absolute;
-    width: 45px;
-    height: 21px;
-    padding-bottom: 3px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #2874AD;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #FFFFFF;
-    z-index: 2;
+   all: unset;
+   position: absolute;
+   width: 45px;
+   height: 21px;
+   padding-bottom: 3px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   background-color: #2874AD;
+   border-radius: 6px;
+   cursor: pointer;
+   color: #FFFFFF;
+   z-index: 2;
 }
 
 .fas{
-    width: 5px;
-    height: 9px;
+   width: 5px;
+   height: 9px;
 }
 
 .custom, .pass{
-    border-radius: 9px !important;
-    box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+   border-radius: 9px !important;
+   box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
 }
 
 .ng-invalid.ng-touched{
@@ -110,36 +116,100 @@ input, input:before, input:after {
 }
 
 .invalid-pass{
-    background-color: #f29085;
-    padding: 35px 15px 20px;
-    font-size: 14px;
-    font-family: "SfProRegular";
-    color: #202020;
-    border-radius: 10px;
-    margin-top: -15px;
+   background-color: #f29085;
+   padding: 35px 15px 20px;
+   font-size: 14px;
+   font-family: "SfProRegular";
+   color: #202020;
+   border-radius: 10px;
+   margin-top: -15px;
 }
 
 .disabled{
-    background-color: #c1c1c1 !important;
-    cursor: unset !important;
+   background-color: #c1c1c1 !important;
+   cursor: unset !important;
 }
 
 .phone-label{
-    font-family: 'SfProRegular';
-    font-size: 14px;
-    color: #202020;
-    margin-bottom: 20px;
+   font-family: 'RobotoMedium';
+   font-size: 17px;
+   color: #7B7B7B;
+   margin-bottom: 20px;
 }
 
 .phone-input-wrapper{
     width: 85%;
     height: auto;
+    display: flex;
+    flex-direction: column;
+
+    .names-area{
+      width: 100%;
+      display: flex;
+      margin-bottom: 63px;
+      column-gap: 12px;
+
+      .name,.last-name{
+         display: flex;
+         flex-direction: column;
+
+         .names-label{
+            font-family: 'RobotoMedium';
+            font-size: 17px;
+            color: #7B7B7B;
+            margin-bottom: 20px;
+         }
+
+         .names-input{
+            all: unset;
+            width: 100%;
+            height: 66px;
+            background-color: #FFFFFF;
+            text-indent: 16px;
+            font-family: 'RobotoMedium';
+            font-size: 20px;
+            border-radius: 9px;
+            box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+
+            &::placeholder{
+               font-family: 'RobotoMedium';
+               font-size: 20px;
+               text-indent: 16px;
+               color: rgba(161, 161, 161, 60%);
+           }
+         }
+      }
+    }
+
+    .mail-inputs{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 63px;
+
+      .email-input{
+         all: unset;
+         height: 66px;
+         background-color: #FFFFFF;
+         text-indent: 16px;
+         font-family: 'RobotoMedium';
+         font-size: 20px;
+         border-radius: 9px;
+         box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+
+         &::placeholder{
+            font-family: 'RobotoMedium';
+            font-size: 20px;
+            text-indent: 16px;
+            color: rgba(161, 161, 161, 60%);
+         }
+      }
+    }
 
     .pass{
         all: unset;
-        width: 100%;
-        height: 72px;
-        margin-top: 15px;
+        width: 45%;
+        height: 66px;
         text-indent: 16px;
         background-color: #FFFFFF;
 
@@ -152,21 +222,21 @@ input, input:before, input:after {
     }
 
     .signUp-btn{
-        all: unset;
-        margin: 0 auto;
-        margin-top: 25px;
-        padding: 25px;
-        background-color: #2874AD;
-        border-radius: 9px;
-        color: #FFFFFF;
-        cursor: pointer;
+      all: unset;
+      margin: 0 auto 0 0;
+      margin-top: 25px;
+      padding: 25px;
+      background-color: #2874AD;
+      border-radius: 9px;
+      color: #FFFFFF;
+      cursor: pointer;
     }
 
     .clarification{
-        font-family: 'RobotoBold';
-        font-size: 15px;
-        margin: 0px;
-        color: #202020;
-        margin-top: 40px;
+      font-family: 'RobotoBold';
+      font-size: 15px;
+      margin: 0px;
+      color: #202020;
+      margin-top: 40px;
     }
 }

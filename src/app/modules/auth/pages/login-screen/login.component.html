@@ -41,18 +41,20 @@
                     [ngClass]="{disabled: (phoneNumber.invalid || phoneNumber.untouched) && !phoneNumber.valid}"><i class="fas fa-chevron-right"></i></button>
                 </div>
                 
-                <button class="adiciona" (click)="toSignUp()">¿No tienes usuario? Crear Usuario</button>
+                <button class="adiciona" (click)="toSignUp()">CREAR UNA NUEVA CUENTA</button>
             </div>
             
             
             <div class="password-input" *ngIf="loggin">
                 
-                <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" required>
+               <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" required>
 
-                <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
-                
-                <button class="confirm" (click)="signIn()" [disabled]="(password.invalid || password.pristine || password.untouched) && !password.valid"
-                [ngClass]="{disabled : (password.invalid || password.pristine || password.untouched) && !password.valid}"><i class="fas fa-chevron-right"></i></button>
+               <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
+               
+               <button class="confirm" (click)="signIn()" [disabled]="(password.invalid || password.pristine || password.untouched) && !password.valid"
+               [ngClass]="{disabled : (password.invalid || password.pristine || password.untouched) && !password.valid}"><i class="fas fa-chevron-right"></i></button>
+
+               <button class="alternate">PREFIERO RECIBIR UN MENSAJE CON EL CODIGO</button>
             </div>
         </ng-container>
         
@@ -60,46 +62,64 @@
 
     <ng-template #elseTemplate>
 
-        <div class="phone-input-wrapper">
-
-            <label for="Phone number" class="phone-label">Número de Telefono:</label>
-
-            <div style="margin-bottom: 30px; margin-top: 15px">
-                <ngx-intl-tel-input 
-                [cssClass]="'custom'"
-                [enableAutoCountrySelect]="true" 
-                [enablePlaceholder]="true" 
-                [searchCountryFlag]="true"
-                [selectFirstCountry]="false" 
-                [preferredCountries]="preferredCountries"
-                [selectedCountryISO]="CountryISO" 
-                maxLength="13"
-                minlength="10"
-                [phoneValidation]="true" 
-                [separateDialCode]="true" 
-                [customPlaceholder]="'Mi # de WhatsApp es....'"
-                [numberFormat]="PhoneNumberFormat.International"
-                [formControl]="phoneNumber"
-                tabindex="1"
-                ></ngx-intl-tel-input> 
+      <div class="phone-input-wrapper">
+         
+         <div class="names-area">
+            <div class="name">
+               <label for="Name" class="names-label">Nombre:</label>
+               <input type="text" class="names-input" placeholder="Mi nombre es..." [formControl]="firstName" required>
             </div>
 
-            <label for="Password" class="phone-label">Contraseña:</label>
+            <div class="last-name">
+               <label for="Last name" class="names-label">Apellido:</label>
+               <input type="text" class="names-input" placeholder="Mi apellido es..." [formControl]="lastName" required>
+            </div>
+         </div>
 
-            <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" placeholder="Contraseña de al menos 3 digitos" required>
+         <label for="Phone number" class="phone-label">Celular que recibe las notificaciones:</label>
 
-            <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
+         <div style="margin-bottom: 63px;">
+            <ngx-intl-tel-input 
+            [cssClass]="'custom'"
+            [enableAutoCountrySelect]="true" 
+            [enablePlaceholder]="true" 
+            [searchCountryFlag]="true"
+            [selectFirstCountry]="false" 
+            [preferredCountries]="preferredCountries"
+            [selectedCountryISO]="CountryISO" 
+            maxLength="13"
+            minlength="10"
+            [phoneValidation]="true" 
+            [separateDialCode]="true" 
+            [customPlaceholder]="'Mi # de WhatsApp es....'"
+            [numberFormat]="PhoneNumberFormat.International"
+            [formControl]="phoneNumber"
+            tabindex="1"
+            ></ngx-intl-tel-input> 
+         </div>
 
-            <button class="signUp-btn" (click)="signMeUp()" 
-            [ngClass]="{'disabled': password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid}"
-            [disabled]="password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid"
-            >
-              Registrarme
-            </button>
+         <div class="mail-inputs">
+            <label for="Email" class="phone-label">Correo Electronico:</label>
 
-            <p class="clarification">Te llegará una confirmación a tu # de WhatsApp</p>
+            <input type="email" class="email-input" placeholder="miEmail@mail.com" [formControl]="email" >
+         </div>
 
-        </div>
+         <label for="Password" class="phone-label">Clave de Acceso:</label>
+
+         <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" placeholder="Escribe..." required>
+
+         <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
+
+         <button class="signUp-btn" (click)="signMeUp()" 
+         [ngClass]="{'disabled': password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid}"
+         [disabled]="password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid"
+         >
+           Registrarme
+         </button>
+
+         <p class="clarification">Te llegará una confirmación a tu # de WhatsApp</p>
+
+      </div>
 
     </ng-template>
     
