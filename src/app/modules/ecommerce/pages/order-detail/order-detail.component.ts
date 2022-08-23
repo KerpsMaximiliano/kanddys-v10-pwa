@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
@@ -196,5 +197,9 @@ export class OrderDetailComponent implements OnInit {
       minute: '2-digit',
       hour12: true,
     });
+  }
+
+  formatId(dateId: string) {
+    return formatID(dateId);
   }
 }
