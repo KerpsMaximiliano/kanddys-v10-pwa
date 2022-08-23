@@ -2,17 +2,8 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [edit]="{
-      active: true,
-      text: 'TAGS'
-    }"
-    [editStyles]="{
-      'margin-right': '20px',
-      'font-family': 'RobotoMedium',
-      'font-size': '13px'
-    }"
     [mainText]="{
-      text: !tagActive ? 'TIENDA NAME ID' : 'TAGS',
+      text:'D’Licianthus' ,
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
@@ -47,201 +38,72 @@
             'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)'
         }
       ]"
-      [ctaText]="{
-        text: { 
-            text: 'PAGOS', 
-            callback: togglePayments 
-        },
-        arrow: true,
-        showEntry: payments
-      }"
-      [tagActive]="tagActive"
-      [tag]="{
-        title: {
-          text: 'TAGS'
-        },
-        tags: [
-          {
-            name: 'Tag ID',
-            icon: {
-              src: '/whatsapp_verde.svg'
-            }
-          },
-          {
-            name: 'Tag ID'
-          },
-          {
-            name: 'Tag ID',
-            icon: {
-              src: '/whatsapp_verde.svg'
-            }
-          }
-        ],
-        icon: {
-          src: '/pencil.svg',
-          width: 15,
-          height: 15
-        }
-      }"
-      [content]="{
-        title: { text: 'PRODUCTOS' },
-        images: [
-          'https://i.imgur.com/xEhQi8j.jpeg',
-          'https://i.imgur.com/xEhQi8j.jpeg',
-          'https://i.imgur.com/xEhQi8j.jpeg'
-        ]
-      }"
     ></app-item-reservation>
-
-    <ng-container *ngIf="payments">
-      <div class="content">
-        <div class="payment-list">
-          <div class="payment-card">
-            <div class="price">
-              <p class="total" *ngIf="price">${{ price | number: "1.0-2" }}</p>
-            </div>
-            <p class="payment-type">Total Facturado en DOP</p>
-          </div>
-          <div class="payment-card">
-            <div class="price">
-              <p class="total" *ngIf="totalPayed">
-                ${{ totalPayed | number: "1.0-2" }}
-              </p>
-            </div>
-            <p class="payment-type">Total Pagado en DOP</p>
-          </div>
-        </div>
-        <h3 class="payments-title">Pagos realizados</h3>
-        <div *ngFor="let item of dummyPayments" class="payments-container">
-            <app-item-status [itemListContent]="item"></app-item-status>
-        </div>
-      </div>
-    </ng-container>
   </div>
 
     <div class="information">
       <div class="reservation">
-        <div class="section">
-          <h2 class="date-reservation">Fecha tu reservación es:</h2>
 
-          <div class="wrapper">
-            <p class="date">Sab 11</p>
-            <p class="text-reservation" style="width: 85%">
-              De 9:00am a 9:45am
-            </p>
-          </div>
-        </div>
+         <div class="section">
+          <h2 class="date-reservation">Articulos facturados:</h2>
+
+            <div class="items-container">
+               <img src="https://i.imgur.com/FdJUfen.jpeg" alt="" class="item-image">
+               <img src="https://i.imgur.com/FdJUfen.jpeg" alt="" class="item-image">
+            </div>
+
+         </div>
 
         <div class="section">
           <h2 class="address-reservation" style="margin-top: 39px">
             Lugar de Entrega:
           </h2>
 
-          <div class="wrapper">
-            <p class="text-reservation">Dirección de correo de Santo Domingo</p>
+          <div class="items-container column">
+            <p class="text"> Dirección Name ID</p>
+            <p class="added">Dirección escrita sale aquí</p>
           </div>
+        </div>
+
+        <div class="section" style="margin-top: 40.5px;">
+            <h2 class="address-reservation">Sobre el pago:</h2>
+
+            <div class="items-container space-between">
+               <p class="total">Total:</p>
+               <p class="amount">RD $ {{payment}}</p>
+            </div>
         </div>
 
         <div class="section">
           <h2 class="address-reservation" style="margin-top: 54px">
-            Mesanje de regalo:
+            Mensaje de regalo:
           </h2>
 
           <div class="wrapper colored">
+
             <section class="message">
               <h3 class="sub" style="margin-top: 0px">Mensaje a escribir:</h3>
               <p class="text-reservation inner">
-                Te quiero, madre mía, te adoro y te amaré para toda la vida.
-                Nunca dudes de lo que siento, aunque a veces no te lo demuestro,
-                ni te lo diga. Gracias, mamá, por tu amor, paciencia,
-                comprensión y soportar mis malcriadeces todo el tiempo. Nunca
-                olvides que te quiero mucho.
+                Este mensaje que se presenta es una prueba dirigida a determinar el funcionamiento correcto de la sección en donde se presenta
               </p>
             </section>
 
             <section class="to">
               <h3 class="sub" style="margin-top: 59px">Para:</h3>
-              <p class="text-reservation inner">Madre mía.</p>
+              <p class="text-reservation inner">Un individuo.</p>
             </section>
 
             <section class="from">
               <h3 class="sub" style="margin-top: 32px">De:</h3>
-              <p class="text-reservation inner">José Amado</p>
+              <p class="text-reservation inner">Oragnismo multicelular.</p>
             </section>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-
-  <!-- <ng-container *ngIf="tagActive">
-    <div class="sector">
-      <h1 class="header-tag">Tags en Order ID:</h1>
-
-      <div class="tag-wrapper">
-        <div class="tag-column">
-          <h2 class="tagid">TAG ID</h2>
-          <p class="ws-message">sin mensaje de whatsapp</p>
-        </div>
-
-        <button class="edit-tag">
-          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
-        </button>
-      </div>
-
-      <div class="tag-wrapper">
-        <div class="tag-column">
-          <h2 class="tagid">TAG ID</h2>
-          <p class="ws-message two">con mensaje de whatsapp</p>
-        </div>
-
-        <button class="edit-tag">
-          <img
-            [src]="env + '/pencil.svg'"
-            alt="Icono de Lapiz"
-            width="19px"
-            height="19px"
-          />
-        </button>
-      </div>
-    </div>
-
-    <div class="add-tag">
-      <h1 class="header-tag">Agregar Otros Tags:</h1>
-
-      <div class="tag-wrapper">
-        <div class="tag-column2">
-          <h2 class="tagid">TAG ID</h2>
-          <p class="ws-message">con mensaje de whatsapp</p>
-        </div>
-
-        <button class="edit-tag">
-          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
-        </button>
-      </div>
-
-      <div class="tag-wrapper">
-        <div class="tag-column2">
-          <h2 class="tagid">TAG ID</h2>
-          <p class="ws-message two">con mensaje de whatsapp</p>
-        </div>
-
-        <button class="edit-tag">
-          <img [src]="env + '/pencil.svg'" alt="Icono de Lapiz" />
-        </button>
-      </div>
-    </div>
-
-    <app-sticky-button
-      [mode]="'double'"
-      [extra]="{
-        return: true
-      }"
-      [text]="''"
-      [text2]="''"
-      [size]="'small'"
-      [fontSize]="'17px'"
-      [bgColor]="'#2874AD'"
-    ></app-sticky-button>
-  </ng-container> -->
 </div>
