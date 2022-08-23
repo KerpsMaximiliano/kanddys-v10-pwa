@@ -57,7 +57,7 @@ const routes: Routes = [
       },
       {
         path: 'order-info/:id',
-        component: OrderInfoComponent,
+        component: OrderDetailComponent,
       },
       {
         path: 'shipment-data-form',
