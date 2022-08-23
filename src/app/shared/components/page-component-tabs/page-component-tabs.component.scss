@@ -41,3 +41,9 @@
       height: 0px;
     }
 }
+
+@media (max-width: 380px) {
+  .page-components-tabs .tab {
+    margin-left: 5px;
+  }
+}
