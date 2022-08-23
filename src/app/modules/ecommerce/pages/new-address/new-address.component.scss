@@ -5,7 +5,12 @@ a,
 button {
   cursor: pointer;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 .component {
@@ -19,8 +24,22 @@ header {
   align-items: center;
   color: white;
   background-color: #2874ad;
-  font-family: "RobotoMedium";
-  font-size: 1rem;
+  font-family: "SfProBold";
+  font-size: 1.375rem;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    a {
+      display: flex;
+    }
+  }
+
+  i {
+    font-size: 0.875rem;
+  }
 
   img {
     filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%)
@@ -28,7 +47,7 @@ header {
   }
 }
 main {
-  padding: 24px 16px;
+  padding: 32px 24px;
 }
 .dot-trio {
   display: flex;

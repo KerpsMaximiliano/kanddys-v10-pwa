@@ -26,7 +26,14 @@
             <div class="background"></div>
 
             <ng-container *ngIf="!option.isOptionAnArray">
-              <span>{{ option.value }}</span>
+              <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+              <div>
+                <span
+                  *ngFor="let subtext of option.subtexts"
+                  [ngStyle]="subtext.styles"
+                  >{{ subtext.text }}</span
+                >
+              </div>
             </ng-container>
 
             <ng-container *ngIf="option.isOptionAnArray && option.valueArray">

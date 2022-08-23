@@ -2,20 +2,21 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export interface AnswerIcon {
   src: string;
-  styles?: Record<string, any>; 
+  styles?: Record<string, any>;
   callback(...params): any;
 }
 
 export interface OptionAnswerSelector {
   value?: string;
+  valueStyles?: Record<string, any>;
   subtexts?: {
     text: string;
     callback?(...params): any;
     callbackParams?: any[];
-    styles: Record<string, any>;
+    styles?: Record<string, any>;
   }[];
   icons?: AnswerIcon[];
-  valueArray?: {text: string, highlight: boolean}[];
+  valueArray?: { text: string; highlight: boolean }[];
   isOptionAnArray?: boolean;
   status: boolean;
   click?: boolean;

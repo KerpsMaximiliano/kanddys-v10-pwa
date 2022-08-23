@@ -3,35 +3,70 @@ import { Router } from '@angular/router';
 import { DeliveryLocation } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AnswerIcon } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import {
+  AnswerIcon,
+  OptionAnswerSelector,
+} from 'src/app/shared/components/answer-selector/answer-selector.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
-interface DeliveryDetails {
-  status: boolean;
-  value: string;
-  description: string[];
-  icons?: AnswerIcon[];
-}
-
 const dummyDeliveryOptions = [
   {
     status: true,
     value: 'fdsfsdfs',
-    description: ['gfsfgfdgfd'],
+    valueStyles: {
+      fontFamily: 'SfProBold',
+      fontSize: '0.875rem',
+      color: '#000000',
+    },
+    subtexts: [
+      {
+        text: 'gfsfgfdgfd',
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+        },
+      },
+    ],
   },
   {
     status: true,
     value: 'fdsfsdfs',
-    description: ['gfsfgfdgfd'],
+    valueStyles: {
+      fontFamily: 'SfProBold',
+      fontSize: '0.875rem',
+      color: '#000000',
+    },
+    subtexts: [
+      {
+        text: 'gfsfgfdgfd',
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+        },
+      },
+    ],
   },
   {
     status: true,
     value: 'fdsfsdfs',
-    description: ['gfsfgfdgfd'],
+    valueStyles: {
+      fontFamily: 'SfProBold',
+      fontSize: '0.875rem',
+      color: '#000000',
+    },
+    subtexts: [
+      {
+        text: 'gfsfgfdgfd',
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+        },
+      },
+    ],
   },
 ];
 
@@ -49,7 +84,7 @@ export class NewAddressComponent implements OnInit {
   mode: 'normal' | 'delete' | 'edit' = 'normal';
   env = environment.assetsUrl;
   addresses: DeliveryLocation[];
-  addressesOptions: DeliveryDetails[] = dummyDeliveryOptions;
+  addressesOptions: OptionAnswerSelector[] = dummyDeliveryOptions;
 
   ngOnInit(): void {}
 
