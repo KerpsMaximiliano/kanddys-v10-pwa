@@ -1,7 +1,12 @@
 <div class="component">
   <header>
-    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    <button class="dot-trio" (click)="onOpenDialog()">
+    <div>
+      <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+      <h5>
+        {{ mode === "normal" ? "Dirección de entrega" : "Modo de edición" }}
+      </h5>
+    </div>
+    <button *ngIf="mode === 'normal'" class="dot-trio" (click)="onOpenDialog()">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
