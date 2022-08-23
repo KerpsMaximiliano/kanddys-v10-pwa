@@ -59,16 +59,14 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     this.orderDate = new Date(this.order.createdAt).toLocaleString();
-    if (this.order.items[0].customizer) {
-      this.payment =
-        Math.round((this.payment * 1.18 + Number.EPSILON) * 100) / 100;
-    }
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
       ).post;
     }
     if (this.order.items[0].customizer) {
+      this.payment =
+        Math.round((this.payment * 1.18 + Number.EPSILON) * 100) / 100;
       this.customizer = await this.customizerValueService.getCustomizerValue(
         this.order.items[0].customizer._id
       );
@@ -201,5 +199,29 @@ export class OrderDetailComponent implements OnInit {
 
   formatId(dateId: string) {
     return formatID(dateId);
+  }
+
+  mouseDown: boolean;
+  startX: number;
+  scrollLeft: number;
+
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
+    this.mouseDown = true;
+    this.startX = e.pageX - el.offsetLeft;
+    this.scrollLeft = el.scrollLeft;
+  }
+
+  stopDragging() {
+    this.mouseDown = false;
+  }
+
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
+    e.preventDefault();
+    if (!this.mouseDown) {
+      return;
+    }
+    const x = e.pageX - el.offsetLeft;
+    const scroll = x - this.startX;
+    el.scrollLeft = this.scrollLeft - scroll;
   }
 }

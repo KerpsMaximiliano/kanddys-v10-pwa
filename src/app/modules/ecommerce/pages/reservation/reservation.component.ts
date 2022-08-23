@@ -14,7 +14,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Calendar } from 'src/app/core/models/calendar';
 import { ItemOrderInput } from 'src/app/core/models/order';
-import { Reservation } from 'src/app/core/models/reservation';
+import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 
 @Component({
   selector: 'app-reservation',
@@ -172,7 +172,6 @@ export class ReservationComponent implements OnInit {
     this.blurContent = false;
   }
 
-
   getAmAndPm() {
     let date = new Date();
     let offset = date.getTimezoneOffset() / 60;
@@ -230,8 +229,7 @@ export class ReservationComponent implements OnInit {
   makeReservation() {
     let date1 = moment.utc().format();
     let date2 = moment.utc().format();
-    let lastHour;
-    let reservation;
+    let reservation: ReservationInput;
 
     if (
       this.calendar.dayIndex == 0 &&
@@ -279,6 +277,7 @@ export class ReservationComponent implements OnInit {
       reservation = {
         calendar: this.calendarData._id,
         merchant: this.merchant,
+        breakTime: this.calendarData.breakTime,
         type: 'ORDER',
         date: {
           dateType: 'RANGE',
@@ -299,7 +298,7 @@ export class ReservationComponent implements OnInit {
           this.orderData.products[0].reservation = reservation;
         }
       } else if (this.mode === 'standalone') {
-        this.standaloneReservation = reservation;
+        this.standaloneReservation = reservation as unknown as Reservation;
       }
     } else {
       this.today = false;
@@ -344,6 +343,7 @@ export class ReservationComponent implements OnInit {
       reservation = {
         calendar: this.calendarData._id,
         merchant: this.merchant,
+        breakTime: this.calendarData.breakTime,
         type: 'ORDER',
         date: {
           dateType: 'RANGE',
@@ -364,7 +364,7 @@ export class ReservationComponent implements OnInit {
           this.orderData.products[0].reservation = reservation;
         }
       } else if (this.mode === 'standalone') {
-        this.standaloneReservation = reservation;
+        this.standaloneReservation = reservation as unknown as Reservation;
       }
     }
 
@@ -401,7 +401,7 @@ export class ReservationComponent implements OnInit {
               this.orderData.products[0].reservation.date.from as string
             )
           : this.formatHour3(this.standaloneReservation.date.from as string),
-      hourNumber: this.formatHour5(reservation.date.from).hour,
+      hourNumber: this.formatHour5(reservation.date.from as string).hour,
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[

@@ -6,9 +6,7 @@
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
     [middleText]="headerText"
-    [back]="
-      step !== 'PHONE_CHECK_AND_SHOW_BANKS'
-    "
+    [back]="step !== 'PHONE_CHECK_AND_SHOW_BANKS'"
     [basic]="step === 'UPDATE_NAME_AND_SHOW_BANKS' && !orderData"
     [dialogProps]="dialogProps"
     [cart]="true"
@@ -47,7 +45,13 @@
         [formControl]="phoneNumber"
       ></ngx-intl-tel-input>
     </div>
-    <ng-container *ngIf="saleflowData && !saleflowData.module?.paymentMethod?.paymentModule?._id  && (!banksInfo || !banksInfo.length)">
+    <ng-container
+      *ngIf="
+        saleflowData &&
+        !saleflowData.module?.paymentMethod?.paymentModule?._id &&
+        (!banksInfo || !banksInfo.length)
+      "
+    >
       <p
         class="label3"
         [ngStyle]="{
@@ -55,7 +59,8 @@
           marginTop: '0'
         }"
       >
-        Al completar la orden será enviado a whatsapp. Asegúrese de enviar el mensaje para continuar con la orden.
+        Al completar la orden será enviado a whatsapp. Asegúrese de enviar el
+        mensaje para continuar con la orden.
       </p>
     </ng-container>
     <ng-container *ngIf="banksInfo && banksInfo.length">
@@ -82,8 +87,9 @@
           }"
         >
           <!-- <strong>(Opcional)</strong> -->
-          Para completar la orden, transfiera como
-          pago la suma de ${{ totalPrice | number: "1.0-2" }}
+          Para completar la orden, transfiera como pago la suma de ${{
+            totalPrice | number: "1.0-2"
+          }}
           DOP.
         </p>
 
@@ -104,7 +110,8 @@
                 color: 'black',
                 fontWeight: 'bold',
                 fontFamily: 'RobotoMedium',
-                margin: '0px'
+                margin: '0px',
+                fontSize: '1rem'
               }"
             >
               {{ bank.value }}
@@ -222,8 +229,9 @@
         }"
       >
         <!-- <strong>(Opcional)</strong> -->
-        Para completar la orden, transfiera como
-        pago la suma de ${{ totalPrice| number: "1.0-2" }}
+        Para completar la orden, transfiera como pago la suma de ${{
+          totalPrice | number: "1.0-2"
+        }}
         DOP.
       </p>
 
@@ -249,7 +257,6 @@
           >
             {{ bank.value }}
           </h6>
-
 
           <div *ngIf="bank.description">
             <p
@@ -321,9 +328,7 @@
   </div>
   <div *ngIf="step === 'PAYMENT_INFO'">
     <div class="content step-7">
-      <p class="label1">
-        Sobre la transferencia que realizó como pago:
-      </p>
+      <p class="label1">Sobre la transferencia que realizó como pago:</p>
       <!-- Temporalmente deshabilitado -->
       <!-- <p style="margin-bottom: 22px; margin-top: 0px" class="label3">
         Que monto transfirió?
@@ -350,9 +355,7 @@
         class="code-input"
       /> -->
 
-      <p class="label3">
-        Adicione la imagen (captura):
-      </p>
+      <p class="label3">Adicione la imagen (captura):</p>
       <app-image-input
         [allowedTypes]="['png', 'jpg', 'jpeg']"
         [expandImage]="true"
@@ -365,12 +368,7 @@
         </div>
       </ng-container> -->
 
-      <p
-        class="label3"
-        *ngIf="banks.length > 1"
-      >
-        Selecciona el banco
-      </p>
+      <p class="label3" *ngIf="banks.length > 1">Selecciona el banco</p>
 
       <app-answer-selector
         *ngIf="banks.length > 1"
@@ -417,11 +415,15 @@
       step !== 'PAYMENT_INFO' &&
       saleflowData &&
       !saleflowData.module?.paymentMethod?.paymentModule?._id &&
-      userData && userData.name
+      userData &&
+      userData.name
     "
   >
     <app-sticky-button
-      *ngIf="step === 'PHONE_CHECK_AND_SHOW_BANKS' || step === 'UPDATE_NAME_AND_SHOW_BANKS'"
+      *ngIf="
+        step === 'PHONE_CHECK_AND_SHOW_BANKS' ||
+        step === 'UPDATE_NAME_AND_SHOW_BANKS'
+      "
       [mode]="changeStickyButtonMode()"
       [text]="changeStickyButtonText()"
       (click)="!buttonBlocked ? submit() : null"
@@ -429,10 +431,7 @@
   </a>
 
   <app-sticky-button
-    *ngIf="
-      step !== 'PAYMENT_INFO' &&
-      saleflowData
-    "
+    *ngIf="step !== 'PAYMENT_INFO' && saleflowData"
     [mode]="changeStickyButtonMode()"
     [text]="changeStickyButtonText()"
     (click)="!buttonBlocked ? submit() : null"
