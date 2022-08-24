@@ -54,6 +54,7 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
     }
+    console.log(this.order);
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus

@@ -76,12 +76,49 @@
       </div>
     </section>
 
-    <section class="section" style="margin-top: 32px">
+    <section class="section" style="margin-top: 32px" *ngIf="!order.ocr">
       <h2 class="section-title">Sobre el pago:</h2>
 
       <div class="items-container space-between" style="padding: 10px 32px">
         <p class="total">Total:</p>
         <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top: 32px" *ngIf="order.ocr">
+      <h2 class="section-title">Sobre el pago:</h2>
+
+      <div class="items-container">
+        <div class="items-container space-between" style="padding: 10px 32px">
+          <p class="total">Total:</p>
+          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+        </div>
+        <div
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            (click)="
+              order.ocr && openImageModal(order.ocr.image)
+            "
+          >
+            <div class="image">
+              <img
+                [src]="
+                  order.ocr
+                    ? order.ocr.image
+                    : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
+            </div>
+          </button>
+        </div>
       </div>
     </section>
 
