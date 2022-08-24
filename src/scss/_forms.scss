@@ -153,6 +153,10 @@
     display: inline-block;
     width: calc(100% - 32px);
   }
+
+  .selector-option-content {
+    padding-top: 11px;
+  }
 }
 
 .selector-option.active {

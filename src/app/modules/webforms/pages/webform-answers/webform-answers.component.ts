@@ -176,6 +176,9 @@ export class WebformAnswersComponent implements OnInit {
           },
           topLeft: {
             text: userAnswerObject.questionText,
+            styles: {
+              paddingBottom: '8px'
+            }
           },
           middleTexts: [
             {
@@ -184,6 +187,9 @@ export class WebformAnswersComponent implements OnInit {
           ],
           bottomLeft: {
             text: userAnswerObject.user.name,
+            styles: {
+              paddingTop: '10px'
+            }
           },
         },
       });
