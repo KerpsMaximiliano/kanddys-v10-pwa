@@ -3,13 +3,44 @@
   margin-bottom: 24px;
   border-bottom: solid 1px #E0E0E0;
 }
+
+.flex-label-and-icon {
+  display: flex;
+  justify-content: space-between;
+}
+
 .label {
   font-family: "RobotoMedium";
   font-size: 16px;
   color: #7B7B7B;
-  margin-bottom: 24px;
   text-transform: uppercase;
 }
+
+.dot-trio {
+  display: flex;
+  padding: 5px 5px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+
+  &:hover,
+  &:active {
+    background-color: #2c89d1;
+
+    .dot {
+      background-color: #fff;
+    }
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #2874AD;
+    margin: 0 1px;
+  }
+}
+
 .selected {
   all: unset;
   padding: 8px 8px 8px 16px;

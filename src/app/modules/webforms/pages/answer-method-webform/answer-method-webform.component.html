@@ -4,13 +4,22 @@
     [returnAble]="true"
     [mainText]="{text: 'PREGUNTA #1, Pantalla #1'}"
     (returnEvent)="back()"
+    [bgColor]="'#2874AD'"
   ></app-helper-headerv2>
-  <div style="padding: 24px;">
+  <div style="padding: 54px 24px 24px 24px;">
     <div
-      class="label"
       [ngStyle]="{marginBottom: answerMethod == null ? '24px' : '12px'}"
+      class="flex-label-and-icon"
     >
-      Metodo de Respuestas
+      <div class="label">
+        Metodo de Respuestas
+      </div>
+
+      <button class="dot-trio"> 
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </button>
     </div>
     <ng-container *ngIf="answerMethod == null">
       <app-answer-selector
@@ -139,9 +148,12 @@
     </ng-container>
   </div>
 </div>
-<app-sticky-button
-  mode="fixed"
-  text="PREVIEW"
-  size="small"
-  bgColor="#2874AD"
-></app-sticky-button>
+
+<!--
+  <app-sticky-button
+    mode="fixed"
+    text="PREVIEW"
+    size="small"
+    bgColor="#2874AD"
+  ></app-sticky-button>
+-->

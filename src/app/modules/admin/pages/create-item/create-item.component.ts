@@ -296,8 +296,24 @@ export class CreateItemComponent implements OnInit {
   onOpenDialog = () => {
     const list: StoreShareList[] = [
       {
-        title: 'Sobre ' + this.merchant.name,
+        //title: 'Sobre ' + this.merchant.name,
+        title: 'Articulo',
         options: [
+          {
+            text: 'Simple',
+            mode: 'func',
+            func: () => {
+              //this.router.navigate(['/ecommerce/item-detail']);
+            },
+          },
+          {
+            text: 'WhatsApp Form',
+            mode: 'func',
+            func: () => {
+              this.headerService.flowRoute = this.router.url;
+              this.router.navigate(['/webforms/webform-questions']);
+            },
+          },
           {
             text: 'Vista del comprador',
             mode: 'func',
