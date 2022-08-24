@@ -8,7 +8,7 @@ import { ItemDashboardOptionsComponent, DashboardOption } from 'src/app/shared/d
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { Questions } from '../../../../shared/components/form-questions/form-questions.component';
 import { Tag } from '../../../../core/models/tags';
-import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config.component';
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';

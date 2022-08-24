@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 

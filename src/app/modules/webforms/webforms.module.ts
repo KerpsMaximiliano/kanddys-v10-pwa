@@ -13,6 +13,7 @@ import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visit
 import { VisitorDetailComponent } from './pages/visitor-detail/visitor-detail.component';
 import { QuestionVisitorsGroupComponent } from './pages/question-visitors-group/question-visitors-group.component';
 import { QuestionVisitorsListComponent } from './pages/question-visitors-list/question-visitors-list.component';
+import { WebformAnswersComponent } from './pages/webform-answers/webform-answers.component';
 
 const routes: Routes = [
   {
@@ -58,7 +59,11 @@ const routes: Routes = [
   {
     path: 'question-visitors-list',
     component: QuestionVisitorsListComponent
-  }
+  },
+  {
+    path: 'webform-answers/:webformId',
+    component: WebformAnswersComponent
+  },
 ];
 
 @NgModule({
@@ -74,6 +79,7 @@ const routes: Routes = [
     VisitorDetailComponent,
     QuestionVisitorsGroupComponent,
     QuestionVisitorsListComponent,
+    WebformAnswersComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

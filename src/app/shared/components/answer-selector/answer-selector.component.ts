@@ -1,28 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-export interface AnswerIcon {
-  src: string;
-  styles?: Record<string, any>;
-  callback(...params): any;
-}
-
-export interface OptionAnswerSelector {
-  value?: string;
-  valueStyles?: Record<string, any>;
-  subtexts?: {
-    text: string;
-    callback?(...params): any;
-    callbackParams?: any[];
-    styles?: Record<string, any>;
-  }[];
-  icons?: AnswerIcon[];
-  valueArray?: { text: string; highlight: boolean }[];
-  isOptionAnArray?: boolean;
-  status: boolean;
-  click?: boolean;
-  description?: string[];
-  id?: string;
-}
+import {
+  ComplexOptionAnswerSelector,
+  OptionAnswerSelector,
+} from 'src/app/core/types/answer-selector';
 
 @Component({
   selector: 'app-answer-selector',
@@ -40,12 +20,14 @@ export class AnswerSelectorComponent {
   @Input() itemStyles: Record<string, any> | null = null;
   @Input() isMultipleOption: boolean = false;
   @Input() isMultipleOption2: boolean = false;
+  @Input() hasComplexOptionsLayout: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
     { value: '¿Cuánto es?', status: true, click: false, description: [] },
     { value: '¿Dónde es?', status: true, click: false, description: [] },
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
+  @Input() complexOptions: ComplexOptionAnswerSelector[];
 
   @Output() onSelector = new EventEmitter<number>();
 
@@ -83,7 +65,12 @@ export class AnswerSelectorComponent {
     this.onSelector.emit(index);
   }
 
+  //Metodos para usar en el template
   spreadParams(anyFunction, params) {
     return anyFunction(...params);
+  }
+
+  getObjectKeysAsArray(object) {
+    return Object.keys(object);
   }
 }
