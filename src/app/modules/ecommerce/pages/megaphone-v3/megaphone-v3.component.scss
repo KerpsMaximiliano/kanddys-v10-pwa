@@ -85,11 +85,10 @@ main {
 }
 
 .item-list {
-  display: flex;
-  flex-direction: column;
-  row-gap: 15px;
-  padding: 10px;
-  padding-bottom: 36px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 16px;
+  gap: 16px;
 }
 
 .category-header {
