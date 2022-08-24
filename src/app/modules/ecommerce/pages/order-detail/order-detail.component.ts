@@ -202,6 +202,12 @@ export class OrderDetailComponent implements OnInit {
     return formatID(dateId);
   }
 
+  redirectToUserContact = () => {
+    this.router.navigate([
+      `/others/user-contact-landing/${this.order.user._id}`,
+    ]);
+  };
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;

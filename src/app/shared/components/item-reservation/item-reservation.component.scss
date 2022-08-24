@@ -1,3 +1,6 @@
+button {
+	all: unset;
+}
 .body {
 	width: 100%;
 	padding: 17px 30px 14px 26px;
@@ -128,7 +131,6 @@
 		align-items: center;
 
 		.display {
-			all: unset;
 			display: flex;
 			justify-content: center;
 			align-items: center;
