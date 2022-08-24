@@ -28,12 +28,6 @@
       [returnAble]="false"
       *ngIf="saleflowData && !hasCustomizer"
     ></app-helper-headerv2>
-    <!-- {
-      src: '/search.svg',
-      color:
-        'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-      callback: null
-    }, -->
     <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
       <app-header-info
         [profileImage]="saleflowData.banner"
@@ -63,28 +57,10 @@
     >
       <div class="item-list" *ngIf="categorylessItems.length">
         <ng-container *ngFor="let item of categorylessItems; index as i">
-          <app-saleflow-item
-            *ngIf="item.showImages && item.images.length"
-            [type]="2"
-            [big]="true"
-            [name]="item.name"
-            [showBox]="item.customizerId ? false : true"
-            [imgURL]="item.images[0]"
-            [isSelected]="item.isSelected"
-            [showSelected]="true"
-            [price]="item.pricing"
-            [showPrice]="item.customizerId ? false : true"
-            priceAlign="start"
-            [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
-            (itemClicked)="onItemClick(item._id, true)"
-            (action)="onItemClick(item._id)"
-          ></app-saleflow-item>
-          <app-package-item
-            [clickAble]="true"
-            *ngIf="!item.showImages || !item.images.length"
+          <app-item
             [item]="item"
-            (action)="onItemClick(item._id, $event)"
-          ></app-package-item>
+            (imageEvent)="onItemClick(item._id, true)"
+          ></app-item>
         </ng-container>
       </div>
       <div *ngFor="let categoryItems of itemsByCategory; let i = index">
@@ -232,7 +208,7 @@
     [solo]="false"
     [cart]="true"
     [cartAmount]="itemCartAmount"
-    *ngIf="itemCartAmount"
+    *ngIf="itemCartAmount && !hasCustomizer"
     (click)="showShoppingCartDialog()"
   ></app-bubble-button>
 </div>
