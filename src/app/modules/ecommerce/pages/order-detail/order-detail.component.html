@@ -35,7 +35,8 @@
           width: 13,
           height: 17,
           color:
-            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)'
+            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)',
+          callback: redirectToUserContact
         }
       ]"
     ></app-item-reservation>
@@ -76,16 +77,7 @@
       </div>
     </section>
 
-    <section class="section" style="margin-top: 32px" *ngIf="!order.ocr">
-      <h2 class="section-title">Sobre el pago:</h2>
-
-      <div class="items-container space-between" style="padding: 10px 32px">
-        <p class="total">Total:</p>
-        <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
-      </div>
-    </section>
-
-    <section class="section" style="margin-top: 32px" *ngIf="order.ocr">
+    <section class="section" style="margin-top: 32px">
       <h2 class="section-title">Sobre el pago:</h2>
 
       <div class="items-container">
@@ -94,6 +86,7 @@
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
         </div>
         <div
+          *ngIf="order?.ocr"
           class="image-container"
           #elemt
           (mousedown)="startDragging($event, elemt)"
@@ -101,17 +94,11 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button
-            (click)="
-              order.ocr && openImageModal(order.ocr.image)
-            "
-          >
+          <button (click)="order.ocr && openImageModal(order.ocr.image)">
             <div class="image">
               <img
                 [src]="
-                  order.ocr
-                    ? order.ocr.image
-                    : '/assets/images/noimage.png'
+                  order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
                 alt="item image"
                 class="item-image"
