@@ -61,8 +61,12 @@
               item.item.images?.length && openImageModal(item.item.images[0])
             "
           >
-            <div class="image">
-              <img
+            <div class="image"
+            [ngStyle]="{
+               backgroundImage: item.item.images?.length ? 'url('+ item.item.images[0] +')' : 'url(/assets/images/noimage.png)'
+            }"
+            >
+              <!-- <img
                 [src]="
                   item.item.images?.length
                     ? item.item.images[0]
@@ -70,7 +74,7 @@
                 "
                 alt="item image"
                 class="item-image"
-              />
+              /> -->
             </div>
           </button>
         </div>
@@ -95,14 +99,18 @@
           (mousemove)="moveEvent($event, elemt)"
         >
           <button (click)="order.ocr && openImageModal(order.ocr.image)">
-            <div class="image">
-              <img
+            <div class="image"
+            [ngStyle]="{
+               'background-image': order.ocr.image ? 'url('+ order.ocr.image +') ' : 'url(/assets/images/noimage.png)'
+            }"
+            >
+              <!-- <img
                 [src]="
                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
                 "
                 alt="item image"
                 class="item-image"
-              />
+              /> -->
             </div>
           </button>
         </div>
