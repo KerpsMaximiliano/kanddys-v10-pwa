@@ -1611,7 +1611,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             return { ok: true };
           } catch (error) {
-            console.log('El error ', error.message);
+            const formData = this.formSteps.map((formStep, index) => {
+              const stepData = {};
+
+              formStep.fieldsList.map((field, index) => {
+                stepData[field.name] = field.fieldControl.control.value;
+              });
+
+              return stepData;
+            });
 
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
@@ -1631,6 +1639,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               log: JSON.stringify({
                 error: error.message,
               }),
+              dataJSON: JSON.stringify(formData),
             });
 
             return { ok: false };
