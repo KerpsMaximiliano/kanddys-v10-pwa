@@ -82,6 +82,24 @@ export class NewAddressComponent implements OnInit {
   env = environment.assetsUrl;
   addresses: DeliveryLocation[];
   addressesOptions: OptionAnswerSelector[] = dummyDeliveryOptions;
+  default: any = [{
+   status: true,
+   value: 'Pick up. Lo pasaré a recoger',
+   valueStyles: {
+     fontFamily: 'SfProBold',
+     fontSize: '0.875rem',
+     color: '#000000',
+   },
+   subtexts: [
+     {
+       text: 'Direccion de pickup del merchant',
+       styles: {
+         fontFamily: 'SfProRegular',
+         fontSize: '1rem',
+       },
+     },
+   ],
+   }];
 
   ngOnInit(): void {}
 

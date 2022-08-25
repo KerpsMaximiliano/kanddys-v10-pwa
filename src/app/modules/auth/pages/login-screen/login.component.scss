@@ -4,7 +4,7 @@
 
     .input-area{
         width: 100%;
-        margin-top: 9vh;
+        margin-top: 38px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -12,7 +12,14 @@
 
         .phone-input-wrapper{
             width: 85%;
-            height: auto;   
+            height: auto;
+            
+            .account{
+               font-family: 'RobotoMedium';
+               font-size: 17px;
+               color: #7B7B7B;
+               margin-bottom: 11px;
+            }
 
             .wrapper{
                 position: relative;
@@ -212,14 +219,26 @@
         height: 66px;
         text-indent: 16px;
         background-color: #FFFFFF;
+        z-index: 2;
 
         &::placeholder{
             font-family: 'RobotoMedium';
             font-size: 20px;
             text-indent: 16px;
             color: rgba(161, 161, 161, 60%);
-        }
-    }
+         }
+      }
+
+      .invalid-pass-register{
+         background-color: #f29085;
+         width: 45%;
+         padding: 25px 0 15px 15px;
+         font-size: 14px;
+         font-family: "SfProRegular";
+         color: #202020;
+         border-radius: 10px;
+         margin-top: -15px;
+      }
 
     .signUp-btn{
       all: unset;
@@ -238,5 +257,6 @@
       margin: 0px;
       color: #202020;
       margin-top: 40px;
+      margin-bottom: 40px;
     }
 }

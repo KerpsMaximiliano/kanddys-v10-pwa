@@ -467,7 +467,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         },
       },
       footerConfig,
-      stepButtonInvalidText: 'ADICIONA TUS DATOS PERSONALES',
+      stepButtonInvalidText: 'ADICIONA TUS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
@@ -562,7 +562,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(1, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'AÑADE LA DESCRIPCIÓN DE TU ORDEN',
+      stepButtonInvalidText: 'INDRESA LOS DATOS REQUERIDOS',
       stepButtonValidText: 'CONTINÚA CON TU ORDEN'
     },
     {
@@ -941,7 +941,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               emitEvent: false,
             });
           },
-          label: 'Via por la que está colocando esta orden (*)',
+          label: 'Vía por la que está colocando esta orden (*)',
           sublabel: 'Favor seleccionar la via por la que estamos conversando para futuras referencias',
           inputType: 'radio',
           styles: {
@@ -983,7 +983,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'ENVIANOS TU ORDEN POR WHATSAPP'
+      stepButtonValidText: 'CONTINUAR'
     },
     {
       headerText: '',
@@ -1276,7 +1276,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(8, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {
@@ -1379,7 +1379,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(10, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'SELECCIONA COMO INFORMARNOS',
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN'
     },
     {

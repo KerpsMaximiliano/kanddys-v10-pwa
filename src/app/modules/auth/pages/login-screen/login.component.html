@@ -3,7 +3,7 @@
     <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-        text: loggin? merchantNumber : ( signUp? 'Crear Usuario' : 'Acceder a Usuario'),
+        text: loggin? merchantNumber : ( signUp? 'Contacto de las facturas' : 'Login'),
         fontFamily: 'SfProBold',
         fontSize: '21px',
         color: '#FFF'
@@ -17,7 +17,9 @@
         <ng-container *ngIf="!signUp ; else elseTemplate">
 
             <div class="phone-input-wrapper" *ngIf="!loggin">
-                
+               
+                <label for="phone number" class="account">Adiciona tu Cuenta (ganas puntos):</label>
+
                 <div class="wrapper">
                     <ngx-intl-tel-input 
                     [cssClass]="'custom'"
@@ -47,14 +49,14 @@
             
             <div class="password-input" *ngIf="loggin">
                 
-               <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" required>
+               <input class="pass" type="password" placeholder="Adiciona tu clave o codigo" [formControl]="password" name="password" id="password" required>
 
                <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
                
                <button class="confirm" (click)="signIn()" [disabled]="(password.invalid || password.pristine || password.untouched) && !password.valid"
                [ngClass]="{disabled : (password.invalid || password.pristine || password.untouched) && !password.valid}"><i class="fas fa-chevron-right"></i></button>
 
-               <button class="alternate">PREFIERO RECIBIR UN MENSAJE CON EL CODIGO</button>
+               <button class="alternate" (click)="generateTOP()">PREFIERO RECIBIR UN MENSAJE CON EL CODIGO</button>
             </div>
         </ng-container>
         
@@ -99,7 +101,7 @@
          </div>
 
          <div class="mail-inputs">
-            <label for="Email" class="phone-label">Correo Electronico:</label>
+            <label for="Email" class="phone-label">Correo Electronico (opcional):</label>
 
             <input type="email" class="email-input" placeholder="miEmail@mail.com" [formControl]="email" >
          </div>
@@ -108,19 +110,63 @@
 
          <input class="pass" type="password" placeholder="Adiciona la Clave" [formControl]="password" name="password" id="password" placeholder="Escribe..." required>
 
-         <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
+         <div [hidden]="password.valid || password.pristine" class="invalid-pass-register"> Por favor introduzca contraseña valida </div>
 
-         <button class="signUp-btn" (click)="signMeUp()" 
-         [ngClass]="{'disabled': password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid}"
-         [disabled]="password.invalid || password.pristine || phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid"
-         >
+         <!-- <button class="signUp-btn" (click)="signMeUp()" 
+         [ngClass]="{
+            'disabled': password.invalid || password.pristine || 
+            phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid || 
+            firstName.untouched || firstName.pristine || firstName.invalid ||
+            lastName.untouched || lastName.pristine || lastName.invalid
+            }"
+
+            [disabled]="password.invalid || password.pristine || 
+            phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid ||
+            firstName.untouched || firstName.pristine || firstName.invalid ||
+            lastName.untouched || lastName.pristine || lastName.invalid"
+            >
            Registrarme
-         </button>
+         </button> -->
 
          <p class="clarification">Te llegará una confirmación a tu # de WhatsApp</p>
 
       </div>
 
-    </ng-template>
-    
+   </ng-template>
+   
+   
+   <app-sticky-button *ngIf="signUp"
+   [mode]="'double'"
+   [text]="'REGISTRARME'"
+   [size]="'small'"
+   [fontSize]="'17px'"
+   [customLeftButtonStyles]="{
+      'width': '100%',
+      'max-width': 'none',
+      'color': '#fff'
+   }"
+   [text2]="''"
+   [customRightButtonStyles]="{
+      'width': '1px',
+      'height': '1px'
+   }"
+   [bgColor]=" !(password.invalid || password.pristine || 
+   phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid ||
+   firstName.untouched || firstName.pristine || firstName.invalid ||
+   lastName.untouched || lastName.pristine || lastName.invalid) ? '#2874AD' : '#C1C1C1'"
+   (click)=" !(password.invalid || password.pristine || 
+   phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid ||
+   firstName.untouched || firstName.pristine || firstName.invalid ||
+   lastName.untouched || lastName.pristine || lastName.invalid) ? signMeUp() : null"
+   ></app-sticky-button>
+
+   <app-bubble-button
+   *ngIf="itemCartAmount"
+    position="right"
+    color="blue"
+    [solo]="false"
+    [cart]="true"
+    [cartAmount]="itemCartAmount"
+    (click)="showShoppingCartDialog()"
+  ></app-bubble-button>
 </div>
