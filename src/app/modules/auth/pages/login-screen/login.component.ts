@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
    signUp: boolean;
    OTP: boolean = false;
    userID: string;
-   items: Item[] = [];
+   items: Item[] | ItemPackage[]= [];
    itemCartAmount: number;
    phoneNumber = new FormControl('', [Validators.required, Validators.minLength(10)]);
    password = new FormControl('', [Validators.required, Validators.minLength(3)]);
@@ -104,6 +104,7 @@ export class LoginComponent implements OnInit {
       // console.log(this.saleflowData);
       let productData: Item[] = this.header.getItems(this.saleflowData._id);
       this.itemCartAmount = productData?.length;
+      this.items = productData;
 
       if(phone) {
           const exists = await this.authService.checkUser(phone);
@@ -140,6 +141,7 @@ export class LoginComponent implements OnInit {
     this.loggin = !this.loggin;
     this.phoneNumber.setValue(null);
     this.password.reset();
+    this.OTP = false;
     this.merchantNumber = '';
   }
 
@@ -260,30 +262,8 @@ export class LoginComponent implements OnInit {
    this.dialog.open(ShowItemsComponent, {
      type: 'flat-action-sheet',
      props: {
-       footerCallback: async () => {
-         if (this.saleflowData.module?.post)
-         console.log('Yes 1');
-/*            this.router.navigate(['/ecommerce/create-giftcard']); */
-         else if (this.saleflowData.module?.delivery)
-         console.log('Yes 2');
-/*            this.router.navigate(['/ecommerce/shipment-data-form']); */
-         else if (!this.header.orderId) {
-           lockUI();
-           const preOrderID = await this.header.newCreatePreOrder();
-           this.header.orderId = preOrderID;
-           unlockUI();
-           console.log('Yes 3');
-           /* this.router.navigate([
-             `ecommerce/flow-completion-auth-less/${preOrderID}`,
-           ]); */
-           this.header.createdOrderWithoutDelivery = true;
-         } else {
-            console.log('Yes 4');
-           /* this.router.navigate([
-             `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-           ]); */
-         }
-       },
+       orderFinished: true,
+       products: this.items
      },
      customClass: 'app-dialog',
      flags: ['no-header'],
