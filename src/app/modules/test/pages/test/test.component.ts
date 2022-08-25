@@ -50,7 +50,6 @@ export class TestComponent implements OnInit {
   constructor(private dialog: DialogService) { }
 
   ngOnInit(): void { 
-    console.log(this.hourRangeInDays);
   }
 
   openDialog(){

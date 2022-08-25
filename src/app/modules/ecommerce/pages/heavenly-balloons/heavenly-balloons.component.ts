@@ -1146,6 +1146,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs: {
             calendarId: this.calendarId,
+            allowSundays: true,
             firstLabel: 'FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO',
             secondLabel: 'HORARIO DE ENTREGA',
             timeOfDayMode: true,

@@ -21,8 +21,9 @@ const routes: Routes = [
   declarations: [
     // HeavenlyBalloonsComponent,
     // LlStudioOrderFormComponent,
-    ReservationOrderlessComponent
+    ReservationOrderlessComponent,
   ],
+  exports: [ReservationOrderlessComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
-export class AirtableModule { }
+export class AirtableModule {}
