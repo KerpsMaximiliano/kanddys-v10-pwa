@@ -66,6 +66,7 @@ const routes: Routes = [
     path: 'webform-answers/:webformId',
     component: WebformAnswersComponent
   },
+  {
     path: 'input-selector',
     component: WebformInputSelectorComponent
   },
@@ -88,7 +89,7 @@ const routes: Routes = [
     VisitorDetailComponent,
     QuestionVisitorsGroupComponent,
     QuestionVisitorsListComponent,
-    WebformAnswersComponent
+    WebformAnswersComponent,
     WebformInputSelectorComponent,
     WebformComponent
   ],

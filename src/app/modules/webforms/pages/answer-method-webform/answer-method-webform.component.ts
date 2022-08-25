@@ -222,6 +222,7 @@ export class AnswerMethodWebformComponent implements OnInit {
           break;
         case 2:
           this.answerTypeOptions = AdditionAnswerTypeOptions;
+          this.router.navigate([`/webforms/input-selector`]);
           break;
       }
       return;
