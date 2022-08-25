@@ -128,12 +128,14 @@ export class LlStudioOrderFormComponent implements OnInit {
           try {
             const response = await this.authService.checkUser(phoneNumber);
 
+            console.log(response, 'checkUser');
+
             localStorage.setItem(
               'lastLoggedPhone',
               JSON.stringify(params.dataModel.value['1'].phoneNumber)
             );
 
-            if (response) {
+            if (response && '_id' in response && 'phone' in response) {
               this.existingUserData = response;
               this.newUser = false;
 
