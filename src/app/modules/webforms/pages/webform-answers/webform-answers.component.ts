@@ -112,6 +112,7 @@ export class WebformAnswersComponent implements OnInit {
                     questionText:
                       this.webformQuestionHashTable[answerObject.question],
                     answer: answerObject.value,
+                    whenWasAnswerCreated: userInfoAndAnswersObject.createdAt,
                     user: {
                       id: userInfoAndAnswersObject.user._id,
                       name: userInfoAndAnswersObject.user.name,
@@ -169,7 +170,9 @@ export class WebformAnswersComponent implements OnInit {
         selected: false,
         texts: {
           topRight: {
-            text: 'la fecha',
+            text: this.getCreationDateDifferenceAsItsSaid(
+              userAnswerObject.whenWasAnswerCreated
+            ),
             styles: {
               color: '#7B7B7B',
             },
@@ -177,8 +180,8 @@ export class WebformAnswersComponent implements OnInit {
           topLeft: {
             text: userAnswerObject.questionText,
             styles: {
-              paddingBottom: '8px'
-            }
+              paddingBottom: '8px',
+            },
           },
           middleTexts: [
             {
@@ -188,8 +191,8 @@ export class WebformAnswersComponent implements OnInit {
           bottomLeft: {
             text: userAnswerObject.user.name,
             styles: {
-              paddingTop: '10px'
-            }
+              paddingTop: '10px',
+            },
           },
         },
       });
@@ -221,7 +224,7 @@ export class WebformAnswersComponent implements OnInit {
       id: newCurrentQuestion._id,
       index: slideChangeEventData.activeIndex,
     };
-    
+
     this.renderAnswersBasedOnCurrentQuestionId(this.currentQuestion.id);
   }
 }

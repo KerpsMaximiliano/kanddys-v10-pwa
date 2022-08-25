@@ -32,6 +32,7 @@ export const answerPaginate = gql`
           type
           isMedia
         }
+        createdAt
         user {
           _id
           name
