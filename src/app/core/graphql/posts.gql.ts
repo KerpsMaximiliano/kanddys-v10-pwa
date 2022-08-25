@@ -1,14 +1,28 @@
 import gql from 'graphql-tag';
 
-
-    
-export const creationPost = gql`
-mutation creationPost($input:PostInput!){
+export const createPost = gql`
+mutation createPost($input:PostInput!){
     createPost(input:$input){
         _id,
         password
     } 
 }
+`;
+
+export const updatePost = gql`
+  mutation updatePost($input:PostInput!, $id: ObjectID!){
+    updatePost(input:$input, id: $id){
+      _id
+    } 
+  }
+`;
+
+export const updateSlide = gql`
+  mutation updateSlide($input: SlideInput!, $id: ObjectID!){
+    updateSlide(input: $input, id: $id){
+      _id
+    } 
+  }
 `;
 
 export const getPostByPassword = gql`
@@ -28,19 +42,21 @@ query getPost($password:String!){
 
 export const post = gql`
 query post($id:ObjectID!){
-  post(id:$id
-  ){
- _id,
- message,
- from,
- multimedia,
- socialNetworks{
-   url
- }
- targets{
-   name,
-   emailOrPhone
- }
+  post(id:$id) {
+    _id,
+    author {
+      _id
+    }
+    message,
+    from,
+    multimedia,
+    socialNetworks{
+      url
+    }
+    targets{
+      name,
+      emailOrPhone
+    }
   } 
 }
 `;
@@ -50,18 +66,12 @@ export const slidesByPost = gql`
 query slidesbyPost($postId:ObjectID!){
   slidesbyPost(postId:$postId
   ){
-    text,
-    media,
-    ilustration{
-      type,
-      background,
-      backgroundTextType,
-      showDecoration,
-      line1,
-      line2,
-      borderRadius,
-      text
-    }
+    _id
+    type
+    title
+    text
+    media
+    index
   } 
 }
 `;

@@ -1,0 +1,45 @@
+<div class="container">
+
+	<app-helper-headerv2
+		[mode]="'edit'"
+    [mainText]="{
+            text: !item ? 'Categorias DE PRODUCTOID' : 'Categorias DE ' + item.name,
+            color:'#E9E371'
+        }"
+    [edit]="{
+            active: true
+        }"
+    [icon]="{
+            src: '/expand-categories.svg',
+            filter: 'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'
+        }"
+    [returnAble]="true"
+		[editBtnCallback]="redirectToItemCreator"
+		[color]="'#E9E371'"
+		[filter]="'invert(87%) sepia(89%) saturate(339%) hue-rotate(350deg) brightness(176%) contrast(90%)'"
+		(returnEvent)="redirect()"
+	></app-helper-headerv2>
+
+	<div *ngIf="item?.images?.length" class="itemImg">
+		<div [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"></div>
+	</div>
+
+	<div class="categories">
+		<app-tags-square
+			*ngFor="let merchantCategory of merchantCategories"
+			[reverse]="true"
+			(click)="addOrRemoveCategory(merchantCategory, itemCategories[merchantCategory._id])"
+			[tagText]="merchantCategory.name"
+			[position]="'left'"
+			[number]="'44 ventas'"
+			[bColor]="itemCategories[merchantCategory._id] ? '#2874ad' : '#fff'"
+			[color]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'"
+			[textColor]="itemCategories[merchantCategory._id] ? '#E9E371' : '#2874AD'">
+		</app-tags-square>
+	</div>
+
+</div>
+<app-bubble-button [position]="'left'" [text]="''" icon="/arrow-left.svg"></app-bubble-button>
+<app-bubble-button [position]="'right'" text="NEW" [icon]="'/expand-categories.svg'" (click)="toData()"></app-bubble-button>
+<app-sticky-button [mode]="'disabled'" [size]="'small'" [text]="'MIRA LAS CATEGORIAS DEL ITEM'">
+</app-sticky-button>

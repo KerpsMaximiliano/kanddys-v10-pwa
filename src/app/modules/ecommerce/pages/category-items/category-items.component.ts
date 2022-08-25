@@ -19,6 +19,12 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+// import { SwiperOptions } from 'swiper';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-category-items',
@@ -26,12 +32,13 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   styleUrls: ['./category-items.component.scss'],
 })
 export class CategoryItemsComponent implements OnInit {
+  URI: string = environment.uri;
   items: Item[] = [];
   originalItems: Item[] = [];
-  saleflowData: SaleFlow;
+  saleflow: SaleFlow;
+  categoryId: string;
   categoryName: string;
   iconImage: string;
-  merchantId: string;
   filters: any[] = [];
   loadingSwiper: boolean;
   selectedTagsIds: any = [];
@@ -40,6 +47,21 @@ export class CategoryItemsComponent implements OnInit {
   deleteEvent: Subscription;
   canOpenCart: boolean;
   isMerchant: boolean;
+  itemCartAmount: number;
+  totalByItems: {
+    item: Item;
+    itemInOrder: number;
+    total: number;
+  }[] = [];
+  ordersTotal: {
+    total: number,
+    length: number
+  };
+  // public swiperConfig: SwiperOptions = {
+  //   slidesPerView: 'auto',
+  //   freeMode: true,
+  //   spaceBetween: 1,
+  // };
 
   env: string = environment.assetsUrl;
 
@@ -47,12 +69,12 @@ export class CategoryItemsComponent implements OnInit {
     private dialog: DialogService,
     private route: ActivatedRoute,
     private router: Router,
-    private saleflow: SaleFlowService,
     private item: ItemsService,
     private header: HeaderService,
     private appService: AppService,
     private authService: AuthService,
     private merchantService: MerchantsService,
+    private orderService: OrderService,
   ) {}
 
   async getCategories(
@@ -98,56 +120,52 @@ export class CategoryItemsComponent implements OnInit {
     this.deleteEvent = this.appService.events
       .pipe(filter((e) => e.type === 'deleted-item'))
       .subscribe((e) => {
-        let productData = this.header.getItems(this.saleflowData._id);
-        if (productData.length > 0) {
-          for (let i = 0; i < productData.length; i++) {
-            for (let j = 0; j < this.items.length; j++) {
-              if (productData[i]._id === this.items[j]._id)
-                this.items[j].isSelected = true;
-              else this.items[j].isSelected = false;
-            }
-          }
-        } else {
-          for (let i = 0; i < this.items.length; i++) {
-            this.items[i].isSelected = false;
-          }
-        }
+        let productData: Item[] = this.header.getItems(this.saleflow._id);
+        const selectedItems = productData?.length
+          ? productData.map((item) => item._id)
+          : [];
+        this.items.forEach((item) => {
+          if (!item.customizerId)
+            item.isSelected = selectedItems.includes(item._id);
+        });
         this.canOpenCart = this.items.some((item) => item.isSelected);
+        this.itemInCart();
       });
     this.header.resetIsComplete();
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();
-      this.saleflowData = (await this.saleflow.saleflow(params.id)).saleflow;
-      this.route.queryParams.subscribe(async (queries) => {
-        if(queries.edit) {
-          const user = await this.authService.me();
-          if(user) {
-            const merchants = await this.merchantService.myMerchants();
-            if(merchants?.length > 0) {
-              const merchant = merchants.find(element => element._id === this.saleflowData.merchant._id)
-              if(merchant) {
-                this.isMerchant = true;
-              }
-            }
-          }
+      this.saleflow = await this.header.fetchSaleflow(params.id);
+      this.categoryId = params.categoryId;
+      // this.route.queryParams.subscribe(async (queries) => {
+      //   if (queries.edit) {
+      const user = await this.authService.me();
+      if (user) {
+        const merchants = await this.merchantService.myMerchants();
+        if (merchants?.length > 0) {
+          const merchant = merchants.find(
+            (element) => element._id === this.saleflow.merchant._id
+          );
+          if (merchant) this.isMerchant = true;
         }
-      })
-      const orderData = this.header.getOrder(this.saleflowData._id);
+      }
+      //   }
+      // });
+      const orderData = this.header.getOrder(this.saleflow._id);
       let saleflowItems: {
         item: string;
         customizer: string;
         index: number;
       }[] = [];
       let items: Item[] = [];
-      const merchantId = this.saleflowData.merchant._id;
+      const merchantId = this.saleflow.merchant._id;
 
-      if (this.saleflowData.items.length !== 0) {
-        for (let i = 0; i < this.saleflowData.items.length; i++) {
+      if (this.saleflow.items.length !== 0) {
+        for (let i = 0; i < this.saleflow.items.length; i++) {
           saleflowItems.push({
-            item: this.saleflowData.items[i].item._id,
-            customizer: this.saleflowData.items[i].customizer?._id,
-            index: this.saleflowData.items[i].index,
+            item: this.saleflow.items[i].item._id,
+            customizer: this.saleflow.items[i].customizer?._id,
+            index: this.saleflow.items[i].index,
           });
         }
         if (saleflowItems.some((item) => item.customizer))
@@ -158,27 +176,25 @@ export class CategoryItemsComponent implements OnInit {
         orderData?.products?.length > 0
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-      items = await this.item.itemsByCategory(
-        this.saleflowData._id,
-        {
-          options: {
-            limit: 100,
+      items = (
+        await this.item.itemsByCategory(
+          params.categoryId,
+          {
+            options: {
+              limit: 100,
+            },
           },
-        },
-        params.categoryId
-      );
-      const bestSellersIds = await this.item.bestSellersByMerchant(
-        15,
-        this.saleflowData.merchant._id
-      );
-
+          this.saleflow._id
+        )
+      ).filter((item) => item.status == 'active');
       for (let i = 0; i < items.length; i++) {
         const saleflowItem = saleflowItems.find(
           (item) => item.item === items[i]._id
         );
         items[i].customizerId = saleflowItem?.customizer;
         items[i].index = saleflowItem?.index;
-        if(!items[i].customizerId) items[i].isSelected = selectedItems.includes(items[i]._id);
+        if (!items[i].customizerId)
+          items[i].isSelected = selectedItems.includes(items[i]._id);
         if (items[i].hasExtraPrice)
           items[i].totalPrice =
             items[i].fixedQuantity * items[i].params[0].values[0].price +
@@ -190,10 +206,17 @@ export class CategoryItemsComponent implements OnInit {
         );
       }
 
-      bestSellersIds.forEach((id) => {
-        const item = items.find((item) => item._id === id);
-        if (item) this.bestSellers.push(item);
-      });
+      // if(!this.hasCustomizer) {
+      //   const bestSellersIds = await this.item.bestSellersByMerchant(
+      //     15,
+      //     this.saleflow.merchant._id
+      //   );
+      //   bestSellersIds.forEach((id) => {
+      //     const item = items.find((item) => item._id === id);
+      //     if (item) this.bestSellers.push(item);
+      //   });
+      // }
+
       this.items = [...items];
       this.originalItems = [...items];
 
@@ -212,7 +235,20 @@ export class CategoryItemsComponent implements OnInit {
         merchantId
       );
       await this.getCategories(itemCategoriesList, headlines);
-
+      this.itemInCart();
+      if(this.isMerchant) {
+        const totalByItems = await this.item.totalByItem(
+          this.saleflow.merchant._id,
+          items.map((item) => item._id)
+        );
+        for (let i = 0; i < items.length; i++) {
+          const sale = totalByItems.find(
+            (item) => item.item._id === items[i]._id
+          );
+          this.totalByItems.push(sale);
+        }
+        this.ordersTotal = await this.orderService.ordersTotal(['completed', 'to confirm', 'verifying'], merchantId, [], this.categoryId);
+      }
       unlockUI();
     });
   }
@@ -220,15 +256,10 @@ export class CategoryItemsComponent implements OnInit {
   onClick(index: any, type?: string) {
     let itemData =
       type === 'slider' ? this.bestSellers[index] : this.items[index];
-    // if (index.index) {
-    //   itemData = this.items[index.index];
-    // } else {
-    //   itemData = this.items[index];
-    // }
     this.header.items = [itemData];
     if (itemData.customizerId) {
-      this.header.emptyOrderProducts(this.saleflowData._id);
-      this.header.emptyItems(this.saleflowData._id);
+      this.header.emptyOrderProducts(this.saleflow._id);
+      this.header.emptyItems(this.saleflow._id);
       let itemParams: ItemSubOrderParamsInput[];
       if (itemData.params.length > 0) {
         itemParams = [
@@ -243,105 +274,104 @@ export class CategoryItemsComponent implements OnInit {
         customizer: itemData.customizerId,
         params: itemParams,
         amount: itemData.customizerId ? undefined : 1,
-        saleflow: this.saleflowData._id,
+        saleflow: this.saleflow._id,
         name: itemData.name,
       };
       this.header.order = {
         products: [product],
       };
-      this.header.storeOrderProduct(this.saleflowData._id, product);
-      this.header.storeItem(this.saleflowData._id, itemData);
+      this.header.storeOrderProduct(this.saleflow._id, product);
+      this.header.storeItem(this.saleflow._id, itemData);
       this.router.navigate([
-        `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
+        `/ecommerce/provider-store/${this.saleflow._id}/${itemData._id}`,
       ]);
     } else
-      this.router.navigate([
-        '/ecommerce/item-detail/' + this.saleflowData._id + '/' + itemData._id,
-      ]);
+      this.router.navigate(
+        ['/ecommerce/item-detail/' + this.saleflow._id + '/' + itemData._id],
+        {
+          queryParams: { viewtype: this.isMerchant ? 'merchant' : 'community' },
+        }
+      );
   }
 
-  closeTagEvent(e) {
-    let tagOptions = e.map((values) => values.options);
-    tagOptions = [].concat.apply([], tagOptions);
+  // closeTagEvent(e) {
+  //   let tagOptions = e.map((values) => values.options);
+  //   tagOptions = [].concat.apply([], tagOptions);
 
-    this.selectedTagsIds = tagOptions.filter((el) => el.selected);
+  //   this.selectedTagsIds = tagOptions.filter((el) => el.selected);
 
-    if (this.selectedTagsIds.length === 0) {
-      this.items = this.originalItems;
-      return;
-    }
+  //   if (this.selectedTagsIds.length === 0) {
+  //     this.items = this.originalItems;
+  //     return;
+  //   }
 
-    let filteredItems = [...this.originalItems];
-    this.selectedTagsIds.forEach((tag) => {
-      filteredItems = filteredItems.filter((item) => {
-        let isValid = false;
-        item.category.forEach((category) => {
-          if (category._id === tag.id) isValid = true;
-        });
-        return isValid;
-      });
-    });
-    this.items = filteredItems;
-    this.loadingSwiper = false;
-  }
+  //   let filteredItems = [...this.originalItems];
+  //   this.selectedTagsIds.forEach((tag) => {
+  //     filteredItems = filteredItems.filter((item) => {
+  //       let isValid = false;
+  //       item.category.forEach((category) => {
+  //         if (category._id === tag.id) isValid = true;
+  //       });
+  //       return isValid;
+  //     });
+  //   });
+  //   this.items = filteredItems;
+  //   this.loadingSwiper = false;
+  // }
 
-  tagDeleted(e) {
-    this.selectedTagsIds = this.selectedTagsIds.filter(
-      (el) => el.id !== e.name[0].id
-    );
+  // tagDeleted(e) {
+  //   this.selectedTagsIds = this.selectedTagsIds.filter(
+  //     (el) => el.id !== e.name[0].id
+  //   );
 
-    if (this.selectedTagsIds.length === 0) {
-      this.items = this.originalItems;
-      return;
-    }
+  //   if (this.selectedTagsIds.length === 0) {
+  //     this.items = this.originalItems;
+  //     return;
+  //   }
 
-    let filteredItems = [...this.originalItems];
-    this.selectedTagsIds.forEach((tag) => {
-      filteredItems = filteredItems.filter((item) => {
-        let isValid = false;
-        item.category.forEach((category) => {
-          if (category._id === tag.id) isValid = true;
-        });
-        return isValid;
-      });
-    });
-    this.items = filteredItems;
-    this.loadingSwiper = false;
-  }
+  //   let filteredItems = [...this.originalItems];
+  //   this.selectedTagsIds.forEach((tag) => {
+  //     filteredItems = filteredItems.filter((item) => {
+  //       let isValid = false;
+  //       item.category.forEach((category) => {
+  //         if (category._id === tag.id) isValid = true;
+  //       });
+  //       return isValid;
+  //     });
+  //   });
+  //   this.items = filteredItems;
+  //   this.loadingSwiper = false;
+  // }
 
-  startLoading(e: boolean) {
-    this.loadingSwiper = e;
-  }
+  // toggleSelected(type: string, index: number) {
+  //   if (index != undefined) {
+  //     const itemData =
+  //       type === 'slider' ? this.bestSellers[index] : this.items[index];
+  //     itemData.isSelected = !itemData.isSelected;
+  //     let itemParams: ItemSubOrderParamsInput[];
+  //     if (itemData.params.length > 0) {
+  //       itemParams = [
+  //         {
+  //           param: itemData.params[0]._id,
+  //           paramValue: itemData.params[0].values[0]._id,
+  //         },
+  //       ];
+  //     }
+  //     const product = {
+  //       item: itemData._id,
+  //       customizer: itemData.customizerId,
+  //       params: itemParams,
+  //       amount: itemData.customizerId ? undefined : 1,
+  //       saleflow: this.saleflow._id,
+  //       name: itemData.name,
+  //     };
+  //     this.header.storeOrderProduct(this.saleflow._id, product);
+  //     this.header.storeItem(this.saleflow._id, itemData);
+  //   }
+  //   this.canOpenCart = this.items.some((item) => item.isSelected);
+  // }
 
-  toggleSelected(type: string, index: number) {
-    if (index != undefined) {
-      const itemData =
-        type === 'slider' ? this.bestSellers[index] : this.items[index];
-      itemData.isSelected = !itemData.isSelected;
-      let itemParams: ItemSubOrderParamsInput[];
-      if (itemData.params.length > 0) {
-        itemParams = [
-          {
-            param: itemData.params[0]._id,
-            paramValue: itemData.params[0].values[0]._id,
-          },
-        ];
-      }
-      const product = {
-        item: itemData._id,
-        customizer: itemData.customizerId,
-        params: itemParams,
-        amount: itemData.customizerId ? undefined : 1,
-        saleflow: this.saleflowData._id,
-        name: itemData.name,
-      };
-      this.header.storeOrderProduct(this.saleflowData._id, product);
-      this.header.storeItem(this.saleflowData._id, itemData);
-    }
-    this.canOpenCart = this.items.some((item) => item.isSelected);
-  }
-
-  showShoppingCartDialog() {
+  showShoppingCartDialog = () => {
     this.dialog.open(ShowItemsComponent, {
       type: 'flat-action-sheet',
       props: {
@@ -350,15 +380,56 @@ export class CategoryItemsComponent implements OnInit {
           this.router.navigate(['/ecommerce/create-giftcard']),
         headerCallback: () =>
           this.router.navigate([
-            `ecommerce/megaphone-v3/${this.header.saleflow._id}`,
+            `/ecommerce/store/${this.header.saleflow._id}`,
           ]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  };
+
+  onShareClick = () => {
+    const list: StoreShareList[] = [
+      {
+        qrlink: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+          },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () =>
+              this.router.navigate([
+                `/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+              ]),
+          },
+        ],
+      },
+    ];
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
+  itemInCart() {
+    const productData = this.header.getItems(this.saleflow._id);
+    this.itemCartAmount = productData?.length;
   }
 
   goBack() {
-    this.router.navigate(['/ecommerce/megaphone-v3/' + this.saleflowData._id]);
+    this.router.navigate(['/ecommerce/store/' + this.saleflow._id]);
   }
 }

@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="top-area">
+        <h1 class="headline">{{headline}}</h1>
+        <button class="top-button" [style.color]="topButton.color? topButton.color : '#2874AD'">{{topButton.text}}</button>
+    </div>
+    <div class="display">
+        <swiper [config]="swiperConfig" *ngIf="!data">
+            <div class="content" *ngFor="let contents of content; index as i">
+                <div class="body">
+                    <img [src]="env + contents.image" [alt]="" class="image" *ngIf="contents.image">
+                </div>
+            
+                <div class="notify" *ngIf="contents.icon?.src">
+                    <img [src]="env + contents.icon.src" [alt]="contents.icon?.alt" width="18px" height="18px">
+                </div>
+            
+                <p class="down-text">{{contents.name}}</p>
+            </div>
+        </swiper>
+
+        <swiper [config]="swiperConfig" *ngIf="data">
+            <div *ngFor="let tag of data; index as i" style="max-width: 76px;">
+                <app-single-item-list
+                    [image]="tag.image"
+                    [tag]="tag.tag"
+                ></app-single-item-list>
+            </div>
+        </swiper>
+    </div>
+</div>

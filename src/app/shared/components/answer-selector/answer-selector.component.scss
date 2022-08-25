@@ -20,6 +20,24 @@ ul {
   margin-bottom: 1rem;
 }
 
+.selector-flex-wrapper {
+  width: 100%;
+  display: flex;
+
+  .selector-option {
+    flex-basis: 100%;
+  }
+
+  .icons-flex-wrapper {
+    display: flex;
+    align-items: center;
+
+    img:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 .option {
   cursor: pointer;
   color: #7b7b7b;
@@ -27,14 +45,13 @@ ul {
   font-size: 19px;
   margin: 0;
   transition: 0.3s ease;
-}
 
-.option-selected {
-  background-color: #82f18d;
-  border-radius: 5px;
-  margin-right: 1rem;
-  padding: 0.5rem;
-  transition: 0.3s ease;
+  &.selected {
+    background-color: #82f18d;
+    border-radius: 5px;
+    margin-right: 1rem;
+    padding: 0.5rem;
+  }
 }
 
 .description-container {

@@ -1,0 +1,23 @@
+<div class="card-edition-buttons-wrapper">
+    <div class="circle-with-icon"
+        [ngStyle]="{
+            backgroundImage: 'url(' + env + '/card-front.svg' + ')',
+            backgroundSize: '1.5rem',
+            marginRight: '1rem'
+        }"
+        (click)="openFileInput('front-image')"
+    >
+    </div>
+
+    <div class="circle-with-icon"
+        [ngStyle]="{
+            backgroundImage: 'url(' + env + '/card-back.svg' + ')',
+            backgroundSize: '1.6rem'
+        }"
+        (click)="openFileInput('back-image')"
+    >
+    </div>
+
+    <input type="file" [id]="'front-image'" [style.display]="'none'" (change)="loadFile('frontImage', $event)" tabindex="-1" />
+    <input type="file" [id]="'back-image'" [style.display]="'none'" (change)="loadFile('backImage', $event)" tabindex="-1" />
+</div>

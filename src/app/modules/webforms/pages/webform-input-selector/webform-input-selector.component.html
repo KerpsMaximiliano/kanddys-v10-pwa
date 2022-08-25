@@ -1,0 +1,61 @@
+<div class="container">
+    <app-helper-headerv2
+    mode="basic"
+    [returnAble]="true"
+    [mainText]="{text: 'PREGUNTA #1, Pantalla #1'}"
+    [dots]="{
+        active: true
+      }"
+    [bgColor]="'#2874AD'"
+    (returnEvent)="back()"
+  ></app-helper-headerv2>
+
+  <div class="content">
+
+    <div class="label">
+        Método de respuesta:
+    </div>
+    <app-answer-selector
+        [options]="answerMethod"
+        [indicator]="true"
+        [activeOption]="0"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '16px'
+        }"
+    ></app-answer-selector>
+
+    <br>
+    
+    <div class="label">
+      ¿Qué tipo de respuesta adicionará?
+    </div>
+    <app-answer-selector
+        [options]="options"
+        [indicator]="true"
+        (onSelector)="selectOption($event)"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '16px'
+        }"
+    ></app-answer-selector>
+  </div>
+
+  <app-sticky-button
+      *ngIf="isClicked"
+      style="position: sticky; top: 100vh; z-index: 2"
+      [mode]="'basic'"
+      [text]="'SALVAR EL FORM'"
+      [size]="'small'"
+      [bgColor]="'#2874AD'"
+      (click)="save()"
+      [customLeftButtonStyles]="{
+        'font-size': '17px',
+        'font-family': 'RobotoMedium',
+        'letter-spacing': '1px'
+      }"
+  ></app-sticky-button>
+
+</div>

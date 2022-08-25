@@ -1,0 +1,42 @@
+.container{
+    width: 100%;
+    background-color: #F6F6F6;
+    min-height: 100vh;
+    
+    .const-components{
+        width: 100%;
+        height: 42px;
+        background-color: #2874AD;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        gap: 30px;
+
+        .nav-item {
+            display: flex;
+            color: #E9E371;
+            cursor: pointer;
+            font-family: 'SfProMedium';
+            font-size: 17px;
+            gap: 5px;
+            align-items: center;
+
+            .icon {
+                width: 13px;
+                height: 17px;
+                filter: invert(93%) sepia(77%) saturate(487%) hue-rotate(350deg) brightness(155%) contrast(94%);
+            }
+
+            &.active {
+                height: 100%;
+                padding: 0 16px;
+                background-color: #E9E371;
+                color: #2874AD;
+
+                img {
+                    filter: brightness(0) saturate(100%) invert(41%) sepia(9%) saturate(4311%) hue-rotate(165deg) brightness(92%) contrast(84%);
+                }
+            }
+        }
+    }
+}

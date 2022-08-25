@@ -1,0 +1,97 @@
+.body{
+    width: 100%;
+    padding: 27px 5% 15px;
+    margin-bottom: 10px;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 12%);
+
+    .top-bar{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 16px;
+        border-bottom: solid 2px rgba(112, 112, 112, 0.17);
+
+        .wrapper{
+            display: flex;
+            align-items: center;
+
+            .top-image{
+                width: 17px;
+                height: 22px;
+                margin-right: 10px;
+                filter: invert(55%) sepia(90%) saturate(6766%) hue-rotate(343deg) brightness(94%) contrast(110%);
+                cursor: pointer;
+            }
+    
+            .top-text{
+                font-family: 'RobotoMedium';
+                font-size: 16px;
+                color: #7B7B7B;
+                margin: 0;
+                letter-spacing: 1.1px;
+                text-transform: uppercase;
+                font-weight: 100;
+            }
+        }
+    }
+
+    .middle{
+        display: flex;
+        flex-direction: column;
+        margin: 14px 0;
+
+        .flexer{
+            display: flex;
+
+            p{
+                font-family: 'RobotoRegular';
+                font-size: 17px;
+                color: #7B7B7B;
+                margin: 10px 0;
+            }
+        }
+    }
+
+    .bottom{
+        display: grid;
+        padding-top: 16px;
+        
+        &.top-border {
+            border-top: solid 2px rgba(112, 112, 112, 0.17);
+        }
+        .flex-buttons {
+            display: flex;
+            column-gap: 1.2em;
+        }
+    }
+
+    .tags-container {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        .tag-label {
+            color: #2874AD;
+            font-size: 15px;
+            padding: 5px;
+        }
+    }
+}
+
+.transparent-button{
+    all: unset;
+    font-family: "SfProBold";
+    color: #2874AD;
+    cursor: pointer;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+}
+
+.right-buttons {
+    display: flex;
+    justify-self: flex-end;
+    gap: 32px;
+}

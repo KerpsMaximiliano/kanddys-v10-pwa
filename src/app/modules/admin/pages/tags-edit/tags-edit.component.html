@@ -1,0 +1,44 @@
+<div class="container">
+    <app-helper-header
+    [bgcolor]="'#FFFFFF'"
+    [searchAble]="false"
+    [middleText]="'EDICION DEL TAG'"
+    [middleTextFontFamily]="'SfProRegular'"
+    [middleTextFontSize]="'17px'"
+    [middleTextColor]="'#7B7B7B'"
+    [options]="true"
+    ></app-helper-header>
+
+    <div class="main">
+        <label for="Tags" class="tag-label">Tag</label>
+
+        <input type="text" class="tag-text" placeholder="Escribe el tag.." (keyup)="writeTag($event)" [(ngModel)]="tagValue"/>
+
+        <p class="optional-text">Opcional: Mensaje que llegará por WhatsApp al asignar el Tag:</p>
+
+        <textarea class="opt-message" placeholder="El mensaje que llegará.." (keyup)="writeMessage($event)" [(ngModel)]="messageValue"></textarea>
+
+        <!--DEPRECATED
+        <label for="Adiciona celulares" class="add-pn">Adiciona los celulares de los recipientes:</label>
+
+        <div class="ws-buyer">
+            <label for="numero del comprador">#WA del Comprador</label>
+        </div>
+        
+        <div class="ws-receiver">
+            <label for="numero del destinatario">#WA que recibe las ordenes/ventas</label>
+        </div>
+        
+        <input type="text" class="pn-text" placeholder="Adiciona un #WA particular"/>
+        
+        DEPRECATED-->
+
+    </div>
+    
+    <app-sticky-button
+    [text]="'SALVAR EL TAG'"
+    [mode]="tagValue?.length >= 2 ? 'fixed' : 'disabled-fixed' "
+    (click)="sendTag()"
+  ></app-sticky-button>
+
+</div>

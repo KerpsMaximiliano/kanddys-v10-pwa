@@ -1,7 +1,9 @@
 import { Model } from '../objects/model';
+import { Calendar } from './calendar';
 import { Customizer } from './customizer';
 import { Item, ItemCategory, ItemPackage } from './item';
 import { Merchant } from './merchant';
+import { ExchangeData } from './wallet';
 
 export class DeliveryLocation {
   _id?: string;
@@ -25,12 +27,12 @@ export class DeliveryLocationInput {
 
 export class ModuleConfig {
   isActive: boolean;
-  calendar: any;
+  calendar: Calendar;
   post: boolean;
   deliveryLocation: boolean;
   pickUpLocations: DeliveryLocation[];
   moduleOrder: number;
-  paymentModule: any;
+  paymentModule: ExchangeData;
 }
 
 export class SaleFlowModule extends Model<SaleFlowModule> {
@@ -45,6 +47,12 @@ export class SaleFlowModule extends Model<SaleFlowModule> {
 export class SocialMediaModel {
   name?: string;
   url?: string;
+  userName?: string;
+}
+
+export class SocialMediaModelInput {
+  name?: string;
+  url: string;
 }
 
 export class SaleFlowItem extends Model<SaleFlowItem> {
@@ -82,16 +90,40 @@ export class SaleFlow extends Model<SaleFlow> {
   canBuyMultipleItems?: boolean;
 }
 
+export class PaginationRangeInput {
+  from: string;
+  to: string;
+}
+
 export class PaginationOptionsInput {
   sortBy?: string;
   limit?: number;
   page?: number;
   select?: string;
   populate?: string[];
+  range?: PaginationRangeInput;
 }
 
 export class PaginationInput {
   options?: PaginationOptionsInput;
   findBy?: any;
   filter?: any;
+}
+
+export class SaleflowModuleConfigInput {
+  calendar?: string;
+  post?: boolean;
+  deliveryLocation?: boolean;
+  pickUpLocations?: DeliveryLocationInput[];
+  moduleOrder?: number;
+  paymentModule?: string;
+}
+
+export class SaleFlowModuleInput {
+  saleflow?: string;
+  appointment?: SaleflowModuleConfigInput;
+  post?: SaleflowModuleConfigInput;
+  delivery?: SaleflowModuleConfigInput;
+  paymentMethod?: SaleflowModuleConfigInput;
+  isSkip?: boolean;
 }

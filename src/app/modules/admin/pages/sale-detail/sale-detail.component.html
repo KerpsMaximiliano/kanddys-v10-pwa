@@ -1,0 +1,44 @@
+<div class="container">
+
+    <!-- Top bar -->
+    <app-helper-headerv2 [mode]="'edit'"
+        [mainText]="{
+            text: merchant ? 'Etiquetas de ' + merchant.name : 'Etiquetas de CompradorId'
+        }"
+        [returnAble]="true"
+        [edit]="{
+            active: true
+        }"
+        [bgColor]="'#2874AD'" 
+        [color]="'#E9E371'"
+        (returnEvent)="redirect()">
+    </app-helper-headerv2>
+
+    <!-- Header (info) -->
+    <div class="header">
+        <div class="header-img"
+            [ngStyle]="{ 'background-image': 'url(' + (merchant ? merchant.image : backgroundImg) + ')' }"
+            *ngIf="merchant ? merchant.image : backgroundImg">
+        </div>
+        <div class="header-img" *ngIf="!(merchant ? merchant.image : backgroundImg)"></div>
+        <p>{{orderId ? orderId : 'VentaID'}}</p>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories">
+        <app-tags-square *ngFor="let tag of tags" (click)="addOrRemoveTag(tag.tags._id, orderTags[tag.tags._id])"
+            [reverse]="true" [tagText]="tag.tags.name" [position]="'left'" [number]="tag.tags.counter + ' ventas'"
+            [bColor]="orderTags[tag.tags._id] ? '#2874ad' : '#fff'"
+            [color]="orderTags[tag.tags._id] ? '#E9E371' : '#2874AD'"
+            [textColor]="orderTags[tag.tags._id] ? '#E9E371' : '#2874AD'">
+            [centered]="true" [size]="'175px'"
+            ></app-tags-square>
+    </div>
+
+    <!-- Bottom buttons -->
+    <app-bubble-button [position]="'left'" [return]="true" [solo]="false" (click)="redirect()"></app-bubble-button>
+    <app-bubble-button [position]="'right'" [text]="'NEW'" [icon]="env + '/expand-categories.svg'" [solo]="false">
+    </app-bubble-button>
+    <app-sticky-button [text]="'LOREM IPSUM DOLOR SIT AMET'" [mode]="'disabled-fixed'">
+    </app-sticky-button>
+</div>

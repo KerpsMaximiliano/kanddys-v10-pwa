@@ -3,7 +3,7 @@
     *ngIf="finalizacion === false"
     [middleText]="headline"
     bgcolor="#FFFFFF"
-    searchAble="false"
+    [searchAble]="false"
     middleTextFontSize="17px"
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
@@ -14,7 +14,7 @@
     *ngIf="finalizacion === true"
     [middleText]="headline"
     bgcolor="#FFFFFF"
-    searchAble="false"
+    [searchAble]="false"
     middleTextFontSize="17px"
     middleTextFontFamily="SfProRegular"
     middleTextColor="#7B7B7B"
@@ -28,6 +28,7 @@
       <app-item-card-amount-and-price
         [applyAnimations]="false"
         [itemData]="item"
+        (imageClicked)="openImageDetail()"
       ></app-item-card-amount-and-price>
     </ng-container>
   </ng-container>
@@ -43,13 +44,7 @@
     <ng-container *ngFor="let option of options; let i = index">
       <div
         class="option"
-        [ngStyle]="{
-          color: option.active ? '#FFFFFF' : '#4773D8',
-          background: option.active
-            ? 'linear-gradient(130deg, #31a4f9, #1d58db)'
-            : 'none',
-          padding: option.active == false ? '0' : 'inherit'
-        }"
+        [ngClass]="{'active': option.active }"
         (click)="changeOption(i)"
         routerLink="{{ option.link }}"
       >
@@ -57,12 +52,7 @@
       </div>
     </ng-container>
   </div>
-  <div
-    [ngStyle]="{
-      height: '100vh'
-    }"
-    *ngIf="status === 'done'"
-  >
+  <div *ngIf="status === 'done'">
     <router-outlet></router-outlet>
   </div>
 </div>

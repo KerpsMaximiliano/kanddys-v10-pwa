@@ -1,0 +1,143 @@
+button {
+	all: unset;
+}
+.body {
+	width: 100%;
+	padding: 17px 30px 14px 26px;
+	background-color: #ffffff;
+
+	.headline-wrapper,
+	.right-wrapper,
+	.content {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.headline-wrapper {
+		.headline {
+			font-family: "RobotoMedium";
+			font-size: 16px;
+			color: #7b7b7b;
+			margin: 0;
+			margin-bottom: 5px;
+			font-weight: normal;
+			letter-spacing: 1px;
+		}
+
+		.subheadline {
+			font-family: "RobotoRegular";
+			font-size: 13px;
+			color: #7b7b7b;
+			margin: 0;
+		}
+	}
+
+	.right-wrapper {
+		width: 33%;
+		align-items: flex-end;
+
+		.right-subheadline {
+			font-family: "RobotoRegular";
+			font-size: 13px;
+			color: #2874ad;
+			margin: 0;
+			margin-top: 5px;
+			font-weight: normal;
+		}
+	}
+
+	.first {
+		margin: 20px 0 20px;
+	}
+
+	.tags-area {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+
+		.tags-headline {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			.tags-title {
+				font-family: "RobotoMedium";
+				font-size: 13px;
+				color: #7b7b7b;
+			}
+		}
+
+		.tags-displayer {
+			display: flex;
+
+			.tag-text {
+				font-family: "SfProRegular";
+				font-size: 14px;
+				color: #7b7b7b;
+				margin: 0;
+				margin-right: 13px;
+			}
+		}
+	}
+
+	.separator {
+		border: none;
+		width: 100%;
+		height: 2px;
+		margin: 15px 0 22px;
+		background-color: rgba(112, 112, 112, 17%);
+	}
+
+	.content {
+		.title {
+			font-family: "RobotoMedium";
+			font-size: 13px;
+			color: #7b7b7b;
+			margin: 0;
+			margin-bottom: 23px;
+		}
+
+		.content-images {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			overflow-x: scroll;
+
+			.product-image {
+				width: 90px;
+				height: 96px;
+				border-top-left-radius: 13px;
+				border-top-right-radius: 13px;
+				margin-bottom: 8px;
+				margin-right: 9.5px;
+			}
+		}
+	}
+
+	.divider {
+		width: 100%;
+		height: 2px;
+		border: none;
+		margin: 11px 0 8px;
+		background-color: rgba(112, 112, 112, 17%);
+	}
+
+	.bottomText {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+
+		.display {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: "SfProBold";
+			font-size: 14px;
+			color: #2874ad;
+			cursor: pointer;
+		}
+	}
+}

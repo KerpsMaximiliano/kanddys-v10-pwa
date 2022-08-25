@@ -1,5 +1,5 @@
 <div
-  class="container"
+  class="container helper-headerv1"
   [style.background-color]="bgcolor"
   [style.position]="position"
   [ngClass]="{ shadow: shadow == true }"
@@ -27,9 +27,26 @@
   >
     <!--Left area-->
     <div class="wrapper-hdrhlpr">
-      <a (click)="close()" class="icon-hlprhdr" *ngIf="!basic && back && !empty"
+      <a
+        (click)="close()"
+        class="icon-hlprhdr"
+        *ngIf="!basic && back && !empty && !leftIconText"
         ><i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i
       ></a>
+
+      <div>
+        <a
+          (click)="close()"
+          class="icon-hlprhdr with-text"
+          *ngIf="!basic && back && !empty && leftIconText"
+          ><i class="fas fa-chevron-left" [style.color]="'#27A2FC'"></i>
+
+          <div class="text">
+            {{ leftIconText }}
+          </div>
+        </a>
+      </div>
+
       <button
         (click)="close()"
         class="x-button-hlprhdr"
@@ -88,6 +105,19 @@
         <div class="dot-hlprhdr"> </div>
         <div class="dot-hlprhdr"> </div>
         <div class="dot-hlprhdr"> </div>
+      </div>
+
+      <div
+        *ngIf="cart === true"
+        [ngStyle]="{
+          marginRight: '24px'
+        }"
+      >
+        <app-cart-button
+          [color]="'blue'"
+          [cartAmount]="cartAmount"
+          [shopCartCallback]="cartCallback"
+        ></app-cart-button>
       </div>
     </div>
   </div>

@@ -1,0 +1,29 @@
+.status-list {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container {
+  width: 90%;
+  background: linear-gradient(180deg, white 50%, rgba(213, 205, 205, 0.9) 300%);
+  margin: 0 auto;
+  border-radius: 13px;
+  padding: 100px;
+}
+.status {
+  font-size: 16px;
+  font-family: "RobotoMedium";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  padding: 14px 15px;
+  color: white;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:not(:first-of-type) {
+    margin-top: 20px;
+  }
+}

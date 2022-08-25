@@ -1,22 +1,100 @@
 <ng-container *ngIf="itemData">
-    <div class="container">
-        <app-helper-header bgcolor="#FFFFFF" [searchAble]="false" middleTextFontSize="17px"
-        middleTextFontFamily="SfProRegular" middleTextColor="#7B7B7B" [middleText]="itemData.name.toUpperCase()"
-        [back]="true" [options]="true" (onClose)="back()">
-        </app-helper-header>
-        <app-swiper [fullScreenSwiper]="true" [saleFlowTwoData]="itemData"></app-swiper>
-        <div class="wrapper">
-            <div class="included" *ngIf="itemData?.content?.length > 0">
-                <div class="title">
-                    Incluido
-                </div>
-                <ng-container *ngFor="let item of itemData.content">
-                    <div class="item">
-                        {{item}}
-                    </div>
-                </ng-container>
-            </div>
-        </div>
+  <div class="container">
+    <div style="position: sticky; top: 0; z-index: 2">
+      <app-helper-headerv2
+        [mode]="'basic'"
+        [returnAble]="true"
+        cartColor="blue"
+        bgColor="#2874ad"
+        [color]="'#FFF'"
+        filter="invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)"
+        (returnEvent)="back()"
+      ></app-helper-headerv2>
     </div>
-    <app-sticky-button [mode]="'basic'" [bgColor]="bgColor" [text]="ctaText" (click)="saveProduct()"></app-sticky-button>
+    <div class="item-info" *ngIf="itemData">
+      <div class="fullScreenSwiper" *ngIf="itemData.images?.length">
+        <button class="swiper-button" (click)="openShareDialog()">
+          <img
+            [src]="env + '/upload.svg'"
+            width="15"
+            height="19"
+            style="
+              filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
+                brightness(80%) contrast(104%);
+            "
+          />
+        </button>
+        <div class="shadowWrapper">
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let item of itemData.images; let i = index"
+              (click)="openImageModal(item)"
+              class="item"
+              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+            ></div>
+          </swiper>
+        </div>
+      </div>
+      <div
+        *ngIf="!itemData.images?.length"
+        style="display: flex; justify-content: flex-end; padding: 0 16px"
+      >
+        <button class="nonswiper-button" (click)="openShareDialog()">
+          <img [src]="env + '/upload.svg'" width="15" height="19" />
+          Compartir
+        </button>
+      </div>
+      <div *ngIf="itemData.pricing" class="item-price">
+        <h2 class="title-name" *ngIf="itemData.name">
+          {{ itemData.name }}
+        </h2>
+
+        <div class="wrapper">
+          <span class="vale">A PAGAR </span>
+          <h3 class="price">RD$ {{ itemData.pricing | number }}</h3>
+        </div>
+      </div>
+
+      <div class="client-submit-area"></div>
+      <ng-container *ngIf="itemData.content?.length">
+        <hr class="divider" />
+        <div class="content">
+          <span class="includes">Incluye:</span>
+          <ul>
+            <li
+              *ngFor="let content of itemData.content; index as i"
+              class="list-content"
+            >
+              - {{ content }}
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+    </div>
+    <app-bubble-button
+      (click)="showItems()"
+      [cart]="true"
+      [cartAmount]="itemCartAmount"
+      [custom]="{ width: 56, height: 56, right: '20px', left: 'auto' }"
+      [solo]="false"
+      [color]="'blue'"
+      [lcmargin]="'0'"
+      *ngIf="itemCartAmount > 0"
+    ></app-bubble-button>
+
+    <app-sticky-button
+      *ngIf="!inCart"
+      style="position: sticky; top: 100vh; z-index: 2"
+      [mode]="'basic'"
+      [text]="'ADD AL CARRITO DE COMPRAS'"
+      [size]="'small'"
+      [bgColor]="'#2874AD'"
+      (click)="saveProduct()"
+      [customLeftButtonStyles]="{
+        'font-size': '17px',
+        'font-family': 'RobotoMedium',
+        'letter-spacing': '1px'
+      }"
+    ></app-sticky-button>
+  </div>
 </ng-container>

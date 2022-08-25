@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Bank } from 'src/app/core/models/wallet';
-import { Location, TitleCasePipe } from '@angular/common';
+import { LocationStrategy, TitleCasePipe } from '@angular/common';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -18,11 +18,20 @@ import { FormControl, Validators } from '@angular/forms';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { environment } from 'src/environments/environment';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
+import { Item, ItemPackage } from 'src/app/core/models/item';
 
 interface BankDetails {
   status: boolean;
   value: string;
-  description: string[];
+  description: any;
 }
 
 @Component({
@@ -44,31 +53,53 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     },
   ];
   bankOptions: BankDetails[] = [];
+  banksInfo: BankDetails[] = [];
   banks: Bank[] = [];
-  step: string = 'UPDATE_NAME_AND_SHOW_BANKS';
+  step:
+    | 'PHONE_CHECK_AND_SHOW_BANKS'
+    | 'UPDATE_NAME_AND_SHOW_BANKS'
+    | 'PAYMENT_INFO' = 'PHONE_CHECK_AND_SHOW_BANKS';
   name = new FormControl('', [Validators.required, Validators.minLength(3)]);
-  phoneNumber = new FormControl('', [
-    Validators.required,
-    Validators.pattern(/^\d{10,}$/),
-  ]);
+  phoneNumber = new FormControl('', [Validators.required]);
   selectedBank: BankDetails = null;
   paymentCode: string = '';
   image: File;
   merchantInfo: Merchant;
   orderId: string;
   isLogged: boolean;
+  userId: string;
   userData: User;
-  orderData: any;
-  fakeData: ItemOrder;
+  isAPreOrder: boolean = true;
+  orderData: ItemOrder;
+  products: Item[] | ItemPackage[] = [];
   reservationOrProduct: string = '';
   headerText: string;
   disableUserDataInputs: boolean = false;
   dialogProps: Record<string, any>;
-  saleflowData: any;
+  saleflowData: SaleFlow;
   ammount = new FormControl('', Validators.pattern(/^\d+$/));
+  stepButtonText: string;
+  stepButtonMode: string;
   whatsappLink: string = '';
+  fixedWhatsappLink: string = '';
+  fixedWhatsappLink2: string = '';
   isANewUser: boolean = false;
+  pastStep:
+    | 'PHONE_CHECK_AND_SHOW_BANKS'
+    | 'UPDATE_NAME_AND_SHOW_BANKS'
+    | 'PAYMENT_INFO';
   env: string = environment.assetsUrl;
+  separateDialCode = true;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO.DominicanRepublic;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  buttonBlocked: boolean = false;
+  itemsAmount: number;
+  totalPrice: number;
 
   constructor(
     private authService: AuthService,
@@ -81,87 +112,85 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     private merchant: MerchantsService,
     protected _DomSanitizer: DomSanitizer,
     private titlecasePipe: TitleCasePipe,
-    private saleflow: SaleFlowService
-  ) {}
-
-  afterOrderRequest = async (data) => {
-    if (
-      data.order.orderStatus === 'cancelled' ||
-      data.order.orderStatus === 'to confirm' ||
-      data.order.orderStatus === 'completed'
-    )
-      this.router.navigate([`ecommerce/order-info/${data.order._id}`]);
-    if (data.order.items[0].reservation?._id !== null) {
-      this.reservationOrProduct = 'reservacion';
-    } else {
-      this.reservationOrProduct = 'producto';
-    }
-
-    if (data) {
-      this.fakeData = data.order;
-      if (!this.merchantInfo) {
-        this.getMerchant(this.fakeData.merchants[0]._id).then(() => {
-          this.merchantInfo = this.header.merchantInfo;
-        });
-      }
-      const totalPrice = this.fakeData.subtotals.reduce(
-        (a, b) => a + b.amount,
-        0
-      );
-
-      this.orderData = {
-        id: this.fakeData._id,
-        userId: this.fakeData.user ? this.fakeData.user._id : null,
-        user: this.fakeData.user ? this.fakeData.user : null,
-        itemAmount: this.fakeData.items.reduce((a, b) => a + b.amount, 0),
-        name: this.fakeData.itemPackage?.name
-          ? this.fakeData.itemPackage?.name
-          : this.fakeData.items[0].item.name,
-        amount: this.fakeData.items[0].customizer
-          ? totalPrice * 1.18
-          : totalPrice,
-        hasCustomizer: this.fakeData.items[0].customizer ? true : false,
-        isPackage: this.fakeData.itemPackage ? true : false,
-      };
-
-      this.products = this.fakeData.items.map((item) => {
-        const newItem = item.item;
-        if (item.customizer) {
-          newItem.customizerId = item.customizer._id;
-          newItem.total = totalPrice * 1.18;
-          this.customizerValueService
-            .getCustomizerValuePreview(item.customizer._id)
-            .then((value) => {
-              newItem.images[0] = value.preview;
-            });
-        }
-        return newItem;
+    private saleflow: SaleFlowService,
+    private dialogService: DialogService,
+    private location: LocationStrategy
+  ) {
+    if (this.header.orderId) {
+      history.pushState(null, null, window.location.href);
+      this.location.onPopState(() => {
+        history.pushState(null, null, window.location.href);
       });
-
-      let showProducts = [];
-      if (this.orderData.isPackage) {
-        showProducts.push(this.fakeData.itemPackage);
-      } else {
-        showProducts = this.products;
-      }
-
-      this.dialogProps = {
-        orderFinished: true,
-        products: showProducts,
-      };
-
-      console.log('Order data', this.orderData);
-
-      if (!this.orderData) {
-        this.router.navigate(['/error-screen/?type=item']);
-      }
-
-      await this.getExchangeData(
-        data.order.items[0].saleflow.module.paymentMethod.paymentModule._id
-      );
-    } else {
-      this.router.navigate(['/ecommerce/error-screen']);
     }
+  }
+
+  afterOrderRequest = async ({ order }: { order: ItemOrder }) => {
+    if (!order) {
+      this.router.navigate(['/others/error-screen']);
+      return;
+    }
+    this.orderData = order;
+
+    if (
+      order.orderStatus === 'cancelled' ||
+      order.orderStatus === 'to confirm' ||
+      order.orderStatus === 'completed'
+    )
+      this.router.navigate([`ecommerce/order-info/${order._id}`]);
+    if (order.items[0].reservation?._id !== null)
+      this.reservationOrProduct = 'reservacion';
+    else this.reservationOrProduct = 'producto';
+    if (!this.merchantInfo) {
+      await this.getMerchant(order.merchants[0]._id);
+      if (this.merchantInfo?.name.includes('&'))
+        this.merchantInfo.name = this.merchantInfo?.name.replace('&', 'and');
+    }
+
+    this.totalPrice = order.subtotals.reduce((a, b) => a + b.amount, 0);
+    if (order.items[0].customizer) this.totalPrice = this.totalPrice * 1.18;
+
+    const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+    this.fixedWhatsappLink2 = `https://wa.me/${
+      this.merchantInfo.owner.phone
+    }?text=Hola%20${this.merchantInfo.name.replace(
+      /[^\w\s]/gi,
+      ''
+    )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+
+    this.products = order.items.map((item) => {
+      const newItem = item.item;
+      if (item.customizer) {
+        newItem.customizerId = item.customizer._id;
+        newItem.total = this.totalPrice;
+        this.customizerValueService
+          .getCustomizerValuePreview(item.customizer._id)
+          .then((value) => {
+            newItem.images[0] = value.preview;
+          });
+      }
+      return newItem;
+    });
+
+    this.dialogProps = {
+      orderFinished: true,
+      products: this.products,
+    };
+    this.itemsAmount = this.products.length;
+
+    if (order.items[0].saleflow.module?.paymentMethod?.paymentModule?._id) {
+      await this.getExchangeData(
+        order.items[0].saleflow.module?.paymentMethod.paymentModule._id
+      );
+    }
+  };
+
+  openCart = () => {
+    this.dialogService.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: this.dialogProps,
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   };
 
   async getOrderData(id: string, preOrder = false) {
@@ -180,207 +209,303 @@ export class FlowCompletionAuthLessComponent implements OnInit {
 
   async getMerchant(id: string) {
     try {
-      const merchant = await this.merchant.merchant(id);
-      this.header.merchantInfo = merchant;
+      this.merchantInfo = await this.merchant.merchant(id);
+      this.header.merchantInfo = this.merchantInfo;
     } catch (error) {
       console.log(error);
     }
   }
 
-  products: any[] = [];
-
   async ngOnInit() {
     this.localStorageFlowRoute =
-      this.header.flowRoute || localStorage.getItem('flowRoute');
+      this.header.flowRoute || (localStorage.getItem('flowRoute') ?? '');
 
-    console.log(this.localStorageFlowRoute);
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    const { orderStatus } = await this.order.getOrderStatus(orderId);
 
-    this.route.params.subscribe(async (routeParams) => {
-      const { orderId } = routeParams;
+    if (orderId) {
+      this.orderId = orderId;
 
-      await this.getOrderData(orderId, true);
+      await this.getOrderData(orderId, orderStatus === 'draft');
 
-      if (orderId) {
-        this.orderId = orderId;
-
-        const { orderStatus } = await this.order.getOrderStatus(orderId);
-
-        if (orderStatus !== 'draft') {
-          this.phoneNumber.setValue(this.orderData.user.phone);
-          this.name.setValue(this.orderData.user.name);
-          this.phoneNumber.disable();
-          this.name.disable();
-          this.disableUserDataInputs = true;
-        }
-        //   await this.order.authOrder(orderId);
-
-        //   await this.getOrderData(orderId, false);
-        // }
-      } else if (!this.header.isDataComplete()) {
-        this.header.resetIsComplete();
+      if (orderStatus === 'completed') {
+        this.redirect();
       }
 
-      const saleflow =
-        this.header.saleflow ||
-        JSON.parse(localStorage.getItem('saleflow-data'));
-      this.saleflowData = saleflow;
+      if (orderStatus !== 'draft') {
+        const { countryIso, nationalNumber } =
+          this.authService.getPhoneInformation(this.orderData.user.phone);
+        this.phoneNumber.setValue(nationalNumber);
+        this.CountryISO = countryIso;
+        this.name.setValue(this.orderData.user.name);
+        this.phoneNumber.disable();
+        this.name.disable();
+        this.disableUserDataInputs = true;
+      }
+    } else if (!this.header.isDataComplete()) {
+      this.header.resetIsComplete();
+    }
 
+    this.saleflowData = this.orderData.items[0].saleflow;
+
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
       try {
         await this.getExchangeData(
-          saleflow.module.paymentMethod.paymentModule._id
+          this.saleflowData.module.paymentMethod.paymentModule._id
         );
-        this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
-
-        // if (currentSession) {
-        //   await this.getExchangeData(
-        //     saleflow.module.paymentMethod.paymentModule._id
-        //   );
-        //   this.isANewUser =
-        //     currentSession.name === '' ||
-        //     String(currentSession.name) === 'null';
-        //   this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
-        // } else {
-        //   this.router.navigate(['/']);
-        // }
+        this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
       } catch (error) {
         console.log(error);
       }
+    }
 
-      this.headerText = 'INFORMACIÓN DEL PAGO';
-      let packages: string[] = [];
-      if (this.header.order?.itemPackage) {
-        packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
-            findBy: {
-              _id: {
-                __in: ([] = packages),
-              },
+    this.headerText = this.saleflowData?.module?.paymentMethod?.paymentModule
+      ?._id
+      ? 'INFORMACIÓN DEL PAGO'
+      : 'INFORMACIÓN';
+    if (this.header.order?.itemPackage) {
+      const packages = [this.header.order.itemPackage];
+      const listItemPackage = (
+        await this.saleflow.listItemPackage({
+          findBy: {
+            _id: {
+              __in: ([] = packages),
             },
-          })
-        ).listItemPackage;
-        this.products = listPackages;
-      }
-
-      if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
-        this.merchantInfo =
-          this.header.merchantInfo ||
-          JSON.parse(localStorage.getItem('merchantInfo'));
-    });
-  }
-
-  findItemData(products) {
-    this.saleflow
-      .listItems({
-        findBy: {
-          _id: {
-            __in: ([] = products),
           },
-        },
-      })
-      .then((data) => {
-        this.products = data.listItems;
-      });
+        })
+      ).listItemPackage;
+      this.products = listItemPackage;
+    }
+
+    if (this.header.merchantInfo || localStorage.getItem('merchantInfo'))
+      this.merchantInfo =
+        this.header.merchantInfo ||
+        JSON.parse(localStorage.getItem('merchantInfo'));
   }
 
   async getExchangeData(id: string) {
-    const data = await this.wallet.exchangedata(id);
-
+    const data = await this.wallet.exchangeData(id);
     this.banks = data.ExchangeData.bank;
-
-    let wallets = [];
-    for (let i = 0; i < data.ExchangeData.bank.length; i++) {
-      wallets.push(
-        this.wallet.paymentReceiver(
-          data.ExchangeData.bank[i].paymentReceiver._id
-        )
-      );
-    }
-    Promise.all(wallets).then((values) => {
-      let descriptions = data.ExchangeData.bank.map((value) => {
-        return {
-          owner: value.ownerAccount,
-          type: value.typeAccount,
-          account: value.account,
-          routingNumber: value.routingNumber,
-        };
-      });
-      const payments = values.map((value) => {
-        return {
-          paymenteceiver: value.PaymentReceiver,
-          bankdata: descriptions,
-        };
-      });
-      this.bankOptions = payments.map((value, index) => {
-        this.banks[index].name = this.titlecasePipe.transform(
-          value.paymenteceiver.name
-        );
-        return {
-          value: this.titlecasePipe.transform(value.paymenteceiver.name),
-          status: true,
-          description: [
-            `Tipo de cuenta: ${value.bankdata[0].type}`,
-            `${value.bankdata[0].owner}`,
-            `Cuenta: ${value.bankdata[0].account}`,
-            `RNC: ${value.bankdata[0].routingNumber}`,
-          ],
-        };
-      });
-    });
+    this.banksInfo = this.banks.map((bank) => ({
+      value: `${bank.bankName}`,
+      status: true,
+      description: {
+        typeAccount: bank.typeAccount,
+        owner: bank.ownerAccount,
+        account: bank.account,
+        routingNumber: bank.routingNumber,
+      },
+    }));
+    this.bankOptions = this.banks.map((bank) => ({
+      value: `${bank.bankName} (${bank.account}, ${bank.ownerAccount})`,
+      status: true,
+      description: {
+        typeAccount: bank.typeAccount,
+        owner: bank.ownerAccount,
+        account: bank.account,
+        routingNumber: bank.routingNumber,
+      },
+    }));
   }
 
-  async submit() {
-    switch (this.step) {
-      case 'UPDATE_NAME_AND_SHOW_BANKS':
-        // this.totalQuestions = 2;
+  async submitPhoneCheck(fullLink: string) {
+    if (this.isAPreOrder) {
+      const foundUser = await this.checkIfUserExists(
+        this.orderData.user?.phone
+      );
+      this.userData = foundUser;
+      if (!foundUser || !foundUser.name || String(foundUser.name) === 'null') {
+        this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+        this.buttonBlocked = false;
+        return;
+      }
 
-        if (!this.phoneNumber.disabled && !this.name.disabled) {
-          lockUI();
+      if (foundUser && foundUser.name) {
+        lockUI();
 
-          let registeredNewUser: User = null;
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
 
-          let foundUser = await this.authService.checkUser(
-            '1' + String(this.phoneNumber.value)
-          );
-          this.userData = foundUser;
+        if (orderStatus === 'draft') {
+          await this.order.authOrder(this.orderId, foundUser._id);
+          this.header.flowRoute = '';
+          this.localStorageFlowRoute = '';
+          localStorage.removeItem('flowRoute');
+          this.header.deleteSaleflowOrder(this.saleflowData._id);
+          this.header.resetIsComplete();
+          this.isAPreOrder = false;
+        }
 
-          console.log(foundUser);
+        await this.getOrderData(this.orderId, false);
 
+        //disable 1st step inputs to avoid further changes to existing order
+        this.phoneNumber.disable();
+
+        if (this.banks?.length === 1) this.selectedBank = this.bankOptions[0];
+        this.buttonBlocked = false;
+        unlockUI();
+      }
+    }
+
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
+      this.pastStep = this.step;
+      this.step = 'PAYMENT_INFO';
+    } else {
+      this.whatsappLink = `https://wa.me/${
+        this.merchantInfo.owner.phone
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+      lockUI();
+      window.location.href = this.whatsappLink;
+    }
+
+    this.fixedWhatsappLink = `https://wa.me/${
+      this.merchantInfo.owner.phone
+    }?text=Hola%20${this.merchantInfo.name.replace(
+      /[^\w\s]/gi,
+      ''
+    )},%20%20acabo%20de%20hacer%20una%20orden.${
+      String(this.userData.name) !== 'null' && this.userData.name
+        ? '%20Mi%20nombre%20es:%20' + this.userData.name
+        : ''
+    }.%20Mas%20info%20aquí%20${fullLink}`;
+
+    this.buttonBlocked = false;
+  }
+
+  async submitUpdateName(fullLink: string) {
+    if (this.isAPreOrder) {
+      const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
+
+      if (!this.name.disabled) {
+        lockUI();
+
+        let registeredNewUser: User;
+
+        let foundUser = await this.authService.checkUser(phoneNumber);
+
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+
+        if (!foundUser) {
+          registeredNewUser = await this.signUp();
+          this.userData = registeredNewUser;
+
+          if (registeredNewUser && orderStatus === 'draft') {
+            this.header.flowRoute = '';
+            this.localStorageFlowRoute = '';
+            localStorage.removeItem('flowRoute');
+            await this.order.authOrder(this.orderId, registeredNewUser._id);
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
+          }
+
+          await this.getOrderData(this.orderId, false);
+          //disable 1st step inputs to avoid further changes to existing order
+          this.name.disable();
+
+          if (this.banks?.length === 1) this.selectedBank = this.bankOptions[0];
+
+          this.buttonBlocked = false;
+          unlockUI();
+
+          if (!this.saleflowData?.module?.paymentMethod?.paymentModule?._id) {
+            this.whatsappLink = `https://wa.me/${
+              this.merchantInfo.owner.phone
+            }?text=Hola%20${this.merchantInfo.name.replace(
+              /[^\w\s]/gi,
+              ''
+            )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+            lockUI();
+            window.location.href = this.whatsappLink;
+            return;
+          }
+        }
+
+        if (foundUser && !foundUser.name) {
+          this.userData.name = this.name.value;
           const { orderStatus } = await this.order.getOrderStatus(this.orderId);
 
-          if (foundUser && foundUser._id !== '') {
-            if (orderStatus === 'draft')
-              await this.order.authOrder(this.orderId, foundUser._id);
-          } else {
-            registeredNewUser = await this.signUp();
-            this.userData = registeredNewUser;
-
-            if (registeredNewUser && orderStatus === 'draft')
-              await this.order.authOrder(this.orderId, registeredNewUser._id);
+          if (orderStatus === 'draft') {
+            await this.order.authOrder(this.orderId, foundUser._id);
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
           }
 
           await this.getOrderData(this.orderId, false);
 
           //disable 1st step inputs to avoid further changes to existing order
           this.phoneNumber.disable();
+
+          if (this.banks.length === 1) {
+            this.selectedBank = this.bankOptions[0];
+          }
+
+          this.buttonBlocked = false;
+          unlockUI();
+        }
+      } else {
+        let registeredNewUser: User = null;
+
+        let foundUser = await this.authService.checkUser(phoneNumber);
+
+        const { orderStatus } = await this.order.getOrderStatus(this.orderId);
+
+        if (orderStatus === 'in progress' && !foundUser) {
+          registeredNewUser = await this.signUp();
+          this.userData = registeredNewUser;
+
+          if (registeredNewUser) {
+            this.header.flowRoute = '';
+            this.localStorageFlowRoute = '';
+            localStorage.removeItem('flowRoute');
+            this.header.deleteSaleflowOrder(this.saleflowData._id);
+            this.header.resetIsComplete();
+            this.isAPreOrder = false;
+          }
+
+          await this.getOrderData(this.orderId, false);
+          //disable 1st step inputs to avoid further changes to existing order
           this.name.disable();
 
           if (this.banks.length === 1) {
             this.selectedBank = this.bankOptions[0];
           }
 
-          this.step = 'PAYMENT_INFO';
-          unlockUI();
-        } else {
-          this.step = 'PAYMENT_INFO';
+          this.buttonBlocked = false;
         }
-
-        // this.updateUser();
-        break;
-      case 'PAYMENT_INFO':
-        this.payOrder();
-        break;
+      }
     }
+    if (this.saleflowData.module?.paymentMethod?.paymentModule?._id) {
+      this.pastStep = this.step;
+      this.step = 'PAYMENT_INFO';
+      this.buttonBlocked = false;
+    }
+  }
+
+  async submit() {
+    this.buttonBlocked = true;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
+    try {
+      switch (this.step) {
+        case 'PHONE_CHECK_AND_SHOW_BANKS':
+          this.submitPhoneCheck(fullLink);
+          break;
+        case 'UPDATE_NAME_AND_SHOW_BANKS':
+          this.submitUpdateName(fullLink);
+          break;
+        case 'PAYMENT_INFO':
+          this.payOrder();
+          this.buttonBlocked = false;
+          break;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    this.buttonBlocked = false;
   }
 
   selectBank(index: number) {
@@ -402,28 +527,27 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   goBack() {
-    if (
-      this.step === 'UPDATE_NAME_AND_SHOW_BANKS' &&
-      (this.header.flowRoute || this.localStorageFlowRoute !== '')
-    ) {
-      const redirectionURL = `/ecommerce/${
-        this.header.flowRoute || this.localStorageFlowRoute
-      }`;
-      console.log(this.localStorageFlowRoute, redirectionURL);
-      this.router.navigate([redirectionURL]);
+    if (this.step === 'UPDATE_NAME_AND_SHOW_BANKS') {
+      this.step = 'PHONE_CHECK_AND_SHOW_BANKS';
     }
-
     if (this.step === 'PAYMENT_INFO') {
-      this.step = 'UPDATE_NAME_AND_SHOW_BANKS';
+      this.image = null;
+      this.selectedBank = null;
+      this.step = this.pastStep;
       this.isANewUser = false;
     }
+
+    this.buttonBlocked = false;
   }
 
   // PAYMENT INFO
   async signUp() {
     try {
       const data = await this.authService.signup(
-        { phone: '1' + this.phoneNumber.value, name: this.name.value },
+        {
+          phone: this.phoneNumber.value.e164Number.split('+')[1],
+          name: this.name.value,
+        },
         'whatsapp'
       );
       if (data) {
@@ -435,6 +559,14 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async checkIfUserExists(number?: string): Promise<User> {
+    const phoneNumber = this.phoneNumber.value.e164Number.split('+')[1];
+    const data = await this.authService.checkUser(number ?? phoneNumber);
+
+    if (!data) return;
+    return data;
   }
 
   // PAYMENT INFO
@@ -450,12 +582,7 @@ export class FlowCompletionAuthLessComponent implements OnInit {
       }
 
       this.isLogged = true;
-      // if (this.orderId) {
-      //   this.router.navigate(['ecommerce/error-screen']);
-      //   return;
-      // }
-
-      if (this.banks.length === 1) {
+      if (this.banks?.length === 1) {
         this.selectedBank = this.bankOptions[0];
       }
 
@@ -466,46 +593,40 @@ export class FlowCompletionAuthLessComponent implements OnInit {
   }
 
   // Case 7
-  onFileInput(file: File) {
-    this.image = file;
+  onFileInput(file: File | { image: File; index: number }) {
+    if (!('index' in file)) this.image = file;
   }
 
   // Case 7
   async payOrder() {
-    const totalPrice = this.fakeData.subtotals.reduce(
-      (a, b) => a + b.amount,
-      0
-    );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData.id}`;
-    // const ammount = new Intl.NumberFormat('es-MX').format(
-    //   this.ammount.value.toLocaleString('es-MX')
-    // );
-    if (this.fakeData.items[0].customizer)
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.orderData._id}`;
+    if (this.orderData.items[0].customizer) {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
-      }?text=Hola%20${
-        this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
-        Math.round((totalPrice * 1.18 + Number.EPSILON) * 100) / 100
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${
+        Math.round((this.totalPrice + Number.EPSILON) * 100) / 100
       }.${
         String(this.userData.name) !== 'null' && this.userData.name
           ? '%20Mi%20nombre%20es:%20' + this.userData.name
           : ''
       }.%20Mas%20info%20aquí%20${fullLink}`;
-    else
+    } else {
       this.whatsappLink = `https://wa.me/${
         this.merchantInfo.owner.phone
-      }?text=Hola%20${
-        this.merchantInfo.name
-      },%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${totalPrice.toLocaleString(
+      }?text=Hola%20${this.merchantInfo.name.replace(
+        /[^\w\s]/gi,
+        ''
+      )},%20le%20acabo%20de%20hacer%20un%20pago%20de%20$${this.totalPrice.toLocaleString(
         'es-MX'
       )}.%20Mi%20nombre%20es:%20${
         this.userData.name
       }.%20Mas%20info%20aquí%20${fullLink}`;
+    }
     try {
       lockUI();
-
-      // alert(this.orderData.userId + " === " + this.orderData.user._id + " === " + this.orderData.user.name);
 
       const data = await this.order.payOrder(
         {
@@ -513,12 +634,10 @@ export class FlowCompletionAuthLessComponent implements OnInit {
           platform: 'bank-transfer',
           transactionCode: this.paymentCode,
         },
-        this.orderData.userId,
+        this.orderData.user._id,
         'bank-transfer',
-        this.orderData.id
+        this.orderData._id
       );
-      this.header.deleteSaleflowOrder(this.saleflowData._id);
-      this.header.resetIsComplete();
       this.header.storedDeliveryLocation = null;
 
       this.orderFinished();
@@ -528,8 +647,52 @@ export class FlowCompletionAuthLessComponent implements OnInit {
     }
   }
 
+  changeStickyButtonText() {
+    switch (this.step) {
+      case 'PHONE_CHECK_AND_SHOW_BANKS':
+        return (this.stepButtonText =
+          !this.phoneNumber.value ||
+          this.phoneNumber.value.nationalNumber === '' ||
+          this.phoneNumber.status === 'INVALID'
+            ? 'ESCRIBE COMO TE CONTACTAMOS'
+            : this.saleflowData?.module?.paymentMethod?.paymentModule?._id
+            ? 'CONTINUAR LA ORDEN'
+            : 'COMPLETA POR WHATSAPP');
+      case 'UPDATE_NAME_AND_SHOW_BANKS':
+        return (this.stepButtonText =
+          this.name.status === 'INVALID'
+            ? 'ESCRIBE QUIEN ERES'
+            : this.saleflowData?.module?.paymentMethod?.paymentModule?._id
+            ? 'CONTINUAR LA ORDEN'
+            : 'COMPLETA POR WHATSAPP');
+      case 'PAYMENT_INFO':
+        return (this.stepButtonText =
+          !this.image || !this.selectedBank
+            ? 'ADICIONA LA INFO DE LA TRANSFERENCIA'
+            : 'MANDA TU ORDEN A ' +
+              this.merchantInfo.name.replace(/[^\w\s]/gi, '').toUpperCase());
+    }
+  }
+
+  changeStickyButtonMode() {
+    switch (this.step) {
+      case 'PHONE_CHECK_AND_SHOW_BANKS':
+        return (this.stepButtonMode =
+          !this.phoneNumber.value ||
+          this.phoneNumber.value.nationalNumber === '' ||
+          this.phoneNumber.status === 'INVALID'
+            ? 'disabled-fixed'
+            : 'fixed');
+      case 'UPDATE_NAME_AND_SHOW_BANKS':
+        return (this.stepButtonMode =
+          this.name.status === 'INVALID' ? 'disabled-fixed' : 'fixed');
+      case 'PAYMENT_INFO':
+        return !this.image || !this.selectedBank ? 'disabled-fixed' : 'fixed';
+    }
+  }
+
   redirect() {
-    this.router.navigate([`ecommerce/order-info/${this.orderData.id}`]);
+    this.router.navigate([`ecommerce/order-info/${this.orderData._id}`]);
   }
 
   orderFinished() {

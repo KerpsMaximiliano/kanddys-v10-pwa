@@ -1,5 +1,5 @@
 .page-components-tabs {
-    height: 57.6px;
+    height: 46px;
     background-color: #C7E3F8;
     width: 100%;
     overflow-x: scroll;
@@ -11,6 +11,7 @@
     z-index: 999;
   
     .tab {
+      all: unset;
       flex-basis: content;
       margin-left: 16px;
       color: #4773d8;
@@ -19,6 +20,10 @@
       font-size: 16px;
       font-family: "RobotoMedium";
       cursor: pointer;
+
+      &:hover {
+        color: #759df8;
+      }
 
       &:last-child {
         margin-right: 16px;
@@ -35,4 +40,10 @@
       background: transparent;
       height: 0px;
     }
+}
+
+@media (max-width: 380px) {
+  .page-components-tabs .tab {
+    margin-left: 5px;
+  }
 }

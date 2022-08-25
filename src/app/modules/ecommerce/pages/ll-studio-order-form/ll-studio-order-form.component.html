@@ -1,0 +1,15 @@
+<ng-container *ngIf="!loading else loadingScreen">
+    <app-multistep-form [steps]="formSteps" [disableSmoothScroll]="false" [scrollableForm]="scrollableForm"
+    [showStepNumbers]="false"></app-multistep-form>
+</ng-container>
+<ng-template #loadingScreen>
+    <app-loading-screen
+        [backgroundColor]="'rgb(250, 164, 164)'"
+        [logo]="logo"
+        [title]="'LL Studio'"
+        [titleStyles]="{
+            fontFamily: 'RalewaySemiBold',
+            color: '#fff'
+        }"
+    ></app-loading-screen>
+</ng-template>

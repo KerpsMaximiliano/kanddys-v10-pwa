@@ -1,225 +1,74 @@
 import {
   Component,
   OnInit,
+  AfterViewInit,
   OnDestroy,
   Input,
   Type,
   ViewChild,
   ViewContainerRef,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of, Subscription } from 'rxjs';
+import { of } from 'rxjs';
 import { delay } from 'rxjs/internal/operators';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { ActivitiesOptionComponent } from '../activities-option/activities-option.component';
-
-interface FieldStyles {
-  fieldStyles?: any;
-  containerStyles?: any;
-  topLabelActionStyles?: any;
-  labelStyles?: any;
-  bottomLabelStyles?: any;
-  customClassName?: string; //you must use ::ng-deep in the scss of the parent component
-}
-
-interface FormField {
-  name: string;
-  styles?: FieldStyles;
-  fieldControl: FormControl | FormArray;
-  enabledOnInit?: 'ENABLED' | 'DISABLED';
-  changeCallbackFunction?(...params): any;
-  changeFunctionSubscription?: Subscription;
-  selectionOptions?: Array<string>;
-  validators?: Array<any>;
-  description?: string;
-  topLabelAction?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any | Promise<any>;
-  };
-  label: string;
-  bottomLabel?: {
-    text: string;
-    clickable?: boolean;
-    callback?: (...params) => any;
-  };
-  placeholder?: string;
-  inputType?: string;
-  showImageBottomLabel?: string;
-  multiple?: boolean;
-}
-
-interface EmbeddedComponentOutput {
-  name: string;
-  callback(params: any): any;
-}
-
-interface EmbeddedComponent {
-  component: Type<any>;
-  inputs: Record<string, any>;
-  outputs?: Array<EmbeddedComponentOutput>;
-  containerStyles?: any;
-  afterIndex: number;
-}
-
-interface PromiseFunction {
-  type: 'promise';
-  function(params): Promise<any>;
-}
-
-interface ObservableFunction {
-  type: 'observable';
-  function(params): Observable<any>;
-}
-
-type AsyncFunction = PromiseFunction | ObservableFunction;
-
-interface FormStep {
-  fieldsList: Array<FormField>;
-  headerText: string;
-  embeddedComponents?: Array<EmbeddedComponent>;
-  accessCondition?(...params): boolean;
-  stepButtonValidText: string;
-  stepButtonInvalidText: string;
-  asyncStepProcessingFunction?: AsyncFunction;
-  stepProcessingFunction?(...params): any;
-  customScrollToStep?(...params): any;
-  customScrollToStepBackwards?(...params): any;
-  bottomLeftAction?: BottomLeftAction;
-  optionalLinksTo?: OptionalLinks;
-  stepResult?: any;
-}
-
-interface BottomLeftAction {
-  text: string;
-  execute(params): any;
-}
-
-interface OptionalLinks {
-  styles?: FieldStyles;
-  links: Array<OptionalLink>;
-}
-
-interface OptionalLink {
-  text: string;
-  action(params): any;
-}
+import {
+  FormStep,
+  FormField,
+  AsyncFunction,
+} from 'src/app/core/types/multistep-form';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  SearchCountryField,
+  CountryISO,
+  PhoneNumberFormat,
+} from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-multistep-form',
   templateUrl: './multistep-form.component.html',
   styleUrls: ['./multistep-form.component.scss'],
 })
-export class MultistepFormComponent implements OnInit, OnDestroy {
+export class MultistepFormComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @ViewChild('embeddedComponent', { read: ViewContainerRef, static: true })
   embeddedComponentRef;
   @Input() steps: Array<FormStep> = [
     {
       fieldsList: [
         {
-          name: 'phoneNumber',
-          fieldControl: new FormControl('', Validators.required),
-          label: 'Con cuál número de WhatsApp harás esta orden?',
-          inputType: 'number',
-          placeholder: 'Mi # de WhatsApp es..',
-          styles: {
-            containerStyles: {
-              marginTop: '150px',
-            },
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl([''], Validators.required),
           },
-          bottomLabel: {
-            text: '¿No tienes un número?',
-            clickable: true,
-            callback: () => {
-              console.log('Se ha clickeado el callback');
-            },
-          },
-        },
-        {
-          name: 'address',
-          fieldControl: new FormControl('', Validators.required),
-          label: 'Dirección?',
-          inputType: 'textarea',
-          placeholder: 'Calle, número(nombre del edificio)',
-          styles: {
-            containerStyles: {
-              marginTop: '74px',
-            },
-          },
-        },
-        // {
-        //   name: 'email',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Email',
-        //   inputType: 'email',
-        //   placeholder: 'Email',
-        //   fieldStyles: {
-        //     color: 'green',
-        //     marginTop: '10px',
-        //   },
-        // },
-        {
-          name: 'imageExample',
-          fieldControl: new FormControl(''),
-          label: 'Sube una imagen',
-          inputType: 'file',
+          label: 'Adjunta aquí tu comprobante de Pago(*)',
+          inputType: 'file2',
+          fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
+            labelStyles: {
+              paddingBottom: '26px',
+              paddingTop: '65px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
             containerStyles: {
-              width: '60%',
+              paddingBottom: '4rem',
             },
-          },
-        },
-        // {
-        //   name: 'imageExample2',
-        //   fieldControl: new FormControl(''),
-        //   label: 'Sube una imagen',
-        //   inputType: 'file',
-        //   placeholder: 'sube una imagen',
-        // },
-      ],
-      embeddedComponents: [
-        {
-          component: ActivitiesOptionComponent,
-          inputs: {
-            lightTextAtTheTop: 'arriba',
-            boldTextAtTheBottom: 'abajo',
-            backgroundColor: 'orange',
-            textColor: 'black',
-          },
-          outputs: [
-            {
-              name: 'exampleEvent',
-              callback: (result) => {
-                console.log('event emiitedaxsadaq', result);
-              },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
             },
-          ],
-          afterIndex: 0,
-          containerStyles: {
-            marginTop: '10px',
-          },
-        },
-        {
-          component: ActivitiesOptionComponent,
-          inputs: {
-            lightTextAtTheTop: 'arriba',
-            boldTextAtTheBottom: 'abajo',
-            backgroundColor: 'red',
-            textColor: 'white',
-          },
-          outputs: [
-            {
-              name: 'exampleEvent',
-              callback: (result) => {
-                console.log('event 222 emiitedaxsadaq', result);
-              },
-            },
-          ],
-          afterIndex: 1,
-          containerStyles: {
-            marginTop: '80px',
           },
         },
       ],
@@ -239,14 +88,27 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         },
       },
       optionalLinksTo: {
-        links: [
+        groupOfLinksArray: [
           {
-            text: 'Que la parte de atrás sea una fotografia',
-            action: () => {
-              console.log('Something happened');
-            },
+            topLabel: 'Opcional',
+            links: [
+              {
+                text: 'Que la parte de atrás sea una fotografia',
+                action: () => {
+                  console.log('Something happened');
+                },
+              },
+            ],
           },
         ],
+      },
+      hasQrHeader: true,
+      qrSectionInfo: {
+        label: 'Re-direcciona a la Colección de Profesores',
+        qrLink: 'https://metacritic.com/',
+        width: 50,
+        icon: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/download.svg',
+        containerStyles: {},
       },
       headerText: 'fase 1',
       stepButtonInvalidText: 'Adiciona TU MOBILE',
@@ -256,7 +118,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       fieldsList: [
         {
           name: 'receivedCode',
-          fieldControl: new FormControl('', Validators.required),
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required),
+          },
           label: 'Escriba el código que recibió:',
           inputType: 'number',
           placeholder: 'El código que recibí en WhatsApp fue..',
@@ -269,7 +134,10 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         {
           name: 'favoriteColors',
           multiple: true,
-          fieldControl: new FormArray([new FormControl('')]),
+          fieldControl: {
+            type: 'multiple',
+            control: new FormArray([new FormControl('')]),
+          },
           label: 'Color favorito',
           inputType: 'text',
           placeholder: 'Mi color favorito es es..',
@@ -291,14 +159,29 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
   ];
   @Input() scrollableForm: boolean = false;
   @Input() disableSmoothScroll: boolean = true;
-  shouldScrollBackwards: boolean = true;
-  currentStep: number = 0;
-  currentStepString: string = (this.currentStep + 1).toString();
+  @Input() showStepNumbers: boolean = true;
+  @Input() shouldScrollBackwards: boolean = true;
+  formWrapperHeight: number = null;
+  currentYPosition: number = 0;
+  shouldAddMultipleInput = false;
+  timeoutId: any = null;
+  @Input() currentStep: number = 0;
+  @Input() currentStepString: string = (this.currentStep + 1).toString();
+  @Output() paramsRef = new EventEmitter();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
   stepFunctionParams: any;
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
+  headerHeightTracker: number = 60;
+  finishedExecutingStepProcessingFunction = true;
 
-  constructor(private header: HeaderService) {}
+  constructor(private header: HeaderService, private dialog: DialogService) {}
 
   ngOnInit(): void {
     this.stepFunctionParams = {
@@ -306,16 +189,70 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
       currentStep: this.currentStep,
       shouldScrollBackwards: this.shouldScrollBackwards,
       changeShouldScrollBackwards: this.changeShouldScrollBackwards,
-      blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
-      unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
-      blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
-      unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
       scrollToStep: this.scrollToStep,
       executeStepDataProcessing: this.executeStepDataProcessing,
       scrollableForm: this.scrollableForm,
+      dialog: this.dialog,
     };
 
     this.initController();
+
+    this.paramsRef.emit(this.stepFunctionParams);
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.headerHeightTracker = document.querySelector('.helper-headerv1')
+        ? document.querySelector('.helper-headerv1').clientHeight
+        : document.querySelector('.helper-headerv2')
+        ? document.querySelector('.helper-headerv2').clientHeight
+        : document.querySelector('.header-info-component')
+        ? document.querySelector('.header-info-component').clientHeight
+        : 0;
+    }, 100);
+
+    if (this.scrollableForm && !this.disableSmoothScroll) {
+      setTimeout(() => {
+        this.formWrapperHeight = document.querySelector(
+          '#step-' + this.currentStep
+        ).clientHeight;
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+
+        phoneInputs.forEach((element) => {
+          element.setAttribute('tabindex', '-1');
+        });
+      }, 100);
+    }
+
+    this.steps.forEach((step, index) => {
+      let currentStepKey = (index + 1).toString();
+
+      let currentStepFormGroup = this.dataModel.get(
+        currentStepKey
+      ) as FormGroup;
+
+      currentStepFormGroup.statusChanges.subscribe((statusValue) => {
+        setTimeout(() => {
+          this.formWrapperHeight = document.querySelector(
+            '#step-' + this.currentStep
+          ).clientHeight;
+        }, 100);
+
+        if (step.statusChangeCallbackFunction)
+          step.statusChangeCallbackFunction(
+            statusValue,
+            this.stepFunctionParams
+          );
+      });
+
+      //allows you to execute custom code when field is not valid
+      this.steps[index].fieldsList.forEach((field) => {
+        if (field.statusChangeCallbackFunction)
+          field.fieldControl.control.statusChanges.subscribe(
+            field.statusChangeCallbackFunction
+          );
+      });
+    });
   }
 
   /**
@@ -332,17 +269,12 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         currentStepKey
       ) as FormGroup;
 
-      currentStepFormGroup.statusChanges.subscribe((statusValue) => {
-        if (this.currentStep > index && statusValue === 'INVALID') {
-          this.currentStep = index;
-          this.scrollToStep(this.currentStep);
-          if (this.scrollableForm) this.blockScrollPastCurrentStep();
-        }
-      });
-
       step.fieldsList.forEach((field) => {
         if (!currentStepFormGroup.get(field.name))
-          currentStepFormGroup.addControl(field.name, field.fieldControl);
+          currentStepFormGroup.addControl(
+            field.name,
+            field.fieldControl.control
+          );
 
         if (field.enabledOnInit === 'DISABLED') {
           currentStepFormGroup.get(field.name).disable();
@@ -352,15 +284,13 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
         //trigger code execution on every input change
         if (field.changeCallbackFunction) {
           field.changeFunctionSubscription =
-            field.fieldControl.valueChanges.subscribe((change) => {
+            field.fieldControl.control.valueChanges.subscribe((change) => {
               field.changeCallbackFunction(change, this.stepFunctionParams);
             });
         }
         // console.log('CURRENT FORM GROUP', currentStepFormGroup);
       });
     });
-
-    if (this.scrollableForm) this.blockScrollPastCurrentStep();
   }
 
   //Removes all subscriptions from every formControl
@@ -374,41 +304,29 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  // initEmbeddedComponents() {
-  //   this.steps.forEach((step) => {
-  //     step.embeddedComponents.forEach((embeddedComponent) => {
-  //       const componentFactory =
-  //         this.componentFactoryResolver.resolveComponentFactory(
-  //           embeddedComponent.component
-  //         );
+  resizeFormWrapper() {
+    if (this.scrollableForm && !this.disableSmoothScroll) {
+      //Arreglar a futuro
+      let currentStepHtmlElement: HTMLElement = document.querySelector(
+        `#step-${this.currentStep}`
+      );
 
-  //       this.embeddedComponentRef.clear();
+      this.formWrapperHeight = document.querySelector(
+        '#step-' + this.currentStep
+      ).clientHeight;
+      this.currentYPosition = currentStepHtmlElement.offsetTop * -1;
 
-  //       const newComponent =
-  //         this.embeddedComponentRef.createComponent(componentFactory);
+      document.querySelector('.fullform-wrapper').scrollTo(0, 0);
+    }
+  }
 
-  //       Object.entries(embeddedComponent.inputs).forEach(
-  //         ([key, value]: [string, any]) => {
-  //           newComponent.instance[key] = value;
-  //         }
-  //       );
-  //     });
-  //   });
-
-  //   // const componentFactory =
-  //   //   this.componentFactoryResolver.resolveComponentFactory(this.bodyComponent);
-
-  //   // this.contentPlaceholderRef.clear();
-
-  //   // const newComponent =
-  //   //   this.contentPlaceholderRef.createComponent(componentFactory);
-
-  //   // Object.entries(this.bodyComponentInputs).forEach(
-  //   //   ([key, value]: [string, any]) => {
-  //   //     newComponent.instance[key] = value;
-  //   //   }
-  //   // );
-  // }
+  /**
+   * Une dos objetos
+   * @method
+   */
+  spreadOperator(object1: Record<string, any>, object2: Record<string, any>) {
+    return { ...object1, ...object2 };
+  }
 
   openInputTypeFileSelector(id: string) {
     let fileElement = document.querySelector(`#${id}`) as HTMLElement;
@@ -462,8 +380,58 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    * Agrega otro input al FormArray para hacer formularios dinamicos
    * @param {FormArray} fieldformArray - step index
    */
-  addOneMoreInputToCurrentFormArray(fieldformArray: FormArray): void {
-    fieldformArray.push(new FormControl(''));
+  fieldName: string;
+  addOneMoreInputToCurrentFormArray(
+    fieldformArray: FormArray,
+    fieldName: string
+  ): void {
+    fieldformArray.push(new FormControl('', Validators.required));
+
+    setTimeout(() => {
+      document
+        .getElementById(fieldName + '-' + String(fieldformArray.length - 1))
+        .focus();
+    }, 100);
+  }
+
+  /**
+   * Remueve un input de un Formarray según un index
+   * @param {FormArray} fieldformArray - step index
+   */
+  removeInputToCurrentFormArray(
+    fieldformArray: FormArray,
+    fieldName: string,
+    fieldIndex: number
+  ): void {
+    let newIndexToFocus: string =
+      fieldformArray.length - 1 === fieldIndex
+        ? String(fieldIndex - 1)
+        : String(fieldIndex);
+
+    fieldformArray.removeAt(fieldIndex);
+
+    setTimeout(() => {
+      document.getElementById(fieldName + '-' + newIndexToFocus).focus();
+    }, 100);
+  }
+
+  onMultipleInputEnterPress(
+    event: any,
+    callback: (...params) => void,
+    fieldformArray: FormArray,
+    fieldName: string,
+    index
+  ) {
+    if (index + 1 === fieldformArray.length) {
+      if (this.timeoutId) clearTimeout(this.timeoutId);
+
+      this.timeoutId = setTimeout(() => {
+        callback(fieldformArray, fieldName);
+      }, 1000);
+    }
+
+    if (event.key === 'Backspace' && this.timeoutId)
+      clearTimeout(this.timeoutId);
   }
 
   /**
@@ -472,12 +440,17 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    */
   applyStylesToImages(currentField: any) {
     let styles = {
-      background:
-        currentField.fieldControl.value !== ''
-          ? 'url(' +
-            currentField.fieldControl.value +
-            ') no-repeat center center / contain #fff'
+      backgroundImage:
+        currentField.fieldControl.control.value !== ''
+          ? 'url(' + currentField.fieldControl.control.value + ')'
           : null,
+      border:
+        currentField.fieldControl.control.value === '' ||
+        !currentField.fieldControl.control.value
+          ? '1px solid dodgerblue'
+          : 'none',
+      backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat',
       height: '200px',
       minWidth: '250px',
       ...currentField.styles.fieldStyles,
@@ -486,63 +459,9 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     return styles;
   }
 
-  blockScrollAfter = (e) => {
-    let nextStepHtmlElement: HTMLElement = document.querySelector(
-      `#step-${this.currentStep + 1}`
-    );
-
-    if (
-      this.currentStep + 1 < this.steps.length &&
-      window.pageYOffset >= nextStepHtmlElement.offsetTop - window.innerHeight
-    ) {
-      window.scroll(0, nextStepHtmlElement.offsetTop - window.innerHeight);
-    }
-  };
-
-  /**
-   * bloquea el scroll hacia el siguiente paso si no pasas la validación del step actual
-   * @method
-   */
-  blockScrollPastCurrentStep = () => {
-    document.addEventListener('scroll', this.blockScrollAfter);
-  };
-
-  /**
-   * Remueve el event listener que bloquea el scroll
-   * @method
-   */
-  unblockScrollPastCurrentStep = () => {
-    document.removeEventListener('scroll', this.blockScrollAfter);
-  };
-
-  blockScrollBefore = (e) => {
-    let currentStepHtmlElement: HTMLElement = document.querySelector(
-      `#step-${this.currentStep}`
-    );
-
-    if (
-      this.currentStep > 0 &&
-      window.pageYOffset <= currentStepHtmlElement.offsetTop
-    ) {
-      window.scroll(0, currentStepHtmlElement.offsetTop);
-    }
-  };
-
-  /**
-   * bloquea el scroll hacia el siguiente paso si no pasas la validación del step actual
-   * @method
-   */
-  blockScrollBeforeCurrentStep = () => {
-    document.addEventListener('scroll', this.blockScrollBefore);
-  };
-
-  /**
-   * Remueve el event listener que bloquea el scroll
-   * @method
-   */
-  unblockScrollBeforeCurrentStep = () => {
-    document.removeEventListener('scroll', this.blockScrollBefore);
-  };
+  changeStylesOnHover(currentField: FormField, hovered: boolean) {
+    currentField.hovered = hovered;
+  }
 
   /**
    * Hace scroll hacia una fase del formulario según su indice en el array de steps
@@ -552,24 +471,23 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
    */
   scrollToStep = (index = this.currentStep + 1, scrollToNextStep = true) => {
     let previousCurrentStep;
+    let nextStepHtmlElement: HTMLElement = document.querySelector(
+      `#step-${index}`
+    );
 
     if (!scrollToNextStep) {
-      if (this.scrollableForm) this.unblockScrollPastCurrentStep();
       previousCurrentStep = this.currentStep;
     }
 
     if (index < this.steps.length) {
       if (!this.disableSmoothScroll && this.scrollableForm) {
-        document.getElementById(`step-${index}`).scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest',
-        });
-      } else if (this.disableSmoothScroll && this.scrollableForm) {
-        let nextStepHtmlElement: HTMLElement = document.querySelector(
-          `#step-${index}`
-        );
+        window.scroll(0, 0);
+        this.currentYPosition = nextStepHtmlElement.offsetTop * -1;
 
+        setTimeout(() => {
+          this.formWrapperHeight = nextStepHtmlElement.clientHeight;
+        }, 100);
+      } else if (this.disableSmoothScroll && this.scrollableForm) {
         if (
           this.currentStep + 1 < this.steps.length &&
           window.pageYOffset <=
@@ -577,8 +495,6 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           scrollToNextStep
         ) {
           window.scroll(0, nextStepHtmlElement.offsetTop);
-
-          if (this.scrollableForm) this.blockScrollBeforeCurrentStep();
         }
 
         if (
@@ -588,19 +504,21 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
           !scrollToNextStep
         ) {
           window.scroll(0, nextStepHtmlElement.offsetTop - window.innerHeight);
-          this.blockScrollPastCurrentStep();
         }
       }
 
       this.currentStep = index;
       this.currentStepString = (index + 1).toString();
-      if (scrollToNextStep && this.scrollableForm)
-        this.blockScrollPastCurrentStep();
 
-      if (!scrollToNextStep && !this.disableSmoothScroll && this.scrollableForm)
-        setTimeout(() => {
-          this.blockScrollPastCurrentStep();
-        }, 500 * (previousCurrentStep - this.currentStep));
+      setTimeout(() => {
+        this.headerHeightTracker = document.querySelector('.helper-headerv1')
+          ? document.querySelector('.helper-headerv1').clientHeight
+          : document.querySelector('.helper-headerv2')
+          ? document.querySelector('.helper-headerv2').clientHeight
+          : document.querySelector('.header-info-component')
+          ? document.querySelector('.header-info-component').clientHeight
+          : 0;
+      }, 100);
     }
   };
 
@@ -616,80 +534,145 @@ export class MultistepFormComponent implements OnInit, OnDestroy {
     if (asyncFunction.type === 'observable') {
       asyncFunction.function(stepFunctionParams).subscribe((result) => {
         this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-        if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          !('customScrollToStep' in this.steps[this.currentStep])
-        )
-          this.scrollToStep();
-        else if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          'customScrollToStep' in this.steps[this.currentStep]
-        )
-          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
+
+        this.finishedExecutingStepProcessingFunction = true;
       });
     } else {
       asyncFunction.function(stepFunctionParams).then((result) => {
         this.steps[this.currentStep].stepButtonValidText = stepButtonText;
-        if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          !('customScrollToStep' in this.steps[this.currentStep])
-        )
-          this.scrollToStep();
-        else if (
-          result.ok &&
-          this.currentStep !== this.steps.length - 1 &&
-          'customScrollToStep' in this.steps[this.currentStep]
-        )
-          this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
+
+        this.finishedExecutingStepProcessingFunction = true;
       });
     }
   }
 
+  handleAddressChange(change) {
+    console.log(change);
+  }
+
+  handleImageInput = (
+    result: any,
+    fieldName: string,
+    currentField: FormField
+  ) => {
+    console.log(fieldName);
+    console.log(currentField);
+    currentField.fileObjects = result;
+  };
+
+  handleImageInputBase64 = (result: any, fieldName: string, fieldControl) => {
+    console.log(fieldName);
+    console.log(fieldControl);
+    const arrayOfImages = fieldControl.control.value;
+
+    arrayOfImages[result.index] = result.image;
+    fieldControl.control.setValue(arrayOfImages);
+  };
+
+  handleFileDeletion = (result: any, currentField: FormField) => {
+    const { index } = result;
+    const arrayOfImages = currentField.fieldControl.control.value;
+
+    const files: any = currentField.fileObjects;
+    const filesArray = [];
+
+    for (let i = 0; i < files.length; i++) {
+      let file = 'item' in files ? files.item(i) : files[i];
+
+      filesArray.push(file);
+    }
+
+    filesArray.splice(index, 1);
+    arrayOfImages.splice(index, 1);
+
+    currentField.fieldControl.control.setValue(arrayOfImages);
+
+    currentField.fileObjects = filesArray;
+  };
+
   executeStepDataProcessing = () => {
-    let stepFunctionParams = {
-      dataModel: this.dataModel,
-      currentStep: this.currentStep,
-      shouldScrollBackwards: this.shouldScrollBackwards,
-      changeShouldScrollBackwards: this.changeShouldScrollBackwards,
-      blockScrollBeforeCurrentStep: this.blockScrollBeforeCurrentStep,
-      unblockScrollBeforeCurrentStep: this.unblockScrollBeforeCurrentStep,
-      blockScrollPastCurrentStep: this.blockScrollPastCurrentStep,
-      unblockScrollPastCurrentStep: this.unblockScrollPastCurrentStep,
-      scrollToStep: this.scrollToStep,
-      executeStepDataProcessing: this.executeStepDataProcessing,
-      scrollableForm: this.scrollableForm,
-    };
+    if (this.finishedExecutingStepProcessingFunction) {
+      this.finishedExecutingStepProcessingFunction = false;
 
-    this.stepFunctionParams = stepFunctionParams;
+      let stepFunctionParams = {
+        dataModel: this.dataModel,
+        currentStep: this.currentStep,
+        shouldScrollBackwards: this.shouldScrollBackwards,
+        changeShouldScrollBackwards: this.changeShouldScrollBackwards,
+        scrollToStep: this.scrollToStep,
+        executeStepDataProcessing: this.executeStepDataProcessing,
+        scrollableForm: this.scrollableForm,
+        dialog: this.dialog,
+      };
 
-    if (this.steps[this.currentStep].stepProcessingFunction) {
-      let result =
-        this.steps[this.currentStep].stepProcessingFunction(stepFunctionParams);
+      this.stepFunctionParams = stepFunctionParams;
 
-      if (
-        result.ok &&
-        this.currentStep !== this.steps.length - 1 &&
-        !('customScrollToStep' in this.steps[this.currentStep])
-      )
-        this.scrollToStep();
-      else if (
-        result.ok &&
-        this.currentStep !== this.steps.length - 1 &&
-        'customScrollToStep' in this.steps[this.currentStep]
-      )
-        this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
-    } else {
-      let stepButtonText = this.steps[this.currentStep].stepButtonValidText;
-      this.steps[this.currentStep].stepButtonValidText = 'ESPERE...';
+      if (this.steps[this.currentStep].stepProcessingFunction) {
+        let result =
+          this.steps[this.currentStep].stepProcessingFunction(
+            stepFunctionParams
+          );
 
-      this.handleAsyncFunction(
-        this.steps[this.currentStep].asyncStepProcessingFunction,
-        stepButtonText,
-        stepFunctionParams
-      );
+        if (!this.steps[this.currentStep].avoidGoingToNextStep) {
+          if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            !('customScrollToStep' in this.steps[this.currentStep])
+          )
+            this.scrollToStep();
+          else if (
+            result.ok &&
+            this.currentStep !== this.steps.length - 1 &&
+            'customScrollToStep' in this.steps[this.currentStep]
+          )
+            this.steps[this.currentStep].customScrollToStep(stepFunctionParams);
+        }
+
+        this.finishedExecutingStepProcessingFunction = true;
+      } else {
+        let stepButtonText = this.steps[this.currentStep].stepButtonValidText;
+        this.steps[this.currentStep].stepButtonValidText = 'ESPERE...';
+
+        this.handleAsyncFunction(
+          this.steps[this.currentStep].asyncStepProcessingFunction,
+          stepButtonText,
+          stepFunctionParams
+        );
+      }
     }
   };
+
+  executeCustomScrollToStep(stepIndex: number) {
+    this.finishedExecutingStepProcessingFunction = false;
+    this.steps[stepIndex].customScrollToStep(this.stepFunctionParams);
+    this.finishedExecutingStepProcessingFunction = true;
+  }
 }

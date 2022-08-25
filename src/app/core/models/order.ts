@@ -68,17 +68,31 @@ export class ItemSubOrderInput {
   name?: string;
 }
 
+export type OrderStatusType =
+  | 'cancelled'
+  | 'started'
+  | 'verifying'
+  | 'in progress'
+  | 'to confirm'
+  | 'completed'
+  | 'error'
+  | 'draft';
+
+export type OrderStatusNameType =
+  | 'cancelado'
+  | 'empezado'
+  | 'verificando'
+  | 'verificado'
+  | 'en revisión'
+  | 'por confirmar'
+  | 'completado'
+  | 'error';
+
+export type OrderType = 'regular' | 'itemPackage';
+
 export class ItemOrder extends Model<ItemOrder> {
-  orderStatus:
-    | 'cancelled'
-    | 'started'
-    | 'verifying'
-    | 'in progress'
-    | 'to confirm'
-    | 'completed'
-    | 'error'
-    | 'draft';
-  orderType: 'regular' | 'itemPackage';
+  orderStatus: OrderStatusType;
+  orderType: OrderType;
   isComplete: boolean;
   subtotals: OrderSubtotal[];
   ocr: OCR;

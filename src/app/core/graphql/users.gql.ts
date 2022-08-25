@@ -23,6 +23,24 @@ export const user = gql`
       phone
       email
       name
+      title
+      bio
+      social {
+        name
+        url
+      }
+    }
+  }
+`;
+
+export const buyersByItem = gql`
+  query buyersByItem($itemId: ObjectID!) {
+    buyersByItem(itemId: $itemId) {
+      _id
+      image
+      phone
+      email
+      name
     }
   }
 `;

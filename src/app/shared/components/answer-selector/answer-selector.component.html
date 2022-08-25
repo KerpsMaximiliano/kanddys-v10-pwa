@@ -6,21 +6,79 @@
       : { margin: useMargins ? '29px 52px;' : '0px' }
   "
 >
-  <ul class="container-options">
+  <ul class="container-options" *ngIf="!hasComplexOptionsLayout">
     <li *ngFor="let option of options; index as i">
       <div class="container-text-option" *ngIf="!isMultipleOption">
-        <p
-          class="option"
-          [class]="
-            i === activeOption && showSelectedFeedback
-              ? 'option-selected'
-              : 'option'
-          "
-          [ngStyle]="itemStyles ? itemStyles : null"
-          (click)="editable && option.status && clickSelector(i)"
-        >
-          {{ option.value }}
-        </p>
+        <div class="selector-flex-wrapper">
+          <div
+            [class]="
+              !indicator
+                ? i === activeOption && showSelectedFeedback
+                  ? 'option selected'
+                  : 'option'
+                : i === activeOption && showSelectedFeedback
+                ? 'selector-option active'
+                : 'selector-option'
+            "
+            [ngStyle]="itemStyles ? itemStyles : null"
+            (click)="editable && option.status && clickSelector(i)"
+          >
+            <div class="background"></div>
+
+            <ng-container *ngIf="!option.isOptionAnArray">
+              <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+              <div>
+                <span
+                  *ngFor="let subtext of option.subtexts"
+                  [ngStyle]="subtext.styles"
+                  >{{ subtext.text }}</span
+                >
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="option.isOptionAnArray && option.valueArray">
+              <span>
+                <ng-container *ngFor="let part of option.valueArray">
+                  <span
+                    *ngIf="part.highlight"
+                    [ngStyle]="{
+                      display: 'inline-block',
+                      margin: '0px 10px',
+                      marginBottom: '10px',
+                      backgroundColor: '#2874AD',
+                      color: '#fff',
+                      borderRadius: '5px',
+                      padding: '5px 10px'
+                    }"
+                    >{{ part.text }}</span
+                  >
+
+                  <span
+                    *ngIf="!part.highlight"
+                    [ngStyle]="{
+                      display: 'inline-block',
+                      margin: '0px 4px',
+                      marginBottom: '10px'
+                    }"
+                    >{{ part.text }}</span
+                  >
+                </ng-container>
+              </span>
+            </ng-container>
+          </div>
+          <div
+            class="icons-flex-wrapper"
+            *ngIf="option.icons && option.icons.length > 0"
+          >
+            <ng-container *ngFor="let icon of option.icons">
+              <img
+                [src]="icon.src"
+                (click)="icon.callback ? icon.callback() : null"
+                [ngStyle]="icon.styles ? icon.styles : null"
+              />
+            </ng-container>
+          </div>
+        </div>
         <!-- THE LINES BELLOW MAKE AN OPCTION CLICKABLE THROUGH ITS DESCRIPTION   -->
         <div
           class="description-container"
@@ -44,6 +102,93 @@
         >
           {{ option.value }}
         </p>
+      </div>
+    </li>
+  </ul>
+
+  <ul class="container-options" *ngIf="hasComplexOptionsLayout">
+    <li *ngFor="let option of complexOptions; index as optionIndex">
+      <div
+        class="selector-option"
+        [ngClass]="
+          option.selected && showSelectedFeedback
+            ? 'selector-option active'
+            : 'selector-option'
+        "
+        [ngStyle]="itemStyles ? itemStyles : null"
+      >
+        <div class="background"></div>
+
+        <!-- WEBFORM-ANSWER LAYOUT -->
+        <div
+          *ngIf="option.type === 'WEBFORM-ANSWER'"
+          class="selector-option-content"
+        >
+          <div
+            class="top"
+            [ngStyle]="
+              option.optionStyles['TOP'] ? option.optionStyles['TOP'] : null
+            "
+          >
+            <div
+              class="top-left"
+              [ngStyle]="
+                option.texts.topLeft.styles ? option.texts.topLeft.styles : null
+              "
+              (click)="option.texts.topLeft.callback()"
+            >
+              {{ option.texts.topLeft.text }}
+            </div>
+            <div
+              class="top-right"
+              [ngStyle]="
+                option.texts.topRight.styles
+                  ? option.texts.topRight.styles
+                  : null
+              "
+              (click)="option.texts.topRight.callback()"
+            >
+              {{ option.texts.topRight.text }}
+            </div>
+          </div>
+          <div
+            class="middle"
+            [ngStyle]="
+              option.optionStyles['MIDDLE']
+                ? option.optionStyles['MIDDLE']
+                : null
+            "
+          >
+            <div
+              class="middle-text"
+              *ngFor="let textObject of option.texts.middleTexts"
+              [ngStyle]="textObject.styles ? textObject.styles : null"
+              (click)="textObject.callback()"
+            >
+              {{ textObject.text }}
+            </div>
+          </div>
+          <div
+            class="bottom"
+            [ngStyle]="
+              option.optionStyles['BOTTOM']
+                ? option.optionStyles['BOTTOM']
+                : null
+            "
+          >
+            <div
+              class="bottom-left"
+              [ngStyle]="
+                option.texts.bottomLeft.styles
+                  ? option.texts.bottomLeft.styles
+                  : null
+              "
+              (click)="option.texts.bottomLeft.callback()"
+            >
+              {{ option.texts.bottomLeft.text }}
+            </div>
+          </div>
+        </div>
       </div>
     </li>
   </ul>

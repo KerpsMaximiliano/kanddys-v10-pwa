@@ -6,7 +6,7 @@
   <p class="top-text">¿Qué mensaje escribiremos?</p>
   <div class="text-container">
     <input
-      *ngFor="let controller of controllers.controls"
+      *ngFor="let controller of getControllers()"
       placeholder="Escribe el mensaje de aprecio…"
       class="message"
       [formControl]="controller"
@@ -16,7 +16,7 @@
   <div class="target">
     <p class="input-texts">¿Para quién es?</p>
     <input
-      [formControl]="controller.get('target')"
+      [formControl]="getControl('target')"
       class="gift-input"
       placeholder="Lo recibirá..."
     />
@@ -24,7 +24,7 @@
   <div class="from" [style.marginBottom]="!submition ? '60px' : ''">
     <p class="input-texts">¿De parte de quién o quienes?</p>
     <input
-      [formControl]="controller.get('from')"
+      [formControl]="getControl('from')"
       class="gift-input"
       placeholder="De parte de..."
     />
@@ -32,44 +32,38 @@
 </div>
 
 <div
-  *ngIf="isPreview === true && message !== ''"
+  *ngIf="isPreview === true"
   class="container"
   [ngStyle]="{ background: background }"
 >
-  <p class="top-text">Mensaje Escrito:</p>
-  <div class="text-container">
-    <!-- <input
-      *ngFor="let controller of controllers.controls"
-      placeholder="Escribe el mensaje de aprecio…"
-      class="message"
-      [formControl]="controller"
-    /> -->
-    <!--<p class="message-v2">{{ message }}</p>
-    <div class="plus">+</div>-->
-    {{message}}
-  </div>
-  <div class="target">
-    <p class="top-text">Para:</p>
-    <div class="little-text-container">
-      {{aux.from}}
+  <div class="preview-container" *ngIf="message && message != ''">
+    <p class="top-text">Mensaje a escribir:</p>
+    <div class="text-container">
+      {{message}}
     </div>
   </div>
-  <div class="from" [style.marginBottom]="!submition ? '60px' : ''">
-    <p class="top-text">De parte:</p>
+  <div class="preview-container" *ngIf="aux.targets && aux.targets[0].name != ''">
+    <p class="top-text">Para:</p>
     <div class="little-text-container">
       {{aux.targets[0].name}}
     </div>
   </div>
+  <div class="preview-container" [style.marginBottom]="!submition ? '60px' : ''" *ngIf="aux.from && aux.from != ''">
+    <p class="top-text">De parte:</p>
+    <div class="little-text-container">
+      {{aux.from}}
+    </div>
+  </div>
   <div *ngIf="aux.multimedia.length > 0">
-    <p class="top-text">Foto de la tarjeta:</p>
-    <div class="pay-image" [ngStyle]="{'background-image': 'url(' + aux.multimedia[0] + ')'}"></div>
-    <p class="bottom-text">
+    <p class="top-text" style="padding-bottom: 10px;">Foto de la tarjeta:</p>
+    <div class="pay-image" (click)="openImageModal(aux.multimedia[0])" [ngStyle]="{'background-image': 'url(' + aux.multimedia[0] + ')'}"></div>
+    <!-- <p class="bottom-text">
       Editar Fotografia
     </p>
 
     <p class="bottom-text">
       $200.00 Kanddys como Gift-Cards
-    </p>
+    </p> -->
   </div>
 </div>
 

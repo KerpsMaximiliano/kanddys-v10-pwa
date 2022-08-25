@@ -1,6 +1,12 @@
 .input-container {
-  height: 200px !important;
-  width: 250px !important;
+  height: 200px;
+  width: 250px;
+  margin-bottom: 1px;
+
+  &.small {
+    height: 85px;
+    width: 100px !important;
+  }
 }
 
 .d-none {
@@ -9,6 +15,7 @@
   
 .file {
   box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  background-size: cover;
   border: 1px solid dodgerblue;
   color: #d0d0d0;
   font-family: RobotoMedium;
@@ -24,8 +31,46 @@
   cursor: pointer;
   z-index: 1;
 
+  .selected {
+    border: none;
+  }
+
   &.error {
     border-color: red;
     color: red;
+  }
+
+  &.small {
+    height: 85px;
+    width: 100px;
+    font-size: 16px;
+  }
+}
+
+.delete-btn {
+  background-color: #FBB;
+  border-radius: 50%;
+  padding: 15px;
+  font-family: SfProLight;
+  color: red;
+  margin: auto;
+  margin-top: 10px;
+  box-shadow: 0px 2px 5px lightgray;
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/delete.svg);
+  background-size: 40%;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    background-color: '#F99';
+    color: darkred;
+    box-shadow: 0px 2px 5px darkgray;
+  }
+
+  &:active {
+    box-shadow: 0px 2px 5px darkgray, 0px 0px 5px inset orangered;
   }
 }

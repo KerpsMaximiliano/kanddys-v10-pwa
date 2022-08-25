@@ -6,7 +6,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./close-tag.component.scss'],
 })
 export class CloseTagComponent implements OnInit {
-  @Input() tags: Array<string> = [];
+  @Input() tags: Array<{
+    type: string;
+    label: string;
+  }> = [];
   @Input() tagsID: Array<string> = [];
   @Input() type: number = 1;
   @Output() closeEvent = new EventEmitter();

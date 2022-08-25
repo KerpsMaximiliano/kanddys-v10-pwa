@@ -1,0 +1,44 @@
+.post-privacy-container{
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container{
+    width: 90%;
+    height: fit-content;
+    max-height: 660px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFFFFF;
+    margin: 0 auto;
+    border-radius: 29px;
+
+    .title{
+        font-family: 'RobotoBold';
+        font-size: 24px;
+        color: #2E2E2E;
+        margin: 57px auto;
+    }
+
+    .separate{
+        border: none;
+        color: transparent;
+        background-color: transparent;
+        margin: 28.5px;
+    }
+
+    .bottom-text{
+        max-width: 64%;
+        font-family: 'RobotoItalic';
+        font-size: 15px;
+        color: #7B7B7B;
+        text-align: center;
+        display: flex;
+        margin: 0 auto;
+        margin-top: 20px;
+        margin-bottom: 60.4px;
+    }
+}

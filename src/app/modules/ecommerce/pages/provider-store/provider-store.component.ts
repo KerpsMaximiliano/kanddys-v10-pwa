@@ -12,6 +12,7 @@ import { lockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { LocationStrategy } from '@angular/common';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-provider-store',
@@ -234,8 +235,8 @@ export class ProviderStoreComponent implements OnInit {
       let packages: string[] = [];
       if (this.header.order.itemPackage) {
         packages.push(this.header.order.itemPackage);
-        const listPackages = (
-          await this.saleflow.listPackages({
+        const listItemPackage = (
+          await this.saleflow.listItemPackage({
             findBy: {
               _id: {
                 __in: ([] = packages),
@@ -243,7 +244,7 @@ export class ProviderStoreComponent implements OnInit {
             },
           })
         ).listItemPackage;
-        this.products = listPackages;
+        this.products = listItemPackage;
         this.status = 'done';
       } else {
         for (let i = 0; i < this.header.order.products.length; i++) {
@@ -431,12 +432,23 @@ export class ProviderStoreComponent implements OnInit {
       this.router.navigate([`ecommerce/category-items/${this.header.saleflow._id}/${this.header.categoryId}`])
     } else {
       this.router.navigate([
-        '/ecommerce/megaphone-v3/' + this.header.saleflow._id,
+        '/ecommerce/store/' + this.header.saleflow._id,
       ]);
     }*/
     //this.location.back();
     this.router.navigate([
-      '/ecommerce/megaphone-v3/' + this.header.saleflow._id,
+      '/ecommerce/store/' + this.header.saleflow._id,
     ]);
+  }
+
+  openImageDetail() {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL: this.header.items[0].images[0],
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    })
   }
 }

@@ -1,9 +1,0 @@
-@import "mixins";
-@import "theme";
-
-:host {
-  @include flex(row, center, center);
-  color: get-color("dark", 0.4);
-  padding: 2rem;
-  font-size: 1.6rem;
-}

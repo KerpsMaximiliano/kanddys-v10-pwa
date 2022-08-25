@@ -1,0 +1,103 @@
+header, footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 20px;
+  align-items: center;
+  color: white;
+  background-color: #2874AD;
+  font-family: "RobotoMedium";
+  font-size: 17px;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  img {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%);
+  }
+}
+
+button, a {
+  all: unset;
+  cursor: pointer;
+
+  &:hover, &:active {
+    opacity: 0.75;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+main {
+  padding: 24px;
+}
+
+h5 {
+  margin: 0 0 32px 0;
+  font-family: "RobotoBold";
+  font-size: 24px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label, h6 {
+  color: rgb(123, 123, 123);
+  font-family: RobotoMedium;
+  font-size: 17px;
+  font-weight: 100;
+}
+
+.form-input {
+  border-radius: 10px;
+  padding: 24px 16px;
+  width: 100%;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 20px 0;
+  width: 60%;
+}
+
+.form-textarea {
+  box-shadow: rgb(221 221 221) 0px 4px 5px 0px inset;
+  color: rgb(11, 31, 56);
+  width: 100%;
+  font-family: RobotoMedium;
+  height: 164px;
+  padding: 23px;
+  resize: none;
+  font-size: 20px;
+  border-radius: 10px;
+  margin-top: 8px;
+  background-color: rgb(255, 255, 255);
+}
+
+.additional-label {
+  margin-bottom: 0;
+}
+
+.additional-content {
+  padding: 20px;
+}
+
+.additional {
+  font-family: "SfProLight";
+  font-size: 17px;
+  color: #2874AD;
+}
+
+.message {
+  box-shadow: 0px 4px 10px #ddd;
+}

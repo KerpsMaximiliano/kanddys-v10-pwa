@@ -26,6 +26,7 @@ export class SeeFiltersComponent implements OnInit {
   @Input() title: string = 'Filters';
   @Input() type: number = 2;
   @Input() searchBar: searchInput
+  @Input() filters: boolean = true;
   @Input() showOptions: boolean = true;
   @Output() eventTags = new EventEmitter();
   @Output() deletedTag = new EventEmitter();

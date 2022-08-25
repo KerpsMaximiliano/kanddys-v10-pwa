@@ -1,0 +1,140 @@
+.container{
+   min-height: 100vh;
+
+   .information{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 47px;
+      margin-bottom: 33px;
+
+      .reservation{
+          width: 87%;
+
+          .section{
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+
+              .items-container{
+                width: 100%;
+                display: flex;
+                align-items: baseline;
+                background-color: #82F18D;
+                padding: 10px 13px;
+                column-gap: 9px;
+                border-radius: 6px;
+
+                .item-image{
+                   width: 86px;
+                   height: 74px;
+                   background-color: #E9E371;
+                   border-radius: 6px;
+                }
+
+                .total{
+                   font-family: 'SfProBold';
+                   font-size: 13px;
+                   color: #000000;
+                }
+
+                .amount{
+                   font-family: 'SfProBold';
+                   font-size: 17px;
+                   color: #174B72;
+                }
+
+                .text{
+                   font-family: 'RobotoMedium';
+                   font-size: 19px;
+                   color: #174B72;    
+                   margin: 0 8px 0;
+                }
+
+                .added{
+                   font-family: 'SfProRegular';
+                   font-size: 14px;
+                   color: #174B72;
+                   margin: 3px 8px 0;
+                }
+              }
+
+              .wrapper{
+                  width: 100%;
+                  display: flex;
+
+                  .date{
+                      width: 15%;
+                      display: flex;
+                      justify-content: center;
+                      font-family: 'SfProRegular';
+                      font-size: 17px;
+                      color: #174B72;
+                      margin: 0;
+                      text-align: center;
+                      background-color: #82F18D;
+                      padding: 4px 3.5%;
+                      border-radius: 6px;
+                      margin-right: 6px;
+                  }
+
+                  .text-reservation{
+                      width: 100%;
+                      display: flex;
+                      justify-content: center;
+                      font-family: 'RobotoMedium';
+                      font-size: 19px;
+                      color: #174B72;    
+                      margin: 0;
+                      background-color: #82F18D;
+                      padding: 12px 18px;
+                      border-radius: 6px;
+                  }
+
+                  .inner{
+                      justify-content: flex-start;
+                      padding: 0;
+                      margin: 0;
+                  }
+
+                  .message,.to,.from{
+                      display: flex;
+                      flex-direction: column;
+
+                      .text-reservation{
+                         font-family: 'RobotoMedium';
+                         font-size: 19px;
+                         color: #174B72;
+                         margin: 0;
+                      }
+                  }
+                }
+
+                .column{
+                  flex-direction: column;
+                }
+
+              .date-reservation,
+              .address-reservation{
+                  font-family: 'RobotoMedium';
+                  font-size: 19px;
+                  color: #7B7B7B;
+                  margin: 0;
+                  margin-bottom: 10px;
+              }
+
+              .colored{
+                  border-radius: 6px;
+                  background-color: #82F18D;
+                  flex-direction: column;
+                  padding: 31px 27px 23px;
+              }
+          }
+      }
+   }
+}
+.space-between{
+   justify-content: space-between;
+   padding: 0 20px 0 33px;
+}

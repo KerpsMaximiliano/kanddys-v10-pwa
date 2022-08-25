@@ -1,0 +1,57 @@
+
+<div class="container">
+    <div class="topbar"></div>
+
+    <app-header-info
+        [title]="merchantInfo?.name || 'Merchant Name'"
+        [profileImage]="merchantInfo?.image"
+    ></app-header-info>
+
+    <div class="tab-area">
+        <div class="tab">Adicionando Recipientes a {{tag?.name}}</div>
+    </div>
+
+    <div class="name-input">
+        <p class="label">
+            Escribe tu número de teléfono: 
+          </p>
+          <ngx-intl-tel-input
+            [cssClass]="'custom'"
+            [preferredCountries]="preferredCountries"
+            [enableAutoCountrySelect]="true"
+            [enablePlaceholder]="true"
+            [searchCountryFlag]="true"
+            [searchCountryField]="[
+              SearchCountryField.Iso2,
+              SearchCountryField.Name
+            ]"
+            [selectFirstCountry]="false"
+            [selectedCountryISO]="CountryISO.UnitedStates"
+            maxLength="15"
+            [phoneValidation]="true"
+            [separateDialCode]="true"
+            [numberFormat]="PhoneNumberFormat.International"
+            name="phone"
+            [formControl]="phoneNumber"
+          ></ngx-intl-tel-input>
+          <span *ngIf="error" style="color: red;">{{error}}</span>
+    </div>
+
+    <div class="button-text">
+        <button 
+            class="ws-confirm"
+            [style.background-color]="
+            phoneNumber.valid ? '#4773D8' : '#AFAFAF'"
+            (click)="addTag()"
+        >
+            Confírmanos por WhatsApp
+        </button>
+        <p class="ws-text" [style.color]="phoneNumber.valid ? '#4773D8' : '#AFAFAF'">Después de tu confirmación recibirás el Magic-Link que al tocarlo activarás tu # de WhatsApp al Tag de {{merchantInfo?.name || 'Provider ID'}}.</p>
+    </div>
+    
+    <app-sticky-button
+    [mode]=" phoneNumber.valid ? 'fixed' : 'disabled-fixed' "
+    [text]=" phoneNumber.valid ? 'Confírmanos por WhatsApp' : 'ADICIONA TU NOMBRE Y APELLIDO'"
+    (click)="addTag()"
+    ></app-sticky-button>
+</div>

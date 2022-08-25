@@ -1,8 +1,17 @@
 @import "forms";
 
+html {
+  scroll-behavior: smooth;
+}
+
 .form-wrapper {
   overflow-y: scroll;
+  overflow-x: hidden;
   transition: transform 1s ease-in-out;
+}
+
+.header-fixed {
+  height: fit-content;
 }
 
 .form-step {
@@ -17,12 +26,12 @@
   }
 
   background-color: #f6f6f6;
-  min-height: calc(100vh - 77px);
+  min-height: calc(100vh - 55px);
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0px 33px;
-  padding-top: 60px;
+  padding-left: 33px;
+  padding-right: 33px;
 
   .optional-links {
     margin-bottom: 80px;
@@ -98,3 +107,61 @@
   font-size: 16px;
   cursor: pointer;
 }
+
+.close-button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid #4773D8;
+}
+
+.input-label-bottom {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.qrsection {
+  padding: 22px 24px 22px 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.date-inputs{
+  appearance: none;
+  display: inline-block;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: 100%;
+  height: 73px;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 0px;
+  -webkit-appearance: none;
+
+  &::-webkit-date-and-time-value {
+    margin: 0;
+  }
+
+  &:focus {
+    border: 1px solid #31a4f9;
+  }
+
+  &::placeholder {
+    font-family: RobotoMedium;
+    font-size: 20px;
+    color: rgb(161, 161, 161, 0.6);
+  }
+}
+
+.date-inputs::-webkit-datetime-edit-month-field { padding: 0; }
+.date-inputs::-webkit-datetime-edit-day-field { padding: 0; }
+.date-inputs::-webkit-datetime-edit-year-field { padding: 0; }

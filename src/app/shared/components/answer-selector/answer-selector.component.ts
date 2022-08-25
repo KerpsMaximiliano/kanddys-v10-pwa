@@ -1,11 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
-export interface OptionAnswerSelector {
-  value: string;
-  status: boolean;
-  click?: boolean;
-  description?: string[];
-}
+import {
+  ComplexOptionAnswerSelector,
+  OptionAnswerSelector,
+} from 'src/app/core/types/answer-selector';
 
 @Component({
   selector: 'app-answer-selector',
@@ -14,22 +11,25 @@ export interface OptionAnswerSelector {
 })
 export class AnswerSelectorComponent {
   @Input() activeOption: number;
-  activeMultipleOption: number[] = [];
+  @Input() activeMultipleOption: number[] = [];
   @Input() editable: boolean = true;
+  @Input() indicator: boolean;
   @Input() showSelectedFeedback: boolean = true;
   @Input() showDescription: boolean = true;
   @Input() containerStyles: Record<string, any> | null = null;
   @Input() itemStyles: Record<string, any> | null = null;
-
   @Input() isMultipleOption: boolean = false;
+  @Input() isMultipleOption2: boolean = false;
+  @Input() hasComplexOptionsLayout: boolean = false;
   @Input() useMargins: boolean = true;
   @Input() options: OptionAnswerSelector[] = [
     { value: '¿Cuánto es?', status: true, click: false, description: [] },
     { value: '¿Dónde es?', status: true, click: false, description: [] },
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
+  @Input() complexOptions: ComplexOptionAnswerSelector[];
 
-  @Output() onSelector = new EventEmitter();
+  @Output() onSelector = new EventEmitter<number>();
 
   constructor() {}
 
@@ -46,18 +46,31 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption.push(option);
       this.activeMultipleOption.sort();
     } else {
-      this.activeMultipleOption.slice(option, 1);
+      this.activeMultipleOption.splice(option, 1);
       this.activeMultipleOption.sort();
     }
   }
 
   clickSelector(index: number) {
-    if (this.isMultipleOption) {
+    if (this.isMultipleOption || this.isMultipleOption2) {
       this.activateMultipleOption(index);
       this.onSelector.emit(index);
     } else {
       this.activateOption(index);
       this.onSelector.emit(index);
     }
+  }
+
+  informSelector(index: number) {
+    this.onSelector.emit(index);
+  }
+
+  //Metodos para usar en el template
+  spreadParams(anyFunction, params) {
+    return anyFunction(...params);
+  }
+
+  getObjectKeysAsArray(object) {
+    return Object.keys(object);
   }
 }

@@ -1,0 +1,48 @@
+<div class="container" [ngStyle]="{ bottom: solo ? '0px' : '14px' }">
+  <button
+    class="bubble"
+    [ngStyle]="{
+      'width.px': custom?.width ? custom.width : '',
+      'height.px': custom?.height ? custom.height : '',
+      left: custom?.left ? custom.left : '',
+      right: custom?.right ? custom.right : ''
+    }"
+    [style.flex-direction]="flexD"
+    [ngClass]="{
+      left: position === 'left',
+      right: position === 'right',
+      rightxl: position === 'rightxl',
+      mini: position === 'mini',
+      minir: position === 'minir',
+      minil: position === 'minil',
+      minis: position === 'minis',
+      big: position === 'big',
+      yellow: color === 'yellow',
+      blue: color === 'blue'
+    }"
+  >
+    <a *ngIf="return && !text && !cart">
+      <i class="fas fa-chevron-left" style="font-size: 22px"></i>
+    </a>
+    <p
+      *ngIf="text && !return && !cart"
+      class="text"
+      [style.font-size]="fontSize"
+    >
+      {{ text }}
+    </p>
+    <img
+      *ngIf="icon"
+      [src]="env + icon"
+      alt="La imagen es variable, pedimos disculpas por inconvenientes ocacionados"
+      width="22px"
+      height="22px"
+    />
+    <div style="margin-bottom: -3px" *ngIf="cart && !return && !text">
+      <app-cart-button
+        [filter]="filterColor"
+        [cartAmount]="cartAmount"
+      ></app-cart-button>
+    </div>
+  </button>
+</div>

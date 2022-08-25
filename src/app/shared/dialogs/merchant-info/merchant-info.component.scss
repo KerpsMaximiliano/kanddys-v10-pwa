@@ -1,0 +1,99 @@
+.merchant-info-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-header {
+    margin-bottom: 40px;
+}
+
+.container{
+    width: 90%;
+    background: linear-gradient(180deg, white 50%, rgba(213, 205, 205, 0.9) 300%);
+    margin: 0 auto;
+    border-radius: 13px;
+    padding-top: 10px;
+
+    .image{
+        display: flex;
+        
+
+        img {
+            margin: 0 auto;
+            border-radius: 50%;
+            width: 101px;
+            height: 101px;
+            box-shadow: 0px 3px 5px #dddddd;
+        }
+    }
+
+    .merchant-name{
+        display: flex;
+        margin: 0 auto;
+        margin-top: 10px;
+        justify-content: center;
+        font-family: 'RobotoBold';
+        font-size: 25px;
+        color: #202020;
+    }
+
+    .website{
+        display: flex;
+        justify-content: center;
+        margin-top: 11px;
+        margin-bottom: 44px;
+        font-family: 'NeueMontreal';
+        font-size: 18px;
+        color: #27A2FC;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .images-info{
+        display: flex;
+        flex-direction: column;
+        margin: 0 59px 67px 39px;
+
+        .info-part1, .info-part2, .info-part3{
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+
+            .merchant-icon{
+                cursor: pointer;
+                filter: brightness(0) saturate(100%) invert(11%) sepia(13%) saturate(0%) hue-rotate(302deg) brightness(108%) contrast(93%);
+            }
+        }
+
+        .info-part1{
+
+            .merchant-icon{
+                margin-right: 22px;
+            }
+        }
+
+        .info-part2, .info-part3{
+
+            .merchant-icon{
+                margin-right: 20px;
+            }
+        }
+
+        .merchant-text{
+            font-family: 'NeueMontreal';
+            font-size: 18px;
+            color: #38373B;
+            line-break: anywhere;
+        }
+        
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    
+}

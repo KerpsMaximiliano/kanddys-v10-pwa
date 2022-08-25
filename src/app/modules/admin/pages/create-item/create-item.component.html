@@ -1,0 +1,111 @@
+<div class="component">
+  <header>
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    
+    <!--  *ngIf="itemForm.valid" iba aqui abajo -->
+    <button class="dot-trio" 
+      (click)="onOpenDialog()">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </button>
+  </header>
+  <main>
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+      <section>
+        <div class="fullScreenSwiper" *ngIf="imageField.length">
+          <div class="shadowWrapper">
+            <swiper [config]="swiperConfig">
+              <label
+                *ngFor="let item of imageField; let i = index"
+                [style.background]="sanitize(item)"
+                [for]="'filemultiple'"
+                class="item"
+                [ngClass]="{ error: error[0] }"
+              ></label>
+            </swiper>
+          </div>
+        </div>
+        <input
+          [id]="'filemultiple'"
+          (change)="fileProgressMultiple($event)"
+          type="file"
+          class="d-none"
+          accept="image/*"
+          multiple
+          [accept]="['.png', '.jpg', '.jpeg']"
+        />
+        <input formControlName="images" style="display: none" />
+        <ng-container *ngIf="!imageField.length">
+          <label
+            [style.background]="sanitize('')"
+            [for]="'filemultiple'"
+            class="file"
+            [ngClass]="{ error: error[0] }"
+          >
+            Adiciona la o las imágenes (opcional)
+          </label>
+        </ng-container>
+      </section>
+      <section class="form-group p-side">
+        <div class="name-and-price-wrapper">
+          <div class="name-wrapper">
+            <input
+              class="input-text"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Nombre (opcional)"
+              formControlName="name"
+            />
+          </div>
+    
+          <div class="price-wrapper">
+            <!-- Input Number Format -->
+            <div class="formatted-price">
+              <span *ngFor="let letter of formattedPricing.split('')">
+                {{ letter }}
+              </span>
+
+              <div
+                class="cursor blinking-cursor"
+                [ngClass]="{ 'blinking-cursor': curencyFocused }"
+                style="width: 1px; height: 1rem"
+              ></div>
+            </div>
+            <input
+              class="formatted-input"
+              type="number"
+              id="pricing"
+              name="pricing"
+              min="1"
+              required
+              formControlName="pricing"
+              (focus)="curencyFocused = true"
+              (blur)="curencyFocused = false"
+              (input)="formatNumber($event)"
+              onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
+            />
+            <!-- Input Number Format -->
+          </div>
+        </div>
+        <textarea
+          placeholder="Descripción (opcional)"
+          class="textarea"
+          formControlName="description"
+        ></textarea>
+        <!-- <div>
+          <button type="submit" class="submit" >
+            Salvar
+          </button>
+        </div> -->
+      </section>
+    </form>
+  </main>
+  <footer [ngClass]="{ disabled: !itemForm.valid }">
+    <button class="back" (click)="goBack()">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="save" (click)="onSubmit()">Salvar</button>
+  </footer>
+</div>

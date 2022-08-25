@@ -48,6 +48,10 @@ export const saleflow = gql`
       merchant {
         _id
         name
+        owner {
+          _id
+          phone
+        }
       }
       packages {
         _id
@@ -65,6 +69,33 @@ export const saleflow = gql`
       paymentInfo
       createdAt
       canBuyMultipleItems
+    }
+  }
+`;
+
+export const saleflowDefault = gql`
+  query saleflowDefault($merchantId: ObjectID!)  {
+    saleflowDefault(merchantId: $merchantId) {
+      _id
+      name
+      items {
+        item {
+          _id
+        }
+      }
+    }
+  }
+`;
+
+export const setDefaultSaleflow = gql`
+  mutation saleflowSetDefault($merchantId: ObjectID!, $id: ObjectID!) {
+    saleflowSetDefault(merchantId: $merchantId, id: $id) {
+      _id
+      name
+      merchant {
+        _id
+        name
+      }
     }
   }
 `;
@@ -115,8 +146,16 @@ export const saleflows = gql`
 `;
 
 export const addItemToSaleFlow = gql`
-  mutation addItemToSaleFlow($item: ObjectID!, $id: ObjectID!) {
+  mutation addItemToSaleFlow($item: SaleFlowItemInput!, $id: ObjectID!) {
     addItemToSaleFlow(item: $item, id: $id) {
+      _id
+    }
+  }
+`;
+
+export const removeItemFromSaleFlow = gql`
+  mutation removeItemFromSaleFlow($item: ObjectID!, $id: ObjectID!) {
+    removeItemFromSaleFlow(item: $item, id: $id) {
       _id
     }
   }
@@ -125,6 +164,21 @@ export const addItemToSaleFlow = gql`
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const createSaleFlowModule = gql`
+  mutation createSaleFlowModule($input: SaleFlowModuleInput!) {
+    createSaleFlowModule(input: $input) {
+      _id
+    }
+  }
+`;
+export const updateSaleFlowModule = gql`
+  mutation updateSaleFlowModule($input: SaleFlowModuleInput!, $id: ObjectID!) {
+    updateSaleFlowModule(input: $input, id: $id) {
       _id
     }
   }
@@ -149,6 +203,7 @@ export const listItems = gql`
   query listItems($params: PaginationInput) {
     listItems(params: $params) {
       _id
+      content
       name
       pricing
       pricePerUnit
@@ -160,6 +215,7 @@ export const listItems = gql`
       quality
       iconImage
       hasExtraPrice
+      showImages
       category {
         _id
         name
@@ -186,7 +242,7 @@ export const listItems = gql`
   }
 `;
 
-export const listPackages = gql`
+export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
       _id

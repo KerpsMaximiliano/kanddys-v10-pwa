@@ -1,0 +1,34 @@
+.scroller {
+  display: flex;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+  gap: 10px;
+}
+.day {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-family: "SfProRegular";
+  font-size: 17px;
+  padding: 10px;
+  
+  border-radius: 6px;
+  gap: 5px;
+  color: #272727;
+
+  
+  &:not(.disabled) {
+    cursor: pointer;
+    &:hover {
+      background-color: #c8f3cc;
+    }
+  }
+
+  &.disabled {
+    color: rgb(197, 197, 204);
+  }
+
+  &.selected {
+    background-color: #82F18D;
+  }
+}

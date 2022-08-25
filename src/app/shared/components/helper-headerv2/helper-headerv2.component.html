@@ -1,28 +1,245 @@
-<div class="main" [style.background-color]="bgColor">
+<div class="external-wrapper">
+    <div class="main helper-headerv2" [style.background-color]="bgColor" [ngClass]="{'fixed': fixed}">
 
-    <ng-container *ngIf="mode == 'basic'">
-    <div class="top-bar">
-        <div class="left-area">
-            <a *ngIf="returnAble == true" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="'#FFFFFF'"></i></a> 
-            <label for="Volver" class="return">Volver</label>
-        </div>
-    
-        <div class="right-area">
-            <!-- ICONOS -->
-            <div *ngIf="whatsapp == true"><img [src]="imageFolder + '/whatsapp_blanco.svg'" height="21.58px" width="21.41px" alt="" style="cursor: pointer; margin-right: 23px"></div>
-            <div *ngIf="shopcart == true"><img [src]="imageFolder + '/carrito_blanco.svg'" style="margin-left: 23px;" height="24.5px" width="30.14px" alt="" style="cursor: pointer;"></div>
-            <div *ngIf="upload == true"><img [src]="imageFolder + '/upload.svg'" style="margin-left: 23px;" height="19px" width="15px" alt="" style="cursor: pointer;"></div>
-            <div *ngIf="plus == true"><img [src]="imageFolder + '/.svg'" style="margin-left: 23px;" height="24.5px" width="30.14px" alt="" style="cursor: pointer;"></div>
-        </div>
+        <ng-container *ngIf="mode === 'basic'">
+            <div class="top-bar">
+                <div class="left-area">
+                    <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
+                        'filter': icon.filter? icon.filter : 'none',
+                        'width.px': icon.width? icon.width : '',
+                        'height.px': icon.height? icon.height : ''
+                    }" (click)="icon.callback && icon.callback()" *ngIf="icon?.src && !returnAble" class="icon"/>
+
+                    <a *ngIf="returnAble && !icon?.src" (click)="return($event)"><i class="fas fa-chevron-left" [style.color]="color"></i></a>
+
+                    <a *ngIf="down &&!returnAble && !icon?.src" (click)="displaying($event)"><i class="fas fa-chevron-down" [style.color]="color"></i></a>
+
+                    <ng-container *ngIf="mainText?.text">
+                        <p class="return" [ngStyle]="
+                        {
+                          'font-size':mainText.fontSize? mainText.fontSize : '',
+                          'font-family': mainText.fontFamily? mainText.fontFamily : '',
+                          'color': mainText.color? mainText.color : (color? color : ''),
+                          'cursor': mainText.pointer? mainText.pointer : 'unset'
+                        }" >{{mainText.text}}</p> 
+                    </ng-container>
+                </div>
+
+                <div class="right-area">
+                    <!-- ICONOS -->
+                    
+                    <button class="header-btn" *ngIf="plus?.active" (click)="triggerEvent('plus')" 
+                    [ngStyle]="
+                        {
+                          'font-family': plus.fontFamily? plus.fontFamily : '',
+                          'font-size': plus.fontSize? plus.fontSize : '',
+                          'color': plus.color? plus.color : (color? color : ''),
+                          cursor: 'pointer'
+                        }">
+                        <span class="plus">+</span>
+                    </button>
+
+                    <ng-container *ngIf="shopcart?.active">
+                        <app-cart-button [cartAmount]="shopcart.cartAmount" [shopCartCallback]="shopCartCallback" [filter]="shopcart.filter">
+                        </app-cart-button>
+                    </ng-container>
+                    
+                    <div *ngFor="let icon of icons; index as i" class="icon-item" [ngStyle]="{'background-color':  icon.highlight?.highlighted? icon.highlight?.color : 'transparent'}">
+                        <img
+                            [src]="env + icon.src"
+                            [alt]="icon.alt"
+                            [ngStyle]="{
+                                width: icon.width? icon.width : '20px',
+                                height: icon.height? icon.height : '20px',
+                                filter: icon.highlight?.filter && icon.highlight.highlighted? icon.highlight?.filter : (icon.color? icon.color :'none'),
+                                margin: icon.margin && icon?.margin,
+                                cursor: 'pointer'
+                            }"
+                            (click)="icon.highlight?.active ? highlight(i) : null"
+                            (click)="icon?.callback? icon.callback() : null"
+                        >
+                    </div>
+
+
+                    <div class="dot-trio" *ngIf="dots?.active" (click)="dotAction($event)" [ngStyle]="{'margin-right': rmargin? rmargin :'0'}">
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 2.5px'}"> </div>
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 2.5px'}"> </div>
+                        <div class="dot" [ngStyle]="{'background-color': dots.color? dots.color : 'none', 'margin': '0 2.5px'}"> </div>
+                    </div>
+
+                    <button class="edit-button"  *ngIf="edit?.active || edit?.batch"  [ngStyle]="editStyles? editStyles : {
+                    'margin-right': rmargin ? rmargin :'20px',
+                    'color': edit.color? edit.color: '', 
+                    'background-color': edit.bgColor? bgColor : ''
+                    }"  (click)="editBtnCallback ? editBtnCallback() : null"> <span *ngIf="edit.batch && !edit?.text" [ngStyle]="{'color': edit.color? edit.color: ''}">BATCH </span> <span *ngIf="edit?.text">{{edit.text}}</span>
+                    <span *ngIf="!edit?.text">EDIT</span> </button>
+                    
+                </div>
+            </div>
+        </ng-container>
+
+
+        <ng-container *ngIf="mode == 'double'">
+            <div class="double-text">
+                <span class="text bold-text" [ngStyle]="
+                {
+                  'font-size': leftText.fontSize? leftText.fontSize : '',
+                  'font-family': leftText.fontFamily? leftText.fontFamily : '',
+                  'color': leftText.color? leftText.color : (color? color : ''),
+                  'cursor': leftText.pointer? 'pointer': 'unset'
+                }">{{leftText.text}}</span>
+
+                <div *ngIf="line">
+                    <hr class="linea" />
+                </div>
+
+                <span class="text bold-text" [ngStyle]="
+                {
+                  'font-size': rightText.fontSize? rightText.fontSize : '',
+                  'font-family':rightText.fontFamily? rightText.fontFamily :'',
+                  'color': rightText.color? rightText.color : (color? color : ''),
+                  'cursor': rightText.pointer? 'pointer': 'unset'
+                }">{{rightText.text}}</span>
+
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="mode == 'center'">
+            <div class="double-text" [ngStyle]="{'justify-content': flexDirection? flexDirection : '' }">
+                <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
+                    [style.color]="color"></i>
+                </a>
+                <a *ngIf="down && !returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-down"
+                    [style.color]="color"></i>
+                </a>
+                <img [src]="env + icon.src" [alt]="icon?.alt" *ngIf="icon?.src && !down && !returnAble" class="return-holder" [ngStyle]="{
+                    width: icon?.width? icon.width : '',
+                    height: icon?.height? icon.height : '',
+                    filter: icon?.filter? icon.filter : '',
+                    cursor: 'pointer'
+                }" (click)="icon?.callback? icon.callback() : null">
+
+                <p class="light-text" [ngStyle]="
+                {'font-size': mainText.fontSize? mainText.fontSize : '', 
+                'font-family': mainText.fontFamily? mainText.fontFamily : '',
+                'color': mainText.color? mainText.color : (color? color : ''),
+                'cursor': mainText.pointer? 'pointer': '',
+                'margin-right': rmargin? rmargin : ''
+                }">
+                  {{mainText.text}} 
+                  <img [src]="env + mainText.icon.src" [alt]="mainText.icon.alt" *ngIf="mainText.icon" [width]="mainText.icon.width" [height]="mainText.icon.height" 
+                  [ngStyle]="{'margin-left': '5px', filter: mainText.icon.color && mainText.icon.color, cursor: 'pointer'}" (click)="mainText.icon.callback()">
+                </p>
+
+                <!--ICONOS-->
+                <div class="icons-holder">
+
+                    <button class="header-btn" *ngIf="plus?.active" (click)="triggerEvent('plus')" 
+                    [ngStyle]="
+                        {
+                          'font-family': plus.fontFamily? plus.fontFamily : '',
+                          'font-size': plus.fontSize? plus.fontSize : '',
+                          'color': plus.color? plus.color : (color? color : ''),
+                          cursor: 'pointer'
+                        }">
+                        <span class="plus">+</span>
+                    </button>
+
+                    <div *ngFor="let icon of icons; index as i" class="icon-center" [ngStyle]="{
+                        'background-color':  icon.highlight?.highlighted? icon.highlight?.color : 'transparent', 
+                        'margin-left': rmargin? rmargin : '31px'
+                        }">
+                        <img
+                            [src]="env + icon.src"
+                            [alt]="icon.alt"
+                            [ngStyle]="{
+                                width: icon.width? icon.width : '20px',
+                                height: icon.height? icon.height : '20px',
+                                filter: icon.color? icon.color: 'none',
+                                margin: icon.margin && icon?.margin,
+                                cursor: 'pointer'
+                            }"
+                            (click)="icon.highlight?.active ? highlight(i) : null"
+                            (click)="icon.callback()"
+                        >
+                    </div>
+
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf=" mode == 'options'">
+            <div class="options">
+                <a *ngIf="returnAble" (click)="return($event)"><i class="fas fa-chevron-left"
+                        [style.color]="color"></i></a>
+                <div class="wrapper" [ngStyle]="{'flex-direction': flexDirection? flexDirection : '', 'align-items': alignItems ? alignItems : '', 'justify-content': justifyContent }">
+                    <span class="bold-text" *ngIf="extraTexts?.itemId" [style.margin-left]="'6%'" >{{extraTexts.itemId}}</span>
+                    <span class="bill bold-text" *ngIf="extraTexts?.billId" >{{extraTexts.billId}}</span>
+                    <span class="bold-text" [ngStyle]="leftTextStyles ? leftTextStyles : null" (click)="neutralEvent()">{{leftText?.text}}</span>
+                    <span class="bold-text" [ngStyle]="rightTextStyles ? rightTextStyles : null" (click)="neutralEvent()" >{{rightText?.text}}</span>
+                    <img *ngIf="icon" 
+                    (click)="icon.callback ? icon.callback() : null"
+                    [src]="env + icon.src" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" 
+                    [ngStyle]="{
+                        'cursor': icon.cursor ? icon.cursor : 'normal', 
+                        'filter': icon.filter ? icon.filter : 'none', 
+                        'width': icon.width ? icon.width  + 'px': '0px', 
+                        'height': icon.height ? icon.height + 'px' : '0px', 
+                        'margin': icon.margin ? icon.margin : '0px'
+                    }"
+                >
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf=" mode == '2raise'">
+            <div class="raise">
+                <ng-container *ngIf="inMall">
+                    <span class="text">Mall</span>
+                    <span class="text">Compras</span>
+                </ng-container>
+                <div class="mi-tienda"> <span class="text" [style.color]="bgColor">{{leftText.text}}</span></div>
+
+                <div class="holder">
+                    <img [src]="env + '/star.svg'" alt="Imagen de una estrella" class="star" [ngStyle]="{'filter': filter? filter : 'none'}">
+                    <span for="List2raise">{{rightText.text}}</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="mode === 'edit'" >
+            <div class="edit" >
+                <a *ngIf="returnAble" (click)="return($event)" class="return-holder"><i class="fas fa-chevron-left"
+                    [style.color]="color"></i>
+                </a>
+                <div class="itf">
+                    <img *ngIf="icon" [src]="env + icon.src" alt="Aqui hay una imagen muy bonita, una pena que no podamos mostrarla caritatriste" class="icon" 
+                    [ngStyle]="{'filter': icon.filter? icon.filter : 'none'}">
+                    
+                    <h1 class="bold-text" [ngStyle]="{
+                        'font-size': mainText.fontSize? mainText.fontSize : '',
+                        'font-family': mainText.fontFamily? mainText.fontFamily : '',
+                        'color': mainText.color? mainText.color : (color? color : '')
+                        }">{{mainText.text}}</h1>
+                </div>
+
+                <button class="edit-button" *ngIf="edit?.active || edit?.batch" [ngStyle]="{
+                    'color': edit.color? edit.color: '', 
+                    'background-color': edit.bgColor? bgColor : ''}"
+                    (click)="editBtnCallback ? editBtnCallback() : null"> 
+                    <span *ngIf="edit.batch" [ngStyle]="{'color': edit.color? edit.color: ''}">BATCH </span> EDIT</button>
+
+                <div *ngIf="plus?.active"><span class="plus"
+                    [ngStyle]="
+                    {
+                      'font-family': plus.fontFamily? plus.fontFamily : '',
+                      'font-size': plus.fontSize? plus.fontSize : '',
+                      'color': plus.color? plus.color : (color? color : ''),
+                      cursor: 'pointer'
+                    }"
+                    >+</span></div>
+            </div>
+        </ng-container>
+
     </div>
-    </ng-container>
-
-
-    <ng-container *ngIf="mode == 'double'">
-        <div class="double-text">
-            <label for="Texto izquierdo" class="left-text">{{leftText}}</label>
-            <div *ngIf="line == true"><hr class="linea"/></div>
-            <label for="Texto derecho" class="right-text">{{rightText}}</label>
-        </div>
-    </ng-container>
 </div>

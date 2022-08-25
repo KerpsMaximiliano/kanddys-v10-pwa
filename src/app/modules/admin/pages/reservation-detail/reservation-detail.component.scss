@@ -1,0 +1,43 @@
+.component {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  padding: 32px;
+}
+h3 {
+  font-family: "RobotoBold";
+  font-size: 24px;
+  color: #2e2e2e;
+  margin: 0;
+  margin-bottom: 24px;
+}
+.date {
+  display: flex;
+  align-items: center;
+  color: #174b72;
+  gap: 2px;
+}
+.day {
+  display: flex;
+  flex-direction: column;
+  font-family: "SfProRegular";
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  font-size: 17px;
+  padding: 8px 12px;
+  text-align: center;
+}
+.time {
+  font-family: "RobotoMedium";
+  font-size: 19px;
+  padding: 17px;
+  padding-left: 32px;
+  width: 100%;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.bg-green {
+  background-color: #82f18d;
+}

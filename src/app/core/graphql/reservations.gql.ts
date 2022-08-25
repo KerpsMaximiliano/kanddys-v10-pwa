@@ -16,6 +16,14 @@ export const createReservationAuthLess = gql`
   }
 `;
 
+export const updateReservation = gql`
+  mutation createReservation($input: ReservationInput!, $id: ObjectID!) {
+    createReservation(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
 export const validateExpirableReservation  = gql`
   mutation validateExpirableReservation ($id: ObjectID!) {
     validateExpirableReservation (id: $id) {
@@ -42,11 +50,52 @@ export const getReservation = gql`
       createdAt
       status
       expiration
-      merchant{
-        _id
+      breakTime
+      calendar
+      date{
+        from
+        until
+        fromHour
+        toHour
       }
-      calendar{
+    }
+  }
+`;
+
+export const getReservationByCalendar = gql`
+  query getReservationByCalendar($paginate: PaginationInput!) {
+    getReservationByCalendar(paginate: $paginate) {
+      _id
+      createdAt
+      status
+      expiration
+      breakTime
+      user {
         _id
+        name
+      }
+      date{
+        from
+        until
+        fromHour
+        toHour
+      }
+    }
+  }
+`;
+
+export const getReservationByMerchant = gql`
+  query getReservationByMerchant($merchantId: ObjectID!) {
+    getReservationByMerchant(merchantId: $merchantId) {
+      _id
+      createdAt
+      status
+      expiration
+      breakTime
+      calendar
+      user {
+        _id
+        name
       }
       date{
         from

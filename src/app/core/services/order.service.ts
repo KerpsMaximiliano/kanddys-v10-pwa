@@ -12,8 +12,16 @@ import {
   ordersByUser,
   toggleUserNotifications,
   updateTagsInOrder,
+  ordersTotal,
+  ordersByItem,
 } from '../graphql/order.gql';
-import { ItemOrder, ItemOrderInput, OCRInput } from '../models/order';
+import {
+  ItemOrder,
+  ItemOrderInput,
+  OCRInput,
+  OrderStatusNameType,
+  OrderStatusType,
+} from '../models/order';
 @Injectable({
   providedIn: 'root',
 })
@@ -71,6 +79,25 @@ export class OrderService {
         fetchPolicy: 'no-cache',
       });
       return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersTotal(
+    status: OrderStatusType[],
+    merchantId: string,
+    orders: string[] = [],
+    itemCategoryId?: string
+  ): Promise<{ total: number; length: number }> {
+    try {
+      const response = await this.graphql.query({
+        query: ordersTotal,
+        variables: { status, merchantId, orders, itemCategoryId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.ordersTotal;
     } catch (e) {
       console.log(e);
     }
@@ -155,5 +182,31 @@ export class OrderService {
 
     console.log(result);
     return result;
+  }
+
+  async ordersByItem(itemId: string): Promise<{ ordersByItem: ItemOrder[] }> {
+    const result = await this.graphql.query({
+      query: ordersByItem,
+      variables: { itemId },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    console.log(result);
+    return result;
+  }
+
+  getOrderStatusName(status: OrderStatusType): OrderStatusNameType {
+    return (
+      {
+        cancelled: 'cancelado',
+        started: 'empezado',
+        verifying: 'verificando',
+        'in progress': 'en revisión',
+        'to confirm': 'por confirmar',
+        completed: 'completado',
+      }[status] ?? 'error'
+    );
   }
 }

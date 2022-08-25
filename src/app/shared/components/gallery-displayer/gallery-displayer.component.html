@@ -1,0 +1,80 @@
+<div class="container">
+
+    <div class="body">
+
+        <div class="headline">
+            <div class="icon-text">
+                <img [src]="env + headline.icon.src" [alt]="headline.icon.alt" [width]="headline.icon.width" [height]="headline.icon.height" [ngStyle]="{'filter': headline.icon?.color}" *ngIf="headline.icon?.src">
+                <h1 class="headline-text" [ngStyle]="{
+                    'font-size': headline?.fontSize? headline.fontSize : '', 
+                    'font-family': headline?.fontFamily? headline.fontFamily : '',
+                    'color': headline?.color? headline.color : ''
+                }">{{headline.text}}</h1>
+            </div>
+
+            <img [src]="env + icon.src" [alt]="icon.alt" [ngStyle]="{
+                'width': icon?.width? icon.width : '',
+                'height': icon?.height? icon.height : '',
+                'filter': icon?.color? icon.color : '',
+                'cursor': 'pointer'
+            }" *ngIf="icon?.src" (click)="icon.callback()">
+        </div>    
+
+        <div class="item-area">
+
+            <ng-container [ngSwitch]="imagesGallery.length">
+
+                <div *ngSwitchCase="1" class="grid-one">
+                    <img [src]="env + imagesGallery[0].src" [alt]="imagesGallery[0].alt" class="image image-one" (click)="imagesGallery[0].callback()" [ngStyle]="{'background-color': imagesGallery[0].src ? 'transparent' : '#7B7B7B'}">
+                </div>
+
+                <div *ngSwitchCase="2" class="grid-two">
+                    <img *ngFor="let item of imagesGallery | slice:0:2; index as i" [src]="env + item.src" [alt]="item.alt" class="image image-two" (click)="item.callback()" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
+                </div>
+
+                <div *ngSwitchCase="3" class="grid-three">
+                    <img [src]="env + imagesGallery[0].src" [alt]="imagesGallery[0].alt" class="image first" (click)="imagesGallery[0].callback()" >
+                    <img *ngFor="let item of imagesGallery | slice:1:3; index as i" [src]="env + item.src" [alt]="item.alt" class="image image-three" (click)="item.callback()" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
+                </div>
+
+                <div *ngSwitchCase="4" class="grid-four">
+                    <img *ngFor="let item of imagesGallery | slice:0:4; index as i" [src]="env + item.src" [alt]="item.alt" class="image image-four" (click)="item.callback()" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
+                </div>
+                
+                <div *ngSwitchDefault class="image-area">
+                    <img *ngFor="let item of imagesGallery | slice:0:6; index as i" [src]="env + item.src" [alt]="item.alt" (click)="item.callback()" class="image gallery-image" [ngStyle]="{'background-color': item.src ? 'transparent' : '#7B7B7B'}">
+                </div>
+
+            </ng-container>
+
+            <button class="cta" [style.color]="cta?.color" *ngIf="cta?.text" (click)="cta.callback()">{{cta.text}}</button>
+        </div>
+
+        <!-- <hr class="divider" *ngIf="bottomText"> -->
+
+        <div class="bottomText" *ngIf="bottomText || bottomLeftText">
+            <div *ngIf="bottomLeftText?.length" class="bottom-left-text">
+                <span *ngFor="let item of bottomLeftText">
+                    {{item.text}}
+                </span>
+            </div>
+            <button class="display" *ngIf="bottomText?.leftText" (click)="showHide($event)" [ngStyle]="{
+                'font-size': bottomText.leftText?.fontSize? bottomText.leftText.fontSize : '',
+                'font-family': bottomText.leftText?.fontFamily? bottomText.leftText.fontFamily : '',
+                'color': bottomText.leftText?.color? bottomText.leftText?.color : ''
+                }">
+                {{bottomText.leftText.text}}
+                <span *ngIf="!showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-right"></i></span>
+                <span *ngIf="showEntry" style="margin-left: 11px; height: 14px;"><i class="fas fa-chevron-down"></i></span>
+            </button>
+
+            <button class="display" *ngIf="bottomText?.rightText" (click)="bottomText.rightText.callback()" [ngStyle]="{
+              'font-size': bottomText.rightText?.fontSize? bottomText.rightText.fontSize : '',
+              'font-family': bottomText.rightText?.fontFamily? bottomText.rightText.fontFamily : '',
+              'color': bottomText.rightText?.color? bottomText.rightText?.color : ''
+              }">{{bottomText.rightText.text}}</button>
+        </div>
+
+    </div>
+
+</div>

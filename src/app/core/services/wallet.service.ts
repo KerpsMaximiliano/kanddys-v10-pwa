@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { float } from '@zxing/library/esm/customTypings';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { ExchangeData, PaymentReceiver } from '../models/wallet';
+import { ExchangeData, ExchangeDataInput, PaymentReceiver } from '../models/wallet';
 import { ListParams } from '../types/general.types';
 import { AppService } from './../../app.service';
 import {
@@ -20,7 +20,7 @@ import {
   updateExchangeData,
   paymentReceivers,
   paymentReceiverByName,
-  exchangedata,
+  exchangeData,
   paymentreceiver
 } from './../graphql/wallet.gql';
 import { Community } from './../models/community';
@@ -63,10 +63,10 @@ export class WalletService {
     }
   }
 
-  async exchangedata(id: string): Promise<{ ExchangeData: ExchangeData }>{
+  async exchangeData(id: string): Promise<{ ExchangeData: ExchangeData }>{
     try {
       const response = await this.graphql.query({
-        query: exchangedata,
+        query: exchangeData,
         variables: { id },
         fetchPolicy: 'no-cache',
       });
@@ -90,20 +90,21 @@ export class WalletService {
   }
 
 
-  async exchangeDataByUser(userId: any) {
+  async exchangeDataByUser(userId: string): Promise<ExchangeData> {
     try {
       const response = await this.graphql.query({
         query: exchangeDataByUser,
         variables: { userId },
         fetchPolicy: 'no-cache',
       });
-      return response;
+      if(!response || response?.errors) return undefined;
+      return response.exchangeDataByUser;
     } catch (e) {
       console.log(e);
     }
   }
 
-  async createExchangeData(input: any) {
+  async createExchangeData(input: ExchangeDataInput): Promise<ExchangeData> {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createExchangeData,
@@ -113,8 +114,7 @@ export class WalletService {
     if (!result || result?.errors) return undefined;
 
     this.app.events.emit({ type: 'reload' });
-    console.log(result);
-    return result;
+    return result.ExchangeData;
   }
 
   async updateExchangeData(input: any, id:any) {
@@ -131,14 +131,15 @@ export class WalletService {
     return result;
   }
 
-  async paymentReceivers(params: any) {
+  async paymentReceivers(params: any): Promise<PaymentReceiver[]> {
     try {
       const response = await this.graphql.query({
         query: paymentReceivers,
         variables: { params },
         fetchPolicy: 'no-cache',
       });
-      return response;
+      if (!response || response?.errors) return undefined;
+      return response.paymentreceivers;
     } catch (e) {
       console.log(e);
     }

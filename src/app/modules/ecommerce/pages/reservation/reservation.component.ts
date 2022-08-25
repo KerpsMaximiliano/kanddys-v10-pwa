@@ -1,24 +1,20 @@
-import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
-import { notification } from 'onsenui';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ItemV2 } from 'src/app/core/types/item-v2.types';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 //import { CommunityNewUserComponent } from 'src/app/shared/dialogs/community-new-user/community-new-user.component';
 //import { ReservationCreatorComponent } from 'src/app/shared/dialogs/reservation-creator/reservation-creator.component';
-import { filter } from 'rxjs/operators';
-import { AppService } from 'src/app/app.service';
-import { PostsService } from 'src/app/core/services/posts.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
+import { Calendar } from 'src/app/core/models/calendar';
+import { ItemOrderInput } from 'src/app/core/models/order';
+import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 
 @Component({
   selector: 'app-reservation',
@@ -26,68 +22,47 @@ import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-d
   styleUrls: ['./reservation.component.scss'],
 })
 export class ReservationComponent implements OnInit {
-  merchant: any;
-  realMonthIndex: any;
-  isClicked: boolean;
-  activeHour: any;
-  // Property for default date
-  firstActiveHour: number;
-  // End property for default date
-  changeLabel: boolean = false;
-  datePreview: any;
-  options: boolean = false;
-  whatsappLink: string;
-  merchantName: string;
-
   constructor(
     public order: OrderService,
-    private route: ActivatedRoute,
     public calendar: CalendarService,
     public reservation: ReservationService,
     private router: Router,
-    private dialog: DialogService,
-    private postService: PostsService,
-    private item: ItemsService,
+    private route: ActivatedRoute,
     public header: HeaderService,
     public saleflow: SaleFlowService,
-    private location: Location,
-    private app: AppService
+    private merchantsService: MerchantsService
   ) {}
 
-  slides: any = ['1', '2', '3'];
-  data: any;
-  reservationInfo: any;
-  date: any;
-  month: any;
+  merchant: string;
+  activeHour: number;
+  // Property for default date
+  firstActiveHour: number;
+  // End property for default date
+  datePreview: {
+    day: string;
+    month: string;
+    monthNumber?: number;
+    hour: string;
+    hourNumber?: number;
+    dateInfo: string;
+    dayName: string;
+    until: string;
+  };
+  shortDatePreview: string;
+  options: boolean = false;
+  whatsappLink: string;
+  merchantId: string;
+  merchantName: string;
+  merchantPhone: string;
+  calendarData: Calendar;
   done: boolean = false;
-  id: any;
-  calendarId: string;
   today: boolean = false;
-  sliders: boolean = false;
-  show: boolean = true;
-  blurSelectable: boolean = true;
-  blurContent: boolean = false;
-  mouseDown = false;
-  startX: any;
-  scrollLeft: any;
-  scroll: boolean = false;
+  blurSelectable = true;
+  blurContent = false;
   version: string;
-  hours: any;
-  todayHours: any;
+  hours: string[];
+  todayHours: string[];
   amHours: string[] = [];
-  items: ItemV2[];
-  filteredDays: any[] = [];
-  lowestDay: any;
-  days = [
-    'Domingo',
-    'Lunes',
-    'Martes',
-    'Miercoles',
-    'Jueves',
-    'Viernes',
-    'Sabado',
-  ];
-  lowestIndexes: number;
   pmHours: string[] = [];
   timeToggle: boolean = false;
   dates = new Date();
@@ -97,156 +72,104 @@ export class ReservationComponent implements OnInit {
   dateComponentFrom: string;
   timeComponentFrom: string;
   weekDay: string;
-  orderData: any;
-  //calendar: 6149f790eb8b911a707523ce
+  orderData: ItemOrderInput;
+  mode: string;
+  standaloneReservation: Reservation;
+
   ngOnInit(): void {
+    const mode = this.route.snapshot.queryParamMap.get('mode');
+    const merchantId = this.route.snapshot.queryParamMap.get('merchantId');
+    const from = this.route.snapshot.queryParamMap.get('from');
+    const to = this.route.snapshot.queryParamMap.get('to');
+
+    if (merchantId && merchantId !== '') this.merchant = merchantId;
+    this.mode = mode;
+
     this.header.disableNav();
     this.header.hide();
     this.header.flowRoute = 'reservations';
     localStorage.setItem('flowRoute', 'reservations');
-
     this.version = this.router.url.split('/')[2];
+
     this.calendar.setInitalState();
+
     this.saleflowData = this.header.getSaleflow();
-    if (!this.header.saleflow) this.header.saleflow = this.saleflowData;
-    this.orderData = this.header.getOrder(this.saleflowData._id);
-    this.header.getOrderProgress(this.saleflowData._id);
-    this.calendarId = this.saleflowData.module.appointment.calendar._id;
-    this.calendar.getToday();
-    this.checkCalendar();
-    if (this.orderData.products[0].reservation) {
-      this.dateFrom = moment(this.orderData.products[0].reservation.date.from)
-        .locale('es-es')
-        .format('DD');
-      this.dateComponentFrom = moment(
-        this.orderData.products[0].reservation.date.from
-      )
-        .locale('es-es')
-        .format('MMMM');
-      this.timeComponentFrom = moment(
-        this.orderData.products[0].reservation.date.from
-      )
-        .locale('es-es')
-        .format('HH:mm');
-      this.dateComponentFrom =
-        this.dateComponentFrom.charAt(0).toUpperCase() +
-        this.dateComponentFrom.slice(1);
-      this.weekDay = moment(this.orderData.products[0].reservation.date.from)
-        .locale('es-es')
-        .format('dddd');
-      this.weekDay =
-        this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
-    }
-    /*this.route.params.subscribe((params) => {
-      this.saleflowData._id = params.id;
-      console.log(this.saleflowData._id);
-      this.saleflow.saleflow(this.saleflowData._id).then((data) => {
-        console.log(data.saleflow.module.appointment.calendar._id);
-        this.calendarId = data.saleflow.module.appointment.calendar._id;
-        this.calendar.getToday();
-        this.checkCalendar();
-      });
-    });*/
-    /*this.item.item(this.saleflowData._id).then(data=>{
-      console.log(data);
-      this.calendarId = data.calendar._id;
-      console.log(this.calendarId);
+    if (this.saleflowData && (!mode || mode === 'normal')) {
+      if (!this.header.saleflow) this.header.saleflow = this.saleflowData;
+      this.orderData = this.header.getOrder(this.saleflowData._id);
+      this.header.getOrderProgress(this.saleflowData._id);
+      const calendarId = this.saleflowData.module.appointment.calendar._id;
       this.calendar.getToday();
-      console.log(this.calendar.months[this.calendar.monthIndex].dates);
-      this.checkCalendar();
-    });*/
-    /*if (this.header.saleflow.module.post !== null) {
-      if (this.header.saleflow.module.post.isActive && this.header.saleflow.module.post.post) {
-        this.items = [
-          {
-            title: "Arreglos seleccionados",
-            showArrow: true,
-            imageUrl: this.header.items[0].images[0],
-            button: {
-              state: false
-            }
-          },
-          {
-            showArrow: true,
-            title : 'Lugar de Entrega',
-            description: this.header.locationData.length > 30 ? `${this.header.locationData.substring(0, 30)}...` : this.header.locationData,
-            button: {
-              state: false
-            }
-          },
-        ];
+      this.checkCalendar(calendarId);
+      if (this.orderData.products[0].reservation) {
+        this.dateFrom = moment(this.orderData.products[0].reservation.date.from)
+          .locale('es-es')
+          .format('DD');
+        this.dateComponentFrom = moment(
+          this.orderData.products[0].reservation.date.from
+        )
+          .locale('es-es')
+          .format('MMMM');
+        this.timeComponentFrom = moment(
+          this.orderData.products[0].reservation.date.from
+        )
+          .locale('es-es')
+          .format('HH:mm');
+        this.dateComponentFrom =
+          this.dateComponentFrom.charAt(0).toUpperCase() +
+          this.dateComponentFrom.slice(1);
+        this.weekDay = moment(this.orderData.products[0].reservation.date.from)
+          .locale('es-es')
+          .format('dddd');
+        this.weekDay =
+          this.weekDay.charAt(0).toUpperCase() + this.weekDay.slice(1);
       }
+    } else if (mode === 'standalone') {
+      const calendarId = this.route.snapshot.queryParamMap.get('calendarId');
+      this.calendar.getToday();
+      this.checkCalendar(calendarId, from, to);
     }
-    else {
-      this.items = [
-        {
-          title: "Arreglos seleccionados",
-          showArrow: true,
-          imageUrl: this.header.items[0].images[0],
-          button: {
-            state: false
-          }
-        },
-        {
-          showArrow: true,
-          title: this.header.pack.package,
-          description: this.header.pack.description,
-          button: {
-            state: false
-          }
-        },
-        {
-          showArrow: true,
-          title: 'Sucursal',
-          description: this.header.locationData.name,
-          button: {
-            state: false
-          }
-        },
-      ];
-    }*/
   }
 
-  checkCalendar() {
-    this.calendar.getCalendar(this.calendarId).then((data) => {
-      //this.merchant = data.getCalendar.merchant._id;
+  async checkCalendar(id: string, fromLimit = null, toLimit = null) {
+    this.calendarData = (
+      await this.calendar.getCalendar(
+        id,
+        fromLimit,
+        toLimit
+        // includeMerchantInfoInQuery
+      )
+    )?.getCalendar;
+    if (!this.mode || this.mode === 'normal') {
       this.merchant = this.saleflowData.merchant._id;
       this.merchantName = this.saleflowData.merchant.name;
-      this.getAmAndPm();
-      // Logic for default date
-      if (!this.sliders) {
-        if (this.calendar.availableHours && this.calendar.showHours) {
-          for (let i = 0; i < this.todayHours.length; i++) {
-            if (this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
-              const slide = this.todayHours[i];
-              if (this.filterHours(this.num(slide) + this.offset)) {
-                this.getId(i, slide);
-                break;
-              }
-            }
+    }
+
+    if (this.mode === 'standalone') {
+      const merchantData = await this.merchantsService.merchant(this.merchant);
+      this.merchantName = merchantData.name;
+      this.merchantPhone = merchantData.owner.phone;
+    }
+
+    this.getAmAndPm();
+    // Logic for default date
+    if (this.calendar.availableHours && this.calendar.showHours) {
+      for (let i = 0; i < this.todayHours.length; i++) {
+        if (this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
+          const slide = this.todayHours[i];
+          if (this.filterHours(this.num(slide) + this.offset)) {
+            this.getId(i, slide);
+            break;
           }
         }
       }
-      // End logic for default date
-    });
+    }
+    // End logic for default date
   }
 
   toggleBlurSelectable() {
     this.blurSelectable = true;
     this.blurContent = false;
-  }
-
-  toggleBlurcontent() {
-    this.blurSelectable = false;
-    this.blurContent = true;
-  }
-
-  toggleHour(time) {
-    if (time == 1) {
-      this.timeToggle = false;
-    } else {
-      this.timeToggle = true;
-    }
   }
 
   getAmAndPm() {
@@ -306,8 +229,8 @@ export class ReservationComponent implements OnInit {
   makeReservation() {
     let date1 = moment.utc().format();
     let date2 = moment.utc().format();
-    let lastHour;
-    let reservation;
+    let reservation: ReservationInput;
+
     if (
       this.calendar.dayIndex == 0 &&
       this.calendar.monthIndex == 0 &&
@@ -352,8 +275,9 @@ export class ReservationComponent implements OnInit {
           })
           .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
       reservation = {
-        calendar: this.calendarId,
+        calendar: this.calendarData._id,
         merchant: this.merchant,
+        breakTime: this.calendarData.breakTime,
         type: 'ORDER',
         date: {
           dateType: 'RANGE',
@@ -363,13 +287,18 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      if (this.saleflowData.module.post == null) {
-        this.orderData.products[0].reservation = reservation;
-      } else if (
-        this.saleflowData.module.delivery.deliveryLocation &&
-        this.saleflowData.module.delivery.isActive
-      ) {
-        this.orderData.products[0].reservation = reservation;
+
+      if (!this.mode || this.mode === 'normal') {
+        if (this.saleflowData.module.post == null) {
+          this.orderData.products[0].reservation = reservation;
+        } else if (
+          this.saleflowData.module.delivery.deliveryLocation &&
+          this.saleflowData.module.delivery.isActive
+        ) {
+          this.orderData.products[0].reservation = reservation;
+        }
+      } else if (this.mode === 'standalone') {
+        this.standaloneReservation = reservation as unknown as Reservation;
       }
     } else {
       this.today = false;
@@ -412,8 +341,9 @@ export class ReservationComponent implements OnInit {
           .format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z';
 
       reservation = {
-        calendar: this.calendarId,
+        calendar: this.calendarData._id,
         merchant: this.merchant,
+        breakTime: this.calendarData.breakTime,
         type: 'ORDER',
         date: {
           dateType: 'RANGE',
@@ -423,169 +353,145 @@ export class ReservationComponent implements OnInit {
           toHour: (hour + 1).toString() + ':' + '00',
         },
       };
-      if (this.saleflowData.module.post == null) {
-        this.orderData.products[0].reservation = reservation;
-      } else if (
-        this.saleflowData.module.delivery.deliveryLocation &&
-        this.saleflowData.module.delivery.isActive
-      ) {
-        this.orderData.products[0].reservation = reservation;
+
+      if (!this.mode || this.mode === 'normal') {
+        if (this.saleflowData.module.post == null) {
+          this.orderData.products[0].reservation = reservation;
+        } else if (
+          this.saleflowData.module.delivery.deliveryLocation &&
+          this.saleflowData.module.delivery.isActive
+        ) {
+          this.orderData.products[0].reservation = reservation;
+        }
+      } else if (this.mode === 'standalone') {
+        this.standaloneReservation = reservation as unknown as Reservation;
       }
     }
+
     let localLastHour = new Date();
     let offset = localLastHour.getTimezoneOffset() / 60;
-    let dateInfo = (
-      this.orderData.products[0].reservation.date.from as string
-    ).split('-');
+
+    let dateInfo =
+      !this.mode || this.mode === 'normal'
+        ? (this.orderData.products[0].reservation.date.from as string).split(
+            '-'
+          )
+        : (this.standaloneReservation.date.from as string).split('-');
+
     let day = dateInfo[2].split('T')[0];
     let hour =
       (parseInt(dateInfo[2].split('T')[1].split(':')[0]) - offset).toString() +
       '00';
-    let month;
+    let month: string;
+    let monthNumber;
     for (let i = 0; i < this.calendar.allFullMonths.length; i++) {
       if (parseInt(dateInfo[1]) - 1 == this.calendar.allFullMonths[i].id) {
         month = this.calendar.allFullMonths[i].name;
+        monthNumber = this.calendar.allFullMonths[i].id;
       }
     }
+
     this.datePreview = {
       day: day,
       month: month,
-      hour: this.formatHour3(
-        this.orderData.products[0].reservation.date.from as string
-      ),
+      monthNumber,
+      hour:
+        !this.mode || this.mode === 'normal'
+          ? this.formatHour3(
+              this.orderData.products[0].reservation.date.from as string
+            )
+          : this.formatHour3(this.standaloneReservation.date.from as string),
+      hourNumber: this.formatHour5(reservation.date.from as string).hour,
       dateInfo: dateInfo[0],
       dayName:
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayName,
-      until: this.formatHour3(
-        this.orderData.products[0].reservation.date.until as string
-      ),
+      until:
+        !this.mode || this.mode === 'normal'
+          ? this.formatHour3(
+              this.orderData.products[0].reservation.date.until as string
+            )
+          : this.formatHour3(this.standaloneReservation.date.from as string),
     };
-    // Logic for default date
-    if (!this.dateComponentFrom)
-      this.dateComponentFrom = this.datePreview.month;
-    if (!this.dateFrom) this.dateFrom = this.datePreview.day;
-    // End logic for default date
-    this.header.datePreview = this.datePreview;
-    this.header.storeReservation(this.saleflowData._id, reservation);
-    this.header.isComplete.reservation = true;
-    this.header.storeOrderProgress(this.saleflowData._id);
-    //this.header.locationData = " Foto Davitte, SD, Este.";
 
-    //this.openDialog(reservation);
-  }
+    this.shortDatePreview = `Reservar el ${this.datePreview.dayName} ${this.datePreview.day} de
+      ${this.datePreview.month} a las ${this.datePreview.hour}
+    `;
 
-  submit() {
-    /*this.dialog.open(CommunityNewUserComponent, {
-      type: 'window',
-      flags: ['no-header'],
-      customClass: 'app-dialog',
-      props: { orderCreator: true },
-    });*/
-  }
-
-  openDialog(reservation) {
-    /*this.dialog.open(ReservationCreatorComponent, {
-      type: 'window',
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      props: { data: reservation, today: this.today },
-    });*/
-  }
-
-  zorroChange(string) {
-    let date = new Date();
-    let offset = date.getTimezoneOffset() / 60;
-    string = parseInt(string.split(':')[0]) + 1;
-    string = string.toString() + ':' + '00';
-    string = parseInt(string.split(':')[0]) - 1;
-    if (string > 12) {
-      string = string - 12;
+    if (!this.mode || this.mode === 'normal') {
+      // Logic for default date
+      if (!this.dateComponentFrom)
+        this.dateComponentFrom = this.datePreview.month;
+      if (!this.dateFrom) this.dateFrom = this.datePreview.day;
+      // End logic for default date
+      this.header.datePreview = this.datePreview;
+      this.header.storeReservation(this.saleflowData._id, reservation);
+      this.header.isComplete.reservation = true;
+      this.header.storeOrderProgress(this.saleflowData._id);
+    } else if (this.mode === 'standalone') {
+      this.whatsappLink = `https://wa.me/${
+        this.merchantPhone
+      }?text=${encodeURIComponent(
+        `Reservación en la sucursal ${this.calendarData.name} el ${
+          this.datePreview.dayName +
+          ', ' +
+          this.datePreview.day +
+          ' de ' +
+          this.datePreview.month
+        } de ${this.datePreview.hour} a ${
+          this.datePreview.until.split(':')[0]
+        }:45 ${this.datePreview.until.slice(-2)}`
+      )}`;
     }
-    if (string > 9) {
-      string = string.toString() + ':' + '45';
-    } else {
-      string = string.toString() + ':' + '45';
-    }
-    return string;
-  }
-
-  zorroChange3(string) {
-    string = parseInt(string.split(':')[0]);
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = '0' + string.toString() + ':' + '00';
-    }
-    return string;
-  }
-
-  zorroChange4(string) {
-    string = parseInt(string.split(':')[0]) + 1;
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = '0' + string.toString() + ':' + '00';
-    }
-    return string;
-  }
-
-  zorroChange2(string) {
-    let date = new Date();
-    let offset = date.getTimezoneOffset() / 60;
-    string = parseInt(string.split(':')[0]);
-    if (string > 12) {
-      string = string - 12;
-    }
-    if (string > 9) {
-      string = string.toString() + ':' + '00';
-    } else {
-      string = string.toString() + ':' + '00';
-    }
-    return string;
   }
 
   zorroChange5(string) {
     string = parseInt(string.split(':')[0]);
+
     if (string > 12) {
       string = string - 12;
-    }
-    if (string == 12) {
+
       string = string.toString() + ':' + '00' + ' ' + 'pm';
-    } else if (string == 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
-    } else if (string > 8) {
-      string = string.toString() + ':' + '00' + ' ' + 'am';
-    } else {
-      string = string.toString() + ':' + '00' + ' ' + 'pm';
+    } else if (string <= 12) {
+      string =
+        string.toString() + ':' + '00' + ' ' + (string === 12 ? 'pm' : 'am');
     }
+
     return string;
   }
 
-  zorroChange6(string) {
-    string = parseInt(string.split(':')[0]);
-    if (string > 12) {
-      string = string - 12;
-    }
-    if (string > 11) {
-      string = string.toString() + ':' + '45';
+  formatDayHourToAmOrPm(
+    hourString: string,
+    addOne: boolean = false,
+    minutes: number = 0
+  ): string {
+    let hourInteger: number | string = parseInt(hourString.split(':')[0]);
+    let formattedHour: string;
+    let minutesString: string;
+
+    minutesString = minutes < 10 ? '0' + minutes : String(minutes);
+
+    if (addOne) hourInteger += 1;
+
+    if (hourInteger < 12) {
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'am';
+    } else if (hourInteger > 12) {
+      hourInteger = hourInteger - 12;
+
+      if (hourInteger !== 12)
+        formattedHour =
+          hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
+      else formattedHour = '00' + ':' + minutesString + ' ' + 'am';
     } else {
-      string = string.toString() + ':' + '45';
+      formattedHour = hourInteger.toString() + ':' + minutesString + ' ' + 'pm';
     }
-    return string;
+
+    return formattedHour;
   }
 
   num(number) {
     return parseInt(number);
-  }
-
-  copyLink() {
-    const uri = 'https://kanddys.com';
-    copyText(
-      `${uri}/appointments/calendar-reservation-v4/${this.saleflowData._id}`
-    );
-    notification.toast('Enlace copiado en el clipboard', { timeout: 2000 });
   }
 
   formatHour(hour: string) {
@@ -606,8 +512,18 @@ export class ReservationComponent implements OnInit {
     return moment(hour, 'h:mm').format('h:mm');
   }
 
-  getId(id, slide) {
+  formatHour5(hour: string) {
+    let date = moment(hour);
+    let hourNew = Number(date.format('h'));
+    let minutes = Number(date.format('mm'));
+    return { hour: hourNew, minutes };
+  }
+
+  getId(id: number, slide: string) {
     slide = (parseInt(slide) + this.offset).toString() + ':' + '00';
+
+    // console.log(slide, "slide");
+
     if (!this.getReservations(slide)) {
       this.calendar.hourIndex = id;
       this.activeHour = id;
@@ -618,13 +534,14 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  getReservations(hour1) {
+  getReservations(hour1: string) {
     for (let i = 0; i < this.calendar.reservations.length; i++) {
       let reservationMonthFrom =
         parseInt(this.calendar.reservations[i].date.from.split('-')[1]) - 1;
       let reservationDayFrom = parseInt(
         this.calendar.reservations[i].date.from.split('-')[2]
       );
+
       if (
         this.calendar.months[this.calendar.monthIndex].id ==
           reservationMonthFrom &&
@@ -635,7 +552,30 @@ export class ReservationComponent implements OnInit {
         let hour = parseInt(this.calendar.reservations[i].date.fromHour);
         let currentArrayHour;
         currentArrayHour = parseInt(hour1);
-        if (hour == currentArrayHour) {
+
+        // console.log(currentArrayHour, hour);
+
+        if (
+          (!this.mode || this.mode === 'normal') &&
+          hour == currentArrayHour
+        ) {
+          if (
+            this.calendar.reservations[i].reservation.length ==
+            this.calendar.reservationLimit
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+        const timezoneOffset = new Date().getTimezoneOffset() / 60;
+
+        //Cuando se le pasa el fromHour a createReservation, deberia sumarsele el offset
+        if (
+          this.mode === 'standalone' &&
+          hour == currentArrayHour - timezoneOffset
+        ) {
           if (
             this.calendar.reservations[i].reservation.length ==
             this.calendar.reservationLimit
@@ -652,16 +592,12 @@ export class ReservationComponent implements OnInit {
   filterHours(hour) {
     let today = new Date();
     let time = today.getHours();
-    /*if (this.calendar.monthIndex == 0 && this.calendar.dayIndex < (this.calendar.monthDay-1)) {
-      console.log('a');
-
-      return false;
-    }else*/
     if (this.calendar.monthIndex == 0 && this.calendar.dayIndex == 0) {
       if (time >= parseInt(hour) - this.offset) {
         return false;
       } else {
-        return true;
+        if (this.getReservations(hour)) return false;
+        else return true;
       }
     } else if (
       this.getLimit(
@@ -682,23 +618,7 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  test(e) {
-    /*
-    this.calendar.dayIndex = dia;
-    this.calendar.showHours = false;
-    this.calendar.hourIndex = 0;
-    this.activeHour = undefined;
-    this.calendar.filterHours();
-    this.todayHours = this.calendar.todayHours;
-    this.hours = this.calendar.hours;
-    this.getAmAndPm();
-    setTimeout((x) => (this.calendar.showHours = true));
-    */
-  }
-
   test2(e) {
-    //this.getMonthId(0);
-
     this.getDayId(
       e.calendar.dates.findIndex(
         (el) => el.indexI === e.day.indexI && el.indexJ === e.day.indexJ
@@ -727,49 +647,6 @@ export class ReservationComponent implements OnInit {
     }
     this.getAmAndPm();
     setTimeout((x) => (this.calendar.showHours = true));
-  }
-
-  getMonthId(id) {
-    this.calendar.showHours = false;
-    this.calendar.showDays = false;
-    this.calendar.monthIndex = id;
-    this.realMonthIndex = id;
-    this.calendar.hourIndex = 0;
-    this.calendar.dayIndex = 0;
-    this.todayHours = this.calendar.todayHours;
-    this.hours = this.calendar.hours;
-    this.calendar.filterDays();
-    this.getAmAndPm();
-    setTimeout((x) => (this.calendar.showHours = true));
-    setTimeout((x) => (this.calendar.showDays = true));
-  }
-
-  changeStyles() {
-    this.sliders = !this.sliders;
-  }
-
-  slider = document.querySelector<HTMLElement>('.scroller');
-
-  startDragging(e, flag, el) {
-    this.mouseDown = true;
-    this.startX = e.pageX - el.offsetLeft;
-    this.scrollLeft = el.scrollLeft;
-  }
-  stopDragging(e, flag) {
-    this.mouseDown = false;
-  }
-  moveEvent(e, el) {
-    e.preventDefault();
-    if (!this.mouseDown) {
-      return;
-    }
-    const x = e.pageX - el.offsetLeft;
-    const scroll = x - this.startX;
-    el.scrollLeft = this.scrollLeft - scroll;
-  }
-
-  goToLink(url: string) {
-    window.open(url, '_blank');
   }
 
   getLimit(limit, monthIndex, dayNumber) {
@@ -804,110 +681,86 @@ export class ReservationComponent implements OnInit {
     }
   }
 
-  redirect(id) {
-    const dayName =
-      this.calendar.months[this.calendar.monthIndex].dates[
-        this.calendar.dayIndex
-      ].dayName;
-    const dayNumber =
-      this.calendar.months[this.calendar.monthIndex].dates[
-        this.calendar.dayIndex
-      ].dayNumber;
-    const month = this.calendar.months[this.calendar.monthIndex].name;
-    let formattedHour;
-    if (this.today) {
-      formattedHour = this.formatHour(
-        this.calendar.todayHours[this.calendar.hourIndex]
-      );
-    } else {
-      formattedHour = this.formatHour(
-        this.zorroChange2(this.calendar.hours[this.calendar.hourIndex])
-      );
-    }
-    const uri = 'https://kanddys.com';
-    // const uri = 'http://localhost:4200';
-    window.location.href = `https://wa.me/19188156444?text=Mi%20sesión%20empezará%20el%20${dayName}%20${dayNumber}%20de%20${month}%20a%20las%20${formattedHour}%20(${uri}/appointments/slot/${id})`;
-  }
-
-  toggleOptions() {
-    this.options = !this.options;
-  }
-  share() {
-    /*let local;
-    if (this.header.locationData.googleMapsURL) {
-      local = this.header.locationData.googleMapsURL;
-    } else if (this.header.locationData.note) {
-      local = this.header.locationData.note;
-    }
-    this.whatsappLink = `https://wa.me/18095636780?text=Orden%20de%20${this.header.getDataFromOrder()[0].item[0].name}%20en%20${local}`;
-    window.location.href = this.whatsappLink;*/
-  }
-
   async save() {
-    this.orderData.products[0].deliveryLocation = {
-      city: null,
-      houseNumber: null,
-      nickName:
-        'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
-      note: null,
-      referencePoint: null,
-      street: null,
-    };
-    this.header.storeOrderPackage(
-      this.saleflowData._id,
-      this.orderData.itemPackage,
-      this.orderData.products
-    );
-    this.header.isComplete.reservation = true;
-    this.header.isComplete.delivery = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
+    if (!this.mode || this.mode === 'normal') {
+      lockUI();
+      this.orderData.products[0].deliveryLocation = {
+        city: null,
+        houseNumber: null,
+        nickName:
+          'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
+        note: null,
+        referencePoint: null,
+        street: null,
+      };
+      this.header.storeOrderPackage(
+        this.saleflowData._id,
+        this.orderData.itemPackage,
+        this.orderData.products
+      );
+      this.header.isComplete.reservation = true;
+      this.header.isComplete.delivery = true;
+      this.header.storeOrderProgress(this.header.saleflow._id);
 
-    let preOrderID;
-    if (!this.header.orderId) preOrderID = await this.header.createPreOrder();
-    else preOrderID = this.header.orderId;
+      let preOrderID;
+      if (!this.header.orderId)
+        preOrderID = await this.header.newCreatePreOrder();
+      else preOrderID = this.header.orderId;
+      unlockUI();
+      this.router.navigate([
+        `ecommerce/flow-completion-auth-less/${preOrderID}`,
+      ]);
+    } else {
+      const year = new Date().getFullYear();
+      const day = Number(this.datePreview.day);
+      const month = this.datePreview.monthNumber;
+      const fromHour = this.datePreview.hourNumber;
 
-    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
+      const fromString = new Date(year, month, day, fromHour).toISOString();
+      const untilString = new Date(
+        year,
+        month,
+        day,
+        fromHour + 1
+      ).toISOString();
 
-    // this.openMagicLinkDialog();
-    // this.router.navigate([`ecommerce/flow-completion`]);
+      const convertedFromHour =
+        String(fromHour).length < 2 ? `0${fromHour}:00` : `${fromHour}:00`;
+
+      const convertedToHour =
+        String(fromHour + 1).length < 2
+          ? `0${fromHour + 1}:00`
+          : `${fromHour + 1}:00`;
+
+      const reservation = await this.reservation.createReservationAuthLess({
+        calendar: this.calendarData._id,
+        merchant: this.merchant,
+        date: {
+          dateType: 'RANGE',
+          from: fromString,
+          until: untilString,
+          fromHour: convertedFromHour,
+          toHour: convertedToHour,
+        },
+        type: 'ORDER',
+        breakTime: this.calendarData.breakTime,
+      });
+
+      if (reservation) window.location.href = this.whatsappLink;
+      else {
+        alert('Un error ocurrió al hacer la reservación, intente más tarde');
+      }
+    }
   }
 
   deleteSelection() {
+    this.activeHour = null;
     this.datePreview = null;
-  }
-
-  saveNoPost() {
-    this.header.post = {
-      message: '',
-      targets: [
-        {
-          name: '',
-          emailOrPhone: '',
-        },
-      ],
-      from: '',
-    };
-  }
-
-  openMagicLinkDialog() {
-    this.dialog.open(MagicLinkDialogComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        asyncCallback: async (whatsappLink: string) => {
-          let preOrderID = await this.header.createPreOrder();
-          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
-
-          return whatsappLink;
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   back() {
     this.router.navigate([
-      '/ecommerce/package-detail/' + this.orderData.itemPackage,
+      `/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`,
     ]);
   }
 }

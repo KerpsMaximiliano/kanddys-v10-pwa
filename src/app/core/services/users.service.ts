@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { ListParams } from '../types/general.types';
-import { merchant, myMerchants, merchants } from '../graphql/merchants.gql';
-import { Merchant } from '../models/merchant';
+import { user, users, buyersByItem } from '../graphql/users.gql';
 import { User } from '../models/user';
-import { users, user } from '../graphql/users.gql';
+import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
@@ -20,13 +18,24 @@ export class UsersService {
     return result;
   }
 
-  async user(id) {
-    console.log('id', id);
+  async user(userId: string): Promise<User> {
     let value = await this.graphql.query({
       query: user,
-      variables: { userId: id },
+      variables: { userId },
       fetchPolicy: 'no-cache',
     });
-    return value;
+    return value?.user ? new User(value.user) : undefined;
+  }
+
+  async buyersByItem(itemId: string): Promise<{ buyersByItem: User[] }> {
+    const result = await this.graphql.query({
+      query: buyersByItem,
+      variables: { itemId },
+      fetchPolicy: 'no-cache'
+    })
+
+    if (!result || result?.errors) return undefined;
+
+    return result;
   }
 }

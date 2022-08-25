@@ -39,6 +39,7 @@ const orderData = `
         _id
         name
         owner {
+          _id
           phone
         }
       }
@@ -278,6 +279,12 @@ export const ordersByUser = gql`
   }
 `;
 
+export const ordersTotal = gql`
+  query ordersTotal($status: [String!]!, $merchantId: ObjectID!, $orders: [ObjectID!], $itemCategoryId: ObjectID) {
+    ordersTotal(status: $status, merchantId: $merchantId, orders: $orders, itemCategoryId: $itemCategoryId)
+  }
+`;
+
 export const payOrder = gql`
   mutation payOrder(
     $ocr: OCRInput
@@ -300,6 +307,25 @@ export const updateTagsInOrder = gql`
     updateTagsInOrder(merchantId: $merchantId, tags: $tags, orderId: $orderId) {
       _id
       tags
+    }
+  }
+`;
+
+export const ordersByItem = gql`
+  query ordersByItem($itemId: ObjectID!) {
+    ordersByItem(itemId: $itemId) {
+      _id
+      items {
+        item {
+          name
+          images
+        }
+      }
+      subtotals {
+        amount
+      }
+      dateId
+      createdAt
     }
   }
 `;

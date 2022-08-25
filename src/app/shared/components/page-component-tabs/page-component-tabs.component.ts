@@ -7,11 +7,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class PageComponentTabsComponent implements OnInit {
   @Input() tabsOptions: string[];
-  activeTag: number = 0;
+  @Input() activeTag: number = 0;
   @Output() changeValue = new EventEmitter<string>();
   mouseDown = false;
-  startX: any;
-  scrollLeft: any;
+  startX: number;
+  scrollLeft: number;
 
   constructor() {}
 
@@ -22,21 +22,19 @@ export class PageComponentTabsComponent implements OnInit {
     this.changeValue.emit(name);
   }
 
-  startDragging(e, flag, el) {
+  startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
     this.startX = e.pageX - el.offsetLeft;
     this.scrollLeft = el.scrollLeft;
   }
 
-  stopDragging(e, flag) {
+  stopDragging() {
     this.mouseDown = false;
   }
 
-  moveEvent(e, el) {
+  moveEvent(e: MouseEvent, el: HTMLDivElement) {
     e.preventDefault();
-    if (!this.mouseDown) {
-      return;
-    }
+    if (!this.mouseDown) return;
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;

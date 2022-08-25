@@ -1,8 +1,12 @@
-<div class="body">
-
-    <div class="profile-name">
-        <div class="profile-purple">
-            <img *ngIf="profileImage else placeholder" [src]="env + profileImage" alt="profile-image" class="image-profile">
+<div 
+    class="body header-info-component"
+    [ngClass]="{'fixed-mode': fixedMode}"
+    [ngStyle]="customStyles?.wrapper"
+>
+    <div class="profile-name" [ngStyle]="customStyles?.leftInnerWrapper">
+        <div class="profile-purple" [ngStyle]="customStyles?.pictureWrapper">
+            <img *ngIf="profileImage else placeholder" [src]="profileImage" alt="profile-image"
+                class="image-profile" (click)="clickOnImage($event)">
             <ng-template #placeholder>
                 <div class="placeholder"></div>
             </ng-template>
@@ -12,18 +16,32 @@
             </div>
         </div>
 
-        <div class="names-wrapper">
-            <label class="header-name">{{title}}</label>
-            <label class="header-desc">{{description}}</label>
-            <label class="header-desc">{{description2}}</label>
+        <div class="content" [ngClass]="{simple: simple}" [ngStyle]="customStyles?.infoWrapper">
+            <div class="main">
+                <ng-container *ngIf="!reverseInfoOrder">
+                    <h2 class="header-name" [ngStyle]="customStyles?.title">
+                        {{simple ? description : title}}
+                    </h2>
+                    <p class="header-desc" [ngStyle]="customStyles?.subtitle">
+                        {{simple ? title : description}} <span [ngStyle]="{ 'color': featuredText.styles, 'cursor': 'pointer', 'font-weight': 'bold' }" (click)="triggerFeaturedText()" *ngIf="featuredText">{{ featuredText.text }}</span>
+                    </p>
+                </ng-container>
+    
+                <ng-container *ngIf="reverseInfoOrder">
+                    <p class="header-desc" [ngStyle]="customStyles?.subtitle">
+                        {{simple ? description : title}}
+                    </p>
+                    <h2 class="header-name" [ngStyle]="customStyles?.title">
+                        {{simple ? title : description}}
+                    </h2>
+                </ng-container>
+                <p class="header-desc" *ngIf="!simple && description2">{{description2}}</p>
+            </div>
+            <div class="more-info-button" *ngIf="type === 'route' || type === 'dialog'">
+                <span (click)="openInfo()">
+                    <img class="blue" [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
+                </span>
+            </div>
         </div>
     </div>
-
-    <div class="more-info-button">
-        <span (click)="openDialog()">
-            <img [src]="env + '/person.svg'" alt="more-info" width="15" height="19">
-        </span>
-    </div>
-      
-    <!-- <img [src]="imageFolder + " alt=""> -->
 </div>

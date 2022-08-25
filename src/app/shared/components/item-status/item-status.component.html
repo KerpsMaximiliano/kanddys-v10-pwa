@@ -1,0 +1,69 @@
+<div>
+  <div class="item-list">
+    <ng-container *ngIf="itemListContent.image">
+      <div 
+        class="item-list-img"
+        *ngIf="!itemListContent.eventImage"
+      >
+        <img src="{{ itemListContent.image }}" class="item-img" alt="image" />
+      </div>
+      <button
+        *ngIf="itemListContent.eventImage"
+        class="item-list-img img-btn"
+        style="cursor: pointer;"
+        (click)="itemListContent.eventImage()"
+      >
+        <img src="{{ itemListContent.image }}" class="item-img" alt="image" />
+      </button>
+    </ng-container>
+    <div 
+      *ngIf="!itemListContent.image"
+      class="item-list-img"
+    >
+      <div class="placeholder"></div>
+    </div>
+
+    <div class="item-list-info">
+      <div class="container">
+        <div class="container-title">
+          <h1>{{ itemListContent.title }}</h1>
+          <p class="subtitle" *ngIf="itemListContent.subtitle">
+            {{ itemListContent.subtitle }}
+          </p>
+        </div>
+        <button 
+          *ngIf="itemListContent.status"
+          class="status"
+          [ngClass]="{'pointer': itemListContent.statusCallback}"
+          (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
+          [ngClass]="{
+            'verificado': itemListContent.status === 'verificado',
+            'pending': itemListContent.status !== 'verificado'
+          }"
+          >
+          {{itemListContent.status}}
+        </button>
+      </div>
+      <div>
+        <p *ngIf="itemListContent.description" class="informacion">
+          {{ itemListContent.description }}
+        </p>
+        <p *ngIf="itemListContent.description2" class="informacion">
+          {{ itemListContent.description2 }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="itemListContent.status"
+    class="bottom-status"
+    [ngClass]="{'pointer': itemListContent.statusCallback}"
+    (click)="itemListContent.statusCallback && itemListContent.statusCallback()"
+    [ngClass]="{
+      'verificado': itemListContent.status === 'verificado',
+      'pending': itemListContent.status !== 'verificado'
+    }"
+    >
+    {{itemListContent.status}}
+  </div>
+</div>

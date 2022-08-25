@@ -10,8 +10,105 @@
     />
     <meta name="theme-color" content="#1976d2" />
     <!--<meta name="google-signin-client_id" content="964059680966-lpq9bi386j6s85oeuhnvrq5rvudhqdgn.apps.googleusercontent.com"/>-->
-    <script src="https://apis.google.com/js/platform.js"></script>
-    <script type="text/javascript" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+    <!-- SHADERS PARA SOMPRAS SUAVES EN THREE.js -->
+    <script type="x-shader/x-fragment" id="PCSS">
+
+      #define LIGHT_WORLD_SIZE 0.005
+      #define LIGHT_FRUSTUM_WIDTH 3.75
+      #define LIGHT_SIZE_UV (LIGHT_WORLD_SIZE / LIGHT_FRUSTUM_WIDTH)
+      #define NEAR_PLANE 9.5
+
+      #define NUM_SAMPLES 17
+      #define NUM_RINGS 11
+      #define BLOCKER_SEARCH_NUM_SAMPLES NUM_SAMPLES
+
+      vec2 poissonDisk[NUM_SAMPLES];
+
+      void initPoissonSamples( const in vec2 randomSeed ) {
+        float ANGLE_STEP = PI2 * float( NUM_RINGS ) / float( NUM_SAMPLES );
+        float INV_NUM_SAMPLES = 1.0 / float( NUM_SAMPLES );
+
+        // jsfiddle that shows sample pattern: https://jsfiddle.net/a16ff1p7/
+        float angle = rand( randomSeed ) * PI2;
+        float radius = INV_NUM_SAMPLES;
+        float radiusStep = radius;
+
+        for( int i = 0; i < NUM_SAMPLES; i ++ ) {
+          poissonDisk[i] = vec2( cos( angle ), sin( angle ) ) * pow( radius, 0.75 );
+          radius += radiusStep;
+          angle += ANGLE_STEP;
+        }
+      }
+
+      float penumbraSize( const in float zReceiver, const in float zBlocker ) { // Parallel plane estimation
+        return (zReceiver - zBlocker) / zBlocker;
+      }
+
+      float findBlocker( sampler2D shadowMap, const in vec2 uv, const in float zReceiver ) {
+        // This uses similar triangles to compute what
+        // area of the shadow map we should search
+        float searchRadius = LIGHT_SIZE_UV * ( zReceiver - NEAR_PLANE ) / zReceiver;
+        float blockerDepthSum = 0.0;
+        int numBlockers = 0;
+
+        for( int i = 0; i < BLOCKER_SEARCH_NUM_SAMPLES; i++ ) {
+          float shadowMapDepth = unpackRGBAToDepth(texture2D(shadowMap, uv + poissonDisk[i] * searchRadius));
+          if ( shadowMapDepth < zReceiver ) {
+            blockerDepthSum += shadowMapDepth;
+            numBlockers ++;
+          }
+        }
+
+        if( numBlockers == 0 ) return -1.0;
+
+        return blockerDepthSum / float( numBlockers );
+      }
+
+      float PCF_Filter(sampler2D shadowMap, vec2 uv, float zReceiver, float filterRadius ) {
+        float sum = 0.0;
+        float depth;
+        #pragma unroll_loop_start
+        for( int i = 0; i < 17; i ++ ) {
+          depth = unpackRGBAToDepth( texture2D( shadowMap, uv + poissonDisk[ i ] * filterRadius ) );
+          if( zReceiver <= depth ) sum += 1.0;
+        }
+        #pragma unroll_loop_end
+        #pragma unroll_loop_start
+        for( int i = 0; i < 17; i ++ ) {
+          depth = unpackRGBAToDepth( texture2D( shadowMap, uv + -poissonDisk[ i ].yx * filterRadius ) );
+          if( zReceiver <= depth ) sum += 1.0;
+        }
+        #pragma unroll_loop_end
+        return sum / ( 2.0 * float( 17 ) );
+      }
+
+      float PCSS ( sampler2D shadowMap, vec4 coords ) {
+        vec2 uv = coords.xy;
+        float zReceiver = coords.z; // Assumed to be eye-space z in this code
+
+        initPoissonSamples( uv );
+        // STEP 1: blocker search
+        float avgBlockerDepth = findBlocker( shadowMap, uv, zReceiver );
+
+        //There are no occluders so early out (this saves filtering)
+        if( avgBlockerDepth == -1.0 ) return 1.0;
+
+        // STEP 2: penumbra size
+        float penumbraRatio = penumbraSize( zReceiver, avgBlockerDepth );
+        float filterRadius = penumbraRatio * LIGHT_SIZE_UV * NEAR_PLANE / zReceiver;
+
+        // STEP 3: filtering
+        //return avgBlockerDepth;
+        return PCF_Filter( shadowMap, uv, zReceiver, filterRadius );
+      }
+    </script>
+
+    <!-- SHADERS PARA SOMPRAS SUAVES EN THREE.js -->
+    <script type="x-shader/x-fragment" id="PCSSGetShadow">
+
+      return PCSS( shadowMap, shadowCoord );
+    </script>
     <!-- IOS METATAGS -->
     <!-- <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Reward *Charly" />
@@ -49,16 +146,6 @@
 
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" crossorigin="use-credentials" href="manifest.webmanifest" />
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://storage.googleapis.com/non-spec-apps/mio-icons/latest/outline.css"
-    />
-    <script src="https://js.stripe.com/v3/"></script>
     <style type="text/css">
       body,
       html {
@@ -138,7 +225,8 @@
   </head>
   <body ontouchstart="">
     <app-root>
-      <div class="app-loading">
+      <!--
+        <div class="app-loading">
         <img class="logo" src="./assets/images/abeja04.png" alt="" />
         <div class="title">Welcome To</div>
         <img src="./assets/images/logo.png" alt="" />
@@ -154,6 +242,7 @@
           />
         </svg>
       </div>
+      -->
     </app-root>
     <noscript
       >Please enable JavaScript to continue using this application.</noscript
@@ -167,6 +256,17 @@
       window.setImmediate = window.setTimeout;
     </script>
     <script src="/assets/js/fontawesome.js"></script>
+    <!-- Hotjar Tracking Code for https://kanddys.com/ -->
+    <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:2988210,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
     <!-- Hotjar Tracking Code for https://test.kanddys.com -->
     <!-- <script>
       (function(h,o,t,j,a,r){

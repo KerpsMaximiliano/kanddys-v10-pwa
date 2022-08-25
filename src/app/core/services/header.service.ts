@@ -26,6 +26,7 @@ import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
 import { MerchantsService } from './merchants.service';
+import { SaleFlowService } from './saleflow.service';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -74,7 +75,6 @@ export class HeaderService {
   pack: any;
   packId: number;
   post: PostInput;
-  comingFromPayments: boolean = false;
   checkData: any;
   flowId: string;
   saleflow: SaleFlow;
@@ -115,8 +115,10 @@ export class HeaderService {
   paramHasImage: boolean;
   storedDeliveryLocation: string = null;
   disableGiftMessageTextarea: boolean = false;
-  createdOrderWithDelivery: boolean = false;
+  // createdOrderWithDelivery: boolean = false;
   createdOrderWithoutDelivery: boolean = false;
+  newTempItem: Item;
+  newTempItemRoute: string = null;
 
   public session: Session;
   constructor(
@@ -128,7 +130,8 @@ export class HeaderService {
     private bookmark: BookmarksService,
     private merchantService: MerchantsService,
     private customizerValueService: CustomizerValueService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private saleflowService: SaleFlowService
   ) {
     this.visible = false;
     this.auth.me().then((data) => {
@@ -147,6 +150,8 @@ export class HeaderService {
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe((e) => {
         if (e.data) {
+          console.log('Autenticando o refrescando token');
+
           this.isLogged = true;
           this.user = e.data.user;
           this.wallet.globalWallet().then((data) => {
@@ -253,6 +258,13 @@ export class HeaderService {
       this.savedBookmarks = data.bookmarkByUser;
     });
     return this.savedBookmarks;
+  }
+
+  async fetchSaleflow(id: string) {
+    if (!this.saleflow || this.saleflow._id !== id)
+      this.saleflow = (await this.saleflowService.saleflow(id))?.saleflow;
+    this.storeSaleflow(this.saleflow);
+    return this.saleflow;
   }
 
   storeSaleflow(saleflow: SaleFlow) {
@@ -429,6 +441,7 @@ export class HeaderService {
     return deliveryOption;
   }
 
+  // Returns order creation progress
   getOrderProgress(saleflow: string) {
     let { orderProgress }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
@@ -436,6 +449,13 @@ export class HeaderService {
       this.hasScenarios = orderProgress.scenarios;
       this.isComplete = orderProgress;
     }
+  }
+
+  // Returns CustomizerValueInput from saleflow
+  getCustomizer(saleflow: string) {
+    let { customizer }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return customizer;
   }
 
   // Removes order product from localStorage
@@ -497,91 +517,75 @@ export class HeaderService {
     localStorage.removeItem(saleflow);
   }
 
-  createPreOrder = () => {
+  storeNewItemTemporarily(item: any, prevRoute: string) {
+    this.newTempItem = item;
+    this.newTempItemRoute = prevRoute;
+  }
+
+  removeTempNewItem() {
+    this.newTempItem = null;
+    this.newTempItemRoute = null;
+  }
+
+  newCreatePreOrder = async () => {
     const saleflow = this.saleflow || this.getSaleflow();
-
     this.order = this.getOrder(saleflow._id);
-
     this.order.products.forEach((product) => {
       delete product.isScenario;
       delete product.limitScenario;
       delete product.name;
     });
-
-    return new Promise(async (resolve, reject) => {
-      let customizer = this.customizer;
-
-      if (!this.customizer) {
-        const customizerPreview = JSON.parse(
-          localStorage.getItem('customizerFile')
-        );
-
-        let order = JSON.parse(localStorage.getItem(saleflow._id));
-        if ('customizer' in order) {
-          customizer = order.customizer;
-
-          const res: Response = await fetch(customizerPreview.base64);
-          const blob: Blob = await res.blob();
-
-          customizer.preview = new File([blob], customizerPreview.fileName, {
-            type: customizerPreview.type,
-          });
-        }
-      }
-
+    // ---------------------- Managing Customizer ----------------------
+    let customizer = this.customizer;
+    if (!customizer) {
+      const customizerPreview: {
+        base64: string;
+        filename: string;
+        type: string;
+      } = JSON.parse(localStorage.getItem('customizerFile'));
+      localStorage.removeItem('customizerFile');
+      customizer = this.getCustomizer(saleflow._id);
       if (customizer) {
-        const customizerId =
-          await this.customizerValueService.createCustomizerValue(customizer);
+        const res: Response = await fetch(customizerPreview.base64);
+        const blob: Blob = await res.blob();
 
-        this.order.products[0].customizer = customizerId;
-        this.customizer = null;
-        this.customizerData = null;
+        customizer.preview = new File([blob], customizerPreview.filename, {
+          type: customizerPreview.type,
+        });
       }
+    }
 
-      if (saleflow.module.post) {
-        console.log('1');
-        // if (!this.comesFromMagicLink) this.header.emptyPost(saleflow._id);
-        if (saleflow.canBuyMultipleItems)
-          this.order.products.forEach((product) => {
-            const createdPostId = localStorage.getItem('createdPostId');
-
-            product.deliveryLocation = this.order.products[0].deliveryLocation;
-            product.post = createdPostId;
-          });
-
-        try {
-          const { createPreOrder } = await this.orderService.createPreOrder(
-            this.order
-          );
-
-          this.orderId = createPreOrder._id;
-          this.currentMessageOption = undefined;
-          this.post = undefined;
-          this.locationData = undefined;
-          this.app.events.emit({ type: 'order-done', data: true });
-          resolve(createPreOrder._id);
-        } catch (error) {
-          console.log(error);
-          reject('Error creando la orden');
-        }
-      } else {
-        try {
-          console.log('2');
-          const { createPreOrder } = await this.orderService.createPreOrder(
-            this.order
-          );
-          this.deleteSaleflowOrder(saleflow._id);
-          this.resetIsComplete();
-          this.orderId = createPreOrder._id;
-          this.app.events.emit({ type: 'order-done', data: true });
-          resolve(createPreOrder._id);
-        } catch (error) {
-          console.log(error);
-          reject('Error creando la orden');
-        }
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
+    if (customizer) {
+      const customizerId =
+        await this.customizerValueService.createCustomizerValue(customizer);
+      this.order.products[0].customizer = customizerId;
+      this.customizer = null;
+      this.customizerData = null;
+    }
+    // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
+    // ---------------------- Managing Post ----------------------------
+    if (saleflow.module?.post) {
+      this.order.products.forEach((product) => {
+        const createdPostId = localStorage.getItem('createdPostId');
+        product.deliveryLocation = this.order.products[0].deliveryLocation;
+        product.post = createdPostId;
+      });
+    }
+    // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
+    try {
+      const { createPreOrder } = await this.orderService.createPreOrder(
+        this.order
+      );
+      this.deleteSaleflowOrder(saleflow._id);
+      this.resetIsComplete();
+      this.orderId = createPreOrder._id;
+      this.currentMessageOption = undefined;
+      this.post = undefined;
+      this.locationData = undefined;
+      this.app.events.emit({ type: 'order-done', data: true });
+      return createPreOrder._id;
+    } catch (error) {
+      console.log(error);
+    }
   };
 }

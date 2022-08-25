@@ -37,7 +37,16 @@ export const tagsByUser = gql`
 			notifyMerchantOrder
     }
   }
-`
+`;
+
+export const tagsByMerchant = gql`
+    query tagsByMerchant($merchantId: ObjectID!) {
+        tagsByMerchant(merchantId: $merchantId)
+    }
+`;
+
+
+
 
 export const addTagsInOrder = gql`
     mutation addTagsInOrder( $merchantId: ObjectID!, $tagId: ObjectID!, $orderId: ObjectID!){
@@ -53,6 +62,31 @@ export const removeTagsInOrder = gql`
         removeTagsInOrder( merchantId: $merchantId, tagId: $tagId, orderId: $orderId){
         _id
         tags
+        }
+    }
+`
+export const addTagsInUserOrder = gql`
+    mutation addTagsInUserOrder( $tagId: ObjectID!, $orderId: ObjectID!){
+        addTagsInUserOrder( tagId: $tagId, orderId: $orderId){
+        _id
+        tags
+        }
+    }
+`
+
+export const removeTagsInUserOrder = gql`
+    mutation removeTagsInUserOrder( $tagId: ObjectID!, $orderId: ObjectID!){
+        removeTagsInUserOrder( tagId: $tagId, orderId: $orderId){
+        _id
+        tags
+        }
+    }
+`
+
+export const addTagContainersPublic = gql`
+    mutation addTagContainersPublic($input: TagContainersInput!, $tagId: ObjectID!) {
+        addTagContainersPublic(input: $input, tagId: $tagId) {
+            phone
         }
     }
 `

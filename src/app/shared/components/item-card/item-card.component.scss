@@ -1,0 +1,76 @@
+.item-card {
+    background-color: #FFFFFF;
+    border-radius: 34px;
+    padding: 26px 20px;
+    margin: 10px 6px;
+    box-shadow: 0px 4px 10px #ddd;
+
+    .top-icons{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .image-prices{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .center-img{
+            width: 163px;
+            height: 176px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+
+            &.center-img-shadow {
+                box-shadow: 0px 4px 10px #ddd;
+            }
+        }
+
+        .placeholder {
+            width: 163px;
+            height: 176px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: #AFAFAF;
+            cursor: pointer;
+        }
+
+        .item-price{
+            font-family: 'SfProBold';
+            font-size: 20px;
+            color: #474747;
+            margin-bottom: 4px;
+        }
+
+        .income{
+            font-family: 'RobotoRegular';
+            font-size: 16px;
+            color: #474747;
+        }
+    }
+}
+
+.box {
+    font-family: "RobotoBlack";
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    background-color: #8351FE;
+    color: white;
+    cursor: pointer;
+
+    &.white {
+        background-color: #ffffff;
+        color: #4773D8;
+        font-family: "RobotoMedium";
+        font-size: 13px;
+        box-shadow: 0px 0px 15px 2px #ddd;
+    }
+}
+
+.image-icon {
+    padding: 4px 6px;
+    cursor: pointer;
+}

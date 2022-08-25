@@ -1,0 +1,36 @@
+<div class="container">
+    <app-helper-headerv2
+    [mode]="'center'"
+    [mainText]="{
+        text: 'TAGS'
+    }"
+    [returnAble]="true"
+    ></app-helper-headerv2>
+
+    <div class="grid-area">
+        <app-single-item-list *ngFor=" let tag of itemList; index as i"
+            [tag]="tag"
+            (singleItem)="touched(tag)"
+        ></app-single-item-list>
+    </div>
+
+    <app-bubble-button
+    [color]="'blue'"
+    [position]="'left'"
+    [return]="true"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    *ngIf="merchant"
+    [mode]="'fixed'"
+    [size]="'small'"
+    [bgColor]="'#2874AD'"
+    [text]="
+		(ordersTotal ? ordersTotal.length : '0') 
+		+ ' / ' + '$' 
+		+ (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') 
+		+ ' / ' 
+		+ (users ? users.length : '0') + ' COMPRADORES'
+	"
+    ></app-sticky-button>
+</div>

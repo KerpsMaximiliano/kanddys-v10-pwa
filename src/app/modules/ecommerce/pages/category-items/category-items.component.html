@@ -1,90 +1,88 @@
-<div style="min-height: 100vh; background-color: #ffffff">
-  <div class="header">
-    <a (click)="goBack()">
-      <i
-        class="fas fa-chevron-left"
-        style="
-          color: #27a2ff;
-          position: absolute;
-          left: 5%;
-          cursor: pointer;
-          top: 41.5%;
-        "
-      ></i>
-    </a>
-    <ng-container *ngIf="categoryName">
-      <!-- <div 
-                class="price-circle" 
-                *ngIf="iconImage" 
-                [ngStyle]="{'background-image': 'url(' + iconImage + ')'}">
-            </div> -->
-      <span class="category-name">{{ categoryName }}</span>
-    </ng-container>
-  </div>
-  <div class="top-wrapper" *ngIf="bestSellers.length > 2">
-    <div class="header-wrapper">
-      <h6 class="header-text" [ngClass]="{'header-text': hasCustomizer, 'merchant-header': !hasCustomizer}">
-        Best Sellers
-      </h6>
+<div class="component">
+  <header>
+    <app-helper-headerv2
+      mode="basic"
+      bgColor="#2874AD"
+      [mainText]="{
+        text: categoryName,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+      }"
+      (returnEvent)="goBack()"
+      [icons]="[
+        {
+          src: '/search.svg',
+          callback: null,
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        },
+        {
+          src: '/upload.svg',
+          callback: onShareClick,
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        }
+      ]"
+    ></app-helper-headerv2>
+  </header>
+  <main>
+    <!-- <p class="description">
+      Aquí el influ-seller tiene espacio para explicar de que se trata su
+      colección.
+    </p> -->
+    <div class="itemGrid">
+      <ng-container *ngFor="let item of items; index as i">
+        <app-saleflow-item
+          [type]="isMerchant ? 3 : 2"
+          [boxAmount]="0"
+          [showBox]="false"
+          [isSelected]="!hasCustomizer && item.isSelected"
+          [showSelected]="true"
+          [showIcon]="isMerchant && item.status !== 'active'"
+          [quantity]="
+            isMerchant && totalByItems?.length && totalByItems[i].itemInOrder
+          "
+          [price]="!hasCustomizer && item.pricing"
+          [imgURL]="item.images ? item.images[0] : ''"
+          [showPrice]="item.customizerId ? false : true"
+          [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
+          (itemClicked)="onClick(i)"
+          [priceAlign]="'start'"
+        >
+        </app-saleflow-item>
+      </ng-container>
     </div>
-    <app-swiper
-      [saleFlowTwo]="true"
-      [saleFlowTwoData]="bestSellers"
-      [showPrice]="hasCustomizer ? false : true"
-      [showDescription]="hasCustomizer ? false : true"
-      (slideActive)="onClick($event, 'slider')"
-      (toggleEmitter)="toggleSelected('slider', $event)"
-    ></app-swiper>
-  </div>
-  <div style="background-color: white">
-    <ng-container *ngIf="hasCustomizer; else selectableItems">
-      <div class="itemGrid" style="row-gap: 0;">
-        <div class="item" *ngFor="let item of items; let i = index">
-          <div class="item-img"
-            [ngStyle]="{ backgroundImage: item.images.length > 0 ? 'url(' + item.images[0] + ')' : 'linear-gradient(#7b7b7b 0%, #3e3e3e 100%)' }"
-            (click)="onClick(i)">
-          </div>
-        </div>
-      </div>
-    </ng-container>
-    <ng-template #selectableItems>
-      <div class="grid-header">
-        <h6 class="merchant-header">Todos los items</h6>
-        <ng-container  *ngIf="isMerchant">
-          <p class="income">$000,000.00 de ingreso</p>
-          <p class="colaborations">
-            00 <img [src]="env + '/star.svg'" alt="stars">
-            {{' '}}$000,000.00 colaborado
-          </p>
-        </ng-container>
-      </div>
-      <div class="itemGrid" style="margin-top: 30px;">
-        <ng-container *ngFor="let item of items; index as i">
-          <app-saleflow-item
-            [type]=2
-            [showBox]="true"
-            [isSelected]="item.isSelected"
-            [showIcon]="isMerchant" 
-            [income]="isMerchant && 123456.55"
-            [price]="item.pricing"
-            [imgURL]="item.images ? item.images[0] : ''"
-            [showPrice]="item.customizerId ? false : true"
-            (itemClicked)="onClick(i)"
-            (changeSelection)="toggleSelected('item', i)"
-            [priceAlign]="'start'"
-          >
-          </app-saleflow-item>
-        </ng-container>
-      </div>
-    </ng-template>
-  </div>
+  </main>
+  <footer *ngIf="!hasCustomizer && !isMerchant">
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <app-cart-button
+      [shopCartCallback]="showShoppingCartDialog"
+      [cartAmount]="itemCartAmount"
+    ></app-cart-button>
+  </footer>
+  <app-sticky-button
+    *ngIf="isMerchant"
+    size="small"
+    [mode]="'double'"
+    bgColor="#A1A1A1"
+    [fontSize]="'14px'"
+    [text]="(ordersTotal? ordersTotal.length : 0) + ' VENTAS'"
+    [text2]="
+      '$' +
+      (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') +
+      ' INGRESO'
+    "
+    [color]="'#FFF'"
+    [extra]="{
+      icon: {
+        src: '/arrow-left.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%)',
+        width: 19,
+        height: 19
+      },
+      bgColor: '#2874AD'
+    }"
+    (added)="goBack()"
+  ></app-sticky-button>
 </div>
-
-<div class="bottom-separator" *ngIf="!hasCustomizer"></div>
-
-<app-sticky-button
-  *ngIf="!hasCustomizer"
-  [mode]="canOpenCart ? 'basic' : 'disabled'"
-  [text]="canOpenCart ? 'VER CARRITO DE COMPRAS' : 'SELECCIONAR'"
-  (click)="showShoppingCartDialog()"
-></app-sticky-button>

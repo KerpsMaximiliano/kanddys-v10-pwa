@@ -1,0 +1,41 @@
+<div class="container">
+
+    <div class="body" [ngClass]="{'click-able': clickAble == true}" (click)="clickAble && onClick()">
+        <div class="top">
+            <div class="wrapper" *ngIf="package?.name || item?.name || package?.description || item?.description">
+                <h3 class="plan-name">{{package?.name || item?.name}}</h3>
+                <ng-container *ngIf="package?.description || item?.description">
+                    <span class="subtitle">{{package?.description || item?.description}}</span>
+                </ng-container>
+            </div>
+            <p class="price">${{package?.price || item?.pricing | number}} DOP</p>
+        </div>
+        <div class="plan-details" *ngIf="(package && packageItems?.length) || (!package && item?.content?.length)">
+
+            <ng-container *ngIf="package">
+                <span class="content" *ngFor="let item of packageItems; index as i">
+                    - {{package.packageRules[i].fixedQuantity}} {{item.name}}
+                </span>
+            </ng-container>
+
+            <ng-container *ngIf="!package && item?.content?.length">
+                <span class="content" *ngFor="let content of item.content; index as i">
+                    - {{content}}
+                </span>
+            </ng-container>
+
+        </div>
+
+        <button class="cart" (click)="onButtonClick()" [ngClass]="{small: buttonSize == 'small'}"
+            *ngIf="!item?.isSelected">
+            ADICIONAR <ng-container *ngIf="buttonSize == 'normal'"> AL </ng-container>
+            <img [src]="env + '/carrito_blanco.svg'" width="26px" height="20px" class="carrito">
+        </button>
+
+        <button class="box white" (click)="onButtonClick()"
+            [ngClass]="{small: buttonSize == 'small'}" *ngIf="item?.isSelected">
+            En el Carrito
+            <i class="fas fa-check-circle icon"></i>
+        </button>
+    </div>
+</div>

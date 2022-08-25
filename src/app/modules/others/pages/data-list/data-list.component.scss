@@ -1,0 +1,81 @@
+nav {
+  background-color: #4773D8;
+  font-family: 'RobotoBold';
+  font-size: 14px;
+  height: 36px;
+  color: white;
+  margin: auto;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.label {
+  margin: 0 38px 21px;
+  font-family: "SfProRegular";
+  font-size: 14px;
+  color: #7B7B7B;
+
+  .matches{
+      font-family: 'RobotoBold';
+      font-size: 17px;
+      color: #7B7B7B;
+      margin-left: 49%;
+  }
+}
+
+.input {
+  margin: 29px 20px 38px 20px;
+}
+
+.leadword-input {
+  margin-top: 16px;
+  padding: 20px 32px;
+  font-family: "SfProSemiBold";
+  font-size: 17px;
+  border-radius: 30px;
+  border: none;
+  width: 100%;
+  line-height: 1;
+  box-shadow: 0 3px 6px rgb(0 0 0 / 18%);
+
+  &::placeholder {
+    color: rgba(11, 31, 56, 0.31);
+    font-family: inherit;
+  }
+}
+
+.tag-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 20px;
+  gap: 15px;
+}
+
+.addButton {
+  all: unset;
+  font-family: "SfProSemiBold";
+  font-size: 17px;
+  color: #4773D8;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    color: #7d9fee;
+  }
+}
+
+.categories{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    row-gap: 12px;
+    justify-items: center;
+}
+
+@media only screen and (max-width: 415px){
+
+    .tag-container {
+        margin: 0 auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+}

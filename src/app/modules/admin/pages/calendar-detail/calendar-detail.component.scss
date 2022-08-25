@@ -1,0 +1,57 @@
+.container{
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 34px;
+
+    .top-content-area{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #F6F6F6;
+        padding: 26px 15px;
+        position: relative;
+
+        .top-merchant-image{
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-top: 4px;
+            margin-bottom: 6px;
+        }
+
+        .calendar-name{
+            font-family: 'RobotoBold';
+            font-size: 19px;
+            text-align: center;
+            color: #202020;
+            margin: 0;
+            margin-bottom: 3px;
+        }
+
+        .calendar-info{
+            font-family: 'SfProRegular';
+            font-size: 14px;
+            line-height: 17.5px;
+            text-align: center;
+            color: #7B7B7B;
+            margin: 0;
+        }
+
+        .edit-button{
+            all: unset;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            padding: 1px;
+            top: 15.4px;
+            right: 24px;
+            cursor: pointer;
+        }
+    }
+
+    .item-container{
+        width: 100%;
+        margin-bottom: 4px;
+    }
+}

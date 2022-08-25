@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
 import {
   animate,
   state,
@@ -81,6 +81,8 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
   price: number;
   currentUrl: string = '';
 
+  @Output() imageClicked: EventEmitter<void> = new EventEmitter();
+
   constructor(
     public header: HeaderService, private router: Router
   ) { }
@@ -124,6 +126,10 @@ export class ItemCardAmountAndPriceComponent implements OnInit {
   onAnimStart(event: any) {
     if(event.toState === 'small' && event.phaseName === 'done') this.showTitle = false;
     if(event.toState === 'big') this.showTitle = true;
+  }
+
+  imageEventTrigger() {
+    this.imageClicked.emit();
   }
 
 }

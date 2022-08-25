@@ -1,0 +1,29 @@
+.container{
+    width: 100%;
+    min-height: 100vh;
+    background-color: #F6F6F6;
+    
+    .title{
+        max-width: 336px;
+        text-align: justify;
+        display: flex;
+        margin-left: 10%;
+        margin-top: 68px;
+        margin-bottom: 32px;
+        font-family: 'RobotoBold';
+        font-size: 24px;
+        color: #2E2E2E;
+    }
+
+    .separate{
+        background-color: transparent;
+        color: transparent;
+        border: none;
+        margin: 5.5px;
+    }
+
+}
+
+#bottom{
+    margin-bottom: 142.5px;
+}

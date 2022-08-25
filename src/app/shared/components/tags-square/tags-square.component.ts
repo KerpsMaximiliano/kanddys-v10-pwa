@@ -8,8 +8,16 @@ import { environment } from 'src/environments/environment'
 })
 export class TagsSquareComponent implements OnInit {
 
-  @Input() number: number = 154;
-  @Input() tagText: string = 'Tag ID';
+  @Input() number: string;
+  @Input() gains: string;
+  @Input() tagText: string;
+  @Input() color: string = '#40772F';
+  @Input() textColor: string = '#7B7B7B';
+  @Input() bColor: string;
+  @Input() position: 'center' | 'left'| 'right' = 'center';
+  @Input() centered: boolean = false;
+  @Input() reverse: boolean= false;
+  @Input() size: string;
   imageFolder: string;
     
   constructor() { 

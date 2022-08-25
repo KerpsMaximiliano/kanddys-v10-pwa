@@ -1,0 +1,12 @@
+<div class="categories-list">
+  <div *ngFor="let category of categories" class="category-item">
+    {{category.name}}
+  </div>
+</div>
+<ng-container *ngIf="merchants"></ng-container>
+<div class="item-list" *ngFor="let item of merchantList">
+  <app-item-list
+    [itemListContent]="item"
+    [marginTop]="'0px'"
+  ></app-item-list>
+</div>

@@ -18,8 +18,9 @@
   height: 88px;
   border-radius: 8px;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  cursor: pointer;
 
   &.placeholder {
     background: rgb(241, 195, 255);
@@ -50,7 +51,7 @@
 }
 
 .card-price {
-  align-self: end;
+  align-self: flex-end;
   color: #7b7b7b;
   font-size: 17px;
   font-family: "RobotoRegular";

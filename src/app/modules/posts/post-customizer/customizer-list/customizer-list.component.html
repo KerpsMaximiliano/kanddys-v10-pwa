@@ -129,7 +129,7 @@
               Add new backgroundImage
             </button>
             <div *ngFor="let fixedControl of getArrayControls(customizerForm, 'backgroundImage.fixed'); index as i">
-              <input type="file" (change)="handleFileInput($event.target.files, fixedControl)" accept="image/*">
+              <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/*">
               <button type="button" (click)="onRemoveArrayItem('backgroundImage.fixed', i)">remove background image</button>
               <input [formControlName]="i" style="display: none;">
             </div>
@@ -190,7 +190,7 @@
                 <!-- <span *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
                   <label>z</label><input type="number" formControlName="z"><br>
                 </span> -->
-                <label>size</label><input type="number" formControlName="height" (change)="handleStickerSize($event.target.value, itemsRuleControl)"><br>
+                <label>size</label><input type="number" formControlName="height" (change)="handleStickerSize($event, itemsRuleControl)"><br>
                 <div style="display: none;">
                   <label>height</label><input type="number" formControlName="height"><br>
                   <label>width</label><input type="number" formControlName="width"><br>
@@ -209,7 +209,7 @@
                     Add new stickers
                   </button>
                   <div *ngFor="let fixedControl of getArrayControls(itemsRuleControl, 'fixed'); index as i">
-                    <input type="file" (change)="handleFileInput($event.target.files, fixedControl)" accept="image/svg+xml">
+                    <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/svg+xml">
                     <button type="button" (click)="onRemoveArrayItem('fixed', i, itemsRuleControl)">remove sticker fixed</button>
                     <input [formControlName]="i" style="display: none;">
                   </div>
@@ -235,6 +235,7 @@
                     <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
                       <input type="color" formControlName="fixedValue">
                       <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
                       <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                     </div>
                   </div>
@@ -260,7 +261,7 @@
                     <!-- <span *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
                       <label>z</label><input type="number" formControlName="z"><br>
                     </span> -->
-                    <label>size</label><input type="number" (change)="handleStickerSize($event.target.value, itemsRuleControl)"><br>
+                    <label>size</label><input type="number" (change)="handleStickerSize($event, itemsRuleControl)"><br>
                     <div style="display: none;">
                       <label>height</label><input type="number" formControlName="height"><br>
                       <label>width</label><input type="number" formControlName="width"><br>
@@ -278,7 +279,7 @@
                         Add new stickers
                       </button>
                       <div *ngFor="let fixedControl of getArrayControls(itemsRuleControl, 'fixed'); index as i">
-                        <input type="file" (change)="handleFileInput($event.target.files, fixedControl)" accept="image/svg+xml">
+                        <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/svg+xml">
                         <button type="button" (click)="onRemoveArrayItem('fixed', i, itemsRuleControl)">remove sticker fixed</button>
                         <input [formControlName]="i" style="display: none;">
                       </div>
@@ -304,6 +305,7 @@
                         <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
                           <input type="color" formControlName="fixedValue">
                           <input type="text" formControlName="name">
+                          <input type="text" formControlName="nickname">
                           <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
                         </div>
                       </div>
@@ -392,6 +394,7 @@
                 <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
                   <input type="color" formControlName="fixedValue">
                   <input type="text" formControlName="name">
+                  <input type="text" formControlName="nickname">
                   <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                 </div>
               </div>
@@ -460,6 +463,7 @@
                     <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
                       <input type="color" formControlName="fixedValue">
                       <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
                       <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
                     </div>
                   </div>

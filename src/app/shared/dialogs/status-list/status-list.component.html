@@ -1,0 +1,22 @@
+<div class="status-list" (click)="close()">
+  <div class="container">
+    <ng-container *ngIf="statusList">
+      <span 
+        class="status" 
+        *ngFor="let status of statusList; index as i"
+        [ngStyle]="{
+          backgroundColor: 
+            (i === 0 && status.status === 'completed' && '#40772F') ||
+            (i === 0 && status.status === 'error' && '#FC2727') ||
+            (i === 0 && '#DD9204'),
+          color:
+            (i !== 0 && status.status === 'completed' && '#40772F') ||
+            (i !== 0 && status.status === 'error' && '#FC2727') ||
+            (i !== 0 && '#DD9204')
+        }"
+      >
+        {{status.name}}
+      </span>
+    </ng-container>
+  </div>
+</div>

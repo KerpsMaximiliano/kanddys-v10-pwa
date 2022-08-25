@@ -1,7 +1,29 @@
-<div class="body">
-    <div class="round">
-      <div class="round-button" [style.background-color]="btnColor"></div>
+<ng-container *ngIf="mode == 'basic'">
+    <div class="body">
+        <div class="round">
+          <div class="round-button" [style.background-color]="btnColor">
+            <div *ngIf="icon" class="img-container">
+                <img [src]="icon" alt="">
+            </div>
+          </div>
+        </div>
+        <label for="Texto boton" class="text-btn">{{ctaText}}</label>
     </div>
-    <label for="Texto boton" class="text-btn">{{ctaText}}</label>
-    
-</div>
+</ng-container>
+
+<ng-container *ngIf="mode == 'white'">
+    <div class="body2">
+        <div class="info-icon">
+            <div class="round-wrapper">
+                <div *ngIf="circle" class="outer-circle"></div>
+                <div class="round2" [style.border-width]="borderw" [style.border-color]="borderc">
+                    <div *ngIf="icon" class="img-container">
+                        <img [src]="imageFolder + icon" alt="">
+                    </div>
+                </div>
+                <label for="Texto boton" class="text-btn2" [style.color]="fontColor">{{ctaText}}</label>
+            </div>
+           <div *ngIf="information"> <img id="info" [src]="imageFolder + '/info.svg'" alt=""> </div>
+        </div>
+    </div>
+</ng-container>
