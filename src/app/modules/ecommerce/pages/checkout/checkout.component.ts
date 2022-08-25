@@ -1,12 +1,10 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
-import {
-  CustomizerValueInput
-} from 'src/app/core/models/customizer-value';
+import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
 import { Item } from 'src/app/core/models/item';
-import {
-  ItemOrderInput} from 'src/app/core/models/order';
+import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -47,6 +45,7 @@ export class CheckoutComponent implements OnInit {
     private postsService: PostsService,
     private orderService: OrderService,
     private appService: AppService,
+    private location: Location,
     private router: Router
   ) {}
 
@@ -174,6 +173,10 @@ export class CheckoutComponent implements OnInit {
 
   placeholder() {
     // console.log('placeholder');
+  }
+
+  back() {
+    this.location.back();
   }
 
   openImageModal(imageSourceURL: string) {
