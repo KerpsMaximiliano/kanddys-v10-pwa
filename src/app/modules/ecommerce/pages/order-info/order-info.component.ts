@@ -153,7 +153,7 @@ export class OrderInfoComponent implements OnInit {
 
       socials: order.items[0].saleflow.social,
     };
-    const user = await this.auth.me()
+    const user = await this.auth.me();
     this.showNotificationButton = user?._id === order.user._id;
     if (order.orderStatus === 'in progress') this.status = 'en revisión';
     else if (order.orderStatus === 'to confirm') this.status = 'por confirmar';
@@ -352,54 +352,50 @@ export class OrderInfoComponent implements OnInit {
             ''
           ),
         });
+        let selectedTypography = this.customizer.texts[0].font;
+        switch (selectedTypography) {
+          case 'Dorsa':
+            selectedTypography = 'Empire';
+            break;
+          case 'Commercial-Script':
+            selectedTypography = 'Classic';
+            break;
+        }
+        if (selectedTypography)
+          this.customizerDetails.push({
+            name: 'Nombre de tipografía',
+            value: selectedTypography,
+          });
+
+        const typographyColorCode = this.customizer.texts[0].color.name;
+        const typographyColorName = this.customizer.texts[0].color.nickname;
+        if (typographyColorCode && typographyColorName) {
+          this.customizerDetails.push({
+            name: 'Color de tipografía',
+            value: typographyColorName,
+          });
+          this.customizerDetails.push({
+            name: 'Código de color de tipografía',
+            value: typographyColorCode,
+          });
+        }
       }
 
-      let selectedTypography =
-        this.customizer.texts.length > 0 && this.customizer.texts[0].font;
-      switch (selectedTypography) {
-        case 'Dorsa':
-          selectedTypography = 'Empire';
-          break;
-        case 'Commercial-Script':
-          selectedTypography = 'Classic';
-          break;
-      }
-      if (selectedTypography)
-        this.customizerDetails.push({
-          name: 'Nombre de tipografía',
-          value: selectedTypography,
-        });
-
-      const typographyColorCode =
-        this.customizer.texts.length && this.customizer.texts[0].color.name;
-      const typographyColorName =
-        this.customizer.texts.length && this.customizer.texts[0].color.nickname;
-      if (typographyColorCode && typographyColorName) {
-        this.customizerDetails.push({
-          name: 'Color de tipografía',
-          value: typographyColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de tipografía',
-          value: typographyColorCode,
-        });
-      }
-
-      const stickerColorCode =
-        this.customizer.stickers.length &&
-        this.customizer.stickers[0].svgOptions.color.name;
-      const stickerColorName =
-        this.customizer.stickers.length &&
-        this.customizer.stickers[0].svgOptions.color.nickname;
-      if (stickerColorName) {
-        this.customizerDetails.push({
-          name: 'Color de sticker',
-          value: stickerColorName,
-        });
-        this.customizerDetails.push({
-          name: 'Código de color de sticker',
-          value: stickerColorCode,
-        });
+      if (this.customizer.stickers.length) {
+        const stickerColorCode =
+          this.customizer.stickers[0].svgOptions.color.name;
+        const stickerColorName =
+          this.customizer.stickers[0].svgOptions.color.nickname;
+        if (stickerColorName) {
+          this.customizerDetails.push({
+            name: 'Color de sticker',
+            value: stickerColorName,
+          });
+          this.customizerDetails.push({
+            name: 'Código de color de sticker',
+            value: stickerColorCode,
+          });
+        }
       }
 
       this.items[0].item.images[0] = this.customizer.preview;
@@ -496,15 +492,31 @@ export class OrderInfoComponent implements OnInit {
   }
 
   wichName(e: string) {
-    switch(e) {
-      case 'Reservación': this.view = 'reservacion'; break;
-      case 'Entrega': this.view = 'address'; break;
-      case 'Sets': this.view = 'escenarios'; break;
-      case 'Comprado': this.view = 'comprado'; break;
-      case 'Personalización': this.view = 'personalizacion'; break;
-      case 'Mensaje': this.view = 'mensajeRegalo'; break;
-      case 'Pago': this.view = 'pago'; break;
-      case 'Lugar de la sesión': this.view = 'address'; break;
+    switch (e) {
+      case 'Reservación':
+        this.view = 'reservacion';
+        break;
+      case 'Entrega':
+        this.view = 'address';
+        break;
+      case 'Sets':
+        this.view = 'escenarios';
+        break;
+      case 'Comprado':
+        this.view = 'comprado';
+        break;
+      case 'Personalización':
+        this.view = 'personalizacion';
+        break;
+      case 'Mensaje':
+        this.view = 'mensajeRegalo';
+        break;
+      case 'Pago':
+        this.view = 'pago';
+        break;
+      case 'Lugar de la sesión':
+        this.view = 'address';
+        break;
     }
   }
 }

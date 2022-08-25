@@ -157,7 +157,11 @@
 
     <section
       class="section"
-      *ngIf="order?.items[0].post && post"
+      *ngIf="
+        (order?.items[0].post && post?.message) ||
+        post?.from ||
+        post?.targets[0].name
+      "
       style="margin-top: 32px"
     >
       <h2 class="section-title">Mensaje de regalo:</h2>

@@ -1,22 +1,16 @@
 import {
   Component,
-  OnInit,
-  Input,
-  Type,
-  ViewChild,
-  ViewContainerRef,
+  OnInit
 } from '@angular/core';
 //import { MultistepFormComponent } from 'src/app/shared/components/multistep-form/multistep-form.component';
-import { Observable, Subscription } from 'rxjs';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
-import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { InformationBoxComponent } from 'src/app/shared/components/information-box/information-box.component';
+import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
 
 @Component({
   selector: 'app-shipment-data-form',
@@ -30,7 +24,7 @@ export class ShipmentDataFormComponent implements OnInit {
     private header: HeaderService,
     private router: Router,
     private dialog: DialogService
-  ) { }
+  ) {}
 
   getStoredDeliveryLocation() {
     const saleflowData: SaleFlow =
@@ -54,7 +48,7 @@ export class ShipmentDataFormComponent implements OnInit {
             control: new FormControl(
               this.getStoredDeliveryLocation() || '',
               Validators.required
-            )
+            ),
           },
           label: 'Dónde entregaremos?',
           inputType: 'textarea',
@@ -80,8 +74,7 @@ export class ShipmentDataFormComponent implements OnInit {
               }
 
               const pickupLocation = this.saleflowData.module.delivery
-                ? this.saleflowData.module.delivery.pickUpLocations[0]
-                  .nickName
+                ? this.saleflowData.module.delivery.pickUpLocations[0].nickName
                 : this.header.storedDeliveryLocation;
               const deliveryData = {
                 nickName: pickupLocation,
@@ -99,24 +92,9 @@ export class ShipmentDataFormComponent implements OnInit {
 
               //========================= CÓDIGO PARA CREAR PREORDER =========================
               if (!this.header.orderId) {
-                lockUI();
-
-                preOrderID = await this.header.newCreatePreOrder();
-                this.header.orderId = preOrderID;
-
-                whatsappLinkQueryParams = {
-                  'Keyword-Order': preOrderID as string,
-                };
-
-                unlockUI();
-
-                //Para el magicLink
-                // this.openDialog(whatsappLinkQueryParams);
-                this.router.navigate([
-                  `ecommerce/flow-completion-auth-less/${preOrderID}`,
-                ]);
-
+                this.router.navigate([`ecommerce/checkout`]);
                 this.header.createdOrderWithoutDelivery = true;
+                return { ok: true };
               } else {
                 this.router.navigate([
                   `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
@@ -145,7 +123,7 @@ export class ShipmentDataFormComponent implements OnInit {
               fontSize: '17px',
               fontStyle: 'italic',
               cursor: 'pointer',
-              marginBottom: '33px'
+              marginBottom: '33px',
             },
             labelStyles: {
               marginTop: '20px',
@@ -194,7 +172,7 @@ export class ShipmentDataFormComponent implements OnInit {
             this.header.order?.products &&
             this.header.order?.products?.length > 0
           ) {
-            this.header.order.products.forEach(product => {
+            this.header.order.products.forEach((product) => {
               product.deliveryLocation = deliveryData;
             });
           }
@@ -203,31 +181,15 @@ export class ShipmentDataFormComponent implements OnInit {
             deliveryData
           );
           this.header.isComplete.delivery = true;
-          this.header.storeOrderProgress(this.header.saleflow?._id || this.header.getSaleflow()?._id);
+          this.header.storeOrderProgress(
+            this.header.saleflow?._id || this.header.getSaleflow()?._id
+          );
 
           //========================= CÓDIGO PARA CREAR PREORDER =========================
           if (!this.header.orderId) {
-          // if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
-            lockUI();
-
-            preOrderID = await this.header.newCreatePreOrder();
-            this.header.orderId = preOrderID;
-
-            whatsappLinkQueryParams = {
-              'Keyword-Order': preOrderID as string,
-            };
-
-            unlockUI();
-
-            // this.header.disableGiftMessageTextarea = true;
-
-            //Para el magicLink
-            // this.openDialog(whatsappLinkQueryParams);
-            this.router.navigate([
-              `ecommerce/flow-completion-auth-less/${preOrderID}`,
-            ]);
-
-            // this.header.createdOrderWithDelivery = true;
+            // if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
+            this.router.navigate([`ecommerce/checkout`]);
+            return { ok: true };
           } else {
             this.router.navigate([
               `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
@@ -262,38 +224,28 @@ export class ShipmentDataFormComponent implements OnInit {
         this.header.saleflow = saleflow;
         this.header.order = orderData;
         if (!this.header.order) {
-          this.router.navigate([
-            `/ecommerce/store/61b8df151e8962cdd6f30feb`,
-          ]);
+          this.router.navigate([`/ecommerce/store/61b8df151e8962cdd6f30feb`]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if (items && items.length > 0) this.header.items = items;
         else {
-          this.router.navigate([
-            `/ecommerce/store/61b8df151e8962cdd6f30feb`,
-          ]);
+          this.router.navigate([`/ecommerce/store/61b8df151e8962cdd6f30feb`]);
         }
       } else {
-        this.router.navigate([
-          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
-        ]);
+        this.router.navigate([`/ecommerce/store/61b8df151e8962cdd6f30feb`]);
       }
     } else {
       this.header.order = orderData;
       if (!this.header.order) {
-        this.router.navigate([
-          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
-        ]);
+        this.router.navigate([`/ecommerce/store/61b8df151e8962cdd6f30feb`]);
         return;
       }
       const items = this.header.getItems(saleflowData._id);
       if (items && items.length > 0) this.header.items = items;
       else {
-        this.router.navigate([
-          `/ecommerce/store/61b8df151e8962cdd6f30feb`,
-        ]);
+        this.router.navigate([`/ecommerce/store/61b8df151e8962cdd6f30feb`]);
       }
     }
   }
