@@ -13,6 +13,8 @@ import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visit
 import { VisitorDetailComponent } from './pages/visitor-detail/visitor-detail.component';
 import { QuestionVisitorsGroupComponent } from './pages/question-visitors-group/question-visitors-group.component';
 import { QuestionVisitorsListComponent } from './pages/question-visitors-list/question-visitors-list.component';
+import { WebformInputSelectorComponent } from './pages/webform-input-selector/webform-input-selector.component';
+import { WebformComponent } from './pages/webform/webform.component';
 
 const routes: Routes = [
   {
@@ -58,6 +60,14 @@ const routes: Routes = [
   {
     path: 'question-visitors-list',
     component: QuestionVisitorsListComponent
+  },
+  {
+    path: 'input-selector',
+    component: WebformInputSelectorComponent
+  },
+  {
+    path: 'webform/:id',
+    component: WebformComponent
   }
 ];
 
@@ -74,6 +84,8 @@ const routes: Routes = [
     VisitorDetailComponent,
     QuestionVisitorsGroupComponent,
     QuestionVisitorsListComponent,
+    WebformInputSelectorComponent,
+    WebformComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
