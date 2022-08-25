@@ -2625,20 +2625,6 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
   }
 
   saveDataInHeader(customizerValues: CustomizerValueInput) {
-    // this.header.customizer = {...customizerValues};
-    // const customizerElementList = [...this.elementList];
-    // console.log(customizerElementList);
-    // this.header.customizerData = {
-    //   willModify: false,
-    //   elementList: customizerElementList.map((value) => { return {...value}}),
-    //   backgroundUrl: this.selectedBackgroundImage,
-    //   backgroundImage: this.imageFile,
-    //   backgroundColor: this.selectedBackgroundColor,
-    //   stickersAmount: this.currentStickersAmount,
-    //   textsAmount: this.currentTextsAmount,
-    //   id: this.customizerRuleID,
-    // };
-    // this.header.isComplete.giftABox.customizer = true;
     this.header.customizer = customizerValues;
 
     this.header.customizerData = {
@@ -2655,9 +2641,8 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
 
     this.header.storeCustomizer(
       this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-      customizerValues
+      {...customizerValues}
     );
-
     this.header.isComplete.customizer = true;
   }
 
@@ -2754,10 +2739,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         r.typography.font !== 'Elegant'
       ) {
         this.drawText(r);
-        // if (this.dragok && r.isDragging) this.drawOutline(r.position, true);
       }
-      // if (this.dragok && r.isDragging) this.drawOutline(r.position);
-
       if (r.lines) {
         this.context.lineWidth = this.elementList[i].lines.width;
         this.context.strokeStyle = this.elementList[i].lines.color;
