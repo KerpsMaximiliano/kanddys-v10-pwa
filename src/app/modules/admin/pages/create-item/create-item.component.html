@@ -1,7 +1,10 @@
 <div class="component">
   <header>
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    <button class="dot-trio" *ngIf="itemForm.valid" (click)="onOpenDialog()">
+    
+    <!--  *ngIf="itemForm.valid" iba aqui abajo -->
+    <button class="dot-trio" 
+      (click)="onOpenDialog()">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
@@ -45,8 +48,19 @@
         </ng-container>
       </section>
       <section class="form-group p-side">
-        <div style="margin-bottom: 16px">
-          <div style="margin-bottom: 16px; position: relative">
+        <div class="name-and-price-wrapper">
+          <div class="name-wrapper">
+            <input
+              class="input-text"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Nombre (opcional)"
+              formControlName="name"
+            />
+          </div>
+    
+          <div class="price-wrapper">
             <!-- Input Number Format -->
             <div class="formatted-price">
               <span *ngFor="let letter of formattedPricing.split('')">
@@ -73,16 +87,6 @@
               onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
             />
             <!-- Input Number Format -->
-          </div>
-          <div>
-            <input
-              class="input-text"
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Nombre (opcional)"
-              formControlName="name"
-            />
           </div>
         </div>
         <textarea

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { AuthService } from 'src/app/core/services/auth.service';

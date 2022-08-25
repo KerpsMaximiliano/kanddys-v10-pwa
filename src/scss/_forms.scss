@@ -145,12 +145,17 @@
     transition: width 0.4s ease-out;
   }
 
-  span {
+  span, .selector-option-content {
     position: relative;
     z-index: 900;
     margin-left: 32px;
     padding-top: 8px;
     display: inline-block;
+    width: calc(100% - 32px);
+  }
+
+  .selector-option-content {
+    padding-top: 11px;
   }
 }
 

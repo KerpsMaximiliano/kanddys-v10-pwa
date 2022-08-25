@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { Router } from '@angular/router';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 const AnswerMethodOptions = [
   {
@@ -17,7 +19,7 @@ const AnswerMethodOptions = [
     status: true,
     click: true,
   },
-  {
+  /*{
     value: 'Visitante incluirá su dirección si no está en la base de datos',
     status: true,
     click: true,
@@ -51,7 +53,7 @@ const AnswerMethodOptions = [
     value: 'Seleccionará entre tus métodos de pagos en nueva pantalla.',
     status: true,
     click: true,
-  },
+  },*/
 ];
 
 const DateAnswerTypeOptions = [
@@ -95,7 +97,7 @@ const DateAnswerTypeOptions = [
     status: true,
     click: true,
   },
-]
+];
 
 const AdditionAnswerTypeOptions = [
   {
@@ -123,7 +125,7 @@ const AdditionAnswerTypeOptions = [
     status: true,
     click: true,
   },
-]
+];
 
 const SelectionAnswerTypeOptions = [
   {
@@ -151,7 +153,7 @@ const SelectionAnswerTypeOptions = [
     status: true,
     click: true,
   },
-]
+];
 
 const OtherTables = [
   {
@@ -179,12 +181,12 @@ const OtherTables = [
     status: true,
     click: true,
   },
-]
+];
 
 @Component({
   selector: 'app-answer-method-webform',
   templateUrl: './answer-method-webform.component.html',
-  styleUrls: ['./answer-method-webform.component.scss']
+  styleUrls: ['./answer-method-webform.component.scss'],
 })
 export class AnswerMethodWebformComponent implements OnInit {
   answerMethodOptions: OptionAnswerSelector[] = AnswerMethodOptions;
@@ -200,24 +202,32 @@ export class AnswerMethodWebformComponent implements OnInit {
   second_answer: string;
   images: File[] = [];
 
-  constructor() { }
+  constructor(private headerService: HeaderService, private router: Router) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  onSelect(option: 'answerMethod' | 'answerType' | 'otherTable', value: number) {
-    if(option === 'answerMethod') {
-      if(value != this.answerMethod) this.resetValues();
-      this.answerMethod = value; 
-      switch(value) {
-        case 0: this.answerTypeOptions = SelectionAnswerTypeOptions; break;
-        case 1: this.answerTypeOptions = DateAnswerTypeOptions; break;
-        case 2: this.answerTypeOptions = AdditionAnswerTypeOptions; break;
+  onSelect(
+    option: 'answerMethod' | 'answerType' | 'otherTable',
+    value: number
+  ) {
+    if (option === 'answerMethod') {
+      if (value != this.answerMethod) this.resetValues();
+      this.answerMethod = value;
+      switch (value) {
+        case 0:
+          this.answerTypeOptions = SelectionAnswerTypeOptions;
+          break;
+        case 1:
+          this.answerTypeOptions = DateAnswerTypeOptions;
+          break;
+        case 2:
+          this.answerTypeOptions = AdditionAnswerTypeOptions;
+          break;
       }
       return;
     }
-    if(option === 'answerType') return this.answerType = value;
-    if(option === 'otherTable') return this.otherTable = value;
+    if (option === 'answerType') return (this.answerType = value);
+    if (option === 'otherTable') return (this.otherTable = value);
   }
 
   resetValues() {
@@ -228,14 +238,13 @@ export class AnswerMethodWebformComponent implements OnInit {
   }
 
   back() {
-    //
+    this.router.navigate([this.headerService.flowRoute]);
   }
 
   onFileInput(file: File | { image: File; index: number }) {
     if ('index' in file) {
-      if(file.index >= 2) return;
+      if (file.index >= 2) return;
       this.images.push(file.image);
     }
   }
-
 }

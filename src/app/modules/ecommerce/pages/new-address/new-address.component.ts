@@ -3,10 +3,7 @@ import { Router } from '@angular/router';
 import { DeliveryLocation } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  AnswerIcon,
-  OptionAnswerSelector,
-} from 'src/app/shared/components/answer-selector/answer-selector.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import {
   StoreShareComponent,
   StoreShareList,

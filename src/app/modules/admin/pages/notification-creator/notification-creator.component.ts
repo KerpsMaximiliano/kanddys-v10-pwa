@@ -9,18 +9,17 @@ import {
   NotificationInput,
   OffsetTimeInput,
   GenericTriggerInput,
-  StatusTriggerInput
+  StatusTriggerInput,
 } from 'src/app/core/models/notification';
 // import { AuthService } from 'src/app/core/services/auth.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
-import { OptionAnswerSelector } from 'src/app/shared/components/answer-selector/answer-selector.component';
 
 const actionList: {
   value?: string;
   status: boolean;
-  trigger: (GenericTriggerInput | StatusTriggerInput);
+  trigger: GenericTriggerInput | StatusTriggerInput;
   valueArray?: {
     text: string;
     highlight: boolean;
@@ -257,7 +256,9 @@ export class NotificationCreatorComponent implements OnInit {
       merchant: this.merchant._id,
       entity: this.entity,
       trigger: [this.actionList[this.selectedAction]?.trigger],
-      offsetTime: this.actionList[this.selectedAction]?.offsetTime && [this.actionList[this.selectedAction]?.offsetTime],
+      offsetTime: this.actionList[this.selectedAction]?.offsetTime && [
+        this.actionList[this.selectedAction]?.offsetTime,
+      ],
       phoneNumbers: [],
     };
     try {
