@@ -1,97 +1,163 @@
 <div class="container">
-   <app-helper-headerv2
-   [mode]="'basic'"
+  <app-helper-headerv2
+    [mode]="'basic'"
     [returnAble]="true"
     [mainText]="{
-      text:'Resumen de la factura' ,
+      text: 'Resumen de la factura',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
     [icons]="[
-    {
-      src: '/person.svg',
-      color:
-        'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
-      callback: placeholder
-    }]"
-   ></app-helper-headerv2>
+      {
+        src: '/person.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
+        callback: placeholder
+      }
+    ]"
+  ></app-helper-headerv2>
 
+  <main class="information">
+    <section class="section">
+      <h2 class="section-title">Articulos facturados:</h2>
 
-   <div class="information">
-
-      <div class="reservation">
-
-         <div class="section">
-          <h2 class="date-reservation">Articulos facturados:</h2>
-
-            <div class="items-container">
-               <img src="https://i.imgur.com/FdJUfen.jpeg" alt="" class="item-image">
-               <img src="https://i.imgur.com/FdJUfen.jpeg" alt="" class="item-image">
+      <div class="items-container">
+        <div
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            *ngFor="let item of items"
+            (click)="item.images?.length && openImageModal(item.images[0])"
+          >
+            <div class="image">
+              <img
+                [src]="
+                  item.images?.length
+                    ? item.images[0]
+                    : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
             </div>
-
-         </div>
-
-        <div class="section">
-          <h2 class="address-reservation" style="margin-top: 39px">
-            Lugar de Entrega:
-          </h2>
-
-          <div class="items-container column">
-            <p class="text"> Dirección Name ID</p>
-            <p class="added">Dirección escrita sale aquí</p>
-          </div>
+          </button>
         </div>
-
-        <div class="section" style="margin-top: 40.5px;">
-            <h2 class="address-reservation">Sobre el pago:</h2>
-
-            <div class="items-container space-between">
-               <p class="total">Total:</p>
-               <p class="amount">RD $ {{payment}}</p>
-            </div>
-        </div>
-
-         <!-- <div class="section">
-            <h2 class="address-reservation" style="margin-top: 54px">
-              Mensaje de regalo:
-            </h2>
-
-            <div class="wrapper colored">
-
-              <section class="message">
-                <h3 class="sub" style="margin-top: 0px">Mensaje a escribir:</h3>
-                <p class="text-reservation inner">
-                  Este mensaje que se presenta es una prueba dirigida a determinar el funcionamiento correcto de la sección en donde se presenta
-                </p>
-              </section>
-           
-              <section class="to">
-                <h3 class="sub" style="margin-top: 59px">Para:</h3>
-                <p class="text-reservation inner">Un individuo.</p>
-              </section>
-           
-              <section class="from">
-                <h3 class="sub" style="margin-top: 32px">De:</h3>
-                <p class="text-reservation inner">Oragnismo multicelular.</p>
-              </section>
-
-            </div>
-         </div> -->
-
       </div>
+    </section>
 
-   </div>
+    <section class="section" style="margin-top: 32px">
+      <h2 class="section-title">Sobre el pago:</h2>
 
-   <app-sticky-button style="position: sticky; top: 100vh"
-   [mode]="'basic'"
-   [text]="'CONTINUAR LA FACTURA'"
-   [bgColor]="'#2874AD'"
-   [customLeftButtonStyles]="{
+      <div class="items-container">
+        <div class="items-container space-between" style="padding: 10px 32px">
+          <p class="total">Total:</p>
+          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" *ngIf="order?.products[0].deliveryLocation">
+      <h2 class="section-title" style="margin-top: 32px">
+        Lugar de
+        {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
+      </h2>
+
+      <div class="items-container column">
+        <p
+          class="address-name"
+          *ngIf="order?.products[0].deliveryLocation.nickName"
+        >
+          {{ order?.products[0].deliveryLocation.nickName }}
+        </p>
+        <p
+          [ngClass]="{
+            added: order?.products[0].deliveryLocation.nickName,
+            'address-name': !order?.products[0].deliveryLocation.nickName
+          }"
+          *ngIf="order?.products[0].deliveryLocation.street"
+        >
+          {{ order?.products[0].deliveryLocation.street }},
+          {{ order?.products[0].deliveryLocation.city }}, República Dominicana
+        </p>
+      </div>
+    </section>
+
+    <section class="section" *ngIf="order?.products[0].reservation && date">
+      <h2 class="section-title" style="margin-top: 32px">
+        Fecha de la sesión:
+      </h2>
+
+      <div class="items-container" style="padding: 10px 32px">
+        <p class="amount">
+          {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
+          {{ date.time }}
+        </p>
+      </div>
+    </section>
+
+    <section
+      class="section"
+      *ngIf="post?.message || post?.from || post?.targets[0].name"
+      style="margin-top: 32px"
+    >
+      <h2 class="section-title">Mensaje de regalo:</h2>
+
+      <div class="message-box">
+        <section *ngIf="post.message">
+          <h3 class="sub">Mensaje a escribir:</h3>
+          <p class="message-text inner">
+            {{ post.message }}
+          </p>
+        </section>
+
+        <section *ngIf="post.targets?.length && post.targets[0]?.name">
+          <h3 class="sub">Para:</h3>
+          <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+        </section>
+
+        <section *ngIf="post.from">
+          <h3 class="sub">De:</h3>
+          <p class="message-text inner">{{ post.from }}</p>
+        </section>
+      </div>
+    </section>
+    <section class="section" *ngIf="customizer" style="margin-top: 32px">
+      <h2 class="section-title">Personalización:</h2>
+      <div class="items-container" style="flex-direction: column">
+        <table>
+          <tr *ngFor="let detail of customizerDetails">
+            <th>{{ detail.name }}</th>
+            <td>{{ detail.value }}</td>
+          </tr>
+        </table>
+        <div *ngIf="customizerPreview">
+          <img
+            class="customizer-preview"
+            [src]="customizerPreview.base64"
+            alt=""
+          />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <app-sticky-button
+    style="position: sticky; top: 100vh"
+    [mode]="'basic'"
+    [text]="'CONTINUAR LA FACTURA'"
+    [bgColor]="'#2874AD'"
+    [customLeftButtonStyles]="{
       'font-size': '17px',
       'font-family': 'RobotoMedium',
-      'color': '#FFF',
+      color: '#FFF',
       'letter-spacing': '1px'
-   }"
-   [size]="'small'"
-   ></app-sticky-button>
+    }"
+    [size]="'small'"
+    (click)="newCreatePreOrder()"
+  ></app-sticky-button>
 </div>

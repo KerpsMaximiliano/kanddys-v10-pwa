@@ -27,6 +27,7 @@ import { PostInput } from '../models/post';
 import { Item, ItemPackage } from '../models/item';
 import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
+import { PostsService } from './posts.service';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -131,7 +132,8 @@ export class HeaderService {
     private merchantService: MerchantsService,
     private customizerValueService: CustomizerValueService,
     private orderService: OrderService,
-    private saleflowService: SaleFlowService
+    private saleflowService: SaleFlowService,
+    private postsService: PostsService
   ) {
     this.visible = false;
     this.auth.me().then((data) => {
@@ -381,6 +383,7 @@ export class HeaderService {
   }
 
   storeCustomizer(saleflow: string, customizer: CustomizerValueInput) {
+    delete customizer?.preview;
     let saleflowData: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     saleflowData.customizer = customizer;
@@ -565,13 +568,21 @@ export class HeaderService {
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
     if (saleflow.module?.post) {
+      const postResult = (await this.postsService.createPost(this.post))
+        ?.createPost?._id;
+
       this.order.products.forEach((product) => {
-        const createdPostId = localStorage.getItem('createdPostId');
-        product.deliveryLocation = this.order.products[0].deliveryLocation;
-        product.post = createdPostId;
+        product.post = postResult;
       });
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
+    // ---------------------- Managing Delivery ----------------------------
+    if (saleflow.module?.delivery) {
+      this.order.products.forEach((product) => {
+        product.deliveryLocation = this.order.products[0].deliveryLocation;
+      });
+    }
+    // ++++++++++++++++++++++ Managing Delivery ++++++++++++++++++++++++++++
     try {
       const { createPreOrder } = await this.orderService.createPreOrder(
         this.order

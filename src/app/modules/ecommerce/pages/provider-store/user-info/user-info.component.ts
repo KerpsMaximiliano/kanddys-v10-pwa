@@ -32,18 +32,8 @@ export class UserInfoComponent implements OnInit {
   async onClick() {
     if (this.isDataMissing() && !this.header.orderId) this.openWarningDialog();
     else {
-      lockUI();
-      let preOrderID;
-      if (!this.header.orderId) preOrderID = await this.header.newCreatePreOrder();
-      else preOrderID = this.header.orderId;
-
-      this.router.navigate([
-        `ecommerce/flow-completion-auth-less/${preOrderID}`,
-      ]);
-
-      unlockUI();
-
-      // this.openMagicLinkDialog();para usar magicLink
+      this.router.navigate([`ecommerce/checkout`]);
+      return;
     }
   }
 
@@ -63,25 +53,6 @@ export class UserInfoComponent implements OnInit {
           ]);
         sub.unsubscribe();
       });
-  }
-
-  openMagicLinkDialog() {
-    this.dialog.open(MagicLinkDialogComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        asyncCallback: async (whatsappLink: string) => {
-          let preOrderID;
-          if (!this.header.orderId)
-            preOrderID = await this.header.newCreatePreOrder();
-          else preOrderID = this.header.orderId;
-          whatsappLink += `text=Keyword-Order%20${preOrderID}`;
-
-          return whatsappLink;
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
   }
 
   isDataMissing(): boolean {
