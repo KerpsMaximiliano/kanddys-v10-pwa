@@ -1,0 +1,10 @@
+<button class="notif-button" [ngClass]="{'active': active}">
+  <div class="content">
+    <span>Mensaje que se recibe al etiquetar</span>
+    <p>Aquí está el mensaje escrito que agregó el provider para que le llega al comprad..</p>
+  </div>
+  <div class="icon-section" *ngIf="active">
+    <img [src]="env + '/whatsapp_verde.svg'" width="30" height="30" alt="activate">
+    <span>ON</span>
+  </div>
+</button>

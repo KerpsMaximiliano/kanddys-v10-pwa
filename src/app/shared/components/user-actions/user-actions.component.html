@@ -1,0 +1,14 @@
+<div class="body">
+    <h1 class="title">{{title}}</h1>
+    <ng-container *ngFor="let actions of content; index as i">
+
+        <div class="questions">
+            <h2 class="question">{{actions.question}}</h2>
+            <span class="plus" *ngIf="!actions.icon" (click)="actions.callback && inputFunc(actions.callback)">+</span>
+            <img [src]="actions.icon.src" [alt]="actions.icon.alt" width="18px" height="18px" style="cursor: pointer;" 
+              *ngIf="actions.icon" (click)="actions.callback && inputFunc(actions.callback)"/>    
+        </div>
+
+        <hr class="linea" *ngIf="actions.line">
+    </ng-container>
+</div>

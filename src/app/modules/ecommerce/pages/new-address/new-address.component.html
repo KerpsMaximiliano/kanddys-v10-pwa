@@ -1,0 +1,44 @@
+<div class="component">
+  <header>
+    <div>
+      <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+      <h5>
+        {{ mode === "normal" ? "Dirección de entrega" : "Modo de edición" }}
+      </h5>
+    </div>
+    <button *ngIf="mode === 'normal'" class="dot-trio" (click)="onOpenDialog()">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </button>
+  </header>
+  <main>
+    <h3 class="title">Seleccione entre:</h3>
+    <div>
+      <app-answer-selector
+        [options]="default"
+        [indicator]="true"
+        (onSelector)="selectAddress($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector> <!--RECORDAR QUE EL PICKUP ES PRIMERA OPCION Y CONSERVAR. GRACIAS :)-->
+      
+      <app-answer-selector
+        [options]="addressesOptions"
+        [indicator]="true"
+        (onSelector)="selectAddress($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </div>
+  </main>
+</div>
+<app-bubble-button
+  position="right"
+  color="blue"
+  [solo]="false"
+  [cart]="true"
+  [cartAmount]="1"
+></app-bubble-button>

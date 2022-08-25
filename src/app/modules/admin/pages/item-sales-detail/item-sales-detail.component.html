@@ -1,0 +1,44 @@
+<div style="min-height: 100vh;">
+  <app-helper-headerv2
+    [mainText]="{
+        text: itemData?.name.toUpperCase(),
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+    }"
+    [returnAble]="true"
+    mode="center"
+    color="#E9E371"
+    (returnEvent)="back()"
+  ></app-helper-headerv2>
+  <div class="fullScreenSwiper" *ngIf="itemData?.images.length">
+    <div class="shadowWrapper">
+        <swiper [config]="swiperConfig">
+        <div
+            *ngFor="let item of itemData.images; let i = index"
+            (click)="openImageModal(item)"
+            class="item"
+            [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+        ></div>
+      </swiper>
+    </div>
+  </div>
+  <app-page-component-tabs
+    [tabsOptions]="tabs"
+    (changeValue)="tabTrigger($event)"
+  ></app-page-component-tabs>
+  <app-notification-toggle
+    [active]="true"
+  ></app-notification-toggle>
+  <div class="orderSection">
+    <ng-container  *ngIf="currentTab == 'Compradores'">
+      <div class="order" *ngFor="let buyer of buyersList; index as i">
+          <app-item-list [itemListContent]="buyer" [marginTop]="'0px'"></app-item-list>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="currentTab == 'Ventas'">
+      <div class="order" *ngFor="let order of ordersList; index as i">
+          <app-item-list [itemListContent]="order" [marginTop]="'0px'"></app-item-list>
+      </div>
+    </ng-container>
+  </div>
+</div>

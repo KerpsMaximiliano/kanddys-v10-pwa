@@ -3,9 +3,14 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   item,
+  authItem,
   items,
-  itemCategories,
+  itemCategory,
+  itemCategoriesList,
   createItem,
+  createPreItem,
+  addImageItem,
+  deleteImageItem,
   itemsByMerchant,
   addItem,
   itemextra,
@@ -13,31 +18,62 @@ import {
   createItemPackage,
   itemExtraByMerchant,
   createItemCategory,
+  updateItemCategory,
   deleteItemCategory,
   itemPackageByMerchant,
   listItemPackage,
   listItems,
   itemCategoryHeadlineByMerchant,
+  itemsByCategory,
+  bestSellersByMerchant,
+  totalByItem,
+  itemExtras,
+  updateItem,
+  deleteItem,
 } from '../graphql/items.gql';
-import { Item, ItemCategory, ItemCategoryHeadline } from '../models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemCategoryHeadline,
+  ItemCategoryInput,
+  ItemInput,
+  ItemPackage,
+} from '../models/item';
+import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
+  temporalItem: Item = null;
+  temporalImages: {
+    old: string[];
+    new: File[];
+  };
+  hasTemporalItemNewImages: boolean = null;
+
+  storeTemporalItem(item: any) {
+    this.temporalItem = item;
+  }
+
+  removeTemporalItem() {
+    this.temporalItem = null;
+    this.temporalImages = null;
+    this.hasTemporalItemNewImages = null;
+  }
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async item(id: string): Promise<Item> {
-    console.log(id);
-    const { item: result } = await this.graphql.query({
+    const result = await this.graphql.query({
       query: item,
       variables: { id },
       fetchPolicy: 'no-cache',
     });
-    return new Item(result);
+    if (!result) return;
+    return result.item;
   }
 
   async itemextra(id: string) {
-    console.log(id);
     const response = await this.graphql.query({
       query: itemextra,
       variables: { id },
@@ -46,8 +82,7 @@ export class ItemsService {
     return response;
   }
 
-  async itemPacakge(id: string) {
-    console.log(id);
+  async itemPacakge(id: string): Promise<{ itemPackage: ItemPackage }> {
     const response = await this.graphql.query({
       query: itemPackage,
       variables: { id },
@@ -65,12 +100,60 @@ export class ItemsService {
     return (result || []).map((r: any) => new Item(r));
   }
 
-  async itemsByMerchant(id: string) {
-    console.log(id);
+  async updateItem(input: ItemInput, id: string) {
+    const response = await this.graphql.query({
+      query: updateItem,
+      variables: { input, id },
+      context: { useMultipart: true },
+      fetchPolicy: 'no-cache',
+    });
+    return response;
+  }
+
+  async addImageItem(images: File[], id: string) {
+    const result = await this.graphql.mutate({
+      mutation: addImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async deleteImageItem(images: string[], id: string) {
+    const result = await this.graphql.mutate({
+      mutation: deleteImageItem,
+      variables: { images, id },
+      fetchPolicy: 'no-cache',
+      context: {
+        useMultipart: true,
+      },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async authItem(merchantId: string, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: authItem,
+      variables: { merchantId, id },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async itemsByMerchant(
+    id: string,
+    sort?: boolean
+  ): Promise<{ itemsByMerchant: Item[] }> {
     try {
       const response = await this.graphql.query({
         query: itemsByMerchant,
-        variables: { id },
+        variables: { id, sort },
         fetchPolicy: 'no-cache',
       });
       return response;
@@ -87,6 +170,57 @@ export class ItemsService {
       });
       return response;
     } catch (e) {}
+  }
+
+  async itemsByCategory(
+    categoryID: string,
+    params?: PaginationInput,
+    saleflowID?: string
+  ): Promise<Item[]> {
+    try {
+      const response = await this.graphql.query({
+        query: itemsByCategory,
+        variables: { categoryID, params, saleflowID },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.itemsByCategory;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async bestSellersByMerchant(
+    limit: number,
+    merchantID: string
+  ): Promise<string[]> {
+    try {
+      const response = await this.graphql.query({
+        query: bestSellersByMerchant,
+        variables: { limit, merchantID },
+        fetchPolicy: 'no-cache',
+      });
+      return response.bestSellersByMerchant;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async totalByItem(
+    merchantId: string,
+    itemId?: string[]
+  ): Promise<{ item: Item; itemInOrder: number; total: number }[]> {
+    try {
+      const response = await this.graphql.query({
+        query: totalByItem,
+        variables: { merchantId, itemId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.totalByItem;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async listItemPackage(params: any) {
@@ -114,31 +248,72 @@ export class ItemsService {
     }
   }
 
-  async itemCategories(merchantId: string, params: any): Promise<{ itemCategoriesList: ItemCategory[] }> {
+  async itemExtras(params: any) {
     try {
       const response = await this.graphql.query({
-        query: itemCategories,
-        variables: { merchantId, params },
+        query: itemExtras, //add listItems to gqls,
+        variables: { params },
         fetchPolicy: 'no-cache',
       });
-      console.log(merchantId, params);
       return response;
     } catch (e) {
       console.log(e);
     }
   }
-  
+
+  async itemCategory(id: string): Promise<ItemCategory> {
+    try {
+      const response = await this.graphql.query({
+        query: itemCategory,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.itemCategory;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async itemCategories(
+    merchantId: string,
+    params: PaginationInput
+  ): Promise<{ itemCategoriesList: ItemCategory[] }> {
+    try {
+      const response = await this.graphql.query({
+        query: itemCategoriesList,
+        variables: { merchantId, params },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   // Agregar categoria
-  async createItemCategory(input: any) {
-    console.log('input', input);
+  async createItemCategory(input: ItemCategoryInput): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
       variables: { input },
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
-    return result;
+    return result.createItemCategory;
+  }
+
+  // Actualizar categoria
+  async updateItemCategory(
+    input: ItemCategoryInput,
+    id: string
+  ): Promise<ItemCategory> {
+    const result = await this.graphql.mutate({
+      mutation: updateItemCategory,
+      variables: { input, id },
+      context: { useMultipart: true },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.updateItemCategory;
   }
 
   // Eliminar Categoria
@@ -149,11 +324,12 @@ export class ItemsService {
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
-  
-  async itemCategoryHeadlineByMerchant(merchant: string): Promise<ItemCategoryHeadline[]> {
+
+  async itemCategoryHeadlineByMerchant(
+    merchant: string
+  ): Promise<ItemCategoryHeadline[]> {
     try {
       const response = await this.graphql.query({
         query: itemCategoryHeadlineByMerchant,
@@ -167,7 +343,6 @@ export class ItemsService {
   }
 
   async createItem(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },
@@ -175,7 +350,17 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
+    return result;
+  }
+
+  async createPreItem(input: any) {
+    const result = await this.graphql.mutate({
+      mutation: createPreItem,
+      variables: { input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
     return result;
   }
 
@@ -188,12 +373,19 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
+  async deleteItem(id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: deleteItem,
+      variables: { id },
+      context: { useMultipart: true },
+    });
+    return result?.deleteItem;
+  }
+
   async createItemPackage(input: any) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: createItemPackage,
       variables: { input },
@@ -201,12 +393,10 @@ export class ItemsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result;
   }
 
   async itemExtraByMerchant(merchantId: string) {
-    console.log(merchantId);
     try {
       const response = await this.graphql.query({
         query: itemExtraByMerchant,

@@ -1,0 +1,248 @@
+.container {
+  width: 100%;
+  min-height: 60px;
+  max-width: 500px;
+  position: relative;
+  z-index: 1000;
+
+  &.shadow {
+    box-shadow: 0 3px 6px rgb(#000000, 0.16);
+  }
+
+  .assets-hlphdr-middle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 434px) {
+      font-size: 14.5px !important;
+    }
+    @media (max-width: 389px) {
+      font-size: 13.5px !important;
+    }
+    @media (max-width: 359px) {
+      font-size: 12px !important;
+    }
+  }
+}
+
+.top-area-hlprhdr {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 17px 0 0 0;
+  position: relative;
+}
+
+.top-area-hlprhdr-full {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  min-height: 60px;
+}
+
+.wrapper-hdrhlpr {
+  display: flex;
+  justify-content: space-between;
+}
+
+/*X button and dot area*/
+.x-button-hlprhdr {
+  font-family: "RobotoMedium";
+  font-size: 16px;
+  margin-left: 20px;
+  color: #27a2ff;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.label-hlprhdr {
+  font-family: "Roboto";
+  font-size: 17px;
+  margin-left: 26px;
+  color: #27a2ff;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.dot-trio-hlprhdr {
+  width: 6px;
+  height: 21px;
+  margin-right: 24px;
+  margin-top: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  cursor: pointer;
+
+  .dot-hlprhdr {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #27a2fc;
+    margin-bottom: 3px;
+  }
+}
+
+/*helper header area*/
+.helper-area-hlprhdr {
+  font-family: "RobotoItalic";
+  font-size: 17px;
+  margin-left: 18px;
+  color: #0b1f38;
+}
+
+/*extra text area*/
+.extra-text-hlprhdr {
+  font-family: "RobotoMedium";
+  font-size: 19px;
+  margin-right: 16px;
+  color: #0b1f38;
+  opacity: 0.31;
+}
+
+/*assetsText area*/
+.assets-hlphdr {
+  color: #27a2fc;
+  font-family: "RobotoMedium";
+  font-size: 19px;
+  margin-right: 31px;
+}
+
+/*icon-image*/
+.icon-hlprhdr {
+  width: 127px;
+  height: 12.5px;
+  margin-left: 25px;
+  color: #27a2fc;
+  cursor: pointer;
+
+  &.with-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .text {
+      margin-left: 12.5px;
+    }
+  }
+}
+
+.infoWallet {
+  display: flex;
+  align-items: flex-end;
+  column-gap: 3px;
+  font-family: "RobotoMedium";
+  font-size: 16px;
+  color: #27a2ff;
+  margin-right: 22px;
+  * {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+/*Notification image*/
+.img-hlprhdr {
+  width: 20px;
+  height: 24px;
+  color: #27a2fc;
+  margin-right: 22px;
+  cursor: pointer;
+}
+
+/*Searchbar if necessary in app*/
+.container-searchbar-hlprhdr {
+  width: 100%;
+  max-width: 500px;
+}
+
+.searchbar-hlprhdr {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  .search-hlprhdr {
+    width: 90%;
+    height: 60px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    font-family: "SfProSemiBold";
+    font-size: 17px;
+    text-indent: 34px;
+    color: #0b1f38;
+    border: none;
+    box-shadow: 0px 10px 5px -5px rgb(0 0 0 / 15%);
+
+    &:focus {
+      border: none;
+      outline: none;
+    }
+
+    &::placeholder {
+      font-family: "SfProSemiBold";
+      font-size: 17px;
+      color: rgba(11, 31, 56, 0.31);
+    }
+  }
+}
+
+.searchbar-hlprhdr-v2 {
+  width: 100%;
+  // height: 140px;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // align-content: center;
+
+  .search-label {
+    margin: 0;
+    padding-top: 23.5px;
+    font-family: SFProRegular;
+    font-size: 14px;
+    color: #7b7b7b;
+    padding-left: 25px;
+    padding-bottom: 15px;
+  }
+  .input-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    .search-hlprhdr-v2 {
+      margin: 0 auto;
+      width: 90%;
+      height: 60px;
+      background-color: #ffffff;
+      border-radius: 30px;
+      font-family: "SfProSemiBold";
+      font-size: 17px;
+      text-indent: 34px;
+      color: #0b1f38;
+      border: none;
+      box-shadow: 0px 10px 5px -5px rgb(0 0 0 / 15%);
+
+      &:focus {
+        border: none;
+        outline: none;
+      }
+
+      &::placeholder {
+        font-family: "SfProSemiBold";
+        font-size: 17px;
+        color: rgba(11, 31, 56, 0.31);
+      }
+    }
+  }
+}

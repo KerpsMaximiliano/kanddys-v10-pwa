@@ -1,0 +1,44 @@
+<div
+  class="provider-info-wrapper"
+  *ngIf="dividedBg === false"
+  [style.background]="background"
+>
+  <app-contact-buttons
+    [socials]="providerSocials"
+    [providerImage]="providerImage"
+  ></app-contact-buttons>
+
+  <div style="display: flex; flex-direction: column">
+    <div>
+      <h1 class="providerID">{{ providerId }}</h1>
+    </div>
+    <div>
+      <h2 class="providerBio" *ngIf="!(leftInfo || rightInfo)">{{ providerBio1 }}</h2>
+      <h2 class="providerBio" style="color: #272727;" *ngIf="leftInfo || rightInfo">{{ providerBio1 }}</h2>
+    </div>
+    <div style="margin-top: 13px; color: #141414;">
+      <h2 class="providerBio" style="margin-bottom: 27px;" *ngIf="rightInfo">{{ rightInfo }}</h2>
+      <h2 class="providerBio" *ngIf="rightInfo">Codigo: {{ leftInfo }}</h2>
+    </div>
+  </div>
+</div>
+
+<div
+  class="provider-info-wrapper"
+  *ngIf="dividedBg === true"
+  [style.background]="dividedBackground"
+>
+  <app-contact-buttons
+    [socials]="providerSocials"
+    [providerImage]="providerImage"
+  ></app-contact-buttons>
+
+  <div style="display: flex; flex-direction: column">
+    <div>
+      <h1 class="providerID">{{ providerId }}</h1>
+    </div>
+    <div>
+      <h2 class="providerBio">{{ providerBio1 }}</h2>
+    </div>
+  </div>
+</div>

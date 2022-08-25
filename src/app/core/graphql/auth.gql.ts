@@ -5,21 +5,26 @@ const user = `
   email
   phone
   name
+  lastname
   birthdate
   image
-  defaultCommunity {
-    _id
-    name
-    kindcode
-  }
+  title
   validatedAt
+  bio
+  title
   deliveryLocations{
     _id
     googleMapsURL
     city
     street
+    nickName
     houseNumber
     note
+  }
+  social {
+    name
+    url
+    userName
   }
 `;
 const sessionBody = `
@@ -42,14 +47,40 @@ export const userExists = gql`
 `;
 
 export const updateme = gql`
-  mutation updateme($input: UserInput!) {
-    me: updateme(input: $input) { ${user} }
+  mutation updateme($input: UserInput!, $files: [Upload!]) {
+    me: updateme(input: $input, files: $files) { ${user} }
   }
 `;
 
 export const refresh = gql`
   mutation {
     session: refresh { ${sessionBody} }
+  }
+`;
+
+export const generateMagicLink = gql`
+  mutation generateMagicLink(
+    $phoneNumber: String!,
+    $redirectionRoute: String!,
+    $redirectionRouteId: String,
+    $entity: String!,
+    $redirectionRouteQueryParams: JSON,
+    $attachments: [Upload!]
+  ) {
+    generateMagicLink(
+      phoneNumber: $phoneNumber, 
+      redirectionRoute: $redirectionRoute, 
+      redirectionRouteId: $redirectionRouteId, 
+      entity: $entity,
+      redirectionRouteQueryParams: $redirectionRouteQueryParams,
+      attachments: $attachments
+    )
+  }
+`;
+
+export const analizeMagicLink = gql`
+  query analizeMagicLink($tempcode: String!) {
+    analizeMagicLink(tempcode: $tempcode) 
   }
 `;
 
@@ -60,8 +91,8 @@ export const signin = gql`
 `;
 
 export const signup = gql`
-  mutation signup($input: UserInput!,$notificationMethod:String!, $code: String) {
-    user: signup(input: $input,notificationMethod:$notificationMethod, assignPassword: false, code: $code) { ${user} }
+  mutation signup($input: UserInput!,$notificationMethod:String!, $code: String, $assignPassword: Boolean, $files: [Upload!]) {
+    user: signup(input: $input,notificationMethod:$notificationMethod, assignPassword: $assignPassword, code: $code, files: $files) { ${user} }
   }
 `;
 
@@ -102,10 +133,10 @@ export const generateOTP = gql`
 `;
 
 export const signinSocial = gql`
-  mutation signinSocial($input: SignInTokenInput!){
-    signinSocial: signinSocial(input: $input){
+  mutation signinSocial($input: SignInTokenInput!) {
+    signinSocial: signinSocial(input: $input) {
       _id
-      user{
+      user {
         _id
         email
         phone
@@ -118,7 +149,7 @@ export const signinSocial = gql`
           kindcode
         }
         validatedAt
-        deliveryLocations{
+        deliveryLocations {
           _id
           googleMapsURL
           city
@@ -134,17 +165,26 @@ export const signinSocial = gql`
       updatedAt
     }
   }
-`
+`;
 export const simplifySignup = gql`
-  mutation simplifySignup($emailOrPhone: String!, $notificationMethod: String){
-    simplifySignup(emailOrPhone: $emailOrPhone, notificationMethod: $notificationMethod)
+  mutation simplifySignup($emailOrPhone: String!, $notificationMethod: String) {
+    simplifySignup(
+      emailOrPhone: $emailOrPhone
+      notificationMethod: $notificationMethod
+    )
   }
-`
+`;
 
 export const getTempCodeData = gql`
-  query getTempCodeData($token: String!){
-    getTempCodeData(token: $token){
+  query getTempCodeData($token: String!) {
+    getTempCodeData(token: $token) {
       metadata
     }
   }
-`
+`;
+
+export const generatePowerMagicLink = gql`
+  mutation generatePowerMagicLink($hostPhoneNumber: String!) {
+    generatePowerMagicLink(hostPhoneNumber: $hostPhoneNumber)
+  }
+`;

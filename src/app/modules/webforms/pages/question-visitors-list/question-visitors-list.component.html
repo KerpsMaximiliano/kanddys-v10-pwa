@@ -1,0 +1,57 @@
+<div class="container">
+    <app-helper-headerv2
+        [mainText]="{
+            text: 'PREGUNTA #1 / PANTALLA #1',
+            color: '#fff'
+        }"
+        [bgColor]="'#2874AD'"
+        [mode]="'center'"
+    ></app-helper-headerv2>
+
+    <div class="question-div">
+        <h1>Pregunta hechaID</h1>
+    </div>
+
+
+    <ng-container *ngIf="mode === 1">
+        <ng-container *ngFor="let answerItem of dummyAnswers; let i = index">
+            <app-question-item
+                view="visitor"
+                headline="VISITANTE NAME"
+                [data]="answerItem"
+                [tags]="dummyTags"
+                [tagsLabel]="'EDITAR:'"
+                [user]="dummyUsers[i]"
+            >
+            </app-question-item>
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="mode === 2">
+        <ng-container *ngFor="let answerItem of dummyAnswers2; let i = index">
+            <app-question-item
+                view="visitor"
+                headline="VISITANTE NAME"
+                [data]="answerItem"
+                [tags]="dummyTags"
+                [tagsLabel]="'EDITAR:'"
+                [user]="dummyUsers[i]"
+            >
+            </app-question-item>
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="mode === 3">
+        <ng-container *ngFor="let answerItem of dummyAnswers3; let i = index">
+            <app-question-item
+                view="visitor"
+                headline="85 VISITANTES SELECCIONARON"
+                [data]="answerItem"
+                [tags]="dummyTags"
+                [tagsLabel]="'EDITAR:'"
+                [users]="dummyUsers"
+            >
+            </app-question-item>
+        </ng-container>  
+    </ng-container>
+</div>

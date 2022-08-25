@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  uri: 'https://kanddys.com',
+  uri: 'https://test.kanddys.com',
   whatsAppAPI:'https://api.whatsapp.com',
   api: {
     // url: 'https://api.rewardcharly.com',
@@ -13,5 +13,6 @@ export const environment = {
       '522253098590-blhe9nm7334r6ie7pno4fv47cq2gfglq.apps.googleusercontent.com',
     facebookId: '',
   },
-  STRIPE_KEY: 'pk_test_51I1G6OBy432m6iRAJAxaouCusq5ALGZhdf1jjTkDrWm3wIFgQ8eosO99wo0CFtigqhpw9FCMfOy4FWoI7qZOkwCo00QMV7cbTI'
+  STRIPE_KEY: 'pk_test_51I1G6OBy432m6iRAJAxaouCusq5ALGZhdf1jjTkDrWm3wIFgQ8eosO99wo0CFtigqhpw9FCMfOy4FWoI7qZOkwCo00QMV7cbTI',
+  assetsUrl: "https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets",
 };

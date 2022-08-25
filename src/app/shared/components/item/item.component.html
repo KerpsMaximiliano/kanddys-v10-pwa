@@ -1,0 +1,17 @@
+<div class="item-card">
+  <button class="button-image">
+    <img
+      class="item-image"
+      [src]="
+        (item.images.length && item.images[0]) || '/assets/images/noimage.png'
+      "
+      (error)="image.src = '/assets/images/noimage.png'"
+      alt="item image"
+      #image
+      (click)="imageEvent.emit()"
+    />
+  </button>
+  <div class="item-info">
+    <div class="flex-column">${{ item.pricing | number }}</div>
+  </div>
+</div>

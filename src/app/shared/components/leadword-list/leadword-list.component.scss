@@ -1,0 +1,59 @@
+.container{
+    & .flex-container{
+        display: flex;
+        flex-direction: column;
+        margin: 0 22px 0 19px;
+
+        .main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            column-gap: 10px;
+
+            .content {
+                width: 70%;
+            }
+
+            .image{
+                cursor: pointer;
+                width: 47px;
+                height: 50px;
+                background-color: black;
+                border-radius: 5px;
+                background-size: cover;
+                background-position: center;
+            }
+            .title{
+                font-family: 'Roboto';
+                font-weight: bold;
+                font-size: 20px;
+                color: #272727;
+
+                @media (max-width: 374px){
+                    font-size: 16px;
+                }
+            }
+
+            .uncompleted {
+                &:hover {
+                    filter: brightness(0) saturate(100%) invert(75%) sepia(18%) saturate(3299%) hue-rotate(178deg) brightness(99%) contrast(107%);
+                }
+            }
+        }
+
+        .additional-info {
+            font-family: "RobotoMedium";
+            font-size: 17px;
+            color: #7B7B7B;
+            margin-top: 8px;
+
+        }
+    }
+    & .separator{
+        height: 1px;
+        width: 100%;
+        background-color: #cececece;
+        margin-top: 17px;
+        margin-bottom: 30px;
+    }
+}

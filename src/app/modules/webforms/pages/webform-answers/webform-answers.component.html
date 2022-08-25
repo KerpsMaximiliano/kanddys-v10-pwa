@@ -1,0 +1,49 @@
+<div class="page-wrapper">
+  <!-- SIMPLE HEADER WITH 3 DOTS-->
+  <header>
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+
+    <button class="dot-trio">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </button>
+  </header>
+
+  <!-- WEBFORM QUESTIONS SWIPER-->
+  <swiper
+    [config]="swiperConfig"
+    (slideChange)="updateShownAnswersToMatchCurrentQuestion($event)"
+  >
+    <div
+      *ngFor="let question of questions; let i = index"
+      class="question-box-wrapper"
+    >
+      <div class="question-box">
+        <h2 class="question-header">{{ question.value }}</h2>
+
+        <p class="question-description" *ngIf="question.description">
+          Description ID
+        </p>
+      </div>
+      <div class="blank-space"></div>
+    </div>
+  </swiper>
+
+  <div class="answers-wrapper">
+    <!-- LIST OF SELECTED QUESTION ANSWERS-->
+    <h3 class="answers-list-header">Respuestas</h3>
+
+    <app-answer-selector
+      [complexOptions]="answersList"
+      [hasComplexOptionsLayout]="true"
+      [indicator]="true"
+      [showSelectedFeedback]="true"
+      [showDescription]="false"
+      [containerStyles]="{
+        margin: '0px',
+        paddingBottom: '16px'
+      }"
+    ></app-answer-selector>
+  </div>
+</div>

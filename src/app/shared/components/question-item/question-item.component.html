@@ -1,0 +1,230 @@
+<div class="container" [style.boxShadow]="shadow">
+  <ng-container *ngIf="!single">
+    <div
+      class="title"
+      [ngStyle]="headlineContainerStyles ? headlineContainerStyles : null"
+    >
+      <div class="headline-left-icon" *ngIf="headlineLeftIcon">
+        <img
+          [src]="env + headlineLeftIcon.icon"
+          alt="the left one"
+          [width]="headlineLeftIcon.width"
+          [height]="headlineLeftIcon.height"
+        />
+      </div>
+
+      <h1
+        class="headline"
+        [ngStyle]="headlineTitleStyles ? headlineTitleStyles : null"
+      >
+        {{ headline }}
+      </h1>
+
+      <div class="headline-right-icon" *ngIf="headlineRightIcon">
+        <img
+          [src]="headlineRightIcon.icon"
+          alt="the right one"
+          [width]="headlineRightIcon.width"
+          [height]="headlineRightIcon.height"
+        />
+      </div>
+
+      <div
+        *ngIf="headlineRightText"
+        [ngStyle]="headlineRightTextStyles ? headlineRightTextStyles : null"
+        (click)="
+          headlineRightText?.callback && headlineRightText?.callbackParams
+            ? spreadParams(
+                headlineRightText.callback,
+                headlineRightText?.callbackParams
+              )
+            : headlineRightText?.callback && !headlineRightText?.callbackParams
+            ? headlineRightText?.callback()
+            : null
+        "
+      >
+        {{ headlineRightText.text }}
+      </div>
+
+      <button class="headline-btn" *ngIf="user">
+        <img
+          [src]="env + '/person.svg'"
+          alt="user info"
+          width="15"
+          height="19"
+        />
+      </button>
+      <button class="headline-btn" *ngIf="users">
+        <img
+          [src]="env + '/person.svg'"
+          alt="user info"
+          width="15"
+          height="19"
+        />
+        <img
+          [src]="env + '/person.svg'"
+          alt="user info"
+          width="15"
+          height="19"
+          [style.marginLeft]="'-4px'"
+        />
+      </button>
+    </div>
+
+    <ng-container *ngIf="data?.length">
+      <div
+        class="question-area"
+        [ngStyle]="{
+          'justify-content': data[0].image ? 'unset' : '',
+          'flex-direction': data[0].image ? 'unset' : ''
+        }"
+      >
+        <div class="wrapper" *ngFor="let question of data; index as i">
+          <span
+            class="date"
+            *ngIf="question.date && !question.question && !question.image"
+            >{{ question.date }}</span
+          >
+          <span class="question" *ngIf="question.question && !question.image">{{
+            question.question
+          }}</span>
+          <p
+            class="answer"
+            *ngIf="!question.image"
+            [ngStyle]="{ maxWidth: question.question && '50%' }"
+          >
+            {{ question.answer }}
+          </p>
+          <img
+            *ngIf="question.image"
+            [src]="question.image"
+            alt="question image"
+            class="image-upload"
+          />
+        </div>
+      </div>
+    </ng-container>
+
+    <div
+      class="end-area"
+      *ngIf="tags && tags.length && collapseTags"
+      [ngStyle]="{
+        'justify-content': tags && tags.length ? 'space-between' : 'flex-end'
+      }"
+    >
+      <button
+        class="display"
+        *ngIf="tags && tags.length"
+        (click)="showTags = !showTags"
+      >
+        TAGS
+        <span *ngIf="!showTags"><i class="fas fa-chevron-right"></i></span>
+        <span *ngIf="showTags"><i class="fas fa-chevron-down"></i></span>
+      </button>
+      <button class="total">{{ total }} RESPUESTAS</button>
+    </div>
+    <div style="margin: 0 24px 24px" *ngIf="showTags || !collapseTags">
+      <h6 class="tags-label" *ngIf="tagsLabel">{{ tagsLabel }}</h6>
+      <div class="tag-list" [ngStyle]="tagListStyles ? tagListStyles : null">
+        <ng-container *ngIf="chipMode === 1">
+          <ng-container *ngIf="tags && tags.length > 0">
+            <button
+              class="tag-button"
+              [ngClass]="{ selected: tag.selected }"
+              *ngFor="let tag of tags"
+              (click)="
+                !shouldPreventClickEvent ? (tag.selected = !tag.selected) : null
+              "
+            >
+              {{ tag.name }}
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="categories && categories.length > 0">
+            <button
+              class="tag-button"
+              [ngClass]="{ selected: category.selected }"
+              *ngFor="let category of categories"
+              (click)="
+                !shouldPreventClickEvent
+                  ? (category.selected = !category.selected)
+                  : null
+              "
+            >
+              {{ category.name }}
+            </button>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="chipMode === 2">
+          <ng-container *ngIf="tags && tags.length > 0">
+            <button
+              class="tag-button-2"
+              [ngClass]="{ selected: tag.selected }"
+              *ngFor="let tag of tags"
+              (click)="
+                !shouldPreventClickEvent ? (tag.selected = !tag.selected) : null
+              "
+              [ngStyle]="{
+                justifyContent: !tag.icon ? 'center' : 'space-between'
+              }"
+            >
+              <span [ngStyle]="tagListTextStyles ? tagListTextStyles : null">
+                {{ tag.name }}
+              </span>
+
+              <img
+                *ngIf="tag.icon"
+                [src]="tag.icon.src"
+                alt="the tag one"
+                [width]="tag.icon.width"
+                [height]="tag.icon.height"
+              />
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="categories && categories.length > 0">
+            <button
+              class="tag-button-2"
+              [ngClass]="{ selected: category.selected }"
+              *ngFor="let category of categories"
+              (click)="
+                !shouldPreventClickEvent
+                  ? (category.selected = !category.selected)
+                  : null
+              "
+              [ngStyle]="{
+                justifyContent: !category.icon ? 'center' : 'space-between'
+              }"
+            >
+              <span [ngStyle]="tagListTextStyles ? tagListTextStyles : null">
+                {{ category.name }}
+              </span>
+
+              <img
+                *ngIf="category.icon"
+                [src]="category.icon.src"
+                alt="the tag one"
+                [width]="category.icon.width"
+                [height]="category.icon.height"
+              />
+            </button>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="single">
+    <div class="title" [ngStyle]="{ 'justify-content': 'flex-start' }">
+      <h1 class="headline">{{ headline }}</h1>
+      <!-- <img [src]="" alt=""> -->
+    </div>
+    <div class="question-area" [ngStyle]="{ 'align-items': 'unset' }">
+      <div class="column-style">
+        <p class="column-answer">{{ answer }}</p>
+        <h2 class="column-date">{{ date }}</h2>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,5 +1,5 @@
 import { Model } from '../objects/model';
-import { Customizer } from './customizer';
+import { Customizer, CustomizerFixedValue } from './customizer';
 
 export interface Position {
   x?: number;
@@ -20,7 +20,7 @@ export class CanvasInput {
 }
 
 export class TextInput {
-  color: string;
+  color: CustomizerFixedValue;
   text: string;
   font: string;
   size: number;
@@ -32,7 +32,7 @@ export class StickerInput {
   url?: string;
   position: Position;
   svgOptions?: {
-    color: string;
+    color: CustomizerFixedValue;
   };
 }
 
@@ -51,7 +51,7 @@ export class LinesInput {
 }
 
 export class BackgroundColorInput {
-  color?: string;
+  color?: CustomizerFixedValue;
 }
 
 export class BackgroundImageInput {
@@ -65,7 +65,7 @@ export class BackgroundImageInput {
 }
 
 export class BackgroundColor {
-  color?: string;
+  color?: CustomizerFixedValue;
 };
 
 export class BackgroundImage {
@@ -90,12 +90,12 @@ export class Stickers {
   sticker: string;
   position: Position;
   svgOptions: {
-    color: string;
+    color: CustomizerFixedValue;
   }
 };
 
 export class Texts {
-  color: string;
+  color: CustomizerFixedValue;
   text: string;
   font: string;
   size: number;

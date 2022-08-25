@@ -1,0 +1,14 @@
+<div class="page-components-tabs" #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)">
+    <button 
+        class="tab"
+        *ngFor="let tab of tabsOptions; index as i" 
+        [ngClass]="{'active': activeTag === i}"
+        (click)="changeTab(i, tab)"
+    >
+        {{tab}}
+    </button>
+</div>

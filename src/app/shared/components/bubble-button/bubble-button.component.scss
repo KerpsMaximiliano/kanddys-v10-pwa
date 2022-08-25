@@ -1,0 +1,106 @@
+.container{
+    width: 100%;
+    max-width: 500px;
+    position: fixed;
+    top: auto;
+    bottom: 0px;
+    z-index: 1001;
+}
+
+button {
+    pointer-events: all;
+}
+
+.bubble{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 20px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0.3rem 0.5rem rgb(0 0 0 / 15%) !important;
+
+    &.yellow {
+        background-color: #E9E371;
+        color: #FFFFFF;
+
+        img {
+            filter: brightness(0) saturate(100%) invert(39%) sepia(46%) saturate(719%) hue-rotate(163deg) brightness(75%) contrast(97%);
+        }
+        &:hover {
+            background-color: rgb(223, 218, 132);
+        }
+    }
+    &.blue {
+        background-color: #2874AD;
+        color: #FFFFFF;
+
+        img {
+            filter: brightness(0) saturate(100%) invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%);
+        }
+        &:hover {
+            background-color: #3e90cf;
+        }
+    }
+}
+    
+.right{
+    right: 20px;
+    left: auto;
+}
+
+.rightxl{
+    right: 95px;
+    left: auto;
+}
+
+.left{
+    left: 20px;
+    right: auto;
+}
+
+.big{
+    width: 72px !important;
+    height: 72px !important;
+}
+
+.mini{
+    height: 50px !important;
+    width: 50px !important;
+    top: auto;
+    bottom: 85px;
+    left: 15px;
+}
+
+.minir{
+    width: 50px !important;
+    height: 50px !important;
+    top: auto;
+    bottom: 85px;
+    right: 15px;
+}
+
+.minil {
+    width: 50px !important;
+    height: 50px !important;
+    left: 15px;
+    right: auto;
+}
+
+.minis{
+    width: 50px !important;
+    height: 50px !important;
+    top: auto;
+    right: 20px;
+}
+
+.text{
+    font-family: 'SfProMedium';
+    font-size: 14px;
+    margin: 4px 0 0;
+}

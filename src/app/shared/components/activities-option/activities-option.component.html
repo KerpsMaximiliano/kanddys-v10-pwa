@@ -1,0 +1,81 @@
+<div
+  *ngIf="!rectangle"
+  [ngStyle]="{
+    color: textColor,
+    backgroundColor: backgroundColor,
+    borderRadius: '5px',
+    width: '222px',
+    minHeight: '123.6px',
+    paddingLeft: '23px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: '20px',
+    overflow: 'hidden',
+    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.16)'
+  }"
+>
+  <span
+    *ngIf="lightTextAtTheTop"
+    [ngStyle]="{
+      fontSize: '17px',
+      fontFamily: 'Roboto'
+    }"
+  >
+    {{ lightTextAtTheTop }}
+  </span>
+  <span
+    *ngIf="boldTextAtTheBottom"
+    [ngStyle]="{
+      fontSize: '30px',
+      fontFamily: 'Roboto',
+      fontWeight: 'bold',
+      marginTop: '10px'
+    }"
+  >
+    {{ boldTextAtTheBottom }}
+  </span>
+  <span
+    *ngIf="ctaText"
+    [ngStyle]="{
+      fontFamily: 'RobotoMedium',
+      fontSize: '16px',
+      color: '#27A2FF',
+      marginTop: '25px',
+      cursor: 'pointer'
+    }"
+  >
+    {{ ctaText }}
+  </span>
+</div>
+
+<div
+  *ngIf="rectangle"
+  [ngStyle]="{
+    color: textColor,
+    backgroundColor: backgroundColor,
+    borderRadius: '5px',
+    width: '100%',
+    height: '121px',
+    padding: '20px',
+    paddingTop: '15px',
+    overflow: 'hidden'
+  }"
+>
+  <div class="container">
+    <div class="content">
+      <span *ngIf="lightTextAtTheTop" class="left">
+        {{ lightTextAtTheTop }}
+      </span>
+    </div>
+    <div class="content">
+      <span *ngIf="boldTextAtTheBottom" class="right">
+        {{ boldTextAtTheBottom }}
+      </span>
+    </div>
+  </div>
+
+  <p *ngIf="ctaText" class="cta">
+    {{ ctaText }}
+  </p>
+</div>

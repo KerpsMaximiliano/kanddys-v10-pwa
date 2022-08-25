@@ -1,0 +1,84 @@
+<div>
+  <h6 *ngIf="topLabel" [ngStyle]="topLabel.styles">
+    {{ topLabel.text }}
+  </h6>
+  <swiper [config]="swiperConfig">
+    <ng-container
+      *ngIf="!uploadImagesWithoutPlaceholderBox"
+    >      
+      <div
+        *ngFor="let input of imageField; index as i"
+        class="input-container"
+        [ngStyle]="containerStyles ? containerStyles : null"
+        [ngClass]="{small: small}"
+      >
+        <input
+          [id]="'file' + i"
+          (change)="fileProgress($event, i)"
+          type="file"
+          class="d-none"
+          [accept]="acceptTypes"
+        />
+        <label
+          [style.background]="sanitize(input, expandImage)"
+          [style.border]="input ? 'none' : '1px solid dodgerblue'"
+          [for]="'file' + i"
+          class="file"
+          [ngStyle]="fileStyles ? fileStyles : null"
+          [ngClass]="{ error: error[i], small: small }"
+        >
+          <ng-container *ngIf="!input">{{ innerLabel }}</ng-container>
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container
+      *ngIf="uploadImagesWithoutPlaceholderBox"
+    >    
+      <input
+        [id]="(id + '-fileinput') || 'filemultiple'"
+        (change)="fileProgressMultiple($event)"
+        (click)="clearFiles()"
+        type="file"
+        class="d-none"
+        accept="image/*"
+        multiple
+        [accept]="acceptTypes"
+      />
+
+      <div
+        *ngFor="let image of imageField; index as i"
+        class="input-container"
+        [ngStyle]="containerStyles ? containerStyles : null"
+        [ngClass]="{small: small}"
+      >
+        <label
+          [style.background]="sanitize(image, expandImage)"
+          [style.border]="image ? 'none' : '1px solid dodgerblue'"
+          [for]="(id + '-fileinput') || 'filemultiple'"
+          class="file"
+          [ngStyle]="fileStyles ? fileStyles : null"
+          [ngClass]="{ error: error[i], small: small }"
+        >
+          <ng-container *ngIf="!image">{{ innerLabel }}</ng-container>
+        </label>
+
+        <div
+          *ngIf="image && allowDeletion"
+          [ngStyle]="{
+          position: 'relative',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyItems: 'center'
+        }">
+          <div 
+            class="delete-btn"
+            (click)="deleteImageFromIndex(i)"
+          >
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </swiper>
+</div>

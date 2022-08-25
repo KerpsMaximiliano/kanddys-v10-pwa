@@ -2,13 +2,28 @@ import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   post,
-  creationPost,
+  createPost,
   getPostByPassword,
   slidesByPost,
   assignPostToCode,
   createCommentInPost,
   commentsByPost,
+  updatePost,
+  updateSlide,
 } from '../graphql/posts.gql';
+import { Post, PostInput, Slide, SlideInput } from '../models/post';
+
+export interface PostContent {
+  _id?: string;
+  type: 'audio' | 'poster' | 'text';
+  audio?: {
+    blob: Blob | string,
+    title?: string;
+  };
+  poster?: File,
+  imageUrl?: string | ArrayBuffer;
+  text?: string
+}
 
 @Injectable({
   providedIn: 'root',
@@ -16,14 +31,36 @@ import {
 export class PostsService {
   constructor(private graphql: GraphQLWrapper) {}
 
-  async creationPost(input: any): Promise<any> {
+  post: PostInput;
+  content: PostContent;
+
+  async createPost(input: PostInput): Promise<{createPost: { _id: string }}> {
     let value = await this.graphql.mutate({
-      mutation: creationPost,
+      mutation: createPost,
       variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
+    return value;
+  }
 
+  async updatePost(input: PostInput, id: string): Promise<{updatePost: { _id: string }}> {
+    let value = await this.graphql.mutate({
+      mutation: updatePost,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+    return value;
+  }
+
+  async updateSlide(input: SlideInput, id: string) {
+    let value = await this.graphql.mutate({
+      mutation: updateSlide,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
     return value;
   }
 
@@ -38,7 +75,7 @@ export class PostsService {
     return value;
   }
 
-  async getPost(id: any) {
+  async getPost(id: string): Promise<{ post: Post }> {
     let value = await this.graphql.query({
       query: post,
       variables: { id },
@@ -49,15 +86,15 @@ export class PostsService {
     return value;
   }
 
-  async slidesByPost(postId: any) {
+  async slidesByPost(postId: string): Promise<Slide[]> {
     let value = await this.graphql.query({
       query: slidesByPost,
       variables: { postId },
       fetchPolicy: 'no-cache',
     });
 
-    // console.log(value);
-    return value;
+    if(!value || value?.errors) return undefined;
+    return value.slidesbyPost;
   }
 
   async assignPostToCode(code, postId) {

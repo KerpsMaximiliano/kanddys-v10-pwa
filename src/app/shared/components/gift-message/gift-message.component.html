@@ -1,0 +1,72 @@
+<div
+  *ngIf="isPreview !== true"
+  class="container"
+  [ngStyle]="{ background: background }"
+>
+  <p class="top-text">¿Qué mensaje escribiremos?</p>
+  <div class="text-container">
+    <input
+      *ngFor="let controller of getControllers()"
+      placeholder="Escribe el mensaje de aprecio…"
+      class="message"
+      [formControl]="controller"
+    />
+    <div class="plus">+</div>
+  </div>
+  <div class="target">
+    <p class="input-texts">¿Para quién es?</p>
+    <input
+      [formControl]="getControl('target')"
+      class="gift-input"
+      placeholder="Lo recibirá..."
+    />
+  </div>
+  <div class="from" [style.marginBottom]="!submition ? '60px' : ''">
+    <p class="input-texts">¿De parte de quién o quienes?</p>
+    <input
+      [formControl]="getControl('from')"
+      class="gift-input"
+      placeholder="De parte de..."
+    />
+  </div>
+</div>
+
+<div
+  *ngIf="isPreview === true"
+  class="container"
+  [ngStyle]="{ background: background }"
+>
+  <div class="preview-container" *ngIf="message && message != ''">
+    <p class="top-text">Mensaje a escribir:</p>
+    <div class="text-container">
+      {{message}}
+    </div>
+  </div>
+  <div class="preview-container" *ngIf="aux.targets && aux.targets[0].name != ''">
+    <p class="top-text">Para:</p>
+    <div class="little-text-container">
+      {{aux.targets[0].name}}
+    </div>
+  </div>
+  <div class="preview-container" [style.marginBottom]="!submition ? '60px' : ''" *ngIf="aux.from && aux.from != ''">
+    <p class="top-text">De parte:</p>
+    <div class="little-text-container">
+      {{aux.from}}
+    </div>
+  </div>
+  <div *ngIf="aux.multimedia.length > 0">
+    <p class="top-text" style="padding-bottom: 10px;">Foto de la tarjeta:</p>
+    <div class="pay-image" (click)="openImageModal(aux.multimedia[0])" [ngStyle]="{'background-image': 'url(' + aux.multimedia[0] + ')'}"></div>
+    <!-- <p class="bottom-text">
+      Editar Fotografia
+    </p>
+
+    <p class="bottom-text">
+      $200.00 Kanddys como Gift-Cards
+    </p> -->
+  </div>
+</div>
+
+<button *ngIf="submition" class="submit" (click)="submit()">
+  salvar el mensaje y CONTINUAR
+</button>

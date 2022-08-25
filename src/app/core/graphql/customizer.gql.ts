@@ -15,7 +15,10 @@ export const customizer =`
   backgroundColor {
     active
     onlyFixed
-    fixed
+    fixed {
+      name
+      fixedValue
+    }
   }
   backgroundImage {
     active
@@ -46,7 +49,11 @@ export const customizer =`
       svgRule {
         active
         fixedColors
-        colors
+        colors {
+          name
+          fixedValue
+          nickname
+        }
       }
     }
   }
@@ -59,7 +66,11 @@ export const customizer =`
       onlyFixedFonts
       fixedFonts
       onlyFixedColor
-      fixedColors
+      fixedColors {
+        name
+        fixedValue
+        nickname
+      }
       fixPositionOnly
       fixPosition {
         x

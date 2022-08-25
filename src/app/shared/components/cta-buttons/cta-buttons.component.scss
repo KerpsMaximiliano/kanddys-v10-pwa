@@ -1,0 +1,122 @@
+/*      BASIC MODE      */
+.body{ 
+    background-color: transparent;
+    width: 121px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .round{
+        border-radius: 50%;
+        background-color: #707070;
+        height: 81px;
+        width: 81px;
+        border: 2px solid transparent;
+        z-index: 1;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .round-button{
+            cursor: pointer;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .img-container{
+                max-width: 35px;
+                max-height: 35px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+
+    .text-btn{
+        width: 105px;
+        margin-top: 3px;
+        text-align: center;
+        color: #141414;
+        opacity: 0.64;
+        font-size: 16px;
+        font-family: 'RobotoRegular';
+    }
+}
+
+/*      WHITE MODE      */
+.body2{
+    background-color: transparent;
+    width: 240px;
+    height: 178;
+    position: relative;
+
+    .info-icon{
+        position: relative;
+        display: flex;
+        justify-content: center;
+
+        .round-wrapper{
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            .outer-circle{
+                width: 25px;
+                height: 25px;
+                border-radius: 50%;
+                background-color: #82F18D;
+                border: none;
+                position: absolute;
+                right: 60px;
+                top: 10px;
+            }
+
+            .round2{
+                width: 129px;
+                height: 129px;
+                border-radius: 50%;
+                border-style: solid;
+                background: linear-gradient(180deg, #FFFFFF 0%, #F6F6F6 100%);
+                box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 15%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+
+                .img-container{
+                    max-width: 60px;
+                    max-height: 60px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+
+            .text-btn2{
+                font-family: 'RobotoMedium';
+                font-size: 16px;
+                text-align: center;
+                margin-top: 10px;
+            }
+
+        }
+    }
+}
+
+#info{
+    position: absolute;
+    right: -8%;
+    width: 5.62px;
+    height: 20.46px;
+    cursor: pointer;
+}

@@ -1,0 +1,10 @@
+<button>
+  <ng-container *ngIf="item.images?.length">
+    <img class="img" [src]="item.images[0]" [alt]="item.name">
+  </ng-container>
+  <div *ngIf="!item.images?.length" class="img placeholder"></div>
+  <div class="content" [ngStyle]="{marginTop: !item.images?.length ? '0' : '-2px'}">
+    <span class="name">{{item.name}}</span>
+    <span class="price">${{item.pricing | number}} DOP</span>
+  </div>
+</button>

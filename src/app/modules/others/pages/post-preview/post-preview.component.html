@@ -1,0 +1,25 @@
+<div class="container">
+	<div class="topbar">
+		<a class="nav-buttons" (click)="goBack()">Cancel</a>
+		<button class="nav-buttons">Compartelo</button>
+	</div>
+	<div class="visualizer-area">
+		<app-pre-visualizer
+			[mode]="'text'"
+		></app-pre-visualizer>
+		<app-pre-visualizer
+			[mode]="'audio'"
+		></app-pre-visualizer>
+		<app-pre-visualizer
+			[mode]="'poster'"
+		></app-pre-visualizer>
+		<div class="gallery">
+			<h4 class="gallery-title">Galeria {{nameId}} </h4>
+			<!-- <img [src]="" alt="image" class="gallery-image"> -->
+			<div class="gallery-images">
+				<div *ngFor="let image of images" class="placeholder"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<app-sticky-button [mode]="'basic'" [text]="'COMPARTELO'"></app-sticky-button>

@@ -1,0 +1,96 @@
+.container{
+    background-color: #F6F6F6;
+    position: relative;
+    & .header-wrapper{
+        padding-left: 25px;
+        padding-right: 25px;
+        padding-bottom: 20px;
+        background-color: white;
+        & .back{
+            width: 25px;
+            height: 25px;
+            margin-top: 35px;
+            margin-bottom: 35px;
+        }
+        & .input{
+            & .search-icon{
+                position: absolute;
+                background-color: #FCFDFF;
+                height: 40px;
+                width: 46px;
+                border-bottom-left-radius: 20px;
+                border-top-left-radius: 20px;
+                border: 1px #E3E3E3 solid;
+                img{
+                    width: 21px;
+                    height: 21px;
+                    margin-top: 8px;
+                    margin-left: 12px;
+                }
+            }
+            & input{
+                width: 100%;
+                height: 40px;
+                border-radius: 20px;
+                padding-left: 55px;
+                color: black;
+                font-size: 15px;
+                background-color: #FCFDFF;
+                border: 1px #E3E3E3 solid;
+            }
+        }
+        & .toggle{
+            margin-top: 25px;
+            font-family: 'Graphik';
+            & .toggle-options{
+                text-align: end;
+                color: #33A3FF;
+            }
+            & .advanced-options{
+                margin-top: 25px;
+                display: flex;
+                justify-content: space-between;
+                font-size: 14px;
+                color: #C1C7D0;
+                text-align: center;
+                & .item{
+                }
+                & .selected-item{
+                    color: #33A3FF;
+                    border-bottom: 1px #33A3FF solid;;
+                }
+            }
+        }
+    }
+    & .result{
+        font-family: 'Graphik';
+        margin-top: 35px;
+        padding: 20px;
+        min-height: 100vh;
+        & .title{
+            font-size: 20px;
+            color: #0F3F62;
+            margin-bottom: 15px;
+        }
+        & .subtitle{
+            font-size: 13px;
+            color: #0F3F62;
+            margin-bottom: 15px;
+        }
+        & .search-items{
+            & b{
+                font-size: 29px;
+                margin-right: 10px;
+                color: #C7C7C7;
+            }
+            & .item2{
+                margin-top: 5px;
+            }
+            color: #2E2E2E;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            display: flex;
+        }
+    }
+}

@@ -1,0 +1,81 @@
+.section:not(:last-of-type) {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: solid 1px #E0E0E0;
+}
+
+.flex-label-and-icon {
+  display: flex;
+  justify-content: space-between;
+}
+
+.label {
+  font-family: "RobotoMedium";
+  font-size: 16px;
+  color: #7B7B7B;
+  text-transform: uppercase;
+}
+
+.dot-trio {
+  display: flex;
+  padding: 5px 5px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+
+  &:hover,
+  &:active {
+    background-color: #2c89d1;
+
+    .dot {
+      background-color: #fff;
+    }
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #2874AD;
+    margin: 0 1px;
+  }
+}
+
+.selected {
+  all: unset;
+  padding: 8px 8px 8px 16px;
+  color: #7b7b7b;
+  font-family: "RobotoMedium";
+  font-size: 19px;
+  margin-bottom: 10px;
+  background-color: #82F18D;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #abf7b4;
+  }
+}
+.input {
+  width: 100%;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  color: #0b1f38;
+  border-radius: 10px;
+  background-color: white;
+}
+.text-input {
+  border-radius: 10px;
+  padding: 0px 20px;
+  height: 73px;
+  border: none;
+  box-shadow: 0px 7px 25px -18px inset;
+}
+.textarea-input {
+  box-shadow: 0px 8px 49px -40px inset;
+  padding: 20px;
+  resize: none;
+  height: 120px;
+}

@@ -1,0 +1,64 @@
+<div class="container">
+
+    <app-helper-headerv2
+    [mode]="'edit'"
+    [mainText]="{
+        text: 'Etiqueta Name',
+        fontSize: '21px'
+    }"
+    [returnAble]="true"
+    [edit]="{
+        active: true,
+        batch: true
+    }"
+    [color]="'#E9E371'"
+    ></app-helper-headerv2>
+
+    <app-header-info-admin
+    [data]="data"
+    [whatsApp]="true"
+    ></app-header-info-admin>
+
+    <div class="tab-area" #elemt
+    (mousedown)="startDragging($event, false, elemt)"
+    (mouseup)="stopDragging($event, false)"
+    (mouseleave)="stopDragging($event, false)"
+    (mousemove)="moveEvent($event, elemt)">
+        <ng-container *ngFor="let item of tabs; index as i">
+            <div class="tab" [ngClass]="{'active' : active === i}" (click)="changeTab(i)">
+                {{item}} 
+            </div>
+        </ng-container>
+    </div>
+    
+    <ng-container *ngFor=" let items of ordurs; index as i">
+      <div class="list-area">
+        <app-item-list
+        [marginTop]="'4.5px'"
+        [color]="'blue'"
+        [itemListContent]="items"
+        ></app-item-list>
+      </div>
+    </ng-container>
+    
+
+    <app-bubble-button
+    [position]="'left'"
+    [return]="true"
+    color= "yellow"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'right'"
+    text="NEW COM"
+    color= "yellow"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [size]="'small'"
+    [mode]="'disabled-fixed'"
+    [text]="'TOCA DONDE PREFIERAS'"
+    ></app-sticky-button>
+    
+    
+</div>

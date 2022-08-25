@@ -1,0 +1,88 @@
+<div class="component">
+  <header>
+    <app-helper-headerv2
+      mode="basic"
+      bgColor="#2874AD"
+      [mainText]="{
+        text: categoryName,
+        fontFamily: 'SfProBold',
+        fontSize: '21px'
+      }"
+      (returnEvent)="goBack()"
+      [icons]="[
+        {
+          src: '/search.svg',
+          callback: null,
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        },
+        {
+          src: '/upload.svg',
+          callback: onShareClick,
+          color:
+            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)'
+        }
+      ]"
+    ></app-helper-headerv2>
+  </header>
+  <main>
+    <!-- <p class="description">
+      Aquí el influ-seller tiene espacio para explicar de que se trata su
+      colección.
+    </p> -->
+    <div class="itemGrid">
+      <ng-container *ngFor="let item of items; index as i">
+        <app-saleflow-item
+          [type]="isMerchant ? 3 : 2"
+          [boxAmount]="0"
+          [showBox]="false"
+          [isSelected]="!hasCustomizer && item.isSelected"
+          [showSelected]="true"
+          [showIcon]="isMerchant && item.status !== 'active'"
+          [quantity]="
+            isMerchant && totalByItems?.length && totalByItems[i].itemInOrder
+          "
+          [price]="!hasCustomizer && item.pricing"
+          [imgURL]="item.images ? item.images[0] : ''"
+          [showPrice]="item.customizerId ? false : true"
+          [backgroundSize]="item.customizerId ? 'contain' : 'cover'"
+          (itemClicked)="onClick(i)"
+          [priceAlign]="'start'"
+        >
+        </app-saleflow-item>
+      </ng-container>
+    </div>
+  </main>
+  <footer *ngIf="!hasCustomizer && !isMerchant">
+    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <app-cart-button
+      [shopCartCallback]="showShoppingCartDialog"
+      [cartAmount]="itemCartAmount"
+    ></app-cart-button>
+  </footer>
+  <app-sticky-button
+    *ngIf="isMerchant"
+    size="small"
+    [mode]="'double'"
+    bgColor="#A1A1A1"
+    [fontSize]="'14px'"
+    [text]="(ordersTotal? ordersTotal.length : 0) + ' VENTAS'"
+    [text2]="
+      '$' +
+      (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0') +
+      ' INGRESO'
+    "
+    [color]="'#FFF'"
+    [extra]="{
+      icon: {
+        src: '/arrow-left.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%)',
+        width: 19,
+        height: 19
+      },
+      bgColor: '#2874AD'
+    }"
+    (added)="goBack()"
+  ></app-sticky-button>
+</div>

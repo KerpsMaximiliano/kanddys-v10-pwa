@@ -1,0 +1,83 @@
+.container{
+  & .filter-container{
+    -webkit-box-shadow: 0px -23px 18px -6px #cccccc70;
+    box-shadow: 0px -23px 18px -6px #cccccc70;
+    -moz-box-shadow: 0px -23px 18px -6px #cccccc70;
+  }
+    & .scenarios{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        background-color: #ffffff;
+    }
+}
+
+.desc-area {
+  width: 100%;
+  background-color: #FFFFFF;
+  padding: 20px 30px;
+
+  p {
+    margin: 0;
+    font-family: "RobotoRegular";
+    font-size: 17px;
+  }
+
+  .price {
+    color: #7B7B7B;
+    margin-bottom: 30px;
+  }
+
+  .desc {
+    color: #272727;
+  }
+}
+
+.fullScreenSwiper {
+  position: relative;
+  font-family: "Roboto";
+  background-color: white;
+  & .shadowWrapper {
+    box-shadow: 0px 10px 20px -10px #999;
+    -webkit-box-shadow: 0px 10px 20px -10px #999;
+    -moz-box-shadow: 0px 10px 20px -10px #999;
+  }
+  & .item {
+    height: 300px !important;
+    width: 100%;
+    max-width: 500px;
+    padding-bottom: 300px;
+    background-size: cover; //100% 100% to fully contain 500x300
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  & .customPagination {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 10px;
+    display: flex;
+    gap: 10px;
+    margin-top: 27px;
+    justify-content: center;
+    margin-bottom: 36px;
+    &.price {
+      position: absolute;
+      bottom: 0;
+    }
+    & .pageBall {
+      height: 10px;
+      width: 10px;
+      border-radius: 100%;
+    }
+  }
+  .text {
+    padding-left: 28px;
+    padding-right: 28px;
+    font-size: 17px;
+    color: #272727;
+  }
+}

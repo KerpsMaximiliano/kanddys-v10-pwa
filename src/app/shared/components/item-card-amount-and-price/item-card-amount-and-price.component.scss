@@ -1,0 +1,74 @@
+.spread {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-item {
+  background-color: #f6f6f6;
+  display: flex;
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 158px;
+}
+
+.image {
+  width: 84px;
+  height: 88px;
+  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  cursor: pointer;
+
+  &.placeholder {
+    background: rgb(241, 195, 255);
+    background: radial-gradient(
+      circle,
+      rgba(241, 195, 255, 1) 0%,
+      rgba(176, 79, 204, 1) 100%
+    );
+  }
+}
+
+.content {
+  margin-left: 20px;
+  padding: 10px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .title {
+    font-family: "RobotoBold";
+    font-size: 20px;
+    color: #272727;
+    @media (max-width: 374px){
+      font-size: 16px;
+  }
+  }
+}
+
+.card-price {
+  align-self: flex-end;
+  color: #7b7b7b;
+  font-size: 17px;
+  font-family: "RobotoRegular";
+}
+
+.min-max {
+  display: flex;
+  align-items: center;
+  font-family: "RobotoRegular";
+
+  .icon {
+    color: #27a2ff;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .num {
+    font-size: 17px;
+    color: #7b7b7b;
+  }
+}

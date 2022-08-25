@@ -1,5 +1,6 @@
 import { Model } from '../objects/model';
 import { Merchant } from './merchant';
+import { Calendar } from './calendar';
 
 export class ItemParamValue extends Model<ItemParamValue> {
   name?: string;
@@ -22,6 +23,7 @@ export class ItemCategory extends Model<ItemCategory> {
   name: string;
   description?: string;
   image?: string;
+  active?: boolean;
   isSelected?: boolean;
 }
 
@@ -53,12 +55,15 @@ export class Item extends Model<Item> {
   pircePerUnit?: number;
   stock?: number;
   params: ItemParam[];
-  calendar: any;
-  itemExtra?: any;
+  calendar: Calendar;
+  itemExtra?: ItemExtra[];
   size: string;
   quality: string;
   iconImage: string;
   hasExtraPrice: boolean;
+  showImages: boolean;
+  status: 'draft' | 'disabled' | 'active';
+  notifications: string[];
 
   customizerId?: string;
   totalPrice?: number;
@@ -69,7 +74,8 @@ export class Item extends Model<Item> {
   qualityQuantity?: {
     price: number,
     quantity: number,
-  }
+  };
+  index?: number;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {
@@ -90,6 +96,7 @@ export class ItemPackage extends Model<ItemPackage> {
   merchant?: Merchant;
   price?: number;
   categories?: ItemCategory[];
+  description?: string;
 
   isSelected?: boolean;
 }
@@ -102,9 +109,65 @@ export class ItemCategoryHeadline extends Model<ItemCategoryHeadline> {
 }
 
 export class ItemExtra extends Model<ItemExtra> {
-  images: string;
+  images: string[];
   name: string;
   isActive: boolean;
   merchant: Merchant;
   categories: ItemCategory[];
+}
+
+export class ItemPricingInput {
+  currencyType: string;
+  amount: number;
+}
+
+export class ItemParamValueInput {
+  name?: string;
+  description?: string;
+  price?: number;
+  quantity?: number;
+  image?: string;
+}
+
+export class ItemParamInput {
+  name?: string;
+  category?: string;
+  formType?: string;
+  values?: ItemParamValueInput[];
+}
+
+export class ItemInput {
+  hasSelection?: boolean;
+  merchant?: string;
+  category?: string[];
+  name?: string;
+  images?: File[];
+  iconImage?: string;
+  fixedQuantity?: number;
+  pricePerUnit?: number;
+  stock?: number;
+  featuredImage?: string;
+  description?: string;
+  purchaseLocations?: string[];
+  pricing?: number;
+  isPhysical?: boolean;
+  hasExtraPrice?: boolean;
+  tags?: string[];
+  currencies?: ItemPricingInput[];
+  params?: ItemParamInput[];
+  calendar?: string;
+  itemExtra?: string[];
+  size?: String
+  content?: string[];
+  quality?: String
+  toPromotion?: boolean;
+  status?: 'draft' | 'disabled' | 'active';
+}
+
+export class ItemCategoryInput {
+  merchant?: string;
+  name?: string;
+  description?: string;
+  image?: string;
+  active?: boolean;
 }

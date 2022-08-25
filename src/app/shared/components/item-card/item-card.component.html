@@ -1,0 +1,36 @@
+<div class="item-card">
+  <div class="top-icons">
+    <div>
+      <div *ngIf="showBox && boxAmount != null" class="box" [ngClass]="{'left': showIcon, 'right': !showIcon}" (click)="onTopBoxClick()">
+        {{boxAmount | number}}
+        <img [src]="env + '/star.svg'" alt="star-icon">
+      </div>
+    </div>
+    <div *ngIf="showIcon" class="image-icon right" (click)="onIconClick()">
+      <img [src]="env + '/closed-eye.svg'" alt="hide-item" width="25.50px" height="20.24px">
+    </div>
+    <div *ngIf="isSelected" class="box white" (click)="onSelectedClick()">
+      En el Carrito
+      <i class="fas fa-check-circle icon"></i>
+    </div>
+  </div>
+
+  <div class="image-prices">
+    <ng-container>
+      <img
+        *ngIf="image else placeholder"
+        [src]="image"
+        alt="item-image"
+        class="center-img"
+        [ngClass]="{'center-img-shadow': showBox || showIcon || price}"
+        (click)="onClick()"
+      >
+      <ng-template #placeholder>
+        <div class="placeholder" (click)="onClick()"></div>
+      </ng-template>
+    </ng-container>
+
+    <label *ngIf="price" class="item-price">${{price | number}}</label>
+    <label *ngIf="income" class="income">${{income | number}} ingreso</label>
+  </div>
+</div>

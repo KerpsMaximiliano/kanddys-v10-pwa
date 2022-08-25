@@ -1,0 +1,159 @@
+<div style="background-color: #F6F6F6; min-height: 100vh;">
+  <app-helper-headerv2
+    mode="basic"
+    [returnAble]="true"
+    [mainText]="{text: 'PREGUNTA #1, Pantalla #1'}"
+    (returnEvent)="back()"
+    [bgColor]="'#2874AD'"
+  ></app-helper-headerv2>
+  <div style="padding: 54px 24px 24px 24px;">
+    <div
+      [ngStyle]="{marginBottom: answerMethod == null ? '24px' : '12px'}"
+      class="flex-label-and-icon"
+    >
+      <div class="label">
+        Metodo de Respuestas
+      </div>
+
+      <button class="dot-trio"> 
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </button>
+    </div>
+    <ng-container *ngIf="answerMethod == null">
+      <app-answer-selector
+        [options]="answerMethodOptions"
+        [indicator]="true"
+        (onSelector)="onSelect('answerMethod', $event)"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </ng-container>
+    <ng-container *ngIf="answerMethod != null">
+      <div class="section">
+        <button class="selected" (click)="answerMethod = null">{{answerMethodOptions[answerMethod].value}}</button>
+        <div style="margin-bottom: 10px;">
+          <input
+            class="input text-input"
+            type="text"
+            [(ngModel)]="question"
+            placeholder="Escribe la pregunta..."
+          >
+        </div>
+        <div style="margin-bottom: 16px;">
+          <input
+          class="input text-input"
+          type="text"
+          [(ngModel)]="description"
+          placeholder="Descripción (opcional)"
+          >
+        </div>
+        <div style="justify-content: flex-end; display: flex;">
+          <app-switch-button
+            [isClicked]="false"
+            [settings]="{
+              leftText: 'RESPUESTA REQUERIDA'
+            }"
+            [textStyles]="{
+              fontFamily: 'SfProLight',
+              color: '#7B7B7B',
+              marginRight: '4px'
+            }"
+            (switched)="answerRequired = !answerRequired"
+          ></app-switch-button>
+        </div>
+      </div>
+      <div class="section">
+        <div class="label" [ngStyle]="{marginBottom: answerType == null ? '24px' : '12px'}">
+          Tipo de Respuestas
+        </div>
+        <ng-container *ngIf="answerType == null">
+          <app-answer-selector
+            [options]="answerTypeOptions"
+            [indicator]="true"
+            (onSelector)="onSelect('answerType', $event)"
+            [showDescription]="false"
+            [containerStyles]="{
+              margin: '0px'
+            }"
+          ></app-answer-selector>
+        </ng-container>
+        <ng-container *ngIf="answerType != null">
+          <button class="selected" (click)="answerType = null">{{answerTypeOptions[answerType].value}}</button>
+          <ng-container *ngIf="answerMethod === 0">
+            <ng-container *ngIf="answerType === 0">
+              <div style="margin-bottom: 10px;">
+                <input
+                  class="input text-input"
+                  type="text"
+                  [(ngModel)]="first_answer"
+                  placeholder="Escribe posible respuesta..."
+                >
+              </div>
+              <div>
+                <input
+                  class="input text-input"
+                  type="text"
+                  [(ngModel)]="second_answer"
+                  placeholder="Escribe posible respuesta..."
+                >
+              </div>
+            </ng-container>
+            <div *ngIf="answerType === 1">
+              <app-image-input
+                [allowedTypes]="['png', 'jpg', 'jpeg']"
+                [expandImage]="true"
+                [multiple]="true"
+                [max]="2"
+                [small]="true"
+                innerLabel="Sube la opción"
+                (onFileInput)="onFileInput($event)"
+              ></app-image-input>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="answerMethod === 2">
+            <ng-container *ngIf="answerType === 1">
+              <div style="margin-bottom: 10px;">
+                <textarea
+                  class="input textarea textarea-input"
+                  placeholder="Escribe pistas para obtener mejores respuestas (opcional)"
+                ></textarea>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="section">
+        <div class="label" [ngStyle]="{marginBottom: otherTable == null ? '24px' : '12px'}">
+          Guardar Respuestas En Otras Tablas
+        </div>
+        <ng-container *ngIf="otherTable == null">
+          <app-answer-selector
+            [options]="otherTablesOptions"
+            [indicator]="true"
+            (onSelector)="onSelect('otherTable', $event)"
+            [showDescription]="false"
+            [containerStyles]="{
+              margin: '0px'
+            }"
+          ></app-answer-selector>
+        </ng-container>
+        <ng-container *ngIf="otherTable != null">
+          <button class="selected" (click)="otherTable = null">{{otherTablesOptions[otherTable].value}}</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<!--
+  <app-sticky-button
+    mode="fixed"
+    text="PREVIEW"
+    size="small"
+    bgColor="#2874AD"
+  ></app-sticky-button>
+-->

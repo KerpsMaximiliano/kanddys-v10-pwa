@@ -1,0 +1,92 @@
+<div class="container">
+    <app-header-info-admin
+    [data]="[{
+        icon: '/folder-details.svg',
+        text: {
+            content: 'Mis Compradores',
+            color: '#2874AD'
+        },
+        filter: 'no'
+    },
+    {
+        text: {
+            content: 'RD$ '+ordersTotal?.total.toLocaleString('es-MX')+' Total en Ventas',
+            color: '#2874AD'
+        }
+    },
+    {
+        icon: '/star.svg',
+        text: {
+            content: '144 En Colaboraciones',
+            color: '#2874AD'
+        }
+    }]"
+    [merchant]="true"
+    ></app-header-info-admin>
+
+    <div class="category">
+        <div class="tab-area">
+
+            <div class="left">
+                <button class="item-tab" [ngClass]="{'active': showActiveItems}" (click)="filterItems('active')">
+                    <span *ngIf="showActiveItems" class="text-tab">{{filteredItems?.length}} items</span>
+                    <img [src]="env + '/open-eye.svg'" alt="filter" class="filter">
+                </button>
+                <button class="item-tab" [ngClass]="{'active': !showActiveItems}" (click)="filterItems('inactive')">
+                    <span *ngIf="!showActiveItems" class="text-tab">{{filteredItems?.length}} items</span>
+                    <img [src]="env + '/closed-eye.svg'" alt="filter" class="filter">
+                </button>
+            </div>
+
+            <div class="right">
+                <button class="tab" [ngClass]="{colored: showCategories}" (click)="showCategories = !showCategories">
+                    <img [src]="env + '/expand-categories.svg'" alt="Lista para expandir categorías" width="18px" height="15px" class="icon" [ngClass]="{yellow: showCategories}">
+                    <p class="tab-text" [ngStyle]="{color: showCategories? '#E9E371':'#2874AD'}">Categorías</p>
+                </button>
+            </div>
+        </div>
+        
+        <ng-container *ngIf="showCategories">
+            <div class="tags-area" *ngIf="categories && categories.length">
+                <app-tags-square
+                    *ngFor="let item of categories; index as i"
+                    [tagText]="item.name"
+                ></app-tags-square>
+            </div>
+        </ng-container>
+
+    </div>
+
+    <div class="items-area" *ngIf="filteredItems?.length">
+        <app-saleflow-item
+            *ngFor="let item of filteredItems; index as i"
+            [imgURL]="item.images[0]"
+            [price]="item.pricing"
+            [income]="0"
+            [quantity]="0"
+            [index2]="0"
+            [showIcon]="true"
+        ></app-saleflow-item>
+    </div>
+    <div style="text-align: center;" *ngIf="!filteredItems?.length">
+        <h2 *ngIf="status === 'loading'">Loading items...</h2>
+        <h2 *ngIf="status === 'complete'">No items were found.</h2>
+    </div>
+     
+    <app-bubble-button
+    [position]="'left'"
+    [return]="true"
+    ></app-bubble-button>
+
+    <app-bubble-button
+    [position]="'right'"
+    [text]="'NEW ITEM'"
+    ></app-bubble-button>
+
+    <app-sticky-button
+    [mode]="'disabled-fixed'"
+    [text]="'TOCA DONDE PREFIERAS'"
+    [size]="'small'"
+    [bgColor]="'#AFAFAF'"
+    ></app-sticky-button>
+</div>

@@ -1,0 +1,43 @@
+.form-dialog {
+    maX-width: 400px;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: white;
+
+    h2 {
+        font-size: clamp(16px, 5vw, 1.5rem);
+        font-family: Roboto;
+        font-weight: 500;
+    }
+
+    .icon {
+        margin: auto;
+        width: fit-content;
+
+        img {
+            width: clamp(30px, 14vw, 90px);
+        }
+    }
+
+    .close-button {
+        color: orangered;
+        background-color: white;
+        border: 1px solid red;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 1rem;
+        text-align: center;
+        margin: 1rem 0rem 0rem 0rem;
+        transition: 0.2s background-color ease-in-out;
+
+        &:hover {
+            cursor: pointer;
+            background-color: darken($color: #fff, $amount: 5);
+        }
+
+        &:active {
+            cursor: pointer;
+            background-color: darken($color: #fff, $amount: 15);
+        }
+    }
+}

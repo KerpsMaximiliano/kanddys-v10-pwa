@@ -1,0 +1,15 @@
+<div class="external-wrapper" (click)="close()">
+  <div
+    class="inner-wrapper"
+    (click)="(null)"
+    [ngStyle]="{
+      'background-image': 'url(' + imageSourceURL + ')',
+      'background-position': 'center',
+      'background-size': 'contain',
+      'background-repeat': 'no-repeat'
+    }"
+  ></div>
+  <button class="preview-btn" *ngIf="buttonText" (click)="buttonFunc && buttonFunc()">
+    {{buttonText}}
+  </button>
+</div>

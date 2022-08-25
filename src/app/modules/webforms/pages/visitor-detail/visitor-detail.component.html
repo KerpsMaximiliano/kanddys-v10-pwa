@@ -1,0 +1,56 @@
+<div class="container">
+
+    <app-helper-headerv2
+        [mode]="'center'"
+        [returnAble]="true"
+        [mainText]="{
+            text: 'VISITANTE NAME ID',
+            fontFamily: 'SfProBold',
+            fontSize: '21px'
+        }"
+        [icon]="{
+            src: '/person.svg',
+            alt: 'Icono clickeable de una persona',
+            width: 14,
+            height: 19,
+            filter: 'invert(100%) sepia(0%) saturate(3018%) hue-rotate(341deg) brightness(164%) contrast(106%)',
+            callback: toUser
+        }"
+        [bgColor]="'#2874AD'"
+    ></app-helper-headerv2>
+
+    <div class="top-area">
+        <div class="hashtag">#hashtag</div>
+        <div class="hashtag">#hashtag <img [src]="env + '/whatsapp_blanco.svg'" alt="icono de whatsapp" style="margin-left: 10.5px; width: 15px;"></div>
+        <div class="hashtag">#hashtag</div>
+    </div>
+
+    <div class="holder">
+    <app-question-item
+    [single]="true"
+    [headline]="'Respuesta ID'"
+    [answer]="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita sapiente impedit in, soluta nam aperiam facere. Rem est sunt dolorum ipsum ratione, quam distinctio reiciendis inventore, aliquid natus perferendis laudantium!'"
+    [date]="'06/06/2022'"
+    ></app-question-item>
+    </div>
+
+    <div class="holder">
+    <app-question-item
+    [single]="true"
+    [headline]="'Respuesta ID'"
+    [answer]="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita sapiente impedit in, soluta nam aperiam facere. Rem est sunt dolorum ipsum ratione, quam distinctio reiciendis inventore, aliquid natus perferendis laudantium!'"
+    [date]="'06/06/2022'"
+    ></app-question-item>
+    </div>
+
+    <div class="holder">
+    <app-question-item
+    [single]="true"
+    [headline]="'Respuesta ID'"
+    [answer]="'Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita sapiente impedit in, soluta nam aperiam facere. Rem est sunt dolorum ipsum ratione, quam distinctio reiciendis inventore, aliquid natus perferendis laudantium!'"
+    [date]="'06/06/2022'"
+    ></app-question-item>
+    </div>
+    
+
+</div>

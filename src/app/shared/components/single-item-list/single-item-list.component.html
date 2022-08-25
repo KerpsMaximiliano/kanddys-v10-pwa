@@ -1,0 +1,21 @@
+<div class="container" (click)="click($event)">
+
+    <ng-container *ngIf="tag">
+        <div class="body">
+            <img [src]="env + image" [alt]="" class="image" *ngIf="image">
+            <div class="notify" *ngIf="tag.notify">
+                <img [src]="env + '/whatsapp_verde.svg'" alt="Icono de WhatsApp" width="18px" height="18px">
+            </div>
+        </div>
+    
+        <p class="down-text">{{tag.name}}</p>
+    </ng-container>
+
+    <ng-container *ngIf="!tag">
+        <div class="body body-flex">
+            <img [src]="env + image" [ngStyle]="filter && { filter: filter }" [alt]="" class="image" *ngIf="image">
+        </div>
+    
+        <p class="down-text">{{ alternativeName }}</p>
+    </ng-container>
+</div>

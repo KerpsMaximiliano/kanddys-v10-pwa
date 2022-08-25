@@ -1,0 +1,136 @@
+.container {
+  padding: 1px 20px;
+  // background: linear-gradient(180deg, rgba(255,255,255,1) 10%, rgba(246,246,246,1) 25%);
+  min-height: 80vh;
+  background: #f6f6f6;
+  padding-bottom: 65px;
+}
+
+.top-text {
+  font-family: "RobotoLight";
+  font-size: 19px;
+  color: #000000;
+  margin: 0;
+}
+
+.preview-container {
+  padding: 28px 0;
+  border-bottom: solid 1px #C7C7C7;
+
+  &:last-of-type {
+    border: none;
+  }
+}
+
+.bottom-text {
+  font-family: "RobotoMedium";
+  font-size: 16px;
+  color: #27a2ff;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.text-container {
+  padding: 16px;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  max-height: 264px;
+  overflow: scroll;
+  font-family: "RobotoMedium";
+  font-size: 20px;
+  color: #0b1f38;
+}
+
+.pay-image {
+  box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  -webkit-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  -moz-box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
+  border: 1px solid dodgerblue;
+  color: #d0d0d0;
+  font-family: RobotoMedium;
+  background: #fff;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 21px;
+  height: 186px;
+  width: 172px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1;
+  background-size: cover;
+}
+
+.little-text-container {
+  padding: 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  font-family: "RobotoMedium";
+  font-size: 20px;
+  color: #0b1f38;
+}
+
+.message {
+  border: none;
+  width: 90%;
+  font-size: 24px;
+  font-family: "RobotoMedium";
+  opacity: 0.31194600462913513;
+  color: #0b1f38;
+  display: inline;
+}
+
+.message-v2 {
+  width: 90%;
+  font-size: 24px;
+  font-family: "RobotoMedium";
+  opacity: 0.31194600462913513;
+  color: #0b1f38;
+}
+
+.plus {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #0b1f38;
+  opacity: 0.31194600462913513;
+  cursor: pointer;
+  display: none;
+}
+
+.receiver {
+  margin-bottom: 60px;
+}
+
+.input-texts {
+  color: #0b1f38;
+  font-size: 17px;
+  font-family: "RobotoMedium";
+  font-style: italic;
+}
+
+.gift-input {
+  border: none;
+  width: 100%;
+  font-size: 24px;
+  font-family: "Roboto";
+  opacity: 0.31194600462913513;
+  color: #0b1f38;
+  display: inline;
+}
+
+.submit {
+  background: #27a2ff;
+  border: none;
+  color: #fff;
+  font-family: "RobotoMedium";
+  width: 100%;
+  height: 78px;
+  font-size: 20px;
+  bottom: 0px;
+  cursor: pointer;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}

@@ -1,0 +1,122 @@
+<div class="external-container">
+  <div class="container">
+    <div class="dialog-card">
+      <div *ngFor="let item of list">
+        <div
+          class="title-wrapper"
+          [ngStyle]="{
+            display: 'flex',
+            'justify-content': item.label ? 'space-between' : 'center'
+          }"
+        >
+          <h1
+            class="title"
+            *ngIf="item.title"
+            [ngStyle]="item.titleStyles && item.titleStyles"
+            [ngClass]="{ alternate: alternate }"
+          >
+            {{ item.title }}
+          </h1>
+          <button
+            class="added-label"
+            *ngIf="item.label"
+            [ngStyle]="item.label.labelStyles && item.label.labelStyles"
+            (click)="item.label.func && secondInput(item.label.func)"
+          >
+            {{ item.label.text }}
+        </button>
+        </div>
+        <div class="qr-container" *ngIf="item.qrlink">
+          <qrcode
+            #qrcode
+            [qrdata]="item.qrlink"
+            [elementType]="'img'"
+            [width]="size"
+            [style.margin-top.px]="-25"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#2874AD"
+            class="bigqr"
+          ></qrcode>
+          <button (click)="downloadQr()">Descarga el qrCode</button>
+        </div>
+        <p class="description" *ngIf="item.description && !item.options">
+          {{ item.description }}
+        </p>
+        <ng-container *ngFor="let option of item.options">
+          <qrcode
+            *ngIf="option.mode === 'qr'"
+            [style.margin-left]="'-10px'"
+            #qrcode
+            [qrdata]="option.link"
+            [elementType]="'img'"
+            [width]="120"
+            [errorCorrectionLevel]="'M'"
+            [allowEmptyString]="true"
+            colorDark="#0B1F38"
+            style="display: none"
+          ></qrcode>
+          <button
+            class="function"
+            (click)="
+              option.mode === 'share'
+                ? share(option.link)
+                : option.mode === 'clipboard'
+                ? copyLink(option.link)
+                : option.mode === 'qr'
+                ? downloadQr()
+                : option.func && inputFunc(option.func)
+            "
+          >
+            <span class="text">{{ option.text }}</span>
+            <img
+              *ngIf="option.icon"
+              class="icon"
+              [src]="env + option.icon.src"
+              [alt]="option.icon.alt"
+              [width]="option.icon.size?.width"
+              [height]="option.icon.size?.height"
+              [ngStyle]="{ filter: option.icon.color && option.icon.color }"
+            />
+            <img
+              *ngIf="
+                (!option.icon && option.mode === 'share') ||
+                option.mode === 'qr'
+              "
+              class="icon blue"
+              [src]="
+                env +
+                (option.mode === 'share'
+                  ? '/upload.svg'
+                  : option.mode === 'qr'
+                  ? '/qr-code.svg'
+                  : '')
+              "
+              [alt]="option.text"
+            />
+            <span
+              *ngIf="
+                option.plus &&
+                !option.icon &&
+                option.mode !== 'share' &&
+                option.mode !== 'qr'
+              "
+              class="plus-icon"
+              >+</span
+            >
+          </button>
+        </ng-container>
+        <div class="center">
+          <button
+            class="confirm"
+            *ngIf="item.message"
+            (click)="item.messageCallback && inputFunc(item.messageCallback)"
+          >
+            {{ item.message }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="cancel" (click)="defaultButton()">{{ buttonText }}</button>
+  </div>
+</div>

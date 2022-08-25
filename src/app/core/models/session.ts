@@ -24,6 +24,7 @@ export class Session extends Model<Session> {
   }
 
   revoke() {
-    localStorage.removeItem(tokenKey);
+    // alert("La sesión está siendo revocada");
+    // localStorage.removeItem(tokenKey);
   }
 }

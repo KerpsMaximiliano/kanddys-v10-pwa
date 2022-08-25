@@ -1,0 +1,37 @@
+<div class="container">
+    <app-helper-header
+        [bgcolor]="'#FFFFFF'"
+        [middleText]="'INFORMACIÓN DE LA ENTREGA'"
+        [middleTextColor]="'#7B7B7B'"
+        [middleTextFontSize]="'17px'"
+        [middleTextFontFamily]="'SfProRegular'"
+        [options]="false"
+        [searchAble]="false"
+        [orderItems]="true"
+    ></app-helper-header>
+
+    <label for="Titulo" class="title">Por favor escriba o diga donde entregaremos:</label>
+
+    <!-- <ng-container *ngIf="una condicion"> -->
+        <app-pre-visualizer
+        [mode]="'text'"
+        [textTitle]="'DIRECCION'"
+        ></app-pre-visualizer>
+    <!-- </ng-container> -->
+
+    <hr class="separate" />
+
+    <!-- <ng-container *ngIf="una condicion"> -->
+        <app-pre-visualizer
+        [mode]="'audio'"
+        ></app-pre-visualizer>
+    <!-- </ng-container> -->
+
+    <hr class="separate" id="bottom" />
+
+    <app-sticky-button
+    [mode]="'fixed'"
+    [text]="'SALVAR LA ORDEN Y TRANSFERIR'"
+    ></app-sticky-button>
+
+</div>

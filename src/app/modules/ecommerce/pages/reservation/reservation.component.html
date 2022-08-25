@@ -1,0 +1,221 @@
+<div class="container">
+  <div
+    class="content-container"
+    (click)="toggleBlurSelectable()"
+    [ngStyle]="{ filter: blurContent ? 'blur(2px)' : 'blur(0px)' }"
+  >
+    <div class="background" *ngIf="blurContent"></div>
+    <div class="input" *ngIf="done">
+      <!-- Fin del scroll de Días---------------------------------------------------------------------------------------->
+
+      <!--Nuevo calendario de días---------------------------------------------------------------------------------------->
+
+      <span class="reservation-text">DIA CONVENIENTE</span>
+
+      <div
+        [style.width]="'90%'"
+        [style.margin-left]="'auto'"
+        [style.margin-right]="'auto'"
+        [style.margin-bottom]="'35px'"
+        [style.margin-top]="'30px'"
+      >
+        <app-calendar
+          [monthNameSelected]="dateComponentFrom"
+          [dateNumber]="dateFrom"
+          [time]="timeComponentFrom"
+          [weekDay]="weekDay"
+          (selectedMonth)="test2($event)"
+        ></app-calendar>
+      </div>
+
+      <!--Fin del calendario de días ------------------------------------------------------------------------------------->
+
+      <!--scroll de horas (se añade margin top y se modifica el estilo)-->
+      <div class="container-scroll-hours" [style.paddingTop.px]="35">
+        <span class="reservation-text">HORA CONVENIENTE</span>
+        <div
+          class="buttons"
+          *ngIf="calendar.availableHours && calendar.showHours"
+        >
+          <ng-container
+            *ngFor="let slide of todayHours; let i = index; let isLast = last"
+          >
+            <ng-container
+              *ngIf="
+                calendar.monthIndex == 0 && calendar.dayIndex == 0;
+                else notToday
+              "
+            >
+              <div
+                class="swiper-slide"
+                (click)="
+                  !filterHours(num(slide) + offset) ? null : getId(i, slide)
+                "
+                [ngStyle]="
+                  !filterHours(num(slide) + offset) && { color: '#949494' }
+                "
+                [ngClass]="{ 'btn-add': i == activeHour }"
+              >
+                <ng-container *ngIf="calendar">
+                  <ng-container
+                    *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available"
+                  >
+                    <div class="slide-content">
+                      <ng-container> Día Ocupado </ng-container>
+                    </div>
+                  </ng-container>
+                  <ng-template #available>
+                    <div class="slide-content">
+                      <ng-container
+                        *ngIf="
+                          calendar.hours[0] !== 'Día Ocupado';
+                          else nonAvailable
+                        "
+                      >
+                        De {{ zorroChange5(slide) }} a
+                        <ng-container *ngIf="!isLast; else notLast">
+                          {{ formatHour2(num(slide).toString() + ":" + "45") }}
+                        </ng-container>
+                        <ng-template #notLast>
+                          {{ formatHour2(num(slide).toString() + ":" + "45") }}
+                        </ng-template>
+                      </ng-container>
+                      <ng-template #nonAvailable>
+                        {{ calendar.todayHours[0] }}am
+                      </ng-template>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-template #notToday>
+              <div
+                class="swiper-slide"
+                (click)="
+                  !filterHours(num(slide) + offset) ? null : getId(i, slide)
+                "
+                [ngStyle]="
+                  !filterHours(num(slide) + offset) && { color: '#C6C6C8' }
+                "
+                [ngClass]="{ 'btn-add': i == activeHour }"
+              >
+                <ng-container *ngIf="calendar">
+                  <ng-container
+                    *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available"
+                  >
+                    <div class="slide-content">
+                      <ng-container> Día Ocupado </ng-container>
+                    </div>
+                  </ng-container>
+                  <ng-template #available>
+                    <div class="slide-content">
+                      <ng-container
+                        *ngIf="
+                          calendar.hours[0] !== 'Día Ocupado';
+                          else nonAvailable
+                        "
+                      >
+                        De {{ zorroChange5(slide) }} a
+                        <ng-container *ngIf="!isLast; else notLast">
+                          {{ formatHour2(num(slide).toString() + ":" + "45") }}
+                        </ng-container>
+                        <ng-template #notLast>
+                          {{ formatHour2(num(slide).toString() + ":" + "45") }}
+                        </ng-template>
+                      </ng-container>
+                      <ng-template #nonAvailable>
+                        {{ calendar.todayHours[0] }}am
+                      </ng-template>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+
+      <!--final del scroll de horas ---------------------------------------------------------------------------------------------------------->
+    </div>
+  </div>
+
+  <!--Fecha y Hora-->
+
+  <div class="container-scroll-hours">
+    <div class="content">
+      <span class="reservation-text">FECHA CONVENIENTE PARA LA SESION</span>
+    </div>
+    <div
+      class="date-info"
+      *ngIf="datePreview"
+      style="
+        text-align: center;
+        color: #ffffff;
+        background-image: linear-gradient(
+          to right,
+          rgb(49, 164, 249),
+          rgb(29, 88, 219)
+        );
+        font-family: RobotoMedium;
+        font-size: 16px;
+        margin-top: 35px;
+        margin-bottom: 96px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 10px;
+        border-radius: 10px;
+        min-width: 300px;
+        max-width: 385px;
+      "
+    >
+      {{ datePreview.dayName }} {{ datePreview.day }} de
+      {{ datePreview.month }}, entre {{ datePreview.hour }} -
+      {{ formatHour4(num(datePreview.hour).toString() + ":" + "45") }}
+      {{ datePreview.hour.slice(-2) }}
+      <div class="delete-button" (click)="deleteSelection()">
+        <div class="text" style="font-size: 12.5px; cursor: pointer">x</div>
+      </div>
+    </div>
+
+    <div class="date-info" *ngIf="!datePreview" style="text-align: center">
+      SELECCIONE DIA Y HORA CONVENIENTE
+    </div>
+  </div>
+
+  <!--Botones-->
+
+  <div
+    class="button-container-2"
+    *ngIf="datePreview && (!whatsappLink || whatsappLink === '')"
+  >
+    <app-sticky-button
+      [mode]="'basic'"
+      [text]="shortDatePreview"
+      (click)="save()"
+    ></app-sticky-button>
+  </div>
+
+  <div
+    class="button-container-2"
+    *ngIf="
+      datePreview &&
+      (whatsappLink || whatsappLink !== '') &&
+      mode === 'standalone'
+    "
+  >
+    <!-- <a [href]="whatsappLink"> -->
+    <app-sticky-button
+      [mode]="'basic'"
+      [text]="shortDatePreview"
+      (click)="save()"
+    ></app-sticky-button>
+    <!-- </a> -->
+  </div>
+
+  <div class="button-container-2" *ngIf="!datePreview">
+    <app-sticky-button
+      [mode]="'disabled'"
+      text="ADICIONA LA FECHA QUE TE CONVIENE"
+    ></app-sticky-button>
+  </div>
+</div>

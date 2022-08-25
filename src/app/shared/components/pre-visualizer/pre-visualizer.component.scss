@@ -1,0 +1,114 @@
+.audio {
+	border-radius: 9px;
+	border: 1px solid rgba(161, 161, 161, 43%);
+	text-align: center;
+	padding: 26px 30px 20px;
+    max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
+
+	audio {
+		width: 100%;
+	}
+
+	.audio-title {
+		margin: 0;
+		margin-bottom: 16px;
+		font-family: "SfProBold";
+		font-size: 17px;
+		color: #474747;
+	}
+
+	.button-play {
+		margin: 0 auto;
+		padding: 0;
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+	}
+
+	.bar {
+		position: relative;
+		width: 270px;
+		height: 6px;
+		background-color: rgba(161, 161, 161, 13%);
+		margin: 0 auto;
+		margin-top: 21px;
+		cursor: pointer;
+
+		.circulito {
+			width: 10px;
+			height: 10px;
+			border-radius: 50%;
+			background-color: #a1a1a1;
+			position: absolute;
+			bottom: -2px;
+			cursor: pointer;
+		}
+	}
+
+	.labels {
+		display: flex;
+		justify-content: space-between;
+		margin: 0 10%;
+		margin-top: 5px;
+	}
+} /*AUDIO MODE*/
+
+.poster {
+	background-color: transparent;
+	border-radius: 9px;
+	border: 1px solid rgba(161, 161, 161, 43%);
+	padding: 0px 50px 50px 50px;
+	max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
+
+	.placeholder {
+		width: 240px;
+		height: 320px;
+		background-color: #707070;
+		border-radius: 9px;
+	}
+
+	.poster-title {
+		font-family: "SfProBold";
+		font-size: 17px;
+		color: #474747;
+		text-align: center;
+		margin-top: 40px;
+		margin-bottom: 25px;
+		text-transform: uppercase;
+	}
+
+	.title-image {
+		width: 100%;
+		border-radius: 9px;
+	}
+}
+
+.text {
+	border-radius: 9px;
+	border: 1px solid rgba(161, 161, 161, 43%);
+	padding: 30px 33px 24px 40px;
+    max-width: 398px;
+    margin: 0 auto;
+    width: 90%;
+
+	.text-title {
+		font-family: "SfProBold";
+		font-size: 17px;
+		color: #474747;
+		display: flex;
+		margin: 0 auto;
+		margin-top: 27px;
+		margin-bottom: 22px;
+	}
+
+	.inner-text {
+		font-family: "RobotoRegular";
+		line-break: anywhere;
+		font-size: 21px;
+		color: rgba(20, 20, 20, 64%);
+	}
+}

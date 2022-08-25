@@ -1,0 +1,284 @@
+//ESTILOS PARA INPUTS TEXT, EMAIL, NUMBER
+.labels-wrapper {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  font-family: "Roboto";
+  font-size: 24px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 18px;
+}
+
+.input-label-bottom {
+  font-family: RobotoMedium;
+  font-size: 16px;
+  color: #7b7b7b;
+  font-weight: bold;
+  display: block;
+  margin-top: 16px;
+}
+
+.dropdown {
+  position: relative;
+
+  .arrow-icon {
+    position: absolute;
+    right: 25px;
+    bottom: 28px;
+    height: 20px;
+    width: 20px;
+
+    img {
+      transform: rotate(270deg);
+    }
+  }
+}
+
+.input {
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: 100%;
+  height: 73px;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+
+  &.select {
+    padding-right: 50px;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+  }
+
+  &:focus {
+    border: 1px solid #31a4f9;
+  }
+
+  &::placeholder {
+    font-family: RobotoMedium;
+    font-size: 20px;
+    color: rgb(161, 161, 161, 0.6);
+  }
+
+  &.formatCurrency {
+    left: 0px;
+
+    &.focused {
+      width: 0px;
+      height: 0px;
+      border: none;
+    }
+  }
+
+  &.hide-placeholder {
+    &::placeholder {
+      display: none;
+    }
+  }
+}
+
+.inputFocused {
+  border: 1px solid #31a4f9;
+  background-color: rebeccapurple;
+}
+
+//ESTILOS PARA TEXTAREAS
+.textarea {
+  box-shadow: 0px 8px 49px -40px inset;
+  color: #0b1f38;
+  width: 100%;
+  font-family: RobotoMedium;
+  border: 1px solid #ccc;
+  //max-height: 154px;
+  padding: 23px;
+  resize: none;
+  font-size: 20px;
+
+  &::placeholder {
+    font-family: RobotoMedium;
+    font-size: 20px;
+    color: rgb(161, 161, 161, 0.6);
+  }
+
+  &:focus {
+    border: 1px solid #31a4f9;
+  }
+}
+
+//ESTILOS PARA LISTA DE OPCIÓN MÚLTILPLE
+.selector {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+}
+
+.selector input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
+.selector-option {
+  position: relative;
+  padding: 10px 0;
+  width: 100%;
+  color: #7b7b7b;
+  font-family: RobotoMedium;
+  font-size: 19px;
+  border-radius: 10px;
+  cursor: pointer;
+
+  .background {
+    background-color: #82f18d;
+    border-radius: 5px;
+    height: 85%;
+    width: 19px;
+    position: absolute;
+    z-index: 500;
+    transition: width 0.4s ease-out;
+  }
+
+  span, .selector-option-content {
+    position: relative;
+    z-index: 900;
+    margin-left: 32px;
+    padding-top: 8px;
+    display: inline-block;
+    width: calc(100% - 32px);
+  }
+
+  .selector-option-content {
+    padding-top: 11px;
+  }
+}
+
+.selector-option.active {
+  .background {
+    width: 100%;
+  }
+}
+
+.radio-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0rem;
+
+  input[type="radio"] {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    appearance: none;
+    /* For iOS < 15 to remove gradient background */
+    background-color: #fff;
+    /* Not removed via appearance */
+    margin: 0;
+
+    font: inherit;
+    color: currentColor;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #2874AD;
+    border-radius: 50%;
+
+    display: grid;
+    place-content: center;
+  }
+
+  input[type="radio"]::before {
+    content: "";
+    width: 17.92px;
+    height: 17.92px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em #2874AD;
+  }
+
+  input[type="radio"]:checked::before {
+    transform: scale(1);
+  }
+}
+
+.file {
+  border: 1px solid dodgerblue;
+  color: #999999;
+  background: #fff;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 21px;
+  height: 200px;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.showImageBottomLabel {
+  font-family: RobotoMedium;
+  font-size: 16px;
+  color: #27a2ff;
+  font-weight: 500;
+  margin-top: 18.2px;
+}
+
+.showImageBottomLabel:hover {
+  cursor: pointer;
+}
+
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.input {
+  -moz-appearance: textfield;
+}
+
+.bottom-separator-disabled {
+  margin-bottom: 31px;
+  background-color: skyblue;
+  width: 100%;
+  height: 0px;
+}
+
+.bottom-separator {
+  margin-bottom: 73px;
+  background-color: skyblue;
+  width: 100%;
+  height: 0px;
+}
+
+.blinking-cursor {
+  animation-name: blinkinCursor;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  width: 1px;
+  height: 1rem;
+
+  @keyframes blinkinCursor {
+    0% {
+      background-color: black;
+    }
+
+    50% {
+      background-color: white;
+    }
+
+    100% {
+      background-color: black;
+    }
+  }
+}

@@ -1,33 +1,20 @@
-import { lockUI } from 'src/app/core/helpers/ui.helpers';
-import { Observable, from } from 'rxjs';
-import { Router } from '@angular/router';
-import { AppService } from 'src/app/app.service';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { from, Observable } from 'rxjs';
+import { AppService } from 'src/app/app.service';
+import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { CountryISO } from 'ngx-intl-tel-input';
 import {
-  FacebookLoginProvider,
-  GoogleLoginProvider,
-  SocialAuthService,
-} from 'angularx-social-login';
-
-import {
-  me,
-  signin,
-  signout,
-  signup,
-  signupSocial,
-  updateme,
-  checkUser,
-  userData,
-  generateOTP,
-  signinSocial,
-  simplifySignup,
-  getTempCodeData
+  analizeMagicLink, checkUser, generateMagicLink, generateOTP, generatePowerMagicLink, getTempCodeData, me,
+  signin, signinSocial, signout,
+  signup, simplifySignup, updateme, userData
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
 import { User } from '../models/user';
-import { refresh, verifyUser, userExists } from './../graphql/auth.gql';
-import { Logs } from 'selenium-webdriver';
+import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
+// import { Logs } from 'selenium-webdriver';
 
 @Injectable({
   providedIn: 'root',
@@ -38,13 +25,15 @@ export class AuthService {
 
   constructor(
     private readonly graphql: GraphQLWrapper,
-    private readonly social: SocialAuthService,
+    // private readonly social: SocialAuthService,
     private readonly app: AppService,
-    private readonly router: Router,
+    private readonly router: Router
   ) {
+    /*
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
     else this.ready = from([undefined]);
+    */
   }
 
   public async userExist(emailOrPhone: string) {
@@ -61,11 +50,15 @@ export class AuthService {
   public async signin(
     emailOrPhone: string,
     password: string,
-    remember : boolean
+    remember: boolean
   ): Promise<Session> {
     try {
       const variables = { emailOrPhone, password, remember };
-      const result = await this.graphql.mutate({ mutation: signin, variables });
+      const promise = this.graphql.mutate({ mutation: signin, variables });
+
+      this.ready = from(promise);
+
+      const result = await promise;
       this.session = new Session(result?.session, true);
     } catch (e) {
       this.session?.revoke();
@@ -82,6 +75,7 @@ export class AuthService {
       const result = await promise;
       this.session = new Session(result?.session, true);
     } catch (e) {
+      console.log(e);
       this.session?.revoke();
       this.session = undefined;
     }
@@ -89,13 +83,17 @@ export class AuthService {
     return this.session;
   }
 
-  public async signinSocial(input: any, authLogin:boolean = true): Promise<Session> {
-    console.log(input);
+  public async signinSocial(
+    input: any,
+    authLogin: boolean = true
+  ): Promise<Session> {
     try {
-      input.createIfNotExist = true
+      input.createIfNotExist = true;
       const variables = { input };
-      const result = await this.graphql.mutate({ mutation: signinSocial, variables });
-      console.log(result);
+      const result = await this.graphql.mutate({
+        mutation: signinSocial,
+        variables,
+      });
       this.session = new Session(result?.signinSocial, true);
     } catch (e) {
       console.log(e);
@@ -106,28 +104,35 @@ export class AuthService {
     return this.session;
   }
 
-  public async simplifySignup(emailOrPhone: string, notificationMethod: string){
-    console.log(emailOrPhone, notificationMethod);
-    
+  public async simplifySignup(
+    emailOrPhone: string,
+    notificationMethod: string
+  ) {
     const result = await this.graphql.mutate({
       mutation: simplifySignup,
-      variables: { emailOrPhone,notificationMethod },
+      variables: { emailOrPhone, notificationMethod },
     });
     return result;
   }
 
-  public async getTempCodeData(token: string){
+  public async getTempCodeData(token: string) {
     const result = await this.graphql.query({
       query: getTempCodeData,
-      variables: {token: token}
+      variables: { token: token },
     });
     return result;
   }
 
-  public async signup(input: any,notificationMethod?:string, code?:string ): Promise<User> {
+  public async signup(
+    input: any,
+    notificationMethod?: string,
+    code?: string,
+    assignPassword?: boolean,
+    files?: any
+  ): Promise<User> {
     const result = await this.graphql.mutate({
       mutation: signup,
-      variables: { input,notificationMethod,code },
+      variables: { input, notificationMethod, code, assignPassword, files },
       context: {
         useMultipart: true,
       },
@@ -158,8 +163,8 @@ export class AuthService {
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
         this.router.navigateByUrl('/home');
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
         window.location.reload();
       }
       return result.success;
@@ -177,8 +182,8 @@ export class AuthService {
       }
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
         window.location.reload();
       }
       return result.success;
@@ -194,40 +199,13 @@ export class AuthService {
       if (result.success) {
         this.session?.revoke();
         this.session = undefined;
-        this.app.nav = [];
-        this.app.header = {};
+        // this.app.nav = [];
+        // this.app.header = {};
       }
       return result.success;
     } catch (e) {
       return false;
     }
-  }
-
-  public async socialAccess(social: 'google' | 'facebook'): Promise<Session> {
-    const configs = {
-      google: {
-        id: GoogleLoginProvider.PROVIDER_ID,
-        tokenKey: 'idToken',
-      },
-      facebook: {
-        id: FacebookLoginProvider.PROVIDER_ID,
-        tokenKey: '',
-      },
-    };
-    const { id, tokenKey } = configs[social];
-    const socialUser = await this.social.signIn(id);
-    const token = socialUser[tokenKey];
-    try {
-      const variables = { token, social };
-      const mutation = signupSocial;
-      const result = await this.graphql.mutate({ mutation, variables });
-      this.session = new Session(result?.session, true);
-    } catch (e) {
-      this.session?.revoke();
-      this.session = undefined;
-    }
-    this.app.events.emit({ type: 'auth', data: this.session });
-    return this.session;
   }
 
   // USER QUERIES
@@ -250,11 +228,10 @@ export class AuthService {
     } catch (e) {}
   }
 
-
-  public async updateMe(input: any) {
+  public async updateMe(input: any, files?: any) {
     const response = await this.graphql.mutate({
       mutation: updateme,
-      variables: { input },
+      variables: { input, files },
       context: { useMultipart: true },
     });
     let user: User;
@@ -265,11 +242,11 @@ export class AuthService {
     return user;
   }
 
-  public async checkUser(emailOrPhone: String,notificationMethod?:String) {
+  public async checkUser(emailOrPhone: String, notificationMethod?: String) {
     try {
       const response = await this.graphql.query({
         query: checkUser,
-        variables: { emailOrPhone,notificationMethod },
+        variables: { emailOrPhone, notificationMethod },
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
@@ -283,7 +260,86 @@ export class AuthService {
         variables: { emailOrPhone },
         fetchPolicy: 'no-cache',
       });
-      return response
+      return response;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  public async generateMagicLink(
+    phoneNumber: string,
+    redirectionRoute: string,
+    redirectionRouteId: string,
+    entity: string,
+    redirectionRouteQueryParams: any,
+    attachments?: any
+  ) {
+    try {
+      const response = await this.graphql.mutate({
+        mutation: generateMagicLink,
+        variables: {
+          phoneNumber,
+          redirectionRoute,
+          redirectionRouteId,
+          entity,
+          redirectionRouteQueryParams,
+          attachments,
+        },
+        context: { useMultipart: true },
+      });
+
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  public async analizeMagicLink(tempcode: String) {
+    try {
+      const promise = this.graphql.query({
+        query: analizeMagicLink,
+        variables: { tempcode },
+        fetchPolicy: 'no-cache',
+      });
+
+      this.ready = from(promise);
+
+      const response = await promise;
+      return response;
     } catch (e) {}
+  }
+
+  public async generatePowerMagicLink(hostPhoneNumber: string) {
+    try {
+      const response = await this.graphql.query({
+        query: generatePowerMagicLink,
+        variables: { hostPhoneNumber },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  public getPhoneInformation(number: string) {
+    if (!number.trim()) throw new Error('Invalid phone number');
+    if (!number.startsWith('+')) number = '+' + number;
+    const phoneUtil = PhoneNumberUtil.getInstance();
+    const phoneNumber = phoneUtil.parse(number);
+    if (!phoneUtil.isValidNumber(phoneNumber))
+      throw new Error('Invalid phone number');
+    const countryCode = phoneNumber.getCountryCode();
+    const countryIso = phoneUtil.getRegionCodeForCountryCode(countryCode);
+    const region = Object.keys(CountryISO).find(
+      (key) => CountryISO[key] == countryIso.toLowerCase()
+    );
+    return {
+      countryCode,
+      nationalNumber: `${phoneNumber.getNationalNumber()}`,
+      countryIso: CountryISO[region],
+      region,
+    };
   }
 }

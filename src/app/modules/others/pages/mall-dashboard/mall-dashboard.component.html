@@ -1,0 +1,11 @@
+<div style="min-height: 100vh;">
+  <!-- <nav>adasda</nav> -->
+  <app-header-info-admin
+    [data]="headerButtons"
+  ></app-header-info-admin>
+  <app-page-component-tabs
+    [tabsOptions]="tabsOptions"
+    (changeValue)="onTabChange($event)"
+  ></app-page-component-tabs>
+  <router-outlet></router-outlet>
+</div>

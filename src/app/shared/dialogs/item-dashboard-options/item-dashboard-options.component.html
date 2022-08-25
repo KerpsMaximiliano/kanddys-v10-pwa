@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="dialog-card">
+        <div *ngFor="let item of list">
+
+            <button class="top-btn" [ngStyle]="{
+                'color': item.button?.color,
+                'background-color': item.button?.bgColor
+            }" *ngIf="item.button?.text">{{item.button?.text}}</button>
+
+            <h1 class="title">{{item.title}}</h1>
+            
+            <ng-container *ngFor="let option of item.content">
+                <div class="function">
+                    <div class="flexer">
+                        <h2 class="text">{{option.headline}}</h2>
+                        
+                        <img
+                            *ngIf="option.icon"
+                            class="icon"
+                            [src]="env + option.icon?.src"
+                            [alt]="option.icon?.alt"
+                            [width]="option.icon?.width"
+                            [height]="option.icon?.height"
+                            [ngStyle]="{filter: option.icon?.color && option.icon?.color}"
+                        >
+                    </div>
+
+                    <p class="description">{{option.description}}</p>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <button class="cancel" (click)="close()">Cancel</button>
+</div>

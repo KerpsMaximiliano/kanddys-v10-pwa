@@ -1,0 +1,191 @@
+<div class="container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="false"
+    [mainText]="{
+      text: order?.items[0].saleflow.headline,
+      fontSize: '21px',
+      fontFamily: 'SfProBold'
+    }"
+    [dots]="{
+      active: true
+    }"
+  ></app-helper-headerv2>
+
+  <div class="box-shadowing">
+    <app-item-reservation
+      [headline]="{
+        text: order ? formatId(order?.dateId) : ''
+      }"
+      [rightActive]="true"
+      [rightSubHeadline]="{
+        text: order?.user.name
+      }"
+      [subheadlines]="[
+        {
+          text: orderDate
+        },
+        {
+          text: orderStatus
+        }
+      ]"
+      [icon]="[
+        {
+          src: '/person.svg',
+          width: 13,
+          height: 17,
+          color:
+            'invert(35%) sepia(92%) saturate(490%) hue-rotate(164deg) brightness(93%) contrast(84%)',
+          callback: redirectToUserContact
+        }
+      ]"
+    ></app-item-reservation>
+  </div>
+
+  <main class="information">
+    <section class="section">
+      <h2 class="section-title">Articulos facturados:</h2>
+
+      <div class="items-container">
+        <div
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            *ngFor="let item of order?.items"
+            (click)="
+              item.item.images?.length && openImageModal(item.item.images[0])
+            "
+          >
+            <div class="image">
+              <img
+                [src]="
+                  item.item.images?.length
+                    ? item.item.images[0]
+                    : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top: 32px">
+      <h2 class="section-title">Sobre el pago:</h2>
+
+      <div class="items-container">
+        <div class="items-container space-between" style="padding: 10px 32px">
+          <p class="total">Total:</p>
+          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+        </div>
+        <div
+          *ngIf="order?.ocr"
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button (click)="order.ocr && openImageModal(order.ocr.image)">
+            <div class="image">
+              <img
+                [src]="
+                  order.ocr ? order.ocr.image : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" *ngIf="order?.items[0].deliveryLocation">
+      <h2 class="section-title" style="margin-top: 32px">
+        Lugar de {{ order?.items[0].reservation ? "la sesión" : " Entrega:" }}
+      </h2>
+
+      <div class="items-container column">
+        <p
+          class="address-name"
+          *ngIf="order.items[0].deliveryLocation.nickName"
+        >
+          {{ order.items[0].deliveryLocation.nickName }}
+        </p>
+        <p
+          [ngClass]="{
+            added: order.items[0].deliveryLocation.nickName,
+            'address-name': !order.items[0].deliveryLocation.nickName
+          }"
+          *ngIf="order.items[0].deliveryLocation.street"
+        >
+          {{ order.items[0].deliveryLocation.street }},
+          {{ order.items[0].deliveryLocation.city }}, República Dominicana
+        </p>
+      </div>
+    </section>
+
+    <section class="section" *ngIf="order?.items[0].reservation && date">
+      <h2 class="section-title" style="margin-top: 32px">
+        Fecha de la sesión:
+      </h2>
+
+      <div class="items-container" style="padding: 10px 32px">
+        <p class="amount">
+          {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
+          {{ date.time }}
+        </p>
+      </div>
+    </section>
+
+    <section
+      class="section"
+      *ngIf="order?.items[0].post && post"
+      style="margin-top: 32px"
+    >
+      <h2 class="section-title">Mensaje de regalo:</h2>
+
+      <div class="message-box">
+        <section *ngIf="post.message">
+          <h3 class="sub">Mensaje a escribir:</h3>
+          <p class="message-text inner">
+            {{ post.message }}
+          </p>
+        </section>
+
+        <section *ngIf="post.targets?.length && post.targets[0]?.name">
+          <h3 class="sub">Para:</h3>
+          <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+        </section>
+
+        <section *ngIf="post.from">
+          <h3 class="sub">De:</h3>
+          <p class="message-text inner">{{ post.from }}</p>
+        </section>
+      </div>
+    </section>
+    <section class="section" *ngIf="customizer" style="margin-top: 32px">
+      <h2 class="section-title">Personalización:</h2>
+      <div class="items-container" style="flex-direction: column">
+        <table>
+          <tr *ngFor="let detail of customizerDetails">
+            <th>{{ detail.name }}</th>
+            <td>{{ detail.value }}</td>
+          </tr>
+        </table>
+        <div *ngIf="customizer.preview">
+          <img class="customizer-preview" [src]="customizer.preview" alt="" />
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,45 @@
+<div class="container">
+<ng-container *ngFor="let listed of list; let i = index">
+        <div class="flex-container" *ngIf="list[i].contact || !numberMail">
+            <div class="main">
+                <ng-container *ngIf="!authData">
+                    <div *ngIf="list[i].image" (click)="openImageModal(list[i].image)" class="image" [ngStyle]="{'background-image': 'url(' + list[i].image + ')'}">
+                    </div>
+                </ng-container>
+                <div class="content">
+                    <div class="title" [ngStyle]="{ color: list[i].status === 'No completado' ? '#4773D8' : '#272727'}">
+                        {{list[i].title}}
+                    </div>
+                    <div class="additional-info" *ngIf="list[i].price || list[i].quantity">
+                        <ng-container>
+                            ${{list[i].price | number: '1.0-2'}} DOP
+                        </ng-container>
+                        <ng-container *ngIf="list[i].price && list[i].quantity">
+                            /
+                        </ng-container>
+                        <ng-container *ngIf="list[i].quantity">
+                            PAQ. {{list[i].quantity}} UNDS
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="link-button" (click)="goLink(i, list[i].type)" style="cursor: pointer;"  *ngIf="!list[i].status || list[i].status === 'No completado'">
+                    <svg class="uncompleted" xmlns="http://www.w3.org/2000/svg" width="30.002" height="30.002" viewBox="0 0 30.002 30.002">
+                        <g id="bx-right-arrow-circle" transform="translate(-2.998 -2.99)">
+                          <path id="Trazado_28146" data-name="Trazado 28146" d="M18,2.99a15,15,0,1,0,15,15,15.02,15.02,0,0,0-15-15Zm0,27a12,12,0,1,1,12-12A12.014,12.014,0,0,1,18,29.991Z" fill="#27a2fc"/>
+                          <path id="Trazado_28147" data-name="Trazado 28147" d="M18,16.491H12v3h6V24l6.008-6.008L18,11.986Z" fill="#27a2fc"/>
+                        </g>
+                    </svg>          
+                </div>
+                <div class="link-button" *ngIf="list[i].status === 'Completado'">
+                    <img src="{{ env }}/check-circle.svg" alt="completed">
+                </div>
+            </div>
+            <div class="additional-info" *ngIf="list[i].status === 'No completado' || list[i].status === 'Completado'">
+                {{list[i].status}}
+            </div>
+        </div>
+        <div class="separator" *ngIf="list[i].contact || !numberMail">
+            
+        </div>
+    </ng-container>
+</div>

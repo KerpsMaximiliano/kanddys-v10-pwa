@@ -1,0 +1,216 @@
+.container {
+  position: sticky;
+  bottom: 0;
+  max-width: 500px;
+  z-index: 10;
+
+  .button {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    background-color: #27a2ff;
+    color: #ffffff;
+    font-family: "RobotoMedium";
+    font-size: 24px;
+    border: none;
+    height: 55px;
+    max-width: 500px;
+    line-height: 1;
+    white-space: break-spaces;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
+    }
+  }
+
+  .inactive {
+    display: none;
+  }
+
+  .disabled {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    color: #ffffff;
+    font-family: "RobotoMedium";
+    font-size: 17px;
+    border: none;
+    height: 38px;
+    line-height: 1;
+    cursor: default;
+    background-color: #AFAFAF;
+    z-index: 10;
+    white-space: break-spaces;
+    position: relative;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
+    }
+  }
+
+  .disabled-fixed {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    color: #ffffff;
+    font-family: "RobotoMedium";
+    font-size: 17px;
+    border: none;
+    height: 38px;
+    line-height: 1;
+    cursor: default;
+    background-color: #7b7b7b;
+    z-index: 1000;
+    position: relative;
+    white-space: break-spaces;
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
+    }
+  }
+}
+
+.fixed-container {
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+
+  .button {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    background-color: #27a2ff;
+    color: #ffffff;
+    font-family: "RobotoMedium";
+    font-size: 24px;
+    border: none;
+    line-height: 1;
+    height: 55px;
+    white-space: break-spaces;
+    .svg {
+      margin: 0 12px;
+      cursor: pointer;
+    }
+
+    &.small {
+      height: 30px;
+      font-size: 17px;
+      padding: 0;
+    }
+  }
+
+  .inactive {
+    display: none;
+  }
+
+  .disabled {
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    color: #ffffff;
+    font-family: RobotoMedium;
+    font-size: 17px;
+    border: none;
+    height: 38px;
+    line-height: 1;
+    cursor: default;
+    background-color: #7b7b7b;
+    white-space: break-spaces;
+    position: relative;
+  }
+}
+
+.fixed-double{
+    width: 100%;
+    max-width: 500px;
+    position: fixed;
+    bottom: 0;
+    z-index: 1000;
+    background-color: #27a2ff;
+    display: flex;
+    justify-content: space-around;
+
+    .added{
+        all: unset;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 15%;
+        max-width: 75px;
+        height: 55px;
+        font-family: 'RobotoMedium';
+        font-size: 17px;
+        text-align: center;
+        color: #E9E371;
+        white-space: break-spaces;
+        cursor: pointer;
+        &.small {
+            height: 30px;
+            font-size: 17px;
+            padding: 0;
+        }
+    }
+
+    .double{
+        all: unset;
+        width: 50%;
+        max-width: 250px;
+        height: 55px;
+        font-family: 'RobotoMedium';
+        font-size: 17px;
+        text-align: center;
+        color: #E9E371;
+        white-space: break-spaces;
+        cursor: pointer;
+        &.small {
+            height: 30px;
+            font-size: 17px;
+            padding: 0;
+        }
+    }
+    
+}
+
+.with-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  img {
+    max-width: 30px;
+    max-height: 30px;
+  }
+}
+
+.button > svg > path {
+  fill: #fff;
+}
+
+.back-btn {
+  color: white;
+  position: absolute;
+  left: 2%;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .fixed-container {
+    .button {
+      font-size: 20px;
+    }
+  }
+  .container {
+    .button {
+      font-size: 20px;
+    }
+  }
+}

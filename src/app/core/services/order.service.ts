@@ -3,13 +3,25 @@ import { BehaviorSubject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   order,
+  preOrder,
+  authOrder,
+  orderStatus,
   createOrder,
+  createPreOrder,
   payOrder,
   ordersByUser,
-  addTagsInOrder,
+  toggleUserNotifications,
   updateTagsInOrder,
+  ordersTotal,
+  ordersByItem,
 } from '../graphql/order.gql';
-import { ItemOrder } from '../models/order';
+import {
+  ItemOrder,
+  ItemOrderInput,
+  OCRInput,
+  OrderStatusNameType,
+  OrderStatusType,
+} from '../models/order';
 @Injectable({
   providedIn: 'root',
 })
@@ -18,22 +30,36 @@ export class OrderService {
 
   orders: any = [];
 
-  async createOrder(input: any) {
-    console.log(input);
+  async createOrder(
+    input: ItemOrderInput
+  ): Promise<{ createOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
       mutation: createOrder,
       variables: { input },
     });
 
     if (!result || result?.errors) return undefined;
-
-    console.log(result);
     return result;
   }
 
-  async payOrder(ocr: any, userId: string, payMode: string, orderId: string) {
-    console.log(ocr, userId, payMode, orderId);
+  async createPreOrder(
+    input: ItemOrderInput
+  ): Promise<{ createPreOrder: { _id: string } }> {
+    const result = await this.graphql.mutate({
+      mutation: createPreOrder,
+      variables: { input },
+    });
 
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async payOrder(
+    ocr: OCRInput,
+    userId: string,
+    payMode: string,
+    orderId: string
+  ): Promise<{ payOrder: { _id: string } }> {
     const result = await this.graphql.mutate({
       mutation: payOrder,
       variables: { ocr, userId, payMode, orderId },
@@ -42,7 +68,6 @@ export class OrderService {
 
     if (!result || result?.errors) return undefined;
 
-    console.log(result);
     return result;
   }
 
@@ -59,6 +84,38 @@ export class OrderService {
     }
   }
 
+  async ordersTotal(
+    status: OrderStatusType[],
+    merchantId: string,
+    orders: string[] = [],
+    itemCategoryId?: string
+  ): Promise<{ total: number; length: number }> {
+    try {
+      const response = await this.graphql.query({
+        query: ordersTotal,
+        variables: { status, merchantId, orders, itemCategoryId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.ordersTotal;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async authOrder(
+    orderId: string,
+    userId?: string
+  ): Promise<{ authOrder: ItemOrder }> {
+    const result = await this.graphql.mutate({
+      mutation: authOrder,
+      variables: { orderId, userId },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
   async order(orderId: string): Promise<{ order: ItemOrder }> {
     try {
       const response = await this.graphql.query({
@@ -72,17 +129,46 @@ export class OrderService {
     }
   }
 
-  async addTagsInOrder(orderId: any, tags: any, merchantId: any) {
-    console.log(tags);
-    const result = await this.graphql.mutate({
-      mutation: addTagsInOrder,
-      variables: { orderId, tags, merchantId },
-    });
+  async preOrder(orderId: string): Promise<{ order: ItemOrder }> {
+    try {
+      const response = await this.graphql.query({
+        query: preOrder,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
-    if (!result || result?.errors) return undefined;
+  async getOrderStatus(orderId: string): Promise<ItemOrder> {
+    try {
+      const { order } = await this.graphql.query({
+        query: orderStatus,
+        variables: { orderId },
+        fetchPolicy: 'no-cache',
+      });
+      return order;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-    console.log(result);
-    return result;
+  async toggleUserNotifications(
+    active: boolean,
+    orderId: string
+  ): Promise<ItemOrder> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: toggleUserNotifications,
+        variables: { active, orderId },
+      });
+
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async updateTagsInOrder(orderId: any, tags: any, merchantId: any) {
@@ -96,5 +182,31 @@ export class OrderService {
 
     console.log(result);
     return result;
+  }
+
+  async ordersByItem(itemId: string): Promise<{ ordersByItem: ItemOrder[] }> {
+    const result = await this.graphql.query({
+      query: ordersByItem,
+      variables: { itemId },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    console.log(result);
+    return result;
+  }
+
+  getOrderStatusName(status: OrderStatusType): OrderStatusNameType {
+    return (
+      {
+        cancelled: 'cancelado',
+        started: 'empezado',
+        verifying: 'verificando',
+        'in progress': 'en revisión',
+        'to confirm': 'por confirmar',
+        completed: 'completado',
+      }[status] ?? 'error'
+    );
   }
 }

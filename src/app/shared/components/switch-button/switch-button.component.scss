@@ -1,0 +1,59 @@
+.input-button-container{
+  display: flex;
+  align-items: center;
+}
+
+.input-switch {
+    display: inline-block;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  
+  .input-switch input {
+    display: none;
+  }
+  
+  .itemCheckBox{
+    width: 47px;
+    height: 20px;
+    background-color: #C5C5C5;
+    border-radius: 25px;
+    padding: 0 3px;
+    display: flex;
+    align-items: center;
+    transition: 0.4s;
+    .itemSwitch{
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: #FFFFFF;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+    }
+    &.active{
+        background-color: #59d866;
+  
+        .itemSwitch{
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+    }
+    .text-inner{
+        font-family: 'RobotoBold';
+        font-size: 10px;
+        color: #ffffff;
+    } 
+    .si{
+        margin: 3px 0 3px 13px;
+    }
+    .no{
+        margin: 3px 0 3px 20px;
+    }
+  }
+
+  .left-text {
+
+  }

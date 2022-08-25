@@ -1,0 +1,32 @@
+<div class="magic-link-dialog">
+  <app-helper-header
+    [searchAble]="false"
+    bgcolor="#ffffff"
+    [basic]="true"
+    position="fixed"
+    [shadow]="true"
+    middleTextColor="#7b7b7b"
+    [replaceXWithLabel]="true"
+    (onClose)="close()"
+  ></app-helper-header>
+
+  <div class="top-separator"></div>
+
+  <div class="content">
+    <h2>¿Eres un Bot?</h2>
+    <a [href]="whatsappLink" target="_blank" id="sendWS">
+      <button>Confírmanos por WhatsApp</button>
+    </a>
+    <p class="first">
+      Después de tu confirmación recibirás el Magic-Link que al tocarlo
+      guardarás tu orden.
+    </p>
+
+    <p class="second">Otras maneras de confirmar que no eres un bot &#62;</p>
+    <!-- <a
+      id="send-email"
+      href="mailto: lbarbozanav@gmail.com?subject=Solicitud de autenticación&body=Keyword-Authme loquesea"
+      >Toca aquí si prefieres confirmar por email</a
+    > -->
+  </div>
+</div>

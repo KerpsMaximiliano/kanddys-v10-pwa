@@ -1,0 +1,85 @@
+.container{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 30px;
+    .top-area{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+        margin: 0 24px 16px 24px;
+        border-bottom: solid 2px #E7E7E7;
+
+        .headline{
+            font-weight: 100;
+            margin: 0;
+            font-family: 'RobotoMedium';
+            font-size: 16px;
+            color: #7B7B7B;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .top-button{
+            all: unset;
+            font-family: 'SfProRegular';
+            font-size: 14px;
+            text-align: center;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.75;
+            }
+        }
+    }
+
+    .display{
+        padding-left: 24px;
+    }
+}
+
+.content{
+    min-width: 76px;
+    width: fit-content;
+    min-height: 99.5px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.body{
+    width: 100%;
+    height: 76px;
+    background-color: #E9E371;
+    border-radius: 50%;
+    position: relative;
+}
+
+.notify{
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFF;
+    border-radius: 50%;
+    position: absolute;
+    right: 0;
+    bottom: 32.5px;
+}
+
+.down-text{
+    font-family: 'SfProMedium';
+    font-size: 14px;
+    color: #7B7B7B;
+    text-align: center;
+    margin-top: 4.5px;
+}

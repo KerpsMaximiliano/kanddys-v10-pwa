@@ -9,7 +9,10 @@ export const customizerValue = `
   createdAt
   updatedAt
   backgroundColor {
-    color
+    color {
+      name
+      fixedValue
+    }
   }
   backgroundImage {
     image
@@ -38,11 +41,19 @@ export const customizerValue = `
       rotation
     }
     svgOptions {
-      color
+      color {
+        name
+        fixedValue
+        nickname
+      }
     }
   }
   texts {
-    color
+    color {
+      name
+      fixedValue
+      nickname
+    }
     text
     font
     size
@@ -79,12 +90,6 @@ export const getCustomizerValuePreview = gql`
   query getCustomizerValue($id: ObjectID!) {
     getCustomizerValue(id: $id) { 
       _id
-      canvas {
-        size {
-          height
-          width
-        }
-      }
       preview
     }
   }

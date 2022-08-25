@@ -3,71 +3,132 @@ import gql from 'graphql-tag';
 export const saleflow = gql`
   query saleflow($id: ObjectID!) {
     saleflow(id: $id) {
+      _id
+      name
+      headline
+      banner
+      subheadline
+      addressExtraInfo
+      banner
+      itemNickname
+      social {
+        name
+        url
+      }
+      module {
+        _id
+        appointment {
+          isActive
+          calendar {
+            _id
+          }
+        }
+        post {
+          isActive
+          post
+        }
+        delivery {
+          isActive
+          deliveryLocation
+          pickUpLocations {
+            city
+            street
+            houseNumber
+            referencePoint
+            nickName
+            note
+          }
+        }
+        paymentMethod {
+          paymentModule {
+            _id
+          }
+        }
+      }
+      merchant {
         _id
         name
-        headline
-        banner
-        subheadline
-        addressExtraInfo
-        banner
-        itemNickname
-        social {
-          name
-          url
-        }
-        module {
+        owner {
           _id
-          appointment {
-            isActive
-            calendar {
-              _id
-            }
-          }
-          post{
-            isActive
-            post
-          }
-          delivery{
-            isActive
-            deliveryLocation
-            pickUpLocations {
-              city
-              street
-              houseNumber
-              referencePoint
-              nickName
-              note
-            }
-          }
-          paymentMethod{
-            paymentModule{
-              _id
-            }
-          }
+          phone
         }
-        merchant {
-          _id
-          name
-        }
-        packages {
-          _id
-        }
-        items {
-          item{
-            _id
-          }
-          customizer {
-            _id
-          }
-          customizer {
-            _id
-          }
-        }
-        workingHours
-        paymentInfo
-        createdAt
-        canBuyMultipleItems
       }
+      packages {
+        _id
+      }
+      items {
+        item {
+          _id
+        }
+        customizer {
+          _id
+        }
+        index
+      }
+      workingHours
+      paymentInfo
+      createdAt
+      canBuyMultipleItems
+    }
+  }
+`;
+
+export const saleflowDefault = gql`
+  query saleflowDefault($merchantId: ObjectID!)  {
+    saleflowDefault(merchantId: $merchantId) {
+      _id
+      name
+      items {
+        item {
+          _id
+        }
+      }
+    }
+  }
+`;
+
+export const setDefaultSaleflow = gql`
+  mutation saleflowSetDefault($merchantId: ObjectID!, $id: ObjectID!) {
+    saleflowSetDefault(merchantId: $merchantId, id: $id) {
+      _id
+      name
+      merchant {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const hotSaleflow = gql`
+  query saleflow($id: ObjectID!) {
+    saleflow(id: $id) {
+      _id
+      name
+      banner
+      subheadline
+      social {
+        name
+        url
+      }
+      merchant {
+        _id
+        name
+      }
+      packages {
+        _id
+      }
+      items {
+        item {
+          _id
+        }
+        customizer {
+          _id
+        }
+        index
+      }
+      workingHours
+    }
   }
 `;
 
@@ -85,23 +146,39 @@ export const saleflows = gql`
 `;
 
 export const addItemToSaleFlow = gql`
-  mutation addItemToSaleFlow($item: ObjectID!, $id: ObjectID!) {
+  mutation addItemToSaleFlow($item: SaleFlowItemInput!, $id: ObjectID!) {
     addItemToSaleFlow(item: $item, id: $id) {
       _id
     }
   }
 `;
 
-export const createPost = gql`
-  mutation createPost($input: PostInput!) {
-    createPost(input: $input) {
+export const removeItemFromSaleFlow = gql`
+  mutation removeItemFromSaleFlow($item: ObjectID!, $id: ObjectID!) {
+    removeItemFromSaleFlow(item: $item, id: $id) {
       _id
     }
   }
 `;
+
 export const createSaleflow = gql`
   mutation createSaleflow($input: SaleFlowInput!) {
     createSaleflow(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const createSaleFlowModule = gql`
+  mutation createSaleFlowModule($input: SaleFlowModuleInput!) {
+    createSaleFlowModule(input: $input) {
+      _id
+    }
+  }
+`;
+export const updateSaleFlowModule = gql`
+  mutation updateSaleFlowModule($input: SaleFlowModuleInput!, $id: ObjectID!) {
+    updateSaleFlowModule(input: $input, id: $id) {
       _id
     }
   }
@@ -124,8 +201,9 @@ export const addLocation = gql`
 
 export const listItems = gql`
   query listItems($params: PaginationInput) {
-    listItems(params: $params) { 
+    listItems(params: $params) {
       _id
+      content
       name
       pricing
       pricePerUnit
@@ -137,6 +215,7 @@ export const listItems = gql`
       quality
       iconImage
       hasExtraPrice
+      showImages
       category {
         _id
         name
@@ -148,17 +227,22 @@ export const listItems = gql`
           _id
           name
           price
+          image
           quantity
         }
       }
-      itemExtra{
+      itemExtra {
         _id
+        images
+        name
+        isActive
+        createdAt
       }
     }
   }
 `;
 
-export const listPackages = gql`
+export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
       _id
@@ -168,13 +252,14 @@ export const listPackages = gql`
       categories {
         _id
       }
+      description
       packageRules {
-        onlyFixedQuantity,
-        fixedQuantity,
-        hasMaxQuantity,
-        maxQuantity,
-        hasMinQuantity,
-        minQuantity,
+        onlyFixedQuantity
+        fixedQuantity
+        hasMaxQuantity
+        maxQuantity
+        hasMinQuantity
+        minQuantity
         offsetPrice
         item {
           _id

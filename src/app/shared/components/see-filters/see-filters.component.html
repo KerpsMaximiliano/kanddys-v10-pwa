@@ -1,0 +1,37 @@
+<div
+  class="container-filters"
+  [ngStyle]="{ padding: showOptions ? '0 24px' : '0 11px', marginBottom: noMarginBottom ? '0px' : '1rem', fontFamily: BigText ? 'RobotoBold' : 'SfProRegular'}"
+>
+  <div *ngIf = "!searchBar" class="container-title">
+    <span class="title" [ngStyle]="{ color: BigText ? 'black' : '#7b7b7b', fontFamily: BigText ? 'RobotoBold' : 'SfProRegular', fontSize: BigText ? '22px' : '14px'}">{{ title }}</span>
+    <div (click)="openDialog()" class="filterButton" *ngIf="filters">
+      <!--<span *ngIf = "activedTags.length > 0" [ngStyle]="{'font-size':activedTags.length > 9?'8px':'16px'}" >{{activedTags.length}}</span>-->
+      <img src="{{ env }}/filter.svg" alt="Filter" />
+    </div>
+    <div class="more" *ngIf="showOptions">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="searchFilterSection" *ngIf = "searchBar">
+    <span class="title">{{ title }}</span>
+    <div class="searchSection">
+      <input [ngStyle] = "{'background': searchBar.background, 'font-family': searchBar.fontFamily}" type="text" placeholder="{{searchBar.placeholder}}" [(ngModel)]="searchBar.value" (ngModelChange)="searchBar.searchFunction()">
+      <div (click)="openDialog()" class="filterButton">
+        <img src="{{ env }}/filter.svg" alt="Filter" />
+      </div>
+    </div>
+  </div>
+
+  <app-close-tag
+    [tags]="activedTags"
+    [type]="type"
+    (closeEvent)="deletedTagFunction($event)"
+    (loadingSwiper)="loadingSwiper.emit(true)"
+    [hasBookmark]="hasBookmark"
+  ></app-close-tag>
+
+  <span class="text">{{ text }}</span>
+</div>

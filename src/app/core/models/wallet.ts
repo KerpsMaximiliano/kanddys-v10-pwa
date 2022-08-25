@@ -10,6 +10,8 @@ export class ElectronicPayment extends Model<ElectronicPayment> {
     paymentReceiver: PaymentReceiver;
     isActive: boolean;
     email: string;
+    link?: string;
+    name?: string;
 }
 
 export class ExchangeData extends Model<ExchangeData> {
@@ -25,6 +27,29 @@ export class Bank extends Model<Bank> {
     isActive: boolean
     account: string;
     routingNumber: number;
+    bankName?: string;
 
     name?: string;
+}
+
+export class ElectronicPaymentInput {
+    paymentReceiver?: string;
+    isActive?: boolean;
+    email?: string;
+    link: string;
+}
+
+export class BankInput {
+    bankName?: string;
+    paymentReceiver?: string;
+    typeAccount?: string;
+    ownerAccount: string;
+    isActive: boolean;
+    account: string;
+    routingNumber: number;
+}
+
+export class ExchangeDataInput {
+    electronicPayment?: ElectronicPaymentInput[];
+    bank: BankInput[];
 }

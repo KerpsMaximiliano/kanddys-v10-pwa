@@ -72,7 +72,7 @@ export const hotTransactionsByGlobalWallet = gql`
 }
 `;
 
-export const exchangedata = gql`
+export const exchangeData = gql`
   query exchangeData($id: ObjectID!){
     ExchangeData: exchangeData(id: $id){
       _id
@@ -85,6 +85,7 @@ export const exchangedata = gql`
         ownerAccount
         routingNumber
         typeAccount
+        bankName
       }
       electronicPayment {
         paymentReceiver {
@@ -93,6 +94,8 @@ export const exchangedata = gql`
         }
         isActive
         email
+        link
+        name
       }
     }
   }
@@ -102,23 +105,6 @@ export const createExchangeData = gql`
   mutation createExchangeData($input: ExchangeDataInput!) {
     ExchangeData: createExchangeData(input: $input) {
       _id
-      bank {
-        paymentReceiver {
-          name
-          image
-        }
-        isActive
-        account
-        routingNumber
-      }
-      electronicPayment {
-        paymentReceiver {
-          name
-          image
-        }
-        isActive
-        email
-      }
     }
   }
 `;
@@ -141,6 +127,8 @@ export const updateExchangeData = gql`
         }
         isActive
         email
+        link
+        name
       }
     }
   }
@@ -260,6 +248,8 @@ export const exchangeDataByUser = gql `
           name
           image
         }
+        ownerAccount
+        bankName
         isActive
         account
         routingNumber
@@ -270,8 +260,10 @@ export const exchangeDataByUser = gql `
           name
           image
         }
+        name
         isActive
         email
+        link
       }
     }
   }

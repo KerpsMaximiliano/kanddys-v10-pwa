@@ -1,0 +1,26 @@
+.card{
+    background-color: white;
+    color: #7B7B7B;
+    font-family: 'RobotoRegular';
+    font-size: 17px;
+    display: flex;
+    flex-direction: column;
+    // gap: 6px;
+    text-align: center;
+    -webkit-box-shadow: 0px 2px 12px 1px #bfbfbf94; 
+    box-shadow: 0px 2px 12px 1px #bfbfbf94;
+    width: auto; 
+    height: 84px;
+    justify-content: space-around;
+    margin: 8px auto;
+    padding: 5px;
+}
+
+.selected {
+    background-color: #4773D8;
+    color: white;
+
+    svg {
+        filter: brightness(0) saturate(100%) invert(96%) sepia(0%) saturate(7495%) hue-rotate(347deg) brightness(110%) contrast(104%);
+    }
+}

@@ -1,4 +1,3 @@
-import { CardData } from './../../shared/components/card/card.component';
 import { OnlyProps } from './../generics/object.generics';
 
 export class Model<This extends object = any> {
@@ -9,15 +8,5 @@ export class Model<This extends object = any> {
 
   constructor(props?: OnlyProps<This>) {
     Object.assign(this, props);
-  }
-
-  toCard(): CardData {
-    return {
-      title: `${this.constructor.name} ${this._id}`,
-      content: `${this.createdAt}`,
-      metadata: {
-        recordId: this._id,
-      },
-    };
   }
 }

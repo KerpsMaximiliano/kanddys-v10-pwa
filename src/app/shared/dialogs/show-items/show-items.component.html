@@ -1,0 +1,105 @@
+<div class="container">
+  <div
+    class="header"
+    [ngStyle]="{
+      justifyContent: headerButton ? 'space-between' : 'flex-start'
+    }"
+  >
+    <i
+      class="fas fa-times"
+      (click)="close()"
+      style="color: #27a2ff; cursor: pointer"
+    ></i>
+    <div class="header-button" *ngIf="headerButton" (click)="seeAllItems()">
+      {{ headerButton }}
+    </div>
+  </div>
+  <div class="card-item-list" *ngIf="products?.length > 0; else noProducts">
+    <div class="card-item" *ngFor="let item of products; let i = index">
+      <div class="card-content">
+        <div
+          class="image"
+          *ngIf="item.images[0]; else noImage"
+          [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"
+        ></div>
+        <ng-template #noImage>
+          <div class="image placeholder"></div>
+        </ng-template>
+        <div class="content">
+          <div id="content">
+            <div class="title">
+              {{ item.name }}
+            </div>
+            <div class="spread">
+              <span class="card-price">
+                <ng-container *ngIf="item.customizerId; else pricing">
+                  <ng-container *ngIf="item.total">
+                    ${{ item.total | number: "1.0-2" }}
+                  </ng-container>
+                </ng-container>
+                <ng-template #pricing>
+                  <ng-container *ngIf="item.pricing">
+                    ${{ item.pricing | number: "1.0-2" }}
+                  </ng-container>
+                  <ng-container *ngIf="item.price">
+                    ${{ item.price | number: "1.0-2" }}
+                  </ng-container>
+                </ng-template>
+              </span>
+            </div>
+          </div>
+          <div class="description">
+            {{item.description}}
+          </div>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <button
+            *ngIf="!orderFinished"
+            class="delete-button"
+            (click)="deleteItem(i)"
+          >
+            <img
+              src="{{ env }}/closeButton.svg"
+              width="32"
+              height="32"
+              alt="delete"
+            />
+          </button>
+        </div>
+      </div>
+      <!-- <button
+        *ngIf="!orderFinished"
+        class="delete-button"
+        (click)="deleteItem(i)"
+      >
+        ELIMINAR
+        <img
+          src="{{ env }}/closeButton.svg"
+          width="20"
+          height="20"
+          alt="delete"
+          style="margin-left: 5px; margin-top: -6px"
+        />
+      </button> -->
+    </div>
+    <div class="price">
+      <p class="total">${{ price | number: "1.0-2" }}</p>
+      <div
+        class="dop"
+      >
+        DOP
+      </div>
+    </div>
+  </div>
+  <ng-template #noProducts>
+    <p class="title empty">
+      Adiciona productos al carrito para visualizarlos aquí
+    </p>
+  </ng-template>
+  <app-sticky-button
+    [text]="footerButton"
+    [mode]="products.length > 0 ? 'basic' : 'disabled'"
+    (click)="orderItems()"
+    *ngIf="footerButton && !orderFinished && products?.length > 0"
+  ></app-sticky-button>
+</div>

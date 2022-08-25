@@ -1,0 +1,96 @@
+<div class="container">
+  <app-helper-headerv2
+    [bgColor]="'#2874AD'"
+    [color]="'#ffffff'"
+    [leftText]="{ text: 'AUTOMATIZACION DE MENSAJE', color: '#ffffff' }"
+    [leftTextStyles]="{ fontSize: '21px', fontFamily: 'SfProDisplayBold' }"
+    [mode]="'options'"
+    (returnEvent)="back()"
+  ></app-helper-headerv2>
+  <div class="wrapper">
+    <h2>Sobre la Automatización</h2>
+    <p>
+      Al cumplirse los criterios el WA (000) 000-0000 recibirá del BOT (000) 000
+      - 0000 un URL con la plantilla que contiene los parámetros.
+    </p>
+    <h3>Con cuál acción recibirá (000) 000 - 0000 la plantilla?</h3>
+    <app-answer-selector
+      [options]="actionList"
+      [indicator]="true"
+      [showDescription]="false"
+      [containerStyles]="{
+        margin: '0px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid rgba(112, 112, 112, 0.49)'
+      }"
+      [itemStyles]="{
+        fontSize: '17px'
+      }"
+      (onSelector)="selectedAction = $event"
+      [activeOption]="selectedAction"
+    ></app-answer-selector>
+    <h3>Cuál es el destinatario del mensaje?</h3>
+    <app-answer-selector
+      [options]="receiverOptions"
+      [indicator]="true"
+      [showDescription]="false"
+      [containerStyles]="{
+        margin: '0px',
+        paddingBottom: '16px'
+      }"
+      [itemStyles]="{
+        fontSize: '17px'
+      }"
+      (onSelector)="selectedReceiver = $event"
+      [activeOption]="selectedReceiver"
+    ></app-answer-selector>
+    <div class="form-wrapper">
+      <label for="form" class="input-label"> Mensaje de la plantilla: </label>
+      <textarea
+        placeholder="Escribe el mensaje.."
+        class="textarea"
+        [(ngModel)]="notificationMessage"
+      ></textarea>
+    </div>
+  </div>
+  <app-sticky-button
+    [mode]="'double'"
+    [bgColor]="'#A1A1A1'"
+    [size]="'small'"
+    [extra]="{ return: true, bgColor: '#2874AD' }"
+    [fontSize]="'17px'"
+    [customLeftButtonStyles]="
+      notificationMessage?.trim() &&
+      selectedAction != null &&
+      selectedReceiver != null &&
+      selectedReceiver == 0
+        ? {
+            width: '85%',
+            'max-width': 'none',
+            color: '#FFFFFF',
+            'background-color': '#2874AD',
+            'border-left': '#fff solid 0.15rem'
+          }
+        : {
+            width: '85%',
+            'max-width': 'none',
+            color: '#FFF',
+            'border-left': '#fff solid 0.15rem'
+          }
+    "
+    [customRightButtonStyles]="{
+      width: '1px'
+    }"
+    [text]="
+      notificationMessage?.trim() &&
+      selectedAction != null &&
+      selectedReceiver != null &&
+      selectedReceiver == 0
+        ? 'SALVAR'
+        : 'ESCRIBA SU MENSAJE'
+    "
+    text2=""
+    (added)="back()"
+    (left)="save()"
+  ></app-sticky-button>
+</div>

@@ -1,0 +1,12 @@
+.itemGrid {
+  display: grid;
+  padding: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  background-color: #ffffff;
+  row-gap: 50px;
+  column-gap: 10px;
+}
+.item-list {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(112, 112, 112, 0.13) ;
+}

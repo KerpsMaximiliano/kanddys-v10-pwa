@@ -1,0 +1,527 @@
+<!-- <button (click)="createCustomizer()">crear customizer</button> -->
+<div *ngIf="customizerID">
+  <p>{{customizerID}}</p>
+  <button (click)="copyId()">copy customizerID</button>
+  <br>
+  <button (click)="openCustomizer()">abrir customizer</button>
+</div>
+<hr>
+<div>
+  <div>
+    <label>Autofill Colors (stickers Texts)</label>
+    <input type="checkbox" [(ngModel)]="autofillColors">
+  </div>
+  <div>
+    <label>Autofill Stickers</label>
+    <input type="checkbox" [(ngModel)]="autofillStickers">
+  </div>
+  <div>
+    <label>Autofill Fonts</label>
+    <input type="checkbox" [(ngModel)]="autofillFonts">
+  </div>
+  <div>
+    <label>Autofill Bg Colors</label>
+    <input type="checkbox" [(ngModel)]="autofillBgColors">
+  </div>
+  <div>
+    <label>Autofill background</label>
+    <input type="checkbox" [(ngModel)]="autofillBackground">
+  </div>
+</div>
+  <form [formGroup]="customizerForm">
+    <button *ngIf="!customizerID" (click)="createCustomizer()">submit</button>
+    <button *ngIf="customizerID" (click)="modifyCustomizer()">actualizar</button>
+    <div formGroupName="canvas">
+      <div>
+        <label>Canvas rounded</label>
+        <input type="checkbox" formControlName="rounded">
+      </div>
+      <div>
+        <label>onlyFixed</label>
+        <input type="checkbox" formControlName="onlyFixed">
+      </div>
+      <!-- <div *ngIf="checkControlValue(customizerForm, 'canvas.onlyFixed')" formGroupName="fixedSize"> -->
+      <div *ngIf="customizerForm.get('canvas.onlyFixed').value" formGroupName="fixedSize" style="margin-left: 10px;">
+        <div style="display: none;">
+          <label>width</label>
+          <input type="number" formControlName="width">
+        </div>
+        <div style="display: none;">
+          <label>height</label>
+          <input type="number" formControlName="height">
+        </div>
+        <label>Ratio (width:height)</label>
+        <div>
+          <label>
+            <input type="radio" value="1:1" formControlName="ratio">
+              <span>1:1</span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="radio" value="3:4" formControlName="ratio">
+              <span>3:4</span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="radio" value="9:16" formControlName="ratio">
+              <span>9:16</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div formGroupName="backgroundColor">
+      <div>
+        <label>backgroundColor active</label>
+        <input type="checkbox" formControlName="active">
+      </div>
+      <div *ngIf="checkControlValue(customizerForm, 'backgroundColor.active')"  style="margin-left: 10px;">
+        <div>
+          <label>onlyFixed</label>
+          <input type="checkbox" formControlName="onlyFixed">
+        </div>
+        <!-- <div *ngIf="checkControlValue(customizerForm, 'backgroundColor.onlyFixed')" formArrayName="fixed"> -->
+        <div *ngIf="customizerForm.get('backgroundColor.onlyFixed').value" formArrayName="fixed"  style="margin-left: 10px;">
+          <label>fixed</label>
+          <button type="button" (click)="onAddArrayItemColor('backgroundColor.fixed')">
+            Add new backgroundColor
+          </button>
+          <div *ngFor="let fixedControl of getArrayControls(customizerForm, 'backgroundColor.fixed'); index as i" [formGroupName]="i">
+            <input type="color" formControlName="fixedValue">
+            <input type="text" formControlName="name">
+            <button type="button" (click)="onRemoveArrayItem('backgroundColor.fixed', i)">remove background color</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div formGroupName="backgroundImage">
+      <div>
+        <label>backgroundImage active</label>
+        <input type="checkbox" formControlName="active">
+      </div>
+      <div *ngIf="checkControlValue(customizerForm, 'backgroundImage.active')"  style="margin-left: 10px;">
+        <div formGroupName="filters" style="margin-left: 10px;">
+          <div>
+            <label>black and white</label>
+            <input type="checkbox" formControlName="bw">
+          </div>
+          <div>
+            <label>contrast</label>
+            <input type="checkbox" formControlName="contrast">
+          </div>
+          <div>
+            <label>sepia</label>
+            <input type="checkbox" formControlName="sepia">
+          </div>
+        </div>
+        <div>
+          <label>onlyFixed</label>
+          <input type="checkbox" formControlName="onlyFixed">
+        </div>
+        <!-- <div *ngIf="checkControlValue(customizerForm, 'backgroundImage.onlyFixed')"> -->
+        <div *ngIf="customizerForm.get('backgroundImage.onlyFixed').value"  style="margin-left: 10px;">
+          <div formArrayName="fixed">
+            <label>fixed</label>
+            <button type="button" (click)="onAddArrayItem('backgroundImage.fixed')">
+              Add new backgroundImage
+            </button>
+            <div *ngFor="let fixedControl of getArrayControls(customizerForm, 'backgroundImage.fixed'); index as i">
+              <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/*">
+              <button type="button" (click)="onRemoveArrayItem('backgroundImage.fixed', i)">remove background image</button>
+              <input [formControlName]="i" style="display: none;">
+            </div>
+          </div>
+          <div formArrayName="urls">
+            <label>urls</label>
+            <button type="button" (click)="onAddArrayItem('backgroundImage.urls')">
+              Add new backgroundImage
+            </button>
+            <div *ngFor="let urlsControl of getArrayControls(customizerForm, 'backgroundImage.urls'); index as i">
+              <input type="text" [formControlName]="i">
+              <button type="button" (click)="onRemoveArrayItem('backgroundImage.urls', i)">remove background url</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div formGroupName="stickers">
+      <div>
+        <label>stickers active</label>
+        <input type="checkbox" formControlName="active">
+      </div>
+      <div *ngIf="checkControlValue(customizerForm, 'stickers.active')" style="margin-left: 10px;">
+        <div>
+          <label>stickers fixedAmountItems</label>
+          <input type="checkbox" formControlName="fixedAmountItems">
+        </div>
+        <div>
+          <div formArrayName="itemsRule">
+            <div *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+              <p style="margin: 0;">cantidad de stickers: {{getArrayLength('stickers')}}</p>
+              <label>stickers itemsRule</label>
+              <button type="button" (click)="onAddArrayItem('stickers.itemsRule')">
+                Add new sticker itemsRule
+              </button>
+            </div>
+            <div *ngIf="!checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+              <p style="margin: 0;">Cantidad de stickers ilimitada.</p>
+              <p style="margin: 0;">Las reglas serán aplicadas para todos los stickers</p>
+            </div>
+            <div *ngFor="let itemsRuleControl of getArrayControls(customizerForm, 'stickers.itemsRule') | slice:0:1; index as i" [formGroupName]="i" style="margin-left: 20px;">
+              <hr>
+              <h5 *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')" style="margin: 0;">Sticker número {{i+1}}</h5>
+              <div>
+                <label>stickers fixPositionOnly</label>
+                <input type="checkbox" formControlName="fixPositionOnly">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'fixPositionOnly')" formGroupName="fixPosition"  style="margin-left: 10px;">
+                <div *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+                  <span>
+                    <label>x</label><input type="number" formControlName="x"> % del canvas<br>
+                  </span>
+                  <span>
+                    <label>y</label><input type="number" formControlName="y"> % del canvas<br>
+                  </span>
+                </div>
+                <!-- <span *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+                  <label>z</label><input type="number" formControlName="z"><br>
+                </span> -->
+                <label>size</label><input type="number" formControlName="height" (change)="handleStickerSize($event, itemsRuleControl)"><br>
+                <div style="display: none;">
+                  <label>height</label><input type="number" formControlName="height"><br>
+                  <label>width</label><input type="number" formControlName="width"><br>
+                </div>
+                <label>rotation</label><input type="number" formControlName="rotation"><br>
+              </div>
+              <div>
+                <label>stickers onlyFixed</label>
+                <input type="checkbox" formControlName="onlyFixed">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixed')" style="margin-left: 10px;">
+              <!-- <div *ngIf="customizerForm.get('stickers.onlyFixed').value"> -->
+                <div formArrayName="fixed">
+                  <label>fixed</label>
+                  <button type="button" (click)="onAddArrayItem('fixed', itemsRuleControl)">
+                    Add new stickers
+                  </button>
+                  <div *ngFor="let fixedControl of getArrayControls(itemsRuleControl, 'fixed'); index as i">
+                    <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/svg+xml">
+                    <button type="button" (click)="onRemoveArrayItem('fixed', i, itemsRuleControl)">remove sticker fixed</button>
+                    <input [formControlName]="i" style="display: none;">
+                  </div>
+                </div>
+                <div formArrayName="urls">
+                  <label>urls</label>
+                  <button type="button" (click)="onAddArrayItem('urls', itemsRuleControl)">
+                    Add new stickers
+                  </button>
+                  <div *ngFor="let urlsControl of getArrayControls(itemsRuleControl, 'urls'); index as i">
+                    <input type="text" [formControlName]="i">
+                    <button type="button" (click)="onRemoveArrayItem('urls', i, itemsRuleControl)">remove sticker url</button>
+                  </div>
+                </div>
+                <div formGroupName="svgRule">
+                  <div>
+                    <label>stickers fixedColors</label>
+                    <input type="checkbox" formControlName="fixedColors">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'svgRule.fixedColors')" formArrayName="colors" style="margin-left: 10px;">
+                    <label>colors</label>
+                    <button type="button" (click)="onAddArrayItemColor('svgRule.colors', itemsRuleControl)">add new sticker color</button>
+                    <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
+                      <input type="color" formControlName="fixedValue">
+                      <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
+                      <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+              <div *ngFor="let itemsRuleControl of getArrayControls(customizerForm, 'stickers.itemsRule'); index as i" [formGroupName]="i" style="margin-left: 20px;">
+                <div *ngIf="i > 0">
+                  <hr>
+                  <h5 style="margin: 0;">Sticker número {{i +1}}</h5>
+                  <div>
+                    <label>stickers fixPositionOnly</label>
+                    <input type="checkbox" formControlName="fixPositionOnly">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'fixPositionOnly')" formGroupName="fixPosition">
+                    <span>
+                      <label>x</label><input type="number" formControlName="x"> % del canvas<br>
+                    </span>
+                    <span>
+                      <label>y</label><input type="number" formControlName="y"> % del canvas<br>
+                    </span>
+                    <!-- <span *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')">
+                      <label>z</label><input type="number" formControlName="z"><br>
+                    </span> -->
+                    <label>size</label><input type="number" (change)="handleStickerSize($event, itemsRuleControl)"><br>
+                    <div style="display: none;">
+                      <label>height</label><input type="number" formControlName="height"><br>
+                      <label>width</label><input type="number" formControlName="width"><br>
+                    </div>
+                    <label>rotation</label><input type="number" formControlName="rotation"><br>
+                  </div>
+                  <div>
+                    <label>stickers onlyFixed</label>
+                    <input type="checkbox" formControlName="onlyFixed">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixed')" style="margin-left: 10px;">
+                    <div formArrayName="fixed">
+                      <label>fixed</label>
+                      <button type="button" (click)="onAddArrayItem('fixed', itemsRuleControl)">
+                        Add new stickers
+                      </button>
+                      <div *ngFor="let fixedControl of getArrayControls(itemsRuleControl, 'fixed'); index as i">
+                        <input type="file" (change)="handleFileInput($event, fixedControl)" accept="image/svg+xml">
+                        <button type="button" (click)="onRemoveArrayItem('fixed', i, itemsRuleControl)">remove sticker fixed</button>
+                        <input [formControlName]="i" style="display: none;">
+                      </div>
+                    </div>
+                    <div formArrayName="urls">
+                      <label>urls</label>
+                      <button type="button" (click)="onAddArrayItem('urls', itemsRuleControl)">
+                        Add new stickers
+                      </button>
+                      <div *ngFor="let urlsControl of getArrayControls(itemsRuleControl, 'urls'); index as i">
+                        <input type="text" [formControlName]="i">
+                        <button type="button" (click)="onRemoveArrayItem('urls', i, itemsRuleControl)">remove sticker url</button>
+                      </div>
+                    </div>
+                    <div formGroupName="svgRule">
+                      <div>
+                        <label>stickers fixedColors</label>
+                        <input type="checkbox" formControlName="fixedColors">
+                      </div>
+                      <div *ngIf="checkControlValue(itemsRuleControl, 'svgRule.fixedColors')" formArrayName="colors" style="margin-left: 10px;">
+                        <label>colors</label>
+                        <button type="button" (click)="onAddArrayItemColor('svgRule.colors', itemsRuleControl)">add new sticker color</button>
+                        <div *ngFor="let colorsControl of getArrayControls(itemsRuleControl, 'svgRule.colors'); index as i" [formGroupName]="i">
+                          <input type="color" formControlName="fixedValue">
+                          <input type="text" formControlName="name">
+                          <input type="text" formControlName="nickname">
+                          <button type="button" (click)="onRemoveArrayItem('svgRule.colors', i, itemsRuleControl)">remove sticker color</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" *ngIf="checkControlValue(customizerForm, 'stickers.fixedAmountItems')" (click)="onRemoveArrayItem('stickers.itemsRule', i)">remove sticker itemRule</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div formGroupName="texts">
+      <div>
+        <label>text active</label>
+        <input type="checkbox" formControlName="active">
+      </div>
+      <div *ngIf="checkControlValue(customizerForm, 'texts.active')" style="margin-left: 10px;">
+        <div>
+          <label>texts fixedAmountItems</label>
+          <input type="checkbox" formControlName="fixedAmountItems">
+        </div>
+        <!-- <div *ngIf="checkControlValue(customizerForm, 'texts.fixedAmountItems')"> -->
+        <div>
+          <div formArrayName="itemsRule">
+            <div *ngIf="checkControlValue(customizerForm, 'texts.fixedAmountItems')">
+              <p style="margin: 0;">cantidad de textos: {{getArrayLength('texts')}}</p>
+              <label>texts itemsRule</label>
+              <button type="button" (click)="onAddArrayItem('texts.itemsRule')">
+                Add new text itemsRule
+              </button>
+            </div>
+            <div *ngIf="!checkControlValue(customizerForm, 'texts.fixedAmountItems')">
+              <p style="margin: 0;">Cantidad de textos ilimitada.</p>
+              <p style="margin: 0;">Las reglas serán aplicadas para todos los textos</p>
+            </div>
+            <div *ngFor="let itemsRuleControl of getArrayControls(customizerForm, 'texts.itemsRule') | slice:0:1; index as i" [formGroupName]="i" style="margin-left: 20px;">
+              <hr>
+              <h5 style="margin: 0" *ngIf="checkControlValue(customizerForm, 'texts.fixedAmountItems')">Texto número {{i+1}}</h5>
+              <div>
+                <label>texto default</label>
+                <input type="text" formControlName="defaultText" [maxlength]="getMaxLength(itemsRuleControl)">
+              </div>
+              <div>
+                <label>fixPositionOnly</label>
+                <input type="checkbox" formControlName="fixPositionOnly">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'fixPositionOnly')" formGroupName="fixPosition" style="margin-left: 10px;">
+                <div *ngIf="checkControlValue(customizerForm, 'texts.fixedAmountItems')">
+                  <span>
+                    <label>x</label><input type="number" formControlName="x"> % del canvas<br>
+                  </span>
+                  <span>
+                    <label>y</label><input type="number" formControlName="y"> % del canvas<br>
+                  </span>
+                </div>
+                <label>rotation</label><input type="number" formControlName="rotation"><br>
+              </div>
+              <div>
+                <label>fixSizeOnly</label>
+                <input type="checkbox" formControlName="fixSizeOnly">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'fixSizeOnly')" style="margin-left: 10px;">
+                <label>fixSize</label>
+                <input type="number" min="16" max="48" formControlName="fixSize">
+              </div>
+              <div>
+                <label>fixedLengthOnly</label>
+                <input type="checkbox" formControlName="fixedLengthOnly">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'fixedLengthOnly')" style="margin-left: 10px;">
+                <label>fixedLength</label>
+                <input type="number" formControlName="fixedLength">
+              </div>
+              <div>
+                <label>onlyFixedColor</label>
+                <input type="checkbox" formControlName="onlyFixedColor">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedColor')" formArrayName="fixedColors" style="margin-left: 10px;">
+                <label>fixedColor</label>
+                <button type="button" (click)="onAddArrayItemColor('fixedColors', itemsRuleControl)">
+                  Add new color
+                </button>
+                <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
+                  <input type="color" formControlName="fixedValue">
+                  <input type="text" formControlName="name">
+                  <input type="text" formControlName="nickname">
+                  <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
+                </div>
+              </div>
+              <div>
+                <label>texts onlyFixedFonts</label>
+                <input type="checkbox" formControlName="onlyFixedFonts">
+              </div>
+              <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedFonts')" formArrayName="fixedFonts" style="margin-left: 10px;">
+                <label>fixedFonts</label>
+                <button type="button" (click)="onAddArrayItem('fixedFonts', itemsRuleControl)">
+                  Add new fonts
+                </button>
+                <div *ngFor="let fixedFonts of getArrayControls(itemsRuleControl, 'fixedFonts'); index as i">
+                  <input type="text" [formControlName]="i">
+                  <button type="button" (click)="onRemoveArrayItem('fixedFonts', i, itemsRuleControl)">remove text fixedFont</button>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="checkControlValue(customizerForm, 'texts.fixedAmountItems')">
+              <div *ngFor="let itemsRuleControl of getArrayControls(customizerForm, 'texts.itemsRule'); index as i" [formGroupName]="i" style="margin-left: 20px;">
+                <div *ngIf="i > 0">
+                  <hr>
+                  <h5 style="margin: 0;">Texto número {{i +1}}</h5>
+                  <div>
+                    <label>texto default</label>
+                    <input type="text" formControlName="defaultText" [maxlength]="getMaxLength(itemsRuleControl)">
+                  </div>
+                  <div>
+                    <label>fixPositionOnly</label>
+                    <input type="checkbox" formControlName="fixPositionOnly">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'fixPositionOnly')" formGroupName="fixPosition" style="margin-left: 10px;">
+                    <span>
+                      <label>x</label><input type="number" formControlName="x"> % del canvas<br>
+                    </span>
+                    <span>
+                      <label>y</label><input type="number" formControlName="y"> % del canvas<br>
+                    </span>
+                    <label>rotation</label><input type="number" formControlName="rotation"><br>
+                  </div>
+                  <div>
+                    <label>fixSizeOnly</label>
+                    <input type="checkbox" formControlName="fixSizeOnly">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'fixSizeOnly')" style="margin-left: 10px;">
+                    <label>fixSize</label>
+                    <input type="number" min="16" max="48" formControlName="fixSize">
+                  </div>
+                  <div>
+                    <label>fixedLengthOnly</label>
+                    <input type="checkbox" formControlName="fixedLengthOnly">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'fixedLengthOnly')" style="margin-left: 10px;">
+                    <label>fixedLength</label>
+                    <input type="number" formControlName="fixedLength">
+                  </div>
+                  <div>
+                    <label>onlyFixedColor</label>
+                    <input type="checkbox" formControlName="onlyFixedColor">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedColor')" formArrayName="fixedColors" style="margin-left: 10px;">
+                    <label>fixedColor</label>
+                    <button type="button" (click)="onAddArrayItemColor('fixedColors', itemsRuleControl)">
+                      Add new color
+                    </button>
+                    <div *ngFor="let fixedColors of getArrayControls(itemsRuleControl, 'fixedColors'); index as i" [formGroupName]="i">
+                      <input type="color" formControlName="fixedValue">
+                      <input type="text" formControlName="name">
+                      <input type="text" formControlName="nickname">
+                      <button type="button" (click)="onRemoveArrayItem('fixedColors', i, itemsRuleControl)">remove text fixedColors</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label>onlyFixedFonts</label>
+                    <input type="checkbox" formControlName="onlyFixedFonts">
+                  </div>
+                  <div *ngIf="checkControlValue(itemsRuleControl, 'onlyFixedFonts')" formArrayName="fixedFonts" style="margin-left: 10px;">
+                    <label>fixedFonts</label>
+                    <button type="button" (click)="onAddArrayItem('fixedFonts', itemsRuleControl)">
+                      Add new fonts
+                    </button>
+                    <div *ngFor="let fixedFonts of getArrayControls(itemsRuleControl, 'fixedFonts'); index as i">
+                      <input type="text" [formControlName]="i">
+                      <button type="button" (click)="onRemoveArrayItem('fixedFonts', i, itemsRuleControl)">remove text fixedFont</button>
+                    </div>
+                  </div>
+                  <button type="button" (click)="onRemoveArrayItem('texts.itemsRule', i)">remove text itemRule</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div formGroupName="lines">
+      <div>
+        <label>lines active</label>
+        <input type="checkbox" formControlName="active">
+      </div>
+      <div *ngIf="checkControlValue(customizerForm, 'lines.active')" style="margin-left: 10px;">
+        <div>
+          <label>lines onlyFixedColor</label>
+          <input type="checkbox" formControlName="onlyFixedColor">
+        </div>
+        <div *ngIf="checkControlValue(customizerForm, 'lines.onlyFixedColor')" formArrayName="fixedColors" style="margin-left: 10px;">
+          <label>lines fixedColors</label>
+          <button type="button" (click)="onAddArrayItem('lines.fixedColors')">
+            Add new color
+          </button>
+          <div *ngFor="let linesFixedColor of getArrayControls(customizerForm, 'lines.fixedColors'); index as i">
+            <input type="color" [formControlName]="i">
+            <button type="button" (click)="onRemoveArrayItem('lines.fixedColors', i)">remove sticker color</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </form>
+<hr>
+<pre>{{customizerForm.value | json}}</pre>
+<ul>
+  <li
+    *ngFor="let item of customizerList"
+    [routerLink]="['/posts/post-customizer', item]"
+    style="padding: 10px; cursor: pointer;"
+  >
+    {{ item }}
+  </li>
+</ul>

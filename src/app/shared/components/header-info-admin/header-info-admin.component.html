@@ -1,0 +1,57 @@
+<div class="container" [ngStyle]="{'flex-direction': whatsApp ? 'column' : 'row'}">
+
+	<div class="tag-area" *ngIf="whatsApp">
+		<div class="texts">
+			<h1 class="title">Mensaje que se recibe al etiquetar</h1>
+			<p class="text-ws">Adicionar notificación al taguear la orden/venta.</p>
+		</div>
+
+		<div class="on-off-icon">
+			<img [src]="env + '/whatsapp_verde.svg'"
+				alt="Icono de whatsApp. Haz click o toca para encender o apagar el mensaje" width="30px" height="30px"
+				style="cursor: pointer;" (click)="turnOn()">
+			<p class="on-off" (click)="turnOn()"><span *ngIf="!on">Off</span> <span *ngIf="on">On</span></p>
+		</div>
+	</div>
+
+	<ng-container *ngIf="data">
+		<div style="display: flex; flex-direction: column; justify-content: center;">
+			<div class="data-container" *ngFor="let element of data; index as i">
+				<button *ngIf="element.func" (click)="element.func()">
+					<img
+						*ngIf="element.icon"
+                        [ngStyle]="{'filter': (element.filter === 'no')? 'none': ''}"
+						[src]="env + element.icon"
+						alt="Haz click aqui para mas"
+						class="icon"
+					>
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
+					</p>
+				</button>
+				<ng-container *ngIf="!element.func">
+					<img
+						*ngIf="element.icon"
+                        [ngStyle]="{'filter': element.filter === 'no'? 'none': ''}"
+						[src]="env + element.icon"
+						alt="Haz click aqui para mas"
+						class="icon"
+					>
+					<p class="text" [ngStyle]="{ 'color': element.text.color && element.text.color != '' ? element.text.color : '#000' }">
+						{{element.text.content}}
+					</p>
+				</ng-container>
+			</div>
+		</div>
+	</ng-container>
+
+	<div class="merchant-area" *ngIf="merchant">
+		<img [src]="env + '/person.svg'" alt="Haz click o toca para ver perfil del vendedor" class="icon" width="15px"
+			height="19px" style="margin-left: 70%;">
+		<img [src]="env + '/upload.svg'" alt="Haz click o toca para compartir" class="icon" width="53px" height="62px"
+			style="margin-top: 28.5px;">
+	</div>
+
+</div>
+
+<!-- TODO ES UN ARRAY DE OBJETOS -->

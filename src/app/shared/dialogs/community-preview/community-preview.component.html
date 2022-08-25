@@ -1,0 +1,58 @@
+<div class="container">
+    <div class="description">
+        <div class="description-header">
+            <div class="title">
+                {{data.name}}
+                <div class="category">
+                    {{data.category}}
+                </div>
+                <div class="description-text">
+                    {{data.extraordinary}}
+                </div>
+            </div>
+            <div class="image" [ngStyle]="{'background-image': 'url(' + data.image + ')'}">
+
+            </div>
+        </div>
+        <div class="section">
+            <div class="title">
+                Our Goal
+            </div>
+            <div class="text">
+                {{data.goal}}
+            </div>
+        </div>
+        <div class="section">
+            <div class="title">
+                Our collaboration for #abetterkindofworld
+            </div>
+            <div class="text">
+                {{data.collab}}
+            </div>
+        </div>
+        <div class="section">
+            <div class="icons">
+                <div class="icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <div class="icon">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <div class="icon">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+            </div>
+        </div>
+        <div class="btns-container">
+            <app-yellow-button
+                [buttonConfig]="textBtnConfig">
+            </app-yellow-button>
+        </div>
+    </div>
+</div>

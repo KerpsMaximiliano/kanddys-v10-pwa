@@ -1,0 +1,54 @@
+<div class="body">
+
+    <div class="top-bar">
+        <div class="wrapper">
+            <img [src]="env + '/person.svg'" alt="" class="top-image"/>
+
+            <h1 class="top-text">{{topBar}}</h1>
+        </div>
+
+        <button class="transparent-button" (click)="buttonAction('top')">{{topBtn}}</button>
+    </div>
+    
+    <div class="middle" *ngIf="questions?.length">
+        <ng-container  *ngFor="let question of questions; let i = index">
+            <div class="flexer" style="justify-content: space-between;">
+                <div class="flexer">
+                    <p class="number" *ngIf="question.enum">#{{i+1}}: </p>
+                    <p class="webform-name">{{question.text}}</p>
+                </div>
+                <p style="color: #000000;">{{question.any}}</p>
+            </div>
+        </ng-container>
+    </div>
+
+    <div
+        class="bottom"
+        [ngClass]="{'top-border': questions?.length}"
+        [ngStyle]="{gridTemplateColumns: (bottomLeftBtn || bottomRightBtn || dropdowns?.length) && 'auto auto'}"
+    >
+        <button *ngIf="bottomLeftBtn && !dropdowns?.length" class="transparent-button" (click)="buttonAction('left')">
+            {{bottomLeftBtn}}
+        </button>
+        <div *ngIf="dropdowns?.length" class="flex-buttons">
+            <ng-container *ngFor="let dropdown of dropdowns; let i = index">
+                <button class="transparent-button" (click)="setCurrentDropdown(i)">
+                    {{dropdown.title}}
+                    <i class="fas fa-chevron-right" *ngIf="i != currentIndex || !dropdownActive"></i>
+                    <i class="fas fa-chevron-down" *ngIf="i == currentIndex && dropdownActive"></i>
+                </button>
+            </ng-container>
+        </div>
+        <div *ngIf="bottomRightBtn || secondBottomRightBtn" class="right-buttons">
+            <button *ngIf="bottomRightBtn && secondBottomRightBtn" class="transparent-button" (click)="buttonAction('right-second')">
+                {{secondBottomRightBtn}}
+            </button>
+            <button *ngIf="bottomRightBtn" class="transparent-button" (click)="buttonAction('right')">
+                {{bottomRightBtn}}
+            </button>
+        </div>
+    </div>
+    <div *ngIf="dropdownActive && dropdowns[currentIndex].content.length" class="tags-container">
+        <span class="tag-label" *ngFor="let content of dropdowns[currentIndex].content">{{ content.text }}</span>
+    </div>
+</div>
