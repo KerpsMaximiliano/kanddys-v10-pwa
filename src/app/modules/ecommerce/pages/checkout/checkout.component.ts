@@ -58,7 +58,7 @@ export class CheckoutComponent implements OnInit {
     this.items[0].images[0] = this.customizerPreview?.base64;
     this.payment =
       (this.items[0].qualityQuantity.price +
-        this.headerService.order.products[0].amount *
+        this.order.products[0].amount *
           this.items[0].params[0].values[0].price) *
       1.18;
     // Customizer data table
