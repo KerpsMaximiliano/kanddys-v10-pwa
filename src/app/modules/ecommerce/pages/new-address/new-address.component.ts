@@ -111,57 +111,61 @@ export class NewAddressComponent implements OnInit {
               this.mode = 'add';
             },
           },
-          {
-            text: 'EDITAR',
-            mode: 'func',
-            func: () => {
-              this.mode = 'edit';
-              this.addressesOptions.forEach((option) => {
-                if (option.click) {
-                  option.icons = [
-                    {
-                      src: this.env + '/pencil.svg',
-                      callback: () => {
-                        this.mode = 'edit';
-                        this.editingId = option.id;
-                        this.addressForm.patchValue(
-                          this.addresses.find(
-                            (address) => address._id === option.id
-                          )
-                        );
-                      },
-                    },
-                  ];
-                }
-              });
-            },
-          },
-          {
-            text: 'BORRAR',
-            mode: 'func',
-            func: () => {
-              this.mode = 'delete';
-              this.addressesOptions.forEach((option) => {
-                if (option.click) {
-                  option.icons = [
-                    {
-                      src: this.env + '/delete.svg',
-                      callback: async () => {
-                        this.openDeleteDialog(option.id);
-                      },
-                      styles: {
-                        width: '16px',
-                        height: '19px',
-                      },
-                    },
-                  ];
-                }
-              });
-            },
-          },
         ],
       },
     ];
+    if (this.addressesOptions.some((option) => option.click)) {
+      list[0].options.push(
+        {
+          text: 'EDITAR',
+          mode: 'func',
+          func: () => {
+            this.mode = 'edit';
+            this.addressesOptions.forEach((option) => {
+              if (option.click) {
+                option.icons = [
+                  {
+                    src: this.env + '/pencil.svg',
+                    callback: () => {
+                      this.mode = 'edit';
+                      this.editingId = option.id;
+                      this.addressForm.patchValue(
+                        this.addresses.find(
+                          (address) => address._id === option.id
+                        )
+                      );
+                    },
+                  },
+                ];
+              }
+            });
+          },
+        },
+        {
+          text: 'BORRAR',
+          mode: 'func',
+          func: () => {
+            this.mode = 'delete';
+            this.addressesOptions.forEach((option) => {
+              if (option.click) {
+                option.icons = [
+                  {
+                    src: this.env + '/delete.svg',
+                    callback: async () => {
+                      this.openDeleteDialog(option.id);
+                    },
+                    styles: {
+                      width: '16px',
+                      height: '19px',
+                    },
+                  },
+                ];
+              }
+            });
+          },
+        }
+      );
+    }
 
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',

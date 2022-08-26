@@ -6,7 +6,11 @@
         {{ mode === "normal" ? "Dirección de entrega" : "Modo de edición" }}
       </h5>
     </div>
-    <button *ngIf="mode === 'normal'" class="dot-trio" (click)="onOpenDialog()">
+    <button
+      *ngIf="mode === 'normal' && saleflow.module?.delivery?.deliveryLocation"
+      class="dot-trio"
+      (click)="onOpenDialog()"
+    >
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
