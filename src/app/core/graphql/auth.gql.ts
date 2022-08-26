@@ -120,6 +120,15 @@ export const checkUser = gql`
   }
 `;
 
+export const hotCheckUser = gql`
+  query checkUser($emailOrPhone: String!,$notificationMethod:String) {
+    checkUser(emailOrPhone: $emailOrPhone,notificationMethod:$notificationMethod) { 
+      _id
+      phone
+    }
+  }
+`;
+
 export const userData = gql`
   query user($_id: ObjectID!) {
     user: user(id: $_id) { ${user} }

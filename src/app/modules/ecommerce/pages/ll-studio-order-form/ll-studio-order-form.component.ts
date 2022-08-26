@@ -69,7 +69,7 @@ export class LlStudioOrderFormComponent implements OnInit {
   referenceImagefiles: File[] = [];
   proofOfPaymentDefaultImages: (string | ArrayBuffer)[] = [''];
   proofOfPaymentImagefiles: File[] = [];
-  newUser = true;
+  newUser = false;
   existingUserData: User = null;
   loading = true;
   logo =
@@ -127,13 +127,6 @@ export class LlStudioOrderFormComponent implements OnInit {
             params.dataModel.value['1'].phoneNumber.e164Number.split('+')[1];
           try {
             const response = await this.authService.checkUser(phoneNumber);
-
-            console.log(response, 'checkUser');
-
-            localStorage.setItem(
-              'lastLoggedPhone',
-              JSON.stringify(params.dataModel.value['1'].phoneNumber)
-            );
 
             if (response && '_id' in response && 'phone' in response) {
               this.existingUserData = response;
@@ -244,6 +237,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 this.formSteps[9].fieldsList[0].fieldControl.control.enable();
               }
             } else {
+              this.newUser = true;
               this.formSteps[1].fieldsList.forEach((field) => {
                 field.fieldControl.control.reset();
                 field.fieldControl.control.enable();
@@ -253,9 +247,21 @@ export class LlStudioOrderFormComponent implements OnInit {
                 field.fieldControl.control.reset();
                 field.fieldControl.control.enable();
               });
+
+              //console.log('nuevo usuario');
             }
           } catch (error) {
             this.newUser = true;
+            this.formSteps[1].fieldsList.forEach((field) => {
+              field.fieldControl.control.reset();
+              field.fieldControl.control.enable();
+            });
+
+            this.formSteps[9].fieldsList.forEach((field) => {
+              field.fieldControl.control.reset();
+              field.fieldControl.control.enable();
+            });
+
             console.log('nuevo usuario');
           }
 
@@ -507,7 +513,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           }
 
           try {
-            const foundEmail = await this.authService.checkUser(
+            const foundEmail = await this.authService.hotCheckUser(
               this.formSteps[1].fieldsList[3].fieldControl.control.value
             );
 
@@ -1770,24 +1776,26 @@ export class LlStudioOrderFormComponent implements OnInit {
             console.log('full form message', this.fullFormMessage);
             console.log('data', data);
 
-            const success = await this.merchantsService.uploadDataToClientsAirtable(
-              this.merchantId,
-              this.automationName,
-              data
-            );
+            const success =
+              await this.merchantsService.uploadDataToClientsAirtable(
+                this.merchantId,
+                this.automationName,
+                data
+              );
 
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
-               type: 'centralized-fullscreen',
-               props: {
-                 icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                 message: success ? null : 'Ocurrió un problema',
-                 showCloseButton: success ? false : true
-               },
-               customClass: 'app-dialog',
-               flags: ['no-header'],
-             });
+              type: 'centralized-fullscreen',
+              props: {
+                icon: success ? 'check-circle.svg' : 'sadFace.svg',
+                message: success ? null : 'Ocurrió un problema',
+                showCloseButton: success ? false : true,
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
 
-             window.location.href = this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            window.location.href =
+              this.whatsappLink + encodeURIComponent(this.fullFormMessage);
             return { ok: true };
           } catch (error) {
             const formData = this.formSteps.map((formStep, index) => {
