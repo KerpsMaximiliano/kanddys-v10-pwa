@@ -149,6 +149,10 @@ export class NewAddressComponent implements OnInit {
                       callback: async () => {
                         this.openDeleteDialog(option.id);
                       },
+                      styles: {
+                        width: '16px',
+                        height: '19px',
+                      },
                     },
                   ];
                 }
