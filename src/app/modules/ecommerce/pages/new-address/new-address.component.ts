@@ -45,10 +45,11 @@ export class NewAddressComponent implements OnInit {
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
   saleflow: SaleFlow;
-  selectedLocation: DeliveryLocation;
+  selectedIndex: number;
 
   async ngOnInit(): Promise<void> {
     this.saleflow = this.headerService.getSaleflow();
+    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
@@ -182,10 +183,12 @@ export class NewAddressComponent implements OnInit {
       (option) => option.id !== id
     );
     this.addresses = this.addresses.filter((address) => address._id !== id);
+    if (this.addresses[this.selectedIndex]._id === id)
+      this.selectedIndex = null;
   }
 
   selectAddress() {
-    const { _id, ...addressInput } = this.selectedLocation;
+    const { _id, ...addressInput } = this.addresses[this.selectedIndex];
     this.headerService.order.products.forEach((product) => {
       product.deliveryLocation = addressInput;
     });
@@ -243,7 +246,7 @@ export class NewAddressComponent implements OnInit {
     } else {
       this.addresses.push(result);
       this.addressesOptions.push(newAddressOption);
-      this.selectedLocation = this.addresses[this.addresses.length - 1];
+      this.selectedIndex = this.addresses.length - 1;
       this.selectAddress();
     }
     this.goBack();

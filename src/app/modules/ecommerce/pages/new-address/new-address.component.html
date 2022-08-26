@@ -22,8 +22,9 @@
       <div>
         <app-answer-selector
           [options]="addressesOptions"
+          [activeOption]="selectedIndex"
           [indicator]="true"
-          (onSelector)="selectedLocation = addresses[$event]"
+          (onSelector)="selectedIndex = $event"
           [containerStyles]="{
             margin: '0px'
           }"
@@ -112,7 +113,7 @@
   (click)="formSubmit()"
 ></app-sticky-button>
 <app-sticky-button
-  *ngIf="mode === 'normal' && selectedLocation"
+  *ngIf="mode === 'normal' && selectedIndex != null"
   mode="fixed"
   text="CONTINUA AL CHECKOUT"
   bgColor="#2874AD"
