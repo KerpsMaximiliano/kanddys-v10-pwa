@@ -858,7 +858,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 );
               }
             } catch (error) {
-              console.log(error);
+              //console.log(error);
             }
           },
           styles: {
@@ -990,7 +990,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
                 }
               } catch (error) {
-                console.log(error);
+                //console.log(error);
               }
             }
           },
@@ -1590,7 +1590,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 await this.merchantsService.uploadDataToClientsAirtable(
                   this.merchantId,
                   this.automationName,
-                  data
+                  data,
+                  window.location.href
                 );
 
               this.dialog.open(GeneralFormSubmissionDialogComponent, {
@@ -1670,8 +1671,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.calendarId;
       this.formSteps[7].embeddedComponents[0].shouldRerender = true;
 
-      console.log('merchantId', this.merchantId);
-      console.log('automationName', this.automationName);
+      //console.log('merchantId', this.merchantId);
+      //console.log('automationName', this.automationName);
     });
 
     setTimeout(() => {

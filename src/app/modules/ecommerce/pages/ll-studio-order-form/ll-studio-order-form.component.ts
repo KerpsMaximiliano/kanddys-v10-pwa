@@ -114,7 +114,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             text: 'Otras maneras de recibir las notificaciones >',
             clickable: true,
             callback: () => {
-              console.log('Se ha clickeado el callback');
+              //console.log('Se ha clickeado el callback');
             },
           },
         },
@@ -122,7 +122,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
-          console.log(params.dataModel.value['1'].phoneNumber);
+          //console.log(params.dataModel.value['1'].phoneNumber);
           const phoneNumber =
             params.dataModel.value['1'].phoneNumber.e164Number.split('+')[1];
           try {
@@ -132,7 +132,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               this.existingUserData = response;
               this.newUser = false;
 
-              console.log(response);
+              //console.log(response);
 
               if (this.existingUserData.name) {
                 this.formSteps[1].fieldsList[0].fieldControl.control.setValue(
@@ -262,7 +262,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               field.fieldControl.control.enable();
             });
 
-            console.log('nuevo usuario');
+            //console.log('nuevo usuario');
           }
 
           return { ok: true };
@@ -788,7 +788,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 );
               }
             } catch (error) {
-              console.log(error);
+              //console.log(error);
             }
           },
           styles: {
@@ -917,7 +917,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                   );
                 }
               } catch (error) {
-                console.log(error);
+                //console.log(error);
               }
             }
           },
@@ -1068,7 +1068,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             'Correo Electrónico',
           ],
           changeCallbackFunction: (change, params) => {
-            console.log(change);
+            //console.log(change);
 
             this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
               change,
@@ -1586,6 +1586,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           );
 
           try {
+
             const { phoneNumber } = params.dataModel.value['1'];
             const name =
               this.formSteps[1].fieldsList[0].fieldControl.control.value;
@@ -1643,7 +1644,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 });
               }
 
-              console.log(requestData);
+              //console.log(requestData);
 
               await this.authService.signup(requestData, 'none', null, false);
             }
@@ -1773,14 +1774,15 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             this.fullFormMessage = this.whatsappLinkSteps.join('');
 
-            console.log('full form message', this.fullFormMessage);
-            console.log('data', data);
+            //console.log('full form message', this.fullFormMessage);
+            //console.log('data', data);
 
             const success =
               await this.merchantsService.uploadDataToClientsAirtable(
                 this.merchantId,
                 this.automationName,
-                data
+                data,
+                window.location.href
               );
 
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
