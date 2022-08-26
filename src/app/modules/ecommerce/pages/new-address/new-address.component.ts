@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -27,7 +28,8 @@ export class NewAddressComponent implements OnInit {
     private headerService: HeaderService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private location: Location
   ) {
     this.addressForm = fb.group({
       nickName: fb.control(null),
@@ -71,6 +73,7 @@ export class NewAddressComponent implements OnInit {
     });
     const user = await this.authService.me();
     if (!user) return;
+    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.addresses.push(...user.deliveryLocations);
     user.deliveryLocations?.forEach((locations) => {
       this.addressesOptions.push({
@@ -173,9 +176,8 @@ export class NewAddressComponent implements OnInit {
     this.addresses = this.addresses.filter((address) => address._id !== id);
   }
 
-  selectAddress(value: number) {
-    this.selectedLocation = this.addresses[value];
-    const { _id, ...addressInput } = this.addresses[value];
+  selectAddress() {
+    const { _id, ...addressInput } = this.selectedLocation;
     this.headerService.order.products.forEach((product) => {
       product.deliveryLocation = addressInput;
     });
@@ -233,6 +235,8 @@ export class NewAddressComponent implements OnInit {
     } else {
       this.addresses.push(result);
       this.addressesOptions.push(newAddressOption);
+      this.selectedLocation = this.addresses[this.addresses.length - 1];
+      this.selectAddress();
     }
     this.goBack();
   }
@@ -245,7 +249,7 @@ export class NewAddressComponent implements OnInit {
       this.addressesOptions.forEach((option) => (option.icons = null));
       return;
     }
-    this.router.navigate(['/admin/merchant-items']);
+    this.location.back();
   }
 
   openDeleteDialog(id: string) {

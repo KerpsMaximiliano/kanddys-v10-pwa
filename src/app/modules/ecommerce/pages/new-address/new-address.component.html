@@ -19,7 +19,7 @@
         <app-answer-selector
           [options]="addressesOptions"
           [indicator]="true"
-          (onSelector)="selectAddress($event)"
+          (onSelector)="selectedLocation = addresses[$event]"
           [containerStyles]="{
             margin: '0px'
           }"
@@ -106,4 +106,13 @@
   bgColor="#2874AD"
   size="small"
   (click)="formSubmit()"
+></app-sticky-button>
+
+<app-sticky-button
+  *ngIf="mode === 'normal' && selectedLocation"
+  mode="fixed"
+  text="CONTINUA AL CHECKOUT"
+  bgColor="#2874AD"
+  size="small"
+  (click)="selectAddress()"
 ></app-sticky-button>
