@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
+import { addLocation, deleteLocation } from '../graphql/saleflow.gql';
 import { user, users, buyersByItem } from '../graphql/users.gql';
+import { DeliveryLocation, DeliveryLocationInput } from '../models/saleflow';
 import { User } from '../models/user';
 import { ListParams } from '../types/general.types';
 
@@ -31,11 +33,31 @@ export class UsersService {
     const result = await this.graphql.query({
       query: buyersByItem,
       variables: { itemId },
-      fetchPolicy: 'no-cache'
-    })
+      fetchPolicy: 'no-cache',
+    });
 
     if (!result || result?.errors) return undefined;
 
+    return result;
+  }
+
+  async addLocation(input: DeliveryLocationInput): Promise<DeliveryLocation> {
+    const result = await this.graphql.mutate({
+      mutation: addLocation,
+      variables: { input },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.addLocation;
+  }
+
+  async deleteLocation(locationId: string) {
+    const result = await this.graphql.mutate({
+      mutation: deleteLocation,
+      variables: { locationId },
+    });
+
+    if (!result || result?.errors) return undefined;
     return result;
   }
 }

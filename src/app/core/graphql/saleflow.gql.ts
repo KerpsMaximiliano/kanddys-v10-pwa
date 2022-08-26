@@ -74,7 +74,7 @@ export const saleflow = gql`
 `;
 
 export const saleflowDefault = gql`
-  query saleflowDefault($merchantId: ObjectID!)  {
+  query saleflowDefault($merchantId: ObjectID!) {
     saleflowDefault(merchantId: $merchantId) {
       _id
       name
@@ -196,6 +196,11 @@ export const addLocation = gql`
       nickName
       note
     }
+  }
+`;
+export const deleteLocation = gql`
+  mutation deleteLocation($locationId: ObjectID!) {
+    deleteLocation(locationId: $locationId)
   }
 `;
 
