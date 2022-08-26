@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
    signUp: boolean;
    OTP: boolean = false;
    authCode: boolean = false;
+   sneaky: string;
    userID: string;
    items: Item[] | ItemPackage[]= [];
    itemCartAmount: number;
@@ -119,7 +120,7 @@ export class LoginComponent implements OnInit {
                
           }else{
              unlockUI();
-             this.toastr.info('Número no registrado o inválido ', null, {
+             this.toastr.error('Número no registrado o inválido ', null, {
              timeOut: 1500
              });
              return
@@ -171,7 +172,7 @@ export class LoginComponent implements OnInit {
       } else {
          this.signUp = false;
          this.loggin = false;
-         this.toastr.info('algo no funco', null, {timeOut: 2000});
+         this.toastr.error('algo no funco', null, {timeOut: 2000});
       }
   }
 
@@ -192,18 +193,18 @@ export class LoginComponent implements OnInit {
                 console.log(error);
             }
         } else {
-            this.toastr.info('Número no registrado', null, {timeOut: 2000});
+            this.toastr.error('Número no registrado', null, {timeOut: 2000});
             return
         }
     } else {
-        this.toastr.info('Introduzca un número válido', null, {timeOut: 2000});
+        this.toastr.error('Introduzca un número válido', null, {timeOut: 2000});
         return
     }
   };
 
   async signIn(){
     if (this.password.invalid){
-        this.toastr.info('Error en campo de contraseña', null, {
+        this.toastr.error('Error en campo de contraseña', null, {
           timeOut: 1500
         });
         
@@ -211,7 +212,7 @@ export class LoginComponent implements OnInit {
       const checkOTP = await this.authService.verify(this.password.value, this.userID);
 
       if(!checkOTP){
-         this.toastr.info('Código inválido', null, {timeOut: 2000})
+         this.toastr.error('Código inválido', null, {timeOut: 2000})
          return
       } else{
          this.toastr.info('Código válido', null, {timeOut: 2000});
@@ -222,18 +223,20 @@ export class LoginComponent implements OnInit {
       const authCoded =  await this.authService.analizeMagicLink(this.password.value);
 
       if(!authCoded){
-         this.toastr.info('Código inválido', null, {timeOut: 2000})
+         this.toastr.error('Código inválido', null, {timeOut: 2000})
          return
       } else {
          this.toastr.info('Código válido', null, {timeOut: 2000});
-         this.router.navigate([`admin/entity-detail-metrics`]); 
+         const sneak = await this.authService.signin(this.merchantNumber, this.sneaky, true);
+         if(sneak) this.router.navigate([`admin/entity-detail-metrics`]);
+         else console.log('Error');
       }
 
     } else {
         const signin = await this.authService.signin( this.merchantNumber, this.password.value, true );
 
         if(!signin){
-            this.toastr.info('Contraseña invalida o usuario no verficado', null, {
+            this.toastr.error('Contraseña invalida o usuario no verficado', null, {
               timeOut: 2500
             });
             console.log('error');
@@ -278,6 +281,7 @@ export class LoginComponent implements OnInit {
             return;
         } else {
             // console.log(newUser);
+            this.sneaky = this.password.value;
             await this.authService.generateMagicLink(this.merchantNumber, `admin/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
             this.toPassword();
             this.toastr.info('¡Usuario registrado con exito!', null, {timeOut: 2000});
