@@ -103,7 +103,7 @@ export class NewAddressComponent implements OnInit {
   onOpenDialog = () => {
     const list: StoreShareList[] = [
       {
-        title: 'Herramientas',
+        title: 'HERRAMIENTAS',
         options: [
           {
             text: 'ADICIONAR',
