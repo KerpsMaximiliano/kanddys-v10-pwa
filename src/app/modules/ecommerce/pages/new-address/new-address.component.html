@@ -13,26 +13,83 @@
     </button>
   </header>
   <main>
-    <h3 class="title">Seleccione entre:</h3>
-    <div>
-      <app-answer-selector
-        [options]="default"
-        [indicator]="true"
-        (onSelector)="selectAddress($event)"
-        [containerStyles]="{
-          margin: '0px'
-        }"
-      ></app-answer-selector> <!--RECORDAR QUE EL PICKUP ES PRIMERA OPCION Y CONSERVAR. GRACIAS :)-->
-      
-      <app-answer-selector
-        [options]="addressesOptions"
-        [indicator]="true"
-        (onSelector)="selectAddress($event)"
-        [containerStyles]="{
-          margin: '0px'
-        }"
-      ></app-answer-selector>
-    </div>
+    <ng-container *ngIf="mode !== 'add' && !editingId">
+      <h3 class="title">Seleccione entre:</h3>
+      <div>
+        <app-answer-selector
+          [options]="addressesOptions"
+          [indicator]="true"
+          (onSelector)="selectAddress($event)"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+        ></app-answer-selector>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="mode === 'add' || editingId">
+      <form [formGroup]="addressForm">
+        <div class="form-group">
+          <label class="input-label" for="nickName"
+            >Nombre de la direccion</label
+          >
+          <input
+            type="text"
+            class="input-text"
+            id="nickName"
+            name="nickName"
+            placeholder="Mi casa.."
+            formControlName="nickName"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label class="input-label" for="nickName">Calle</label>
+          <input
+            type="text"
+            class="input-text"
+            id="street"
+            name="street"
+            formControlName="street"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label class="input-label" for="nickName"
+            >Número de casa/apartamento</label
+          >
+          <input
+            type="number"
+            class="input-text"
+            id="houseNumber"
+            name="houseNumber"
+            formControlName="houseNumber"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label class="input-label" for="nickName"
+            >Punto de referencia (opcional)</label
+          >
+          <input
+            type="text"
+            class="input-text"
+            id="referencePoint"
+            name="referencePoint"
+            formControlName="referencePoint"
+          />
+        </div>
+        <div class="form-group">
+          <label class="input-label" for="nickName">Nota (opcional)</label>
+          <input
+            type="text"
+            class="input-text"
+            id="note"
+            name="note"
+            formControlName="note"
+          />
+        </div>
+      </form>
+    </ng-container>
   </main>
 </div>
 <app-bubble-button
@@ -42,3 +99,11 @@
   [cart]="true"
   [cartAmount]="1"
 ></app-bubble-button>
+<app-sticky-button
+  *ngIf="mode === 'add' || editingId"
+  [mode]="addressForm?.valid ? 'fixed' : 'disabled-fixed'"
+  text="GUARDA Y CONTINUA AL CHECKOUT"
+  bgColor="#2874AD"
+  size="small"
+  (click)="formSubmit()"
+></app-sticky-button>

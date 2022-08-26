@@ -19,6 +19,7 @@ const user = `
     street
     nickName
     houseNumber
+    referencePoint
     note
   }
   social {
@@ -60,19 +61,19 @@ export const refresh = gql`
 
 export const generateMagicLink = gql`
   mutation generateMagicLink(
-    $phoneNumber: String!,
-    $redirectionRoute: String!,
-    $redirectionRouteId: String,
-    $entity: String!,
-    $redirectionRouteQueryParams: JSON,
+    $phoneNumber: String!
+    $redirectionRoute: String!
+    $redirectionRouteId: String
+    $entity: String!
+    $redirectionRouteQueryParams: JSON
     $attachments: [Upload!]
   ) {
     generateMagicLink(
-      phoneNumber: $phoneNumber, 
-      redirectionRoute: $redirectionRoute, 
-      redirectionRouteId: $redirectionRouteId, 
-      entity: $entity,
-      redirectionRouteQueryParams: $redirectionRouteQueryParams,
+      phoneNumber: $phoneNumber
+      redirectionRoute: $redirectionRoute
+      redirectionRouteId: $redirectionRouteId
+      entity: $entity
+      redirectionRouteQueryParams: $redirectionRouteQueryParams
       attachments: $attachments
     )
   }
@@ -80,7 +81,7 @@ export const generateMagicLink = gql`
 
 export const analizeMagicLink = gql`
   query analizeMagicLink($tempcode: String!) {
-    analizeMagicLink(tempcode: $tempcode) 
+    analizeMagicLink(tempcode: $tempcode)
   }
 `;
 
