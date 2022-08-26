@@ -175,6 +175,19 @@ export class NewAddressComponent implements OnInit {
 
   selectAddress(value: number) {
     this.selectedLocation = this.addresses[value];
+    const { _id, ...addressInput } = this.addresses[value];
+    this.headerService.order.products.forEach((product) => {
+      product.deliveryLocation = addressInput;
+    });
+    this.headerService.storeLocation(
+      this.headerService.getSaleflow()._id,
+      addressInput
+    );
+    this.headerService.isComplete.delivery = true;
+    this.headerService.storeOrderProgress(
+      this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
+    );
+    this.router.navigate(['ecommerce/checkout']);
   }
 
   async formSubmit() {

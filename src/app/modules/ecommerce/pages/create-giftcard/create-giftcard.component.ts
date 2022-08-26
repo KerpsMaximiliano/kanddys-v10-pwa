@@ -72,7 +72,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.isComplete.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    this.router.navigate([`ecommerce/shipment-data-form`]);
+    this.router.navigate([`ecommerce/new-address`]);
   }
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
@@ -376,7 +376,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.isComplete.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
-            this.router.navigate([`ecommerce/shipment-data-form`]);
+            this.router.navigate([`ecommerce/new-address`]);
 
             return of({
               ok: true,
