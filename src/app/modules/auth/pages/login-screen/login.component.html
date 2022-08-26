@@ -49,7 +49,7 @@
             
             <div class="password-input" *ngIf="loggin">
                 
-               <input class="pass" type="password" [placeholder]=" !OTP ? 'Adiciona tu clave' : 'Escribe el código que recibiste'" 
+               <input class="pass" type="password" [placeholder]=" OTP || authCode ? 'Escribe el código que recibiste' : 'Adiciona tu clave'"
                [formControl]="password" name="password" id="password" required>
 
                <div [hidden]="password.valid || password.pristine" class="invalid-pass"> Por favor introduzca contraseña valida </div>
