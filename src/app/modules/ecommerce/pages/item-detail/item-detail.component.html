@@ -1,6 +1,6 @@
 <ng-container *ngIf="itemData">
   <div class="container">
-    <div style="position: sticky; top: 0; z-index: 2">
+    <div>
       <app-helper-headerv2
         [mode]="'basic'"
         [returnAble]="true"
@@ -84,7 +84,6 @@
 
     <app-sticky-button
       *ngIf="!inCart"
-      style="position: sticky; top: 100vh; z-index: 2"
       [mode]="'basic'"
       [text]="'ADD AL CARRITO DE COMPRAS'"
       [size]="'small'"
