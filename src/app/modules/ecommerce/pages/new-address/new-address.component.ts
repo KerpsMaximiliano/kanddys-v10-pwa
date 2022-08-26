@@ -44,6 +44,7 @@ export class NewAddressComponent implements OnInit {
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
+  newAddressOption: OptionAnswerSelector[] = [];
   saleflow: SaleFlow;
   selectedIndex: number;
 
@@ -72,6 +73,16 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
+
+    this.newAddressOption.push({
+      status: true,
+      value: 'Agregar nueva dirección',
+      valueStyles: {
+        fontFamily: 'SfProBold',
+        fontSize: '0.875rem',
+        color: '#000000',
+      }
+    })
     const user = await this.authService.me();
     if (!user) return;
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;

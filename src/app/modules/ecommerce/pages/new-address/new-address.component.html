@@ -30,6 +30,18 @@
           }"
         ></app-answer-selector>
       </div>
+      <ng-container>
+        <div>
+          <app-answer-selector
+            [options]="newAddressOption"
+            [indicator]="true"
+            (onSelector)="mode = 'add'"
+            [containerStyles]="{
+              margin: '0px'
+            }"
+          ></app-answer-selector>
+        </div>
+      </ng-container>
     </ng-container>
     <ng-container *ngIf="mode === 'add' || editingId">
       <form [formGroup]="addressForm">
@@ -64,6 +76,9 @@
           >
           <input
             type="number"
+            min="0"
+            inputmode="numeric"
+            pattern="[0-9]*"
             class="input-text"
             id="houseNumber"
             name="houseNumber"
