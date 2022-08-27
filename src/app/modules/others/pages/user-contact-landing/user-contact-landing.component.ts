@@ -22,6 +22,7 @@ import {
 import { environment } from 'src/environments/environment';
 import { deleteIrrelevantDataFromObject } from 'src/app/core/helpers/objects.helpers';
 import { SwiperOptions } from 'swiper';
+import { ExchangeData } from 'src/app/core/models/wallet';
 
 const socialNames = [
   'linkedin',
@@ -50,6 +51,7 @@ export class UserContactLandingComponent implements OnInit {
     length: number;
   };
   users: User[] = [];
+  exchangeData: ExchangeData;
   hasSocials: boolean;
   showSocials: boolean;
   regex = /\D/g;
@@ -312,16 +314,22 @@ export class UserContactLandingComponent implements OnInit {
         ]);
         if (!user) return unlockUI();
         this.user = user;
+        this.exchangeData = await this.walletService.exchangeDataByUser(user._id);
+
         if (user._id === currentUser?._id) this.admin = true;
         this.merchant = await this.merchantsService.merchantDefault(
           this.user._id
         );
+        this.checkSocials(this.user?.social);
+
         if (!this.merchant) return unlockUI();
+        this.hasSocials = false;
         this.checkSocials(this.merchant.social);
         this.saleflow = await this.saleflowService.saleflowDefault(
           this.merchant._id
         );
         if (!this.saleflow) return unlockUI();
+        /*
         if (this.admin && this.saleflow?.items?.length) {
           const [total, users] = await Promise.all([
             this.orderService.ordersTotal(
@@ -334,6 +342,7 @@ export class UserContactLandingComponent implements OnInit {
           this.ordersTotal = total;
           this.users = users;
         } else if (this.saleflow?.items?.length) this.getItems();
+        */
         unlockUI();
       });
     });

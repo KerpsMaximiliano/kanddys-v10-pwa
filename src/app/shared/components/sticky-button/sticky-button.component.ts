@@ -20,6 +20,7 @@ interface Extra {
   fontSize?: string;
   return?: boolean;
   returnCallback?(...params): any;
+  returnStyles?: Record<string, any>;
   icon?: {
     src: string;
     alt?: string;
