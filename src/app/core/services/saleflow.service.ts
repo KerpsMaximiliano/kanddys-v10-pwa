@@ -1,32 +1,32 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { ListParams } from '../types/general.types';
+import { Item, ItemPackage } from '../models/item';
+import {
+  PaginationInput,
+  SaleFlow,
+  SaleFlowModule,
+  SaleFlowModuleInput,
+} from '../models/saleflow';
 import { AppService } from './../../app.service';
 import {
-  saleflow,
-  saleflowDefault,
-  setDefaultSaleflow,
-  hotSaleflow,
-  listItems,
-  saleflows,
   addItemToSaleFlow,
-  addLocation,
-  listItemPackage,
-  updateSaleflow,
   createSaleflow,
   createSaleFlowModule,
-  updateSaleFlowModule,
+  hotSaleflow,
+  listItemPackage,
+  listItems,
   removeItemFromSaleFlow,
+  saleflow,
+  saleflowDefault,
+  saleflows,
+  setDefaultSaleflow,
+  updateSaleflow,
+  updateSaleFlowModule,
 } from './../graphql/saleflow.gql';
-import { itemCategoriesList } from './../graphql/items.gql';
-import { Community } from './../models/community';
-import { User } from './../models/user';
-import { PaginationInput, SaleFlow, SaleFlowModule, SaleFlowModuleInput } from '../models/saleflow';
-import { Item, ItemPackage } from '../models/item';
 
 @Injectable({ providedIn: 'root' })
 export class SaleFlowService {
-  constructor(private graphql: GraphQLWrapper, private app: AppService) { }
+  constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
     try {
@@ -55,10 +55,10 @@ export class SaleFlowService {
       const response = await this.graphql.query({
         query: saleflowDefault,
         variables: { merchantId },
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
       });
 
-      if(response) {
+      if (response) {
         const { saleflowDefault: saleflowDefaultResponse } = response;
         return saleflowDefaultResponse;
       } else {
@@ -82,7 +82,9 @@ export class SaleFlowService {
     }
   }
 
-  async listItemPackage(params: PaginationInput): Promise<{ listItemPackage: ItemPackage[] }> {
+  async listItemPackage(
+    params: PaginationInput
+  ): Promise<{ listItemPackage: ItemPackage[] }> {
     try {
       const response = await this.graphql.query({
         query: listItemPackage,
@@ -109,17 +111,10 @@ export class SaleFlowService {
     }
   }
 
-  async addLocation(input: any) {
-    const result = await this.graphql.mutate({
-      mutation: addLocation,
-      variables: { input },
-    });
-
-    if (!result || result?.errors) return undefined;
-    return result;
-  }
-
-  async addItemToSaleFlow(item: { item: string, customizer?: string, index?: number }, id: string) {
+  async addItemToSaleFlow(
+    item: { item: string; customizer?: string; index?: number },
+    id: string
+  ) {
     const result = await this.graphql.mutate({
       mutation: addItemToSaleFlow,
       variables: { item, id },
@@ -146,7 +141,10 @@ export class SaleFlowService {
     return result;
   }
 
-  async setDefaultSaleflow(merchantId: string, id: string): Promise<{ saleflowSetDefault: SaleFlow }> {
+  async setDefaultSaleflow(
+    merchantId: string,
+    id: string
+  ): Promise<{ saleflowSetDefault: SaleFlow }> {
     const result = await this.graphql.mutate({
       mutation: setDefaultSaleflow,
       variables: { merchantId, id },
@@ -168,7 +166,9 @@ export class SaleFlowService {
     return result;
   }
 
-  async createSaleFlowModule(input: SaleFlowModuleInput): Promise<SaleFlowModule> {
+  async createSaleFlowModule(
+    input: SaleFlowModuleInput
+  ): Promise<SaleFlowModule> {
     const result = await this.graphql.mutate({
       mutation: createSaleFlowModule,
       variables: { input },
@@ -177,7 +177,10 @@ export class SaleFlowService {
     return result;
   }
 
-  async updateSaleFlowModule(input: SaleFlowModuleInput, id: string): Promise<SaleFlowModule> {
+  async updateSaleFlowModule(
+    input: SaleFlowModuleInput,
+    id: string
+  ): Promise<SaleFlowModule> {
     const result = await this.graphql.mutate({
       mutation: updateSaleFlowModule,
       variables: { input, id },

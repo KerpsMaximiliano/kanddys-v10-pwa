@@ -34,13 +34,15 @@ export class LoginComponent implements OnInit {
    loggin: boolean;
    signUp: boolean;
    OTP: boolean = false;
+   authCode: boolean = false;
+   sneaky: string;
    userID: string;
    items: Item[] | ItemPackage[]= [];
    itemCartAmount: number;
    phoneNumber = new FormControl('', [Validators.required, Validators.minLength(10)]);
    password = new FormControl('', [Validators.required, Validators.minLength(3)]);
    firstName = new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i)]);
-   lastName = new FormControl('', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i)]);
+   lastName = new FormControl('', [Validators.required, Validators.minLength(2), Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i)]);
    email = new FormControl('', [Validators.minLength(12)]);
    SearchCountryField = SearchCountryField;
    CountryISO = CountryISO.DominicanRepublic;
@@ -118,7 +120,7 @@ export class LoginComponent implements OnInit {
                
           }else{
              unlockUI();
-             this.toastr.info('Número no registrado o inválido ', null, {
+             this.toastr.error('Número no registrado o inválido ', null, {
              timeOut: 1500
              });
              return
@@ -139,19 +141,39 @@ export class LoginComponent implements OnInit {
 
   toggleLog(){
     this.loggin = !this.loggin;
-    this.phoneNumber.setValue(null);
-    this.password.reset();
     this.OTP = false;
+    this.authCode = false;
+    this.phoneNumber.reset();
+    this.password.reset();
     this.merchantNumber = '';
   }
 
   toSignUp(){
     this.signUp = !this.signUp;
+    this.OTP = false;
+    this.authCode = false;
     this.phoneNumber.reset();
     this.password.reset();
     this.firstName.reset();
     this.lastName.reset();
     this.email.reset();
+  }
+
+  async toPassword(){
+   this.password.reset();
+   this.signUp = false;
+   this.OTP = false;
+   this.loggin = true;
+   this.authCode = true;
+   const toVerify = await this.authService.checkUser(this.merchantNumber);
+      if(toVerify){
+         this.userID = toVerify._id;
+         // console.log(this.userID);
+      } else {
+         this.signUp = false;
+         this.loggin = false;
+         this.toastr.error('algo no funco', null, {timeOut: 2000});
+      }
   }
 
   async submitPhone(){
@@ -171,36 +193,50 @@ export class LoginComponent implements OnInit {
                 console.log(error);
             }
         } else {
-            this.toastr.info('Número no registrado', null, {timeOut: 2000});
+            this.toastr.error('Número no registrado', null, {timeOut: 2000});
             return
         }
     } else {
-        this.toastr.info('Introduzca un número válido', null, {timeOut: 2000});
+        this.toastr.error('Introduzca un número válido', null, {timeOut: 2000});
         return
     }
   };
 
   async signIn(){
     if (this.password.invalid){
-        this.toastr.info('Error en campo de contraseña', null, {
+        this.toastr.error('Error en campo de contraseña', null, {
           timeOut: 1500
         });
+        
     } else if(this.OTP) {
       const checkOTP = await this.authService.verify(this.password.value, this.userID);
 
       if(!checkOTP){
-         this.toastr.info('Código inválido', null, {timeOut: 2000})
+         this.toastr.error('Código inválido', null, {timeOut: 2000})
          return
       } else{
          this.toastr.info('Código válido', null, {timeOut: 2000});
          this.router.navigate([`admin/entity-detail-metrics`]); 
       }
       
+    } else if(this.authCode){
+      const authCoded =  await this.authService.analizeMagicLink(this.password.value);
+
+      if(!authCoded){
+         this.toastr.error('Código inválido', null, {timeOut: 2000})
+         return
+      } else {
+         this.toastr.info('Código válido', null, {timeOut: 2000});
+         const sneak = await this.authService.signin(this.merchantNumber, this.sneaky, true);
+         if(sneak) this.router.navigate([`admin/entity-detail-metrics`]);
+         else console.log('Error');
+      }
+
     } else {
         const signin = await this.authService.signin( this.merchantNumber, this.password.value, true );
 
         if(!signin){
-            this.toastr.info('Contraseña invalida o usuario no verficado', null, {
+            this.toastr.error('Contraseña invalida o usuario no verficado', null, {
               timeOut: 2500
             });
             console.log('error');
@@ -223,7 +259,7 @@ export class LoginComponent implements OnInit {
     if(this.phoneNumber === null || undefined) {
         this.toastr.info('Por favor, introduzca un número válido', null, {timeOut: 2000});
         return
-    }
+      }
 
     this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
 
@@ -245,8 +281,9 @@ export class LoginComponent implements OnInit {
             return;
         } else {
             // console.log(newUser);
+            this.sneaky = this.password.value;
             await this.authService.generateMagicLink(this.merchantNumber, `admin/entity-detail-metrics`, newUser._id, 'MerchantAccess', null);
-            this.toSignUp();
+            this.toPassword();
             this.toastr.info('¡Usuario registrado con exito!', null, {timeOut: 2000});
         }
 

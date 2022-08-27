@@ -31,9 +31,18 @@ ul {
   .icons-flex-wrapper {
     display: flex;
     align-items: center;
+    margin: 8px;
 
-    img:hover {
+    .icon-button {
+      all: unset;
+      padding: 8px;
+      border-radius: 50%;
       cursor: pointer;
+
+      &:hover,
+      &:active {
+        background-color: #ebebeb;
+      }
     }
   }
 }
@@ -57,7 +66,7 @@ ul {
 .description-container {
   margin-top: 15px;
   cursor: pointer;
-  
+
   .description-label {
     font-family: RobotoLight;
     font-style: italic;
