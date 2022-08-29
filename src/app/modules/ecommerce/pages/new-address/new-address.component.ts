@@ -220,13 +220,14 @@ export class NewAddressComponent implements OnInit {
     let result: DeliveryLocation;
     if (this.mode === 'edit')
       await this.usersService.deleteLocation(this.editingId);
+    const newAddress = {
+      ...this.addressForm.value,
+      city: 'Santo Domingo',
+      houseNumber: `${this.addressForm.value.houseNumber}`,
+    };
     if (this.user) {
-      result = await this.usersService.addLocation({
-        ...this.addressForm.value,
-        city: 'Santo Domingo',
-        houseNumber: `${this.addressForm.value.houseNumber}`,
-      });
-    } else result = this.addressForm.value;
+      result = await this.usersService.addLocation(newAddress);
+    } else result = newAddress;
     if (!result) return;
     const newAddressOption = {
       status: true,
