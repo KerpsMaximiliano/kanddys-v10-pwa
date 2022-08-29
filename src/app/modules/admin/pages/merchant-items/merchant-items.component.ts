@@ -312,12 +312,25 @@ export class MerchantItemsComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: 'GESTIÓN DE ITEMS',
+        titleStyles: {
+          margin: '0px',
+          marginTop: '15px',
+          marginBottom: '65px',
+        },
         options: [
           {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
               this.router.navigate(['admin/create-item/']);
+            },
+          },
+          {
+            text: 'ESCONDER',
+            mode: 'func',
+            func: () => {
+              this.selectionConfiguration.mode = 'HIDE';
+              this.selectionConfiguration.active = true;
             },
           },
           {
@@ -337,6 +350,15 @@ export class MerchantItemsComponent implements OnInit {
       props: {
         list,
         alternate: true,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '64px',
+          },
+          dialogCard: {
+            paddingBottom: '64px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
