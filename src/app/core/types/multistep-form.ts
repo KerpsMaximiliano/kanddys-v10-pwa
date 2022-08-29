@@ -41,6 +41,8 @@ export interface FormField {
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
   statusChangeCallbackFunction?(...params): any;
+  onFocusFunction?(...params): any;
+  onBlurFunction?(...params): any;
   changeFunctionSubscription?: Subscription;
   customCursorIndex?: number;
   selectionOptions?: Array<string>;
@@ -225,7 +227,13 @@ export interface FormStep {
   tabsOptions?: string[];
   tabsCallback?(change, params): any;
   customStickyButton?: {
-    mode: string;
+    mode:
+      | 'basic'
+      | 'fixed'
+      | 'disabled'
+      | 'disabled-fixed'
+      | 'double'
+      | 'fixed-v2';
     bgcolor?: string;
     bgcolorInactive?: string;
     color?: string;

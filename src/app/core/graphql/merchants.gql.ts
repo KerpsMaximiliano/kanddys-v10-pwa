@@ -304,12 +304,14 @@ export const uploadDataToClientsAirtable = gql`
   mutation uploadDataToClientsAirtable(
     $merchantId: ObjectID!,
     $automation: String!,
-    $data: JSON!
+    $data: JSON!,
+    $route: String
   ) {
     uploadDataToClientsAirtable(
       merchantId: $merchantId,
       automation: $automation,
-      data: $data
+      data: $data,
+      route: $route
     )
   }
 `;

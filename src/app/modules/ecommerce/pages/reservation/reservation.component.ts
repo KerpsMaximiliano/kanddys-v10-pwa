@@ -701,15 +701,8 @@ export class ReservationComponent implements OnInit {
       this.header.isComplete.reservation = true;
       this.header.isComplete.delivery = true;
       this.header.storeOrderProgress(this.header.saleflow._id);
-
-      let preOrderID;
-      if (!this.header.orderId)
-        preOrderID = await this.header.newCreatePreOrder();
-      else preOrderID = this.header.orderId;
-      unlockUI();
-      this.router.navigate([
-        `ecommerce/flow-completion-auth-less/${preOrderID}`,
-      ]);
+      this.router.navigate([`ecommerce/checkout`]);
+      return;
     } else {
       const year = new Date().getFullYear();
       const day = Number(this.datePreview.day);

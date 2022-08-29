@@ -6,9 +6,21 @@ import { lockUI } from 'src/app/core/helpers/ui.helpers';
 import { PhoneNumberUtil } from 'google-libphonenumber';
 import { CountryISO } from 'ngx-intl-tel-input';
 import {
-  analizeMagicLink, checkUser, generateMagicLink, generateOTP, generatePowerMagicLink, getTempCodeData, me,
-  signin, signinSocial, signout,
-  signup, simplifySignup, updateme, userData
+  analizeMagicLink,
+  checkUser,
+  generateMagicLink,
+  generateOTP,
+  generatePowerMagicLink,
+  getTempCodeData,
+  hotCheckUser,
+  me,
+  signin,
+  signinSocial,
+  signout,
+  signup,
+  simplifySignup,
+  updateme,
+  userData,
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
@@ -250,6 +262,17 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
+    } catch (e) {}
+  }
+
+  public async hotCheckUser(emailOrPhone: String) {
+    try {
+      const response = await this.graphql.query({
+        query: hotCheckUser,
+        variables: { emailOrPhone },
+        fetchPolicy: 'no-cache',
+      });
+      return response?.checkUser ? response?.checkUser : undefined;
     } catch (e) {}
   }
 

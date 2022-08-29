@@ -675,4 +675,20 @@ export class MultistepFormComponent
     this.steps[stepIndex].customScrollToStep(this.stepFunctionParams);
     this.finishedExecutingStepProcessingFunction = true;
   }
+
+  onFocus(currentField: FormField) {
+    currentField.focused = true;
+
+    if (currentField.onFocusFunction) {
+      currentField.onFocusFunction(this.stepFunctionParams);
+    }
+  }
+
+  onBlur(currentField: FormField) {
+    currentField.focused = false;
+
+    if (currentField.onBlurFunction) {
+      currentField.onBlurFunction(this.stepFunctionParams);
+    }
+  }
 }

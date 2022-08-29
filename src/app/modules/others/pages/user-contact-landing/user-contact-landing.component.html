@@ -2,28 +2,33 @@
   <app-helper-headerv2
     [returnAble]="true"
     [mode]="'basic'"
-    [icons]="
-      !admin
-        ? [
-            {
-              src: '/person.svg',
-              color:
-                'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
-              callback: contactCallback,
-              highlight: {
-                active: true,
-                color: '#E9E371'
-              }
-            },
-            {
-              src: '/upload.svg',
-              color:
-                'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
-              callback: shareCallback
-            }
-          ]
-        : []
-    "
+    [icons]="[
+      {
+        src: '/person.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
+        callback: contactCallback,
+        highlight: {
+          active: true,
+          color: '#E9E371'
+        },
+        isAsBackgroundImage: true,
+        backgroundImage:
+          'url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/person.svg)',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '14px',
+        width: '32px',
+        height: '28px',
+        borderRadius: '45%'
+      },
+      {
+        src: '/upload.svg',
+        color:
+          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
+        callback: shareCallback
+      }
+    ]"
     [bgColor]="'#2874AD'"
     (returnEvent)="back()"
   ></app-helper-headerv2>
@@ -39,7 +44,10 @@
             'background-color': merchant?.image ? 'transparent' : '#a1a1a1'
           }"
         />
-        <div class="contact-info" *ngIf="admin">
+
+        <!--
+
+                  <div class="contact-info" *ngIf="admin">  
           <div class="admin-buttons">
             <button class="admin-btn">
               <img [src]="env + '/pencil.svg'" alt="" width="19" height="19" />
@@ -58,7 +66,9 @@
             </button>
           </div>
         </div>
-        <div class="contact-info" *ngIf="showSocials && !admin">
+
+        -->
+        <div class="contact-info" *ngIf="showSocials">
           <button class="save-btn">
             <p>Sálvalo</p>
             <img [src]="env + '/contact.svg'" alt="" width="27" height="23" />
@@ -76,8 +86,17 @@
 
       <div *ngIf="showSocials" class="social-info">
         <div class="info space-between">
-          <div class="buttons">
+          <div class="buttons no-padding">
             <!-- <a class="dollar-btn">$</a> -->
+            <ng-container *ngIf="exchangeData">
+              <a href="#">
+                <img
+                  [src]="env + '/dollar.svg'"
+                  alt="bank-info"
+                  height="50"
+                />
+              </a>
+            </ng-container>
             <ng-container
               *ngFor="let social of merchant?.social || user?.social"
             >
@@ -122,7 +141,6 @@
                 (merchant?.title || user?.title)
               "
             >
-              SALÚDANOS
               <img
                 [src]="env + '/whatsapp-white.svg'"
                 alt="call"
@@ -133,7 +151,7 @@
           </ng-container>
         </div>
         <div class="socials" *ngIf="hasSocials">
-          <h6>Cuentas sociales</h6>
+          <h6 [ngStyle]="{ fontWeight: 'normal' }">Cuentas sociales</h6>
           <div class="space-between">
             <ng-container
               *ngFor="let social of merchant?.social || user?.social"
@@ -193,7 +211,9 @@
     </div>
   </div>
   <div style="margin-bottom: 6px">
-    <app-gallery-displayer
+    <!--
+      
+          <app-gallery-displayer
       [headline]="{
         icon: {
           src: '/salealt.svg',
@@ -218,14 +238,31 @@
       }"
       [imagesGallery]="imagesGallery"
     ></app-gallery-displayer>
+
+    -->
   </div>
 </div>
 <app-sticky-button
   mode="double"
   size="small"
   fontSize="17px"
-  text="POSIBILIDADES"
-  [text2]="admin ? 'WebApps STORE' : 'RECAUDA FONDOS'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      color: '#fff',
+      fontSize: '17px',
+      justifyContent: 'flex-start',
+      paddingLeft: '15px',
+      borderRight: '1px solid white',
+      height: '20px',
+      alignSelf: 'center',
+      maxWidth: '69px'
+    }
+  }"
+  text=""
+  [text2]=""
   bgColor="#2874AD"
+  [backButton]="true"
+  [backButtonCallback]="back"
   color="#FFFFFF"
 ></app-sticky-button>

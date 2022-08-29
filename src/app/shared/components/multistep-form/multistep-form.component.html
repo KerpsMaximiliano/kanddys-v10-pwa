@@ -535,8 +535,8 @@
                       currentField.shouldFormatNumber,
                     focused: currentField.focused
                   }"
-                  (focus)="currentField.focused = true"
-                  (blur)="currentField.focused = false"
+                  (focus)="onFocus(currentField)"
+                  (blur)="onBlur(currentField)"
                   [ngStyle]="
                     currentField.styles.fieldStyles &&
                     !currentField.styles.customClassName

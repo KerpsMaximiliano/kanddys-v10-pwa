@@ -30,13 +30,17 @@ import {
   uploadDataToClientsAirtable,
   uploadAirtableAttachments,
   usersOrderMerchant,
-  merchantDefault2
+  merchantDefault2,
 } from './../graphql/merchants.gql';
-import { EmployeeContract, Merchant, MerchantInput } from './../models/merchant';
+import {
+  EmployeeContract,
+  Merchant,
+  MerchantInput,
+} from './../models/merchant';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
-  constructor(private graphql: GraphQLWrapper) { }
+  constructor(private graphql: GraphQLWrapper) {}
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {
@@ -85,7 +89,10 @@ export class MerchantsService {
     return response;
   }
 
-  async ordersByMerchant(merchant: string, pagination?: PaginationInput): Promise<{ ordersByMerchant: ItemOrder[] }> {
+  async ordersByMerchant(
+    merchant: string,
+    pagination?: PaginationInput
+  ): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
       query: ordersByMerchant,
       variables: { pagination, merchant },
@@ -113,7 +120,7 @@ export class MerchantsService {
       variables: { merchantId },
       fetchPolicy: 'no-cache',
     });
-    if(!response || response?.errors) return undefined;
+    if (!response || response?.errors) return undefined;
     return response.usersOrderMerchant;
   }
 
@@ -156,14 +163,16 @@ export class MerchantsService {
         variables: { userId },
         fetchPolicy: 'no-cache',
       });
-      if(!response || response?.errors) return undefined;
+      if (!response || response?.errors) return undefined;
       return new Merchant(response.merchantDefault);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async setDefaultMerchant(id: string): Promise<{ merchantSetDefault: Merchant }> {
+  async setDefaultMerchant(
+    id: string
+  ): Promise<{ merchantSetDefault: Merchant }> {
     const result = await this.graphql.mutate({
       mutation: setDefaultMerchant,
       variables: { id },
@@ -173,8 +182,10 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     return result;
   }
-  
-  async merchantAuthorize(merchantId: string): Promise<{ merchantAuthorize: Merchant }> {
+
+  async merchantAuthorize(
+    merchantId: string
+  ): Promise<{ merchantAuthorize: Merchant }> {
     const result = await this.graphql.mutate({
       mutation: merchantAuthorize,
       variables: { merchantId },
@@ -185,7 +196,10 @@ export class MerchantsService {
     return result;
   }
 
-  async createMerchant(input: MerchantInput, files?: any): Promise<{ createMerchant: Merchant }> {
+  async createMerchant(
+    input: MerchantInput,
+    files?: any
+  ): Promise<{ createMerchant: Merchant }> {
     console.log(input);
     const result = await this.graphql.mutate({
       mutation: createMerchant,
@@ -199,7 +213,11 @@ export class MerchantsService {
     return result;
   }
 
-  async updateMerchant(input: MerchantInput, id: string, files?: any): Promise<Merchant> {
+  async updateMerchant(
+    input: MerchantInput,
+    id: string,
+    files?: any
+  ): Promise<Merchant> {
     const result = await this.graphql.mutate({
       mutation: updateMerchant,
       variables: { input, id, files },
@@ -255,15 +273,13 @@ export class MerchantsService {
     return result;
   }
 
-  async uploadAirtableAttachments(
-    files: any
-  ): Promise<Array<String>> {
+  async uploadAirtableAttachments(files: any): Promise<Array<String>> {
     try {
       const { uploadAirtableAttachments: result } = await this.graphql.mutate({
         mutation: uploadAirtableAttachments,
         variables: { files },
         fetchPolicy: 'no-cache',
-        context: { useMultipart: true }
+        context: { useMultipart: true },
       });
 
       if (!result || result?.errors) return undefined;
@@ -277,12 +293,13 @@ export class MerchantsService {
   async uploadDataToClientsAirtable(
     merchantId: string,
     automation: string,
-    data: Record<string, any>
+    data: Record<string, any>,
+    route?: string
   ): Promise<boolean> {
     try {
       const result = await this.graphql.mutate({
         mutation: uploadDataToClientsAirtable,
-        variables: { merchantId, automation, data },
+        variables: { merchantId, automation, data, route },
         fetchPolicy: 'no-cache',
       });
 
@@ -294,13 +311,15 @@ export class MerchantsService {
     }
   }
 
-  async tagsByMerchant(merchantId: string): Promise<{ tagsByMerchant: { orders: number, tags: Tag }[] }> {
+  async tagsByMerchant(
+    merchantId: string
+  ): Promise<{ tagsByMerchant: { orders: number; tags: Tag }[] }> {
     const response = await this.graphql.query({
       query: tagsByMerchant,
       variables: { merchantId },
       fetchPolicy: 'no-cache',
     });
-    if(!response || response?.errors) return undefined;
+    if (!response || response?.errors) return undefined;
     return response;
   }
 }

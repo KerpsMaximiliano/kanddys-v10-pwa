@@ -770,6 +770,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           shouldFormatNumber: true,
           label:
             'Indica el total de tu orden. Si no lo sabes puedes dejarlo en blanco',
+          bottomLabel: {text: "El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo."},
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
@@ -858,13 +859,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 );
               }
             } catch (error) {
-              console.log(error);
+              //console.log(error);
             }
           },
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
+            },
+            bottomLabelStyles: {
+              fontFamily: "RobotoLight",
             },
             containerStyles: {
               position: 'relative',
@@ -990,7 +994,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   );
                 }
               } catch (error) {
-                console.log(error);
+                //console.log(error);
               }
             }
           },
@@ -1146,6 +1150,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs: {
             calendarId: this.calendarId,
+            allowSundays: true,
             firstLabel: 'FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO',
             secondLabel: 'HORARIO DE ENTREGA',
             timeOfDayMode: true,
@@ -1589,7 +1594,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 await this.merchantsService.uploadDataToClientsAirtable(
                   this.merchantId,
                   this.automationName,
-                  data
+                  data,
+                  window.location.href
                 );
 
               this.dialog.open(GeneralFormSubmissionDialogComponent, {
@@ -1611,7 +1617,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             return { ok: true };
           } catch (error) {
-            console.log('El error ', error.message);
+            const formData = this.formSteps.map((formStep, index) => {
+              const stepData = {};
+
+              formStep.fieldsList.map((field, index) => {
+                stepData[field.name] = field.fieldControl.control.value;
+              });
+
+              return stepData;
+            });
 
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
@@ -1631,6 +1645,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               log: JSON.stringify({
                 error: error.message,
               }),
+              dataJSON: JSON.stringify(formData),
             });
 
             return { ok: false };
@@ -1660,8 +1675,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
         this.calendarId;
       this.formSteps[7].embeddedComponents[0].shouldRerender = true;
 
-      console.log('merchantId', this.merchantId);
-      console.log('automationName', this.automationName);
+      //console.log('merchantId', this.merchantId);
+      //console.log('automationName', this.automationName);
     });
 
     setTimeout(() => {

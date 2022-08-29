@@ -70,7 +70,7 @@ export class ReservationOrderlessComponent implements OnInit {
     private location: Location,
     private app: AppService,
     private toastr: ToastrService
-  ) { }
+  ) {}
 
   slides: any = ['1', '2', '3'];
   data: any;
@@ -116,6 +116,7 @@ export class ReservationOrderlessComponent implements OnInit {
   weekDay: string;
   orderData: any;
   dialogProps: any;
+  @Input() allowSundays: boolean = false;
 
   //calendar: 6149f790eb8b911a707523ce
   ngOnInit(): void {
@@ -131,6 +132,7 @@ export class ReservationOrderlessComponent implements OnInit {
 
   checkCalendar() {
     this.calendar.getCalendar(this.calendarId).then((data) => {
+      console.log('ladata', data);
       this.merchant = null;
       this.merchantName = '';
       this.getAmAndPm();
@@ -528,7 +530,6 @@ export class ReservationOrderlessComponent implements OnInit {
       });
   }
 
-
   formatDayHourToAmOrPm(
     hourString: string,
     addOne: boolean = false,
@@ -656,8 +657,6 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
-    
-
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
@@ -672,9 +671,13 @@ export class ReservationOrderlessComponent implements OnInit {
     ) {
       let shouldDisableHour = false;
       Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
-        if(hourWithoutOffset === currentHour && this.calendar.months[this.calendar.monthIndex].dates[
-          this.calendar.dayIndex
-        ].dayNumber === currentDayNumber) return true;
+        if (
+          hourWithoutOffset === currentHour &&
+          this.calendar.months[this.calendar.monthIndex].dates[
+            this.calendar.dayIndex
+          ].dayNumber === currentDayNumber
+        )
+          return true;
 
         if (
           dayKey ===
@@ -739,7 +742,7 @@ export class ReservationOrderlessComponent implements OnInit {
     const currentDayNumber = currentDateObject.getDate();
     let returnValue = false;
 
-    if(!this.hourRangeInDays) return false;//garantiza que si no hay limites de horario, todo se vea sin restricciones
+    if (!this.hourRangeInDays) return false; //garantiza que si no hay limites de horario, todo se vea sin restricciones
 
     const daysHashTableTranslation = {
       Lunes: 'MONDAY',
@@ -750,7 +753,6 @@ export class ReservationOrderlessComponent implements OnInit {
       Sabado: 'SATURDAY',
       Domingo: 'SUNDAY',
     };
-
 
     Object.keys(this.hourRangeInDays).forEach((dayKey, index) => {
       if (
@@ -797,7 +799,7 @@ export class ReservationOrderlessComponent implements OnInit {
   test2(e) {
     //this.getMonthId(0);
     this.activeHour = null;
-    console.log("Dia seleccionado")
+    console.log('Dia seleccionado');
     console.log(this.activeHour);
 
     this.getDayId(
