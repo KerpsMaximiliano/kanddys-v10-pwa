@@ -61,6 +61,7 @@
     width: 23px;
     height: 6px;
     display: flex;
+    align-self: flex-start;
     justify-content: space-evenly;
     cursor: pointer;
 
@@ -93,6 +94,8 @@
             color: #7B7B7B;
             font-weight: normal;
             text-transform: uppercase;
+            margin: 0px;
+            margin-bottom: 26px;
         }
     }
 
@@ -140,13 +143,15 @@
                 margin-bottom: 15px;
                 font-size: 23px !important;
             }
+
+            &.unset{
+              cursor: unset !important;
+              box-shadow: none !important;
+              border: 0.5px solid #c9c9c9;
+              border-radius: 15px;
+           }
         }
     }
-}
-
-.unset{
-   cursor: unset !important;
-   box-shadow: none !important;
 }
 
 @media only screen and(min-width:309px) and (max-width: 327px){
