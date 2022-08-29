@@ -30,6 +30,18 @@
           }"
         ></app-answer-selector>
       </div>
+      <ng-container>
+        <div>
+          <app-answer-selector
+            [options]="newAddressOption"
+            [indicator]="true"
+            (onSelector)="mode = 'add'"
+            [containerStyles]="{
+              margin: '0px'
+            }"
+          ></app-answer-selector>
+        </div>
+      </ng-container>
     </ng-container>
     <ng-container *ngIf="mode === 'add' || editingId">
       <form [formGroup]="addressForm">
@@ -60,15 +72,17 @@
         </div>
         <div class="form-group">
           <label class="input-label" for="nickName"
-            >Número de casa/apartamento</label
+            >Número de casa/apartamento (opcional)</label
           >
           <input
             type="number"
+            min="0"
+            inputmode="numeric"
+            pattern="[0-9]*"
             class="input-text"
             id="houseNumber"
             name="houseNumber"
             formControlName="houseNumber"
-            required
           />
         </div>
         <div class="form-group">

@@ -1,8 +1,9 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
@@ -32,8 +33,8 @@ export class NewAddressComponent implements OnInit {
     private location: Location
   ) {
     this.addressForm = fb.group({
-      nickName: fb.control(null),
-      street: fb.control(null),
+      nickName: fb.control('Mi casa', [Validators.required]),
+      street: fb.control(null, [Validators.required]),
       houseNumber: fb.control(null),
       referencePoint: fb.control(null),
       note: fb.control(null),
@@ -44,8 +45,10 @@ export class NewAddressComponent implements OnInit {
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
+  newAddressOption: OptionAnswerSelector[] = [];
   saleflow: SaleFlow;
   selectedIndex: number;
+  user: User;
 
   async ngOnInit(): Promise<void> {
     this.saleflow = this.headerService.getSaleflow();
@@ -72,11 +75,20 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
+    this.newAddressOption.push({
+      status: true,
+      value: 'Agregar nueva dirección',
+      valueStyles: {
+        fontFamily: 'SfProBold',
+        fontSize: '0.875rem',
+        color: '#000000',
+      },
+    });
     const user = await this.authService.me();
     if (!user) return;
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
-    this.addresses.push(...user.deliveryLocations);
-    user.deliveryLocations?.forEach((locations) => {
+    this.addresses.push(...this.user.deliveryLocations);
+    this.user.deliveryLocations?.forEach((locations) => {
       this.addressesOptions.push({
         status: true,
         id: locations._id,
@@ -208,11 +220,14 @@ export class NewAddressComponent implements OnInit {
     let result: DeliveryLocation;
     if (this.mode === 'edit')
       await this.usersService.deleteLocation(this.editingId);
-    result = await this.usersService.addLocation({
+    const newAddress = {
       ...this.addressForm.value,
       city: 'Santo Domingo',
       houseNumber: `${this.addressForm.value.houseNumber}`,
-    });
+    };
+    if (this.user) {
+      result = await this.usersService.addLocation(newAddress);
+    } else result = newAddress;
     if (!result) return;
     const newAddressOption = {
       status: true,
