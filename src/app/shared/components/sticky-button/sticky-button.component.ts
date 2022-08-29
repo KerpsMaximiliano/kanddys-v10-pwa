@@ -20,6 +20,7 @@ interface Extra {
   fontSize?: string;
   return?: boolean;
   returnCallback?(...params): any;
+  returnStyles?: Record<string, any>;
   icon?: {
     src: string;
     alt?: string;
@@ -35,7 +36,13 @@ interface Extra {
   styleUrls: ['./sticky-button.component.scss'],
 })
 export class StickyButtonComponent implements OnInit {
-  @Input() mode: string = 'basic';
+  @Input() mode:
+    | 'basic'
+    | 'fixed'
+    | 'disabled'
+    | 'disabled-fixed'
+    | 'double'
+    | 'fixed-v2' = 'basic';
   @Input() text: string;
   @Input() text2: string;
   @Input() auxText: string;

@@ -74,14 +74,14 @@
                     ? '50px'
                     : '0px',
                 color:
-                  this.filteredDays[i][j].weekDayNumber === 0
+                  this.filteredDays[i][j].weekDayNumber === 0 && !allowSundays
                     ? '#c5c5cc'
                     : indexI == i && indexJ == j
                     ? '#FFFFFF'
                     : '#272727',
                 'background-color': 'transparent',
                 'background-image':
-                  this.filteredDays[i][j].weekDayNumber === 0
+                  this.filteredDays[i][j].weekDayNumber === 0 && !allowSundays
                     ? 'none'
                     : indexI == i && indexJ == j
                     ? 'linear-gradient(to right, #31A4F9, #1D58DB)'

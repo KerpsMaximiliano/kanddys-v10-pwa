@@ -1,4 +1,4 @@
-<div style="min-height: 100vh; padding-bottom: 30px;">
+<div style="min-height: 100vh; padding-bottom: 30px">
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
@@ -14,7 +14,45 @@
     (dotEvent)="onOptionsClick()"
     bgColor="#2874AD"
   ></app-helper-headerv2>
-  <div class="about-products" style="margin-top: 12px">
+
+  <div class="about-items" style="margin-top: 54px">
+    <div class="wrapper">
+      <h2 class="about-name">Sobre los artículos</h2>
+
+      <div class="dot-trio" (click)="onShareItemsClick()">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </div>
+    </div>
+
+    <div class="grid-details">
+      <div class="info-card pointer" routerLink="/admin/merchant-items">
+        <h2 class="amount quantity">
+          {{ items ? items.length : "0" }}
+        </h2>
+        <h2 class="amount">EN TOTAL</h2>
+      </div>
+
+      <!-- <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'active'}">
+        <h2 class="amount quantity">
+          {{ activeItems ? activeItems.length : "0" }}
+        </h2>
+
+        <h2 class="amount">VISIBLES</h2>
+      </div>
+
+      <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'disabled'}">
+        <h2 class="amount quantity">
+          {{ inactiveItems ? inactiveItems.length : "0" }}
+        </h2>
+
+        <h2 class="amount">INVISIBLES</h2>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="about-products" style="margin-top: 68px">
     <div class="wrapper">
       <h2 class="about-name">Sobre las facturas</h2>
 
@@ -52,40 +90,26 @@
     </div>
   </div>
 
-  <div class="about-items" style="margin-top: 32px">
-    <div class="wrapper">
-      <h2 class="about-name">Sobre los artículos</h2>
+  <!-- 
+    <div class="about-forms" style="margin-top: 32px">
+      <div class="wrapper">
+        <h2 class="about-name">Sobre los artículos</h2>
 
-      <div class="dot-trio" (click)="onShareItemsClick()">
-        <div class="dot"> </div>
-        <div class="dot"> </div>
-        <div class="dot"> </div>
+        <div class="dot-trio" (click)="onShareItemsClick()">
+          <div class="dot"> </div>
+          <div class="dot"> </div>
+          <div class="dot"> </div>
+        </div>
+      </div>
+
+      <div class="grid-details">
+        <div class="info-card pointer" routerLink="/admin/merchant-items">
+          <h2 class="amount quantity">
+            {{ items ? items.length : "0" }}
+          </h2>
+          <h2 class="amount">EN TOTAL</h2>
+        </div>
       </div>
     </div>
-
-    <div class="grid-details">
-      <div class="info-card pointer" routerLink="/admin/merchant-items">
-        <h2 class="amount quantity">
-          {{ items ? items.length : "0" }}
-        </h2>
-        <h2 class="amount">EN TOTAL</h2>
-      </div>
-
-      <!-- <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'active'}">
-        <h2 class="amount quantity">
-          {{ activeItems ? activeItems.length : "0" }}
-        </h2>
-
-        <h2 class="amount">VISIBLES</h2>
-      </div>
-
-      <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'disabled'}">
-        <h2 class="amount quantity">
-          {{ inactiveItems ? inactiveItems.length : "0" }}
-        </h2>
-
-        <h2 class="amount">INVISIBLES</h2>
-      </div> -->
-    </div>
-  </div>
+  -->
 </div>

@@ -66,16 +66,17 @@
               </span>
             </ng-container>
           </div>
-          <div
-            class="icons-flex-wrapper"
-            *ngIf="option.icons && option.icons.length > 0"
-          >
+          <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
             <ng-container *ngFor="let icon of option.icons">
-              <img
-                [src]="icon.src"
+              <button
+                class="icon-button"
                 (click)="icon.callback ? icon.callback() : null"
-                [ngStyle]="icon.styles ? icon.styles : null"
-              />
+              >
+                <img
+                  [src]="icon.src"
+                  [ngStyle]="icon.styles ? icon.styles : null"
+                />
+              </button>
             </ng-container>
           </div>
         </div>

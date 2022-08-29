@@ -1,140 +1,183 @@
-.container{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+   margin: 0;
+}
+button {
+   all: unset;
+}
+button,
+a {
+   cursor: pointer;
+}
+.container {
+   width: 100%;
    min-height: 100vh;
 
-   .information{
+   .information {
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 47px;
-      margin-bottom: 33px;
+      margin-top: 40px;
+      padding: 0 24px 32px;
 
-      .reservation{
-          width: 87%;
+      .section {
+         width: 100%;
 
-          .section{
-              width: 100%;
-              display: flex;
-              flex-direction: column;
+         .items-container {
+            background-color: #82f18d;
+            padding: 10px 12px;
+            border-radius: 6px;
 
-              .items-container{
-                width: 100%;
-                display: flex;
-                align-items: baseline;
-                background-color: #82F18D;
-                padding: 10px 13px;
-                column-gap: 9px;
-                border-radius: 6px;
+            .image-container {
+               display: flex;
+               overflow-x: scroll;
+               column-gap: 8px;
 
-                .item-image{
-                   width: 86px;
-                   height: 74px;
-                   background-color: #E9E371;
-                   border-radius: 6px;
-                }
+               .image {
+                  position: relative;
 
-                .total{
-                   font-family: 'SfProBold';
-                   font-size: 13px;
-                   color: #000000;
-                }
-
-                .amount{
-                   font-family: 'SfProBold';
-                   font-size: 17px;
-                   color: #174B72;
-                }
-
-                .text{
-                   font-family: 'RobotoMedium';
-                   font-size: 19px;
-                   color: #174B72;    
-                   margin: 0 8px 0;
-                }
-
-                .added{
-                   font-family: 'SfProRegular';
-                   font-size: 14px;
-                   color: #174B72;
-                   margin: 3px 8px 0;
-                }
-              }
-
-              .wrapper{
-                  width: 100%;
-                  display: flex;
-
-                  .date{
-                      width: 15%;
-                      display: flex;
-                      justify-content: center;
-                      font-family: 'SfProRegular';
-                      font-size: 17px;
-                      color: #174B72;
-                      margin: 0;
-                      text-align: center;
-                      background-color: #82F18D;
-                      padding: 4px 3.5%;
-                      border-radius: 6px;
-                      margin-right: 6px;
+                  .item-image {
+                     width: 86px;
+                     height: 74px;
+                     background-color: #e9e371;
+                     border-radius: 6px;
+                     -webkit-user-drag: none;
+                     object-fit: cover;
                   }
 
-                  .text-reservation{
-                      width: 100%;
-                      display: flex;
-                      justify-content: center;
-                      font-family: 'RobotoMedium';
-                      font-size: 19px;
-                      color: #174B72;    
-                      margin: 0;
-                      background-color: #82F18D;
-                      padding: 12px 18px;
-                      border-radius: 6px;
+                  &:after {
+                     content: "\A";
+                     position: absolute;
+                     width: 100%;
+                     height: 100%;
+                     top: 0;
+                     left: 0;
+                     background: rgba(0, 0, 0, 0.3);
+                     opacity: 0;
+                     transition: all 0.5s;
+                     -webkit-transition: all 0.5s;
+                     border-radius: 6px;
                   }
 
-                  .inner{
-                      justify-content: flex-start;
-                      padding: 0;
-                      margin: 0;
+                  &:hover:after {
+                     opacity: 1;
                   }
+               }
+            }
 
-                  .message,.to,.from{
-                      display: flex;
-                      flex-direction: column;
+            .total {
+               font-family: "SfProBold";
+               font-size: 13px;
+               color: #000000;
+            }
 
-                      .text-reservation{
-                         font-family: 'RobotoMedium';
-                         font-size: 19px;
-                         color: #174B72;
-                         margin: 0;
-                      }
-                  }
-                }
+            .amount {
+               font-family: "SfProBold";
+               font-size: 17px;
+               color: #174b72;
+               text-transform: capitalize;
+            }
 
-                .column{
-                  flex-direction: column;
-                }
+            .address-name {
+               font-family: "RobotoMedium";
+               font-size: 19px;
+               color: #174b72;
+               margin: 0 8px 0;
+            }
 
-              .date-reservation,
-              .address-reservation{
-                  font-family: 'RobotoMedium';
-                  font-size: 19px;
-                  color: #7B7B7B;
-                  margin: 0;
-                  margin-bottom: 10px;
-              }
+            .added {
+               font-family: "SfProRegular";
+               font-size: 14px;
+               color: #174b72;
+               margin: 3px 8px 0;
+            }
+         }
 
-              .colored{
-                  border-radius: 6px;
-                  background-color: #82F18D;
-                  flex-direction: column;
-                  padding: 31px 27px 23px;
-              }
-          }
+         .text-reservation {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            font-family: "RobotoMedium";
+            font-size: 19px;
+            color: #174b72;
+            margin: 0;
+            background-color: #82f18d;
+            padding: 12px 18px;
+            border-radius: 6px;
+         }
+
+         .inner {
+            justify-content: flex-start;
+            padding: 0;
+            margin: 0;
+         }
+         .message-box {
+            border-radius: 6px;
+            background-color: #82f18d;
+            flex-direction: column;
+            padding: 24px;
+
+            > :not(:first-child) {
+               margin-top: 32px;
+            }
+         }
+
+         .message-text {
+            font-family: "RobotoMedium";
+            font-size: 19px;
+            color: #174b72;
+            margin: 0;
+         }
+
+         .column {
+            flex-direction: column;
+         }
+
+         .section-title {
+            font-family: "RobotoMedium";
+            font-size: 19px;
+            color: #7b7b7b;
+            margin: 0;
+            margin-bottom: 10px;
+            font-weight: normal;
+         }
       }
    }
 }
-.space-between{
+
+.sub {
+   font-family: "RobotoLight";
+   font-size: 19px;
+   color: #000000;
+   margin: 0 0 8px 0;
+   font-weight: 100;
+}
+
+.box-shadowing {
+   width: 100%;
+   height: auto;
+   box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
+}
+
+.space-between {
+   display: flex;
    justify-content: space-between;
-   padding: 0 20px 0 33px;
+}
+
+table {
+   width: 100%;
+   margin-bottom: 8px;
+
+   th,
+   td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 5px;
+   }
+}
+.customizer-preview {
+   width: 100%;
 }

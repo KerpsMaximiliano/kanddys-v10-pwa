@@ -10,7 +10,8 @@ export class FrontendLogsService {
 
   async createFrontendLog(input: {
     route: string,
-    log: string
+    log: string,
+    dataJSON?: string
   }){
     try {
       const result = await this.graphql.mutate({

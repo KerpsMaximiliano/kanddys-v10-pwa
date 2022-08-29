@@ -35,6 +35,7 @@ export class CalendarComponent implements OnInit {
   @Input() dateNumber: string;
   @Input() time: string;
   @Input() weekDay: string;
+  @Input() allowSundays: boolean = false;
 
   ngOnInit(): void {
     /*
@@ -127,7 +128,7 @@ export class CalendarComponent implements OnInit {
     this.indexI = i;
     this.indexJ = j;
 
-    if(this.filteredDays[i][j].weekDayNumber !== 0) {
+    if(this.filteredDays[i][j].weekDayNumber !== 0 || (this.filteredDays[i][j].weekDayNumber === 0 && this.allowSundays)) {
 
       this.filteredDays[i][j].indexI = i;
       this.filteredDays[i][j].indexJ = j;
