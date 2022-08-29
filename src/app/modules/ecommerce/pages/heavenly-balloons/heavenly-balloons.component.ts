@@ -770,20 +770,20 @@ export class HeavenlyBalloonsComponent implements OnInit {
           shouldFormatNumber: true,
           label:
             'Indica el total de tu orden. Si no lo sabes puedes dejarlo en blanco',
+          bottomLabel: {text: "El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo."},
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-            //RESETEA EL VALOR DEL MONTO PAGADO SI EL TOTAL ES MENOR
-            /*if (Number(change) < Number(firstPayment)) {
+            if (Number(change) < Number(firstPayment)) {
               this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
                 emitEvent: false,
               });
 
               this.formSteps[6].fieldsList[1].formattedValue =
                 '$' + this.decimalPipe.transform(Number(0), '1.2');
-            }*/
+            }
 
             try {
               if (!change.includes('.')) {
@@ -867,6 +867,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               ...labelStyles,
               paddingBottom: '26px',
             },
+            bottomLabelStyles: {
+              fontFamily: "RobotoLight",
+            },
             containerStyles: {
               position: 'relative',
             },
@@ -905,7 +908,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
-            /*if (
+            if (
               Number(change) > Number(totalAmount) &&
               totalAmount !== '' &&
               Number(totalAmount) !== 0
@@ -916,84 +919,84 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   emitEvent: false,
                 }
               );
-            } else {*/
-            try {
-              if (!change.includes('.')) {
-                const plainNumber = change.split(',').join('');
+            } else {
+              try {
+                if (!change.includes('.')) {
+                  const plainNumber = change.split(',').join('');
 
-                if (plainNumber[0] === '0') {
-                  const formatted =
-                    plainNumber.length > 3
-                      ? this.decimalPipe.transform(
-                          Number(
-                            plainNumber.slice(0, -2) +
-                              '.' +
-                              plainNumber.slice(-2)
-                          ),
-                          '1.2'
-                        )
-                      : this.decimalPipe.transform(
-                          Number(
-                            '0.' +
-                              (plainNumber.length <= 2
-                                ? '0' + plainNumber.slice(1)
-                                : plainNumber.slice(1))
-                          ),
-                          '1.2'
-                        );
+                  if (plainNumber[0] === '0') {
+                    const formatted =
+                      plainNumber.length > 3
+                        ? this.decimalPipe.transform(
+                            Number(
+                              plainNumber.slice(0, -2) +
+                                '.' +
+                                plainNumber.slice(-2)
+                            ),
+                            '1.2'
+                          )
+                        : this.decimalPipe.transform(
+                            Number(
+                              '0.' +
+                                (plainNumber.length <= 2
+                                  ? '0' + plainNumber.slice(1)
+                                  : plainNumber.slice(1))
+                            ),
+                            '1.2'
+                          );
 
-                  if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[1].placeholder = '';
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[1].placeholder = '';
+                    }
+
+                    this.formSteps[6].fieldsList[1].formattedValue =
+                      '$' + formatted;
+                  } else {
+                    const formatted =
+                      plainNumber.length > 2
+                        ? this.decimalPipe.transform(
+                            Number(
+                              plainNumber.slice(0, -2) +
+                                '.' +
+                                plainNumber.slice(-2)
+                            ),
+                            '1.2'
+                          )
+                        : this.decimalPipe.transform(
+                            Number(
+                              '0.' +
+                                (plainNumber.length === 1
+                                  ? '0' + plainNumber
+                                  : plainNumber)
+                            ),
+                            '1.2'
+                          );
+
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[1].placeholder = '';
+                    }
+
+                    this.formSteps[6].fieldsList[1].formattedValue =
+                      '$' + formatted;
                   }
-
-                  this.formSteps[6].fieldsList[1].formattedValue =
-                    '$' + formatted;
                 } else {
-                  const formatted =
-                    plainNumber.length > 2
-                      ? this.decimalPipe.transform(
-                          Number(
-                            plainNumber.slice(0, -2) +
-                              '.' +
-                              plainNumber.slice(-2)
-                          ),
-                          '1.2'
-                        )
-                      : this.decimalPipe.transform(
-                          Number(
-                            '0.' +
-                              (plainNumber.length === 1
-                                ? '0' + plainNumber
-                                : plainNumber)
-                          ),
-                          '1.2'
-                        );
-
-                  if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[1].placeholder = '';
-                  }
-
-                  this.formSteps[6].fieldsList[1].formattedValue =
-                    '$' + formatted;
+                  const convertedNumber = Number(
+                    change
+                      .split('')
+                      .filter((char) => char !== '.')
+                      .join('')
+                  );
+                  this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
+                    convertedNumber,
+                    {
+                      emitEvent: false,
+                    }
+                  );
                 }
-              } else {
-                const convertedNumber = Number(
-                  change
-                    .split('')
-                    .filter((char) => char !== '.')
-                    .join('')
-                );
-                this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
-                  convertedNumber,
-                  {
-                    emitEvent: false,
-                  }
-                );
+              } catch (error) {
+                //console.log(error);
               }
-            } catch (error) {
-              //console.log(error);
             }
-            //}
           },
           styles: {
             labelStyles: {
