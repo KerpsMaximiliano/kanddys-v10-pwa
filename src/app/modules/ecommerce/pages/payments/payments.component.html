@@ -46,13 +46,14 @@
 
    <app-bubble-button
    [cart]="true"
+   [solo]="!selectedMethod || !image? true : false"
    [color]="'blue'"
    [cartAmount]="2"
    [position]="'right'"
    ></app-bubble-button>
 
    <app-sticky-button *ngIf="image || selectedMethod"
-   [mode]="'basic'"
+   [mode]="'fixed'"
    [text]="image? 'MANDAR FACTURA POR WHATSAPP' : ( selectedMethod? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO' : '')"
    [size]="'small'"
    [bgColor]="image? '#2874AD' : '#C1C1C1'"
