@@ -170,6 +170,9 @@ export class HeaderService {
             this.myMerchants = data;
           });
           sub.unsubscribe();
+        } else {
+          this.user = null;
+          sub.unsubscribe();
         }
       });
     const sub1 = this.app.events
@@ -186,6 +189,9 @@ export class HeaderService {
               this.savedBookmarks = data.bookmarkByUser;
             }
           });
+          sub1.unsubscribe();
+        } else {
+          this.user = null;
           sub1.unsubscribe();
         }
       });
@@ -384,7 +390,7 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
   }
 
-  storeOrderAuth(saleflow: string, value: boolean) {
+  storeOrderAnonymous(saleflow: string, value: boolean) {
     let { anonymous, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     anonymous = value;
@@ -464,7 +470,7 @@ export class HeaderService {
   }
 
   // Returns order auth type
-  getOrderAuth(saleflow: string) {
+  getOrderAnonymous(saleflow: string) {
     let { anonymous }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     return anonymous;

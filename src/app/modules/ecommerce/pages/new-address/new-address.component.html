@@ -19,7 +19,7 @@
     </button>
   </header>
   <main>
-    <ng-container *ngIf="mode === 'anonymous'">
+    <ng-container *ngIf="mode === 'auth'">
       <h3 class="title">Seleccione entre:</h3>
 
       <app-answer-selector
@@ -32,7 +32,7 @@
         (onSelector)="selectedAuthIndex = $event"
       ></app-answer-selector>
     </ng-container>
-    <ng-container *ngIf="mode !== 'anonymous' && mode !== 'add' && !editingId">
+    <ng-container *ngIf="mode !== 'auth' && mode !== 'add' && !editingId">
       <h3 class="title">Seleccione entre:</h3>
       <div>
         <app-answer-selector
@@ -45,7 +45,7 @@
           }"
         ></app-answer-selector>
       </div>
-      <ng-container>
+      <ng-container *ngIf="newAddressOption?.length">
         <div>
           <app-answer-selector
             [options]="newAddressOption"
@@ -150,7 +150,7 @@
   (click)="selectAddress()"
 ></app-sticky-button>
 <app-sticky-button
-  *ngIf="mode === 'anonymous' && selectedAuthIndex != null"
+  *ngIf="mode === 'auth' && selectedAuthIndex != null"
   mode="fixed"
   text="CONFIRMAR ELECCIÓN"
   bgColor="#2874AD"
