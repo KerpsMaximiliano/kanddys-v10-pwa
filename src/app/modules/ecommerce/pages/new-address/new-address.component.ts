@@ -40,7 +40,7 @@ export class NewAddressComponent implements OnInit {
       note: fb.control(null),
     });
   }
-  mode: 'normal' | 'add' | 'delete' | 'edit' | 'anonymous';
+  mode: 'normal' | 'add' | 'delete' | 'edit' | 'anonymous' = 'anonymous';
   editingId: string;
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
@@ -54,49 +54,8 @@ export class NewAddressComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const user = await this.authService.me();
-    if (!user) {
-      this.mode = 'anonymous';
-      this.authOptions.push(
-        {
-          status: true,
-          id: 'continue',
-          value: 'Continuar de forma anónima',
-          valueStyles: {
-            fontFamily: 'SfProBold',
-            fontSize: '0.875rem',
-            color: '#000000',
-          },
-          subtexts: [
-            {
-              text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
-              styles: {
-                fontFamily: 'SfProRegular',
-                fontSize: '1rem',
-              },
-            },
-          ],
-        },
-        {
-          status: true,
-          id: 'toLogin',
-          value: 'Login o crea tu nueva cuenta',
-          valueStyles: {
-            fontFamily: 'SfProBold',
-            fontSize: '0.875rem',
-            color: '#000000',
-          },
-          subtexts: [
-            {
-              text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
-              styles: {
-                fontFamily: 'SfProRegular',
-                fontSize: '1rem',
-              },
-            },
-          ],
-        }
-      );
-    } else this.mode = 'normal';
+    if (!user) this.notUser();
+    else this.isUser(user);
     this.saleflow = this.headerService.getSaleflow();
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
@@ -261,15 +220,28 @@ export class NewAddressComponent implements OnInit {
     this.router.navigate(['ecommerce/checkout']);
   }
 
-  authSelect(index: Number) {
-    if (index === 0) {
-      this.mode = 'normal';
-      this.headerService.storeOrderAuth(this.saleflow._id, true);
-    } else
-      this.router.navigate([`auth/login`], {
-        queryParams: { auth: 'order', saleflow: this.saleflow._id },
-      });
-  }
+  authSelect(index: Number){
+   switch (index){
+      case 0:
+         if(this.user){
+            this.authService.signoutThree();
+            this.addressesOptions.length = 1;
+         }; 
+         this.mode = 'normal';
+         break;
+
+      case 1:
+         this.router.navigate([`auth/login`], {
+            queryParams: { auth: 'order', saleflow: this.saleflow._id },
+         });
+         break;
+      
+      case 2:
+         this.mode = 'normal';
+         this.headerService.storeOrderAuth(this.saleflow._id, true);
+         break;
+   };
+  };
 
   async formSubmit() {
     if (this.addressForm.invalid) return;
@@ -359,4 +331,110 @@ export class NewAddressComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+  
+  notUser(){
+   this.authOptions.push(
+      {
+         status: true,
+         id: 'continue',
+         value: 'Continuar de forma anónima',
+         valueStyles: {
+           fontFamily: 'SfProBold',
+           fontSize: '0.875rem',
+           color: '#000000',
+         },
+         subtexts: [
+           {
+             text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
+             styles: {
+               fontFamily: 'SfProRegular',
+               fontSize: '1rem',
+             },
+           },
+         ],
+      },
+      {
+         status: true,
+         id: 'toLogin',
+         value: 'Login o crea tu nueva cuenta',
+         valueStyles: {
+           fontFamily: 'SfProBold',
+           fontSize: '0.875rem',
+           color: '#000000',
+         },
+         subtexts: [
+           {
+             text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+             styles: {
+               fontFamily: 'SfProRegular',
+               fontSize: '1rem',
+             },
+           },
+         ],
+      }
+   );
+  };
+
+  isUser(user: User){
+   this.authOptions.push(
+      {
+        status: true,
+        id: 'continue',
+        value: 'Continuar de forma anónima',
+        valueStyles: {
+          fontFamily: 'SfProBold',
+          fontSize: '0.875rem',
+          color: '#000000',
+        },
+        subtexts: [
+          {
+            text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
+            styles: {
+              fontFamily: 'SfProRegular',
+              fontSize: '1rem',
+            },
+          },
+        ],
+      },
+      {
+        status: true,
+        id: 'toLogin',
+        value: 'Login o crea tu nueva cuenta',
+        valueStyles: {
+          fontFamily: 'SfProBold',
+          fontSize: '0.875rem',
+          color: '#000000',
+        },
+        subtexts: [
+          {
+            text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+            styles: {
+              fontFamily: 'SfProRegular',
+              fontSize: '1rem',
+            },
+          },
+        ],
+      },
+      {
+       status: true,
+        id: 'withUser',
+        value: `Continuar como ${user.name}`,
+        valueStyles: {
+          fontFamily: 'SfProBold',
+          fontSize: '0.875rem',
+          color: '#000000',
+        },
+        subtexts: [
+          {
+            text: 'Sigues ganando Kanddys. Seleccionas entre tus direcciones sin re-escribirlas',
+            styles: {
+              fontFamily: 'SfProRegular',
+              fontSize: '1rem',
+            },
+          },
+        ],
+      }
+   );
+  };
+
 }
