@@ -18,6 +18,7 @@ import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item
 
 interface ExtendedItem extends Item {
   selected?: boolean;
+  changedSelection?: boolean;
 }
 
 @Component({
@@ -147,6 +148,11 @@ export class MerchantItemsComponent implements OnInit {
     selected: boolean;
   }) => {
     this.items[targetItemData.index].selected = targetItemData.selected;
+    this.items[targetItemData.index].changedSelection = this.items[
+      targetItemData.index
+    ].changedSelection
+      ? !this.items[targetItemData.index].changedSelection
+      : true;
   };
 
   testing = () => {
@@ -227,13 +233,26 @@ export class MerchantItemsComponent implements OnInit {
       this.selectionConfiguration.mode === 'DELETE' &&
       this.selectionConfiguration.active
         ? this.deleteMultipleItems
+        : this.selectionConfiguration.mode === 'HIDE' &&
+          this.selectionConfiguration.active
+        ? this.hideMultipleItems
         : null;
 
     const list: StoreShareList[] = [
       {
-        title: `¿Eliminar los productos seleccionados?`,
+        title:
+          this.selectionConfiguration.mode === 'DELETE'
+            ? `¿Eliminar los productos seleccionados?`
+            : this.selectionConfiguration.mode === 'HIDE'
+            ? `¿Esconder los productos seleccionados?`
+            : null,
         description: 'Lorem ipsum',
-        message: 'Si, Eliminar',
+        message:
+          this.selectionConfiguration.mode === 'DELETE'
+            ? `Si, Eliminar`
+            : this.selectionConfiguration.mode === 'HIDE'
+            ? `Si, Esconder`
+            : null,
         messageCallback: operationFunction,
       },
     ];
@@ -256,9 +275,11 @@ export class MerchantItemsComponent implements OnInit {
       const arrayOfItemDeletionsFromSaleflowMutationPromises = [];
 
       selectedItems.forEach((item, index) => {
-        arrayOfItemDeletionsFromSaleflowMutationPromises.push(
-          this.deleteItem(item)
-        );
+        if (item.changedSelection) {
+          arrayOfItemDeletionsFromSaleflowMutationPromises.push(
+            this.deleteItem(item)
+          );
+        }
       });
 
       Promise.all(arrayOfItemDeletionsFromSaleflowMutationPromises)
@@ -276,11 +297,99 @@ export class MerchantItemsComponent implements OnInit {
           );
           this.selectionConfiguration.mode = 'NONE';
           this.selectionConfiguration.active = false;
+          this.items.forEach((item) => {
+            item.changedSelection = false;
+          });
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
         });
     }
+  };
+
+  hideMultipleItems = async () => {
+    const selectedItems = this.items.filter(
+      (item) => item.selected || item.changedSelection
+    );
+
+    if (selectedItems.length > 0) {
+      const arrayOfMutationsForHidingItemsPromises = [];
+
+      selectedItems.forEach((item, index) => {
+        console.log(item.changedSelection);
+        if (item.changedSelection) {
+          arrayOfMutationsForHidingItemsPromises.push(this.hideItem(item));
+        }
+      });
+
+      Promise.all(arrayOfMutationsForHidingItemsPromises)
+        .then((arrayOfResults) => {
+          let objectOfItemsToHide = {};
+
+          for (const result of arrayOfResults) {
+            if (result.success) {
+              objectOfItemsToHide[result.id] = true;
+            }
+          }
+
+          this.items.forEach((item) => {
+            if (item.selected && item.changedSelection) {
+              item.selected = false;
+              item.status = item.status === 'active' ? 'disabled' : 'active';
+              item.changedSelection = false;
+            }
+
+            if (!item.selected && item.changedSelection) {
+              item.selected = false;
+              item.status = item.status === 'active' ? 'disabled' : 'active';
+              item.changedSelection = false;
+            }
+
+            if (item.selected && !item.changedSelection) {
+              item.selected = false;
+              item.changedSelection = false;
+            }
+
+            if (!item.changedSelection) {
+              item.selected = false;
+            }
+          });
+          this.selectionConfiguration.mode = 'NONE';
+          this.selectionConfiguration.active = false;
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  hideItem = (item: ExtendedItem): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const updatedItem = await this.itemsService.updateItem(
+          {
+            status:
+              item.status === 'active'
+                ? 'disabled'
+                : item.status === 'disabled'
+                ? 'active'
+                : 'draft',
+          },
+          item._id
+        );
+
+        if (updatedItem)
+          resolve({
+            success: true,
+            id: item._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
   };
 
   deleteItem = (item: ExtendedItem): Promise<any> => {
@@ -331,6 +440,14 @@ export class MerchantItemsComponent implements OnInit {
             func: () => {
               this.selectionConfiguration.mode = 'HIDE';
               this.selectionConfiguration.active = true;
+
+              this.items.forEach((item) => {
+                if (item.status === 'active') {
+                  item.selected = false;
+                } else {
+                  item.selected = true;
+                }
+              });
             },
           },
           {
