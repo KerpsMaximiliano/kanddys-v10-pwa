@@ -597,7 +597,10 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openDialog() {
-    const styles = [{'background-color': '#82F18D', color: '#174B72' }, {'background-color': '#B17608', color: '#FFFFFF'}];
+    const styles = [
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+    ];
     const list: StoreShareList[] = [
       {
         title: this.item.name,
@@ -605,12 +608,11 @@ export class ItemDisplayComponent implements OnInit {
           text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
           textArray: ['VISIBLE', 'INVISIBLE'],
           func: this.toggleActivateItem,
-          valueUpdate: () =>{
-            return this.item.status === 'active' ? 1 : 0
+          valueUpdate: () => {
+            return this.item.status === 'active' ? 1 : 0;
           },
           stylesArray: styles,
-          labelStyles:
-            this.item.status === 'disabled' ? styles[1] : styles[0],
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0],
         },
         options: [
           {
@@ -657,6 +659,34 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        alternate: true,
+        hideCancelButtton: true,
+        headerIcon: {
+          src: '/upload.svg',
+          cursor: 'none',
+          styles: {
+            wrapper: {
+              width: '15px',
+              height: '19px',
+              paddingTop: '26px',
+              paddingBottom: '30px',
+            },
+          },
+        },
+        dynamicStyles: {
+          container: {
+            paddingBottom: '64px',
+          },
+          titleWrapper: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            paddingBottom: '42px',
+          },
+          dialogCard: {
+            paddingBottom: '64px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

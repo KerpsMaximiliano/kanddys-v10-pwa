@@ -43,6 +43,7 @@ export class MerchantItemsComponent implements OnInit {
     active: false,
     mode: 'NONE',
   };
+  selectedItemsCounter: number = 0;
 
   // Dummy Data
   itemList: Array<any> = [
@@ -153,6 +154,10 @@ export class MerchantItemsComponent implements OnInit {
     ].changedSelection
       ? !this.items[targetItemData.index].changedSelection
       : true;
+
+    this.selectedItemsCounter = this.items.reduce((total, number, index) => {
+      return this.items[index].selected ? total + 1 : total + 0;
+    }, 0);
   };
 
   testing = () => {
