@@ -34,6 +34,32 @@
         <h2 class="amount">EN TOTAL</h2>
       </div>
 
+      <div
+        class="info-card pointer"
+        routerLink="/admin/merchant-items" 
+        [queryParams]="{status: 'active'}"
+      >
+        <h2 class="amount quantity">
+          {{ activeItems && activeItems.length > 0 ? activeItems.length : 0 }}
+        </h2>
+
+        <h2 class="amount">VISIBLES</h2>
+      </div>
+
+      <div
+        class="info-card pointer"
+        routerLink="/admin/merchant-items"
+        [queryParams]="{status: 'disabled'}"
+      >
+        <h2 class="amount quantity">
+          {{
+            inactiveItems && inactiveItems.length > 0 ? inactiveItems.length : 0
+          }}
+        </h2>
+
+        <h2 class="amount">INVISIBLES</h2>
+      </div>
+
       <!-- <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'active'}">
         <h2 class="amount quantity">
           {{ activeItems ? activeItems.length : "0" }}

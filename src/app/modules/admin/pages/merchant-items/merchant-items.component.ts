@@ -16,6 +16,11 @@ import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-sh
 import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 
+interface ExtendedItem extends Item {
+  selected?: boolean;
+  changedSelection?: boolean;
+}
+
 @Component({
   selector: 'app-merchant-items',
   templateUrl: './merchant-items.component.html',
@@ -24,13 +29,22 @@ import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item
 export class MerchantItemsComponent implements OnInit {
   merchant: Merchant;
   saleflow: SaleFlow;
-  items: Item[] = [];
+  items: ExtendedItem[] = [];
   ordersTotal: {
     total: number;
     length: number;
   };
   hasSalesData: boolean = false;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
+  selectionConfiguration: {
+    mode: 'DELETE' | 'HIDE' | 'NONE';
+    active: boolean;
+  } = {
+    active: false,
+    mode: 'NONE',
+  };
+  selectedItemsCounter: number = 0;
+  statusQueryParam: 'active' | 'disabled';
 
   // Dummy Data
   itemList: Array<any> = [
@@ -78,10 +92,13 @@ export class MerchantItemsComponent implements OnInit {
     const status = this.route.snapshot.queryParamMap.get('status') as
       | 'active'
       | 'disabled';
+    if (status) this.statusQueryParam = status;
+
     this.authService.ready.subscribe(async (observer) => {
       if (observer != undefined) {
         this.status = 'loading';
         const user = await this.authService.me();
+        console.log(user);
         if (!user) this.errorScreen();
 
         // TODO: Replace this with a header service  call to get the merchant ID
@@ -128,6 +145,23 @@ export class MerchantItemsComponent implements OnInit {
       console.log(error);
     }
   }
+
+  markItemAsSelectedOrRemoveItsSelection = (targetItemData: {
+    id: string | number;
+    index: number;
+    selected: boolean;
+  }) => {
+    this.items[targetItemData.index].selected = targetItemData.selected;
+    this.items[targetItemData.index].changedSelection = this.items[
+      targetItemData.index
+    ].changedSelection
+      ? !this.items[targetItemData.index].changedSelection
+      : true;
+
+    this.selectedItemsCounter = this.items.reduce((total, number, index) => {
+      return this.items[index].selected ? total + 1 : total + 0;
+    }, 0);
+  };
 
   testing = () => {
     console.log('test');
@@ -202,16 +236,251 @@ export class MerchantItemsComponent implements OnInit {
     });
   }
 
+  openSelectionDialog = () => {
+    const operationFunction =
+      this.selectionConfiguration.mode === 'DELETE' &&
+      this.selectionConfiguration.active
+        ? this.deleteMultipleItems
+        : this.selectionConfiguration.mode === 'HIDE' &&
+          this.selectionConfiguration.active
+        ? this.hideMultipleItems
+        : null;
+
+    const list: StoreShareList[] = [
+      {
+        title:
+          this.selectionConfiguration.mode === 'DELETE'
+            ? `¿Eliminar los productos seleccionados?`
+            : this.selectionConfiguration.mode === 'HIDE'
+            ? `¿Esconder los productos seleccionados?`
+            : null,
+        description: 'Lorem ipsum',
+        message:
+          this.selectionConfiguration.mode === 'DELETE'
+            ? `Si, Eliminar`
+            : this.selectionConfiguration.mode === 'HIDE'
+            ? `Si, Esconder`
+            : null,
+        messageCallback: operationFunction,
+      },
+    ];
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
+  deleteMultipleItems = async () => {
+    const selectedItems = this.items.filter((item) => item.selected);
+
+    if (selectedItems.length > 0) {
+      const arrayOfItemDeletionsFromSaleflowMutationPromises = [];
+
+      selectedItems.forEach((item, index) => {
+        if (item.changedSelection) {
+          arrayOfItemDeletionsFromSaleflowMutationPromises.push(
+            this.deleteItem(item)
+          );
+        }
+      });
+
+      Promise.all(arrayOfItemDeletionsFromSaleflowMutationPromises)
+        .then((arrayOfResults) => {
+          let objectOfItemsToDelete = {};
+
+          for (const result of arrayOfResults) {
+            if (result.success) {
+              objectOfItemsToDelete[result.id] = true;
+            }
+          }
+
+          this.items = this.items.filter(
+            (item) => objectOfItemsToDelete[item._id] !== true
+          );
+          this.selectedItemsCounter = 0;
+          this.selectionConfiguration.mode = 'NONE';
+          this.selectionConfiguration.active = false;
+          this.items.forEach((item) => {
+            item.changedSelection = false;
+          });
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  hideMultipleItems = async () => {
+    const selectedItems = this.items.filter(
+      (item) => item.selected || item.changedSelection
+    );
+
+    if (selectedItems.length > 0) {
+      const arrayOfMutationsForHidingItemsPromises = [];
+
+      selectedItems.forEach((item, index) => {
+        console.log(item.changedSelection);
+        if (item.changedSelection) {
+          arrayOfMutationsForHidingItemsPromises.push(this.hideItem(item));
+        }
+      });
+
+      Promise.all(arrayOfMutationsForHidingItemsPromises)
+        .then((arrayOfResults) => {
+          let objectOfItemsToHide = {};
+
+          for (const result of arrayOfResults) {
+            if (result.success) {
+              objectOfItemsToHide[result.id] = true;
+            }
+          }
+
+          this.items.forEach((item) => {
+            if (item.selected && item.changedSelection) {
+              item.selected = false;
+              item.status = item.status === 'active' ? 'disabled' : 'active';
+              item.changedSelection = false;
+            }
+
+            if (!item.selected && item.changedSelection) {
+              item.selected = false;
+              item.status = item.status === 'active' ? 'disabled' : 'active';
+              item.changedSelection = false;
+            }
+
+            if (item.selected && !item.changedSelection) {
+              item.selected = false;
+              item.changedSelection = false;
+            }
+
+            if (!item.changedSelection) {
+              item.selected = false;
+            }
+          });
+
+          if (this.statusQueryParam) {
+            this.getItems(this.merchant._id, this.statusQueryParam);
+          }
+
+          this.selectedItemsCounter = 0;
+          this.selectionConfiguration.mode = 'NONE';
+          this.selectionConfiguration.active = false;
+        })
+        .catch((arrayOfErrors) => {
+          console.log(arrayOfErrors);
+        });
+    }
+  };
+
+  hideItem = (item: ExtendedItem): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const updatedItem = await this.itemsService.updateItem(
+          {
+            status:
+              item.status === 'active'
+                ? 'disabled'
+                : item.status === 'disabled'
+                ? 'active'
+                : 'draft',
+          },
+          item._id
+        );
+
+        if (updatedItem)
+          resolve({
+            success: true,
+            id: item._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
+
+  deleteItem = (item: ExtendedItem): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const removeItemFromSaleFlow =
+          await this.saleflowService.removeItemFromSaleFlow(
+            item._id,
+            this.saleflow._id
+          );
+        if (!removeItemFromSaleFlow) return;
+        const deletedItem = await this.itemsService.deleteItem(item._id);
+
+        if (deletedItem)
+          resolve({
+            success: deletedItem,
+            id: item._id,
+          });
+      } catch (error) {
+        reject({
+          success: false,
+          id: null,
+        });
+      }
+    });
+  };
+
   openDialog = () => {
     const list: StoreShareList[] = [
       {
-        title: 'Crear',
+        title: 'GESTIÓN DE ITEMS',
+        titleStyles: {
+          margin: '0px',
+          marginTop: '15px',
+          marginBottom: '65px',
+        },
         options: [
           {
-            text: 'Un nuevo Item',
+            text: 'ADICIONAR',
             mode: 'func',
             func: () => {
               this.router.navigate(['admin/create-item/']);
+            },
+          },
+          {
+            text: 'ESCONDER',
+            mode: 'func',
+            func: () => {
+              this.selectionConfiguration.mode = 'HIDE';
+              this.selectionConfiguration.active = true;
+              this.selectedItemsCounter = 0;
+
+              this.items.forEach((item) => {
+                if (item.status === 'active') {
+                  item.selected = false;
+                } else {
+                  item.selected = true;
+                  this.selectedItemsCounter += 1;
+                }
+                item.changedSelection = false;
+              });
+            },
+          },
+          {
+            text: 'BORRAR (ELIMINA LA DATA)',
+            mode: 'func',
+            func: () => {
+              this.selectedItemsCounter = 0;
+
+              this.items.forEach((item) => {
+                item.selected = false;
+                item.changedSelection = false;
+              });
+
+              this.selectionConfiguration.mode = 'DELETE';
+              this.selectionConfiguration.active = true;
             },
           },
         ],
@@ -223,6 +492,15 @@ export class MerchantItemsComponent implements OnInit {
       props: {
         list,
         alternate: true,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '64px',
+          },
+          dialogCard: {
+            paddingBottom: '64px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -266,5 +544,18 @@ export class MerchantItemsComponent implements OnInit {
         content,
       },
     });
+  };
+
+  quitItemSelection = () => {
+    if (this.selectionConfiguration.active) {
+      this.selectedItemsCounter = 0;
+      this.items.forEach((item) => {
+        item.selected = false;
+        item.changedSelection = false;
+      });
+
+      this.selectionConfiguration.active = false;
+      this.selectionConfiguration.mode = 'NONE';
+    }
   };
 }

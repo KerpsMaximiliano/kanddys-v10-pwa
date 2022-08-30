@@ -1,13 +1,17 @@
 <div class="external-container">
-  <div class="container">
-    <div class="dialog-card">
+  <div class="container" [ngStyle]="dynamicStyles?.container">
+    <div class="dialog-card" [ngStyle]="dynamicStyles?.dialogCard">
       <div *ngFor="let item of list">
         <div
           class="title-wrapper"
-          [ngStyle]="{
-            display: 'flex',
-            'justify-content': item.label ? 'space-between' : 'center'
-          }"
+          [ngStyle]="
+            !dynamicStyles?.titleWrapper
+              ? {
+                  display: 'flex',
+                  'justify-content': item.label ? 'space-between' : 'center'
+                }
+              : dynamicStyles?.titleWrapper
+          "
         >
           <h1
             class="title"
@@ -24,7 +28,7 @@
             (click)="item.label.func && secondInput(item.label.func)"
           >
             {{ item.label.text }}
-        </button>
+          </button>
         </div>
         <div class="qr-container" *ngIf="item.qrlink">
           <qrcode
@@ -117,6 +121,8 @@
         </div>
       </div>
     </div>
-    <button class="cancel" (click)="defaultButton()">{{ buttonText }}</button>
+    <button class="cancel" *ngIf="!hideCancelButtton" (click)="defaultButton()">
+      {{ buttonText }}
+    </button>
   </div>
 </div>

@@ -36,13 +36,13 @@ interface StoreShareOption {
   mode?: 'clipboard' | 'share' | 'func' | 'qr';
 }
 
-interface Label{
-    text: string;
-    func?: () => void;
-    textArray?: Array<string>;
-    labelStyles?: Record<string, any>;
-    stylesArray?: Array<Record<string, any>>;
-    valueUpdate?: () => any;
+interface Label {
+  text: string;
+  func?: () => void;
+  textArray?: Array<string>;
+  labelStyles?: Record<string, any>;
+  stylesArray?: Array<Record<string, any>>;
+  valueUpdate?: () => any;
 }
 
 export interface StoreShareList {
@@ -67,7 +67,13 @@ export class StoreShareComponent implements OnInit {
   @Input() list: StoreShareList[] = [];
   @Input() alternate: boolean;
   @Input() buttonText: string = 'Cancel';
-  @Input() public buttonCallback : () => void;
+  @Input() public buttonCallback: () => void;
+  @Input() hideCancelButtton: boolean = false;
+  @Input() dynamicStyles: {
+    container?: Record<string, string | number>,
+    titleWrapper?: Record<string, string | number>,    
+    dialogCard?: Record<string, string | number>,    
+  };
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
   screenWidth: number;
@@ -82,17 +88,18 @@ export class StoreShareComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.hideCancelButtton, this.dynamicStyles, this.list, this.alternate)
     if (!this.list || !this.list.length)
       throw new Error('Ingresa opciones para mostrar');
   }
 
-  ngOnChanges(changes: SimpleChanges){
-    console.log(changes)
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes);
     const list: SimpleChange = changes.list;
     console.log('Old value:', list.previousValue);
     console.log('New value:', list.currentValue);
   }
-  
+
   downloadQr() {
     const parentElement = this.qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
@@ -160,20 +167,19 @@ export class StoreShareComponent implements OnInit {
     this.close();
   }
 
-  secondInput(callback: () => void){
+  secondInput(callback: () => void) {
     let label = this.list[0].label;
     label.text = label.textArray[label.valueUpdate()];
     label.labelStyles = label.stylesArray[label.valueUpdate()];
     callback();
   }
 
-  defaultButton(){
-    if(this.buttonCallback){
-        this.buttonCallback();
-        this.close()
-    } else{
-        this.close();
+  defaultButton() {
+    if (this.buttonCallback) {
+      this.buttonCallback();
+      this.close();
+    } else {
+      this.close();
     }
   }
-
 }
