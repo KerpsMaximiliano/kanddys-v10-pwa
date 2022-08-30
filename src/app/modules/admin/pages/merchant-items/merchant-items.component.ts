@@ -447,6 +447,7 @@ export class MerchantItemsComponent implements OnInit {
                 } else {
                   item.selected = true;
                 }
+                item.changedSelection = false;
               });
             },
           },
@@ -454,6 +455,11 @@ export class MerchantItemsComponent implements OnInit {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
             func: () => {
+              this.items.forEach((item) => {
+                item.selected = false;
+                item.changedSelection = false;
+              });
+
               this.selectionConfiguration.mode = 'DELETE';
               this.selectionConfiguration.active = true;
             },
