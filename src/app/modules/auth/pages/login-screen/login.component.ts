@@ -20,6 +20,8 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
+type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -27,7 +29,7 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginComponent implements OnInit {
   saleflow: SaleFlow;
-  auth: 'phone' | 'password' | 'order';
+  auth: AuthTypes;
   merchantNumber: string = '(000) 000-0000';
   merchant: Merchant;
   loggin: boolean;
@@ -84,10 +86,7 @@ export class LoginComponent implements OnInit {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
-    this.auth = this.route.snapshot.queryParamMap.get('auth') as
-      | 'phone'
-      | 'password'
-      | 'order';
+    this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
 
     if (this.orderId) {
       this.orderStatus = (
@@ -178,6 +177,8 @@ export class LoginComponent implements OnInit {
         this.loggin = false;
         unlockUI();
       }
+    } else if (this.auth === 'anonymous') {
+      unlockUI();
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -235,6 +236,10 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
+          if (this.orderId && this.auth === 'anonymous') {
+            this.authOrder(this.userID);
+            return;
+          }
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
           this.loggin = true;

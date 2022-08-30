@@ -32,6 +32,7 @@ export class CheckoutComponent implements OnInit {
   items: Item[];
   post: PostInput;
   payment: number;
+  hasPayment: boolean;
   date: {
     month: string;
     day: number;
@@ -150,6 +151,8 @@ export class CheckoutComponent implements OnInit {
           this.headerService.getSaleflow()?._id
       )?.data;
     this.setCustomizerPreview();
+    if (this.saleflow?.module?.paymentMethod?.paymentModule?._id)
+      this.hasPayment = true;
     if (this.order.products[0].reservation) {
       const fromDate = new Date(this.order.products[0].reservation.date.from);
       const untilDate = new Date(this.order.products[0].reservation.date.until);
@@ -250,6 +253,7 @@ export class CheckoutComponent implements OnInit {
       const { createPreOrder } = await this.orderService.createPreOrder(
         this.order
       );
+      const anonymous = this.headerService.getOrderAuth(this.saleflow._id);
       this.headerService.deleteSaleflowOrder(this.saleflow._id);
       this.headerService.resetIsComplete();
       this.headerService.orderId = createPreOrder._id;
@@ -257,15 +261,46 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
+
+      if (this.headerService.user) {
+        await this.authOrder(this.headerService.user._id);
+        return;
+      }
       this.router.navigate([`/auth/login`], {
         queryParams: {
           orderId: createPreOrder._id,
+          auth: anonymous && 'anonymous',
         },
       });
     } catch (error) {
       console.log(error);
     }
   };
+
+  async authOrder(id: string) {
+    const { orderStatus } = await this.orderService.getOrderStatus(
+      this.headerService.orderId
+    );
+    if (orderStatus === 'draft') {
+      await this.orderService.authOrder(this.headerService.orderId, id);
+      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
+      this.headerService.resetIsComplete();
+    }
+    if (this.hasPayment)
+      this.router.navigate(
+        [`/ecommerce/payments/${this.headerService.orderId}`],
+        {
+          replaceUrl: true,
+        }
+      );
+    else
+      this.router.navigate(
+        [`/ecommerce/order-info/${this.headerService.orderId}`],
+        {
+          replaceUrl: true,
+        }
+      );
+  }
 
   mouseDown: boolean;
   startX: number;

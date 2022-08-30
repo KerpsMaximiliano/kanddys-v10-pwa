@@ -23,13 +23,13 @@
       <h3 class="title">Seleccione entre:</h3>
 
       <app-answer-selector
-         [options]="anonymousOptions"
-         [activeOption]="selectedID"
-         [indicator]="true"
-         [containerStyles]="{
-            margin: '0px'
-         }"
-         (onSelector)="selectedID = $event"
+        [options]="authOptions"
+        [activeOption]="selectedAuthIndex"
+        [indicator]="true"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+        (onSelector)="selectedAuthIndex = $event"
       ></app-answer-selector>
     </ng-container>
     <ng-container *ngIf="mode !== 'anonymous' && mode !== 'add' && !editingId">
@@ -37,9 +37,9 @@
       <div>
         <app-answer-selector
           [options]="addressesOptions"
-          [activeOption]="selectedIndex"
+          [activeOption]="selectedDeliveryIndex"
           [indicator]="true"
-          (onSelector)="selectedIndex = $event"
+          (onSelector)="selectedDeliveryIndex = $event"
           [containerStyles]="{
             margin: '0px'
           }"
@@ -142,7 +142,7 @@
   (click)="formSubmit()"
 ></app-sticky-button>
 <app-sticky-button
-  *ngIf="mode === 'normal' && selectedIndex != null"
+  *ngIf="mode === 'normal' && selectedDeliveryIndex != null"
   mode="fixed"
   text="CONTINUA AL CHECKOUT"
   bgColor="#2874AD"
@@ -150,12 +150,12 @@
   (click)="selectAddress()"
 ></app-sticky-button>
 <app-sticky-button
-  *ngIf="mode === 'anonymous' && selectedID != null"
+  *ngIf="mode === 'anonymous' && selectedAuthIndex != null"
   mode="fixed"
   text="CONFIRMAR ELECCIÓN"
   bgColor="#2874AD"
   size="small"
-  (click)="Continue(selectedID)"
+  (click)="authSelect(selectedAuthIndex)"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"
