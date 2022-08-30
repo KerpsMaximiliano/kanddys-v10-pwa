@@ -257,9 +257,11 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      this.router.navigate([
-        `ecommerce/flow-completion-auth-less/${createPreOrder._id}`,
-      ]);
+      this.router.navigate([`/auth/login`], {
+        queryParams: {
+          orderId: createPreOrder._id,
+        },
+      });
     } catch (error) {
       console.log(error);
     }

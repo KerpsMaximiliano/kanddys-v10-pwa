@@ -75,6 +75,9 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
+    this.user = await this.authService.me();
+    if (!this.user) return;
+    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
       value: 'Agregar nueva dirección',
@@ -84,9 +87,6 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
-    const user = await this.authService.me();
-    if (!user) return;
-    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.addresses.push(...this.user.deliveryLocations);
     this.user.deliveryLocations?.forEach((locations) => {
       this.addressesOptions.push({

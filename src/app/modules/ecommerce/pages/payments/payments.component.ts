@@ -52,9 +52,9 @@ export class PaymentsComponent implements OnInit {
     )?.ExchangeData?.bank;
 
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-    this.whatsappLink = `https://wa.me/${
-      this.merchant.owner.phone
-    }?text=${this.merchant.name
+    this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${(
+      this.order.user.name || this.merchant.name
+    )
       .replace('&', 'and')
       .replace(
         /[^\w\s]/gi,
