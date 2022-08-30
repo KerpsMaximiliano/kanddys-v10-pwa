@@ -671,11 +671,12 @@ export class ItemDisplayComponent implements OnInit {
               paddingBottom: '30px',
               position: 'relative',
               width: '100%',
-              filter: "sepia(100%) hue-rotate(190deg) saturate(500%);"
             },
             image: {
               position: 'absolute',
               right: '28px',
+              filter:
+                'sepia(100%) hue-rotate(190deg) saturate(500%) brightness(0.7)',
             },
           },
         },
@@ -691,7 +692,7 @@ export class ItemDisplayComponent implements OnInit {
           },
           dialogCard: {
             paddingBottom: '64px',
-            paddingTop: '0px'
+            paddingTop: '0px',
           },
         },
       },
