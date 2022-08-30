@@ -666,10 +666,15 @@ export class ItemDisplayComponent implements OnInit {
           cursor: 'none',
           styles: {
             wrapper: {
-              width: '15px',
               height: '19px',
               paddingTop: '26px',
               paddingBottom: '30px',
+              position: 'relative',
+              width: '100%',
+            },
+            image: {
+              position: 'absolute',
+              right: '28px',
             },
           },
         },
@@ -685,6 +690,7 @@ export class ItemDisplayComponent implements OnInit {
           },
           dialogCard: {
             paddingBottom: '64px',
+            paddingTop: '0px'
           },
         },
       },
