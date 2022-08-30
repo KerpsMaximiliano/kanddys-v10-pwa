@@ -40,17 +40,61 @@ export class NewAddressComponent implements OnInit {
       note: fb.control(null),
     });
   }
-  mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
+  mode: 'normal' | 'add' | 'delete' | 'edit' | 'anonymous';
   editingId: string;
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
   newAddressOption: OptionAnswerSelector[] = [];
+  anonymousOptions: OptionAnswerSelector[] = [];
   saleflow: SaleFlow;
   selectedIndex: number;
+  selectedID: number;
   user: User;
 
   async ngOnInit(): Promise<void> {
+     const user = await this.authService.me();
+     if (!user) {
+       this.mode = 'anonymous';
+       this.anonymousOptions.push({
+         status: true,
+         id: 'continue',
+         value: 'Continuar de forma anónima',
+         valueStyles: {
+           fontFamily: 'SfProBold',
+           fontSize: '0.875rem',
+           color: '#000000',
+         },
+         subtexts: [
+           {
+             text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
+             styles: {
+               fontFamily: 'SfProRegular',
+               fontSize: '1rem',
+             },
+           },
+         ],
+       },
+       {
+         status: true,
+         id: 'toLogin',
+         value: 'Login o crea tu nueva cuenta',
+         valueStyles: {
+           fontFamily: 'SfProBold',
+           fontSize: '0.875rem',
+           color: '#000000',
+         },
+         subtexts: [
+           {
+             text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+             styles: {
+               fontFamily: 'SfProRegular',
+               fontSize: '1rem',
+             },
+           },
+         ]
+       });
+    } else this.mode = 'normal';
     this.saleflow = this.headerService.getSaleflow();
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
@@ -75,6 +119,9 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
+    this.user = await this.authService.me();
+    if (!this.user) return;
+    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
       value: 'Agregar nueva dirección',
@@ -84,9 +131,6 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
-    const user = await this.authService.me();
-    if (!user) return;
-    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.addresses.push(...this.user.deliveryLocations);
     this.user.deliveryLocations?.forEach((locations) => {
       this.addressesOptions.push({
@@ -213,6 +257,11 @@ export class NewAddressComponent implements OnInit {
       this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
     );
     this.router.navigate(['ecommerce/checkout']);
+  }
+
+  Continue(index: Number){
+   if(index === 0) this.mode = 'normal'
+   else this.router.navigate([`auth/login`], {queryParams: {auth: 'order', saleflow: this.saleflow._id} });
   }
 
   async formSubmit() {

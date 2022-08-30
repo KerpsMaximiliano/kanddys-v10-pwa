@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
+  BankAnswers,
   ComplexOptionAnswerSelector,
   OptionAnswerSelector,
 } from 'src/app/core/types/answer-selector';
@@ -28,6 +29,7 @@ export class AnswerSelectorComponent {
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
   @Input() complexOptions: ComplexOptionAnswerSelector[];
+  @Input() values: BankAnswers;
 
   @Output() onSelector = new EventEmitter<number>();
 

@@ -1,67 +1,83 @@
 <div class="container">
-   <app-helper-headerv2
-   [mode]="'basic'"
-   [mainText]="{
-      text:'Métodos de Pagos en DOP',
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [mainText]="{
+      text: 'Métodos de Pagos en DOP',
       fontFamily: 'SfProBold',
       fontSize: '21px'
-   }"
-   [dots]="{
+    }"
+    [dots]="{
       active: true
-   }"
-   [returnAble]="true"
-   ></app-helper-headerv2>
-
-   <div class="total-paid">
-      <h1 class="paid">${{totalPaid}}</h1>
-      <p class="total">Total Facturado</p>
-   </div>
-
-   <div class="payment-method">
-      <label for="Payment-selection" class="payment-selection">Selecciona el metodo que te convenga:</label>
-
+    }"
+    [returnAble]="true"
+  ></app-helper-headerv2>
+  <div class="total-paid">
+    <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
+    <p class="total">Total Facturado</p>
+  </div>
+  <div class="payment-method">
+    <label for="Payment-selection" class="payment-selection"
+      >Selecciona el metodo que te convenga:</label
+    >
+    <ng-container *ngIf="!selectedBank">
       <app-answer-selector
-      [options]="paymentOptions"
-      [indicator]="true"
-      (onSelector)="selectAddress($event)"
-      [containerStyles]="{
-        margin: '0px'
-      }"
+        [values]="{
+          type: 'bank',
+          items: banks
+        }"
+        [activeOption]="selectedOption"
+        [indicator]="true"
+        (onSelector)="selectBank($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
       ></app-answer-selector>
-   </div>
-
-   <hr class="divider" *ngIf="selectedMethod">
-
-   <div class="image-area" *ngIf="selectedMethod">
-
-      <label for="Image" class="image-label">Comprobante de Pago</label>
-
-      <app-image-input style="margin-left: 5px;"
-        [allowedTypes]="['png', 'jpg', 'jpeg']"
-        [expandImage]="true"
-        (onFileInput)="onFileInput($event)"
-      ></app-image-input>
-
-   </div>
-
-   <app-bubble-button
-   [cart]="true"
-   [solo]="!selectedMethod || !image? true : false"
-   [color]="'blue'"
-   [cartAmount]="2"
-   [position]="'right'"
-   ></app-bubble-button>
-
-   <app-sticky-button *ngIf="image || selectedMethod"
-   [mode]="'fixed'"
-   [text]="image? 'MANDAR FACTURA POR WHATSAPP' : ( selectedMethod? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO' : '')"
-   [size]="'small'"
-   [bgColor]="image? '#2874AD' : '#C1C1C1'"
-   [customLeftButtonStyles]="{
-      'letter-space':'1px',
-      'font-family': 'RobotoMedium',
-      'font-size': '17px',
-      'color': '#FFFFFF'
-   }"
-   ></app-sticky-button>
+    </ng-container>
+    <ng-container *ngIf="selectedBank">
+      <div class="option-content">
+        <p class="option-title">Transferencia Bancaria</p>
+        <ul>
+          <li>Tipo de cuenta: {{ selectedBank.typeAccount }}</li>
+          <li>{{ selectedBank.ownerAccount }}</li>
+          <li>Cuenta: {{ selectedBank.account }}</li>
+          <li>RNC: {{ selectedBank.routingNumber }}</li>
+        </ul>
+        <p class="option-footer">{{ selectedBank.bankName }}</p>
+        <button class="option-remove" (click)="removeBank()">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+  <div class="image-area" *ngIf="selectedBank">
+    <label for="Image" class="image-label">Comprobante de Pago</label>
+    <app-image-input
+      style="margin-left: 5px"
+      [allowedTypes]="['png', 'jpg', 'jpeg']"
+      [expandImage]="true"
+      (onFileInput)="onFileInput($event)"
+    ></app-image-input>
+  </div>
+  <a [href]="whatsappLink" target="_blank">
+    <app-sticky-button
+      *ngIf="image || selectedBank"
+      (click)="image && submitPayment()"
+      [mode]="'fixed'"
+      [text]="
+        image
+          ? 'MANDAR FACTURA POR WHATSAPP'
+          : selectedBank
+          ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
+          : ''
+      "
+      [size]="'small'"
+      [bgColor]="image ? '#2874AD' : '#C1C1C1'"
+      [customLeftButtonStyles]="{
+        'letter-space': '1px',
+        'font-family': 'RobotoMedium',
+        'font-size': '17px',
+        color: '#FFFFFF'
+      }"
+    ></app-sticky-button>
+  </a>
 </div>
