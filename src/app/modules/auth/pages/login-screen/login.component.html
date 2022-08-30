@@ -85,7 +85,7 @@
         >
           Por favor introduzca contraseña valida
         </div>
-        <a [href]="messageLink" target="_blank" *ngIf="!hasPayment">
+        <a [href]="messageLink" target="_blank" *ngIf="orderId && !hasPayment">
           <button
             class="confirm"
             (click)="signIn()"
@@ -103,7 +103,7 @@
           </button>
         </a>
         <button
-          *ngIf="hasPayment"
+          *ngIf="!orderId || (orderId && hasPayment)"
           class="confirm"
           (click)="signIn()"
           [disabled]="
