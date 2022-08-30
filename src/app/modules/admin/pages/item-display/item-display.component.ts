@@ -671,6 +671,7 @@ export class ItemDisplayComponent implements OnInit {
               paddingBottom: '30px',
               position: 'relative',
               width: '100%',
+              filter: "sepia(100%) hue-rotate(190deg) saturate(500%);"
             },
             image: {
               position: 'absolute',
