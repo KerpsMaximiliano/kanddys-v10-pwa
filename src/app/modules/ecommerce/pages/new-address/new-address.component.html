@@ -19,7 +19,20 @@
     </button>
   </header>
   <main>
-    <ng-container *ngIf="mode !== 'add' && !editingId">
+    <ng-container *ngIf="mode === 'anonymous'">
+      <h3 class="title">Seleccione entre:</h3>
+
+      <app-answer-selector
+         [options]="anonymousOptions"
+         [activeOption]="selectedID"
+         [indicator]="true"
+         [containerStyles]="{
+            margin: '0px'
+         }"
+         (onSelector)="selectedID = $event"
+      ></app-answer-selector>
+    </ng-container>
+    <ng-container *ngIf="mode !== 'anonymous' && mode !== 'add' && !editingId">
       <h3 class="title">Seleccione entre:</h3>
       <div>
         <app-answer-selector
@@ -135,6 +148,14 @@
   bgColor="#2874AD"
   size="small"
   (click)="selectAddress()"
+></app-sticky-button>
+<app-sticky-button
+  *ngIf="mode === 'anonymous' && selectedID != null"
+  mode="fixed"
+  text="CONFIRMAR ELECCIÓN"
+  bgColor="#2874AD"
+  size="small"
+  (click)="Continue(selectedID)"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"
