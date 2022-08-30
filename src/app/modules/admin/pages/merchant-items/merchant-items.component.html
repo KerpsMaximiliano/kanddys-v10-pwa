@@ -17,7 +17,9 @@
   ></app-helper-headerv2>
 
   <div class="wrapper">
-    <h2 class="items-header">Sobre las facturas</h2>
+    <h2 class="items-header">
+      {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
+    </h2>
 
     <div class="dot-trio" (click)="openDialog()">
       <div class="dot"> </div>
