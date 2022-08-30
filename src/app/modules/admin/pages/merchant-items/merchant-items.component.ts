@@ -537,7 +537,12 @@ export class MerchantItemsComponent implements OnInit {
 
   quitItemSelection = () => {
     if (this.selectionConfiguration.active) {
-      this.items.forEach((item) => (item.selected = false));
+      
+      this.selectedItemsCounter = 0;
+      this.items.forEach((item) => {
+        item.selected = false;
+        item.changedSelection = false;
+      });
 
       this.selectionConfiguration.active = false;
       this.selectionConfiguration.mode = 'NONE';
