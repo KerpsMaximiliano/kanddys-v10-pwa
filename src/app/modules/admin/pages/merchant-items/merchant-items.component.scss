@@ -4,7 +4,6 @@
 
   .saleflows-grid {
     width: auto;
-    max-height: 93.5vh;
     padding: 16px 24px 32px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -12,7 +11,6 @@
     column-gap: 14px;
     row-gap: 25px;
     overflow-x: hidden;
-    overflow-y: scroll;
     justify-items: center;
     .capsize {
       width: 100%;
@@ -22,13 +20,13 @@
   }
 }
 
-.wrapper {
+.header-wrapper {
   display: flex;
   align-items: center;
   padding: 0px;
   padding-left: 24px;
   padding-right: 24px;
-  padding-top: 32px;
+  padding-top: 68px;
   justify-content: space-between;
 
   .items-header {

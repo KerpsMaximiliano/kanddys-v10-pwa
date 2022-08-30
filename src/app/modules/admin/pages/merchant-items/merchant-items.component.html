@@ -1,6 +1,7 @@
 <div class="container">
   <app-helper-headerv2
     [mode]="'basic'"
+    [fixed]="true"
     [mainText]="{
       text: merchant?.name || 'Tienda',
       fontFamily: 'SfProBold',
@@ -16,7 +17,7 @@
     (plusEvent)="createItem()"
   ></app-helper-headerv2>
 
-  <div class="wrapper">
+  <div class="header-wrapper">
     <h2 class="items-header">
       {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
     </h2>
