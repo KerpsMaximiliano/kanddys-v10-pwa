@@ -117,11 +117,11 @@ const routes: Routes = [
       },
       {
         path: 'checkout',
-        component: CheckoutComponent
+        component: CheckoutComponent,
       },
       {
-         path: 'payments',
-         component: PaymentsComponent
+        path: 'payments/:id',
+        component: PaymentsComponent,
       },
     ],
   },
