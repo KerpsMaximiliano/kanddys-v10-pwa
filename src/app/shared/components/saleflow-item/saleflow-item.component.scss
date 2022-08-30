@@ -329,8 +329,8 @@
         transition: 0.5s background-color ease-in-out, 0.5s color ease-in-out;
 
         &:active {
-          background-color: #82F18D;
-          color: #174B72;
+          background-color: #82f18d;
+          color: #174b72;
         }
       }
 
@@ -415,7 +415,7 @@
 
 .selected2 {
   background-color: #82f18d;
-  color: #174B72;
+  color: #174b72;
 }
 
 .select-mode-radio-button {
@@ -439,6 +439,21 @@
 
   &.radioButtonClicked {
     background-color: #82f18d;
+  }
+}
+
+@media (max-width: 768px) {
+  .itemContainer {
+    .simpleCard {
+      .info-area {
+        &.transition-class {
+          &:active {
+            color: #7b7b7b;
+            background-color: #ffffff;
+          }
+        }
+      }
+    }
   }
 }
 
