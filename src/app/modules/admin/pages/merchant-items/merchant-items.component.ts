@@ -445,6 +445,7 @@ export class MerchantItemsComponent implements OnInit {
             func: () => {
               this.selectionConfiguration.mode = 'HIDE';
               this.selectionConfiguration.active = true;
+              this.selectedItemsCounter = 0;
 
               this.items.forEach((item) => {
                 if (item.status === 'active') {
@@ -460,6 +461,8 @@ export class MerchantItemsComponent implements OnInit {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
             func: () => {
+              this.selectedItemsCounter = 0;
+
               this.items.forEach((item) => {
                 item.selected = false;
                 item.changedSelection = false;
