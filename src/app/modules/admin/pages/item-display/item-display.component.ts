@@ -525,12 +525,12 @@ export class ItemDisplayComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -672,7 +672,7 @@ export class ItemDisplayComponent implements OnInit {
 
   copyLink() {
     this.clipboard.copy(
-      `${this.URI}/admin/item-detail/${this.saleflow._id}/${this.item._id}`
+      `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
     );
     this.toastr.info('Enlace del producto copiado en el clipboard', null, {
       timeOut: 2000,
