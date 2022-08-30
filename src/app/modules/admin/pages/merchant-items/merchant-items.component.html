@@ -82,7 +82,13 @@
   -->
 
   <app-sticky-button
-    *ngIf="selectionConfiguration.active && selectedItemsCounter > 0"
+    *ngIf="
+      (selectionConfiguration.active &&
+        selectedItemsCounter > 0) ||
+      (selectionConfiguration.active &&
+        selectedItemsCounter === 0 &&
+        selectionConfiguration.mode === 'HIDE')
+    "
     size="small"
     [mode]="'fixed'"
     bgColor="#2874AD"

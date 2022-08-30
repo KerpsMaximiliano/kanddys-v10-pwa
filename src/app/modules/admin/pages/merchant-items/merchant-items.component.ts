@@ -44,6 +44,7 @@ export class MerchantItemsComponent implements OnInit {
     mode: 'NONE',
   };
   selectedItemsCounter: number = 0;
+  statusQueryParam: 'active' | 'disabled';
 
   // Dummy Data
   itemList: Array<any> = [
@@ -91,6 +92,8 @@ export class MerchantItemsComponent implements OnInit {
     const status = this.route.snapshot.queryParamMap.get('status') as
       | 'active'
       | 'disabled';
+    if (status) this.statusQueryParam = status;
+
     this.authService.ready.subscribe(async (observer) => {
       if (observer != undefined) {
         this.status = 'loading';
@@ -300,6 +303,7 @@ export class MerchantItemsComponent implements OnInit {
           this.items = this.items.filter(
             (item) => objectOfItemsToDelete[item._id] !== true
           );
+          this.selectedItemsCounter = 0;
           this.selectionConfiguration.mode = 'NONE';
           this.selectionConfiguration.active = false;
           this.items.forEach((item) => {
@@ -359,6 +363,12 @@ export class MerchantItemsComponent implements OnInit {
               item.selected = false;
             }
           });
+
+          if (this.statusQueryParam) {
+            this.getItems(this.merchant._id, this.statusQueryParam);
+          }
+
+          this.selectedItemsCounter = 0;
           this.selectionConfiguration.mode = 'NONE';
           this.selectionConfiguration.active = false;
         })
@@ -452,6 +462,7 @@ export class MerchantItemsComponent implements OnInit {
                   item.selected = false;
                 } else {
                   item.selected = true;
+                  this.selectedItemsCounter += 1;
                 }
                 item.changedSelection = false;
               });
@@ -537,7 +548,6 @@ export class MerchantItemsComponent implements OnInit {
 
   quitItemSelection = () => {
     if (this.selectionConfiguration.active) {
-      
       this.selectedItemsCounter = 0;
       this.items.forEach((item) => {
         item.selected = false;
