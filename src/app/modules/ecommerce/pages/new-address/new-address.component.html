@@ -8,7 +8,7 @@
     </div>
     <button
       *ngIf="
-        mode === 'normal' && saleflow.module?.delivery?.deliveryLocation && user
+        mode === 'normal' && saleflow?.module?.delivery?.deliveryLocation && user
       "
       class="dot-trio"
       (click)="onOpenDialog()"

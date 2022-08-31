@@ -275,7 +275,12 @@ export class LoginComponent implements OnInit {
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
         if (this.auth === 'order') {
-          this.back();
+          this.router.navigate([`ecommerce/new-address`], {
+            replaceUrl: true,
+            state: {
+              loggedIn: true,
+            },
+          });
           return;
         }
         if (this.orderId) {
@@ -303,7 +308,12 @@ export class LoginComponent implements OnInit {
         );
         if (!session) return console.log('Error logging in');
         if (this.auth === 'order') {
-          this.back();
+          this.router.navigate([`ecommerce/new-address`], {
+            replaceUrl: true,
+            state: {
+              loggedIn: true,
+            },
+          });
           return;
         }
         if (this.orderId) {
@@ -329,7 +339,12 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.auth === 'order') {
-        this.back();
+        this.router.navigate([`ecommerce/new-address`], {
+          replaceUrl: true,
+          state: {
+            loggedIn: true,
+          },
+        });
         return;
       }
       if (this.orderId) {

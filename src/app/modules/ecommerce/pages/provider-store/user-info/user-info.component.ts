@@ -5,8 +5,7 @@ import { SaleFlow } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { WarningStepsComponent } from '../../../../../shared/dialogs/warning-steps/warning-steps.component';
-import { MagicLinkDialogComponent } from 'src/app/shared/components/magic-link-dialog/magic-link-dialog.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-user-info',
@@ -24,7 +23,8 @@ export class UserInfoComponent implements OnInit {
   constructor(
     private dialog: DialogService,
     private router: Router,
-    public header: HeaderService
+    public header: HeaderService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {}
@@ -32,7 +32,16 @@ export class UserInfoComponent implements OnInit {
   async onClick() {
     if (this.isDataMissing() && !this.header.orderId) this.openWarningDialog();
     else {
+      this.toastr.info(
+        'Se ha seleccionado la única opción para pick-up',
+        'Este Saleflow no contiene delivery',
+        {
+          timeOut: 5000,
+          positionClass: 'toast-top-center',
+        }
+      );
       this.router.navigate([`ecommerce/checkout`]);
+      this.header.storeOrderAnonymous(this.header.saleflow._id, true);
       return;
     }
   }

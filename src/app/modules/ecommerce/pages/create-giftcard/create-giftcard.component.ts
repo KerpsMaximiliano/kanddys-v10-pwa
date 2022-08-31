@@ -59,30 +59,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.isComplete.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    if (!this.header.saleflow.module?.delivery?.isActive) {
-      this.router.navigate([`ecommerce/checkout`]);
-      return { ok: true };
-    }
-    if (this.header.saleflow.module.delivery.deliveryLocation) {
-      this.router.navigate([`ecommerce/new-address`]);
-      return { ok: true };
-    }
-    if (
-      this.header.saleflow.module.delivery.pickUpLocations.length === 1 &&
-      !this.header.saleflow.module.delivery.deliveryLocation
-    ) {
-      const { _id, ...addressInput } =
-        this.header.saleflow.module.delivery.pickUpLocations[0];
-      this.header.order.products.forEach((product) => {
-        product.deliveryLocation = addressInput;
-      });
-      this.header.storeLocation(this.header.getSaleflow()._id, addressInput);
-      this.header.isComplete.delivery = true;
-      this.header.storeOrderProgress(
-        this.header.saleflow?._id || this.header.getSaleflow()?._id
-      );
-      this.router.navigate(['ecommerce/checkout']);
-    }
+    this.router.navigate([`ecommerce/new-address`]);
+    return { ok: true };
   }
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
@@ -368,35 +346,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.isComplete.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
-            if (!this.header.saleflow.module?.delivery?.isActive) {
-              this.router.navigate([`ecommerce/checkout`]);
-              return { ok: true };
-            }
-            if (this.header.saleflow.module.delivery.deliveryLocation) {
-              this.router.navigate([`ecommerce/new-address`]);
-              return { ok: true };
-            }
-            if (
-              this.header.saleflow.module.delivery.pickUpLocations.length ===
-                1 &&
-              !this.header.saleflow.module.delivery.deliveryLocation
-            ) {
-              const { _id, ...addressInput } =
-                this.header.saleflow.module.delivery.pickUpLocations[0];
-              this.header.order.products.forEach((product) => {
-                product.deliveryLocation = addressInput;
-              });
-              this.header.storeLocation(
-                this.header.getSaleflow()._id,
-                addressInput
-              );
-              this.header.isComplete.delivery = true;
-              this.header.storeOrderProgress(
-                this.header.saleflow?._id || this.header.getSaleflow()?._id
-              );
-              this.router.navigate(['ecommerce/checkout']);
-            }
-
+            this.router.navigate([`ecommerce/new-address`]);
             return of({
               ok: true,
             });

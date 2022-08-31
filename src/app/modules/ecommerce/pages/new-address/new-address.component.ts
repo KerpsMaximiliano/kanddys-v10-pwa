@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -31,7 +32,8 @@ export class NewAddressComponent implements OnInit {
     private authService: AuthService,
     private fb: FormBuilder,
     private usersService: UsersService,
-    private location: Location
+    private location: Location,
+    private toastr: ToastrService
   ) {
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
@@ -46,9 +48,11 @@ export class NewAddressComponent implements OnInit {
       referencePoint: fb.control(null, Validators.pattern(/[\S]/)),
       note: fb.control(null, Validators.pattern(/[\S]/)),
     });
+    this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
   editingId: string;
+  loggedIn: boolean;
   env = environment.assetsUrl;
   itemCartAmount: number;
   addresses: DeliveryLocation[] = [];
@@ -100,6 +104,8 @@ export class NewAddressComponent implements OnInit {
   user: User;
 
   async ngOnInit(): Promise<void> {
+    this.saleflow = this.headerService.getSaleflow();
+    if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
     if (this.user) {
       this.authOptions.push({
@@ -122,7 +128,6 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     }
-    this.saleflow = this.headerService.getSaleflow();
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.itemCartAmount = this.headerService.order?.products?.length;
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
@@ -298,8 +303,8 @@ export class NewAddressComponent implements OnInit {
           this.newAddressOption = null;
           this.user = null;
         }
-        this.mode = 'normal';
         this.headerService.storeOrderAnonymous(this.saleflow._id, true);
+        this.checkAddresses(true);
         break;
 
       case 1:
@@ -309,8 +314,57 @@ export class NewAddressComponent implements OnInit {
         break;
 
       case 2:
-        this.mode = 'normal';
+        this.checkAddresses();
         break;
+    }
+  }
+
+  checkAddresses(isAnon?: boolean) {
+    if (!this.headerService.saleflow.module?.delivery?.isActive) {
+      this.toastr.info('Este Saleflow no contiene delivery o pick-up.', null, {
+        timeOut: 3000,
+        positionClass: 'toast-top-center',
+      });
+      this.router.navigate([`ecommerce/checkout`]);
+      return;
+    }
+    if (
+      this.headerService.saleflow.module.delivery.pickUpLocations.length > 1 ||
+      (this.headerService.saleflow.module.delivery.deliveryLocation && !isAnon)
+    ) {
+      this.mode = 'normal';
+      return;
+    }
+    if (
+      this.headerService.saleflow.module.delivery.pickUpLocations.length ===
+        1 &&
+      (!this.headerService.saleflow.module.delivery.deliveryLocation || isAnon)
+    ) {
+      const { _id, ...addressInput } =
+        this.headerService.saleflow.module.delivery.pickUpLocations[0];
+      this.headerService.order.products.forEach((product) => {
+        product.deliveryLocation = addressInput;
+      });
+      this.headerService.storeLocation(
+        this.headerService.getSaleflow()._id,
+        addressInput
+      );
+      this.headerService.isComplete.delivery = true;
+      this.headerService.storeOrderProgress(
+        this.headerService.saleflow?._id ||
+          this.headerService.getSaleflow()?._id
+      );
+      this.toastr.info(
+        'Se ha seleccionado la única opción para pick-up',
+        !this.headerService.saleflow.module.delivery.deliveryLocation
+          ? 'Este Saleflow no contiene delivery'
+          : 'Has decidido hacer la orden de forma anónima',
+        {
+          timeOut: 5000,
+          positionClass: 'toast-top-center',
+        }
+      );
+      this.router.navigate(['ecommerce/checkout']);
     }
   }
 
