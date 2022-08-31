@@ -259,7 +259,7 @@ export class MerchantItemsComponent implements OnInit {
         titleStyles: {
           margin: 0,
         },
-        description: 'Lorem ipsum',
+        description: 'Esta acción será permanente',
         descriptionPosition: 'BOTTOM',
         message:
           this.selectionConfiguration.mode === 'DELETE'
