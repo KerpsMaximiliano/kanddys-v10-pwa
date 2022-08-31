@@ -457,7 +457,7 @@ export class MerchantItemsComponent implements OnInit {
               });
             },
           },
-          {
+          /*{
             text: 'MOSTRAR ITEMS INVISIBLES EN LA TIENDA',
             mode: 'func',
             func: async () => {
@@ -477,7 +477,7 @@ export class MerchantItemsComponent implements OnInit {
                 }
               });
             },
-          },
+          },*/
           {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',

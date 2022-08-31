@@ -96,7 +96,14 @@
         ? 'MOSTRAR ITEMS EN LA TIENDA'
         : null
     "
-    [textCallback]="selectionConfiguration.active ? openSelectionDialog : null"
+    [textCallback]="
+      selectionConfiguration.active && selectionConfiguration.mode !== 'HIDE'
+        ? openSelectionDialog
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIDE'
+        ? hideMultipleItems
+        : null
+    "
     [color]="'#FFF'"
     [backButton]="true"
     [backButtonCallback]="quitItemSelection"
