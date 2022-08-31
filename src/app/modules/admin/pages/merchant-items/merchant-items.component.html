@@ -82,13 +82,7 @@
   -->
 
   <app-sticky-button
-    *ngIf="
-      (selectionConfiguration.active &&
-        selectedItemsCounter > 0) ||
-      (selectionConfiguration.active &&
-        selectedItemsCounter === 0 &&
-        selectionConfiguration.mode === 'HIDE')
-    "
+    *ngIf="selectionConfiguration.active && selectedItemsCounter > 0"
     size="small"
     [mode]="'fixed'"
     bgColor="#2874AD"
@@ -98,6 +92,8 @@
         ? 'BORRAR ITEMS'
         : selectionConfiguration.mode === 'HIDE'
         ? 'ESCONDER ITEMS'
+        : selectionConfiguration.mode === 'SHOW'
+        ? 'MOSTRAR ITEMS EN LA TIENDA'
         : null
     "
     [textCallback]="selectionConfiguration.active ? openSelectionDialog : null"
