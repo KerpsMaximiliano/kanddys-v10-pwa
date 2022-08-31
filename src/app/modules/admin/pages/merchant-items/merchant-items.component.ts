@@ -279,19 +279,24 @@ export class MerchantItemsComponent implements OnInit {
   deleteMultipleItems = async () => {
     const selectedItems = this.items.filter((item) => item.selected);
 
-    if (selectedItems.length > 0) {
-      const arrayOfItemDeletionsFromSaleflowMutationPromises = [];
+    try {
+      if (selectedItems.length > 0) {
+        const arrayOfResults = [];
 
-      selectedItems.forEach((item, index) => {
-        if (item.changedSelection) {
-          arrayOfItemDeletionsFromSaleflowMutationPromises.push(
-            this.deleteItem(item)
-          );
+        let itemIndex = 0;
+
+        for (const item of selectedItems) {
+          const deletedItem = await this.deleteItem(item);
+
+          if (deletedItem) {
+            arrayOfResults.push(deletedItem);
+            console.log('Se borro este', deletedItem, 'index', itemIndex);
+          }
+
+          itemIndex += 1;
         }
-      });
 
-      Promise.all(arrayOfItemDeletionsFromSaleflowMutationPromises)
-        .then((arrayOfResults) => {
+        if (arrayOfResults.length > 0) {
           let objectOfItemsToDelete = {};
 
           for (const result of arrayOfResults) {
@@ -309,10 +314,10 @@ export class MerchantItemsComponent implements OnInit {
           this.items.forEach((item) => {
             item.changedSelection = false;
           });
-        })
-        .catch((arrayOfErrors) => {
-          console.log(arrayOfErrors);
-        });
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -408,14 +413,17 @@ export class MerchantItemsComponent implements OnInit {
   };
 
   deleteItem = (item: ExtendedItem): Promise<any> => {
+    console.log('item to delete', item._id);
+
     return new Promise(async (resolve, reject) => {
       try {
-        const removeItemFromSaleFlow =
+        const removedItemFromSaleFlow =
           await this.saleflowService.removeItemFromSaleFlow(
             item._id,
             this.saleflow._id
           );
-        if (!removeItemFromSaleFlow) return;
+
+        if (!removedItemFromSaleFlow) return;
         const deletedItem = await this.itemsService.deleteItem(item._id);
 
         if (deletedItem)

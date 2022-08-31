@@ -1,10 +1,9 @@
 <div class="component">
   <header>
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    
+
     <!--  *ngIf="itemForm.valid" iba aqui abajo -->
-    <button class="dot-trio" 
-      (click)="onOpenDialog()">
+    <button class="dot-trio" (click)="onOpenDialog()">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
@@ -59,7 +58,7 @@
               formControlName="name"
             />
           </div>
-    
+
           <div class="price-wrapper">
             <!-- Input Number Format -->
             <div class="formatted-price">
@@ -106,6 +105,8 @@
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
-    <button class="save" (click)="onSubmit()">Salvar</button>
+    <button class="save" (click)="submitEventFinished ? onSubmit() : null">
+      {{ submitEventFinished ? "Salvar" : "Espere..." }}
+    </button>
   </footer>
 </div>
