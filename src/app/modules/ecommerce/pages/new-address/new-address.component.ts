@@ -34,11 +34,17 @@ export class NewAddressComponent implements OnInit {
     private location: Location
   ) {
     this.addressForm = fb.group({
-      nickName: fb.control('Mi casa', [Validators.required]),
-      street: fb.control(null, [Validators.required]),
-      houseNumber: fb.control(null),
-      referencePoint: fb.control(null),
-      note: fb.control(null),
+      nickName: fb.control('Mi casa', [
+        Validators.required,
+        Validators.pattern(/[\S]/),
+      ]),
+      street: fb.control(null, [
+        Validators.required,
+        Validators.pattern(/[\S]/),
+      ]),
+      houseNumber: fb.control(null, Validators.pattern(/[\S]/)),
+      referencePoint: fb.control(null, Validators.pattern(/[\S]/)),
+      note: fb.control(null, Validators.pattern(/[\S]/)),
     });
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
@@ -259,9 +265,12 @@ export class NewAddressComponent implements OnInit {
     this.addressesOptions = this.addressesOptions.filter(
       (option) => option.id !== id
     );
-    this.addresses = this.addresses.filter((address) => address._id !== id);
-    if (this.addresses[this.selectedDeliveryIndex]._id === id)
+    if (
+      this.selectedDeliveryIndex != null &&
+      this.addresses[this.selectedDeliveryIndex]._id === id
+    )
       this.selectedDeliveryIndex = null;
+    this.addresses = this.addresses.filter((address) => address._id !== id);
   }
 
   selectAddress() {
@@ -283,7 +292,7 @@ export class NewAddressComponent implements OnInit {
   authSelect(index: Number) {
     switch (index) {
       case 0:
-        if (this.user) {
+        if (this.user || this.headerService.user) {
           this.authService.signoutThree();
           this.addressesOptions.length = 1;
           this.newAddressOption = null;
@@ -311,9 +320,12 @@ export class NewAddressComponent implements OnInit {
     if (this.mode === 'edit')
       await this.usersService.deleteLocation(this.editingId);
     const newAddress = {
-      ...this.addressForm.value,
+      nickName: this.addressForm.value.nickName.trim(),
+      street: this.addressForm.value.street.trim(),
+      houseNumber: this.addressForm.value.houseNumber?.toString(),
+      referencePoint: this.addressForm.value.referencePoint?.trim(),
+      note: this.addressForm.value.note?.trim(),
       city: 'Santo Domingo',
-      houseNumber: `${this.addressForm.value.houseNumber}`,
     };
     if (this.user) {
       result = await this.usersService.addLocation(newAddress);

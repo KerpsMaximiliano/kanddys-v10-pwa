@@ -174,9 +174,6 @@ export class ShipmentDataFormComponent implements OnInit {
           //========================= CÓDIGO PARA CREAR PREORDER =========================
           this.router.navigate([`ecommerce/checkout`]);
           return { ok: true };
-
-          //========================= CÓDIGO PARA CREAR PREORDER =========================
-          return { ok: true };
         },
       },
       headerText: 'INFORMACION DE LA ENTREGA',

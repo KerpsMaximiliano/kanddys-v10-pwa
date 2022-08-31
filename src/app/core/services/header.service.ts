@@ -169,32 +169,32 @@ export class HeaderService {
           this.merchantService.myMerchants().then((data) => {
             this.myMerchants = data;
           });
-          sub.unsubscribe();
         } else {
+          this.isLogged = false;
           this.user = null;
-          sub.unsubscribe();
+          this.walletData = null;
+          this.savedBookmarks = null;
+          this.myMerchants = null;
         }
       });
-    const sub1 = this.app.events
-      .pipe(filter((e) => e.type === 'singleAuth'))
-      .subscribe((e) => {
-        if (e.data) {
-          this.isLogged = true;
-          this.user = e.data.user;
-          this.wallet.globalWallet().then((data) => {
-            this.walletData = data.globalWallet;
-          });
-          this.bookmark.bookmarkByUser().then((data) => {
-            if (data.bookmarkByUser) {
-              this.savedBookmarks = data.bookmarkByUser;
-            }
-          });
-          sub1.unsubscribe();
-        } else {
-          this.user = null;
-          sub1.unsubscribe();
-        }
-      });
+    // const sub1 = this.app.events
+    //   .pipe(filter((e) => e.type === 'singleAuth'))
+    //   .subscribe((e) => {
+    //     if (e.data) {
+    //       this.isLogged = true;
+    //       this.user = e.data.user;
+    //       this.wallet.globalWallet().then((data) => {
+    //         this.walletData = data.globalWallet;
+    //       });
+    //       this.bookmark.bookmarkByUser().then((data) => {
+    //         if (data.bookmarkByUser) {
+    //           this.savedBookmarks = data.bookmarkByUser;
+    //         }
+    //       });
+    //     } else {
+    //       this.user = null;
+    //     }
+    //   });
   }
   hide() {
     this.visible = false;
@@ -282,7 +282,9 @@ export class HeaderService {
   }
 
   getSaleflow(): SaleFlow {
-    return JSON.parse(localStorage.getItem('saleflow-data'));
+    const saleflow = JSON.parse(localStorage.getItem('saleflow-data'));
+    this.saleflow = saleflow;
+    return saleflow;
   }
 
   // Stores order product data in localStorage
