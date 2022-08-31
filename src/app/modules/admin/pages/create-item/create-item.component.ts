@@ -50,6 +50,18 @@ export class CreateItemComponent implements OnInit {
     spaceBetween: 5,
   };
 
+  dynamicForm = new FormGroup({});
+  fields = [
+    // { id: "1", label: 'Generic field', value: "This is a field" }
+    {
+      id: 0,
+      name: { id: "name-0", label: 'Nombre' },
+      price: { id: "price-0", label: 'Price' },
+      description: { id: "description-0", label: 'Description' }
+    }
+  ]
+  hasParams: boolean = false;
+
   constructor(
     protected _DomSanitizer: DomSanitizer,
     private authService: AuthService,
@@ -65,6 +77,11 @@ export class CreateItemComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const itemId = this.route.snapshot.paramMap.get('itemId');
+
+    // Dynamic form setup
+    const dynamicFormValue = this.fields[0];
+    this.addFormControls(dynamicFormValue);
+
     const promises: Promise<User | Merchant | Item>[] = [
       this.authService.me(),
       this.merchantService.merchantDefault(),
@@ -337,6 +354,13 @@ export class CreateItemComponent implements OnInit {
               this.router.navigate(['/ecommerce/item-detail']);
             },
           },
+          {
+            text: !this.hasParams ? 'Dinámico' : 'Estático',
+            mode: 'func',
+            func: () => {
+              this.hasParams = !this.hasParams;
+            },
+          },
         ],
       },
     ];
@@ -350,4 +374,26 @@ export class CreateItemComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  dynamicInputKeyPress(index: number) {
+    if (this.fields[index].id == this.fields[this.fields.length - 1].id) this.generateFields();
+  }
+
+  private generateFields() {
+    const id = this.fields[this.fields.length - 1].id + 1;
+    const newValue = {
+      id: this.fields[this.fields.length - 1].id + 1,
+      name: { id: `name-${id}`, label: 'Nombre' },
+      price: { id: `price-${id}`, label: 'Price' },
+      description: { id: `description-${id}`, label: 'Description' }
+    }
+    this.fields.push(newValue);
+    this.addFormControls(newValue);
+  }
+
+  private addFormControls(data: any) {
+    this.dynamicForm.addControl((data.name.id).toString(), new FormControl(data.name.id));
+    this.dynamicForm.addControl((data.price.id).toString(), new FormControl(data.price.id));
+    this.dynamicForm.addControl((data.description.id).toString(), new FormControl(data.description.id));
+  }
 }

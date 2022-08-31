@@ -47,62 +47,135 @@
           </label>
         </ng-container>
       </section>
-      <section class="form-group p-side">
-        <div class="name-and-price-wrapper">
-          <div class="name-wrapper">
-            <input
-              class="input-text"
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Nombre (opcional)"
-              formControlName="name"
-            />
-          </div>
-    
-          <div class="price-wrapper">
-            <!-- Input Number Format -->
-            <div class="formatted-price">
-              <span *ngFor="let letter of formattedPricing.split('')">
-                {{ letter }}
-              </span>
-
-              <div
-                class="cursor blinking-cursor"
-                [ngClass]="{ 'blinking-cursor': curencyFocused }"
-                style="width: 1px; height: 1rem"
-              ></div>
+      
+      <ng-container *ngIf="!hasParams">
+        <section class="form-group p-side">
+          <div class="name-and-price-wrapper">
+            <div class="name-wrapper">
+              <input
+                class="input-text"
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Nombre (opcional)"
+                formControlName="name"
+              />
             </div>
-            <input
-              class="formatted-input"
-              type="number"
-              id="pricing"
-              name="pricing"
-              min="1"
-              required
-              formControlName="pricing"
-              (focus)="curencyFocused = true"
-              (blur)="curencyFocused = false"
-              (input)="formatNumber($event)"
-              onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
-            />
-            <!-- Input Number Format -->
+      
+            <div class="price-wrapper">
+              <!-- Input Number Format -->
+              <div class="formatted-price">
+                <span *ngFor="let letter of formattedPricing.split('')">
+                  {{ letter }}
+                </span>
+  
+                <div
+                  class="cursor blinking-cursor"
+                  [ngClass]="{ 'blinking-cursor': curencyFocused }"
+                  style="width: 1px; height: 1rem"
+                ></div>
+              </div>
+              <input
+                class="formatted-input"
+                type="number"
+                id="pricing"
+                name="pricing"
+                min="1"
+                required
+                formControlName="pricing"
+                (focus)="curencyFocused = true"
+                (blur)="curencyFocused = false"
+                (input)="formatNumber($event)"
+                onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
+              />
+              <!-- Input Number Format -->
+            </div>
           </div>
-        </div>
-        <textarea
-          placeholder="Descripción (opcional)"
-          class="textarea"
-          formControlName="description"
-        ></textarea>
-        <!-- <div>
-          <button type="submit" class="submit" >
-            Salvar
-          </button>
-        </div> -->
-      </section>
+          <textarea
+            placeholder="Descripción (opcional)"
+            class="textarea"
+            formControlName="description"
+          ></textarea>
+          <!-- <div>
+            <button type="submit" class="submit" >
+              Salvar
+            </button>
+          </div> -->
+        </section>
+      </ng-container>
+      <ng-container *ngIf="hasParams">
+        <form [formGroup]="dynamicForm">
+          <div *ngFor="let field of fields; let i = index">
+            <section class="form-group p-side">
+              <div class="name-and-price-wrapper">
+                <div class="name-wrapper">
+                  <input
+                    class="input-text"
+                    type="text"
+                    id="{{ field.name.id }}"
+                    name="{{ field.name.id }}"
+                    placeholder="Nombre (opcional)"
+                    [formControlName]="field.name.id"
+                    (keypress)="dynamicInputKeyPress(i)"
+                  />
+                </div>
+          
+                <div class="price-wrapper">
+                  <!-- Input Number Format -->
+                  <div class="formatted-price">
+                    <span *ngFor="let letter of formattedPricing.split('')">
+                      {{ letter }}
+                    </span>
+      
+                    <div
+                      class="cursor blinking-cursor"
+                      [ngClass]="{ 'blinking-cursor': curencyFocused }"
+                      style="width: 1px; height: 1rem"
+                    ></div>
+                  </div>
+                  <input
+                    class="formatted-input"
+                    type="number"
+                    id="{{ field.price.id }}"
+                    name="{{ field.price.id }}"
+                    min="1"
+                    required
+                    [formControlName]="field.price.id"
+                    (focus)="curencyFocused = true"
+                    (blur)="curencyFocused = false"
+                    (input)="formatNumber($event)"
+                    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
+                    (keypress)="dynamicInputKeyPress(i)"
+                  />
+                  <!-- Input Number Format -->
+                </div>
+              </div>
+              <textarea
+                placeholder="Descripción (opcional)"
+                class="textarea"
+                [formControlName]="field.description.id"
+                (keypress)="dynamicInputKeyPress(i)"
+              ></textarea>
+              <!-- <div>
+                <button type="submit" class="submit" >
+                  Salvar
+                </button>
+              </div> -->
+            </section>
+            <br><br>
+          </div>
+        </form>
+      </ng-container>
     </form>
   </main>
-  <footer [ngClass]="{ disabled: !itemForm.valid }">
+  <footer [ngClass]="{ disabled: !itemForm.valid }" *ngIf="!hasParams">
+    <button class="back" (click)="goBack()">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="save" (click)="onSubmit()">Salvar</button>
+  </footer>
+
+  <footer *ngIf="hasParams">
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
