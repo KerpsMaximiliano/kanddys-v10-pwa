@@ -256,7 +256,11 @@ export class MerchantItemsComponent implements OnInit {
             : this.selectionConfiguration.mode === 'SHOW'
             ? `¿Mostrar en la tienda los productos seleccionados?`
             : null,
+        titleStyles: {
+          margin: 0,
+        },
         description: 'Lorem ipsum',
+        descriptionPosition: 'BOTTOM',
         message:
           this.selectionConfiguration.mode === 'DELETE'
             ? `Si, Eliminar`
@@ -273,7 +277,29 @@ export class MerchantItemsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
         alternate: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+          },
+          titleWrapper: {
+            margin: 0,
+          },
+          description: {
+            marginBottom: '30px',
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            paddingTop: '42px',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -457,7 +483,7 @@ export class MerchantItemsComponent implements OnInit {
               });
             },
           },
-          {
+          /*{
             text: 'MOSTRAR ITEMS INVISIBLES EN LA TIENDA',
             mode: 'func',
             func: async () => {
@@ -477,7 +503,7 @@ export class MerchantItemsComponent implements OnInit {
                 }
               });
             },
-          },
+          },*/
           {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
@@ -567,5 +593,9 @@ export class MerchantItemsComponent implements OnInit {
       this.selectionConfiguration.active = false;
       this.selectionConfiguration.mode = 'NONE';
     }
+  };
+
+  goToEntityDetailMetrics = () => {
+    this.router.navigate(['admin/entity-detail-metrics']);
   };
 }
