@@ -440,10 +440,12 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'ESCONDER',
             mode: 'func',
-            func: () => {
+            func: async () => {
               this.selectionConfiguration.mode = 'HIDE';
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
+
+              await this.getItems(this.merchant._id, null);
 
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') return false;
@@ -458,10 +460,12 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'MOSTRAR ITEMS INVISIBLES EN LA TIENDA',
             mode: 'func',
-            func: () => {
+            func: async () => {
               this.selectionConfiguration.mode = 'SHOW';
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
+
+              await this.getItems(this.merchant._id, null);
 
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') {
