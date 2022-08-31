@@ -37,7 +37,7 @@ export class MerchantItemsComponent implements OnInit {
   hasSalesData: boolean = false;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   selectionConfiguration: {
-    mode: 'DELETE' | 'HIDE' | 'NONE';
+    mode: 'DELETE' | 'HIDE' | 'SHOW' | 'NONE';
     active: boolean;
   } = {
     active: false,
@@ -241,7 +241,7 @@ export class MerchantItemsComponent implements OnInit {
       this.selectionConfiguration.mode === 'DELETE' &&
       this.selectionConfiguration.active
         ? this.deleteMultipleItems
-        : this.selectionConfiguration.mode === 'HIDE' &&
+        : ['HIDE', 'SHOW'].includes(this.selectionConfiguration.mode) &&
           this.selectionConfiguration.active
         ? this.hideMultipleItems
         : null;
@@ -253,6 +253,8 @@ export class MerchantItemsComponent implements OnInit {
             ? `¿Eliminar los productos seleccionados?`
             : this.selectionConfiguration.mode === 'HIDE'
             ? `¿Esconder los productos seleccionados?`
+            : this.selectionConfiguration.mode === 'SHOW'
+            ? `¿Mostrar en la tienda los productos seleccionados?`
             : null,
         description: 'Lorem ipsum',
         message:
@@ -260,6 +262,8 @@ export class MerchantItemsComponent implements OnInit {
             ? `Si, Eliminar`
             : this.selectionConfiguration.mode === 'HIDE'
             ? `Si, Esconder`
+            : this.selectionConfiguration.mode === 'SHOW'
+            ? `Si, Mostrar`
             : null,
         messageCallback: operationFunction,
       },
@@ -322,15 +326,12 @@ export class MerchantItemsComponent implements OnInit {
   };
 
   hideMultipleItems = async () => {
-    const selectedItems = this.items.filter(
-      (item) => item.selected || item.changedSelection
-    );
+    const selectedItems = this.items.filter((item) => item.selected);
 
     if (selectedItems.length > 0) {
       const arrayOfMutationsForHidingItemsPromises = [];
 
       selectedItems.forEach((item, index) => {
-        console.log(item.changedSelection);
         if (item.changedSelection) {
           arrayOfMutationsForHidingItemsPromises.push(this.hideItem(item));
         }
@@ -346,31 +347,10 @@ export class MerchantItemsComponent implements OnInit {
             }
           }
 
-          this.items.forEach((item) => {
-            if (item.selected && item.changedSelection) {
-              item.selected = false;
-              item.status = item.status === 'active' ? 'disabled' : 'active';
-              item.changedSelection = false;
-            }
-
-            if (!item.selected && item.changedSelection) {
-              item.selected = false;
-              item.status = item.status === 'active' ? 'disabled' : 'active';
-              item.changedSelection = false;
-            }
-
-            if (item.selected && !item.changedSelection) {
-              item.selected = false;
-              item.changedSelection = false;
-            }
-
-            if (!item.changedSelection) {
-              item.selected = false;
-            }
-          });
-
           if (this.statusQueryParam) {
             this.getItems(this.merchant._id, this.statusQueryParam);
+          } else {
+            this.getItems(this.merchant._id, null);
           }
 
           this.selectedItemsCounter = 0;
@@ -465,14 +445,27 @@ export class MerchantItemsComponent implements OnInit {
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
 
-              this.items.forEach((item) => {
-                if (item.status === 'active') {
-                  item.selected = false;
-                } else {
-                  item.selected = true;
-                  this.selectedItemsCounter += 1;
+              this.items = this.items.filter((item) => {
+                if (item.status === 'disabled') return false;
+                else {
+                  return true;
                 }
-                item.changedSelection = false;
+              });
+            },
+          },
+          {
+            text: 'MOSTRAR ITEMS INVISIBLES EN LA TIENDA',
+            mode: 'func',
+            func: () => {
+              this.selectionConfiguration.mode = 'SHOW';
+              this.selectionConfiguration.active = true;
+              this.selectedItemsCounter = 0;
+
+              this.items = this.items.filter((item) => {
+                if (item.status === 'disabled') return true;
+                else {
+                  return false;
+                }
               });
             },
           },
