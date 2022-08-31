@@ -230,7 +230,7 @@ export class LoginComponent implements OnInit {
         this.phoneNumber.value.e164Number.split('+')[1]
       );
 
-      if (validUser) {
+      if (validUser && validUser.validatedAt !== null) {
         try {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(
@@ -248,7 +248,13 @@ export class LoginComponent implements OnInit {
         } catch (error) {
           console.log(error);
         }
-      } else if(this.orderId && this.auth === 'anonymous'){
+      } else if (validUser && validUser.validatedAt === null){
+         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+         this.userID = validUser._id;
+         this.loggin = true;
+         this.generateTOP();
+
+      }else if(this.orderId && this.auth === 'anonymous'){
         const anonymous = this.authService.signup({
          phone: this.phoneNumber.value.e164Number.split('+')[1]
         },

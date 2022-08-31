@@ -59,7 +59,7 @@
           </button>
         </div>
 
-        <button class="adiciona" (click)="toSignUp()">
+        <button class="adiciona" (click)="toSignUp()" *ngIf="auth !== 'anonymous'">
           CREAR UNA NUEVA CUENTA
         </button>
       </div>
