@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -79,6 +80,7 @@ export class LoginComponent implements OnInit {
     private headerService: HeaderService,
     private orderService: OrderService,
     private merchantService: MerchantsService,
+    private location: Location,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {}
 
@@ -272,11 +274,17 @@ export class LoginComponent implements OnInit {
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth === 'order') {
+          this.back();
+          return;
+        }
         if (this.orderId) {
           this.authOrder(checkOTP.user._id);
           return;
         }
-        this.router.navigate([`admin/entity-detail-metrics`]);
+        this.router.navigate([`admin/entity-detail-metrics`], {
+          replaceUrl: true,
+        });
       }
     } else if (this.authCode) {
       const authCoded = await this.authService.analizeMagicLink(
@@ -294,11 +302,17 @@ export class LoginComponent implements OnInit {
           true
         );
         if (!session) return console.log('Error logging in');
+        if (this.auth === 'order') {
+          this.back();
+          return;
+        }
         if (this.orderId) {
           this.authOrder(session.user._id);
           return;
         }
-        this.router.navigate([`admin/entity-detail-metrics`]);
+        this.router.navigate([`admin/entity-detail-metrics`], {
+          replaceUrl: true,
+        });
       }
     } else {
       const signin = await this.authService.signin(
@@ -314,11 +328,17 @@ export class LoginComponent implements OnInit {
         console.log('error');
         return;
       }
+      if (this.auth === 'order') {
+        this.back();
+        return;
+      }
       if (this.orderId) {
         this.authOrder(signin.user._id);
         return;
       }
-      this.router.navigate([`admin/entity-detail-metrics`]);
+      this.router.navigate([`admin/entity-detail-metrics`], {
+        replaceUrl: true,
+      });
     }
   }
 
@@ -417,4 +437,8 @@ export class LoginComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  back() {
+    this.location.back();
+  }
 }

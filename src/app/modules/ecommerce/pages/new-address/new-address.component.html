@@ -131,7 +131,9 @@
   color="blue"
   [solo]="false"
   [cart]="true"
-  [cartAmount]="1"
+  [cartAmount]="itemCartAmount"
+  *ngIf="itemCartAmount"
+  (click)="showShoppingCartDialog()"
 ></app-bubble-button>
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"

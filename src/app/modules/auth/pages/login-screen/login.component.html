@@ -12,8 +12,8 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="loggin || signUp ? true : false"
-    (returnEvent)="loggin ? toggleLog() : signUp ? toSignUp() : null"
+    [returnAble]="auth === 'order' || loggin || signUp ? true : false"
+    (returnEvent)="loggin ? toggleLog() : signUp ? toSignUp() : auth === 'order' ? back() : null"
   ></app-helper-headerv2>
 
   <div class="input-area">
