@@ -17,6 +17,38 @@
     (plusEvent)="createItem()"
   ></app-helper-headerv2>
 
+  <ng-container *ngIf="highlightedItems.length > 0">
+    <div class="header-wrapper">
+      <h2 class="items-header">Destacados</h2>
+
+      <div class="dot-trio" (click)="openDialog()">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </div>
+    </div>
+
+    <swiper [config]="swiperConfig">
+      <div *ngFor="let item of highlightedItems; let i = index">
+        <app-saleflow-item
+          [itemIndex]="i"
+          [itemId]="item._id"
+          [type]="4"
+          [imgURL]="item.images ? item.images[0] : ''"
+          [price]="item.pricing"
+          [showPrice]="true"
+          (itemClicked)="goToDetail(item._id)"
+          (onItemSelectionClick)="
+            markItemAsSelectedOrRemoveItsSelection($event)
+          "
+          (iconTwoClicked)="openDeleteDialog(item)"
+          [responsiveWidthVersion]="true"
+        ></app-saleflow-item>
+        <div class="blank-space"></div>
+      </div>
+    </swiper>
+  </ng-container>
+
   <div class="header-wrapper">
     <h2 class="items-header">
       {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}

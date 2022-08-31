@@ -15,7 +15,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
-
+import { SwiperOptions } from 'swiper';
 interface ExtendedItem extends Item {
   selected?: boolean;
   changedSelection?: boolean;
@@ -30,6 +30,7 @@ export class MerchantItemsComponent implements OnInit {
   merchant: Merchant;
   saleflow: SaleFlow;
   items: ExtendedItem[] = [];
+  highlightedItems: ExtendedItem[] = [];
   ordersTotal: {
     total: number;
     length: number;
@@ -37,7 +38,7 @@ export class MerchantItemsComponent implements OnInit {
   hasSalesData: boolean = false;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   selectionConfiguration: {
-    mode: 'DELETE' | 'HIDE' | 'SHOW' | 'NONE';
+    mode: 'DELETE' | 'HIDE' | 'SHOW' | 'HIGHTLIGHT' | 'NONE';
     active: boolean;
   } = {
     active: false,
@@ -45,6 +46,16 @@ export class MerchantItemsComponent implements OnInit {
   };
   selectedItemsCounter: number = 0;
   statusQueryParam: 'active' | 'disabled';
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 5,
+    pagination: {
+      el: '.swiper-pagination',
+      type: 'bullets',
+      clickable: true,
+    },
+  };
 
   // Dummy Data
   itemList: Array<any> = [
@@ -135,6 +146,14 @@ export class MerchantItemsComponent implements OnInit {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true))
         .itemsByMerchant;
+
+      //quitar luego
+      if(items.length > 1) {
+        this.highlightedItems.push(items[0]);
+        this.highlightedItems.push(items[1]);
+      }
+      //fin quitar luego
+
       if (status === 'active')
         this.items = items.filter((item) => item.status === 'active');
       else if (status === 'disabled')
@@ -435,6 +454,21 @@ export class MerchantItemsComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate(['admin/create-item/']);
+            },
+          },
+          {
+            text: 'DESTACAR',
+            mode: 'func',
+            func: () => {
+              this.selectedItemsCounter = 0;
+
+              this.items.forEach((item) => {
+                item.selected = false;
+                item.changedSelection = false;
+              });
+
+              this.selectionConfiguration.mode = 'HIGHTLIGHT';
+              this.selectionConfiguration.active = true;
             },
           },
           {
