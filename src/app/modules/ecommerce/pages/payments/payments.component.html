@@ -61,8 +61,8 @@
   <a [href]="whatsappLink" target="_blank">
     <app-sticky-button
       *ngIf="image || selectedBank"
-      (click)="image && submitPayment()"
-      [mode]="'fixed'"
+      (click)="image && !disableButton && submitPayment()"
+      [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
       [text]="
         image
           ? 'MANDAR FACTURA POR WHATSAPP'

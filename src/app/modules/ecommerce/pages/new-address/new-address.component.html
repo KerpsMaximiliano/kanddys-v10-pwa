@@ -8,7 +8,9 @@
     </div>
     <button
       *ngIf="
-        mode === 'normal' && saleflow?.module?.delivery?.deliveryLocation && user
+        mode === 'normal' &&
+        saleflow?.module?.delivery?.deliveryLocation &&
+        user
       "
       class="dot-trio"
       (click)="onOpenDialog()"
@@ -137,11 +139,11 @@
 ></app-bubble-button>
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"
-  [mode]="addressForm?.valid ? 'fixed' : 'disabled-fixed'"
+  [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
   text="GUARDA Y CONTINUA AL CHECKOUT"
   bgColor="#2874AD"
   size="small"
-  (click)="formSubmit()"
+  (click)="!disableButton && formSubmit()"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="mode === 'normal' && selectedDeliveryIndex != null"

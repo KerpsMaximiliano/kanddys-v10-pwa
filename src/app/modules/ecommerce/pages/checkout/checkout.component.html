@@ -149,7 +149,7 @@
   </main>
 
   <app-sticky-button
-    [mode]="'fixed'"
+    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
     [text]="'CONTINUAR LA FACTURA'"
     [bgColor]="'#2874AD'"
     [customLeftButtonStyles]="{
@@ -159,6 +159,6 @@
       'letter-spacing': '1px'
     }"
     [size]="'small'"
-    (click)="newCreatePreOrder()"
+    (click)="!disableButton && newCreatePreOrder()"
   ></app-sticky-button>
 </div>

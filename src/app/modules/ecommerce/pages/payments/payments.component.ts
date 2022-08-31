@@ -24,6 +24,7 @@ export class PaymentsComponent implements OnInit {
   order: ItemOrder;
   merchant: Merchant;
   whatsappLink: string;
+  disableButton: boolean;
 
   constructor(
     private walletService: WalletService,
@@ -78,6 +79,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   async submitPayment() {
+    this.disableButton = true;
     lockUI();
     await this.orderService.payOrder(
       {

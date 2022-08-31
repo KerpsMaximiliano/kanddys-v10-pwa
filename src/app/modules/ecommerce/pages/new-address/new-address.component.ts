@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -53,6 +54,7 @@ export class NewAddressComponent implements OnInit {
   mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
   editingId: string;
   loggedIn: boolean;
+  disableButton: boolean;
   env = environment.assetsUrl;
   itemCartAmount: number;
   addresses: DeliveryLocation[] = [];
@@ -370,6 +372,8 @@ export class NewAddressComponent implements OnInit {
 
   async formSubmit() {
     if (this.addressForm.invalid) return;
+    this.disableButton = true;
+    lockUI();
     let result: DeliveryLocation;
     if (this.mode === 'edit')
       await this.usersService.deleteLocation(this.editingId);
@@ -420,6 +424,8 @@ export class NewAddressComponent implements OnInit {
       this.selectedDeliveryIndex = this.addresses.length - 1;
       this.selectAddress();
     }
+    this.disableButton = false;
+    unlockUI();
     this.goBack();
   }
 

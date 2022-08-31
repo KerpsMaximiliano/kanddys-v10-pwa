@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
 import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
@@ -36,6 +37,7 @@ export class CheckoutComponent implements OnInit {
   payment: number;
   hasPayment: boolean;
   messageLink: string;
+  disableButton: boolean;
   date: {
     month: string;
     day: number;
@@ -205,6 +207,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   newCreatePreOrder = async () => {
+    this.disableButton = true;
+    lockUI();
     this.order.products.forEach((product) => {
       delete product.isScenario;
       delete product.limitScenario;
@@ -263,11 +267,12 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-
       if (this.headerService.user) {
         await this.authOrder(this.headerService.user._id);
+        unlockUI();
         return;
       }
+      unlockUI();
       this.router.navigate([`/auth/login`], {
         queryParams: {
           orderId: createPreOrder._id,
@@ -276,6 +281,8 @@ export class CheckoutComponent implements OnInit {
       });
     } catch (error) {
       console.log(error);
+      unlockUI();
+      this.disableButton = false;
     }
   };
 
