@@ -9,10 +9,12 @@ import { PostInput } from 'src/app/core/models/post';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-checkout',
@@ -32,6 +34,8 @@ export class CheckoutComponent implements OnInit {
   items: Item[];
   post: PostInput;
   payment: number;
+  hasPayment: boolean;
+  messageLink: string;
   date: {
     month: string;
     day: number;
@@ -44,6 +48,7 @@ export class CheckoutComponent implements OnInit {
     private customizerValueService: CustomizerValueService,
     private postsService: PostsService,
     private orderService: OrderService,
+    private merchantService: MerchantsService,
     private appService: AppService,
     private location: Location,
     private router: Router
@@ -250,6 +255,7 @@ export class CheckoutComponent implements OnInit {
       const { createPreOrder } = await this.orderService.createPreOrder(
         this.order
       );
+      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
       this.headerService.deleteSaleflowOrder(this.saleflow._id);
       this.headerService.resetIsComplete();
       this.headerService.orderId = createPreOrder._id;
@@ -257,13 +263,66 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      this.router.navigate([
-        `ecommerce/flow-completion-auth-less/${createPreOrder._id}`,
-      ]);
+
+      if (this.headerService.user) {
+        await this.authOrder(this.headerService.user._id);
+        return;
+      }
+      this.router.navigate([`/auth/login`], {
+        queryParams: {
+          orderId: createPreOrder._id,
+          auth: anonymous && 'anonymous',
+        },
+      });
     } catch (error) {
       console.log(error);
     }
   };
+
+  async authOrder(id: string) {
+    const { orderStatus } = await this.orderService.getOrderStatus(
+      this.headerService.orderId
+    );
+    if (orderStatus === 'draft') {
+      const order = (
+        await this.orderService.authOrder(this.headerService.orderId, id)
+      ).authOrder;
+      if (this.saleflow?.module?.paymentMethod?.paymentModule?._id)
+        this.hasPayment = true;
+      else {
+        const merchant = await this.merchantService.merchant(
+          order.merchants?.[0]?._id
+        );
+        const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+        this.messageLink = `https://wa.me/${
+          merchant.owner.phone
+        }?text=Hola%20${merchant.name
+          .replace('&', 'and')
+          .replace(
+            /[^\w\s]/gi,
+            ''
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+        window.location.href = this.messageLink;
+        return;
+      }
+      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
+      this.headerService.resetIsComplete();
+    }
+    if (this.hasPayment)
+      this.router.navigate(
+        [`/ecommerce/payments/${this.headerService.orderId}`],
+        {
+          replaceUrl: true,
+        }
+      );
+    else
+      this.router.navigate(
+        [`/ecommerce/order-info/${this.headerService.orderId}`],
+        {
+          replaceUrl: true,
+        }
+      );
+  }
 
   mouseDown: boolean;
   startX: number;

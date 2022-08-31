@@ -7,7 +7,9 @@
       </h5>
     </div>
     <button
-      *ngIf="mode === 'normal' && saleflow.module?.delivery?.deliveryLocation"
+      *ngIf="
+        mode === 'normal' && saleflow.module?.delivery?.deliveryLocation && user
+      "
       class="dot-trio"
       (click)="onOpenDialog()"
     >
@@ -17,20 +19,33 @@
     </button>
   </header>
   <main>
-    <ng-container *ngIf="mode !== 'add' && !editingId">
+    <ng-container *ngIf="mode === 'auth'">
+      <h3 class="title">Seleccione entre:</h3>
+
+      <app-answer-selector
+        [options]="authOptions"
+        [activeOption]="selectedAuthIndex"
+        [indicator]="true"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+        (onSelector)="selectedAuthIndex = $event"
+      ></app-answer-selector>
+    </ng-container>
+    <ng-container *ngIf="mode !== 'auth' && mode !== 'add' && !editingId">
       <h3 class="title">Seleccione entre:</h3>
       <div>
         <app-answer-selector
           [options]="addressesOptions"
-          [activeOption]="selectedIndex"
+          [activeOption]="selectedDeliveryIndex"
           [indicator]="true"
-          (onSelector)="selectedIndex = $event"
+          (onSelector)="selectedDeliveryIndex = $event"
           [containerStyles]="{
             margin: '0px'
           }"
         ></app-answer-selector>
       </div>
-      <ng-container>
+      <ng-container *ngIf="newAddressOption?.length">
         <div>
           <app-answer-selector
             [options]="newAddressOption"
@@ -116,7 +131,9 @@
   color="blue"
   [solo]="false"
   [cart]="true"
-  [cartAmount]="1"
+  [cartAmount]="itemCartAmount"
+  *ngIf="itemCartAmount"
+  (click)="showShoppingCartDialog()"
 ></app-bubble-button>
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"
@@ -127,12 +144,20 @@
   (click)="formSubmit()"
 ></app-sticky-button>
 <app-sticky-button
-  *ngIf="mode === 'normal' && selectedIndex != null"
+  *ngIf="mode === 'normal' && selectedDeliveryIndex != null"
   mode="fixed"
   text="CONTINUA AL CHECKOUT"
   bgColor="#2874AD"
   size="small"
   (click)="selectAddress()"
+></app-sticky-button>
+<app-sticky-button
+  *ngIf="mode === 'auth' && selectedAuthIndex != null"
+  mode="fixed"
+  text="CONFIRMAR ELECCIÓN"
+  bgColor="#2874AD"
+  size="small"
+  (click)="authSelect(selectedAuthIndex)"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"

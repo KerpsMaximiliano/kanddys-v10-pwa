@@ -9,6 +9,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -40,19 +41,84 @@ export class NewAddressComponent implements OnInit {
       note: fb.control(null),
     });
   }
-  mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
+  mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
   editingId: string;
   env = environment.assetsUrl;
+  itemCartAmount: number;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
   newAddressOption: OptionAnswerSelector[] = [];
+  authOptions: OptionAnswerSelector[] = [
+    {
+      status: true,
+      id: 'continue',
+      value: 'Continuar de forma anónima',
+      valueStyles: {
+        fontFamily: 'SfProBold',
+        fontSize: '0.875rem',
+        color: '#000000',
+      },
+      subtexts: [
+        {
+          text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
+          styles: {
+            fontFamily: 'SfProRegular',
+            fontSize: '1rem',
+          },
+        },
+      ],
+    },
+    {
+      status: true,
+      id: 'toLogin',
+      value: 'Login o crea tu nueva cuenta',
+      valueStyles: {
+        fontFamily: 'SfProBold',
+        fontSize: '0.875rem',
+        color: '#000000',
+      },
+      subtexts: [
+        {
+          text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+          styles: {
+            fontFamily: 'SfProRegular',
+            fontSize: '1rem',
+          },
+        },
+      ],
+    },
+  ];
   saleflow: SaleFlow;
-  selectedIndex: number;
+  selectedDeliveryIndex: number;
+  selectedAuthIndex: number;
   user: User;
 
   async ngOnInit(): Promise<void> {
+    this.user = await this.authService.me();
+    if (this.user) {
+      this.authOptions.push({
+        status: true,
+        id: 'withUser',
+        value: `Continuar como ${this.user.name}`,
+        valueStyles: {
+          fontFamily: 'SfProBold',
+          fontSize: '0.875rem',
+          color: '#000000',
+        },
+        subtexts: [
+          {
+            text: 'Sigues ganando Kanddys. Seleccionas entre tus direcciones sin re-escribirlas',
+            styles: {
+              fontFamily: 'SfProRegular',
+              fontSize: '1rem',
+            },
+          },
+        ],
+      });
+    }
     this.saleflow = this.headerService.getSaleflow();
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
+    this.itemCartAmount = this.headerService.order?.products?.length;
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
@@ -75,6 +141,8 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
+    if (!this.user) return;
+    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
       value: 'Agregar nueva dirección',
@@ -84,9 +152,6 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
-    const user = await this.authService.me();
-    if (!user) return;
-    if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.addresses.push(...this.user.deliveryLocations);
     this.user.deliveryLocations?.forEach((locations) => {
       this.addressesOptions.push({
@@ -195,12 +260,12 @@ export class NewAddressComponent implements OnInit {
       (option) => option.id !== id
     );
     this.addresses = this.addresses.filter((address) => address._id !== id);
-    if (this.addresses[this.selectedIndex]._id === id)
-      this.selectedIndex = null;
+    if (this.addresses[this.selectedDeliveryIndex]._id === id)
+      this.selectedDeliveryIndex = null;
   }
 
   selectAddress() {
-    const { _id, ...addressInput } = this.addresses[this.selectedIndex];
+    const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
     this.headerService.order.products.forEach((product) => {
       product.deliveryLocation = addressInput;
     });
@@ -213,6 +278,31 @@ export class NewAddressComponent implements OnInit {
       this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
     );
     this.router.navigate(['ecommerce/checkout']);
+  }
+
+  authSelect(index: Number) {
+    switch (index) {
+      case 0:
+        if (this.user) {
+          this.authService.signoutThree();
+          this.addressesOptions.length = 1;
+          this.newAddressOption = null;
+          this.user = null;
+        }
+        this.mode = 'normal';
+        this.headerService.storeOrderAnonymous(this.saleflow._id, true);
+        break;
+
+      case 1:
+        this.router.navigate([`auth/login`], {
+          queryParams: { auth: 'order', saleflow: this.saleflow._id },
+        });
+        break;
+
+      case 2:
+        this.mode = 'normal';
+        break;
+    }
   }
 
   async formSubmit() {
@@ -261,21 +351,19 @@ export class NewAddressComponent implements OnInit {
     } else {
       this.addresses.push(result);
       this.addressesOptions.push(newAddressOption);
-      this.selectedIndex = this.addresses.length - 1;
+      this.selectedDeliveryIndex = this.addresses.length - 1;
       this.selectAddress();
     }
     this.goBack();
   }
 
   goBack() {
-    if (this.mode !== 'normal') {
-      this.mode = 'normal';
-      this.editingId = null;
-      this.addressForm.reset();
-      this.addressesOptions.forEach((option) => (option.icons = null));
-      return;
-    }
-    this.location.back();
+    if (this.mode === 'auth') return this.location.back();
+    if (this.mode === 'normal') return (this.mode = 'auth');
+    this.mode = 'normal';
+    this.editingId = null;
+    this.addressForm.reset();
+    this.addressesOptions.forEach((option) => (option.icons = null));
   }
 
   openDeleteDialog(id: string) {
@@ -303,4 +391,15 @@ export class NewAddressComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+  showShoppingCartDialog = () => {
+    this.dialogService.open(ShowItemsComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        orderFinished: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 }

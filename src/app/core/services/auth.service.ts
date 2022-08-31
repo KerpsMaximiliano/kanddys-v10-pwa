@@ -209,6 +209,7 @@ export class AuthService {
       if (result.success) {
         this.session?.revoke();
         this.session = undefined;
+        this.app.events.emit({ type: 'auth', data: this.session });
         // this.app.nav = [];
         // this.app.header = {};
       }

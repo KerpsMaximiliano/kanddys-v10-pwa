@@ -209,4 +209,9 @@ export class OrderService {
       }[status] ?? 'error'
     );
   }
+
+  async getOrderData(id: string, preOrder?: boolean): Promise<ItemOrder> {
+    if (!preOrder) return (await this.order(id))?.order;
+    return (await this.preOrder(id))?.order;
+  }
 }

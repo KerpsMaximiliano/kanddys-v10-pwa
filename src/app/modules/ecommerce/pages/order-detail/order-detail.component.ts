@@ -1,10 +1,10 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
-import { CalendarService } from 'src/app/core/services/calendar.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
@@ -42,8 +42,13 @@ export class OrderDetailComponent implements OnInit {
     private postsService: PostsService,
     private customizerValueService: CustomizerValueService,
     private reservationService: ReservationService,
-    private calendarService: CalendarService
-  ) {}
+    private location: LocationStrategy
+  ) {
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');

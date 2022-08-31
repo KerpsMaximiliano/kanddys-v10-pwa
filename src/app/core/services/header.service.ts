@@ -49,6 +49,7 @@ class SaleflowData {
   orderProgress: OrderProgress;
   customizer: CustomizerValueInput;
   customizerPreviewBase64: string;
+  anonymous: boolean;
 }
 
 @Injectable({
@@ -139,6 +140,7 @@ export class HeaderService {
     this.auth.me().then((data) => {
       if (data != undefined) {
         this.isLogged = true;
+        this.user = data;
       } else {
         this.isLogged = false;
         this.user = undefined;
@@ -168,6 +170,9 @@ export class HeaderService {
             this.myMerchants = data;
           });
           sub.unsubscribe();
+        } else {
+          this.user = null;
+          sub.unsubscribe();
         }
       });
     const sub1 = this.app.events
@@ -184,6 +189,9 @@ export class HeaderService {
               this.savedBookmarks = data.bookmarkByUser;
             }
           });
+          sub1.unsubscribe();
+        } else {
+          this.user = null;
           sub1.unsubscribe();
         }
       });
@@ -382,6 +390,13 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
   }
 
+  storeOrderAnonymous(saleflow: string, value: boolean) {
+    let { anonymous, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    anonymous = value;
+    localStorage.setItem(saleflow, JSON.stringify({ anonymous, ...rest }));
+  }
+
   storeCustomizer(saleflow: string, customizer: CustomizerValueInput) {
     delete customizer?.preview;
     let saleflowData: SaleflowData =
@@ -452,6 +467,13 @@ export class HeaderService {
       this.hasScenarios = orderProgress.scenarios;
       this.isComplete = orderProgress;
     }
+  }
+
+  // Returns order auth type
+  getOrderAnonymous(saleflow: string) {
+    let { anonymous }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return anonymous;
   }
 
   // Returns CustomizerValueInput from saleflow
