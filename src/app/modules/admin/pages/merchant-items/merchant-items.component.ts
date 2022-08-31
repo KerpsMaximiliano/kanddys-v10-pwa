@@ -448,6 +448,8 @@ export class MerchantItemsComponent implements OnInit {
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') return false;
                 else {
+                  item.selected = false;
+                  item.changedSelection = false;
                   return true;
                 }
               });
@@ -462,8 +464,11 @@ export class MerchantItemsComponent implements OnInit {
               this.selectedItemsCounter = 0;
 
               this.items = this.items.filter((item) => {
-                if (item.status === 'disabled') return true;
-                else {
+                if (item.status === 'disabled') {
+                  item.selected = false;
+                  item.changedSelection = false;
+                  return true;
+                } else {
                   return false;
                 }
               });
