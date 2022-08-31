@@ -9,12 +9,13 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="false"
+    [returnAble]="true"
     [dots]="{
       active: true,
       color: '#fff'
     }"
     (plusEvent)="createItem()"
+    (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 
   <div class="header-wrapper">
