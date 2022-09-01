@@ -50,6 +50,7 @@ export interface StoreShareList {
   titleStyles?: Record<string, any>;
   label?: Label;
   description?: string;
+  descriptionPosition?: 'MIDDLE' | 'BOTTOM';
   message?: string;
   messageCallback?: (...args: any[]) => void;
   qrlink?: string;
@@ -70,9 +71,11 @@ export class StoreShareComponent implements OnInit {
   @Input() public buttonCallback: () => void;
   @Input() hideCancelButtton: boolean = false;
   @Input() dynamicStyles: {
-    container?: Record<string, string | number>,
-    titleWrapper?: Record<string, string | number>,    
-    dialogCard?: Record<string, string | number>,    
+    container?: Record<string, string | number>;
+    titleWrapper?: Record<string, string | number>;
+    dialogCard?: Record<string, string | number>;
+    button?: Record<string, string | number>;
+    description?: Record<string, string | number>;
   };
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
@@ -88,7 +91,6 @@ export class StoreShareComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.hideCancelButtton, this.dynamicStyles, this.list, this.alternate)
     if (!this.list || !this.list.length)
       throw new Error('Ingresa opciones para mostrar');
   }

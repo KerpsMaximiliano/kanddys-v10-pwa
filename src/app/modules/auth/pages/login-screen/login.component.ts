@@ -257,21 +257,21 @@ export class LoginComponent implements OnInit {
          this.toValidate = true;
 
       }else if(this.orderId && this.auth === 'anonymous'){
-        const anonymous = this.authService.signup({
+        const anonymous = await this.authService.signup({
          phone: this.phoneNumber.value.e164Number.split('+')[1]
         },
         'none',
         null,
         false
         );
-        if(anonymous){
-            this.authOrder((await anonymous)._id);
-            return;
-         } else {
-            this.toastr.error('Algo salio mal', null, {
-               timeOut: 1500,
-             });
-         }
+        if (anonymous) {
+          this.authOrder(anonymous._id);
+          return;
+        } else {
+          this.toastr.error('Algo salio mal', null, {
+            timeOut: 1500,
+          });
+        }
       } else {
         this.toastr.error('Número no registrado', null, { timeOut: 2000 });
         return;
@@ -494,10 +494,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
         replaceUrl: true,
       });
-    else
-      this.router.navigate([`/ecommerce/order-info/${this.orderId}`], {
-        replaceUrl: true,
-      });
+    else window.location.href = this.messageLink;
   }
 
   showShoppingCartDialog = () => {

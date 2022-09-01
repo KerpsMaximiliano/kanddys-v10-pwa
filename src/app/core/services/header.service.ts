@@ -392,10 +392,10 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
   }
 
-  storeOrderAnonymous(saleflow: string, value: boolean) {
+  storeOrderAnonymous(saleflow: string) {
     let { anonymous, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    anonymous = value;
+    anonymous = true;
     localStorage.setItem(saleflow, JSON.stringify({ anonymous, ...rest }));
   }
 
@@ -512,14 +512,21 @@ export class HeaderService {
   emptyPost(saleflow: string) {
     let { post, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify({ ...rest }));
+    localStorage.setItem(saleflow, JSON.stringify(rest));
   }
 
   // Empties delivery option from localStorage
   emptyDeliveryOption(saleflow: string) {
     let { deliveryOption, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify({ ...rest }));
+    localStorage.setItem(saleflow, JSON.stringify(rest));
+  }
+
+  // Deletes anonymous property from order
+  deleteOrderAnonymous(saleflow: string) {
+    let { anonymous, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(saleflow, JSON.stringify(rest));
   }
 
   // Empties order products from localStorage
