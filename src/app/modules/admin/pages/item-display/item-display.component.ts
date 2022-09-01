@@ -515,7 +515,12 @@ export class ItemDisplayComponent implements OnInit {
       {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
         label: {
-          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+          text:
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'INVISIBLE',
           labelStyles: this.item.status !== 'active' && {
             backgroundColor: '#B17608',
             color: '#fff',

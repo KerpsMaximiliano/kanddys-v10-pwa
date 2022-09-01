@@ -138,7 +138,7 @@ export class MerchantItemsComponent implements OnInit {
     }
   }
 
-  async getItems(merchantID: string, status?: 'active' | 'disabled') {
+  async getItems(merchantID: string, status?: 'active' | 'disabled' | 'featured') {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true))
         .itemsByMerchant;
@@ -146,6 +146,10 @@ export class MerchantItemsComponent implements OnInit {
       if (status === 'active')
         this.items = items.filter(
           (item) => item.status === 'active' || item.status === 'featured'
+        );
+      else if (status === 'featured')
+        this.items = items.filter(
+          (item) => item.status === 'featured'
         );
       else if (status === 'disabled')
         this.items = items.filter((item) => item.status === 'disabled');
@@ -306,13 +310,13 @@ export class MerchantItemsComponent implements OnInit {
           dialogCard: {
             borderRadius: '25px',
             paddingTop: '47px',
+            paddingBottom: '30px',
           },
           titleWrapper: {
             margin: 0,
             marginBottom: '42px',
           },
           description: {
-            marginBottom: '30px',
             marginTop: '12px',
           },
           button: {

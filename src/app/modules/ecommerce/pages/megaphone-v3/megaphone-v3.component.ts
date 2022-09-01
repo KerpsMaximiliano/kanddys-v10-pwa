@@ -79,7 +79,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   swiperConfigHighlightedItems: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 16.5,
+    spaceBetween: 16.5
   };
 
   constructor(
