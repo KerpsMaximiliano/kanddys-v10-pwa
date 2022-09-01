@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   hasPayment: boolean;
   OTP: boolean = false;
   authCode: boolean = false;
+  toValidate: boolean = false;
   sneaky: string;
   userID: string;
   messageLink: string;
@@ -253,6 +254,7 @@ export class LoginComponent implements OnInit {
          this.userID = validUser._id;
          this.loggin = true;
          this.generateTOP();
+         this.toValidate = true;
 
       }else if(this.orderId && this.auth === 'anonymous'){
         const anonymous = this.authService.signup({
@@ -309,6 +311,13 @@ export class LoginComponent implements OnInit {
           this.authOrder(checkOTP.user._id);
           return;
         }
+        if(this.toValidate){
+         this.loggin = false;
+         this.signUp = true;
+         this.password.reset();
+         return;
+       }
+
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
@@ -354,7 +363,7 @@ export class LoginComponent implements OnInit {
       );
 
       if (!signin) {
-        this.toastr.error('Contraseña invalida o usuario no verficado', null, {
+        this.toastr.error('Contraseña inválida o usuario no verificado', null, {
           timeOut: 2500,
         });
         console.log('error');
@@ -432,6 +441,34 @@ export class LoginComponent implements OnInit {
         });
       }
     } else {
+      if(this.toValidate){
+         const validateUser = await this.authService.updateMe({
+          password: this.password.value,
+          name: this.firstName.value,
+          lastname: this.lastName.value,
+          email:
+            this.email.value && this.email.valid ? this.email.value : undefined,
+         });
+
+         if(validateUser){
+            this.password.reset();
+            this.OTP = false;
+            this.toValidate = false;
+            this.signUp = false;
+            this.loggin = true;
+            
+            this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+               timeOut: 2000
+            });
+            return;
+         } 
+         else{
+            this.toastr.error('Algo no funciona', null, {
+               timeOut: 2200
+            });
+            return;
+         };
+      }
       this.toastr.info('Ese Usuario ya esta registrado', null, {
         timeOut: 2200,
       });
