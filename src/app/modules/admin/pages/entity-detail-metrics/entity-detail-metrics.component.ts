@@ -88,7 +88,9 @@ export class EntityDetailMetricsComponent implements OnInit {
       this.items = (
         await this.merchantsService.itemsByMerchant(this.merchant._id)
       )?.itemsByMerchant;
-      this.activeItems = this.items.filter((item) => item.status === 'active');
+      this.activeItems = this.items.filter(
+        (item) => item.status === 'active' || item.status === 'featured'
+      );
       this.inactiveItems = this.items.filter(
         (item) => item.status === 'disabled'
       );
@@ -234,8 +236,8 @@ export class EntityDetailMetricsComponent implements OnInit {
         buttonCallback: () => {
           // TODO: replace the signout function
           this.authService.signoutThree();
-          this.router.navigate([`auth/login`])
-        }
+          this.router.navigate([`auth/login`]);
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
