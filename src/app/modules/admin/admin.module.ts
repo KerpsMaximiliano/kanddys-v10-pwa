@@ -213,7 +213,7 @@ const routes: Routes = [
     component: UserItemsComponent,
   },
   {
-    path: 'options',
+    path: 'options/:itemId',
     component: ActionsMenuComponent
   },
 ];

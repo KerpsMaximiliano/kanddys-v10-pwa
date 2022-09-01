@@ -1,57 +1,61 @@
 <div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+  ></app-helper-headerv2>
 
-   <app-helper-headerv2
-   [mode]="'basic'"
-   [returnAble]="true"
-   ></app-helper-headerv2>
+  <div class="message-card" *ngIf="!isTag && !template">
+    Producto creado exitosamente.
+  </div>
 
-   <div class="message-card" *ngIf="!isTag && !template" >Producto creado exitosamente.</div>
+  <div class="message-card" *ngIf="isTag">
+    {{ tag.name }} creado Exitosamente
+  </div>
 
-   <div class="message-card" *ngIf="isTag">{{tag.name}} creado Exitosamente</div>
+  <ng-container *ngIf="!template">
+    <div class="answers-area">
+      <h2 class="actions">Potenciales acciones:</h2>
 
-   <ng-container *ngIf="!template">
-      <div class="answers-area">
-         <h2 class="actions">Potenciales acciones:</h2>
-   
-         <app-answer-selector
-          [options]="options"
-          [activeOption]="activeIndex"
-          [indicator]="true"
-          (onSelector)="selectedOption($event)"
-          [containerStyles]="{
-            margin: '0px'
-          }"
-         ></app-answer-selector>
-      </div>
-   </ng-container>
+      <app-answer-selector
+        [options]="options"
+        [activeOption]="activeIndex"
+        [indicator]="true"
+        (onSelector)="selectedOption($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </div>
+  </ng-container>
 
-   <ng-container *ngIf="template">
-      <div class="answers-area">
-         <h2 class="actions template" >Selecciona la plantilla:</h2>
-   
-         <app-answer-selector
-          [options]="options"
-          [activeOption]="activeIndex"
-          [indicator]="true"
-          (onSelector)="selectedOption($event)"
-          [containerStyles]="{
-            margin: '0px'
-          }"
-         ></app-answer-selector>
-      </div>
-   </ng-container>
+  <ng-container *ngIf="template">
+    <div class="answers-area">
+      <h2 class="actions template">Selecciona la plantilla:</h2>
 
-   <app-sticky-button *ngIf="template"
-   [mode]="'double'"
-   [extra]="{
+      <app-answer-selector
+        [options]="options"
+        [activeOption]="activeIndex"
+        [indicator]="true"
+        (onSelector)="selectedOption($event)"
+        [containerStyles]="{
+          margin: '0px'
+        }"
+      ></app-answer-selector>
+    </div>
+  </ng-container>
+
+  <app-sticky-button
+    *ngIf="template"
+    [mode]="'double'"
+    [extra]="{
       return: true,
-      returnStyles:{
-         'border-right': '1.5px solid #fff'
+      returnStyles: {
+        'border-right': '1.5px solid #fff'
       }
-   }"
-   [text]="''"
-   [text2]="''"
-   [size]="'small'"
-   [bgColor]="'#2874AD'"
-   ></app-sticky-button>
+    }"
+    [text]="''"
+    [text2]="''"
+    [size]="'small'"
+    [bgColor]="'#2874AD'"
+  ></app-sticky-button>
 </div>
