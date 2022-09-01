@@ -36,6 +36,7 @@ import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
+import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
 
 const routes: Routes = [
   {
@@ -216,6 +217,10 @@ const routes: Routes = [
     path: 'options/:itemId',
     component: ActionsMenuComponent
   },
+  {
+    path: 'metrics-info',
+    component: MetricsInfoComponent
+  }
 ];
 
 @NgModule({
@@ -254,6 +259,7 @@ const routes: Routes = [
     UserItemsComponent,
     MerchantSharedComponent,
     ActionsMenuComponent,
+    MetricsInfoComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
