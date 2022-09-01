@@ -9,12 +9,13 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="false"
+    [returnAble]="true"
     [dots]="{
       active: true,
       color: '#fff'
     }"
     (plusEvent)="createItem()"
+    (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 
   <div
@@ -165,7 +166,14 @@
         ? 'MOSTRAR ITEMS EN LA TIENDA'
         : null
     "
-    [textCallback]="selectionConfiguration.active ? openSelectionDialog : null"
+    [textCallback]="
+      selectionConfiguration.active && selectionConfiguration.mode !== 'HIDE'
+        ? openSelectionDialog
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIDE'
+        ? hideMultipleItems
+        : null
+    "
     [color]="'#FFF'"
     [backButton]="true"
     [backButtonCallback]="quitItemSelection"
