@@ -63,6 +63,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
+  highlightedItems: Item[] = [];
   // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
@@ -73,6 +74,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 5,
+  };
+
+  swiperConfigHighlightedItems: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 16.5,
   };
 
   constructor(
@@ -114,6 +121,13 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.categorylessItems = this.items
       .filter((item) => !item.category.length)
       .sort((a, b) => a.pricing - b.pricing);
+    this.highlightedItems = [];
+    for (const item of this.categorylessItems) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
+      }
+    }
+
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
       if (

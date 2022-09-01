@@ -1,33 +1,23 @@
 <div class="component">
   <header>
     <app-helper-headerv2
+      [mode]="'basic'"
+      [fixed]="true"
       [mainText]="{
-        text: saleflowData?.headline,
+        text: saleflowData?.merchant?.name || 'Tienda',
         fontFamily: 'SfProBold',
         fontSize: '21px',
-        icon: admin
-          ? {
-              src: '/pencil.svg',
-              width: '14',
-              height: '14',
-              color: 'brightness(7)',
-              callback: onShareClick
-            }
-          : null
+        color: '#FFF'
       }"
-      [mode]="!admin ? 'basic' : 'center'"
-      [icons]="[
-        {
-          src: '/upload.svg',
-          color:
-            'brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%) contrast(102%)',
-          callback: onShareClick
-        }
-      ]"
       bgColor="#2874AD"
-      [returnAble]="false"
-      *ngIf="saleflowData && !hasCustomizer"
+      [dots]="{
+        active: true,
+        color: '#fff'
+      }"
     ></app-helper-headerv2>
+
+    <div class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
+
     <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
       <app-header-info
         [profileImage]="saleflowData.banner"
@@ -51,11 +41,83 @@
         ></app-package-item>
       </div>
     </div>
+
+    <!--REGULAR MERCHANT-->
     <div
       class="content"
       *ngIf="!hasCustomizer && items.length && itemsByCategory.length < 4"
     >
-      <div class="item-list" *ngIf="categorylessItems.length">
+      <div
+        *ngIf="highlightedItems.length > 0"
+        [ngStyle]="{
+          paddingLeft: '25px',
+          paddingBottom: '70px'
+        }"
+      >
+        <div
+          class="header-wrapper"
+          [ngStyle]="{
+            paddingLeft: '0px',
+            paddingBottom: '17px'
+          }"
+        >
+          <h2 class="items-header">Destacados</h2>
+
+          <div class="dot-trio" (click)="(null)">
+            <div class="dot"> </div>
+            <div class="dot"> </div>
+            <div class="dot"> </div>
+          </div>
+        </div>
+
+        <div></div>
+        <swiper [config]="swiperConfigHighlightedItems">
+          <div
+            *ngFor="let item of highlightedItems; let i = index"
+            [ngStyle]="{
+              width: 'auto'
+            }"
+          >
+            <app-saleflow-item
+              [itemIndex]="i"
+              [itemId]="item._id"
+              [type]="4"
+              [imgURL]="item.images ? item.images[0] : ''"
+              [price]="item.pricing"
+              [showPrice]="true"
+              (itemClicked)="onItemClick(item._id, true)"
+              [dynamicStyles]="{
+                itemContainer: {
+                  minWidth: '242px',
+                  height: '315px',
+                  margin: '0px'
+                },
+                simpleCard: {
+                  height: '100%'
+                },
+                itemImg: {
+                  height: '82.8571%'
+                },
+                infoArea: {
+                  height: '17.1429%'
+                }
+              }"
+            ></app-saleflow-item>
+            <div class="blank-space"></div>
+          </div>
+        </swiper>
+      </div>
+
+      <div
+        class="item-list"
+        [ngStyle]="{
+          padding: '0px',
+          paddingLeft: '25px',
+          paddingRight: '17px',
+          paddingBottom: '17px'
+        }"
+        *ngIf="categorylessItems.length"
+      >
         <ng-container *ngFor="let item of categorylessItems; index as i">
           <app-item
             [item]="item"

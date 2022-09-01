@@ -46,12 +46,6 @@ export class MerchantItemsComponent implements OnInit {
   };
   selectedItemsCounter: number = 0;
   statusQueryParam: 'active' | 'disabled';
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 'auto',
-    freeMode: false,
-    spaceBetween: 16.5,
-  };
-
   // Dummy Data
   itemList: Array<any> = [
     {
@@ -315,6 +309,7 @@ export class MerchantItemsComponent implements OnInit {
           },
           titleWrapper: {
             margin: 0,
+            marginBottom: '42px',
           },
           description: {
             marginBottom: '30px',
@@ -322,7 +317,6 @@ export class MerchantItemsComponent implements OnInit {
           },
           button: {
             border: 'none',
-            paddingTop: '42px',
             margin: '0px',
           },
         },

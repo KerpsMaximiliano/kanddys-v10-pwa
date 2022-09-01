@@ -19,73 +19,9 @@
   ></app-helper-headerv2>
 
   <div
-    *ngIf="highlightedItems.length > 0"
-    [ngStyle]="{
-      paddingLeft: '24px'
-    }"
-  >
-    <div
-      class="header-wrapper"
-      [ngStyle]="{
-        paddingLeft: '0px',
-        paddingBottom: '17px'
-      }"
-    >
-      <h2 class="items-header">Destacados</h2>
-
-      <div class="dot-trio" (click)="openDialog()">
-        <div class="dot"> </div>
-        <div class="dot"> </div>
-        <div class="dot"> </div>
-      </div>
-    </div>
-
-    <div></div>
-    <swiper [config]="swiperConfig">
-      <div
-        *ngFor="let item of highlightedItems; let i = index"
-        [ngStyle]="{
-          width: 'auto'
-        }"
-      >
-        <app-saleflow-item
-          [itemIndex]="i"
-          [itemId]="item._id"
-          [type]="4"
-          [imgURL]="item.images ? item.images[0] : ''"
-          [price]="item.pricing"
-          [showPrice]="true"
-          (itemClicked)="goToDetail(item._id)"
-          (onItemSelectionClick)="
-            markItemAsSelectedOrRemoveItsSelection($event)
-          "
-          (iconTwoClicked)="openDeleteDialog(item)"
-          [dynamicStyles]="{
-            itemContainer: {
-              minWidth: '242px',
-              height: '315px',
-              margin: '0px'
-            },
-            simpleCard: {
-              height: '100%'
-            },
-            itemImg: {
-              height: '82.8571%'
-            },
-            infoArea: {
-              height: '17.1429%'
-            }
-          }"
-        ></app-saleflow-item>
-        <div class="blank-space"></div>
-      </div>
-    </swiper>
-  </div>
-
-  <div
     class="header-wrapper"
     [ngStyle]="{
-      paddingTop: '70px'
+      paddingTop: '62px'
     }"
   >
     <h2 class="items-header">
