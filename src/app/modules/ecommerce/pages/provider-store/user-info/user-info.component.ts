@@ -41,7 +41,7 @@ export class UserInfoComponent implements OnInit {
         }
       );
       this.router.navigate([`ecommerce/checkout`]);
-      this.header.storeOrderAnonymous(this.header.saleflow._id, true);
+      this.header.storeOrderAnonymous(this.header.saleflow._id);
       return;
     }
   }
