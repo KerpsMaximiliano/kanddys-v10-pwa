@@ -700,6 +700,9 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           shouldFormatNumber: true,
           label: 'Monto Total de Compra:',
+          bottomLabel: {
+            text: 'El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo.',
+          },
           inputType: 'number',
           placeholder: 'Si no estas segur(x) puedes dejarlo en blanco',
           changeCallbackFunction: (change, params) => {
@@ -795,6 +798,9 @@ export class LlStudioOrderFormComponent implements OnInit {
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
+            },
+            bottomLabelStyles: {
+              fontFamily: 'RobotoLight',
             },
             containerStyles: {
               position: 'relative',
@@ -1586,7 +1592,6 @@ export class LlStudioOrderFormComponent implements OnInit {
           );
 
           try {
-
             const { phoneNumber } = params.dataModel.value['1'];
             const name =
               this.formSteps[1].fieldsList[0].fieldControl.control.value;

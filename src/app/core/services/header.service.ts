@@ -49,6 +49,7 @@ class SaleflowData {
   orderProgress: OrderProgress;
   customizer: CustomizerValueInput;
   customizerPreviewBase64: string;
+  anonymous: boolean;
 }
 
 @Injectable({
@@ -139,6 +140,7 @@ export class HeaderService {
     this.auth.me().then((data) => {
       if (data != undefined) {
         this.isLogged = true;
+        this.user = data;
       } else {
         this.isLogged = false;
         this.user = undefined;
@@ -167,26 +169,32 @@ export class HeaderService {
           this.merchantService.myMerchants().then((data) => {
             this.myMerchants = data;
           });
-          sub.unsubscribe();
+        } else {
+          this.isLogged = false;
+          this.user = null;
+          this.walletData = null;
+          this.savedBookmarks = null;
+          this.myMerchants = null;
         }
       });
-    const sub1 = this.app.events
-      .pipe(filter((e) => e.type === 'singleAuth'))
-      .subscribe((e) => {
-        if (e.data) {
-          this.isLogged = true;
-          this.user = e.data.user;
-          this.wallet.globalWallet().then((data) => {
-            this.walletData = data.globalWallet;
-          });
-          this.bookmark.bookmarkByUser().then((data) => {
-            if (data.bookmarkByUser) {
-              this.savedBookmarks = data.bookmarkByUser;
-            }
-          });
-          sub1.unsubscribe();
-        }
-      });
+    // const sub1 = this.app.events
+    //   .pipe(filter((e) => e.type === 'singleAuth'))
+    //   .subscribe((e) => {
+    //     if (e.data) {
+    //       this.isLogged = true;
+    //       this.user = e.data.user;
+    //       this.wallet.globalWallet().then((data) => {
+    //         this.walletData = data.globalWallet;
+    //       });
+    //       this.bookmark.bookmarkByUser().then((data) => {
+    //         if (data.bookmarkByUser) {
+    //           this.savedBookmarks = data.bookmarkByUser;
+    //         }
+    //       });
+    //     } else {
+    //       this.user = null;
+    //     }
+    //   });
   }
   hide() {
     this.visible = false;
@@ -274,7 +282,9 @@ export class HeaderService {
   }
 
   getSaleflow(): SaleFlow {
-    return JSON.parse(localStorage.getItem('saleflow-data'));
+    const saleflow = JSON.parse(localStorage.getItem('saleflow-data'));
+    this.saleflow = saleflow;
+    return saleflow;
   }
 
   // Stores order product data in localStorage
@@ -382,6 +392,13 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
   }
 
+  storeOrderAnonymous(saleflow: string) {
+    let { anonymous, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    anonymous = true;
+    localStorage.setItem(saleflow, JSON.stringify({ anonymous, ...rest }));
+  }
+
   storeCustomizer(saleflow: string, customizer: CustomizerValueInput) {
     delete customizer?.preview;
     let saleflowData: SaleflowData =
@@ -454,6 +471,13 @@ export class HeaderService {
     }
   }
 
+  // Returns order auth type
+  getOrderAnonymous(saleflow: string) {
+    let { anonymous }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return anonymous;
+  }
+
   // Returns CustomizerValueInput from saleflow
   getCustomizer(saleflow: string) {
     let { customizer }: SaleflowData =
@@ -488,14 +512,21 @@ export class HeaderService {
   emptyPost(saleflow: string) {
     let { post, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify({ ...rest }));
+    localStorage.setItem(saleflow, JSON.stringify(rest));
   }
 
   // Empties delivery option from localStorage
   emptyDeliveryOption(saleflow: string) {
     let { deliveryOption, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify({ ...rest }));
+    localStorage.setItem(saleflow, JSON.stringify(rest));
+  }
+
+  // Deletes anonymous property from order
+  deleteOrderAnonymous(saleflow: string) {
+    let { anonymous, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(saleflow, JSON.stringify(rest));
   }
 
   // Empties order products from localStorage

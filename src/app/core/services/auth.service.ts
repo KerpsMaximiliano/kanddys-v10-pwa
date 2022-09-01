@@ -41,11 +41,9 @@ export class AuthService {
     private readonly app: AppService,
     private readonly router: Router
   ) {
-    /*
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
     else this.ready = from([undefined]);
-    */
   }
 
   public async userExist(emailOrPhone: string) {
@@ -211,6 +209,7 @@ export class AuthService {
       if (result.success) {
         this.session?.revoke();
         this.session = undefined;
+        this.app.events.emit({ type: 'auth', data: this.session });
         // this.app.nav = [];
         // this.app.header = {};
       }

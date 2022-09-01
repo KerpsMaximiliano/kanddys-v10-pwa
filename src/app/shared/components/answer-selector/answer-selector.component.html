@@ -7,104 +7,136 @@
   "
 >
   <ul class="container-options" *ngIf="!hasComplexOptionsLayout">
-    <li *ngFor="let option of options; index as i">
-      <div class="container-text-option" *ngIf="!isMultipleOption">
-        <div class="selector-flex-wrapper">
+    <ng-container *ngIf="!values">
+      <li *ngFor="let option of options; index as i">
+        <div class="container-text-option" *ngIf="!isMultipleOption">
+          <div class="selector-flex-wrapper">
+            <div
+              [class]="
+                !indicator
+                  ? i === activeOption && showSelectedFeedback
+                    ? 'option selected'
+                    : 'option'
+                  : i === activeOption && showSelectedFeedback
+                  ? 'selector-option active'
+                  : 'selector-option'
+              "
+              [ngStyle]="itemStyles ? itemStyles : null"
+              (click)="editable && option.status && clickSelector(i)"
+            >
+              <div class="background"></div>
+
+              <ng-container *ngIf="!option.isOptionAnArray">
+                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <div>
+                  <span
+                    *ngFor="let subtext of option.subtexts"
+                    [ngStyle]="subtext.styles"
+                    >{{ subtext.text }}</span
+                  >
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="option.isOptionAnArray && option.valueArray">
+                <span>
+                  <ng-container *ngFor="let part of option.valueArray">
+                    <span
+                      *ngIf="part.highlight"
+                      [ngStyle]="{
+                        display: 'inline-block',
+                        margin: '0px 10px',
+                        marginBottom: '10px',
+                        backgroundColor: '#2874AD',
+                        color: '#fff',
+                        borderRadius: '5px',
+                        padding: '5px 10px'
+                      }"
+                      >{{ part.text }}</span
+                    >
+
+                    <span
+                      *ngIf="!part.highlight"
+                      [ngStyle]="{
+                        display: 'inline-block',
+                        margin: '0px 4px',
+                        marginBottom: '10px'
+                      }"
+                      >{{ part.text }}</span
+                    >
+                  </ng-container>
+                </span>
+              </ng-container>
+            </div>
+            <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
+              <ng-container *ngFor="let icon of option.icons">
+                <button
+                  class="icon-button"
+                  (click)="icon.callback ? icon.callback() : null"
+                >
+                  <img
+                    [src]="icon.src"
+                    [ngStyle]="icon.styles ? icon.styles : null"
+                  />
+                </button>
+              </ng-container>
+            </div>
+          </div>
+          <!-- THE LINES BELLOW MAKE AN OPCTION CLICKABLE THROUGH ITS DESCRIPTION   -->
           <div
-            [class]="
-              !indicator
-                ? i === activeOption && showSelectedFeedback
-                  ? 'option selected'
-                  : 'option'
-                : i === activeOption && showSelectedFeedback
-                ? 'selector-option active'
-                : 'selector-option'
-            "
-            [ngStyle]="itemStyles ? itemStyles : null"
+            class="description-container"
+            *ngIf="option?.description && showDescription"
             (click)="editable && option.status && clickSelector(i)"
           >
-            <div class="background"></div>
-
-            <ng-container *ngIf="!option.isOptionAnArray">
-              <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
-              <div>
-                <span
-                  *ngFor="let subtext of option.subtexts"
-                  [ngStyle]="subtext.styles"
-                  >{{ subtext.text }}</span
-                >
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="option.isOptionAnArray && option.valueArray">
-              <span>
-                <ng-container *ngFor="let part of option.valueArray">
-                  <span
-                    *ngIf="part.highlight"
-                    [ngStyle]="{
-                      display: 'inline-block',
-                      margin: '0px 10px',
-                      marginBottom: '10px',
-                      backgroundColor: '#2874AD',
-                      color: '#fff',
-                      borderRadius: '5px',
-                      padding: '5px 10px'
-                    }"
-                    >{{ part.text }}</span
-                  >
-
-                  <span
-                    *ngIf="!part.highlight"
-                    [ngStyle]="{
-                      display: 'inline-block',
-                      margin: '0px 4px',
-                      marginBottom: '10px'
-                    }"
-                    >{{ part.text }}</span
-                  >
-                </ng-container>
-              </span>
-            </ng-container>
-          </div>
-          <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
-            <ng-container *ngFor="let icon of option.icons">
-              <button
-                class="icon-button"
-                (click)="icon.callback ? icon.callback() : null"
-              >
-                <img
-                  [src]="icon.src"
-                  [ngStyle]="icon.styles ? icon.styles : null"
-                />
-              </button>
-            </ng-container>
+            <p
+              class="description-label"
+              *ngFor="let description of option.description"
+            >
+              {{ description }}
+            </p>
           </div>
         </div>
-        <!-- THE LINES BELLOW MAKE AN OPCTION CLICKABLE THROUGH ITS DESCRIPTION   -->
-        <div
-          class="description-container"
-          *ngIf="option?.description && showDescription"
-          (click)="editable && option.status && clickSelector(i)"
-        >
+        <div class="container-text-option" *ngIf="isMultipleOption">
           <p
-            class="description-label"
-            *ngFor="let description of option.description"
+            class="option"
+            [ngClass]="
+              option.click && showSelectedFeedback
+                ? 'option-selected'
+                : 'option'
+            "
           >
-            {{ description }}
+            {{ option.value }}
           </p>
         </div>
-      </div>
-      <div class="container-text-option" *ngIf="isMultipleOption">
-        <p
-          class="option"
-          [ngClass]="
-            option.click && showSelectedFeedback ? 'option-selected' : 'option'
-          "
-        >
-          {{ option.value }}
-        </p>
-      </div>
-    </li>
+      </li>
+    </ng-container>
+    <ng-container *ngIf="values">
+      <ng-container *ngIf="values.type === 'bank'">
+        <li *ngFor="let item of values.items; index as i">
+          <div class="container-text-option">
+            <div class="selector-flex-wrapper">
+              <div
+                class="selector-option"
+                [ngClass]="{ active: i === activeOption }"
+                [ngStyle]="itemStyles ? itemStyles : null"
+                (click)="clickSelector(i)"
+              >
+                <div class="background"></div>
+                <div class="option-content">
+                  <p class="option-title">Transferencia Bancaria</p>
+                  <ul>
+                    <li>Tipo de cuenta: {{ item.typeAccount }}</li>
+                    <li>{{ item.ownerAccount }}</li>
+                    <li>Cuenta: {{ item.account }}</li>
+                    <li>RNC: {{ item.routingNumber }}</li>
+                  </ul>
+                  <p class="option-footer">{{ item.bankName }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ng-container>
+    </ng-container>
   </ul>
 
   <ul class="container-options" *ngIf="hasComplexOptionsLayout">
