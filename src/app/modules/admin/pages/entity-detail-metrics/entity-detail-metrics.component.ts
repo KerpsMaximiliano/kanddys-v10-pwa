@@ -36,6 +36,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   items: Item[];
   activeItems: Item[];
   inactiveItems: Item[];
+  highlightedItems: Item[];
   // user: User;
   users: User[];
   mode: 'collections' | 'store' = 'store';
@@ -93,6 +94,9 @@ export class EntityDetailMetricsComponent implements OnInit {
       );
       this.inactiveItems = this.items.filter(
         (item) => item.status === 'disabled'
+      );
+      this.highlightedItems = this.items.filter(
+        (item) => item.status === 'featured'
       );
     } catch (error) {
       console.log(error);

@@ -57,7 +57,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
       this.itemData = await this.items.item(params.id);
-      if (!this.itemData || this.itemData.status !== 'active')
+      if (
+        !this.itemData ||
+        (this.itemData.status !== 'active' &&
+          this.itemData.status !== 'featured')
+      )
         return this.back();
 
       if (this.itemData.images.length > 1)
