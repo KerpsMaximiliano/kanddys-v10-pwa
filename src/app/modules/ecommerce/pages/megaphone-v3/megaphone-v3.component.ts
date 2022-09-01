@@ -265,7 +265,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             _id: {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
-            status: 'active',
           },
           options: {
             limit: 60,
@@ -274,7 +273,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         const selectedItems = orderData?.products?.length
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-        this.items = items.listItems;
+        this.items = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
+
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
