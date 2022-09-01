@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { WhatsappMessageComponent } from 'src/app/shared/dialogs/whatsapp-message/whatsapp-message.component';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import {
   order,
@@ -26,7 +28,10 @@ import {
   providedIn: 'root',
 })
 export class OrderService {
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(
+    private graphql: GraphQLWrapper,
+    private dialogService: DialogService
+  ) {}
 
   orders: any = [];
 
@@ -213,5 +218,20 @@ export class OrderService {
   async getOrderData(id: string, preOrder?: boolean): Promise<ItemOrder> {
     if (!preOrder) return (await this.order(id))?.order;
     return (await this.preOrder(id))?.order;
+  }
+
+  openWhatsAppMessage(phone: string, message: string) {
+    this.dialogService.open(WhatsappMessageComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        data: {
+          phone,
+          message,
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+    });
   }
 }
