@@ -253,7 +253,7 @@ export class LoginComponent implements OnInit {
          this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
          this.userID = validUser._id;
          this.loggin = true;
-         this.generateTOP();
+         await this.generateTOP();
          this.toValidate = true;
 
       }else if(this.orderId && this.auth === 'anonymous'){
@@ -323,8 +323,9 @@ export class LoginComponent implements OnInit {
         });
       }
     } else if (this.authCode) {
-      const authCoded = await this.authService.analizeMagicLink(
-        this.password.value
+      const authCoded = await this.authService.verify(
+        this.password.value,
+        this.userID
       );
 
       if (!authCoded) {
@@ -427,14 +428,18 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
+        console.log("Creando nuevo user");
         this.sneaky = this.password.value;
-        await this.authService.generateMagicLink(
-          this.merchantNumber,
-          `admin/entity-detail-metrics`,
-          newUser._id,
-          'MerchantAccess',
-          null
-        );
+        
+        await this.generateTOP();
+
+        // await this.authService.generateMagicLink(
+        //   this.merchantNumber,
+        //   `admin/entity-detail-metrics`,
+        //   newUser._id,
+        //   'MerchantAccess',
+        //   null
+        // );
         this.toPassword();
         this.toastr.info('¡Usuario registrado con exito!', null, {
           timeOut: 2000,
