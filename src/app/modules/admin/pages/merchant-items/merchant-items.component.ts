@@ -49,12 +49,7 @@ export class MerchantItemsComponent implements OnInit {
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 5,
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true,
-    },
+    spaceBetween: 16.5    
   };
 
   // Dummy Data

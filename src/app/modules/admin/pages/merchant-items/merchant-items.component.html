@@ -17,8 +17,19 @@
     (plusEvent)="createItem()"
   ></app-helper-headerv2>
 
-  <ng-container *ngIf="highlightedItems.length > 0">
-    <div class="header-wrapper">
+  <div
+    *ngIf="highlightedItems.length > 0"
+    [ngStyle]="{
+      paddingLeft: '24px'
+    }"
+  >
+    <div
+      class="header-wrapper"
+      [ngStyle]="{
+        paddingLeft: '0px',
+        paddingBottom: '17px'
+      }"
+    >
       <h2 class="items-header">Destacados</h2>
 
       <div class="dot-trio" (click)="openDialog()">
@@ -28,8 +39,14 @@
       </div>
     </div>
 
+    <div></div>
     <swiper [config]="swiperConfig">
-      <div *ngFor="let item of highlightedItems; let i = index">
+      <div
+        *ngFor="let item of highlightedItems; let i = index"
+        [ngStyle]="{
+          width: 'auto'
+        }"
+      >
         <app-saleflow-item
           [itemIndex]="i"
           [itemId]="item._id"
@@ -42,14 +59,34 @@
             markItemAsSelectedOrRemoveItsSelection($event)
           "
           (iconTwoClicked)="openDeleteDialog(item)"
-          [responsiveWidthVersion]="true"
+          [dynamicStyles]="{
+            itemContainer: {
+              minWidth: '242px',
+              height: '315px',
+              margin: '0px'
+            },
+            simpleCard: {
+              height: '100%'
+            },
+            itemImg: {
+              height: '82.8571%'
+            },
+            infoArea: {
+              height: '17.1429%'
+            }
+          }"
         ></app-saleflow-item>
         <div class="blank-space"></div>
       </div>
     </swiper>
-  </ng-container>
+  </div>
 
-  <div class="header-wrapper">
+  <div
+    class="header-wrapper"
+    [ngStyle]="{
+      paddingTop: '70px'
+    }"
+  >
     <h2 class="items-header">
       {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
     </h2>

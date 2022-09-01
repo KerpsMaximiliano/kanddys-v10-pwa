@@ -59,6 +59,12 @@ export class SaleflowItemComponent implements OnInit {
   @Input() responsiveWidthVersion: boolean = false;
   @Input() itemId: string | number = null;
   @Input() itemIndex: number = null;
+  @Input() dynamicStyles: {
+    itemContainer?: Record<string, string | number>;
+    simpleCard?: Record<string, string | number>;
+    itemImg?: Record<string, string | number>;
+    infoArea?: Record<string, string | number>;
+  } = null;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
@@ -101,6 +107,10 @@ export class SaleflowItemComponent implements OnInit {
       '/ecommerce/scenario-details/' + this.itemExtra._id,
       { idProduct: this.itemExtra.idProduct },
     ]);
+  }
+
+  spreadOperator(object1: Record<string, any>, object2: Record<string, any>) {
+    return { ...object1, ...object2 };
   }
 
   onTopBoxClick() {
