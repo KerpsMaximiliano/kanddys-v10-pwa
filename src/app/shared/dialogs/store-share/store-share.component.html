@@ -44,7 +44,15 @@
           ></qrcode>
           <button (click)="downloadQr()">Descarga el qrCode</button>
         </div>
-        <p class="description" *ngIf="item.description && !item.options">
+        <p
+          class="description"
+          *ngIf="
+            item.description &&
+            !item.options &&
+            (!item.descriptionPosition || item.descriptionPosition === 'MIDDLE')
+          "
+          [ngStyle]="dynamicStyles?.description"
+        >
           {{ item.description }}
         </p>
         <ng-container *ngFor="let option of item.options">
@@ -115,10 +123,23 @@
             class="confirm"
             *ngIf="item.message"
             (click)="item.messageCallback && inputFunc(item.messageCallback)"
+            [ngStyle]="dynamicStyles?.button"
           >
             {{ item.message }}
           </button>
         </div>
+
+        <p
+          class="description"
+          *ngIf="
+            item.description &&
+            !item.options &&
+            item.descriptionPosition === 'BOTTOM'
+          "
+          [ngStyle]="dynamicStyles?.description"
+        >
+          {{ item.description }}
+        </p>
       </div>
     </div>
     <button class="cancel" *ngIf="!hideCancelButtton" (click)="defaultButton()">
