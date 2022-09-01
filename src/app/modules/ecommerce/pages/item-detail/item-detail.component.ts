@@ -121,21 +121,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
                   if (this.saleflowData.module?.post)
                     this.router.navigate(['/ecommerce/create-giftcard']);
                   else if (this.saleflowData.module?.delivery)
-                    this.router.navigate(['/ecommerce/shipment-data-form']);
-                  else if (!this.header.orderId) {
-                    lockUI();
-                    const preOrderID = await this.header.newCreatePreOrder();
-                    this.header.orderId = preOrderID;
-                    unlockUI();
-                    this.router.navigate([
-                      `ecommerce/flow-completion-auth-less/${preOrderID}`,
-                    ]);
-                    this.header.createdOrderWithoutDelivery = true;
-                  } else {
-                    this.router.navigate([
-                      `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-                    ]);
-                  }
+                    this.router.navigate(['/ecommerce/new-address']);
+                  else this.router.navigate([`/ecommerce/checkout`]);
                 }
               }
             });

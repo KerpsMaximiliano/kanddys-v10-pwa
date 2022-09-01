@@ -1,49 +1,81 @@
-.container{
-    width: 100%;
-    min-height: 100vh;
-   
-    .saleflows-grid{
-        width: auto;
-        max-height: 93.5vh;
-        padding: 16px 24px 32px;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        -moz-column-gap: 14px;
-        column-gap: 14px;
-        row-gap: 25px;
-        overflow-x: hidden;
-        overflow-y: scroll;
-        justify-items: center;
-        .capsize{
-            width: 100%;
-            max-width: 212px;
-            height: auto;
-        }
+.container {
+  width: 100%;
+  min-height: 100vh;
+
+  .saleflows-grid {
+    width: auto;
+    padding: 16px 24px 32px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    -moz-column-gap: 14px;
+    column-gap: 14px;
+    row-gap: 25px;
+    overflow-x: hidden;
+    justify-items: center;
+    .capsize {
+      width: 100%;
+      max-width: 212px;
+      height: auto;
     }
+  }
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 68px;
+  justify-content: space-between;
+
+  .items-header {
+    font-family: RobotoMedium;
+    font-weight: normal;
+    color: #7B7B7B;
+    font-size: 17px;
+    margin: 0px;
+  }
+
+  .dot-trio {
+    width: 23px;
+    height: 6px;
+    display: flex;
+    justify-content: space-evenly;
+    cursor: pointer;
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #2874ad;
+      margin-bottom: 3px;
+    }
+  }
 }
 
 .no-results {
-    display: flex;
-    font-family: 'RobotoMedium';
-    font-size: 24px;
-    justify-content: center;
-    padding: 2rem 0rem;
-    padding-bottom: 5rem;
-    text-align: center;
-    height: 45vh;
-    max-height: 450px;
-  
-    @media (max-width: 410px) {
-        font-size: 18px;
-        margin: 0rem 2rem;
-    }
-  
-    @media (max-height: 592px) {
-        height: auto;
-    }
-  
-    @media (min-height: 970px){
-        height: 75vh;
-        max-height: none;
-    }
+  display: flex;
+  font-family: "RobotoMedium";
+  font-size: 24px;
+  justify-content: center;
+  padding: 2rem 0rem;
+  padding-bottom: 5rem;
+  text-align: center;
+  height: 45vh;
+  max-height: 450px;
+
+  @media (max-width: 410px) {
+    font-size: 18px;
+    margin: 0rem 2rem;
   }
+
+  @media (max-height: 592px) {
+    height: auto;
+  }
+
+  @media (min-height: 970px) {
+    height: 75vh;
+    max-height: none;
+  }
+}

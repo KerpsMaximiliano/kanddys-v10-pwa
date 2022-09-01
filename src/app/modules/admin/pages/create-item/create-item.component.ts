@@ -44,6 +44,7 @@ export class CreateItemComponent implements OnInit {
   });
   formattedPricing = '$0.00';
   curencyFocused = false;
+  submitEventFinished: boolean = true;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -113,6 +114,10 @@ export class CreateItemComponent implements OnInit {
   }
 
   async onSubmit() {
+    this.submitEventFinished = false;
+    
+    console.log("Ejecutando submit");
+
     const { images, name, description } = this.itemForm.value;
     const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
@@ -147,6 +152,8 @@ export class CreateItemComponent implements OnInit {
               updatedItem._id
             );
           }
+
+          this.submitEventFinished = true;
           this.itemService.removeTemporalItem();
           this.router.navigate([`/admin/merchant-items`]);
         }
@@ -176,6 +183,7 @@ export class CreateItemComponent implements OnInit {
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
             this.router.navigate([`/admin/merchant-items`]);
+            this.submitEventFinished = true;
           }
         } else {
           const { createPreItem } = await this.itemService.createPreItem(
@@ -183,6 +191,7 @@ export class CreateItemComponent implements OnInit {
           );
 
           if ('_id' in createPreItem) {
+            this.submitEventFinished = true;
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
             this.router.navigate(

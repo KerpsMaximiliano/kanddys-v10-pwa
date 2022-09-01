@@ -487,65 +487,71 @@
                 </label>
 
                 <div
-                  *ngIf="currentField.shouldFormatNumber"
                   [ngStyle]="{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    backgroundColor: 'white'
-                  }"
-                  [ngClass]="{
-                    inputFocused: currentField.focused,
-                    input: true
+                    position: 'relative'
                   }"
                 >
-                  <span
-                    *ngFor="
-                      let letter of currentField.formattedValue.split('');
-                      let i = index
-                    "
-                  >
-                    {{ letter }}
-                  </span>
-
                   <div
-                    class="cursor"
-                    [ngStyle]="currentField.styles.formattedInputCaretStyles"
-                    [ngClass]="{ 'blinking-cursor': currentField.focused }"
-                  ></div>
+                    *ngIf="currentField.shouldFormatNumber"
+                    [ngStyle]="{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      backgroundColor: 'white'
+                    }"
+                    [ngClass]="{
+                      inputFocused: currentField.focused,
+                      input: true
+                    }"
+                  >
+                    <span
+                      *ngFor="
+                        let letter of currentField.formattedValue.split('');
+                        let i = index
+                      "
+                    >
+                      {{ letter }}
+                    </span>
+
+                    <div
+                      class="cursor"
+                      [ngStyle]="currentField.styles.formattedInputCaretStyles"
+                      [ngClass]="{ 'blinking-cursor': currentField.focused }"
+                    ></div>
+                  </div>
+
+                  <input
+                    [id]="currentField.name"
+                    [name]="currentField.name"
+                    [formControlName]="currentField.name"
+                    [type]="currentField.inputType || 'text'"
+                    [min]="
+                      currentField.inputType === 'number' &&
+                      currentField.onlyAllowPositiveNumbers
+                        ? 0
+                        : null
+                    "
+                    tabindex="-1"
+                    [placeholder]="currentField.placeholder"
+                    [ngClass]="{
+                      input: true,
+                      formatCurrency:
+                        currentField.inputType === 'number' &&
+                        currentField.shouldFormatNumber,
+                      focused: currentField.focused
+                    }"
+                    (focus)="onFocus(currentField)"
+                    (blur)="onBlur(currentField)"
+                    [ngStyle]="
+                      currentField.styles.fieldStyles &&
+                      !currentField.styles.customClassName
+                        ? currentField.styles.fieldStyles
+                        : null
+                    "
+                  />
                 </div>
 
-                <input
-                  [id]="currentField.name"
-                  [name]="currentField.name"
-                  [formControlName]="currentField.name"
-                  [type]="currentField.inputType || 'text'"
-                  [min]="
-                    currentField.inputType === 'number' &&
-                    currentField.onlyAllowPositiveNumbers
-                      ? 0
-                      : null
-                  "
-                  tabindex="-1"
-                  [placeholder]="currentField.placeholder"
-                  [ngClass]="{
-                    input: true,
-                    formatCurrency:
-                      currentField.inputType === 'number' &&
-                      currentField.shouldFormatNumber,
-                    focused: currentField.focused
-                  }"
-                  (focus)="onFocus(currentField)"
-                  (blur)="onBlur(currentField)"
-                  [ngStyle]="
-                    currentField.styles.fieldStyles &&
-                    !currentField.styles.customClassName
-                      ? currentField.styles.fieldStyles
-                      : null
-                  "
-                />
-
-                <span
+                <div
                   *ngIf="currentField.bottomLabel"
                   class="input-label-bottom"
                   [ngStyle]="
@@ -560,7 +566,7 @@
                   "
                 >
                   {{ currentField.bottomLabel.text }}
-                </span>
+                </div>
               </ng-container>
 
               <!-- MULTIPLE INPUTS GO HERE -->
@@ -1734,9 +1740,12 @@
         : 'disabled-fixed'
     "
     (click)="
-      !steps[currentStep].justExecuteCustomScrollToStep && finishedExecutingStepProcessingFunction
+      !steps[currentStep].justExecuteCustomScrollToStep &&
+      finishedExecutingStepProcessingFunction
         ? executeStepDataProcessing()
-        : finishedExecutingStepProcessingFunction ? steps[currentStep].customScrollToStep(stepFunctionParams) : null
+        : finishedExecutingStepProcessingFunction
+        ? steps[currentStep].customScrollToStep(stepFunctionParams)
+        : null
     "
     [height]="
       dataModel.get(currentStepString).status !== 'INVALID'
@@ -1785,9 +1794,12 @@
           : 'disabled-fixed'
       "
       (click)="
-        !steps[currentStep].justExecuteCustomScrollToStep && finishedExecutingStepProcessingFunction
+        !steps[currentStep].justExecuteCustomScrollToStep &&
+        finishedExecutingStepProcessingFunction
           ? executeStepDataProcessing()
-          : finishedExecutingStepProcessingFunction ? steps[currentStep].customScrollToStep(stepFunctionParams) : null
+          : finishedExecutingStepProcessingFunction
+          ? steps[currentStep].customScrollToStep(stepFunctionParams)
+          : null
       "
       [height]="
         dataModel.get(currentStepString).status !== 'INVALID'
