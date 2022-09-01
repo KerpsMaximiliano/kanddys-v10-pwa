@@ -58,7 +58,7 @@
       (onFileInput)="onFileInput($event)"
     ></app-image-input>
   </div>
-  <a [href]="whatsappLink" target="_blank">
+  <a [href]="whatsappLink" target="_blank" [ngClass]="{disabled: !image}">
     <app-sticky-button
       *ngIf="image || selectedBank"
       (click)="image && !disableButton && submitPayment()"

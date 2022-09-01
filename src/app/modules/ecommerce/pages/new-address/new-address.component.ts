@@ -305,17 +305,19 @@ export class NewAddressComponent implements OnInit {
           this.newAddressOption = null;
           this.user = null;
         }
-        this.headerService.storeOrderAnonymous(this.saleflow._id, true);
+        this.headerService.storeOrderAnonymous(this.saleflow._id);
         this.checkAddresses(true);
         break;
 
       case 1:
+        this.headerService.deleteOrderAnonymous(this.saleflow._id);
         this.router.navigate([`auth/login`], {
           queryParams: { auth: 'order', saleflow: this.saleflow._id },
         });
         break;
 
       case 2:
+        this.headerService.deleteOrderAnonymous(this.saleflow._id);
         this.checkAddresses();
         break;
     }

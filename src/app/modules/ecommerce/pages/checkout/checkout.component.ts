@@ -267,7 +267,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.post = undefined;
       this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      if (this.headerService.user) {
+      if (this.headerService.user && !anonymous) {
         await this.authOrder(this.headerService.user._id);
         unlockUI();
         return;
