@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { Tag } from 'src/app/core/models/tags';
 
 @Component({
   selector: 'app-actions-menu',
@@ -9,8 +10,22 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 export class ActionsMenuComponent implements OnInit {
 
    constructor() { }
-
+   template: boolean = true;
+   isTag: boolean;
    activeIndex: number;
+   tag: Tag = {
+      _id: '1',
+      createdAt: 'string',
+      updatedAt: 'string',
+      messageNotify: 'Esto es un mensaje',
+      counter: 0,
+      name: '#Tag',
+      notify: true,
+      user: 'Pablito',
+      notifyUserOrder: true,
+      notifyMerchantOrder: true
+    
+   };
    options: OptionAnswerSelector[] = [
     {
        status: true,
