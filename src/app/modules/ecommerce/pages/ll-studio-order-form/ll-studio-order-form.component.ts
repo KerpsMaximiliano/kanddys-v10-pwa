@@ -1703,7 +1703,7 @@ export class LlStudioOrderFormComponent implements OnInit {
                 await this.authService.signup(requestData, 'none', null, false);
               } catch (error) {
                 errorOnSignup = true;
-                this.submitData(
+                await this.submitData(
                   fileRoutesReferenceImages,
                   proofOfPaymentImages
                 );
@@ -1711,7 +1711,7 @@ export class LlStudioOrderFormComponent implements OnInit {
             }
 
             if (errorOnSignup === false) {
-              this.submitData(fileRoutesReferenceImages, proofOfPaymentImages);
+              await this.submitData(fileRoutesReferenceImages, proofOfPaymentImages);
             }
 
             return { ok: true };
