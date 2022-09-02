@@ -182,7 +182,7 @@ export class CreateItemComponent implements OnInit {
           if ('_id' in createItem) {
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
-            this.router.navigate([`/admin/merchant-items`]);
+            this.router.navigate([`/admin/options/${createItem._id}`]);
             this.submitEventFinished = true;
           }
         } else {
