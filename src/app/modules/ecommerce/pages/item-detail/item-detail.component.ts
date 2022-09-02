@@ -100,9 +100,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
-    if (productData && productData.length > 0) {
-      this.inCart = productData.some((item) => item._id === this.itemData._id);
-    } else this.inCart = false;
+    this.inCart = productData?.some((item) => item._id === this.itemData._id);
   }
 
   showItems() {
@@ -164,6 +162,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       saleflow: this.saleflowData._id,
     });
     this.header.storeItem(this.saleflowData._id, this.itemData);
+    this.appService.events.emit({
+      type: 'added-item',
+      data: this.itemData._id,
+    });
     this.itemInCart();
     this.showItems();
   }

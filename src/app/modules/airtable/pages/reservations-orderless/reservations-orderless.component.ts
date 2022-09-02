@@ -969,8 +969,6 @@ export class ReservationOrderlessComponent implements OnInit {
     if (!this.header.orderId)
       preOrderID = await this.header.newCreatePreOrder();
     else preOrderID = this.header.orderId;
-
-    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
   }
 
   deleteSelection() {

@@ -1,34 +1,33 @@
+import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
-  ItemPackage,
+  ItemPackage
 } from 'src/app/core/models/item';
-import { SaleFlow, SocialMediaModel } from 'src/app/core/models/saleflow';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
 import { Merchant } from 'src/app/core/models/merchant';
-import { environment } from 'src/environments/environment';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
-import { Location } from '@angular/common';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
-  StoreShareList,
+  StoreShareList
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { OrderService } from 'src/app/core/services/order.service';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
@@ -63,7 +62,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
-  // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
@@ -309,7 +307,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             (product) => !itemIDs.includes(product.item)
           );
         }
-        // this.canOpenCart = orderData?.products?.length > 0;
         this.itemCartAmount = orderData?.products?.length;
         await this.organizeItems(merchant);
         this.status = 'complete';
