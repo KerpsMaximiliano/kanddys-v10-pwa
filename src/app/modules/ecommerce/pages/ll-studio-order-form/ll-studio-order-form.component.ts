@@ -198,13 +198,23 @@ export class LlStudioOrderFormComponent implements OnInit {
 
               if (birthdayValue !== '' && birthdayValue) {
                 birthdayValue = new Date(birthdayValue);
+                console.log(birthdayValue);
+                const monthNumber = Number(birthdayValue.getMonth()) + 1;
+                const monthString =
+                  String(monthNumber).length < 2
+                    ? '0' + monthNumber
+                    : monthNumber;
+                const dayNumber = Number(birthdayValue.getDate()) + 1;
+                const dayString =
+                  String(dayNumber).length < 2 ? '0' + dayNumber : dayNumber;
+
                 birthdayValue =
                   birthdayValue.getFullYear() +
                   '-' +
-                  '0' +
-                  (Number(birthdayValue.getMonth()) + 1) +
+                  monthString +
                   '-' +
-                  (Number(birthdayValue.getDate()) + 1);
+                  dayString;
+                console.log(birthdayValue);
                 this.formSteps[1].fieldsList[4].fieldControl.control.setValue(
                   birthdayValue
                 );
@@ -226,8 +236,15 @@ export class LlStudioOrderFormComponent implements OnInit {
 
               if (
                 this.existingUserData.deliveryLocations.length > 0 &&
+                this.existingUserData.deliveryLocations[0].nickName &&
                 this.existingUserData.deliveryLocations[0].nickName !== ''
               ) {
+                console.log(
+                  'lo que llega al address',
+                  this.existingUserData.deliveryLocations.length,
+                  this.existingUserData.deliveryLocations[0].nickName
+                );
+
                 this.formSteps[9].fieldsList[0].fieldControl.control.setValue(
                   this.existingUserData.deliveryLocations[0].nickName
                 );
@@ -422,7 +439,12 @@ export class LlStudioOrderFormComponent implements OnInit {
             type: 'single',
             control: new FormControl(
               '',
-              Validators.compose([Validators.required, Validators.email])
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                ),
+              ])
             ),
           },
           placeholder: 'ejemplo@hotmail.com...',
@@ -680,7 +702,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       customScrollToStepBackwards: (params) => {
         this.whatsappLinkSteps.pop();
 
-        params.scrollToStep(1, false);
+        params.scrollToStep(2, false);
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
@@ -719,7 +741,6 @@ export class LlStudioOrderFormComponent implements OnInit {
 
               return;
             }
-            
 
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[4].fieldsList[1].fieldControl.control.setValue(0, {
@@ -1737,6 +1758,7 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             const dateOffset = new Date().getTimezoneOffset() / 60;
 
+            /*
             const data = {
               data: encodeURIComponent(
                 JSON.stringify({
@@ -1828,6 +1850,8 @@ export class LlStudioOrderFormComponent implements OnInit {
 
             window.location.href =
               this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+            */
+
             return { ok: true };
           } catch (error) {
             const formData = this.formSteps.map((formStep, index) => {
