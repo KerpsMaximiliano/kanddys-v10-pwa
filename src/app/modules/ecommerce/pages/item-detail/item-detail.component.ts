@@ -1,23 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { Item } from '../../../../core/models/item';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
+import { Item } from '../../../../core/models/item';
 
 @Component({
   selector: 'app-item-detail',
@@ -37,8 +36,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemData: Item;
   saleflowData: SaleFlow;
   inCart: boolean;
-  showCartCallBack: () => void;
-  itemCartAmount: number;
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   deleteEvent: Subscription;
@@ -72,7 +69,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
       this.itemInCart();
-      this.showCartCallBack = () => this.showItems();
     });
 
     this.deleteEvent = this.appService.events
@@ -99,7 +95,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
-    this.itemCartAmount = productData?.length;
     this.inCart = productData?.some((item) => item._id === this.itemData._id);
   }
 
@@ -140,19 +135,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
-
-  onCartClick() {
-    if (this.previewMode) return;
-    if (this.inCart) {
-      this.saveProduct();
-    } else {
-      if (!this.saleflowData.canBuyMultipleItems) {
-        this.header.emptyOrderProducts(this.saleflowData._id);
-        this.header.emptyItems(this.saleflowData._id);
-      }
-      this.saveProduct();
-    }
   }
 
   saveProduct() {

@@ -202,15 +202,6 @@
       </ng-container>
     </section>
   </main>
-  <app-bubble-button
-    position="right"
-    color="blue"
-    [solo]="false"
-    [cart]="true"
-    [cartAmount]="itemCartAmount"
-    *ngIf="itemCartAmount && !hasCustomizer"
-    (click)="showShoppingCartDialog()"
-  ></app-bubble-button>
 </div>
 
 <app-bubble-button

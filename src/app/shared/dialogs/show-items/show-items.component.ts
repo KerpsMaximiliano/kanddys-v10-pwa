@@ -62,7 +62,6 @@ export class ShowItemsComponent implements OnInit {
       this.header.saleflow?._id || this.header.getSaleflow()?._id,
       this.products[i]._id
     );
-    this.header.order?.products?.filter((item) => item.item !== deletedID);
     const index = this.products.findIndex(
       (product) => product._id === this.products[i]._id
     );

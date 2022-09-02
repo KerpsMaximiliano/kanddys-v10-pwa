@@ -1,10 +1,10 @@
 <router-outlet></router-outlet>
-<!-- <app-bubble-button
+<app-bubble-button
   position="right"
   color="blue"
   [solo]="false"
   [cart]="true"
   [cartAmount]="itemCartAmount"
-  *ngIf="itemCartAmount"
+  *ngIf="allowMultipleItems && itemCartAmount && activePath !== 'checkout'"
   (click)="showShoppingCartDialog()"
-></app-bubble-button> -->
+></app-bubble-button>

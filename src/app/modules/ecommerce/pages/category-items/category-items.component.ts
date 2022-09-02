@@ -45,9 +45,7 @@ export class CategoryItemsComponent implements OnInit {
   hasCustomizer: boolean;
   bestSellers: Item[] = [];
   deleteEvent: Subscription;
-  canOpenCart: boolean;
   isMerchant: boolean;
-  itemCartAmount: number;
   totalByItems: {
     item: Item;
     itemInOrder: number;
@@ -128,8 +126,6 @@ export class CategoryItemsComponent implements OnInit {
           if (!item.customizerId)
             item.isSelected = selectedItems.includes(item._id);
         });
-        this.canOpenCart = this.items.some((item) => item.isSelected);
-        this.itemInCart();
       });
     this.header.resetIsComplete();
     if (this.header.customizerData) this.header.customizerData = null;
@@ -220,7 +216,6 @@ export class CategoryItemsComponent implements OnInit {
       this.items = [...items];
       this.originalItems = [...items];
 
-      this.canOpenCart = orderData?.products?.length > 0;
       const itemCategoriesList = (
         await this.item.itemCategories(merchantId, {
           options: {
@@ -235,7 +230,6 @@ export class CategoryItemsComponent implements OnInit {
         merchantId
       );
       await this.getCategories(itemCategoriesList, headlines);
-      this.itemInCart();
       if(this.isMerchant) {
         const totalByItems = await this.item.totalByItem(
           this.saleflow.merchant._id,
@@ -294,100 +288,6 @@ export class CategoryItemsComponent implements OnInit {
       );
   }
 
-  // closeTagEvent(e) {
-  //   let tagOptions = e.map((values) => values.options);
-  //   tagOptions = [].concat.apply([], tagOptions);
-
-  //   this.selectedTagsIds = tagOptions.filter((el) => el.selected);
-
-  //   if (this.selectedTagsIds.length === 0) {
-  //     this.items = this.originalItems;
-  //     return;
-  //   }
-
-  //   let filteredItems = [...this.originalItems];
-  //   this.selectedTagsIds.forEach((tag) => {
-  //     filteredItems = filteredItems.filter((item) => {
-  //       let isValid = false;
-  //       item.category.forEach((category) => {
-  //         if (category._id === tag.id) isValid = true;
-  //       });
-  //       return isValid;
-  //     });
-  //   });
-  //   this.items = filteredItems;
-  //   this.loadingSwiper = false;
-  // }
-
-  // tagDeleted(e) {
-  //   this.selectedTagsIds = this.selectedTagsIds.filter(
-  //     (el) => el.id !== e.name[0].id
-  //   );
-
-  //   if (this.selectedTagsIds.length === 0) {
-  //     this.items = this.originalItems;
-  //     return;
-  //   }
-
-  //   let filteredItems = [...this.originalItems];
-  //   this.selectedTagsIds.forEach((tag) => {
-  //     filteredItems = filteredItems.filter((item) => {
-  //       let isValid = false;
-  //       item.category.forEach((category) => {
-  //         if (category._id === tag.id) isValid = true;
-  //       });
-  //       return isValid;
-  //     });
-  //   });
-  //   this.items = filteredItems;
-  //   this.loadingSwiper = false;
-  // }
-
-  // toggleSelected(type: string, index: number) {
-  //   if (index != undefined) {
-  //     const itemData =
-  //       type === 'slider' ? this.bestSellers[index] : this.items[index];
-  //     itemData.isSelected = !itemData.isSelected;
-  //     let itemParams: ItemSubOrderParamsInput[];
-  //     if (itemData.params.length > 0) {
-  //       itemParams = [
-  //         {
-  //           param: itemData.params[0]._id,
-  //           paramValue: itemData.params[0].values[0]._id,
-  //         },
-  //       ];
-  //     }
-  //     const product = {
-  //       item: itemData._id,
-  //       customizer: itemData.customizerId,
-  //       params: itemParams,
-  //       amount: itemData.customizerId ? undefined : 1,
-  //       saleflow: this.saleflow._id,
-  //       name: itemData.name,
-  //     };
-  //     this.header.storeOrderProduct(this.saleflow._id, product);
-  //     this.header.storeItem(this.saleflow._id, itemData);
-  //   }
-  //   this.canOpenCart = this.items.some((item) => item.isSelected);
-  // }
-
-  showShoppingCartDialog = () => {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver mas productos',
-        footerCallback: () =>
-          this.router.navigate(['/ecommerce/create-giftcard']),
-        headerCallback: () =>
-          this.router.navigate([
-            `/ecommerce/store/${this.header.saleflow._id}`,
-          ]),
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
-
   onShareClick = () => {
     const list: StoreShareList[] = [
       {
@@ -423,11 +323,6 @@ export class CategoryItemsComponent implements OnInit {
       flags: ['no-header'],
     });
   };
-
-  itemInCart() {
-    const productData = this.header.getItems(this.saleflow._id);
-    this.itemCartAmount = productData?.length;
-  }
 
   goBack() {
     this.router.navigate(['/ecommerce/store/' + this.saleflow._id]);

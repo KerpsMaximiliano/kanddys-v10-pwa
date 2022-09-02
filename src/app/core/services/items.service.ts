@@ -342,7 +342,7 @@ export class ItemsService {
     }
   }
 
-  async createItem(input: any) {
+  async createItem(input: ItemInput): Promise<{ createItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },
@@ -353,7 +353,7 @@ export class ItemsService {
     return result;
   }
 
-  async createPreItem(input: any) {
+  async createPreItem(input: ItemInput): Promise<{ createPreItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: createPreItem,
       variables: { input },

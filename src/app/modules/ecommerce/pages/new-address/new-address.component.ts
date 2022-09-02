@@ -11,10 +11,9 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
-  StoreShareList,
+  StoreShareList
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -56,7 +55,6 @@ export class NewAddressComponent implements OnInit {
   loggedIn: boolean;
   disableButton: boolean;
   env = environment.assetsUrl;
-  itemCartAmount: number;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
   newAddressOption: OptionAnswerSelector[] = [];
@@ -131,7 +129,6 @@ export class NewAddressComponent implements OnInit {
       });
     }
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
-    this.itemCartAmount = this.headerService.order?.products?.length;
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
@@ -465,15 +462,4 @@ export class NewAddressComponent implements OnInit {
       flags: ['no-header'],
     });
   }
-
-  showShoppingCartDialog = () => {
-    this.dialogService.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        orderFinished: true,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 }
