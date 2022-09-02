@@ -79,7 +79,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   swiperConfigHighlightedItems: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 16.5
+    spaceBetween: 0,
   };
 
   constructor(
@@ -121,12 +121,17 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.categorylessItems = this.items
       .filter((item) => !item.category.length)
       .sort((a, b) => a.pricing - b.pricing);
+    const highlightedItemsObject = {};
     this.highlightedItems = [];
+
     for (const item of this.categorylessItems) {
       if (item.status === 'featured') {
         this.highlightedItems.push(item);
+        highlightedItemsObject[item._id] = true;
       }
     }
+
+    console.log(this.categories);
 
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
@@ -169,6 +174,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           callback: () => this.router.navigate([url]),
           shareCallback: () => this.onShareCallback(url),
         });
+
+        for (const itemCategory of this.itemsByCategory) {
+          for (const item of itemCategory.items) {
+            if (!highlightedItemsObject[item._id]) {
+              this.highlightedItems.push(item);
+              highlightedItemsObject[item._id] = true;
+            }
+          }
+        }
+
+        console.log(this.itemsByCategory, "itemsporcategoria")
+
         unlockUI();
       }
     });

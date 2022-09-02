@@ -3,6 +3,7 @@
     <app-helper-headerv2
       [mode]="'basic'"
       [fixed]="true"
+      *ngIf="!(itemsByCategory.length && hasCustomizer)"
       [mainText]="{
         text: saleflowData?.merchant?.name || 'Tienda',
         fontFamily: 'SfProBold',
@@ -79,7 +80,8 @@
             *ngFor="let item of highlightedItems; let i = index"
             [ngStyle]="{
               width: 'auto',
-              paddingBottom: '10px'
+              paddingBottom: '10px',
+              paddingRight: '16.5px'
             }"
           >
             <app-saleflow-item

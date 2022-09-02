@@ -9,7 +9,10 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="true"
+    [returnAble]="
+      !selectionConfiguration.active ||
+      (selectionConfiguration.active && selectedItemsCounter > 0)
+    "
     [dots]="{
       active: true,
       color: '#fff'

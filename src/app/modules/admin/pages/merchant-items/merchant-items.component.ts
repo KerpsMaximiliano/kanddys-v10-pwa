@@ -138,7 +138,10 @@ export class MerchantItemsComponent implements OnInit {
     }
   }
 
-  async getItems(merchantID: string, status?: 'active' | 'disabled' | 'featured') {
+  async getItems(
+    merchantID: string,
+    status?: 'active' | 'disabled' | 'featured'
+  ) {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true))
         .itemsByMerchant;
@@ -148,9 +151,7 @@ export class MerchantItemsComponent implements OnInit {
           (item) => item.status === 'active' || item.status === 'featured'
         );
       else if (status === 'featured')
-        this.items = items.filter(
-          (item) => item.status === 'featured'
-        );
+        this.items = items.filter((item) => item.status === 'featured');
       else if (status === 'disabled')
         this.items = items.filter((item) => item.status === 'disabled');
       else this.items = items;
@@ -560,8 +561,10 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'DESTACAR',
             mode: 'func',
-            func: () => {
+            func: async () => {
               this.selectedItemsCounter = 0;
+
+              await this.getItems(this.merchant._id, null);
 
               this.items.forEach((item) => {
                 item.selected = false;
@@ -616,8 +619,10 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
-            func: () => {
+            func: async () => {
               this.selectedItemsCounter = 0;
+
+              await this.getItems(this.merchant._id, null);
 
               this.items.forEach((item) => {
                 item.selected = false;
@@ -691,9 +696,14 @@ export class MerchantItemsComponent implements OnInit {
     });
   };
 
-  quitItemSelection = () => {
+  quitItemSelection = async () => {
     if (this.selectionConfiguration.active) {
       this.selectedItemsCounter = 0;
+
+      if (this.statusQueryParam)
+        await this.getItems(this.merchant._id, this.statusQueryParam);
+      else await this.getItems(this.merchant._id, null);
+
       this.items.forEach((item) => {
         item.selected = false;
         item.changedSelection = false;
