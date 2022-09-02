@@ -691,6 +691,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       fieldsList: [
         {
           name: 'totalAmount',
+          onlyAllowPositiveNumbers: true,
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
@@ -707,6 +708,18 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'Si no estas segur(x) puedes dejarlo en blanco',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['5'];
+
+            if (!change || change === '' || Number(change) <= 0) {
+              this.formSteps[4].fieldsList[0].fieldControl.control.setValue(0, {
+                emitEvent: false,
+              });
+
+              this.formSteps[4].fieldsList[0].formattedValue =
+                '$' + this.decimalPipe.transform(Number(0), '1.2');
+
+              return;
+            }
+            
 
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[4].fieldsList[1].fieldControl.control.setValue(0, {
@@ -825,6 +838,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           name: 'firstPayment',
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
+          onlyAllowPositiveNumbers: true,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
           fieldControl: {
             type: 'single',
@@ -836,6 +850,17 @@ export class LlStudioOrderFormComponent implements OnInit {
           placeholder: 'Si no has realizado ningún pago favor colocar "0"',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['5'];
+
+            if (!change || change === '' || Number(change) <= 0) {
+              this.formSteps[4].fieldsList[1].fieldControl.control.setValue(0, {
+                emitEvent: false,
+              });
+
+              this.formSteps[4].fieldsList[1].formattedValue =
+                '$' + this.decimalPipe.transform(Number(0), '1.2');
+
+              return;
+            }
 
             if (
               Number(change) > Number(totalAmount) &&
