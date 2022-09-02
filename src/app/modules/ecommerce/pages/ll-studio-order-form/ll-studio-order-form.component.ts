@@ -1630,6 +1630,7 @@ export class LlStudioOrderFormComponent implements OnInit {
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
+          let errorOnSignup: boolean = false;
           this.whatsappLinkSteps.push(
             `*Podemos mencionarte en nuestra sección "Veo, Veo":*\n${
               this.formSteps[this.formSteps.length - 1].fieldsList[0]
@@ -1697,160 +1698,21 @@ export class LlStudioOrderFormComponent implements OnInit {
 
               //console.log(requestData);
 
-              await this.authService.signup(requestData, 'none', null, false);
-            }
-
-            if (
-              this.formSteps[2].fieldsList[1].fieldControl.control.value
-                .length > 0 &&
-              this.formSteps[2].fieldsList[1].fieldControl.control.value[0] !==
-                ''
-            ) {
-              fileRoutesReferenceImages =
-                await this.merchantsService.uploadAirtableAttachments(
-                  this.formSteps[2].fieldsList[1].fieldControl.control.value.map(
-                    (base64string) => base64ToFile(base64string)
-                  )
+              try {
+                errorOnSignup = false;
+                await this.authService.signup(requestData, 'none', null, false);
+              } catch (error) {
+                errorOnSignup = true;
+                this.submitData(
+                  fileRoutesReferenceImages,
+                  proofOfPaymentImages
                 );
-
-              this.whatsappLinkSteps.push(`*Foto de Referencia:*\n`);
-
-              for (let route of fileRoutesReferenceImages) {
-                this.whatsappLinkSteps.push(`${route}\n`);
               }
-              this.whatsappLinkSteps.push(`\n`);
             }
 
-            if (
-              this.formSteps[4].fieldsList[3].fieldControl.control.value
-                .length > 0 &&
-              this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !==
-                ''
-            ) {
-              proofOfPaymentImages =
-                await this.merchantsService.uploadAirtableAttachments(
-                  this.formSteps[4].fieldsList[3].fieldControl.control.value.map(
-                    (base64string) => base64ToFile(base64string)
-                  )
-                );
-
-              this.whatsappLinkSteps.push(`*Comprobante de pago:*\n`);
-
-              for (let route of proofOfPaymentImages) {
-                this.whatsappLinkSteps.push(`${route}\n`);
-              }
-              this.whatsappLinkSteps.push(`\n`);
+            if (errorOnSignup === false) {
+              this.submitData(fileRoutesReferenceImages, proofOfPaymentImages);
             }
-
-            const convertedTotalAmount = Number(
-              this.formSteps[4].fieldsList[0].formattedValue
-                .split('')
-                .filter((char) => char !== ',' && char !== '$')
-                .join('')
-            );
-
-            const convertedPayedAmount = Number(
-              this.formSteps[4].fieldsList[1].formattedValue
-                .split('')
-                .filter((char) => char !== ',' && char !== '$')
-                .join('')
-            );
-
-            const dateOffset = new Date().getTimezoneOffset() / 60;
-
-            /*
-            const data = {
-              data: encodeURIComponent(
-                JSON.stringify({
-                  phoneNumber:
-                    this.formSteps[0].fieldsList[0].fieldControl.control.value,
-                  name: this.formSteps[1].fieldsList[0].fieldControl.control
-                    .value,
-                  lastname:
-                    this.formSteps[1].fieldsList[1].fieldControl.control.value,
-                  instagramUser:
-                    this.formSteps[1].fieldsList[2].fieldControl.control.value,
-                  email:
-                    this.formSteps[1].fieldsList[3].fieldControl.control.value,
-                  birthday:
-                    this.formSteps[1].fieldsList[4].fieldControl.control.value,
-                  details:
-                    this.formSteps[2].fieldsList[0].fieldControl.control.value,
-                  wouldYourOrderIncludeAGiftWrap:
-                    this.formSteps[3].fieldsList[0].fieldControl.control.value,
-                  referenceImage: fileRoutesReferenceImages,
-                  totalAmount: convertedTotalAmount,
-                  payedAmount: convertedPayedAmount,
-                  paymentMethod:
-                    this.formSteps[4].fieldsList[2].fieldControl.control.value,
-                  proofOfPayment: proofOfPaymentImages,
-                  fromWhereAreYouPaying:
-                    this.formSteps[5].fieldsList[0].fieldControl.control.value,
-                  dateConfirmation:
-                    this.formSteps[6].fieldsList[0].fieldControl.control.value,
-                  reservation: this.reservation
-                    ? new Date(
-                        this.reservation.data.dateInfo,
-                        this.reservation.data.monthNumber,
-                        this.reservation.data.day,
-                        this.reservation.data.hour.slice(-2) === 'pm' &&
-                        this.reservation.data.hour.slice(0, 2) !== '12'
-                          ? this.reservation.data.hourNumber + 12 - dateOffset
-                          : this.reservation.data.hour.slice(-2) === 'am' &&
-                            this.reservation.data.hour.slice(0, 2) !== '12'
-                          ? this.reservation.data.hourNumber - dateOffset
-                          : this.reservation.data.hour.slice(-2) === 'pm'
-                          ? 12 - dateOffset
-                          : 0 - dateOffset,
-                        this.reservation.data.minutesNumber
-                      ).toISOString()
-                    : '',
-                  'about-delivery':
-                    this.formSteps[8].fieldsList[0].fieldControl.control.value,
-                  whereToDeliver:
-                    this.formSteps[9].fieldsList[0].fieldControl.control.value,
-                  location:
-                    this.formSteps[9].fieldsList[1].fieldControl.control.value,
-                  canWeMentionYou:
-                    this.formSteps[this.formSteps.length - 1].fieldsList[0]
-                      .fieldControl.control.value,
-                  whyDidYouChooseUs:
-                    this.formSteps[this.formSteps.length - 2].fieldsList[0]
-                      .fieldControl.control.value,
-                  firstTime:
-                    this.formSteps[this.formSteps.length - 3].fieldsList[0]
-                      .fieldControl.control.value,
-                })
-              ),
-            };
-
-            this.fullFormMessage = this.whatsappLinkSteps.join('');
-
-            //console.log('full form message', this.fullFormMessage);
-            //console.log('data', data);
-
-            const success =
-              await this.merchantsService.uploadDataToClientsAirtable(
-                this.merchantId,
-                this.automationName,
-                data,
-                window.location.href
-              );
-
-            this.dialog.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: success ? 'check-circle.svg' : 'sadFace.svg',
-                message: success ? null : 'Ocurrió un problema',
-                showCloseButton: success ? false : true,
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
-
-            window.location.href =
-              this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-            */
 
             return { ok: true };
           } catch (error) {
@@ -1898,6 +1760,147 @@ export class LlStudioOrderFormComponent implements OnInit {
       stepButtonValidText: 'ENVIAR LA ORDEN POR WHATSAPP',
     },
   ];
+
+  async submitData(fileRoutesReferenceImages, proofOfPaymentImages) {
+    if (
+      this.formSteps[2].fieldsList[1].fieldControl.control.value.length > 0 &&
+      this.formSteps[2].fieldsList[1].fieldControl.control.value[0] !== ''
+    ) {
+      fileRoutesReferenceImages =
+        await this.merchantsService.uploadAirtableAttachments(
+          this.formSteps[2].fieldsList[1].fieldControl.control.value.map(
+            (base64string) => base64ToFile(base64string)
+          )
+        );
+
+      this.whatsappLinkSteps.push(`*Foto de Referencia:*\n`);
+
+      for (let route of fileRoutesReferenceImages) {
+        this.whatsappLinkSteps.push(`${route}\n`);
+      }
+      this.whatsappLinkSteps.push(`\n`);
+    }
+
+    if (
+      this.formSteps[4].fieldsList[3].fieldControl.control.value.length > 0 &&
+      this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !== ''
+    ) {
+      proofOfPaymentImages =
+        await this.merchantsService.uploadAirtableAttachments(
+          this.formSteps[4].fieldsList[3].fieldControl.control.value.map(
+            (base64string) => base64ToFile(base64string)
+          )
+        );
+
+      this.whatsappLinkSteps.push(`*Comprobante de pago:*\n`);
+
+      for (let route of proofOfPaymentImages) {
+        this.whatsappLinkSteps.push(`${route}\n`);
+      }
+      this.whatsappLinkSteps.push(`\n`);
+    }
+
+    const convertedTotalAmount = Number(
+      this.formSteps[4].fieldsList[0].formattedValue
+        .split('')
+        .filter((char) => char !== ',' && char !== '$')
+        .join('')
+    );
+
+    const convertedPayedAmount = Number(
+      this.formSteps[4].fieldsList[1].formattedValue
+        .split('')
+        .filter((char) => char !== ',' && char !== '$')
+        .join('')
+    );
+
+    const dateOffset = new Date().getTimezoneOffset() / 60;
+
+    const data = {
+      data: encodeURIComponent(
+        JSON.stringify({
+          phoneNumber:
+            this.formSteps[0].fieldsList[0].fieldControl.control.value,
+          name: this.formSteps[1].fieldsList[0].fieldControl.control.value,
+          lastname: this.formSteps[1].fieldsList[1].fieldControl.control.value,
+          instagramUser:
+            this.formSteps[1].fieldsList[2].fieldControl.control.value,
+          email: this.formSteps[1].fieldsList[3].fieldControl.control.value,
+          birthday: this.formSteps[1].fieldsList[4].fieldControl.control.value,
+          details: this.formSteps[2].fieldsList[0].fieldControl.control.value,
+          wouldYourOrderIncludeAGiftWrap:
+            this.formSteps[3].fieldsList[0].fieldControl.control.value,
+          referenceImage: fileRoutesReferenceImages,
+          totalAmount: convertedTotalAmount,
+          payedAmount: convertedPayedAmount,
+          paymentMethod:
+            this.formSteps[4].fieldsList[2].fieldControl.control.value,
+          proofOfPayment: proofOfPaymentImages,
+          fromWhereAreYouPaying:
+            this.formSteps[5].fieldsList[0].fieldControl.control.value,
+          dateConfirmation:
+            this.formSteps[6].fieldsList[0].fieldControl.control.value,
+          reservation: this.reservation
+            ? new Date(
+                this.reservation.data.dateInfo,
+                this.reservation.data.monthNumber,
+                this.reservation.data.day,
+                this.reservation.data.hour.slice(-2) === 'pm' &&
+                this.reservation.data.hour.slice(0, 2) !== '12'
+                  ? this.reservation.data.hourNumber + 12 - dateOffset
+                  : this.reservation.data.hour.slice(-2) === 'am' &&
+                    this.reservation.data.hour.slice(0, 2) !== '12'
+                  ? this.reservation.data.hourNumber - dateOffset
+                  : this.reservation.data.hour.slice(-2) === 'pm'
+                  ? 12 - dateOffset
+                  : 0 - dateOffset,
+                this.reservation.data.minutesNumber
+              ).toISOString()
+            : '',
+          'about-delivery':
+            this.formSteps[8].fieldsList[0].fieldControl.control.value,
+          whereToDeliver:
+            this.formSteps[9].fieldsList[0].fieldControl.control.value,
+          location: this.formSteps[9].fieldsList[1].fieldControl.control.value,
+          canWeMentionYou:
+            this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl
+              .control.value,
+          whyDidYouChooseUs:
+            this.formSteps[this.formSteps.length - 2].fieldsList[0].fieldControl
+              .control.value,
+          firstTime:
+            this.formSteps[this.formSteps.length - 3].fieldsList[0].fieldControl
+              .control.value,
+        })
+      ),
+    };
+
+    this.fullFormMessage = this.whatsappLinkSteps.join('');
+
+    //console.log('full form message', this.fullFormMessage);
+    //console.log('data', data);
+
+    const success = await this.merchantsService.uploadDataToClientsAirtable(
+      this.merchantId,
+      this.automationName,
+      data,
+      window.location.href
+    );
+
+    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+      type: 'centralized-fullscreen',
+      props: {
+        icon: success ? 'check-circle.svg' : 'sadFace.svg',
+        message: success ? null : 'Ocurrió un problema',
+        showCloseButton: success ? false : true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+
+    window.location.href =
+      this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+  }
 
   constructor(
     private decimalPipe: DecimalPipe,
