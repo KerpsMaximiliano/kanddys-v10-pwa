@@ -42,6 +42,7 @@ export class ItemDisplayComponent implements OnInit {
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
+  initialStatus: 'active' | 'featured' | 'disabled' = null;
   // providerView: boolean;
   // mode: 'new-item' | 'edit';
   defaultMerchant: Merchant = null;
@@ -92,8 +93,8 @@ export class ItemDisplayComponent implements OnInit {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
 
-          if (this.item && this.item.category.length > 0) {
-          }
+          if (this.item.status !== 'draft')
+            this.initialStatus = this.item.status;
 
           if (!this.item) return this.redirect();
 
@@ -498,7 +499,14 @@ export class ItemDisplayComponent implements OnInit {
     this.itemsService
       .updateItem(
         {
-          status: this.item.status === 'disabled' ? 'active' : 'disabled',
+          status:
+            this.item.status === 'disabled'
+              ? this.initialStatus && this.initialStatus !== 'disabled'
+                ? this.initialStatus
+                : 'active'
+              : ['active', 'featured'].includes(this.item.status)
+              ? 'disabled'
+              : 'active',
         },
         this.item._id
       )
@@ -507,7 +515,12 @@ export class ItemDisplayComponent implements OnInit {
         this.item.status =
           this.item.status === 'disabled' ? 'active' : 'disabled';
       });
-    this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+    this.item.status =
+      this.item.status === 'disabled'
+        ? 'active'
+        : this.item.status === 'featured' || this.item.status === 'active'
+        ? 'disabled'
+        : 'active';
   };
 
   openShareDialog = () => {
@@ -603,21 +616,39 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#82F18D', color: '#174B72' },
       { 'background-color': '#B17608', color: '#FFFFFF' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+      { 'background-color': '#82F18D', color: '#174B72' },
     ];
     const list: StoreShareList[] = [
       {
         title: this.item.name,
         label: {
-          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
-          textArray: ['VISIBLE', 'INVISIBLE'],
+          text:
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'INVISIBLE',
+          textArray: [
+            'INVISIBLE',
+            'INVISIBLE',
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'VISIBLE (NO DESTACADO)',
+          ],
           func: this.toggleActivateItem,
           valueUpdate: () => {
-            return this.item.status === 'active' ? 1 : 0;
+            return this.item.status === 'active'
+              ? 0
+              : this.item.status === 'featured'
+              ? 1
+              : 2;
           },
           stylesArray: styles,
-          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0],
+          labelStyles: this.item.status === 'disabled' ? styles[0] : styles[2],
         },
         options: [
           {

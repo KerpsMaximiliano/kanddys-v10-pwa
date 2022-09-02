@@ -43,9 +43,13 @@
     </div>
 
     <!--REGULAR MERCHANT-->
-    <div class="content" [ngStyle]="{
-      paddingBottom: '1rem'
-    }" *ngIf="!hasCustomizer && items.length">
+    <div
+      class="content"
+      [ngStyle]="{
+        paddingBottom: '1rem'
+      }"
+      *ngIf="!hasCustomizer && items.length"
+    >
       <div
         *ngIf="highlightedItems.length > 0"
         [ngStyle]="{
@@ -127,7 +131,9 @@
       </div>
 
       <ng-container *ngIf="itemsByCategory.length > 1 && !hasCustomizer">
-        <ng-container *ngFor="let category of itemsByCategory">
+        <ng-container
+          *ngFor="let category of itemsByCategory; index as i"
+        >
           <div
             class="header-wrapper"
             [ngStyle]="{
@@ -140,7 +146,7 @@
               {{ category.label || "Titulo de la categoria" }}
             </h2>
 
-            <div class="dot-trio" (click)="(null)">
+            <div class="dot-trio" (click)="seeCategories(i)">
               <div class="dot"> </div>
               <div class="dot"> </div>
               <div class="dot"> </div>
@@ -156,7 +162,7 @@
               paddingBottom: '0px'
             }"
           >
-            <ng-container *ngFor="let item of category.items; index as i">
+            <ng-container *ngFor="let item of category.items.slice(0, 5); index as i">
               <app-item
                 [item]="item"
                 (imageEvent)="onItemClick(item._id, true)"

@@ -521,7 +521,7 @@ export class MerchantItemsComponent implements OnInit {
       try {
         const updatedItem = await this.itemsService.updateItem(
           {
-            status: item.status !== 'featured' ? 'featured' : 'active',
+            status: 'featured',
           },
           item._id
         );

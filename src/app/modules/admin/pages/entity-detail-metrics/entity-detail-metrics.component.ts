@@ -67,6 +67,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
+      this.headerService.flowRoute = this.router.url;
       this.router.navigate([`auth/login/`]);
       unlockUI();
       return;
@@ -213,6 +214,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -240,6 +242,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         buttonCallback: () => {
           // TODO: replace the signout function
           this.authService.signoutThree();
+          this.headerService.flowRoute = this.router.url;
           this.router.navigate([`auth/login`]);
         },
       },
@@ -282,6 +285,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -305,6 +309,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onPencilClick = () => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['admin/create-item']);
   };
 
@@ -315,6 +320,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   redirectMerchantItems = (url: string) => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['/admin/' + url]);
   };
 

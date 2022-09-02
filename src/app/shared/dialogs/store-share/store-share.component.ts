@@ -181,8 +181,11 @@ export class StoreShareComponent implements OnInit {
 
   secondInput(callback: () => void) {
     let label = this.list[0].label;
-    label.text = label.textArray[label.valueUpdate()];
-    label.labelStyles = label.stylesArray[label.valueUpdate()];
+    const currentStatusIndex = label.valueUpdate();
+    label.text = label.textArray[currentStatusIndex];
+    console.log(currentStatusIndex, label.stylesArray);
+    label.labelStyles = label.stylesArray[currentStatusIndex];
+
     callback();
   }
 
