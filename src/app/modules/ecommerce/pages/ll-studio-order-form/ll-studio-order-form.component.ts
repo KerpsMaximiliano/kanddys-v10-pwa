@@ -1711,7 +1711,10 @@ export class LlStudioOrderFormComponent implements OnInit {
             }
 
             if (errorOnSignup === false) {
-              await this.submitData(fileRoutesReferenceImages, proofOfPaymentImages);
+              await this.submitData(
+                fileRoutesReferenceImages,
+                proofOfPaymentImages
+              );
             }
 
             return { ok: true };
@@ -1766,19 +1769,27 @@ export class LlStudioOrderFormComponent implements OnInit {
       this.formSteps[2].fieldsList[1].fieldControl.control.value.length > 0 &&
       this.formSteps[2].fieldsList[1].fieldControl.control.value[0] !== ''
     ) {
-      fileRoutesReferenceImages =
-        await this.merchantsService.uploadAirtableAttachments(
-          this.formSteps[2].fieldsList[1].fieldControl.control.value.map(
-            (base64string) => base64ToFile(base64string)
-          )
-        );
+      const arrayOfFiles = [];
 
-      this.whatsappLinkSteps.push(`*Foto de Referencia:*\n`);
+      this.formSteps[2].fieldsList[1].fieldControl.control.value.forEach(
+        (base64string) => {
+          if (base64string && base64string !== '')
+            arrayOfFiles.push(base64ToFile(base64string));
+        }
+      );
 
-      for (let route of fileRoutesReferenceImages) {
-        this.whatsappLinkSteps.push(`${route}\n`);
+      const uploadFilesResult =
+        await this.merchantsService.uploadAirtableAttachments(arrayOfFiles);
+
+      if (uploadFilesResult) {
+        fileRoutesReferenceImages = uploadFilesResult;
+        this.whatsappLinkSteps.push(`*Foto de Referencia:*\n`);
+
+        for (let route of fileRoutesReferenceImages) {
+          this.whatsappLinkSteps.push(`${route}\n`);
+        }
+        this.whatsappLinkSteps.push(`\n`);
       }
-      this.whatsappLinkSteps.push(`\n`);
     }
 
     if (
