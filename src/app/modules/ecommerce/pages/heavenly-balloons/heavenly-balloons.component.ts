@@ -760,6 +760,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       fieldsList: [
         {
           name: 'totalAmount',
+          onlyAllowPositiveNumbers: true,
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
@@ -770,11 +771,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
           shouldFormatNumber: true,
           label:
             'Indica el total de tu orden. Si no lo sabes puedes dejarlo en blanco',
-          bottomLabel: {text: "El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo."},
+          bottomLabel: {
+            text: 'El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo.',
+          },
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
+
+            if (!change || change === '' || Number(change) <= 0) {
+              this.formSteps[6].fieldsList[0].fieldControl.control.setValue(0, {
+                emitEvent: false,
+              });
+
+              this.formSteps[6].fieldsList[0].formattedValue =
+                '$' + this.decimalPipe.transform(Number(0), '1.2');
+
+              return;
+            }
 
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
@@ -868,7 +882,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             bottomLabelStyles: {
-              fontFamily: "RobotoLight",
+              fontFamily: 'RobotoLight',
             },
             containerStyles: {
               position: 'relative',
@@ -891,6 +905,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
         {
           name: 'firstPayment',
+          onlyAllowPositiveNumbers: true,
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
@@ -907,6 +922,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
+
+            if (!change || change === '' || Number(change) <= 0) {
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
+                emitEvent: false,
+              });
+
+              this.formSteps[6].fieldsList[1].formattedValue =
+                '$' + this.decimalPipe.transform(Number(0), '1.2');
+
+              return;
+            }
 
             if (
               Number(change) > Number(totalAmount) &&
