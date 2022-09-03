@@ -540,6 +540,12 @@
                         currentField.shouldFormatNumber,
                       focused: currentField.focused
                     }"
+                    (keydown)="
+                      currentField.inputType === 'number' &&
+                      currentField.shouldFormatNumber
+                        ? blockCursorMovement($event, true)
+                        : null
+                    "
                     (focus)="onFocus(currentField)"
                     (blur)="onBlur(currentField)"
                     [ngStyle]="
