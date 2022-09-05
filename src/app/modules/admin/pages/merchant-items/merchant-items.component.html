@@ -9,7 +9,10 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="true"
+    [returnAble]="
+      !selectionConfiguration.active ||
+      (selectionConfiguration.active && selectedItemsCounter > 0)
+    "
     [dots]="{
       active: true,
       color: '#fff'
@@ -18,7 +21,12 @@
     (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 
-  <div class="header-wrapper">
+  <div
+    class="header-wrapper"
+    [ngStyle]="{
+      paddingTop: '62px'
+    }"
+  >
     <h2 class="items-header">
       {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
     </h2>
@@ -36,7 +44,9 @@
         [itemIndex]="i"
         [itemId]="item._id"
         [type]="4"
-        [inactive]="item.status != 'active' ? true : false"
+        [inactive]="
+          item.status != 'active' && item.status != 'featured' ? true : false
+        "
         [selectable]="selectionConfiguration.active"
         [isSelected]="item.selected"
         [imgURL]="item.images ? item.images[0] : ''"
@@ -95,6 +105,8 @@
         ? 'ESCONDER ITEMS'
         : selectionConfiguration.mode === 'SHOW'
         ? 'MOSTRAR ITEMS EN LA TIENDA'
+        : selectionConfiguration.mode === 'HIGHLIGHT'
+        ? 'DESTACAR ITEMS EN LA TIENDA'
         : null
     "
     [textCallback]="

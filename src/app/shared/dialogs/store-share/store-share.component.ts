@@ -77,6 +77,16 @@ export class StoreShareComponent implements OnInit {
     button?: Record<string, string | number>;
     description?: Record<string, string | number>;
   };
+  @Input() headerIcon?: {
+    src: string;
+    alt?: string;
+    cursor?: string;
+    styles: {
+      image: Record<string, string | number>;
+      wrapper: Record<string, string | number>;
+    };
+    callback?: () => void;
+  } = null;
   size: number = 150;
   @Output() messageEvent = new EventEmitter();
   screenWidth: number;
@@ -171,8 +181,11 @@ export class StoreShareComponent implements OnInit {
 
   secondInput(callback: () => void) {
     let label = this.list[0].label;
-    label.text = label.textArray[label.valueUpdate()];
-    label.labelStyles = label.stylesArray[label.valueUpdate()];
+    const currentStatusIndex = label.valueUpdate();
+    label.text = label.textArray[currentStatusIndex];
+    console.log(currentStatusIndex, label.stylesArray);
+    label.labelStyles = label.stylesArray[currentStatusIndex];
+
     callback();
   }
 
