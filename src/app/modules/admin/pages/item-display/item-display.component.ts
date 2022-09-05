@@ -501,26 +501,22 @@ export class ItemDisplayComponent implements OnInit {
         {
           status:
             this.item.status === 'disabled'
-              ? this.initialStatus && this.initialStatus !== 'disabled'
-                ? this.initialStatus
-                : 'active'
-              : ['active', 'featured'].includes(this.item.status)
-              ? 'disabled'
-              : 'active',
+              ? 'active'
+              : this.item.status === 'active'
+              ? 'featured'
+              : 'disabled',
         },
         this.item._id
       )
       .catch((error) => {
         console.log(error);
-        this.item.status =
-          this.item.status === 'disabled' ? 'active' : 'disabled';
       });
     this.item.status =
       this.item.status === 'disabled'
         ? 'active'
-        : this.item.status === 'featured' || this.item.status === 'active'
-        ? 'disabled'
-        : 'active';
+        : this.item.status === 'active'
+        ? 'featured'
+        : 'disabled';
   };
 
   openShareDialog = () => {
@@ -616,9 +612,9 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#B17608', color: '#FFFFFF' },
-      { 'background-color': '#B17608', color: '#FFFFFF' },
       { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
     ];
     const list: StoreShareList[] = [
       {
@@ -631,24 +627,20 @@ export class ItemDisplayComponent implements OnInit {
               ? 'VISIBLE (Y DESTACADO)'
               : 'INVISIBLE',
           textArray: [
+            'VISIBLE (NO DESTACADO)',
+            'VISIBLE (Y DESTACADO)',
             'INVISIBLE',
-            'INVISIBLE',
-            this.item.status === 'active'
-              ? 'VISIBLE (NO DESTACADO)'
-              : this.item.status === 'featured'
-              ? 'VISIBLE (Y DESTACADO)'
-              : 'VISIBLE (NO DESTACADO)',
           ],
           func: this.toggleActivateItem,
           valueUpdate: () => {
-            return this.item.status === 'active'
+            return this.item.status === 'disabled'
               ? 0
-              : this.item.status === 'featured'
+              : this.item.status === 'active'
               ? 1
               : 2;
           },
           stylesArray: styles,
-          labelStyles: this.item.status === 'disabled' ? styles[0] : styles[2],
+          labelStyles: this.item.status === 'disabled' ? styles[2] : styles[0],
         },
         options: [
           {

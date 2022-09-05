@@ -110,11 +110,16 @@
         : null
     "
     [textCallback]="
-      selectionConfiguration.active && selectionConfiguration.mode !== 'HIDE'
+      selectionConfiguration.active &&
+      selectionConfiguration.mode !== 'HIDE' &&
+      selectionConfiguration.mode !== 'HIGHLIGHT'
         ? openSelectionDialog
         : selectionConfiguration.active &&
           selectionConfiguration.mode === 'HIDE'
         ? hideMultipleItems
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIGHLIGHT'
+        ? highlightMultipleItems
         : null
     "
     [color]="'#FFF'"
