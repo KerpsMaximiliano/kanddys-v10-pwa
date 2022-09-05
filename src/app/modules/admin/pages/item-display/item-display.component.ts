@@ -569,6 +569,21 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        dynamicStyles: {
+         container: {
+           paddingBottom: '64px',
+         },
+         titleWrapper: {
+           display: 'flex',
+           flexDirection: 'column',
+           alignItems: 'flex-start',
+           paddingBottom: '26px',
+         },
+         dialogCard: {
+           paddingBottom: '64px',
+           paddingTop: '0px',
+         },
+       }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
