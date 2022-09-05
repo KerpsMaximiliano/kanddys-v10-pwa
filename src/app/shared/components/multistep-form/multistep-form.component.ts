@@ -670,6 +670,16 @@ export class MultistepFormComponent
     }
   };
 
+  blockCursorMovement(e: any, targetedInput: boolean = false) {
+    if (!targetedInput) return;
+    else {//Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
+      //ocasiona el el numero formateado se desconfigure
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  }
+
   executeCustomScrollToStep(stepIndex: number) {
     this.finishedExecutingStepProcessingFunction = false;
     this.steps[stepIndex].customScrollToStep(this.stepFunctionParams);

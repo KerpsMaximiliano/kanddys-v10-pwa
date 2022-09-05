@@ -1,7 +1,4 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 //import { MultistepFormComponent } from 'src/app/shared/components/multistep-form/multistep-form.component';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -91,20 +88,9 @@ export class ShipmentDataFormComponent implements OnInit {
               this.header.disableGiftMessageTextarea = false;
 
               //========================= CÓDIGO PARA CREAR PREORDER =========================
-              if (!this.header.orderId) {
-                this.router.navigate([`ecommerce/checkout`]);
-                this.header.createdOrderWithoutDelivery = true;
-                return { ok: true };
-              } else {
-                this.router.navigate([
-                  `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-                ]);
-
-                //Para el magicLink
-                // this.openDialog({
-                //   'Keyword-Order': this.header.orderId as string,
-                // });
-              }
+              this.router.navigate([`ecommerce/checkout`]);
+              this.header.createdOrderWithoutDelivery = true;
+              return { ok: true };
               //========================= CÓDIGO PARA CREAR PREORDER =========================
             },
           },
@@ -186,21 +172,7 @@ export class ShipmentDataFormComponent implements OnInit {
           );
 
           //========================= CÓDIGO PARA CREAR PREORDER =========================
-          if (!this.header.orderId) {
-            // if (!this.header.orderId && !this.header.createdOrderWithDelivery) {
-            this.router.navigate([`ecommerce/checkout`]);
-            return { ok: true };
-          } else {
-            this.router.navigate([
-              `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-            ]);
-
-            //Para el magicLink
-            // this.openDialog({
-            //   'Keyword-Order': this.header.orderId as string,
-            // });
-          }
-          //========================= CÓDIGO PARA CREAR PREORDER =========================
+          this.router.navigate([`ecommerce/checkout`]);
           return { ok: true };
         },
       },
