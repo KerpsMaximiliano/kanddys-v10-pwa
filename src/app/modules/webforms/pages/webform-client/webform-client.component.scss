@@ -84,6 +84,6 @@
    }
 }
 
-.ng-invalid:not(form), .ng-touched:not(form), .ng-dirty:not(form){
+.ng-invalid.ng-touched:not(form){
    border: 1px solid #c0392b !important;
 }

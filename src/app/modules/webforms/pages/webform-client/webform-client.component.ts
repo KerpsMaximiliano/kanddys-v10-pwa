@@ -14,7 +14,7 @@ import { ShortCalendarComponent } from 'src/app/shared/components/short-calendar
   styleUrls: ['./webform-client.component.scss'],
 })
 export class WebformClientComponent implements OnInit {
-  inputType: 'fullName' | 'image' | 'text' | 'number' | 'phone' | 'email' | 'url' = 'url';
+  inputType: 'fullName' | 'image' | 'text' | 'number' | 'phone' | 'email' | 'url' = 'phone';
   clientInput = new FormGroup({
     text: new FormControl(null, [Validators.required, Validators.minLength(3)]),
     image: new FormControl(),
