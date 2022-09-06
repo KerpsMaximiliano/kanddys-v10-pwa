@@ -144,6 +144,7 @@ export const item = gql`
           _id
           name
           price
+          description
           image
           quantity
         }
