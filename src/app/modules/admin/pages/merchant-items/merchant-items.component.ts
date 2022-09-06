@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemStatus } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -12,10 +12,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
-import { SwiperOptions } from 'swiper';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 interface ExtendedItem extends Item {
   selected?: boolean;
   changedSelection?: boolean;
@@ -45,7 +43,7 @@ export class MerchantItemsComponent implements OnInit {
     mode: 'NONE',
   };
   selectedItemsCounter: number = 0;
-  statusQueryParam: 'active' | 'disabled';
+  statusQueryParam: ItemStatus;
   // Dummy Data
   itemList: Array<any> = [
     {
@@ -89,22 +87,21 @@ export class MerchantItemsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    const status = this.route.snapshot.queryParamMap.get('status') as
-      | 'active'
-      | 'disabled';
+    const status = this.route.snapshot.queryParamMap.get(
+      'status'
+    ) as ItemStatus;
     if (status) this.statusQueryParam = status;
-
     this.authService.ready.subscribe(async (observer) => {
       if (observer != undefined) {
         this.status = 'loading';
-        const user = await this.authService.me();
-        console.log(user);
-        if (!user) this.errorScreen();
-
-        // TODO: Replace this with a header service  call to get the merchant ID
-        // const merchantID = "616a13a527bcf7b8ba3ac312";
 
         await this.getMerchant();
+        if (!this.merchant) {
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate([`auth/login/`]);
+          unlockUI();
+          return;
+        }
 
         await Promise.all([
           this.getOrderTotal(this.merchant._id),
@@ -138,23 +135,20 @@ export class MerchantItemsComponent implements OnInit {
     }
   }
 
-  async getItems(
-    merchantID: string,
-    status?: 'active' | 'disabled' | 'featured'
-  ) {
+  async getItems(merchantID: string, status?: ItemStatus) {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true))
         .itemsByMerchant;
 
-      if (status === 'active')
+      if (status === 'active') {
         this.items = items.filter(
           (item) => item.status === 'active' || item.status === 'featured'
         );
-      else if (status === 'featured')
+      } else if (status === 'featured') {
         this.items = items.filter((item) => item.status === 'featured');
-      else if (status === 'disabled')
+      } else if (status === 'disabled') {
         this.items = items.filter((item) => item.status === 'disabled');
-      else this.items = items;
+      } else this.items = items;
     } catch (error) {
       this.status = 'error';
       console.log(error);
@@ -565,10 +559,13 @@ export class MerchantItemsComponent implements OnInit {
               this.selectedItemsCounter = 0;
 
               await this.getItems(this.merchant._id, null);
-
-              this.items.forEach((item) => {
-                item.selected = false;
-                item.changedSelection = false;
+              this.items = this.items.filter((item) => {
+                if (item.status === 'featured') return false;
+                else {
+                  item.selected = false;
+                  item.changedSelection = false;
+                  return true;
+                }
               });
 
               this.selectionConfiguration.mode = 'HIGHLIGHT';

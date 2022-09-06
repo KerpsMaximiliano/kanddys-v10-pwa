@@ -115,9 +115,6 @@ export class CreateItemComponent implements OnInit {
 
   async onSubmit() {
     this.submitEventFinished = false;
-    
-    console.log("Ejecutando submit");
-
     const { images, name, description } = this.itemForm.value;
     const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
@@ -305,7 +302,6 @@ export class CreateItemComponent implements OnInit {
   onOpenDialog = () => {
     const list: StoreShareList[] = [
       {
-        //title: 'Sobre ' + this.merchant.name,
         title: 'Articulo',
         options: [
           {
@@ -323,32 +319,35 @@ export class CreateItemComponent implements OnInit {
               this.router.navigate(['/webforms/webform-questions']);
             },
           },
-          {
-            text: 'Vista del comprador',
-            mode: 'func',
-            func: () => {
-              const { images, name, description } = this.itemForm.value;
-              const pricing = parseFloat(
-                this.formattedPricing.replace(/\$|,/g, '')
-              );
-              this.itemService.storeTemporalItem({
-                ...this.item,
-                _id: this.item?._id,
-                name,
-                description,
-                images: this.imageField,
-                pricing: pricing,
-              });
-              this.itemService.temporalImages = {
-                old: this.item?.images,
-                new: images,
-              };
-              this.router.navigate(['/ecommerce/item-detail']);
-            },
-          },
         ],
       },
     ];
+
+    if (this.itemForm.valid) {
+      list[0].options.push({
+        text: 'Vista del comprador',
+        mode: 'func',
+        func: () => {
+          const { images, name, description } = this.itemForm.value;
+          const pricing = parseFloat(
+            this.formattedPricing.replace(/\$|,/g, '')
+          );
+          this.itemService.storeTemporalItem({
+            ...this.item,
+            _id: this.item?._id,
+            name,
+            description,
+            images: this.imageField,
+            pricing: pricing,
+          });
+          this.itemService.temporalImages = {
+            old: this.item?.images,
+            new: images,
+          };
+          this.router.navigate(['/ecommerce/item-detail']);
+        },
+      });
+    }
 
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',

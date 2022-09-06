@@ -91,11 +91,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if (!this.items.temporalItem) {
-      // this.header.flowRoute = this.router.url;
-
+    if (!this.items.temporalItem)
       return this.router.navigate([`/admin/create-item`]);
-    }
     this.itemData = this.items.temporalItem;
     if (!this.itemData.images.length) this.itemData.showImages = false;
     this.previewMode = true;
