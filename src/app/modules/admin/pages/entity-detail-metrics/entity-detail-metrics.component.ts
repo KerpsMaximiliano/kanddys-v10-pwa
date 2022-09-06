@@ -36,6 +36,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   items: Item[];
   activeItems: Item[];
   inactiveItems: Item[];
+  highlightedItems: Item[];
   // user: User;
   users: User[];
   mode: 'collections' | 'store' = 'store';
@@ -66,6 +67,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
+      this.headerService.flowRoute = this.router.url;
       this.router.navigate([`auth/login/`]);
       unlockUI();
       return;
@@ -88,9 +90,14 @@ export class EntityDetailMetricsComponent implements OnInit {
       this.items = (
         await this.merchantsService.itemsByMerchant(this.merchant._id)
       )?.itemsByMerchant;
-      this.activeItems = this.items.filter((item) => item.status === 'active');
+      this.activeItems = this.items.filter(
+        (item) => item.status === 'active' || item.status === 'featured'
+      );
       this.inactiveItems = this.items.filter(
         (item) => item.status === 'disabled'
+      );
+      this.highlightedItems = this.items.filter(
+        (item) => item.status === 'featured'
       );
     } catch (error) {
       console.log(error);
@@ -207,6 +214,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -234,8 +242,9 @@ export class EntityDetailMetricsComponent implements OnInit {
         buttonCallback: () => {
           // TODO: replace the signout function
           this.authService.signoutThree();
-          this.router.navigate([`auth/login`])
-        }
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate([`auth/login`]);
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -276,6 +285,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -299,6 +309,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onPencilClick = () => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['admin/create-item']);
   };
 
@@ -309,6 +320,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   redirectMerchantItems = (url: string) => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['/admin/' + url]);
   };
 

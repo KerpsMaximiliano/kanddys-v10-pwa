@@ -36,8 +36,8 @@
 
       <div
         class="info-card pointer"
-        routerLink="/admin/merchant-items" 
-        [queryParams]="{status: 'active'}"
+        routerLink="/admin/merchant-items"
+        [queryParams]="{ status: 'active' }"
       >
         <h2 class="amount quantity">
           {{ activeItems && activeItems.length > 0 ? activeItems.length : 0 }}
@@ -49,7 +49,7 @@
       <div
         class="info-card pointer"
         routerLink="/admin/merchant-items"
-        [queryParams]="{status: 'disabled'}"
+        [queryParams]="{ status: 'disabled' }"
       >
         <h2 class="amount quantity">
           {{
@@ -58,6 +58,22 @@
         </h2>
 
         <h2 class="amount">INVISIBLES</h2>
+      </div>
+
+      <div
+        class="info-card pointer"
+        routerLink="/admin/merchant-items"
+        [queryParams]="{ status: 'featured' }"
+      >
+        <h2 class="amount quantity">
+          {{
+            highlightedItems && highlightedItems.length > 0
+              ? highlightedItems.length
+              : 0
+          }}
+        </h2>
+
+        <h2 class="amount">DESTACADOS</h2>
       </div>
 
       <!-- <div class="info-card pointer" routerLink="/admin/merchant-items" [queryParams]="{status: 'active'}">

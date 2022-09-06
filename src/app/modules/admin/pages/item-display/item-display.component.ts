@@ -42,6 +42,7 @@ export class ItemDisplayComponent implements OnInit {
   hasToken: boolean = false;
   isPreItem: boolean = false;
   newMerchant: boolean = false;
+  initialStatus: 'active' | 'featured' | 'disabled' = null;
   // providerView: boolean;
   // mode: 'new-item' | 'edit';
   defaultMerchant: Merchant = null;
@@ -92,8 +93,8 @@ export class ItemDisplayComponent implements OnInit {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
 
-          if (this.item && this.item.category.length > 0) {
-          }
+          if (this.item.status !== 'draft')
+            this.initialStatus = this.item.status;
 
           if (!this.item) return this.redirect();
 
@@ -498,16 +499,24 @@ export class ItemDisplayComponent implements OnInit {
     this.itemsService
       .updateItem(
         {
-          status: this.item.status === 'disabled' ? 'active' : 'disabled',
+          status:
+            this.item.status === 'disabled'
+              ? 'active'
+              : this.item.status === 'active'
+              ? 'featured'
+              : 'disabled',
         },
         this.item._id
       )
       .catch((error) => {
         console.log(error);
-        this.item.status =
-          this.item.status === 'disabled' ? 'active' : 'disabled';
       });
-    this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
+    this.item.status =
+      this.item.status === 'disabled'
+        ? 'active'
+        : this.item.status === 'active'
+        ? 'featured'
+        : 'disabled';
   };
 
   openShareDialog = () => {
@@ -515,7 +524,12 @@ export class ItemDisplayComponent implements OnInit {
       {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
         label: {
-          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
+          text:
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'INVISIBLE',
           labelStyles: this.item.status !== 'active' && {
             backgroundColor: '#B17608',
             color: '#fff',
@@ -555,6 +569,21 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        dynamicStyles: {
+         container: {
+           paddingBottom: '64px',
+         },
+         titleWrapper: {
+           display: 'flex',
+           flexDirection: 'column',
+           alignItems: 'flex-start',
+           paddingBottom: '26px',
+         },
+         dialogCard: {
+           paddingBottom: '64px',
+           paddingTop: '0px',
+         },
+       }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -597,20 +626,36 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openDialog() {
-    const styles = [{'background-color': '#82F18D', color: '#174B72' }, {'background-color': '#B17608', color: '#FFFFFF'}];
+    const styles = [
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+    ];
     const list: StoreShareList[] = [
       {
         title: this.item.name,
         label: {
-          text: this.item.status === 'active' ? 'VISIBLE' : 'INVISIBLE',
-          textArray: ['VISIBLE', 'INVISIBLE'],
+          text:
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'INVISIBLE',
+          textArray: [
+            'VISIBLE (NO DESTACADO)',
+            'VISIBLE (Y DESTACADO)',
+            'INVISIBLE',
+          ],
           func: this.toggleActivateItem,
-          valueUpdate: () =>{
-            return this.item.status === 'active' ? 1 : 0
+          valueUpdate: () => {
+            return this.item.status === 'disabled'
+              ? 0
+              : this.item.status === 'active'
+              ? 1
+              : 2;
           },
           stylesArray: styles,
-          labelStyles:
-            this.item.status === 'disabled' ? styles[1] : styles[0],
+          labelStyles: this.item.status === 'disabled' ? styles[2] : styles[0],
         },
         options: [
           {
@@ -657,6 +702,42 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        alternate: true,
+        hideCancelButtton: true,
+        headerIcon: {
+          src: '/upload.svg',
+          cursor: 'none',
+          styles: {
+            wrapper: {
+              height: '19px',
+              paddingTop: '26px',
+              paddingBottom: '30px',
+              position: 'relative',
+              width: '100%',
+            },
+            image: {
+              position: 'absolute',
+              right: '28px',
+              filter:
+                'sepia(100%) hue-rotate(190deg) saturate(500%) brightness(0.7)',
+            },
+          },
+        },
+        dynamicStyles: {
+          container: {
+            paddingBottom: '64px',
+          },
+          titleWrapper: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            paddingBottom: '42px',
+          },
+          dialogCard: {
+            paddingBottom: '64px',
+            paddingTop: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

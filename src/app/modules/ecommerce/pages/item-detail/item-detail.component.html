@@ -45,7 +45,7 @@
         </button>
       </div>
       <div *ngIf="itemData.pricing" class="item-price">
-        <h2 class="title-name" *ngIf="itemData.name">
+        <h2 class="title-name">
           {{ itemData.name }}
         </h2>
 
@@ -88,7 +88,7 @@
       [text]="'ADD AL CARRITO DE COMPRAS'"
       [size]="'small'"
       [bgColor]="'#2874AD'"
-      (click)="saveProduct()"
+      (click)="!previewMode && saveProduct()"
       [customLeftButtonStyles]="{
         'font-size': '17px',
         'font-family': 'RobotoMedium',

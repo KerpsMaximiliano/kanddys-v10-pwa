@@ -9,18 +9,29 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="true"
-    [dots]="{
-      active: true,
-      color: '#fff'
-    }"
-    (plusEvent)="createItem()"
+    [returnAble]="
+      !selectionConfiguration.active ||
+      (selectionConfiguration.active && selectedItemsCounter > 0)
+    "
     (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 
-  <div class="header-wrapper">
+  <div
+    class="header-wrapper"
+    [ngStyle]="{
+      paddingTop: '62px'
+    }"
+  >
     <h2 class="items-header">
-      {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
+      {{
+        selectionConfiguration.active
+          ? "Seleccione entre:"
+          : statusQueryParam === "featured"
+          ? "Productos destacados"
+          : statusQueryParam === "disabled"
+          ? "Productos deshabilitados"
+          : "Todos los productos"
+      }}
     </h2>
 
     <div class="dot-trio" (click)="openDialog()">
@@ -36,7 +47,9 @@
         [itemIndex]="i"
         [itemId]="item._id"
         [type]="4"
-        [inactive]="item.status != 'active' ? true : false"
+        [inactive]="
+          item.status != 'active' && item.status != 'featured' ? true : false
+        "
         [selectable]="selectionConfiguration.active"
         [isSelected]="item.selected"
         [imgURL]="item.images ? item.images[0] : ''"
@@ -95,14 +108,21 @@
         ? 'ESCONDER ITEMS'
         : selectionConfiguration.mode === 'SHOW'
         ? 'MOSTRAR ITEMS EN LA TIENDA'
+        : selectionConfiguration.mode === 'HIGHLIGHT'
+        ? 'DESTACAR ITEMS EN LA TIENDA'
         : null
     "
     [textCallback]="
-      selectionConfiguration.active && selectionConfiguration.mode !== 'HIDE'
+      selectionConfiguration.active &&
+      selectionConfiguration.mode !== 'HIDE' &&
+      selectionConfiguration.mode !== 'HIGHLIGHT'
         ? openSelectionDialog
         : selectionConfiguration.active &&
           selectionConfiguration.mode === 'HIDE'
         ? hideMultipleItems
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIGHLIGHT'
+        ? highlightMultipleItems
         : null
     "
     [color]="'#FFF'"
