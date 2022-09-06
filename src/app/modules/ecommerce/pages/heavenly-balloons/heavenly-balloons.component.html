@@ -1,6 +1,12 @@
 <ng-container *ngIf="!loading else loadingScreen">
-    <app-multistep-form [steps]="formSteps" [disableSmoothScroll]="false" [scrollableForm]="scrollableForm"
-    [showStepNumbers]="false"></app-multistep-form>
+    <app-multistep-form
+        [steps]="formSteps" 
+        [disableSmoothScroll]="false" 
+        [scrollableForm]="scrollableForm"
+        [showStepNumbers]="false"
+        [usesGoogleMaps]="true"
+        (paramsRef)="storeParams($event)"
+    ></app-multistep-form>
 </ng-container>
 <ng-template #loadingScreen>
     <app-loading-screen
