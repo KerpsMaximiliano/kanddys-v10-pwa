@@ -11,10 +11,7 @@
         color: '#FFF'
       }"
       bgColor="#2874AD"
-      [dots]="{
-        active: true,
-        color: '#fff'
-      }"
+      [returnAble]="false"
     ></app-helper-headerv2>
 
     <div class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
@@ -66,12 +63,6 @@
           }"
         >
           <h2 class="items-header">Destacados</h2>
-
-          <div class="dot-trio" (click)="(null)">
-            <div class="dot"> </div>
-            <div class="dot"> </div>
-            <div class="dot"> </div>
-          </div>
         </div>
 
         <div></div>

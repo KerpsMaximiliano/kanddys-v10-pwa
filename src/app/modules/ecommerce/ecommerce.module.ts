@@ -8,7 +8,7 @@ import { FlowCompletionAuthLessComponent } from './pages/flow-completion-auth-le
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
-import { MegaphoneV3Component } from './pages/megaphone-v3/megaphone-v3.component';
+import { StoreComponent } from './pages/store/store.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { OrderInfoComponent } from './pages/order-info/order-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
@@ -54,7 +54,7 @@ const routes: Routes = [
       { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
       {
         path: 'store/:id',
-        component: MegaphoneV3Component,
+        component: StoreComponent,
       },
       {
         path: 'order-info/:id',
@@ -134,7 +134,7 @@ const routes: Routes = [
     CustomItemDetailComponent,
     CustomizerRedirectComponent,
     ProviderStoreComponent,
-    MegaphoneV3Component,
+    StoreComponent,
     OrderInfoComponent,
     ShipmentDataFormComponent,
     ItemDetailComponent,

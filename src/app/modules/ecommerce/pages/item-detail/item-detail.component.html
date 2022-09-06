@@ -88,7 +88,7 @@
       [text]="'ADD AL CARRITO DE COMPRAS'"
       [size]="'small'"
       [bgColor]="'#2874AD'"
-      (click)="saveProduct()"
+      (click)="!previewMode && saveProduct()"
       [customLeftButtonStyles]="{
         'font-size': '17px',
         'font-family': 'RobotoMedium',

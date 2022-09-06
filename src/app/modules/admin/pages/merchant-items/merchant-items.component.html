@@ -13,11 +13,6 @@
       !selectionConfiguration.active ||
       (selectionConfiguration.active && selectedItemsCounter > 0)
     "
-    [dots]="{
-      active: true,
-      color: '#fff'
-    }"
-    (plusEvent)="createItem()"
     (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 
@@ -28,7 +23,15 @@
     }"
   >
     <h2 class="items-header">
-      {{ selectionConfiguration.active ? "Seleccione entre:" : "Alegrias" }}
+      {{
+        selectionConfiguration.active
+          ? "Seleccione entre:"
+          : statusQueryParam === "featured"
+          ? "Productos destacados"
+          : statusQueryParam === "disabled"
+          ? "Productos deshabilitados"
+          : "Todos los productos"
+      }}
     </h2>
 
     <div class="dot-trio" (click)="openDialog()">

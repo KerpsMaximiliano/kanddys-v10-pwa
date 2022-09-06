@@ -38,6 +38,8 @@ export class ItemPricing {
   amount: number;
 }
 
+export type ItemStatus = 'draft' | 'disabled' | 'active' | 'featured';
+
 export class Item extends Model<Item> {
   hasSelection?: boolean;
   merchant?: Merchant;
@@ -62,7 +64,7 @@ export class Item extends Model<Item> {
   iconImage: string;
   hasExtraPrice: boolean;
   showImages: boolean;
-  status: 'draft' | 'disabled' | 'active' | 'featured';
+  status: ItemStatus;
   notifications: string[];
 
   customizerId?: string;
@@ -161,7 +163,7 @@ export class ItemInput {
   content?: string[];
   quality?: String;
   toPromotion?: boolean;
-  status?: 'draft' | 'disabled' | 'active' | 'featured';
+  status?: ItemStatus;
 }
 
 export class ItemCategoryInput {
