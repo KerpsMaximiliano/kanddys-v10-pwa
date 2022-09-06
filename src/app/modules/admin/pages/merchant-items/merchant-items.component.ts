@@ -195,7 +195,8 @@ export class MerchantItemsComponent implements OnInit {
   errorScreen() {
     unlockUI();
     this.status = 'error';
-    this.router.navigate([`others/error-screen/`]);
+    // this.router.navigate([`others/error-screen/`]);
+    this.router.navigate([`auth/login`]);
   }
 
   goToMetrics = () => {
