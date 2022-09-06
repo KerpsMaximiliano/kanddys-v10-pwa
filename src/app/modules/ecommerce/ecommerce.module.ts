@@ -10,7 +10,6 @@ import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { StoreComponent } from './pages/store/store.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
-import { OrderInfoComponent } from './pages/order-info/order-info.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
 import { CustomizerRedirectComponent } from './pages/provider-store/customizer-redirect/customizer-redirect.component';
@@ -135,7 +134,6 @@ const routes: Routes = [
     CustomizerRedirectComponent,
     ProviderStoreComponent,
     StoreComponent,
-    OrderInfoComponent,
     ShipmentDataFormComponent,
     ItemDetailComponent,
     FlowCompletionAuthLessComponent,
