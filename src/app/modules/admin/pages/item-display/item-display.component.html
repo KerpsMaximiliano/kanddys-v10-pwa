@@ -18,7 +18,10 @@
           [src]="env + '/upload.svg'"
           width="15"
           height="19"
-          style="filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);"
+          style="
+            filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
+              brightness(80%) contrast(104%);
+          "
         />
       </button>
       <div class="shadowWrapper">
@@ -38,18 +41,10 @@
     </div>
     <div
       *ngIf="!item.images?.length"
-      style="
-        display: flex;
-        justify-content: flex-end;
-        padding: 0 16px;
-      "
+      style="display: flex; justify-content: flex-end; padding: 0 16px"
     >
       <button class="nonswiper-button" (click)="openShareDialog()">
-        <img
-          [src]="env + '/upload.svg'"
-          width="15"
-          height="19"
-        />
+        <img [src]="env + '/upload.svg'" width="15" height="19" />
         Compartir
       </button>
     </div>
@@ -74,6 +69,14 @@
           </h2>
 
           <h2 class="amount">EN INGRESOS TOTALES</h2>
+        </div>
+
+        <div class="info-card">
+          <h2 class="amount quantity">
+            {{ buyersByItem && buyersByItem.length ? buyersByItem.length : 0 }}
+          </h2>
+
+          <h2 class="amount">COMPRADORES</h2>
         </div>
       </div>
     </section>

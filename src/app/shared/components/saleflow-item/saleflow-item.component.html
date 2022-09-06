@@ -1,10 +1,14 @@
 <div
   class="itemContainer type{{ type }}"
   [ngClass]="{ 'big-size': big, v2: responsiveWidthVersion }"
-  [ngStyle]="{
-    'border-top-left-radius': type == 3 ? '14px' : '',
-    'border-top-right-radius': type == 3 ? '14px' : ''
-  }"
+  [ngStyle]="
+    dynamicStyles?.itemContainer
+      ? dynamicStyles?.itemContainer
+      : {
+          'border-top-left-radius': type == 3 ? '14px' : '',
+          'border-top-right-radius': type == 3 ? '14px' : ''
+        }
+  "
 >
   <div class="marginCard" *ngIf="type == 1">
     <!-- MODALIDAD QUE MUESTRA IMAGEN Y DETALLES COMO CANTIDAD VENDIDA, VENTAS TOTALES E INGRESO -->
@@ -193,20 +197,32 @@
     </div>
   </div>
 
-  <div class="simpleCard" *ngIf="type == 4">
+  <div
+    class="simpleCard"
+    [ngStyle]="dynamicStyles?.simpleCard ? dynamicStyles?.simpleCard : null"
+    *ngIf="type == 4"
+  >
     <!--MODALIDAD QUE SOLO MUESTRA LOS PRECIOS Y LAS VENTAS-->
     <div
       class="itemImg opacity-hover"
-      [ngStyle]="{
-        'background-image': imgURL && 'url(' + imgURL + ')',
-        'background-size': backgroundSize
-      }"
+      [ngStyle]="
+        dynamicStyles?.itemImg
+          ? spreadOperator(dynamicStyles?.itemImg, {
+              'background-image': imgURL && 'url(' + imgURL + ')',
+              'background-size': backgroundSize
+            })
+          : {
+              'background-image': imgURL && 'url(' + imgURL + ')',
+              'background-size': backgroundSize
+            }
+      "
       (click)="onClick()"
     ></div>
 
     <div
       class="info-area flex-row-2 transition-class"
       [ngClass]="{ inactive2: inactive && !selectable, selected2: isSelected }"
+      [ngStyle]="dynamicStyles?.infoArea ? dynamicStyles?.infoArea : null"
     >
       <div class="flex-column">
         <span class="price2" *ngIf="price >= 0 && showPrice"

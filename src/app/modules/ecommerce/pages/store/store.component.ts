@@ -1,41 +1,40 @@
+import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
   ItemPackage,
 } from 'src/app/core/models/item';
-import { SaleFlow, SocialMediaModel } from 'src/app/core/models/saleflow';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
 import { Merchant } from 'src/app/core/models/merchant';
-import { environment } from 'src/environments/environment';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
-import { Location } from '@angular/common';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { OrderService } from 'src/app/core/services/order.service';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 @Component({
-  selector: 'app-megaphone-v3',
-  templateUrl: './megaphone-v3.component.html',
-  styleUrls: ['./megaphone-v3.component.scss'],
+  selector: 'app-store',
+  templateUrl: './store.component.html',
+  styleUrls: ['./store.component.scss'],
 })
-export class MegaphoneV3Component implements OnInit, OnDestroy {
+export class StoreComponent implements OnInit, OnDestroy {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
   saleflowData: SaleFlow;
@@ -63,6 +62,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
+  highlightedItems: Item[] = [];
   // canOpenCart: boolean;
   itemCartAmount: number;
   deleteEvent: Subscription;
@@ -73,6 +73,12 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 5,
+  };
+
+  swiperConfigHighlightedItems: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 0,
   };
 
   constructor(
@@ -114,6 +120,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
     this.categorylessItems = this.items
       .filter((item) => !item.category.length)
       .sort((a, b) => a.pricing - b.pricing);
+    const highlightedItemsObject = {};
+    this.highlightedItems = [];
+
+    for (const item of this.categorylessItems) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
+        highlightedItemsObject[item._id] = true;
+      }
+    }
+
+    console.log(this.categories);
+
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
       if (
@@ -155,6 +173,18 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
           callback: () => this.router.navigate([url]),
           shareCallback: () => this.onShareCallback(url),
         });
+
+        for (const itemCategory of this.itemsByCategory) {
+          for (const item of itemCategory.items) {
+            if (!highlightedItemsObject[item._id]) {
+              this.highlightedItems.push(item);
+              highlightedItemsObject[item._id] = true;
+            }
+          }
+        }
+
+        console.log(this.itemsByCategory, 'itemsporcategoria');
+
         unlockUI();
       }
     });
@@ -265,7 +295,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             _id: {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
-            status: 'active',
           },
           options: {
             limit: 60,
@@ -274,7 +303,10 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
         const selectedItems = orderData?.products?.length
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-        this.items = items.listItems;
+        this.items = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
+
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
