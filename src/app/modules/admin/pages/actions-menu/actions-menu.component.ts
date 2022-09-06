@@ -217,4 +217,8 @@ export class ActionsMenuComponent implements OnInit {
         break;
     }
   }
+
+  goToMerchantItems() {
+    this.router.navigate(['admin/merchant-items']);
+  }
 }

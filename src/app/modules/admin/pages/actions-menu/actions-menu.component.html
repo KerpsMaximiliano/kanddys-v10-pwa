@@ -2,6 +2,8 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="true"
+    [bgColor]="'#2874AD'"
+    (returnEvent)="goToMerchantItems()"
   ></app-helper-headerv2>
 
   <div class="message-card" *ngIf="!isTag && !template">
@@ -23,6 +25,9 @@
         (onSelector)="selectedOption($event)"
         [containerStyles]="{
           margin: '0px'
+        }"
+        [optionContainerStyles]="{
+          marginBottom: '10px'
         }"
       ></app-answer-selector>
     </div>
