@@ -1,33 +1,28 @@
-import { Injectable, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs/internal/Subscription';
-import { DialogService } from './../../libs/dialog/services/dialog.service';
-import { CommunityPreviewComponent } from '../../shared/dialogs/community-preview/community-preview.component';
-import { SearchHashtagComponent } from '../../shared/dialogs/search-hashtag/search-hashtag.component';
 import { Location } from '@angular/common';
-import { AuthService } from './auth.service';
-import { AppService } from 'src/app/app.service';
-import { OrderService } from './order.service';
+import { Injectable } from '@angular/core';
 import { filter } from 'rxjs/operators';
-import { User } from '../models/user';
-import { WalletService } from './wallet.service';
-import { Session } from '../models/session';
-import { BookmarksService } from './bookmarks.service';
+import { AppService } from 'src/app/app.service';
 import { CustomizerValueInput } from '../models/customizer-value';
+import { Item, ItemPackage } from '../models/item';
 import { Merchant } from '../models/merchant';
-import { DeliveryLocationInput, SaleFlow } from '../models/saleflow';
-import { CustomizerValueService } from './customizer-value.service';
-import { ProviderStoreComponent } from 'src/app/modules/ecommerce/pages/provider-store/provider-store.component';
 import {
   ItemOrderInput,
   ItemSubOrderInput,
   ItemSubOrderParamsInput,
 } from '../models/order';
-import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
-import { Item, ItemPackage } from '../models/item';
+import { ReservationInput } from '../models/reservation';
+import { DeliveryLocationInput, SaleFlow } from '../models/saleflow';
+import { Session } from '../models/session';
+import { User } from '../models/user';
+import { AuthService } from './auth.service';
+import { BookmarksService } from './bookmarks.service';
+import { CustomizerValueService } from './customizer-value.service';
 import { MerchantsService } from './merchants.service';
-import { SaleFlowService } from './saleflow.service';
+import { OrderService } from './order.service';
 import { PostsService } from './posts.service';
+import { SaleFlowService } from './saleflow.service';
+import { WalletService } from './wallet.service';
 
 class OrderProgress {
   qualityQuantity: boolean;
@@ -56,34 +51,18 @@ class SaleflowData {
   providedIn: 'root',
 })
 export class HeaderService {
-  isLogged: boolean = false;
   orderId: string;
   user: User;
-  visible: boolean = false;
-  navBarVisible: boolean = false;
-  loaderVisible: boolean = false;
   walletData: any;
   datePreview: any;
-  locationData: DeliveryLocationInput;
   flowImage: any = [];
   savedBookmarks: any;
-  invokeFirstComponentFunction = new EventEmitter();
-  subsVar: Subscription;
   items: Item[] = [];
-  orders: any[] = [];
   order: ItemOrderInput;
-  postMultimedia: any[] = [];
-  userId: string;
-  pack: any;
-  packId: number;
   post: PostInput;
-  checkData: any;
   flowId: string;
   saleflow: SaleFlow;
   categoryId: string;
-  ids: any;
-  saleflowIdKey = 'saleflow-token';
-  productsSelected: any = [];
   customizer: CustomizerValueInput;
   customizerData: {
     willModify: boolean;
@@ -96,7 +75,6 @@ export class HeaderService {
     textsAmount: number;
     id: string;
   };
-  isEditing: boolean = false;
   merchantInfo: Merchant;
   myMerchants: Merchant[];
   tags: any;
@@ -115,16 +93,11 @@ export class HeaderService {
   flowRoute: string;
   paramHasColor: boolean;
   paramHasImage: boolean;
-  storedDeliveryLocation: string = null;
-  disableGiftMessageTextarea: boolean = false;
-  // createdOrderWithDelivery: boolean = false;
-  createdOrderWithoutDelivery: boolean = false;
   newTempItem: Item;
   newTempItemRoute: string = null;
 
   public session: Session;
   constructor(
-    private dialog: DialogService,
     private location: Location,
     private app: AppService,
     private auth: AuthService,
@@ -136,13 +109,10 @@ export class HeaderService {
     private saleflowService: SaleFlowService,
     private postsService: PostsService
   ) {
-    this.visible = false;
     this.auth.me().then((data) => {
       if (data != undefined) {
-        this.isLogged = true;
         this.user = data;
       } else {
-        this.isLogged = false;
         this.user = undefined;
         this.walletData = undefined;
         this.savedBookmarks = undefined;
@@ -156,7 +126,6 @@ export class HeaderService {
         if (e.data) {
           console.log('Autenticando o refrescando token');
 
-          this.isLogged = true;
           this.user = e.data.user;
           this.wallet.globalWallet().then((data) => {
             this.walletData = data.globalWallet;
@@ -170,7 +139,6 @@ export class HeaderService {
             this.myMerchants = data;
           });
         } else {
-          this.isLogged = false;
           this.user = null;
           this.walletData = null;
           this.savedBookmarks = null;
@@ -196,60 +164,34 @@ export class HeaderService {
     //     }
     //   });
   }
-  hide() {
-    this.visible = false;
-  }
-  show() {
-    this.visible = true;
-  }
-  toggleNav() {
-    this.navBarVisible = !this.navBarVisible;
-  }
-  showNav() {
-    this.navBarVisible = true;
-  }
-  disableNav() {
-    this.navBarVisible = false;
-  }
-  toggle() {
-    this.visible = !this.visible;
-  }
   goBack() {
     this.location.back();
   }
 
   isDataComplete(): boolean {
-    // console.log('Saleflow check');
     if (!this.saleflow) return;
     if (
       this.saleflow.module.delivery &&
       this.saleflow.module.delivery.isActive
     ) {
-      // console.log('Delivery check');
       if (!this.isComplete.delivery) return;
     }
     if (this.items.some((item) => item.customizerId)) {
-      // console.log('qualityQuantity check');
       if (!this.isComplete.qualityQuantity) return;
-      // console.log('Customizer');
       if (!this.isComplete.customizer) return;
     }
     if (
       this.saleflow.module.appointment &&
       this.saleflow.module.appointment.isActive
     ) {
-      // console.log('Reservation check');
       if (!this.isComplete.reservation) return;
     }
     if (this.hasScenarios) {
-      // console.log('Scenarios check');
       if (!this.isComplete.scenarios) return;
     }
     if (this.saleflow.module.post && this.saleflow.module.post.isActive) {
-      // console.log('Post check');
       if (!this.isComplete.message) return;
     }
-    // console.log('Data complete!');
     return true;
   }
 
@@ -296,8 +238,19 @@ export class HeaderService {
     const index = order.products.findIndex(
       (subOrder) => subOrder.item === product.item
     );
-    if (index >= 0) order.products.splice(index, 1);
-    else order.products.push(product);
+    console.log(this.order);
+    if (!this.order) {
+      this.order = {
+        products: [],
+      };
+    }
+    if (index >= 0) {
+      order.products.splice(index, 1);
+      this.order?.products?.splice(index, 1);
+    } else {
+      order.products.push(product);
+      this.order?.products?.push(product);
+    }
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
@@ -331,6 +284,12 @@ export class HeaderService {
     let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order) order = {};
+    if (!this.order) {
+      this.order = {
+        itemPackage,
+        products,
+      };
+    }
     order.itemPackage = itemPackage;
     order.products = products;
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
@@ -492,8 +451,10 @@ export class HeaderService {
     if (!order) return;
     if (!order.products) return;
     const index = order.products.findIndex((subOrder) => subOrder.item === id);
-    if (index >= 0) order.products.splice(index, 1);
-    else return;
+    if (index >= 0) {
+      order.products.splice(index, 1);
+      this.order.products.splice(index, 1);
+    } else return;
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
@@ -623,7 +584,6 @@ export class HeaderService {
       this.orderId = createPreOrder._id;
       this.currentMessageOption = undefined;
       this.post = undefined;
-      this.locationData = undefined;
       this.app.events.emit({ type: 'order-done', data: true });
       return createPreOrder._id;
     } catch (error) {

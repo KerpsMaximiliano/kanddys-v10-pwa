@@ -12,10 +12,10 @@ export class ItemParamValue extends Model<ItemParamValue> {
 
 export class ItemParam extends Model<ItemParam> {
   name?: string;
-  values?: ItemParamValue[]
+  values?: ItemParamValue[];
   category?: string;
   formType?: string;
-  }
+}
 
 export class ItemCategory extends Model<ItemCategory> {
   _id: string;
@@ -30,13 +30,13 @@ export class ItemCategory extends Model<ItemCategory> {
 export class Currency extends Model<Currency> {
   identifier?: string;
   merchant: Merchant;
-  }
+}
 
 export class ItemPricing {
   _id: string;
   currencyType?: Currency;
   amount: number;
-  }
+}
 
 export class Item extends Model<Item> {
   hasSelection?: boolean;
@@ -49,7 +49,7 @@ export class Item extends Model<Item> {
   isPhysical: boolean;
   purchaseLocations?: string[];
   tags?: string[];
-  currencies?: ItemPricing[]; 
+  currencies?: ItemPricing[];
   pricing: number;
   fixedQuantity: number;
   pircePerUnit?: number;
@@ -72,14 +72,14 @@ export class Item extends Model<Item> {
   content?: string[];
   isSelected?: boolean;
   qualityQuantity?: {
-    price: number,
-    quantity: number,
+    price: number;
+    quantity: number;
   };
   index?: number;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {
-  item?: Item
+  item?: Item;
   onlyFixedQuantity?: boolean;
   fixedQuantity?: number;
   hasMaxQuantity?: boolean;
@@ -87,12 +87,12 @@ export class ItemPackageRule extends Model<ItemPackageRule> {
   hasMinQuantity?: boolean;
   minQuantity?: number;
   offsetPrice?: number;
-  }
+}
 
 export class ItemPackage extends Model<ItemPackage> {
   name?: string;
   images?: string[];
-  packageRules?: ItemPackageRule[]
+  packageRules?: ItemPackageRule[];
   merchant?: Merchant;
   price?: number;
   categories?: ItemCategory[];
@@ -104,7 +104,7 @@ export class ItemPackage extends Model<ItemPackage> {
 export class ItemCategoryHeadline extends Model<ItemCategoryHeadline> {
   _id: string;
   merchant: Merchant;
-  headline: String
+  headline: String;
   itemsCategories: string[];
 }
 
@@ -157,11 +157,13 @@ export class ItemInput {
   params?: ItemParamInput[];
   calendar?: string;
   itemExtra?: string[];
-  size?: String
+  size?: String;
   content?: string[];
-  quality?: String
+  quality?: String;
   toPromotion?: boolean;
-  status?: 'draft' | 'disabled' | 'active';
+  status?: 'draft' | 'disabled' | 'active' | 'featured';
+  showImages?: boolean;
+  collaboration?: number;
 }
 
 export class ItemCategoryInput {

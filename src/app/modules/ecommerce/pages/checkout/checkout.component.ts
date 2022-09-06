@@ -156,7 +156,7 @@ export class CheckoutComponent implements OnInit {
           this.headerService.getSaleflow()?._id
       )?.data;
     this.setCustomizerPreview();
-    if (this.order.products[0].reservation) {
+    if (this.order?.products?.[0].reservation) {
       const fromDate = new Date(this.order.products[0].reservation.date.from);
       const untilDate = new Date(this.order.products[0].reservation.date.until);
       this.date = {
@@ -264,7 +264,6 @@ export class CheckoutComponent implements OnInit {
       this.headerService.orderId = createPreOrder._id;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
-      this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.headerService.user && !anonymous) {
         await this.authOrder(this.headerService.user._id);

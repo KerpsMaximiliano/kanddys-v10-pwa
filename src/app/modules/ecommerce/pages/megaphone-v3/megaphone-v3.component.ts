@@ -1,41 +1,37 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { Location } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
   ItemPackage,
 } from 'src/app/core/models/item';
-import { SaleFlow, SocialMediaModel } from 'src/app/core/models/saleflow';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
 import { Merchant } from 'src/app/core/models/merchant';
-import { environment } from 'src/environments/environment';
-import { copyText } from 'src/app/core/helpers/strings.helpers';
-import { Location } from '@angular/common';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { OrderService } from 'src/app/core/services/order.service';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-megaphone-v3',
   templateUrl: './megaphone-v3.component.html',
   styleUrls: ['./megaphone-v3.component.scss'],
 })
-export class MegaphoneV3Component implements OnInit, OnDestroy {
+export class MegaphoneV3Component implements OnInit {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
   saleflowData: SaleFlow;
@@ -63,9 +59,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
-  // canOpenCart: boolean;
-  itemCartAmount: number;
-  deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   viewtype: 'preview' | 'merchant';
   admin: boolean;
@@ -164,27 +157,7 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.header.resetIsComplete();
-    this.header.disableNav();
-    this.header.hide();
-    this.header.packId = 0;
     this.executeProcessesAfterLoading();
-    this.deleteEvent = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item'))
-      .subscribe((e) => {
-        let productData: Item[] = this.header.getItems(this.saleflowData._id);
-        const selectedItems = productData?.length
-          ? productData.map((item) => item._id)
-          : [];
-        this.items.forEach((item) => {
-          if (!item.customizerId)
-            item.isSelected = selectedItems.includes(item._id);
-        });
-        this.itemCartAmount = productData?.length;
-      });
-  }
-
-  ngOnDestroy() {
-    this.deleteEvent.unsubscribe();
   }
 
   executeProcessesAfterLoading() {
@@ -309,8 +282,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
             (product) => !itemIDs.includes(product.item)
           );
         }
-        // this.canOpenCart = orderData?.products?.length > 0;
-        this.itemCartAmount = orderData?.products?.length;
         await this.organizeItems(merchant);
         this.status = 'complete';
         unlockUI();
@@ -457,7 +428,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
   }
 
   save(index?: number) {
-    if (index) this.header.packId = index;
     this.header.items = [];
     let products = [];
     let order;
@@ -494,23 +464,6 @@ export class MegaphoneV3Component implements OnInit, OnDestroy {
       `/ecommerce/item-detail/${this.saleflowData._id}/${id}`,
     ]);
   }
-
-  showShoppingCartDialog = () => {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        footerCallback: async () => {
-          if (this.saleflowData.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
-          else if (this.saleflowData.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
-          else this.router.navigate([`/ecommerce/checkout`]);
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 
   async itemOfPackage(packages: ItemPackage[]) {
     let index = 0;
