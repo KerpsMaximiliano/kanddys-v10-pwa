@@ -61,12 +61,13 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin: 19px 32px;
+			margin: 32px;
 
 			.title-name {
 				font-family: "SfProMedium";
 				font-size: 19px;
 				color: #4f4f4f;
+				margin: 0;
 			}
 
 			.wrapper {
