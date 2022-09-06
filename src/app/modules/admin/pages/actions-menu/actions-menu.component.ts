@@ -177,7 +177,7 @@ export class ActionsMenuComponent implements OnInit {
     });
   }
 
-  selectedOption(e: number) {
+  async selectedOption(e: number) {
     console.log(e);
     console.log(this.options[e]);
     switch (e) {
@@ -185,24 +185,25 @@ export class ActionsMenuComponent implements OnInit {
         this.router.navigate([`/admin/merchant-items`]);
         break;
       case 1: {
-        this.itemsService.updateItem(
+        await this.itemsService.updateItem(
           {
             status: 'disabled',
           },
           this.item._id
         );
+        this.router.navigate([`/admin/merchant-items`]);
         break;
       }
       case 2: {
-        this.itemsService.updateItem(
+        await this.itemsService.updateItem(
           {
             status: 'active',
           },
           this.item._id
         );
-        this.itemsByMerchant?.forEach((item) => {
+        this.itemsByMerchant?.forEach(async item => {
           if (item._id != this.item._id) {
-            this.itemsService.updateItem(
+            await this.itemsService.updateItem(
               {
                 status: 'disabled',
               },
@@ -210,6 +211,7 @@ export class ActionsMenuComponent implements OnInit {
             );
           }
         });
+        this.router.navigate([`/admin/merchant-items`]);
         break;
       }
       case 3:
