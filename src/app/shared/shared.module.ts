@@ -90,6 +90,7 @@ import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.com
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
 import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
+import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 
 const imports = [
   CommonModule,
@@ -185,7 +186,8 @@ const declarations = [
   ItemSettingsComponent,
   LoadingScreenComponent,
   ItemComponent,
-  ReloadComponent
+  ReloadComponent,
+  CurrencyInputComponent,
 ];
 
 @NgModule({

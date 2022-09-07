@@ -7,8 +7,19 @@ const webformBody = `
     questions {
         _id
         type
+        index
+        subIndex
         value
+        answerDefault {
+          active
+          isMedia
+          value
+          defaultValue
+        }
+        show
         required
+        active
+        answerMedia
     }
 `;
 
@@ -21,11 +32,11 @@ export const webform = gql`
 `;
 
 export const webformByMerchant = gql`
-    query webformByMerchant($merchantId: ObjectID!) {
-      webformByMerchant(merchantId: $merchantId) {
-          _id
-        }
+  query webformByMerchant($merchantId: ObjectID!) {
+    webformByMerchant(merchantId: $merchantId) {
+      _id
     }
+  }
 `;
 
 export const answerPaginate = gql`

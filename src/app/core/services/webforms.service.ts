@@ -9,7 +9,12 @@ import {
   webformByMerchant,
 } from '../graphql/webforms.gql';
 import { PaginationInput } from '../models/saleflow';
-import { Webform } from '../models/webform';
+import {
+  AnswerInput,
+  QuestionInput,
+  Webform,
+  WebformInput,
+} from '../models/webform';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +23,10 @@ export class WebformsService {
   webformData: Webform;
   constructor(private graphql: GraphQLWrapper) {}
 
-  async createWebform(input: any, merchantId: any) {
+  async createWebform(
+    input: WebformInput,
+    merchantId: string
+  ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: createWebform,
       variables: { input, merchantId },
@@ -26,7 +34,10 @@ export class WebformsService {
     return result?.createWebform;
   }
 
-  async webformAddQuestion(input: any[], id: any) {
+  async webformAddQuestion(
+    input: QuestionInput[],
+    id: string
+  ): Promise<Webform> {
     const result = await this.graphql.mutate({
       mutation: webformAddQuestion,
       variables: { input, id },
@@ -35,30 +46,30 @@ export class WebformsService {
     return result?.webformAddQuestion;
   }
 
-  async webform(id: string) {
+  async webform(id: string): Promise<Webform> {
     try {
       const response = await this.graphql.query({
         query: webform,
         variables: { id },
         fetchPolicy: 'no-cache',
       });
-      return response.webform;
+      return response?.webform;
     } catch (e) {
       console.log(e);
     }
   }
 
-  async webformsByMerchant(id: string) {
+  async webformsByMerchant(merchantId: string): Promise<Webform[]> {
     try {
       const response = await this.graphql.query({
         query: webformByMerchant,
-        variables: { merchantId: id },
+        variables: { merchantId },
         fetchPolicy: 'no-cache',
       });
 
       if (!response) return undefined;
 
-      return response.webformByMerchant;
+      return response?.webformByMerchant;
     } catch (e) {
       console.log(e);
     }
@@ -80,7 +91,7 @@ export class WebformsService {
     }
   }
 
-  async createAnswer(input: any) {
+  async createAnswer(input: AnswerInput) {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
       variables: { input },

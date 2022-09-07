@@ -4,11 +4,23 @@ import { Merchant } from './merchant';
 import { User } from './user';
 import { ExchangeData } from './wallet';
 
+export class AnswersQuestionInput {
+  question: string;
+  value?: string;
+  media?: File;
+  isMedia?: boolean;
+}
+
 export class AnswersQuestion extends Model<AnswersQuestion> {
   question: string;
   value: string;
   isMedia: boolean;
   type: string;
+}
+
+export class AnswerInput {
+  webform: string;
+  response: AnswersQuestionInput[];
 }
 
 export class Answer extends Model<Answer> {
@@ -25,12 +37,32 @@ export class answer {
   totalResults: number;
 }
 
+export class AnswerDefaultInput {
+  active?: boolean;
+  media?: File;
+  isMedia?: boolean;
+  value?: string;
+  defaultValue?: string;
+}
+
 export class AnswerDefault extends Model<AnswerDefault> {
   active: boolean;
   isMedia: boolean;
   value: string;
   defaultValue: string;
 }
+
+export class QuestionInput {
+  type?: 'text' | 'multiple' | 'default';
+  index?: number;
+  subIndex?: number;
+  value?: string;
+  answerDefault?: AnswerDefaultInput[];
+  show?: Boolean;
+  required?: Boolean;
+  answerMedia?: Boolean;
+}
+
 export class Question extends Model<Question> {
   type: string;
   index: number;
@@ -42,6 +74,14 @@ export class Question extends Model<Question> {
   active: boolean;
   answerMedia: boolean;
 }
+
+export class WebformInput {
+  name?: string;
+  description?: string;
+  bookmark?: string;
+  exchangeData?: string;
+}
+
 export class Webform extends Model<Webform> {
   questions: Question[];
   name: string;
