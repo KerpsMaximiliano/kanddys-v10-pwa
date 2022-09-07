@@ -14,7 +14,7 @@ import { ShortCalendarComponent } from 'src/app/shared/components/short-calendar
   styleUrls: ['./webform-client.component.scss'],
 })
 export class WebformClientComponent implements OnInit {
-  inputType: 'fullName' | 'image' | 'text' | 'number' | 'phone' | 'email' | 'url' = 'text';
+  inputType: 'fullName' | 'image' | 'text' | 'number' | 'phone' | 'email' | 'url' = 'phone';
   clientInput = new FormGroup({
     text: new FormControl(null, [Validators.required, Validators.minLength(3)]),
     image: new FormControl(),
@@ -23,7 +23,7 @@ export class WebformClientComponent implements OnInit {
     lastName: new FormControl(null, [Validators.minLength(2)]),
     email: new FormControl(),
     phone: new FormControl(null, [Validators.maxLength(15)]),
-    url: new FormControl()
+    url: new FormControl(null, [Validators.minLength(6)])
   });
   SearchCountryField = SearchCountryField;
   CountryISO = CountryISO.DominicanRepublic;

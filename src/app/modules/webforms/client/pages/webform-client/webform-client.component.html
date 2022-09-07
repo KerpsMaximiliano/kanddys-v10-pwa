@@ -13,12 +13,16 @@
     <ng-container *ngIf="inputType == 'text'">
       <div class="input-container">
         <label for="Text" class="input-label">Mensaje:</label>
-        <input
-          type="textarea"
+        <textarea
+          cols="30"
+          rows="8"
+          id="text1"
+          name="Message"
           class="text-input area"
           formControlName="text"
           placeholder="Escribe aquí tú mensaje"
-        />
+        >
+         </textarea>
       </div>
     </ng-container>
 
@@ -103,6 +107,18 @@
           (onFileInput)="onFileInput($event)"
         ></app-image-input>
       </div>
+    </ng-container>
+
+    <ng-container *ngIf="inputType == 'url'">
+      <div class="input-container">
+         <label for="Number" class="input-label">Cantidad:</label>
+         <input
+           type="url"
+           class="text-input"
+           formControlName="url"
+           placeholder="mipágina.com"
+         />
+       </div>
     </ng-container>
   </form>
 

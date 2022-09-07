@@ -1,0 +1,5 @@
+<ng-container *ngIf="status === 'complete'">
+  <router-outlet></router-outlet>
+</ng-container>
+<ng-container *ngIf="status === 'loading'"><h1>Cargando...</h1></ng-container>
+<ng-container *ngIf="status === 'error'"><h1>Error.</h1></ng-container>

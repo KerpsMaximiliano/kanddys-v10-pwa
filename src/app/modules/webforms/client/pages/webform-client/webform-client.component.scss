@@ -30,7 +30,9 @@
             box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
 
             &.area{
-               height: 225px;
+               width: 95%;
+               height: auto;
+               padding: 20px 10px;
             }
 
             &::placeholder{
@@ -80,4 +82,8 @@
          }
       }
    }
+}
+
+.ng-invalid.ng-touched:not(form){
+   border: 1px solid #c0392b !important;
 }

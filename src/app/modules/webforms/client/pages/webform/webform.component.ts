@@ -8,15 +8,17 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 @Component({
   selector: 'app-webform',
   templateUrl: './webform.component.html',
-  styleUrls: ['./webform.component.scss']
+  styleUrls: ['./webform.component.scss'],
 })
 export class WebformComponent implements OnInit {
-
   webform: any;
   answers: any[];
   canSave: boolean = false;
 
-  firstName = new FormControl('', [Validators.nullValidator, Validators.minLength(3)]);
+  firstName = new FormControl('', [
+    Validators.nullValidator,
+    Validators.minLength(3),
+  ]);
   lastName = new FormControl('');
   text = new FormControl('', [Validators.minLength(1)]);
 
@@ -25,15 +27,14 @@ export class WebformComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dialog: DialogService
-  ) { }
+  ) {}
 
   async ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    await this.getWebform(id);
+    this.getWebform();
   }
 
   async save() {
-    console.log("saving...");
+    console.log('saving...');
     console.log(this.text.value);
     console.log(this.firstName.value);
     console.log(this.lastName.value);
@@ -42,19 +43,17 @@ export class WebformComponent implements OnInit {
 
     console.log(this.answers);
 
-    const answer = await this.webforms.createAnswer(
-      {
-        webform: this.webform._id,
-        response: this.answers
-      }
-    );
+    const answer = await this.webforms.createAnswer({
+      webform: this.webform._id,
+      response: this.answers,
+    });
 
     this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
       props: {
         icon: answer ? 'check-circle.svg' : 'sadFace.svg',
         message: answer ? null : 'Ocurrió un problema',
-        showCloseButton: answer ? false : true
+        showCloseButton: answer ? false : true,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -68,31 +67,29 @@ export class WebformComponent implements OnInit {
       this.answers = [
         {
           question: this.webform.questions[0]._id,
-          value: this.firstName.value
+          value: this.firstName.value,
         },
         {
           question: this.webform.questions[1]._id,
-          value: this.lastName.value
-        }
-      ]
+          value: this.lastName.value,
+        },
+      ];
     } else if (this.webform.questions.length == 1) {
       this.answers = [
         {
           question: this.webform.questions[0]._id,
-          value: this.text.value
-        }
-      ]
+          value: this.text.value,
+        },
+      ];
     }
   }
 
   back() {
-    this.router.navigate(['/webforms/input-selector'])
+    this.router.navigate(['/webforms/input-selector']);
   }
 
-  async getWebform(id: string) {
-    const webform = await this.webforms.webform(id);
-    this.webform = webform;
+  async getWebform() {
+    this.webform = this.webforms.webformData;
     console.log(this.webform);
   }
-
 }

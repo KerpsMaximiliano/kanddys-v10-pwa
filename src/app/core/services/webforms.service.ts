@@ -1,18 +1,24 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { createAnswer, createWebform, webform, webformAddQuestion } from '../graphql/webforms.gql';
+import {
+  createAnswer,
+  createWebform,
+  webform,
+  webformAddQuestion,
+} from '../graphql/webforms.gql';
+import { Webform } from '../models/webform';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WebformsService {
-
-  constructor(private graphql: GraphQLWrapper) { }
+  webformData: Webform;
+  constructor(private graphql: GraphQLWrapper) {}
 
   async createWebform(input: any, merchantId: any) {
     const result = await this.graphql.mutate({
       mutation: createWebform,
-      variables: { input, merchantId }
+      variables: { input, merchantId },
     });
     return result?.createWebform;
   }
@@ -42,7 +48,7 @@ export class WebformsService {
   async createAnswer(input: any) {
     const result = await this.graphql.mutate({
       mutation: createAnswer,
-      variables: { input }
+      variables: { input },
     });
     return result?.createAnswer;
   }
