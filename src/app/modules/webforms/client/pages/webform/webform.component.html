@@ -177,7 +177,10 @@
     [mode]="form.valid ? 'fixed' : 'disabled-fixed'"
     size="small"
     bgColor="#2874AD"
-    [text]="'NOTITIFICAR DEL FORM POR WHATSAPP A ID'"
+    [text]="
+      'NOTIFICAR DEL FORM POR WHATSAPP A ' +
+      webform?.merchant?.name?.toUpperCase()
+    "
     (click)="form.valid && onSubmit()"
   ></app-sticky-button>
 </div>

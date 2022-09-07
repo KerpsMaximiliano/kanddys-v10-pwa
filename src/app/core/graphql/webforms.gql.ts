@@ -4,6 +4,13 @@ const webformBody = `
     _id
     name
     description
+    merchant {
+      _id
+      name
+      owner {
+        phone
+      }
+    }
     questions {
         _id
         type
