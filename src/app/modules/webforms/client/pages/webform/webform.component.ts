@@ -1,21 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  AbstractControl, FormBuilder,
+  AbstractControl,
+  FormBuilder,
   FormControl,
   FormGroup,
   ValidatorFn,
-  Validators
+  Validators,
 } from '@angular/forms';
 import {
   CountryISO,
   PhoneNumberFormat,
-  SearchCountryField
+  SearchCountryField,
 } from 'ngx-intl-tel-input';
 import {
   AnswerInput,
   AnswersQuestionInput,
   Question,
-  Webform
+  Webform,
 } from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
@@ -73,7 +74,7 @@ export class WebformComponent implements OnInit {
         const defaultValue = question.answerDefault.find(
           (value) => value.active
         )?.value;
-        const validations: ValidatorFn[] = [];
+        const validations: ValidatorFn[] = [Validators.pattern(/[\S]/)];
         if (question.required) validations.push(Validators.required);
         if (question.type === 'number') validations.push(Validators.min(1));
         const formControl = this.fb.control(defaultValue, validations);
@@ -95,23 +96,37 @@ export class WebformComponent implements OnInit {
         };
       });
   }
-  onSubmit() {
+
+  async onSubmit() {
     const response: AnswersQuestionInput[] = [];
     for (let i in this.form.value) {
       response.push({
         question: i,
         value: !(this.form.value[i] instanceof File)
-          ? this.form.value[i]
+          ? this.form.value[i].trim()
           : null,
         isMedia: this.form.value[i] instanceof File,
-        media: this.form.value[i] instanceof File ? this.form.value[i] : null,
+        media:
+          this.form.value[i] instanceof File ? this.form.value[i].trim() : null,
       });
     }
     const input: AnswerInput = {
       webform: this.webform._id,
       response,
     };
-    this.webformsService.createAnswer(input);
+    await this.webformsService.createAnswer(input);
+    const message = `Respuestas enviadas al webform "${
+      this.webform.name
+    }"\n${response.map((answer) => {
+      const question = this.webform.questions.find(
+        (q) => q._id === answer.question
+      )?.value;
+      return `\n${question}: ${answer.isMedia ? 'Archivo' : answer.value}`;
+    })}`;
+    const whatsappLink = `https://wa.me/${
+      this.webform.merchant.owner.phone
+    }?text=${encodeURIComponent(message)}`;
+    window.location.href = whatsappLink;
   }
 
   onCurrencyInput(

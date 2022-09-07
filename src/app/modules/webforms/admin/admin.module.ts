@@ -15,6 +15,7 @@ import { WebformInputSelectorComponent } from './pages/webform-input-selector/we
 import { WebformVisitorsComponent } from './pages/webform-visitors/webform-visitors.component';
 import { WebformsAdminComponent } from './webforms-admin/webforms-admin.component';
 import { WebformAnswerMethodComponent } from './pages/webform-answer-method/webform-answer-method.component';
+import { WebformWebhookConfigComponent } from './pages/webform-webhook-config/webform-webhook-config.component';
 
 const routes: Routes = [
   {
@@ -65,6 +66,10 @@ const routes: Routes = [
         path: 'answer-method',
         component: WebformAnswerMethodComponent
       },
+      {
+         path: 'webhook-config',
+         component: WebformWebhookConfigComponent
+      }
     ],
   },
   {
@@ -88,6 +93,7 @@ const routes: Routes = [
     WebformAnswersComponent,
     WebformInputSelectorComponent,
     WebformAnswerMethodComponent,
+    WebformWebhookConfigComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

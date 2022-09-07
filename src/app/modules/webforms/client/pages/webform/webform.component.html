@@ -1,12 +1,13 @@
 <div class="main-container">
   <app-helper-headerv2
     [mode]="'basic'"
+    bgColor="#2874AD"
     [mainText]="{
-      text: 'Contacto de las Facturas',
+      text: webform?.name,
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
-    [returnAble]="true"
+    [returnAble]="false"
   ></app-helper-headerv2>
 
   <form [formGroup]="form" class="client-form">
@@ -177,7 +178,10 @@
     [mode]="form.valid ? 'fixed' : 'disabled-fixed'"
     size="small"
     bgColor="#2874AD"
-    [text]="'NOTITIFICAR DEL FORM POR WHATSAPP A ID'"
+    [text]="
+      'NOTIFICAR DEL FORM POR WHATSAPP A ' +
+      webform?.merchant?.name?.toUpperCase()
+    "
     (click)="form.valid && onSubmit()"
   ></app-sticky-button>
 </div>

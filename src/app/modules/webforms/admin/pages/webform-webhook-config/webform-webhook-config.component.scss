@@ -1,0 +1,162 @@
+.main-container{
+   width: 100%;
+   min-height: 100vh;
+}
+
+.save-answer{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   
+   .top-area{
+      width: 100%;
+      height: auto;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 31.5px 20px;
+      background-color: #ffffff;
+      box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 12%);
+
+      .label-required{
+         font-family: 'SfProLight';
+         font-size: 1rem;
+         color: #7b7b7b;
+         margin: 0 10px;
+      }
+   }
+
+   .select-db{
+      width: 80%;
+      margin: 47px auto 0;
+
+      .options-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 26px;
+      }
+   }
+}
+
+.webhook{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+
+   .webhook-selector{
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 17.9vh auto 0;
+
+      .input-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 21px;
+      }
+
+      .input-text{
+         all: unset;
+         height: 66px;
+         background-color: #ffffff;
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #0b1f38;
+         text-indent: 16px;
+         border-radius: 9px;
+         box-shadow: inset 0 3px 6px 3px rgba(0, 0, 0, 12%);
+
+         &::placeholder{
+            font-family: 'RobotoMedium';
+            font-size: 1.25rem;
+            color: rgba(112, 112, 112, 60%);
+         }
+      }
+   }
+}
+
+.select-table{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+
+   .top-area{
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 30px auto 0;
+
+      .about{
+         font-family: 'RobotoBold';
+         font-size: 1.375rem;
+         color: #202020;
+         font-weight: normal;
+         margin: 10px 0 5px;
+      }
+
+      .input-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 25px;
+      }
+   }
+
+   .bottom-area{
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 37px auto 20px;
+
+      .input-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 25px;
+      }
+   }
+}
+
+.connect{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+
+   .top-area{
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 30px auto 0;
+
+      .about{
+         font-family: 'RobotoBold';
+         font-size: 1.375rem;
+         color: #202020;
+         font-weight: normal;
+         margin: 10px 0 5px;
+      }
+
+      .input-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 25px;
+      }
+   }
+
+   .bottom-area{
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      margin: 37px auto 20px;
+
+      .input-label{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         margin: 0 0 25px;
+      }
+   }
+}
