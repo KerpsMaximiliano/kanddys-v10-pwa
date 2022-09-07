@@ -2269,9 +2269,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              /*window.location.href =
+              window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
