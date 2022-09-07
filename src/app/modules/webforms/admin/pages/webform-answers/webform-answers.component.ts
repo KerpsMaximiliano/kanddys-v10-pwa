@@ -6,7 +6,7 @@ import { User } from 'src/app/core/models/user';
 import { Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { WebformService } from 'src/app/core/services/webform.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import {
   WebformAnswerLayoutOption,
   webformAnswerLayoutOptionDefaultStyles
@@ -50,7 +50,7 @@ export class WebformAnswersComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private merchantsService: MerchantsService,
-    private webformService: WebformService
+    private webformsService: WebformsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -65,7 +65,7 @@ export class WebformAnswersComponent implements OnInit {
     }
 
     if (this.loggedIn) {
-      this.webformData = this.webformService.webformData;
+      this.webformData = this.webformsService.webformData;
 
       if (this.webformData) {
         this.questions = this.webformData.questions;
@@ -82,9 +82,10 @@ export class WebformAnswersComponent implements OnInit {
             this.webformQuestionHashTable[question._id] = question.value;
           });
 
-          this.webformAnswersPerUser = await this.webformService.answerPaginate(
-            this.webformData._id
-          );
+          // TO FIX PaginationInput
+          // this.webformAnswersPerUser = await this.webformsService.answerPaginate(
+          //   this.webformData._id
+          // );
 
           if (this.webformAnswersPerUser) {
             for (const userInfoAndAnswersObject of this.webformAnswersPerUser) {

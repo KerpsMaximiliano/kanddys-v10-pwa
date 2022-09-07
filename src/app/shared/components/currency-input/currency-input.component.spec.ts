@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WebformClientComponent } from './webform-client.component';
+import { CurrencyInputComponent } from './currency-input.component';
 
-describe('WebformClientComponent', () => {
-  let component: WebformClientComponent;
-  let fixture: ComponentFixture<WebformClientComponent>;
+describe('CurrencyInputComponent', () => {
+  let component: CurrencyInputComponent;
+  let fixture: ComponentFixture<CurrencyInputComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WebformClientComponent ]
+      declarations: [ CurrencyInputComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WebformClientComponent);
+    fixture = TestBed.createComponent(CurrencyInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

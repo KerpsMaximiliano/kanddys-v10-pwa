@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { WebformService } from 'src/app/core/services/webform.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 @Component({
   selector: 'app-webforms-client',
@@ -11,17 +11,17 @@ export class WebformsClientComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   constructor(
     private route: ActivatedRoute,
-    private webformService: WebformService
+    private webformsService: WebformsService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
       this.status = 'loading';
       const { webformId } = routeParams;
-      this.webformService.webformData = await this.webformService.webform(
+      this.webformsService.webformData = await this.webformsService.webform(
         webformId
       );
-      if (this.webformService.webformData) this.status = 'complete';
+      if (this.webformsService.webformData) this.status = 'complete';
       else this.status = 'error';
     });
   }

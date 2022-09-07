@@ -1,77 +1,86 @@
-.container {
-    width: 100%;
-	min-height: 100vh;
-    .content {
-        margin: 35px 30px;
-    }
-}
+.main-container {
+   width: 100%;
+   min-height: 100vh;
 
-.names-area {
-    width: 100%;
-    display: flex;
-    margin-bottom: 63px;
-    column-gap: 12px;
+   .client-form {
+      width: 100%;
+      padding: 28px 5%;
 
-    .name,.last-name{
-       display: flex;
-       flex-direction: column;
+      .input-container {
+         font-family: "RobotoMedium";
+         margin-bottom: 16px;
+         // width: 100%;
+         // display: flex;
+         // flex-direction: column;
 
-       .names-label{
-          font-family: 'RobotoMedium';
-          font-size: 17px;
-          color: #7B7B7B;
-          margin-bottom: 20px;
-       }
-
-       .names-input{
-          all: unset;
-          width: 100%;
-          height: 66px;
-          background-color: #FFFFFF;
-          text-indent: 16px;
-          font-family: 'RobotoMedium';
-          font-size: 20px;
-          border-radius: 9px;
-          box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
-
-          &::placeholder{
-             font-family: 'RobotoMedium';
-             font-size: 20px;
-             text-indent: 16px;
-             color: rgba(161, 161, 161, 60%);
+         .input-label {
+            display: inline-block;
+            color: #7b7b7b;
+            font-size: 1rem;
+            margin-bottom: 8px;
          }
-       }
-    }
+
+         .text-input {
+            all: unset;
+            width: 100%;
+            height: 66px;
+            background-color: #ffffff;
+            text-indent: 16px;
+            font-size: 1.25rem;
+            border-radius: 9px;
+            box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+
+            &.area {
+               width: 95%;
+               padding: 20px 10px;
+            }
+
+            &::placeholder {
+               font-size: 20px;
+               text-indent: 16px;
+               color: rgba(161, 161, 161, 60%);
+            }
+         }
+
+         // &.double {
+         //    width: 100%;
+         //    display: flex;
+         //    flex-direction: row !important;
+         //    column-gap: 12px;
+         // }
+
+         // .name,
+         // .last-name {
+         //    display: flex;
+         //    flex-direction: column;
+
+         //    .input-label {
+         //       color: #7b7b7b;
+         //       font-size: 1.063rem;
+         //       margin-bottom: 20px;
+         //    }
+
+         //    .text-input {
+         //       all: unset;
+         //       width: 100%;
+         //       height: 66px;
+         //       background-color: #ffffff;
+         //       text-indent: 16px;
+         //       font-size: 1.25rem;
+         //       border-radius: 9px;
+         //       box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+
+         //       &::placeholder {
+         //          font-size: 20px;
+         //          text-indent: 16px;
+         //          color: rgba(161, 161, 161, 60%);
+         //       }
+         //    }
+         // }
+      }
+   }
 }
 
-.mail-inputs{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 63px;
-
-    .email-input{
-       all: unset;
-       height: 66px;
-       background-color: #FFFFFF;
-       text-indent: 16px;
-       font-family: 'RobotoMedium';
-       font-size: 20px;
-       border-radius: 9px;
-       box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
-
-       &::placeholder{
-          font-family: 'RobotoMedium';
-          font-size: 20px;
-          text-indent: 16px;
-          color: rgba(161, 161, 161, 60%);
-       }
-    }
+.ng-invalid.ng-touched:not(form) {
+   border: 1px solid #c0392b !important;
 }
-
-.phone-label{
-    font-family: 'RobotoMedium';
-    font-size: 17px;
-    color: #7B7B7B;
-    margin-bottom: 20px;
- }

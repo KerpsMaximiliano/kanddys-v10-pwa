@@ -1,9 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  AbstractControl, FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
+import {
+  CountryISO,
+  PhoneNumberFormat,
+  SearchCountryField
+} from 'ngx-intl-tel-input';
+import {
+  AnswerInput,
+  AnswersQuestionInput,
+  Question,
+  Webform
+} from 'src/app/core/models/webform';
 import { WebformsService } from 'src/app/core/services/webforms.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+
+interface QuestionControl extends Question {
+  formControl?: FormControl;
+  choices?: OptionAnswerSelector[];
+}
 
 @Component({
   selector: 'app-webform',
@@ -11,85 +31,110 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
   styleUrls: ['./webform.component.scss'],
 })
 export class WebformComponent implements OnInit {
-  webform: any;
-  answers: any[];
-  canSave: boolean = false;
-
-  firstName = new FormControl('', [
-    Validators.nullValidator,
-    Validators.minLength(3),
-  ]);
-  lastName = new FormControl('');
-  text = new FormControl('', [Validators.minLength(1)]);
+  // inputType:
+  //   | 'fullName'
+  //   | 'image'
+  //   | 'text'
+  //   | 'number'
+  //   | 'phone'
+  //   | 'email'
+  //   | 'url' = 'phone';
+  // clientInput = new FormGroup({
+  //   text: new FormControl(null, [Validators.required, Validators.minLength(3)]),
+  //   image: new FormControl(),
+  //   phoneNumber: new FormControl(),
+  //   name: new FormControl(null, [Validators.minLength(3)]),
+  //   lastName: new FormControl(null, [Validators.minLength(2)]),
+  //   email: new FormControl(),
+  //   phone: new FormControl(null, [Validators.maxLength(15)]),
+  //   url: new FormControl(null, [Validators.minLength(6)]),
+  // });
+  form: FormGroup = new FormGroup({});
+  SearchCountryField = SearchCountryField;
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
+  webform: Webform;
+  questions: QuestionControl[] = [];
 
   constructor(
-    private webforms: WebformsService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private dialog: DialogService
+    private webformsService: WebformsService,
+    private fb: FormBuilder
   ) {}
 
-  async ngOnInit() {
-    this.getWebform();
+  ngOnInit(): void {
+    this.webform = this.webformsService.webformData;
+    this.questions = this.webform.questions
+      .filter((question) => question.active)
+      .map((question) => {
+        const defaultValue = question.answerDefault.find(
+          (value) => value.active
+        )?.value;
+        const validations: ValidatorFn[] = [];
+        if (question.required) validations.push(Validators.required);
+        if (question.type === 'number') validations.push(Validators.min(1));
+        const formControl = this.fb.control(defaultValue, validations);
+        this.form.addControl(question._id, formControl);
+        return {
+          ...question,
+          formControl,
+          choices:
+            question.type === 'multiple'
+              ? question.answerDefault
+                  .filter((answer) => answer.active)
+                  .map((answers) => {
+                    return {
+                      value: answers.value,
+                      status: true,
+                    };
+                  })
+              : null,
+        };
+      });
   }
-
-  async save() {
-    console.log('saving...');
-    console.log(this.text.value);
-    console.log(this.firstName.value);
-    console.log(this.lastName.value);
-
-    this.buildAnswer();
-
-    console.log(this.answers);
-
-    const answer = await this.webforms.createAnswer({
-      webform: this.webform._id,
-      response: this.answers,
-    });
-
-    this.dialog.open(GeneralFormSubmissionDialogComponent, {
-      type: 'centralized-fullscreen',
-      props: {
-        icon: answer ? 'check-circle.svg' : 'sadFace.svg',
-        message: answer ? null : 'Ocurrió un problema',
-        showCloseButton: answer ? false : true,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-
-    console.log(answer);
-  }
-
-  buildAnswer() {
-    if (this.webform.questions.length > 1) {
-      this.answers = [
-        {
-          question: this.webform.questions[0]._id,
-          value: this.firstName.value,
-        },
-        {
-          question: this.webform.questions[1]._id,
-          value: this.lastName.value,
-        },
-      ];
-    } else if (this.webform.questions.length == 1) {
-      this.answers = [
-        {
-          question: this.webform.questions[0]._id,
-          value: this.text.value,
-        },
-      ];
+  onSubmit() {
+    const response: AnswersQuestionInput[] = [];
+    for (let i in this.form.value) {
+      response.push({
+        question: i,
+        value: !(this.form.value[i] instanceof File)
+          ? this.form.value[i]
+          : null,
+        isMedia: this.form.value[i] instanceof File,
+        media: this.form.value[i] instanceof File ? this.form.value[i] : null,
+      });
     }
+    const input: AnswerInput = {
+      webform: this.webform._id,
+      response,
+    };
+    this.webformsService.createAnswer(input);
   }
 
-  back() {
-    this.router.navigate(['/webforms/input-selector']);
+  onCurrencyInput(
+    form: FormControl | AbstractControl,
+    value: { formatted: string; number: number }
+  ) {
+    form.setValue(value.number);
   }
 
-  async getWebform() {
-    this.webform = this.webforms.webformData;
-    console.log(this.webform);
+  onSelectInput(
+    form: FormControl | AbstractControl,
+    questionIndex: number,
+    value: number
+  ) {
+    form.setValue(this.questions[questionIndex].answerDefault[value].value);
+  }
+
+  onFileInput(
+    form: FormControl | AbstractControl,
+    file: File | { image: File; index: number }
+  ) {
+    if (!('index' in file)) {
+      form.setValue(file);
+    }
   }
 }
