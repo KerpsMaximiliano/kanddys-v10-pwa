@@ -15,7 +15,15 @@ const webformBody = `
 export const webform = gql`
     query webform($id: ObjectID!) {
         webform(id: $id) {
-            ${webformBody}
+          ${webformBody}
+        }
+    }
+`;
+
+export const webformByMerchant = gql`
+    query webformByMerchant($merchantId: ObjectID!) {
+      webformByMerchant(merchantId: $merchantId) {
+          _id
         }
     }
 `;

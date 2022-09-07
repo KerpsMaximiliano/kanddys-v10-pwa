@@ -68,12 +68,15 @@ export class WebformService {
     }
   }
 
-  async answerPaginate(id: string): Promise<any> {
+  async answerPaginate(id?: string): Promise<any> {
     try {
       const { answerPaginate: response } = await this.graphql.query({
         query: answerPaginate,
         variables: {
-          input: {
+          // TODO: Refactorizar esto.
+          // Se supone que es el componente quien elige cómo paginar el query,
+          // no el servicio.
+          input: !id ? {} : {
             findBy: {
               webform: id,
             },
