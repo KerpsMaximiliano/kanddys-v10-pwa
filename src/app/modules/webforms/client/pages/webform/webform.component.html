@@ -1,12 +1,13 @@
 <div class="main-container">
   <app-helper-headerv2
     [mode]="'basic'"
+    bgColor="#2874AD"
     [mainText]="{
-      text: 'Contacto de las Facturas',
+      text: webform?.name,
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
-    [returnAble]="true"
+    [returnAble]="false"
   ></app-helper-headerv2>
 
   <form [formGroup]="form" class="client-form">

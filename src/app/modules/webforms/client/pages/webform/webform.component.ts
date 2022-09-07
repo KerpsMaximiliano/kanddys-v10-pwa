@@ -74,7 +74,7 @@ export class WebformComponent implements OnInit {
         const defaultValue = question.answerDefault.find(
           (value) => value.active
         )?.value;
-        const validations: ValidatorFn[] = [];
+        const validations: ValidatorFn[] = [Validators.pattern(/[\S]/)];
         if (question.required) validations.push(Validators.required);
         if (question.type === 'number') validations.push(Validators.min(1));
         const formControl = this.fb.control(defaultValue, validations);
@@ -103,10 +103,11 @@ export class WebformComponent implements OnInit {
       response.push({
         question: i,
         value: !(this.form.value[i] instanceof File)
-          ? this.form.value[i]
+          ? this.form.value[i].trim()
           : null,
         isMedia: this.form.value[i] instanceof File,
-        media: this.form.value[i] instanceof File ? this.form.value[i] : null,
+        media:
+          this.form.value[i] instanceof File ? this.form.value[i].trim() : null,
       });
     }
     const input: AnswerInput = {
