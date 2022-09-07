@@ -1959,14 +1959,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'E-Mail',
             'Instagram',
           ],
-          changeCallbackFunction: (change, params) => {
-            this.formSteps[5].fieldsList[5].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-          },
           label: 'Vía del pedido (*)',
           inputType: 'radio',
           styles: {
