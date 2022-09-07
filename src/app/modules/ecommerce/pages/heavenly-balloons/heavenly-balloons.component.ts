@@ -297,9 +297,16 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'email',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.email),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.pattern(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                ),
+              ])
+            ),
           },
-          label: 'Email',
+          label: 'Correo electrónico',
           placeholder: 'example@domain',
           inputType: 'email',
           styles: {
@@ -334,6 +341,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         this.whatsAppMessageParts.pop();
+        params.scrollToStep(0, false);
       },
       pageHeader: {
         text: '¿Donde recibirás las notificaciones de esta orden?',
@@ -420,6 +428,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         this.whatsAppMessageParts.pop();
+        params.scrollToStep(1, false);
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
@@ -434,7 +443,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           label: 'Cantidad de rosas(Si desconoce la cantidad, dejarlo vacío)',
           fieldControl: {
             type: 'single',
-            control: new FormControl(0, Validators.min(0)),
+            control: new FormControl(null, Validators.min(0)),
           },
           onlyAllowPositiveNumbers: true,
           placeholder: 'Escribe un número',
@@ -572,10 +581,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               {
                 color: '#572364',
                 label: 'Morado oscuro',
-              },
-              {
-                color: '#40E0D0',
-                label: 'Turquesa',
               },
               {
                 color: '#40E0D0',
@@ -1278,6 +1283,26 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
+          label: 'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
+          placeholder: 'Escribe aquí...',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+              paddingBottom: '26px',
+            },
+            containerStyles: {
+              paddingBottom: '0rem',
+            },
+          },
+        },
+        /* FUNCIONALIDAD GPS CON GOOGLE MAPS
+        {
+          name: 'location',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
           label: 'Locación',
           inputType: 'location-map',
           placeholder:
@@ -1294,7 +1319,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '0px',
             },
           },
-        },
+        },*/
         {
           name: 'sender',
           fieldControl: {
@@ -1302,7 +1327,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(''),
           },
           label:
-            'Remitente (Si no deseas que indiquemos de parte de quien proviene este arreglo puedes escribir "Anónimo" o dejarlo vacío',
+            'Nombre del Remitente',
           placeholder: 'Escribe aquí',
           styles: {
             labelStyles: {
@@ -1365,7 +1390,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           component: ReservationOrderlessComponent,
           inputs: {
             calendarId: this.calendarId || '62eadec619ae079e9283f355',
-            firstLabel: 'FECHA DE ENTREGA',
+            firstLabel: 'FECHA DE ENTREGA (*)',
             secondLabel: 'TANDA',
             timeOfDayMode: true,
             containerStyles: {
@@ -1376,9 +1401,11 @@ export class HeavenlyBalloonsComponent implements OnInit {
             {
               name: 'onTimeOfDaySelection',
               callback: (timeOfDay) => {
-                this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
-                  timeOfDay
-                );
+                if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
+                  this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
+                    timeOfDay
+                  );
+                }
               },
             },
             {
@@ -1465,6 +1492,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
         return { ok: true };
       },
       customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+
         if (this.choosedFlowers) {
           params.scrollToStep(3);
         } else {
@@ -1659,6 +1688,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
             control: new FormControl(0),
@@ -1785,6 +1815,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
             control: new FormControl(0, [

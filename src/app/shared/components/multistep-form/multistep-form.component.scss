@@ -115,7 +115,7 @@ html {
   background-color: white;
   border-radius: 5px;
   padding: 5px;
-  border: 1px solid #4773D8;
+  border: 1px solid #4773d8;
 }
 
 .input-label-bottom {
@@ -131,7 +131,7 @@ html {
   justify-content: space-between;
 }
 
-.date-inputs{
+.date-inputs {
   appearance: none;
   display: inline-block;
   visibility: visible;
@@ -162,6 +162,29 @@ html {
   }
 }
 
-.date-inputs::-webkit-datetime-edit-month-field { padding: 0; }
-.date-inputs::-webkit-datetime-edit-day-field { padding: 0; }
-.date-inputs::-webkit-datetime-edit-year-field { padding: 0; }
+.color-container {
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+
+  .color-circle {
+    width: 35px;
+    padding: 0px 10px;
+    height: 35px;
+    position: relative;
+    border-radius: 50%;
+    border: 0.07px solid lightgrey;
+  }
+}
+
+.date-inputs::-webkit-datetime-edit-month-field {
+  padding: 0;
+}
+.date-inputs::-webkit-datetime-edit-day-field {
+  padding: 0;
+}
+.date-inputs::-webkit-datetime-edit-year-field {
+  padding: 0;
+}

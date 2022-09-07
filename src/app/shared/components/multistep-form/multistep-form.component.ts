@@ -27,6 +27,8 @@ import {
   CountryISO,
   PhoneNumberFormat,
 } from 'ngx-intl-tel-input';
+import { SwiperOptions } from 'swiper';
+import { Observable } from 'apollo-link';
 
 @Component({
   selector: 'app-multistep-form',
@@ -167,6 +169,7 @@ export class MultistepFormComponent
   timeoutId: any = null;
   @Input() currentStep: number = 0;
   @Input() currentStepString: string = (this.currentStep + 1).toString();
+  @Input() usesGoogleMaps: boolean = false;
   @Output() paramsRef = new EventEmitter();
   dataModel: FormGroup = new FormGroup({});
   env: string = environment.assetsUrl;
@@ -180,6 +183,13 @@ export class MultistepFormComponent
   PhoneNumberFormat = PhoneNumberFormat;
   headerHeightTracker: number = 60;
   finishedExecutingStepProcessingFunction = true;
+  colorPickerSwiperConfig: SwiperOptions = {
+    slidesPerView: 5,
+    spaceBetween: 50,
+    pagination: { clickable: true },
+  };
+  googleMapsApiLoaded: Observable<boolean>;
+  location = null;
 
   constructor(private header: HeaderService, private dialog: DialogService) {}
 
@@ -672,7 +682,8 @@ export class MultistepFormComponent
 
   blockCursorMovement(e: any, targetedInput: boolean = false) {
     if (!targetedInput) return;
-    else {//Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
+    else {
+      //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
       //ocasiona el el numero formateado se desconfigure
       if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
@@ -699,6 +710,133 @@ export class MultistepFormComponent
 
     if (currentField.onBlurFunction) {
       currentField.onBlurFunction(this.stepFunctionParams);
+    }
+  }
+
+  selectColor(colorIndex: number, currentField: FormField) {
+    /*console.log(
+      'before',
+      currentField.colorPickerConfiguration.selectedCounter,
+      currentField.colorPickerConfiguration.maximumNumberOfSelections,
+      currentField.colorPickerConfiguration.options[colorIndex].selected
+    );*/
+
+    if (
+      currentField.colorPickerConfiguration.selectedCounter <
+      currentField.colorPickerConfiguration.maximumNumberOfSelections
+    ) {
+      currentField.colorPickerConfiguration.options[colorIndex].selected =
+        currentField.colorPickerConfiguration.options[colorIndex].selected
+          ? false
+          : true;
+
+      if (currentField.colorPickerConfiguration.options[colorIndex].selected) {
+        if (
+          currentField.colorPickerConfiguration.selectedCounter <
+          currentField.colorPickerConfiguration.maximumNumberOfSelections
+        )
+          currentField.colorPickerConfiguration.selectedCounter += 1;
+      } else {
+        currentField.colorPickerConfiguration.selectedCounter -= 1;
+      }
+    } else if (
+      currentField.colorPickerConfiguration.selectedCounter ===
+        currentField.colorPickerConfiguration.maximumNumberOfSelections &&
+      currentField.colorPickerConfiguration.options[colorIndex].selected
+    ) {
+      currentField.colorPickerConfiguration.options[colorIndex].selected =
+        false;
+      currentField.colorPickerConfiguration.selectedCounter -= 1;
+    }
+
+    currentField.fieldControl.control.setValue(
+      currentField.colorPickerConfiguration.options.filter(
+        (option) => option.selected
+      )
+    );
+
+    /*console.log(
+      'after',
+      currentField.colorPickerConfiguration.selectedCounter,
+      currentField.colorPickerConfiguration.maximumNumberOfSelections,
+      currentField.colorPickerConfiguration.options[colorIndex].selected
+    );*/
+  }
+
+  setUserCurrentLocation(currentField: FormField) {
+    currentField.clickedOnLocationQuestionButton = true;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.location = {};
+          this.location.lat = position.coords.latitude;
+          this.location.lng = position.coords.longitude;
+          currentField.wannaAddYourGPSLocation = true;
+
+          currentField.fieldControl.control.setValue(
+            'http://www.google.com/maps/place/' +
+              this.location.lat +
+              ',' +
+              this.location.lng
+          );
+        },
+        () => {
+          alert('No proporcionaste tu ubicación');
+          currentField.wannaAddYourGPSLocation = false;
+        }
+      );
+    }
+  }
+
+  setManualLocation(currentField: FormField) {
+    currentField.clickedOnLocationQuestionButton = true;
+    currentField.wannaAddYourGPSLocation = false;
+  }
+
+  addMarker(event: any, currentField: FormField) {
+    if (!currentField.markerPositions) currentField.markerPositions = [];
+    currentField.markerPositions.push(event.latLng.toJSON());
+
+    currentField.fieldControl.control.setValue(
+      'http://www.google.com/maps/place/' +
+        currentField.markerPositions[0].lat +
+        ',' +
+        currentField.markerPositions[0].lng
+    );
+  }
+
+  changeMarkerPosition(event: any, currentField: FormField) {
+    currentField.markerPositions[0].lat = event.latLng.lat();
+    currentField.markerPositions[0].lng = event.latLng.lng();
+
+    currentField.fieldControl.control.setValue(
+      'http://www.google.com/maps/place/' +
+        currentField.markerPositions[0].lat +
+        ',' +
+        currentField.markerPositions[0].lng
+    );
+  }
+
+  searchLocationAndCenterMap(event: any, currentField: FormField) {
+    if ('geometry' in event) {
+      currentField.centerMapOnCoordinates = {
+        lat: event.geometry.location.lat(),
+        lng: event.geometry.location.lng(),
+      };
+      console.log(currentField.centerMapOnCoordinates);
+    }
+  }
+
+  markOptionAsSelected(option: string, currentField: FormField) {
+    if (currentField.inputType === 'radio') {
+      //console.log('before', 'option', option, 'selected', currentField.fieldControl.control.value)
+      if (
+        currentField.fieldControl.control.value === '' ||
+        currentField.fieldControl.control.value !== option
+      )
+        currentField.fieldControl.control.setValue(option);
+      else currentField.fieldControl.control.setValue('');
+      //console.log('after', 'option', option, 'selected', currentField.fieldControl.control.value)
     }
   }
 }
