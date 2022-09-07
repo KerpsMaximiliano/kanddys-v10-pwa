@@ -772,60 +772,44 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           },
         },
-      ],
-      embeddedComponents: [
         {
-          afterIndex: 6,
-          component: ImageInputComponent,
-          inputs: {
-            imageField:
-              this.defaultImages.length > 0 ? this.defaultImages : null,
-            multiple: true,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Fotos de referencia',
-            expandImage: true,
-            topLabel: {
-              text: '¿Tienes fotos de referencia? Adjúntalas aquí:',
-              styles: {
-                ...labelStyles,
-                paddingTop: '51px',
-                paddingBottom: '26px',
-              },
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
             },
             containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
               width: '157px',
-              height: '137px',
-              margin: '0px',
+              textAlign: 'center',
             },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-              backgroundSize: 'cover',
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.defaultImages[result.index] = result.image;
-                this.formSteps[0].embeddedComponents[0].inputs.innerLabel =
-                  'Adiciona otra imagen (opcional)';
-                this.formSteps[0].embeddedComponents[0].shouldRerender = true;
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.files[result.index] = result.image;
-              },
-            },
-          ],
-          containerStyles: {
-            marginTop: '0px',
-            paddingBottom: '4rem',
           },
         },
       ],
@@ -1630,8 +1614,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 '0';
               this.formSteps[6].fieldsList[3].styles.containerStyles.height =
                 '0px';
-              this.formSteps[6].fieldsList[3].styles.containerStyles.marginLeft =
-                '1000px';
               this.formSteps[6].fieldsList[3].fieldControl.control.setValue('');
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                 []
@@ -1654,29 +1636,46 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
         {
-          name: 'referenceImage',
+          name: 'proofOfPayment',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl(['']),
           },
           label: 'Adjuntar comprobante (*)',
-          inputType: 'file',
+          inputType: 'file2',
+          fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
             },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
             fieldStyles: {
-              minWidth: '192px',
-              maxHeight: '163px',
-              width: 'calc((100% - 35px * 2) - 55.14%)',
-              borderRadius: '7px',
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
             },
             containerStyles: {
+              marginTop: '0px',
+              paddingTop: '64px',
+              paddingBottom: '270px',
               transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
             },
           },
         },
@@ -2051,7 +2050,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               howDidYouFindUs,
               orderMedium,
               paymentMethod,
-              referenceImage,
+              proofOfPayment,
               socialId,
             } = params.dataModel.value['7'];
             let totalAmount = this.formSteps[6].fieldsList[4].formattedValue;
@@ -2177,27 +2176,75 @@ export class HeavenlyBalloonsComponent implements OnInit {
               rosesColor,
             };
 
-            if (referenceImage) {
-              files.push(base64ToFile(referenceImage));
+            if (
+              this.formSteps[3].fieldsList[7].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[3].fieldsList[7].fieldControl.control.value[0] !==
+                ''
+            ) {
+              const arrayOfReferenceImageFiles = [];
+              const arrayOfProofOfPaymentFiles = [];
 
-              this.defaultImages.forEach((image) => {
-                if (image !== '') {
-                  files.push(base64ToFile(image as string));
+              this.formSteps[3].fieldsList[7].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfReferenceImageFiles.push(base64ToFile(base64string));
                 }
-              });
-
-              const fileRoutes =
-                await this.merchantsService.uploadAirtableAttachments(files);
-              whatsappMessagePartsOfThe7thStep.push(
-                `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`
-              );
-              whatsappMessagePartsOfThe7thStep.push(
-                `*Fotos de Referencia:*\n${fileRoutes.slice(1).join('\n')}\n\n`
               );
 
-              data.referenceImage = fileRoutes[0];
-              data.articlePhotos = fileRoutes.slice(1);
+              if (
+                this.formSteps[6].fieldsList[3].fieldControl.control.value
+                  .length > 0 &&
+                this.formSteps[6].fieldsList[3].fieldControl.control
+                  .value[0] !== ''
+              ) {
+                this.formSteps[6].fieldsList[3].fieldControl.control.value.forEach(
+                  (base64string) => {
+                    if (base64string && base64string !== '')
+                      arrayOfProofOfPaymentFiles.push(
+                        base64ToFile(base64string)
+                      );
+                  }
+                );
+              }
+
+              const uploadFilesResultReferenceImages =
+                await this.merchantsService.uploadAirtableAttachments(
+                  arrayOfReferenceImageFiles
+                );
+
+              const uploadFilesResultProofOfPayment =
+                await this.merchantsService.uploadAirtableAttachments(
+                  arrayOfProofOfPaymentFiles
+                );
+
+              if (uploadFilesResultReferenceImages) {
+                const fileRoutes = uploadFilesResultReferenceImages;
+                whatsappMessagePartsOfThe7thStep.push(
+                  `*Foto de Referencia:*\n`
+                );
+
+                data.referenceImage = fileRoutes;
+
+                fileRoutes.forEach((route, index) => {
+                  whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+                });
+              }
+
+              if (uploadFilesResultProofOfPayment) {
+                const fileRoutes = uploadFilesResultProofOfPayment;
+                whatsappMessagePartsOfThe7thStep.push(
+                  `*Comprobante de pago:*\n`
+                );
+
+                data.proofOfPayment = fileRoutes;
+
+                fileRoutes.forEach((route, index) => {
+                  whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+                });
+              }
             }
+
 
             if (reservation) {
               const deliveryISOString = new Date(
@@ -2214,10 +2261,15 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   JSON.stringify({
                     ...data,
                   })
-                )
-              }
+                ),
+              };
 
-              const completeWhatsappParts = this.whatsAppMessageParts.concat(whatsappMessagePartsOfThe7thStep);
+              const completeWhatsappParts = this.whatsAppMessageParts.concat(
+                whatsappMessagePartsOfThe7thStep
+              );
+
+              console.log(completeWhatsappParts);
+
               this.fullFormMessage = completeWhatsappParts.join('');
 
               const success =
@@ -2238,9 +2290,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              /*window.location.href =
+              window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
