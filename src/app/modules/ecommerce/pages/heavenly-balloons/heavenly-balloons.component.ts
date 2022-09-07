@@ -403,13 +403,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const whatsappMessagePartsOfThe3rdStep = [];
 
-            this.formSteps[2].fieldsList[0].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-
             whatsappMessagePartsOfThe3rdStep.push(
               `*¿Qué voy a ordenar?:*\n${change}\n\n`
             );
@@ -419,7 +412,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             if (change === 'Arreglo de flores') {
               this.formSteps[4].fieldsList.forEach((field, index) => {
-                field.fieldControl.control.setValue('');
+                if (index !== this.formSteps[4].fieldsList.length - 1)
+                  field.fieldControl.control.setValue('');
+                else {
+                  field.fieldControl.control.setValue(['']);
+                  field.fileObjects = [];
+                }
               });
 
               params.scrollToStep(3);
@@ -434,6 +432,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                       color.selected = false;
                     }
                   );
+                } else if (index === 7) {
+                  field.fieldControl.control.setValue(['']);
+                  field.fileObjects = [];
                 } else field.fieldControl.control.setValue('');
               });
 
@@ -914,13 +915,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           selectionOptions: ['Si', 'No'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[4].fieldsList[1].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-
             if (change === 'Si') {
               this.formSteps[4].fieldsList[2].styles.containerStyles.opacity =
                 '1';
@@ -989,6 +983,46 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           },
         },
+        {
+          name: 'referenceImage2',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            },
+          },
+        },
       ],
       stepProcessingFunction: (params) => {
         const { orderDetails, wantToAddADedication, dedicationMessage } =
@@ -1014,70 +1048,20 @@ export class HeavenlyBalloonsComponent implements OnInit {
       },
       customScrollToStepBackwards: (params) => {
         this.formSteps[2].fieldsList[0].fieldControl.control.setValue(null);
-        this.formSteps[4].fieldsList.forEach((field) => {
-          field.fieldControl.control.setValue('');
+
+        this.formSteps[4].fieldsList.forEach((field, index) => {
+          if (index !== this.formSteps[4].fieldsList.length - 1)
+            field.fieldControl.control.setValue('');
+          else {
+            field.fieldControl.control.setValue(['']);
+            field.fileObjects = [];
+          }
         });
 
         params.scrollToStep(2);
 
         this.whatsAppMessageParts.pop();
       },
-      embeddedComponents: [
-        {
-          afterIndex: 2,
-          component: ImageInputComponent,
-          inputs: {
-            imageField:
-              this.defaultImages.length > 0 ? this.defaultImages : null,
-            multiple: true,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Fotos de referencia',
-            expandImage: true,
-            topLabel: {
-              text: '¿Tienes fotos de referencia? Adjúntalas aquí:',
-              styles: {
-                ...labelStyles,
-                paddingTop: '51px',
-                paddingBottom: '26px',
-              },
-            },
-            containerStyles: {
-              width: '157px',
-              height: '137px',
-              margin: '0px',
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-              backgroundSize: 'cover',
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.defaultImages[result.index] = result.image;
-                this.formSteps[4].embeddedComponents[0].inputs.innerLabel =
-                  'Adiciona otra imagen (opcional)';
-                this.formSteps[4].embeddedComponents[0].shouldRerender = true;
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.files[result.index] = result.image;
-              },
-            },
-          ],
-          containerStyles: {
-            marginTop: '0px',
-            paddingBottom: '4rem',
-          },
-        },
-      ],
       footerConfig,
       stepButtonInvalidText: 'INGRESA LOS DATOS REQUERIDOS',
       stepButtonValidText: 'CONTINUA CON TU ORDEN',
@@ -1588,13 +1572,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Otro',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[6].fieldsList[2].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-
             this.formSteps[6].fieldsList[3].styles.containerStyles = {};
 
             if (change !== 'Efectivo') {
@@ -2125,11 +2102,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               ).toISOString();
             }
 
-            // if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
-            //   this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
-
-            const files = [];
-
             let data: any = {
               instagramUser,
               name,
@@ -2168,75 +2140,90 @@ export class HeavenlyBalloonsComponent implements OnInit {
               rosesColor,
             };
 
+            const arrayOfReferenceImageFiles = [];
+            const arrayOfProofOfPaymentFiles = [];
+
             if (
               this.formSteps[3].fieldsList[7].fieldControl.control.value
                 .length > 0 &&
               this.formSteps[3].fieldsList[7].fieldControl.control.value[0] !==
-                ''
+                '' &&
+              whatWouldYouOrder === 'Arreglo de flores'
             ) {
-              const arrayOfReferenceImageFiles = [];
-              const arrayOfProofOfPaymentFiles = [];
-
               this.formSteps[3].fieldsList[7].fieldControl.control.value.forEach(
                 (base64string) => {
                   if (base64string && base64string !== '')
                     arrayOfReferenceImageFiles.push(base64ToFile(base64string));
                 }
               );
+            }
 
-              if (
-                this.formSteps[6].fieldsList[3].fieldControl.control.value
-                  .length > 0 &&
-                this.formSteps[6].fieldsList[3].fieldControl.control
-                  .value[0] !== ''
-              ) {
-                this.formSteps[6].fieldsList[3].fieldControl.control.value.forEach(
-                  (base64string) => {
-                    if (base64string && base64string !== '')
-                      arrayOfProofOfPaymentFiles.push(
-                        base64ToFile(base64string)
-                      );
-                  }
-                );
-              }
+            if (
+              this.formSteps[4].fieldsList[3].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !==
+                '' &&
+              whatWouldYouOrder === 'Otro'
+            ) {
+              this.formSteps[4].fieldsList[3].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfReferenceImageFiles.push(base64ToFile(base64string));
+                }
+              );
+            }
 
-              const uploadFilesResultReferenceImages =
+            if (
+              this.formSteps[6].fieldsList[3].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[6].fieldsList[3].fieldControl.control.value[0] !==
+                ''
+            ) {
+              this.formSteps[6].fieldsList[3].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfProofOfPaymentFiles.push(base64ToFile(base64string));
+                }
+              );
+            }
+
+            let uploadFilesResultReferenceImages = null;
+
+            if (arrayOfReferenceImageFiles.length > 0)
+              uploadFilesResultReferenceImages =
                 await this.merchantsService.uploadAirtableAttachments(
                   arrayOfReferenceImageFiles
                 );
 
-              const uploadFilesResultProofOfPayment =
+            let uploadFilesResultProofOfPayment = null;
+
+            if (arrayOfProofOfPaymentFiles.length > 0)
+              uploadFilesResultProofOfPayment =
                 await this.merchantsService.uploadAirtableAttachments(
                   arrayOfProofOfPaymentFiles
                 );
 
-              if (uploadFilesResultReferenceImages) {
-                const fileRoutes = uploadFilesResultReferenceImages;
-                whatsappMessagePartsOfThe7thStep.push(
-                  `*Foto de Referencia:*\n`
-                );
+            if (uploadFilesResultReferenceImages) {
+              const fileRoutes = uploadFilesResultReferenceImages;
+              whatsappMessagePartsOfThe7thStep.push(`*Foto de Referencia:*\n`);
 
-                data.referenceImage = fileRoutes;
+              data.referenceImage = fileRoutes;
 
-                fileRoutes.forEach((route, index) => {
-                  whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
-                });
-              }
-
-              if (uploadFilesResultProofOfPayment) {
-                const fileRoutes = uploadFilesResultProofOfPayment;
-                whatsappMessagePartsOfThe7thStep.push(
-                  `*Comprobante de pago:*\n`
-                );
-
-                data.proofOfPayment = fileRoutes;
-
-                fileRoutes.forEach((route, index) => {
-                  whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
-                });
-              }
+              fileRoutes.forEach((route, index) => {
+                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+              });
             }
 
+            if (uploadFilesResultProofOfPayment) {
+              const fileRoutes = uploadFilesResultProofOfPayment;
+              whatsappMessagePartsOfThe7thStep.push(`*Comprobante de pago:*\n`);
+
+              data.proofOfPayment = fileRoutes;
+
+              fileRoutes.forEach((route, index) => {
+                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+              });
+            }
 
             if (reservation) {
               const deliveryISOString = new Date(
@@ -2282,8 +2269,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              window.location.href =
+              /*window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
