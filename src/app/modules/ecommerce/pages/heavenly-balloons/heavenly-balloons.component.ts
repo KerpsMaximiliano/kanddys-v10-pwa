@@ -1591,7 +1591,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 '0';
               this.formSteps[6].fieldsList[3].styles.containerStyles.height =
                 '0px';
-              this.formSteps[6].fieldsList[3].fieldControl.control.setValue('');
+              this.formSteps[6].fieldsList[3].fieldControl.control.setValue(['']);
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
@@ -2247,7 +2247,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 whatsappMessagePartsOfThe7thStep
               );
 
-              console.log(completeWhatsappParts);
+              //console.log(completeWhatsappParts);
 
               this.fullFormMessage = completeWhatsappParts.join('');
 
