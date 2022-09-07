@@ -5,6 +5,7 @@ import {
   answerPaginate,
   webformAddQuestion,
 } from '../graphql/webforms.gql';
+import { Webform } from '../models/webform';
 
 export interface FormCreationConfig {
   currentStep: {
@@ -48,10 +49,10 @@ export interface FormCreationConfig {
 })
 export class WebformService {
   formCreationData: FormCreationConfig = null;
-
+  webformData: Webform;
   constructor(private graphql: GraphQLWrapper) {}
 
-  async webform(id: string): Promise<any> {
+  async webform(id: string): Promise<Webform> {
     try {
       const { webform: response } = await this.graphql.query({
         query: webform,
