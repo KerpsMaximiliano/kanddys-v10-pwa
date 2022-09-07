@@ -30,6 +30,12 @@ export interface MultipleControl {
   control: FormArray;
 }
 
+export interface ColorOption {
+  label: string;
+  color: string;
+  selected?: boolean;
+}
+
 export interface FormField {
   name: string;
   styles?: FieldStyles;
@@ -46,6 +52,11 @@ export interface FormField {
   changeFunctionSubscription?: Subscription;
   customCursorIndex?: number;
   selectionOptions?: Array<string>;
+  colorPickerConfiguration?: {
+    options: Array<ColorOption>;
+    maximumNumberOfSelections?: number;
+    selectedCounter?: number;
+  };
   shouldCollapseList?: boolean;
   collapsed?: boolean;
   validators?: Array<any>;
@@ -86,8 +97,20 @@ export interface FormField {
     | 'file2'
     | 'radio'
     | 'button'
-    | 'radio-simple';
+    | 'radio-simple'
+    | 'color-picker'
+    | 'location-map';
+  wannaAddYourGPSLocation?: boolean;
+  clickedOnLocationQuestionButton?: boolean;
   callbackOnClick?(...params): any;
+  markerPositions?: Array<{
+    lat: number;
+    lng: number;
+  }>;
+  centerMapOnCoordinates?: {
+    lat: number;
+    lng: number;
+  };
   shouldFormatNumber?: boolean;
   showImageBottomLabel?: string;
   multiple?: boolean;
