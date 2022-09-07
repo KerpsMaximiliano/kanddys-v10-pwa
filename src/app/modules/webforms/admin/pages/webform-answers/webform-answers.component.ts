@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { SwiperOptions } from 'swiper';
-import {
-  OptionAnswerSelector,
-  WebformAnswerLayoutOption,
-  webformAnswerLayoutOptionDefaultStyles,
-} from 'src/app/core/types/answer-selector';
+import * as moment from 'moment';
+import { Merchant } from 'src/app/core/models/merchant';
 import { User } from 'src/app/core/models/user';
+import { Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Merchant } from 'src/app/core/models/merchant';
 import { WebformService } from 'src/app/core/services/webform.service';
-import * as moment from 'moment';
-import { Webform } from 'src/app/core/models/webform';
+import {
+  WebformAnswerLayoutOption,
+  webformAnswerLayoutOptionDefaultStyles
+} from 'src/app/core/types/answer-selector';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-webform-answers',
