@@ -2247,7 +2247,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 whatsappMessagePartsOfThe7thStep
               );
 
-              console.log(completeWhatsappParts);
+              //console.log(completeWhatsappParts);
 
               this.fullFormMessage = completeWhatsappParts.join('');
 
