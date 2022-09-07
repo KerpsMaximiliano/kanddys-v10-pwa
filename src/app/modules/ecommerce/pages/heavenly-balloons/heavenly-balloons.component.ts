@@ -73,6 +73,40 @@ export class HeavenlyBalloonsComponent implements OnInit {
   multistepFormData: any = null;
   loading: boolean = true;
 
+  reservationOrderlessComponent = {
+    afterIndex: 0,
+    component: ReservationOrderlessComponent,
+    inputs: {
+      calendarId: this.calendarId || '62eadec619ae079e9283f355',
+      firstLabel: 'FECHA DE ENTREGA (*)',
+      secondLabel: 'TANDA',
+      timeOfDayMode: true,
+      containerStyles: {
+        minHeight: 'auto',
+      },
+    },
+    outputs: [
+      {
+        name: 'onTimeOfDaySelection',
+        callback: (timeOfDay) => {
+          if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
+              timeOfDay
+            );
+          }
+        },
+      },
+      {
+        name: 'componentAndDataLoaded',
+        callback: (loaded) => {
+          if (loaded) {
+            window.dispatchEvent(new Event('resize'));
+          }
+        },
+      },
+    ],
+  };
+
   formSteps: FormStep[] = [
     {
       fieldsList: [
@@ -1283,7 +1317,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
+          label:
+            'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
           placeholder: 'Escribe aquí...',
           styles: {
             labelStyles: {
@@ -1292,6 +1327,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
+              opacity: '0',
+              height: '0px',
               paddingBottom: '0rem',
             },
           },
@@ -1326,8 +1364,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label:
-            'Nombre del Remitente',
+          label: 'Nombre del Remitente',
           placeholder: 'Escribe aquí',
           styles: {
             labelStyles: {
@@ -1384,41 +1421,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
       ],
-      embeddedComponents: [
-        {
-          afterIndex: 0,
-          component: ReservationOrderlessComponent,
-          inputs: {
-            calendarId: this.calendarId || '62eadec619ae079e9283f355',
-            firstLabel: 'FECHA DE ENTREGA (*)',
-            secondLabel: 'TANDA',
-            timeOfDayMode: true,
-            containerStyles: {
-              minHeight: 'auto',
-            },
-          },
-          outputs: [
-            {
-              name: 'onTimeOfDaySelection',
-              callback: (timeOfDay) => {
-                if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
-                  this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
-                    timeOfDay
-                  );
-                }
-              },
-            },
-            {
-              name: 'componentAndDataLoaded',
-              callback: (loaded) => {
-                if (loaded) {
-                  window.dispatchEvent(new Event('resize'));
-                }
-              },
-            },
-          ],
-        },
-      ],
+      embeddedComponents: [this.reservationOrderlessComponent],
       stepProcessingFunction: (params) => {
         const {
           reservation: timeOfDay,
@@ -1437,57 +1440,51 @@ export class HeavenlyBalloonsComponent implements OnInit {
           whatsappMessagePartsOfThe6thStep.push(
             `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`
           );
+        }
 
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
+        if (deliveryMethod && deliveryMethod !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Método de entrega:*\n${deliveryMethod}\n\n`
+          );
         }
 
         if (typeOfBuilding && typeOfBuilding !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Tipo de edificación:*\n${typeOfBuilding}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
 
         if (deliveryAddress && deliveryAddress !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Dirección de entrega:*\n${deliveryAddress}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
 
         if (location && location !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Locación/Ubicación exacta:*\n${location}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
 
         if (sender && sender !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Nombre del Remitente:*\n${sender}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
 
         if (receiver && receiver !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Nombre del Destinatario:*\n${receiver}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
 
         if (receiverPhoneNumber && receiverPhoneNumber !== '') {
           whatsappMessagePartsOfThe6thStep.push(
             `*Teléfono del destinatario:*\n${receiverPhoneNumber.e164Number}\n\n`
           );
-
-          this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
         }
+
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
 
         return { ok: true };
       },
@@ -1596,7 +1593,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'paymentMethod',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(''),
           },
           selectionOptions: [
             'Cuenta Popular',
@@ -1642,7 +1639,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
             }
           },
-          label: 'Vía o Cuenta a la que realizaste tu pago (*)',
+          label: 'Vía o Cuenta a la que realizaste tu pago',
           inputType: 'radio',
           styles: {
             fieldStyles: {
@@ -1695,17 +1692,20 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
           shouldFormatNumber: true,
           label: 'Total de la orden (*)',
+          bottomLabel: {
+            text: 'El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo.',
+          },
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
             if (Number(change) < Number(firstPayment)) {
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(0, {
                 emitEvent: false,
               });
 
-              this.formSteps[6].fieldsList[1].formattedValue =
+              this.formSteps[6].fieldsList[5].formattedValue =
                 '$' + this.decimalPipe.transform(Number(0), '1.2');
             }
 
@@ -1735,10 +1735,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                         );
 
                   if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[0].placeholder = '';
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
 
-                  this.formSteps[6].fieldsList[0].formattedValue =
+                  this.formSteps[6].fieldsList[4].formattedValue =
                     '$' + formatted;
                 } else {
                   const formatted =
@@ -1762,10 +1762,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                         );
 
                   if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[0].placeholder = '';
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
 
-                  this.formSteps[6].fieldsList[0].formattedValue =
+                  this.formSteps[6].fieldsList[4].formattedValue =
                     '$' + formatted;
                 }
               } else {
@@ -1775,7 +1775,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                     .filter((char) => char !== '.')
                     .join('')
                 );
-                this.formSteps[6].fieldsList[0].fieldControl.control.setValue(
+                this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
                   convertedNumber,
                   {
                     emitEvent: false,
@@ -1802,6 +1802,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               bottom: '0px',
               left: '0px',
               boxShadow: 'none',
+            },
+            bottomLabelStyles: {
+              fontFamily: 'RobotoLight',
             },
             formattedInputStyles: {
               bottom: '0px',
@@ -1835,7 +1838,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               totalAmount !== '' &&
               Number(totalAmount) !== 0
             ) {
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
                 firstPayment,
                 {
                   emitEvent: false,
@@ -1868,10 +1871,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                           );
 
                     if (formatted === '0.00') {
-                      this.formSteps[6].fieldsList[1].placeholder = '';
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
 
-                    this.formSteps[6].fieldsList[1].formattedValue =
+                    this.formSteps[6].fieldsList[5].formattedValue =
                       '$' + formatted;
                   } else {
                     const formatted =
@@ -1895,10 +1898,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                           );
 
                     if (formatted === '0.00') {
-                      this.formSteps[6].fieldsList[1].placeholder = '';
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
 
-                    this.formSteps[6].fieldsList[1].formattedValue =
+                    this.formSteps[6].fieldsList[5].formattedValue =
                       '$' + formatted;
                   }
                 } else {
@@ -1908,7 +1911,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                       .filter((char) => char !== '.')
                       .join('')
                   );
-                  this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
+                  this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
                     convertedNumber,
                     {
                       emitEvent: false,
@@ -2054,6 +2057,50 @@ export class HeavenlyBalloonsComponent implements OnInit {
             let totalAmount = this.formSteps[6].fieldsList[4].formattedValue;
             let firstPayment = this.formSteps[6].fieldsList[5].formattedValue;
 
+            const whatsappMessagePartsOfThe7thStep = [];
+
+            if (billType && billType !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Tipo de Factura:*\n${billType}\n\n`
+              );
+
+              if (billType === 'Comprobante Fiscal (B01)' && socialId !== '') {
+                whatsappMessagePartsOfThe7thStep.push(
+                  `*RNC o Cédula :*\n${socialId}\n\n`
+                );
+              }
+            }
+
+            if (paymentMethod && paymentMethod !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Vía de pago:*\n${paymentMethod}\n\n`
+              );
+            }
+
+            if (totalAmount) {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Total de la orden:*\n${totalAmount}\n\n`
+              );
+            }
+
+            if (paymentMethod) {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Total pagado:*\n$${paymentMethod}\n\n`
+              );
+            }
+
+            if (orderMedium && orderMedium !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Vía del pedido:*\n${orderMedium}\n\n`
+              );
+            }
+
+            if (howDidYouFindUs && howDidYouFindUs !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*¿Cómo nos conociste?:*\n${howDidYouFindUs}\n\n`
+              );
+            }
+
             const convertedTotalAmount = Number(
               totalAmount
                 .split('')
@@ -2092,7 +2139,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
             const files = [];
 
-            const data: any = {
+            let data: any = {
               instagramUser,
               name,
               lastname,
@@ -2141,10 +2188,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
               const fileRoutes =
                 await this.merchantsService.uploadAirtableAttachments(files);
-              this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
-              this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes
-                .slice(1)
-                .join('\n')}\n\n`;
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`
+              );
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Fotos de Referencia:*\n${fileRoutes.slice(1).join('\n')}\n\n`
+              );
 
               data.referenceImage = fileRoutes[0];
               data.articlePhotos = fileRoutes.slice(1);
@@ -2160,6 +2209,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             if (window.navigator.onLine) {
+              data = {
+                data: encodeURIComponent(
+                  JSON.stringify({
+                    ...data,
+                  })
+                )
+              }
+
+              const completeWhatsappParts = this.whatsAppMessageParts.concat(whatsappMessagePartsOfThe7thStep);
+              this.fullFormMessage = completeWhatsappParts.join('');
+
               const success =
                 await this.merchantsService.uploadDataToClientsAirtable(
                   this.merchantId,
@@ -2178,8 +2238,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              window.location.href =
+              /*window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
@@ -2234,12 +2295,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
       this.automationName = automationName;
       this.calendarId = calendarId;
 
-      this.formSteps[7].embeddedComponents[0].inputs.calendarId =
+      this.formSteps[5].embeddedComponents[0].inputs.calendarId =
         this.calendarId;
-      this.formSteps[7].embeddedComponents[0].shouldRerender = true;
-
-      console.log('merchantId', this.merchantId);
-      console.log('automationName', this.automationName);
+      this.formSteps[5].embeddedComponents[0].shouldRerender = true;
     });
 
     setTimeout(() => {
