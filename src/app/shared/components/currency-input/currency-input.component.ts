@@ -9,10 +9,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class CurrencyInputComponent implements OnInit {
   formattedPricing = '$0.00';
   curencyFocused = false;
-  @Output() onInputEvent = new EventEmitter<{
-    formatted: string;
-    number: number;
-  }>();
+  @Output() onInputEvent = new EventEmitter<number>();
 
   constructor(private decimalPipe: DecimalPipe) {}
 
@@ -63,9 +60,8 @@ export class CurrencyInputComponent implements OnInit {
             );
       this.formattedPricing = '$' + formatted;
     }
-    this.onInputEvent.emit({
-      formatted: this.formattedPricing,
-      number: parseFloat(this.formattedPricing.replace(/\$|,/g, '')),
-    });
+    this.onInputEvent.emit(
+      parseFloat(this.formattedPricing.replace(/\$|,/g, ''))
+    );
   }
 }
