@@ -1245,7 +1245,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               marginBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1274,7 +1273,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '164px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1296,7 +1294,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
               paddingBottom: '0rem',
@@ -1341,7 +1338,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1361,7 +1357,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1382,7 +1377,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '30px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
               paddingBottom: '0rem',
@@ -1679,6 +1673,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                totalAmount,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
+
+            if (change) console.log(totalAmount, change);
+
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[6].fieldsList[5].fieldControl.control.setValue(0, {
                 emitEvent: false,
@@ -1811,6 +1823,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
+
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                firstPayment,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
 
             if (
               Number(change) > Number(totalAmount) &&
@@ -1973,6 +2001,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               background: 'white',
               height: '164px',
             },
+            containerStyles: {
+              paddingBottom: '120px'
+            }
           },
         },
       ],
@@ -2276,7 +2307,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
               window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
@@ -2312,7 +2342,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
-                appVersion: version,  
+                appVersion: version,
               }),
               dataJSON: JSON.stringify(formData),
             });

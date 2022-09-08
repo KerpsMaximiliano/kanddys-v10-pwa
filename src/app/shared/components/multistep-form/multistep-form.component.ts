@@ -29,7 +29,7 @@ import {
 } from 'ngx-intl-tel-input';
 import { SwiperOptions } from 'swiper';
 import { Observable } from 'apollo-link';
-import 'swiper/'
+import 'swiper/';
 
 @Component({
   selector: 'app-multistep-form',
@@ -186,7 +186,6 @@ export class MultistepFormComponent
   finishedExecutingStepProcessingFunction = true;
   colorPickerSwiperConfig: SwiperOptions = {
     slidesPerView: 5,
-    spaceBetween: 50,
   };
   googleMapsApiLoaded: Observable<boolean>;
   location = null;
