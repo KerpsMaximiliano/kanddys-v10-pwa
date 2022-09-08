@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { ReservationOrderlessComponent } from 'src/app/modules/airtable/pages/reservations-orderless/reservations-orderless.component';
@@ -115,7 +120,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Nombre (*)',
           topLabelAction: {
@@ -149,7 +160,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -497,7 +514,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(
               [],
-              Validators.compose([Validators.required, Validators.minLength(2)])
+              Validators.compose([Validators.required, Validators.minLength(1)])
             ),
           },
           colorPickerConfiguration: {
@@ -715,7 +732,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
                 '0px';
               this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
               );
               this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
             } else {
@@ -752,7 +772,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Mensaje de dedicatoria',
+          label: 'Mensaje de dedicatoria (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
@@ -828,7 +848,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         const whatsappMessagePartsOfThe4thStep = [];
 
-        if (howManyRoses !== '' && howManyRoses !== 0) {
+        if (howManyRoses && howManyRoses !== '' && howManyRoses !== 0) {
           whatsappMessagePartsOfThe4thStep.push(
             `*Cantidad de rosas:*\n${howManyRoses}\n\n`
           );
@@ -1141,11 +1161,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
-                  Validators.required
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
-                  Validators.required
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
                 );
                 this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
               });
@@ -1532,8 +1558,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[6].fieldsList[1].styles.containerStyles.height =
                 'auto';
               this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
               );
+              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
             }
           },
           inputType: 'radio',
@@ -1596,10 +1626,30 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
               this.formSteps[6].fieldsList[3].styles.containerStyles.marginLeft =
                 '0px';
+
+              const detectIfFirstIndexIsAnImageAndIsNotAnEmptyString = (
+                arrayOfValues: Array<string>
+              ) => {
+                return (control: AbstractControl): ValidationErrors | null => {
+                  const isInvalid =
+                    (arrayOfValues.length > 0 && arrayOfValues[0] === '') ||
+                    arrayOfValues.length === 0
+                      ? true
+                      : false;
+                  return isInvalid
+                    ? { proofOfPayment: { value: control.value } }
+                    : null;
+                };
+              };
+
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  detectIfFirstIndexIsAnImageAndIsNotAnEmptyString(
+                    this.formSteps[6].fieldsList[3].fieldControl.control.value
+                  ),
+                ])
               );
-              this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
             } else {
               this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
                 '0';
@@ -1611,8 +1661,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
             }
+
+            this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
           },
           label: 'Vía o Cuenta a la que realizaste tu pago',
           inputType: 'radio',
@@ -1978,63 +2029,63 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   }
                 } else {
                   let filteredString = change
-                  .split('')
-                  .filter(
-                    (char) =>
-                      char !== '.' ||
-                      char !== '+' ||
-                      char !== '-' ||
-                      char !== 'e'
-                  )
-                  .join('');
+                    .split('')
+                    .filter(
+                      (char) =>
+                        char !== '.' ||
+                        char !== '+' ||
+                        char !== '-' ||
+                        char !== 'e'
+                    )
+                    .join('');
 
-                if (filteredString.length <= 14) {
-                  filteredString += '00';
+                  if (filteredString.length <= 14) {
+                    filteredString += '00';
 
-                  const formatted =
-                    filteredString.length > 2
-                      ? this.decimalPipe.transform(
-                          Number(
-                            filteredString.slice(0, -2) +
-                              '.' +
-                              filteredString.slice(-2)
-                          ),
-                          '1.2'
-                        )
-                      : this.decimalPipe.transform(
-                          Number(
-                            '0.' +
-                              (filteredString.length === 1
-                                ? '0' + filteredString
-                                : filteredString)
-                          ),
-                          '1.2'
-                        );
+                    const formatted =
+                      filteredString.length > 2
+                        ? this.decimalPipe.transform(
+                            Number(
+                              filteredString.slice(0, -2) +
+                                '.' +
+                                filteredString.slice(-2)
+                            ),
+                            '1.2'
+                          )
+                        : this.decimalPipe.transform(
+                            Number(
+                              '0.' +
+                                (filteredString.length === 1
+                                  ? '0' + filteredString
+                                  : filteredString)
+                            ),
+                            '1.2'
+                          );
 
-                  if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[5].placeholder = '';
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[5].placeholder = '';
+                    }
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      filteredString,
+                      {
+                        emitEvent: false,
+                      }
+                    );
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+                  } else {
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      firstPayment,
+                      {
+                        emitEvent: false,
+                      }
+                    );
                   }
-
-                  this.formSteps[6].fieldsList[5].formattedValue =
-                    '$' + formatted;
-
-                  this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
-                    filteredString,
-                    {
-                      emitEvent: false,
-                    }
-                  );
-
-                  this.formSteps[6].fieldsList[5].formattedValue =
-                    '$' + formatted;
-                } else {
-                  this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
-                    firstPayment,
-                    {
-                      emitEvent: false,
-                    }
-                  );
-                }
                 }
               } catch (error) {
                 console.log(error);
@@ -2199,12 +2250,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
             if (firstPayment) {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Total pagado:*\n${firstPayment}\n\n`
-              );
-            }
-
-            if (paymentMethod) {
-              whatsappMessagePartsOfThe7thStep.push(
-                `*Total pagado:*\n$${paymentMethod}\n\n`
               );
             }
 
@@ -2422,9 +2467,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              /*window.location.href =
+     
+              window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
