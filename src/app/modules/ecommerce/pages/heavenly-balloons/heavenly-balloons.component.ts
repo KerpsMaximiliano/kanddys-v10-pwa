@@ -13,6 +13,7 @@ import { CountryISO } from 'ngx-intl-tel-input';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
+import { version } from 'package.json';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px',
@@ -1591,7 +1592,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 '0';
               this.formSteps[6].fieldsList[3].styles.containerStyles.height =
                 '0px';
-              this.formSteps[6].fieldsList[3].fieldControl.control.setValue(['']);
+              this.formSteps[6].fieldsList[3].fieldControl.control.setValue([
+                '',
+              ]);
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
@@ -1644,8 +1647,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
             containerStyles: {
               marginTop: '0px',
-              paddingTop: '64px',
-              paddingBottom: '270px',
+              paddingTop: '0px',
+              paddingBottom: '0px',
               transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
@@ -2241,6 +2244,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                     ...data,
                   })
                 ),
+                appVersion: version,
               };
 
               const completeWhatsappParts = this.whatsAppMessageParts.concat(
@@ -2255,7 +2259,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 await this.merchantsService.uploadDataToClientsAirtable(
                   this.merchantId,
                   this.automationName,
-                  data
+                  data,
+                  window.location.href
                 );
 
               this.dialog.open(GeneralFormSubmissionDialogComponent, {
@@ -2271,12 +2276,23 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
               window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+                
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
 
             return { ok: true };
           } catch (error) {
+            const formData = this.formSteps.map((formStep, index) => {
+              const stepData = {};
+
+              formStep.fieldsList.map((field, index) => {
+                stepData[field.name] = field.fieldControl.control.value;
+              });
+
+              return stepData;
+            });
+
             console.log('El error ', error.message);
 
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
@@ -2296,7 +2312,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
+                appVersion: version,  
               }),
+              dataJSON: JSON.stringify(formData),
             });
 
             return { ok: false };

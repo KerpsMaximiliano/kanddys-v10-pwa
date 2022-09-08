@@ -13,6 +13,8 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
+import { version } from 'package.json';
+
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px',
@@ -1746,6 +1748,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
+                appVersion: version
               }),
               dataJSON: JSON.stringify(formData),
             });
@@ -1884,6 +1887,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               .control.value,
         })
       ),
+      appVersion: version,
     };
 
     this.fullFormMessage = this.whatsappLinkSteps.join('');
