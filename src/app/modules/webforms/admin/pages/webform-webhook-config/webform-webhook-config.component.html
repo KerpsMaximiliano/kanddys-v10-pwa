@@ -1,134 +1,155 @@
 <div class="main-container">
-   <app-helper-headerv2
-   [mode]="'basic'"
-   [returnAble]="true"
-   [mainText]=" stepValue === 'saveAnswer' ? {
-      text: 'Opciones De Guardar Respuesta',
-      fontFamily: 'SfProBold',
-      fontSize: '1.313rem'
-   } : null"
-   [dots]="{
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    [mainText]="
+      stepValue === 'saveAnswer'
+        ? {
+            text: 'Opciones De Guardar Respuesta',
+            fontFamily: 'SfProBold',
+            fontSize: '1.313rem'
+          }
+        : null
+    "
+    [dots]="{
       active: true
-   }"
-   ></app-helper-headerv2>
+    }"
+  ></app-helper-headerv2>
 
-   <div [ngSwitch]="stepValue">
-      <div *ngSwitchCase="'saveAnswer'" class="save-answer">
-         <div class="top-area">
-            <label for="required" id="requiredFor" class="label-required">Respuesta requerida</label>
-            <app-switch-button></app-switch-button>
-         </div>
-
-         <div class="select-db">
-            <label for="Option" class="options-label">Adicionar la respuesta en base de datos de terceros:</label>
-
-            <app-answer-selector
-            [options]="databaseOptions"
-            [activeOption]="databaseIndex"
-            [indicator]="true"
-            [showDescription]="false"
-            [containerStyles]="{
-              margin: '26px 0 30px'
-            }"
-            ></app-answer-selector>
-         </div>
+  <div [ngSwitch]="stepValue">
+    <div *ngSwitchCase="'saveAnswer'" class="save-answer">
+      <div class="top-area">
+        <label for="required" id="requiredFor" class="label-required"
+          >Respuesta requerida</label
+        >
+        <app-switch-button></app-switch-button>
       </div>
-   
-   <!-- <div [ngSwitch]="stepValue"> -->
-      <div *ngSwitchCase="'webhook'" class="webhook">
-         <div class="webhook-selector">
-            <label for="webhook" class="input-label">Webhook:</label>
 
-            <input type="text" class="input-text" minlength="8" placeholder="Paste el webhook de tu Airtable aqui"/>
-         </div>
+      <div class="select-db">
+        <label for="Option" class="options-label"
+          >Adicionar la respuesta en base de datos de terceros:</label
+        >
 
-         <app-sticky-button
-         [mode]="'fixed'"
-         [size]="'small'"
-         bgColor="#2874AD"
-         text="CONECTAR EL FORM A TU airtable"
-         ></app-sticky-button>
+        <app-answer-selector
+          [options]="databaseOptions"
+          [activeOption]="databaseIndex"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '26px 0 30px'
+          }"
+        ></app-answer-selector>
       </div>
-   <!-- </div> -->
-   <!-- <div [ngSwitch]="stepValue"> -->
-      <div *ngSwitchCase="'selectTable'" class="select-table">
-         <div class="top-area"> 
-            <h1 class="about">Sobre donde guardar la respuesta:</h1>
+    </div>
 
-            <label for="Select table" class="input-label">Selecciona la tabla donde se guardará</label>
+    <!-- <div [ngSwitch]="stepValue"> -->
+    <div *ngSwitchCase="'webhook'" class="webhook">
+      <div class="webhook-selector">
+        <label for="webhook" class="input-label">WEBHOOK:</label>
 
-            <app-answer-selector
-            [options]="tableOptions"
-            [activeOption]="tableIndex"
-            [indicator]="true"
-            [showDescription]="false"
-            [containerStyles]="{
-              margin: '0 0 30px'
-            }"
-            ></app-answer-selector>
-         </div>
-
-         <div class="bottom-area">
-            <label for="Bottom option" class="input-label">Selecciona la columna (field, campo)
-               donde se guarda:</label>
-
-               <app-answer-selector
-               [options]="fieldOptions"
-               [activeOption]="fieldIndex"
-               [indicator]="true"
-               [showDescription]="false"
-               [containerStyles]="{
-                 margin: '0 0 30px'
-               }"
-               ></app-answer-selector>
-         </div>
-
-         <app-sticky-button
-         [mode]="'disabled-fixed'"
-         [size]="'small'"
-         text="SELCCIONA LA TABLA Y LA COLUMNA"
-         ></app-sticky-button>
+        <input
+          type="text"
+          class="input-text"
+          minlength="8"
+          placeholder="Paste el webhook de tu Airtable aqui"
+        />
       </div>
-   <!-- </div> -->
-   <!-- <div [ngSwitch]="stepValue"> -->
-      <div *ngSwitchCase="'connect'" class="connect">
-         <div class="top-area"> 
-            <h1 class="about">Sobre donde guardar la respuesta:</h1>
 
-            <label for="Select table" class="input-label">Selecciona la tabla donde se guardará</label>
+      <app-sticky-button
+        [mode]="'fixed'"
+        [size]="'small'"
+        bgColor="#2874AD"
+        text="CONECTAR EL FORM A TU airtable"
+      ></app-sticky-button>
+    </div>
+    <!-- </div> -->
+    <!-- <div [ngSwitch]="stepValue"> -->
+    <div *ngSwitchCase="'selectTable'" class="select-table">
+      <div class="top-area">
+        <h1 class="about">Sobre donde guardar la respuesta:</h1>
 
-            <app-answer-selector
-            [options]="dummyOptions"
-            [activeOption]="0"
-            [indicator]="true"
-            [showDescription]="false"
-            [containerStyles]="{
-              margin: '0 0 30px'
-            }"
-            ></app-answer-selector>
-         </div>
+        <label for="Select table" class="input-label"
+          >Selecciona la tabla donde se guardará</label
+        >
 
-         <div class="bottom-area">
-            <label for="Bottom option" class="input-label">Selecciona la columna (field, campo) donde se guarda:</label>
-
-               <app-answer-selector
-               [options]="dummyActiveOption"
-               [activeOption]="0"
-               [indicator]="true"
-               [showDescription]="false"
-               [containerStyles]="{
-                 margin: '0 0 30px'
-               }"
-               ></app-answer-selector>
-         </div>
-
-         <app-sticky-button
-         [mode]="'fixed'"
-         [size]="'small'"
-         bgColor="#2874AD"
-         text="CONECTA LA RESPUESTA A LA TABLAID EN EL FIELD ID"
-         ></app-sticky-button>
+        <app-answer-selector
+          [options]="tableOptions"
+          [activeOption]="tableIndex"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0 0 30px'
+          }"
+        ></app-answer-selector>
       </div>
-   <!-- </div> -->
-   </div>
+
+      <div class="bottom-area">
+        <label for="Bottom option" class="input-label"
+          >Selecciona la columna (field, campo) donde se guarda:</label
+        >
+
+        <app-answer-selector
+          [options]="fieldOptions"
+          [activeOption]="fieldIndex"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0 0 30px'
+          }"
+        ></app-answer-selector>
+      </div>
+
+      <app-sticky-button
+        [mode]="'disabled-fixed'"
+        [size]="'small'"
+        text="SELCCIONA LA TABLA Y LA COLUMNA"
+      ></app-sticky-button>
+    </div>
+    <!-- </div> -->
+    <!-- <div [ngSwitch]="stepValue"> -->
+    <div *ngSwitchCase="'connect'" class="connect">
+      <div class="top-area">
+        <h1 class="about">Sobre donde guardar la respuesta:</h1>
+
+        <label for="Select table" class="input-label"
+          >Selecciona la tabla donde se guardará</label
+        >
+
+        <app-answer-selector
+          [options]="dummyOptions"
+          [activeOption]="0"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0 0 30px'
+          }"
+        ></app-answer-selector>
+      </div>
+
+      <div class="bottom-area">
+        <label for="Bottom option" class="input-label"
+          >Selecciona la columna (field, campo) donde se guarda:</label
+        >
+
+        <app-answer-selector
+          [options]="dummyActiveOption"
+          [activeOption]="0"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0 0 30px'
+          }"
+        ></app-answer-selector>
+        <app-select-dropdown></app-select-dropdown>
+      </div>
+
+      <app-sticky-button
+        [mode]="'fixed'"
+        [size]="'small'"
+        bgColor="#2874AD"
+        text="CONECTA LA RESPUESTA A LA TABLAID EN EL FIELD ID"
+      ></app-sticky-button>
+    </div>
+    <!-- </div> -->
+  </div>
 </div>
