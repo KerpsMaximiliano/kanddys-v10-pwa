@@ -129,11 +129,8 @@ export class WebformComponent implements OnInit {
     window.location.href = whatsappLink;
   }
 
-  onCurrencyInput(
-    form: FormControl | AbstractControl,
-    value: { formatted: string; number: number }
-  ) {
-    form.setValue(value.number);
+  onCurrencyInput(form: FormControl | AbstractControl, value: number) {
+    form.setValue(value);
   }
 
   onSelectInput(
