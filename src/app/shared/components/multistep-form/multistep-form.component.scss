@@ -131,7 +131,7 @@ html {
   justify-content: space-between;
 }
 
-.date-inputs{
+.date-inputs {
   appearance: none;
   visibility: visible;
   border-radius: 10px;
@@ -161,7 +161,7 @@ input[type="date"] {
   border: 0;
   margin: 0;
   -webkit-appearance: none;
- 
+
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button,
   &::-webkit-clear-button {
@@ -169,12 +169,20 @@ input[type="date"] {
     display: none;
   }
 
-  &::-webkit-datetime-edit-month-field { padding: 0; }
-  &::-webkit-datetime-edit-day-field { padding: 0; }
-  &::-webkit-datetime-edit-year-field { padding: 0; }
+  &::-webkit-datetime-edit-month-field {
+    padding: 0;
+  }
+  &::-webkit-datetime-edit-day-field {
+    padding: 0;
+  }
+  &::-webkit-datetime-edit-year-field {
+    padding: 0;
+  }
 
-  &::-webkit-datetime-edit-fields-wrapper { padding: 0; }
-  
+  &::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+
   &::-webkit-date-and-time-value {
     margin: 0;
   }
@@ -200,10 +208,19 @@ input[type="date"] {
     position: relative;
     border-radius: 50%;
     border: 0.07px solid lightgrey;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 
-
-.date-inputs::-webkit-datetime-edit-month-field { padding: 0; }
-.date-inputs::-webkit-datetime-edit-day-field { padding: 0; }
-.date-inputs::-webkit-datetime-edit-year-field { padding: 0; }
+.date-inputs::-webkit-datetime-edit-month-field {
+  padding: 0;
+}
+.date-inputs::-webkit-datetime-edit-day-field {
+  padding: 0;
+}
+.date-inputs::-webkit-datetime-edit-year-field {
+  padding: 0;
+}
