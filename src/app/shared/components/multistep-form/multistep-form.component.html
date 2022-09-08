@@ -543,7 +543,9 @@
                     (keydown)="
                       currentField.inputType === 'number' &&
                       currentField.shouldFormatNumber
-                        ? blockCursorMovement($event, true)
+                        ? blockCursorMovement($event, currentField, true)
+                        : currentField.inputType === 'number'
+                        ? blockNonNumericStuff($event, currentField, true)
                         : null
                     "
                     (focus)="onFocus(currentField)"
