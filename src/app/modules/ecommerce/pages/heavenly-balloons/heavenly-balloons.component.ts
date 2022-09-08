@@ -848,7 +848,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         const whatsappMessagePartsOfThe4thStep = [];
 
-        if (howManyRoses !== '' && howManyRoses !== 0) {
+        if (howManyRoses && howManyRoses !== '' && howManyRoses !== 0) {
           whatsappMessagePartsOfThe4thStep.push(
             `*Cantidad de rosas:*\n${howManyRoses}\n\n`
           );
@@ -2467,6 +2467,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
+     
               window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
             } else {
