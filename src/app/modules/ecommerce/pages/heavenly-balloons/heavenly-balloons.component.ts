@@ -1098,7 +1098,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Fuera de Santo Domingo',
           ],
           changeCallbackFunction: (change, params) => {
-            if (change !== 'Pickup') {
+            const { deliveryMethod: pastValue } = params.dataModel.value['6'];
+
+            if (
+              change !== 'Pickup' &&
+              (pastValue === '' || pastValue === 'Pickup')
+            ) {
               this.formSteps[5].fieldsList.forEach((field, index) => {
                 if (
                   !(
@@ -1144,7 +1149,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 );
                 this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
               });
-            } else {
+            } else if (
+              change === 'Pickup' &&
+              (pastValue === '' || pastValue !== 'Pickup')
+            ) {
               this.formSteps[5].fieldsList.forEach((field, index) => {
                 if (
                   !(
@@ -1171,7 +1179,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ].styles.containerStyles.opacity = '0';
                   this.formSteps[5].fieldsList[
                     index
-                  ].fieldControl.control.setValue('');
+                  ].fieldControl.control.setValue('', {
+                    emitEvent: false,
+                  });
                 }
 
                 if (index === this.formSteps[5].fieldsList.length - 1) {
@@ -1181,21 +1191,30 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 }
 
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
                   []
@@ -2002,8 +2021,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '164px',
             },
             containerStyles: {
-              paddingBottom: '120px'
-            }
+              paddingBottom: '120px',
+            },
           },
         },
       ],
@@ -2082,6 +2101,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
             if (totalAmount) {
               whatsappMessagePartsOfThe7thStep.push(
                 `*Total de la orden:*\n${totalAmount}\n\n`
+              );
+            }
+
+            if (firstPayment) {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Total pagado:*\n${firstPayment}\n\n`
               );
             }
 
