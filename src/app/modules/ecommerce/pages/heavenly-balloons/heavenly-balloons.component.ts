@@ -379,7 +379,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         params.scrollToStep(0, false);
       },
       pageHeader: {
-        text: '¿Donde recibirás las notificaciones de esta orden?',
+        text: '¿Dónde notificamos el estatus de tu orden?',
         styles: {
           fontFamily: 'RobotoBold',
           fontSize: '24px',
@@ -962,7 +962,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Mensaje de dedicatoria',
+          label: 'Mensaje de dedicatoria (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
@@ -1556,7 +1556,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(''),
           },
           label: 'RNC o Cédula (*)',
-          placeholder: 'example@domain',
+          placeholder: '???-???????-?',
           styles: {
             labelStyles: {
               ...labelStyles,
@@ -1677,6 +1677,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
           onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
@@ -1708,8 +1709,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               return;
             }
 
-            if (change) console.log(totalAmount, change);
-
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[6].fieldsList[5].fieldControl.control.setValue(0, {
                 emitEvent: false,
@@ -1720,7 +1719,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             try {
-              if (!change.includes('.')) {
+              if (!this.formSteps[6].fieldsList[4].lastInputWasADot) {
                 const plainNumber = change.split(',').join('');
 
                 if (plainNumber[0] === '0') {
@@ -1779,18 +1778,64 @@ export class HeavenlyBalloonsComponent implements OnInit {
                     '$' + formatted;
                 }
               } else {
-                const convertedNumber = Number(
-                  change
-                    .split('')
-                    .filter((char) => char !== '.')
-                    .join('')
-                );
-                this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
-                  convertedNumber,
-                  {
-                    emitEvent: false,
+                let filteredString = change
+                  .split('')
+                  .filter(
+                    (char) =>
+                      char !== '.' ||
+                      char !== '+' ||
+                      char !== '-' ||
+                      char !== 'e'
+                  )
+                  .join('');
+
+                if (filteredString.length <= 14) {
+                  filteredString += '00';
+
+                  const formatted =
+                    filteredString.length > 2
+                      ? this.decimalPipe.transform(
+                          Number(
+                            filteredString.slice(0, -2) +
+                              '.' +
+                              filteredString.slice(-2)
+                          ),
+                          '1.2'
+                        )
+                      : this.decimalPipe.transform(
+                          Number(
+                            '0.' +
+                              (filteredString.length === 1
+                                ? '0' + filteredString
+                                : filteredString)
+                          ),
+                          '1.2'
+                        );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
-                );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    filteredString,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+                } else {
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    totalAmount,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+                }
               }
             } catch (error) {
               console.log(error);
@@ -1828,6 +1873,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
           onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
@@ -1872,7 +1918,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             } else {
               try {
-                if (!change.includes('.')) {
+                if (!this.formSteps[6].fieldsList[5].lastInputWasADot) {
                   const plainNumber = change.split(',').join('');
 
                   if (plainNumber[0] === '0') {
@@ -1931,18 +1977,64 @@ export class HeavenlyBalloonsComponent implements OnInit {
                       '$' + formatted;
                   }
                 } else {
-                  const convertedNumber = Number(
-                    change
-                      .split('')
-                      .filter((char) => char !== '.')
-                      .join('')
-                  );
+                  let filteredString = change
+                  .split('')
+                  .filter(
+                    (char) =>
+                      char !== '.' ||
+                      char !== '+' ||
+                      char !== '-' ||
+                      char !== 'e'
+                  )
+                  .join('');
+
+                if (filteredString.length <= 14) {
+                  filteredString += '00';
+
+                  const formatted =
+                    filteredString.length > 2
+                      ? this.decimalPipe.transform(
+                          Number(
+                            filteredString.slice(0, -2) +
+                              '.' +
+                              filteredString.slice(-2)
+                          ),
+                          '1.2'
+                        )
+                      : this.decimalPipe.transform(
+                          Number(
+                            '0.' +
+                              (filteredString.length === 1
+                                ? '0' + filteredString
+                                : filteredString)
+                          ),
+                          '1.2'
+                        );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[6].fieldsList[5].placeholder = '';
+                  }
+
+                  this.formSteps[6].fieldsList[5].formattedValue =
+                    '$' + formatted;
+
                   this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
-                    convertedNumber,
+                    filteredString,
                     {
                       emitEvent: false,
                     }
                   );
+
+                  this.formSteps[6].fieldsList[5].formattedValue =
+                    '$' + formatted;
+                } else {
+                  this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                    firstPayment,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+                }
                 }
               } catch (error) {
                 console.log(error);
@@ -1977,7 +2069,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(''),
           },
           selectionOptions: [
             'Whatsapp',
@@ -1986,7 +2078,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'E-Mail',
             'Instagram',
           ],
-          label: 'Vía del pedido (*)',
+          label: 'Vía del pedido',
           inputType: 'radio',
           styles: {
             fieldStyles: {
@@ -2330,8 +2422,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
-              window.location.href =
+              /*window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+                */
             } else {
               throw new Error('Se perdió la conexion a internet');
             }

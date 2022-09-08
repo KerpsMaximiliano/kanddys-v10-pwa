@@ -43,6 +43,7 @@ export interface FormField {
   onlyAllowPositiveNumbers?: boolean;
   phoneCountryCode?: CountryISO;
   formattedValue?: string;
+  lastInputWasADot?: boolean;
   fileObjects?: File[];
   enabledOnInit?: 'ENABLED' | 'DISABLED';
   changeCallbackFunction?(...params): any;
