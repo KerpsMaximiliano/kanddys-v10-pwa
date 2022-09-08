@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["css-font-loading-module"]
+    "types": ["css-font-loading-module"],
+    "resolveJsonModule": true
   },
   "files": [
     "src/main.ts",
