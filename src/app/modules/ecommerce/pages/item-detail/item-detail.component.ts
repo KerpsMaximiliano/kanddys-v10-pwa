@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { Item } from '../../../../core/models/item';
+import { Item, ItemParamValue } from '../../../../core/models/item';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -18,6 +18,7 @@ import {
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { ItemSubOrderInput } from 'src/app/core/models/order';
 
 @Component({
   selector: 'app-item-detail',
@@ -26,7 +27,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 })
 export class ItemDetailComponent implements OnInit, OnDestroy {
   constructor(
-    public items: ItemsService,
+    public itemsService: ItemsService,
     private route: ActivatedRoute,
     private header: HeaderService,
     private router: Router,
@@ -34,13 +35,18 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private appService: AppService,
     private saleflowService: SaleFlowService
   ) {}
-  itemData: Item;
+  item: Item;
   saleflowData: SaleFlow;
   inCart: boolean;
   showCartCallBack: () => void;
   itemCartAmount: number;
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
+  hasParams: boolean;
+  selectedParam: {
+    param: number;
+    value: number;
+  };
   deleteEvent: Subscription;
   whatsappLink: string = null;
   swiperConfig: SwiperOptions = {
@@ -64,15 +70,19 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       )
         return this.back();
 
-      if (this.itemData.images.length > 1)
+      if (this.item.images.length > 1) {
         this.swiperConfig.pagination = {
           el: '.swiper-pagination',
           type: 'bullets',
           clickable: true,
         };
+      }
+      if (this.item.params?.some((param) => param.values?.length)) {
+        this.hasParams = true;
+      }
 
       const whatsappMessage = encodeURIComponent(
-        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`
+        `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`
       );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
       this.itemInCart();
@@ -101,8 +111,15 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
     this.itemCartAmount = productData?.length;
-    if (productData && productData.length > 0) {
-      this.inCart = productData.some((item) => item._id === this.itemData._id);
+    if (productData?.length) {
+      this.inCart = productData.some(
+        (item) =>
+          item._id === this.item._id ||
+          item._id ===
+            this.item.params?.[this.selectedParam?.param]?.values?.[
+              this.selectedParam?.value
+            ]?._id
+      );
     } else this.inCart = false;
   }
 
@@ -118,7 +135,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             .saleflow(this.saleflowData._id, true)
             .then(async (data) => {
               for (let i = 0; i < data.saleflow.items.length; i++) {
-                if (data.saleflow.items[i].item._id === this.itemData._id) {
+                if (data.saleflow.items[i].item._id === this.item._id) {
                   if (this.saleflowData.module?.post)
                     this.router.navigate(['/ecommerce/create-giftcard']);
                   else if (this.saleflowData.module?.delivery)
@@ -159,12 +176,37 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   saveProduct() {
-    this.header.storeOrderProduct(this.saleflowData._id, {
-      item: this.itemData._id,
+    const product: ItemSubOrderInput = {
+      item: this.item._id,
       amount: 1,
       saleflow: this.saleflowData._id,
-    });
-    this.header.storeItem(this.saleflowData._id, this.itemData);
+    };
+    if (this.selectedParam) {
+      product.params = [
+        {
+          param: this.item.params[this.selectedParam.param]._id,
+          paramValue:
+            this.item.params[this.selectedParam.param].values[
+              this.selectedParam.value
+            ]._id,
+        },
+      ];
+    }
+    this.header.storeOrderProduct(this.saleflowData._id, product);
+    const itemParamValue: ItemParamValue = {
+      ...this.item.params[this.selectedParam.param].values[
+        this.selectedParam.value
+      ],
+      price:
+        this.item.pricing +
+        this.item.params[this.selectedParam.param].values[
+          this.selectedParam.value
+        ].price,
+    };
+    this.header.storeItem(
+      this.saleflowData._id,
+      this.selectedParam ? itemParamValue : this.item
+    );
     this.itemInCart();
     this.showItems();
   }
@@ -173,17 +215,17 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.itemData._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
           },
         ],
       },
@@ -202,14 +244,24 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (this.previewMode) {
       // this.header.flowRoute = this.router.url;
 
-      if (this.itemData._id)
-        return this.router.navigate([
-          `/admin/create-item/${this.itemData._id}`,
-        ]);
+      if (this.item._id)
+        return this.router.navigate([`/admin/create-item/${this.item._id}`]);
       else return this.router.navigate([`/admin/create-item`]);
     }
-    this.items.removeTemporalItem();
+    if (this.selectedParam) {
+      this.selectedParam = null;
+      return;
+    }
+    this.itemsService.removeTemporalItem();
     this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]);
+  }
+
+  selectParamValue(param: number, value: number) {
+    this.selectedParam = {
+      param,
+      value,
+    };
+    this.itemInCart();
   }
 
   tapping = () => {

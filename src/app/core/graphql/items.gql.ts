@@ -140,10 +140,13 @@ export const item = gql`
       params {
         _id
         name
+        category
+        formType
         values {
           _id
           name
           price
+          description
           image
           quantity
         }
@@ -259,6 +262,18 @@ export const itemPackage = gql`
 export const createItem = gql`
   mutation createItem($input: ItemInput!) {
     createItem(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const createItemParam = gql`
+  mutation createItemParam($merchantId: ObjectID!, $itemId: ObjectID!, $input: ItemParamInput!) {
+    createItemParam(
+      merchantId: $merchantId,
+      itemId: $itemId,
+      input: $input
+    ) {
       _id
     }
   }

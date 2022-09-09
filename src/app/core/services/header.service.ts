@@ -24,7 +24,7 @@ import {
 } from '../models/order';
 import { ReservationInput } from '../models/reservation';
 import { PostInput } from '../models/post';
-import { Item, ItemPackage } from '../models/item';
+import { Item, ItemPackage, ItemParamValue } from '../models/item';
 import { MerchantsService } from './merchants.service';
 import { SaleFlowService } from './saleflow.service';
 import { PostsService } from './posts.service';
@@ -294,7 +294,10 @@ export class HeaderService {
     if (!order) order = {};
     if (!order.products) order.products = [];
     const index = order.products.findIndex(
-      (subOrder) => subOrder.item === product.item
+      (subOrder) =>
+        (!product.params?.length && subOrder.item === product.item) ||
+        (product.params?.length &&
+          subOrder.params?.[0]?.paramValue === product.params[0].paramValue)
     );
     if (index >= 0) order.products.splice(index, 1);
     else order.products.push(product);
@@ -302,7 +305,7 @@ export class HeaderService {
   }
 
   // Stores item data in localStorage
-  storeItem(saleflow: string, product: Item | ItemPackage) {
+  storeItem(saleflow: string, product: Item | ItemPackage | ItemParamValue) {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!itemData) itemData = [];
@@ -491,7 +494,9 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order) return;
     if (!order.products) return;
-    const index = order.products.findIndex((subOrder) => subOrder.item === id);
+    const index = order.products.findIndex(
+      (subOrder) => subOrder.item === id || subOrder.params[0].paramValue === id
+    );
     if (index >= 0) order.products.splice(index, 1);
     else return;
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));

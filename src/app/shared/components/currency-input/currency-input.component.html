@@ -1,5 +1,5 @@
 <div class="price-wrapper">
-  <div class="formatted-price">
+  <div class="formatted-price" [ngStyle]="fieldStyles">
     <span *ngFor="let letter of formattedPricing.split('')">
       {{ letter }}
     </span>
@@ -14,6 +14,7 @@
     type="number"
     id="pricing"
     name="pricing"
+    [defaultValue]="initialValue"
     min="1"
     required
     (focus)="curencyFocused = true"

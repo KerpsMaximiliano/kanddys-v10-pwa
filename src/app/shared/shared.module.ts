@@ -189,7 +189,7 @@ const declarations = [
   ItemComponent,
   ReloadComponent,
   CurrencyInputComponent,
-  SelectDropdownComponent,
+  SelectDropdownComponent
 ];
 
 @NgModule({

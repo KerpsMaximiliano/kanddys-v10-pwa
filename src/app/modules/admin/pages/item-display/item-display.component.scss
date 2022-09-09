@@ -120,6 +120,31 @@
 		}
 	}
 
+	.dynamic-items-section {
+		.item-detail {
+			margin-top: 25px;
+		}
+	}
+
+	.saleflows-grid {
+        width: auto;
+        max-height: 93.5vh;
+        padding: 16px 24px 32px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        -moz-column-gap: 14px;
+        column-gap: 14px;
+        row-gap: 25px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        justify-items: center;
+        .capsize{
+            width: 100%;
+            max-width: 212px;
+            height: auto;
+        }
+    }
+
 	.category {
 		width: 100%;
 

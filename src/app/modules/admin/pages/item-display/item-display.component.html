@@ -49,6 +49,21 @@
       </button>
     </div>
 
+    <section class="dynamic-items-section" *ngIf="item.params && item.params.length && item.params[0].values.length">
+      <p class="item-detail">Selecciona entre opciones:</p>
+      <div class="saleflows-grid">
+        <div class="capsize" *ngFor="let paramValue of item.params[0].values">
+          <app-saleflow-item
+              [type]="3"
+              [imgURL]="paramValue.image ? paramValue.image : ''"
+              [price]="paramValue.price"
+              [showPrice]="true"
+              [responsiveWidthVersion]="true"
+          ></app-saleflow-item>
+        </div>
+      </div>
+    </section>
+
     <section>
       <p class="item-detail">Sobre {{ item.name || "el producto" }}</p>
 

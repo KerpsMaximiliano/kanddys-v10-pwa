@@ -8,6 +8,7 @@ import {
   itemCategory,
   itemCategoriesList,
   createItem,
+  createItemParam,
   createPreItem,
   addImageItem,
   deleteImageItem,
@@ -346,6 +347,17 @@ export class ItemsService {
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async createItemParam(merchantId: string, itemId: string, input: any) {
+    const result = await this.graphql.mutate({
+      mutation: createItemParam,
+      variables: { merchantId, itemId, input },
       context: { useMultipart: true },
     });
 
