@@ -224,20 +224,22 @@ export class CreateItemComponent implements OnInit {
           );
 
           if ('_id' in createItem) {
-            await this.itemService.createItemParam(
-              this.merchant._id,
-              createItem._id,
-              {
-                name: params[0].name,
-                formType: 'color',
-                values: params[0].values.map((value) => ({
-                  name: value.name,
-                  image: value.image,
-                  price: value.price,
-                  description: value.description,
-                })),
-              }
-            );
+            if (this.hasParams) {
+              await this.itemService.createItemParam(
+                this.merchant._id,
+                createItem._id,
+                {
+                  name: params[0].name,
+                  formType: 'color',
+                  values: params[0].values.map((value) => ({
+                    name: value.name,
+                    image: value.image,
+                    price: value.price,
+                    description: value.description,
+                  })),
+                }
+              );
+            }
 
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
