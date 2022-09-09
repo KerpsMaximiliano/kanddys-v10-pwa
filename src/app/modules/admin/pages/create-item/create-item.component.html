@@ -182,6 +182,12 @@
                           fontWeight: 'normal',
                           marginLeft: 'auto'
                         }"
+                        (onFileInputBase64Multiple)="
+                          handleImageInput(valuesControl, 'image', $event, 'ADD')
+                        "
+                        (onFileDeletion)="
+                          handleImageInput(valuesControl, 'image', $event, 'DELETE')
+                        "
                       ></app-image-input>
                     </div>
                   </div>

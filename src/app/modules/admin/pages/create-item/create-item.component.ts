@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
@@ -158,7 +159,8 @@ export class CreateItemComponent implements OnInit {
       .value as ItemInput;
     params?.forEach((param) => {
       param.values = param.values.filter(
-        (values) => values.name || values.price || values.description
+        (values) =>
+          values.name || values.price || values.description || values.image
       );
     });
     try {
@@ -201,7 +203,7 @@ export class CreateItemComponent implements OnInit {
         const itemInput = {
           name: name || null,
           description: description || null,
-          pricing,
+          pricing: !this.hasParams ? params : pricing ? pricing : 0,
           images: images,
           merchant: this.merchant?._id,
           content: [],
@@ -211,7 +213,6 @@ export class CreateItemComponent implements OnInit {
           showImages:
             images.length > 0 ||
             this.itemService.temporalImages?.new?.length > 0,
-          params: params[0]?.values.length ? params : null,
         };
         if (this.user) {
           const { createItem } = await this.itemService.createItem(itemInput);
@@ -221,7 +222,23 @@ export class CreateItemComponent implements OnInit {
             },
             this.saleflow._id
           );
+
           if ('_id' in createItem) {
+            await this.itemService.createItemParam(
+              this.merchant._id,
+              createItem._id,
+              {
+                name: params[0].name,
+                formType: 'color',
+                values: params[0].values.map((value) => ({
+                  name: value.name,
+                  image: value.image,
+                  price: value.price,
+                  description: value.description,
+                })),
+              }
+            );
+
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
             this.router.navigate([`/admin/merchant-items`]);
@@ -264,6 +281,23 @@ export class CreateItemComponent implements OnInit {
     else {
       this.formattedPricing.values[index] = '$' + value;
       this.dynamicInputKeyPress(index);
+    }
+  }
+
+  handleImageInput(
+    form: FormGroup | AbstractControl,
+    controlName: string,
+    value: any,
+    operation: 'ADD' | 'DELETE'
+  ) {
+    if (operation === 'ADD' && 'image' in value)
+      form.get(controlName).setValue(value.image, {
+        emitEvent: false,
+      });
+    else {
+      form.get(controlName).setValue(null, {
+        emitEvent: false,
+      });
     }
   }
 
