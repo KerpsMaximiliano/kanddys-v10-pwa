@@ -165,6 +165,7 @@ export class CreateItemComponent implements OnInit {
           values.name || values.price || values.description || values.image
       );
     });
+
     // const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
       if (this.item || this.itemService.temporalItem?._id) {
@@ -181,7 +182,6 @@ export class CreateItemComponent implements OnInit {
               images.length > 0
             : this.itemService.temporalItem?.images?.length > 0 ||
               this.item.images.length > 0,
-          params: params[0]?.values.length ? params : null,
         };
         const { updateItem: updatedItem } = await this.itemService.updateItem(
           itemInput,
@@ -208,7 +208,7 @@ export class CreateItemComponent implements OnInit {
         const itemInput = {
           name: name || null,
           description: description || null,
-          pricing: !this.hasParams ? params : pricing ? pricing : 0,
+          pricing: !this.hasParams ? pricing : pricing ? pricing : 0,
           images: images,
           merchant: this.merchant?._id,
           content: [],
@@ -410,6 +410,10 @@ export class CreateItemComponent implements OnInit {
                 if (!this.getArrayLength(this.itemForm, 'params')) {
                   this.generateFields();
                   this.generateFields();
+                }
+              } else {
+                while (this.itemForm.get('params').value.length !== 0) {
+                  (<FormArray>this.itemForm.get('params')).removeAt(0);
                 }
               }
               this.hasParams = !this.hasParams;
