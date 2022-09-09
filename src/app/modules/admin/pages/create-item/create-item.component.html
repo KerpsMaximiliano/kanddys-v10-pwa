@@ -1,5 +1,5 @@
 <div class="component">
-  <header>
+  <header class="flex-between">
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
 
     <!--  *ngIf="itemForm.valid" iba aqui abajo -->
@@ -48,130 +48,104 @@
       </section>
 
       {{ formattedPricing | json }}
-      <ng-container *ngIf="!hasParams">
-        <section class="form-group p-side">
-          <div class="name-and-price-wrapper">
-            <div class="name-wrapper">
-              <input
-                class="input-text"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Nombre (opcional)"
-                formControlName="name"
-              />
-            </div>
-            <div class="price-wrapper">
-              <!-- Input Number Format -->
-              <div class="formatted-price">
-                <span *ngFor="let letter of formattedPricing.item.split('')">
-                  {{ letter }}
-                </span>
 
-                <div
-                  class="cursor blinking-cursor"
-                  [ngClass]="{ 'blinking-cursor': curencyFocused }"
-                  style="width: 1px; height: 1rem"
-                ></div>
-              </div>
-              <input
-                class="formatted-input"
-                type="number"
-                id="pricing"
-                name="pricing"
-                min="1"
-                required
-                formControlName="pricing"
-                (focus)="curencyFocused = true"
-                (blur)="curencyFocused = false"
-                (input)="formatNumber(itemForm, 'pricing', $event)"
-                onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
-              />
-              <!-- Input Number Format -->
+      <ng-container *ngIf="status === 'complete'">
+        <ng-container *ngIf="!hasParams">
+          <section class="form-group p-side">
+            <div class="flex-between" style="margin-bottom: 8px">
+              <span class="info-label">Info</span>
+              <button type="button" class="dot-trio">
+                <div class="dot blue"> </div>
+                <div class="dot blue"> </div>
+                <div class="dot blue"> </div>
+              </button>
             </div>
-          </div>
-          <textarea
-            placeholder="Descripción (opcional)"
-            class="textarea"
-            formControlName="description"
-          ></textarea>
-        </section>
-      </ng-container>
-      <ng-container *ngIf="hasParams">
-        <div formArrayName="params" *ngIf="getArrayLength(itemForm, 'params')">
+            <div class="name-and-price-wrapper">
+              <div class="name-wrapper">
+                <input
+                  class="input-text"
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Nombre (opcional)"
+                  formControlName="name"
+                />
+              </div>
+              <div style="flex-basis: 35.12%">
+                <app-currency-input
+                  [initialValue]="
+                    parseFloat(formattedPricing.item.substring(1))
+                  "
+                  (onInputEvent)="
+                    handleCurrencyInput(itemForm, 'pricing', $event)
+                  "
+                ></app-currency-input>
+              </div>
+            </div>
+            <textarea
+              placeholder="Descripción (opcional)"
+              class="textarea"
+              formControlName="description"
+            ></textarea>
+          </section>
+        </ng-container>
+        <ng-container *ngIf="hasParams">
           <div
-            *ngFor="
-              let paramsControl of getParamsControls(itemForm, 'params');
-              index as i
-            "
-            [formGroupName]="i"
+            formArrayName="params"
+            *ngIf="getArrayLength(itemForm, 'params')"
           >
             <div
-              formArrayName="values"
-              *ngIf="getArrayLength(paramsControl, 'values')"
+              *ngFor="
+                let paramsControl of getControls(itemForm, 'params');
+                index as i
+              "
+              [formGroupName]="i"
             >
-              <section
-                class="form-group p-side"
-                *ngFor="
-                  let valuesControl of getParamsControls(
-                    paramsControl,
-                    'values'
-                  );
-                  index as j
-                "
-                [formGroupName]="j"
+              <div
+                formArrayName="values"
+                *ngIf="getArrayLength(paramsControl, 'values')"
               >
-                <div class="name-and-price-wrapper">
-                  <div class="name-wrapper">
-                    <input
-                      class="input-text"
-                      type="text"
-                      formControlName="name"
-                      placeholder="Nombre (opcional)"
-                      (keypress)="dynamicInputKeyPress(j)"
-                    />
-                  </div>
-                  <div class="price-wrapper">
-                    <div class="formatted-price">
-                      <span
-                        *ngFor="
-                          let letter of formattedPricing.values[j].split('')
-                        "
-                      >
-                        {{ letter }}
-                      </span>
-
-                      <div
-                        class="cursor blinking-cursor"
-                        [ngClass]="{ 'blinking-cursor': curencyFocused }"
-                        style="width: 1px; height: 1rem"
-                      ></div>
+                <section
+                  class="form-group p-side"
+                  *ngFor="
+                    let valuesControl of getControls(paramsControl, 'values');
+                    index as j
+                  "
+                  [formGroupName]="j"
+                >
+                  <div class="name-and-price-wrapper">
+                    <div class="name-wrapper">
+                      <input
+                        class="input-text"
+                        type="text"
+                        formControlName="name"
+                        placeholder="Nombre (opcional)"
+                        (keypress)="dynamicInputKeyPress(j)"
+                      />
                     </div>
-                    <input
-                      class="formatted-input"
-                      type="number"
-                      min="1"
-                      required
-                      formControlName="price"
-                      (focus)="curencyFocused = true"
-                      (blur)="curencyFocused = false"
-                      (input)="formatNumber(valuesControl, 'price', $event, j)"
-                      onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
-                      (keypress)="dynamicInputKeyPress(j)"
-                    />
+                    <div style="flex-basis: 35.12%">
+                      <app-currency-input
+                        [initialValue]="
+                          parseFloat(formattedPricing.values[j].substring(1))
+                        "
+                        (onInputEvent)="
+                          handleCurrencyInput(valuesControl, 'price', $event, j)
+                        "
+                      ></app-currency-input>
+                    </div>
                   </div>
-                </div>
-                <textarea
-                  placeholder="Descripción (opcional)"
-                  class="textarea"
-                  formControlName="description"
-                  (keypress)="dynamicInputKeyPress(j)"
-                ></textarea>
-              </section>
+                  <textarea
+                    placeholder="Descripción (opcional)"
+                    class="textarea"
+                    formControlName="description"
+                    (keypress)="dynamicInputKeyPress(j)"
+                  ></textarea>
+                </section>
+              </div>
+              <br /><br />
             </div>
-            <br /><br />
           </div>
-        </div>
+        </ng-container>
       </ng-container>
     </form>
   </main>

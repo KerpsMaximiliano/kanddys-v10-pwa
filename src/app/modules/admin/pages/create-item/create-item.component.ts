@@ -5,7 +5,7 @@ import {
   FormArray,
   FormControl,
   FormGroup,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,7 +21,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   StoreShareComponent,
-  StoreShareList
+  StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
@@ -32,6 +32,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./create-item.component.scss'],
 })
 export class CreateItemComponent implements OnInit {
+  status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   env = environment.assetsUrl;
   defaultImages: (string | ArrayBuffer)[] = [''];
   imageField: (string | ArrayBuffer)[] = [];
@@ -49,7 +50,6 @@ export class CreateItemComponent implements OnInit {
     pricing: new FormControl(null, [Validators.required, Validators.min(1)]),
     params: new FormArray([]),
   });
-  // formattedPricing = '$0.00';
   formattedPricing = {
     item: '$0.00',
     values: [],
@@ -60,25 +60,8 @@ export class CreateItemComponent implements OnInit {
     freeMode: false,
     spaceBetween: 5,
   };
-
-  dynamicForm = new FormGroup({});
-  // fields = [
-  //   {
-  //     id: 0,
-  //     name: { id: 'name-0', label: 'Nombre' },
-  //     price: { id: 'price-0', label: 'Price' },
-  //     description: { id: 'description-0', label: 'Description' },
-  //   },
-  // ];
-
-  paramsGroup = new FormGroup({
-    name: new FormControl(),
-    description: new FormControl(),
-    price: new FormControl(null, [Validators.required, Validators.min(1)]),
-    quantity: new FormControl(),
-    image: new FormControl(),
-  });
-  hasParams: boolean = false;
+  hasParams: boolean;
+  parseFloat = parseFloat;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -89,7 +72,6 @@ export class CreateItemComponent implements OnInit {
     private router: Router,
     private itemService: ItemsService,
     private headerService: HeaderService,
-    private decimalPipe: DecimalPipe,
     private dialogService: DialogService
   ) {}
 
@@ -101,20 +83,28 @@ export class CreateItemComponent implements OnInit {
     ];
     if (itemId && !this.itemService.temporalItem)
       promises.push(this.itemService.item(itemId));
+    this.status = 'loading';
     const [user, userMerchant, item] = await Promise.all(promises);
-    if (!user || !userMerchant) return;
+    if (!user || !userMerchant) {
+      this.status = 'complete';
+      return;
+    }
     this.user = user as User;
     this.merchant = userMerchant as Merchant;
     this.saleflow = await this.saleflowService.saleflowDefault(
       this.merchant._id
     );
-    if (!item && !this.itemService.temporalItem) return;
+    if (!item && !this.itemService.temporalItem) {
+      this.status = 'complete';
+      return;
+    }
     this.item = item as Item;
-    const { images, name, description, merchant } =
+    const { images, name, description, merchant, params, pricing } =
       this.item || this.itemService.temporalItem;
-    let { pricing } = this.item || this.itemService.temporalItem;
-    if (merchant && this.user._id !== merchant.owner._id)
+    if (merchant && this.user._id !== merchant.owner._id) {
+      this.status = 'error';
       throw new Error('No eres el merchant dueño de este item');
+    }
     this.imageField = images;
     if (this.itemService.temporalImages?.new?.length) this.changedImages = true;
     if (
@@ -126,11 +116,28 @@ export class CreateItemComponent implements OnInit {
         type: 'bullets',
         clickable: true,
       };
-    if (pricing % 1 === 0) pricing = pricing * 100;
     this.itemForm.get('name').setValue(name);
-    this.itemForm.get('pricing').setValue(pricing);
-    this.formatNumber(this.itemForm, 'pricing', pricing);
     this.itemForm.get('description').setValue(description);
+    this.handleCurrencyInput(this.itemForm, 'pricing', pricing);
+    if (params?.[0]?.values?.length) {
+      params[0].values.forEach(() => {
+        this.generateFields();
+      });
+      this.itemForm.get('params').patchValue(params);
+      (
+        (this.itemForm.get('params') as FormArray)
+          .at(0)
+          .get('values') as FormArray
+      ).controls.forEach((control, index) => {
+        this.handleCurrencyInput(
+          control,
+          'price',
+          params[0].values[index].price,
+          index
+        );
+      });
+    }
+    this.status = 'complete';
   }
 
   goBack() {
@@ -147,17 +154,12 @@ export class CreateItemComponent implements OnInit {
   }
 
   async onSubmit() {
-    const { images, name, description, params } = this.itemForm
+    const { images, name, description, params, pricing } = this.itemForm
       .value as ItemInput;
-    const pricing = parseFloat(this.formattedPricing.item.replace(/\$|,/g, ''));
     params?.forEach((param) => {
-      console.log('test param');
-      param.values?.forEach((value, index) => {
-        console.log('test value');
-        value.price = parseFloat(
-          this.formattedPricing.values[index].replace(/\$|,/g, '')
-        );
-      });
+      param.values = param.values.filter(
+        (values) => values.name || values.price || values.description
+      );
     });
     try {
       if (this.item || this.itemService.temporalItem?._id) {
@@ -211,7 +213,6 @@ export class CreateItemComponent implements OnInit {
             this.itemService.temporalImages?.new?.length > 0,
           params: params[0]?.values.length ? params : null,
         };
-        console.log(itemInput);
         if (this.user) {
           const { createItem } = await this.itemService.createItem(itemInput);
           await this.saleflowService.addItemToSaleFlow(
@@ -249,60 +250,20 @@ export class CreateItemComponent implements OnInit {
     }
   }
 
-  formatNumber(
+  handleCurrencyInput(
     form: FormGroup | AbstractControl,
     controlName: string,
-    event: Event | number,
+    value: number,
     index?: number
   ) {
-    let value: string;
-    if (typeof event === 'number') value = `${event}`;
-    else value = (<HTMLInputElement>event.target).value;
-    if (value.includes('.')) {
-      value = value
-        .split('')
-        .filter((char) => char !== '.')
-        .join('');
-      const convertedNumber = Number(value);
-      form.get(controlName).setValue(convertedNumber, {
-        emitEvent: false,
-      });
-    }
-    const plainNumber = value.split(',').join('');
-    if (plainNumber[0] === '0') {
-      const formatted =
-        plainNumber.length > 3
-          ? this.decimalPipe.transform(
-              Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-              '1.2'
-            )
-          : this.decimalPipe.transform(
-              Number(
-                '0.' +
-                  (plainNumber.length <= 2
-                    ? '0' + plainNumber.slice(1)
-                    : plainNumber.slice(1))
-              ),
-              '1.2'
-            );
-      if (index == null) this.formattedPricing.item = '$' + formatted;
-      else this.formattedPricing.values[index] = '$' + formatted;
-    } else {
-      const formatted =
-        plainNumber.length > 2
-          ? this.decimalPipe.transform(
-              Number(plainNumber.slice(0, -2) + '.' + plainNumber.slice(-2)),
-              '1.2'
-            )
-          : this.decimalPipe.transform(
-              Number(
-                '0.' +
-                  (plainNumber.length === 1 ? '0' + plainNumber : plainNumber)
-              ),
-              '1.2'
-            );
-      if (index == null) this.formattedPricing.item = '$' + formatted;
-      else this.formattedPricing.values[index] = '$' + formatted;
+    form.get(controlName).setValue(value, {
+      emitEvent: false,
+    });
+    if (value % 1 === 0) value = value * 100;
+    if (index == null) this.formattedPricing.item = '$' + value;
+    else {
+      this.formattedPricing.values[index] = '$' + value;
+      this.dynamicInputKeyPress(index);
     }
   }
 
@@ -378,13 +339,9 @@ export class CreateItemComponent implements OnInit {
                 this.formattedPricing.item.replace(/\$|,/g, '')
               );
               params?.forEach((param) => {
-                console.log('test param');
-                param.values?.forEach((value, index) => {
-                  console.log('test value');
-                  value.price = parseFloat(
-                    this.formattedPricing.values[index].replace(/\$|,/g, '')
-                  );
-                });
+                param.values = param.values.filter(
+                  (values) => values.name || values.price || values.description
+                );
               });
               this.itemService.storeTemporalItem({
                 ...this.item,
@@ -407,10 +364,8 @@ export class CreateItemComponent implements OnInit {
             mode: 'func',
             func: () => {
               if (!this.hasParams) {
-                this.generateFields();
-                console.log(this.itemForm.value);
-                console.log(this.itemForm.get('params'));
-                console.log(this.itemForm.get('params').value);
+                if (!this.getArrayLength(this.itemForm, 'params'))
+                  this.generateFields();
               }
               this.hasParams = !this.hasParams;
             },
@@ -461,8 +416,7 @@ export class CreateItemComponent implements OnInit {
     this.formattedPricing.values.push('$0.00');
   }
 
-  getParamsControls(form: FormGroup | AbstractControl, controlName: string) {
-    // return (this.itemForm.get('params') as FormArray).controls;
+  getControls(form: FormGroup | AbstractControl, controlName: string) {
     return (form.get(controlName) as FormArray).controls;
   }
 

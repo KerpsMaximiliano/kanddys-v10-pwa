@@ -140,6 +140,8 @@ export const item = gql`
       params {
         _id
         name
+        category
+        formType
         values {
           _id
           name
