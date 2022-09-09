@@ -1,99 +1,131 @@
-<ng-container *ngIf="itemData">
-  <div class="container">
-    <div>
-      <app-helper-headerv2
-        [mode]="'basic'"
-        [returnAble]="true"
-        cartColor="blue"
-        bgColor="#2874ad"
-        [color]="'#FFF'"
-        filter="invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)"
-        (returnEvent)="back()"
-      ></app-helper-headerv2>
-    </div>
-    <div class="item-info" *ngIf="itemData">
-      <div class="fullScreenSwiper" *ngIf="itemData.images?.length">
-        <button class="swiper-button" (click)="openShareDialog()">
-          <img
-            [src]="env + '/upload.svg'"
-            width="15"
-            height="19"
-            style="
-              filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
-                brightness(80%) contrast(104%);
-            "
-          />
-        </button>
-        <div class="shadowWrapper">
-          <swiper [config]="swiperConfig">
-            <div
-              *ngFor="let item of itemData.images; let i = index"
-              (click)="openImageModal(item)"
-              class="item"
-              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-            ></div>
-          </swiper>
-        </div>
+<div class="container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    cartColor="blue"
+    bgColor="#2874ad"
+    [color]="'#FFF'"
+    filter="invert(100%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(105%) contrast(100%)"
+    (returnEvent)="back()"
+  ></app-helper-headerv2>
+  <div class="item-info" *ngIf="item">
+    <div class="fullScreenSwiper" *ngIf="item.images?.length">
+      <button class="swiper-button" (click)="openShareDialog()">
+        <img
+          [src]="env + '/upload.svg'"
+          width="15"
+          height="19"
+          style="
+            filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
+              brightness(80%) contrast(104%);
+          "
+        />
+      </button>
+      <div class="shadowWrapper">
+        <swiper [config]="swiperConfig">
+          <div
+            *ngFor="let item of item.images; let i = index"
+            (click)="openImageModal(item)"
+            class="item"
+            [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+          ></div>
+        </swiper>
       </div>
-      <div
-        *ngIf="!itemData.images?.length"
-        style="display: flex; justify-content: flex-end; padding: 0 16px"
+    </div>
+    <div
+      *ngIf="!item.images?.length"
+      style="display: flex; justify-content: flex-end; padding: 0 16px"
+    >
+      <button class="nonswiper-button" (click)="openShareDialog()">
+        <img [src]="env + '/upload.svg'" width="15" height="19" />
+        Compartir
+      </button>
+    </div>
+
+    <div
+      class="item-price"
+      *ngIf="!hasParams || (hasParams && selectedParam != null)"
+    >
+      <h2
+        class="title-name"
+        *ngIf="
+          item.name ||
+          item.params[selectedParam.param].values[selectedParam.value].name
+        "
       >
-        <button class="nonswiper-button" (click)="openShareDialog()">
-          <img [src]="env + '/upload.svg'" width="15" height="19" />
-          Compartir
-        </button>
-      </div>
-      <div *ngIf="itemData.pricing" class="item-price">
-        <h2 class="title-name" *ngIf="itemData.name">
-          {{ itemData.name }}
-        </h2>
+        {{
+          selectedParam == null
+            ? item.name
+            : item.params[selectedParam.param].values[selectedParam.value].name
+        }}
+      </h2>
 
-        <div class="wrapper">
-          <span class="vale">A PAGAR </span>
-          <h3 class="price">RD$ {{ itemData.pricing | number }}</h3>
-        </div>
+      <div class="wrapper">
+        <span class="vale">A PAGAR </span>
+        <h3 class="price">
+          RD$
+          {{
+            selectedParam == null
+              ? item.pricing
+              : (item.params[selectedParam.param].values[selectedParam.value]
+                  .price | number)
+          }}
+        </h3>
       </div>
-
-      <div class="client-submit-area"></div>
-      <ng-container *ngIf="itemData.content?.length">
-        <hr class="divider" />
-        <div class="content">
-          <span class="includes">Incluye:</span>
-          <ul>
-            <li
-              *ngFor="let content of itemData.content; index as i"
-              class="list-content"
-            >
-              - {{ content }}
-            </li>
-          </ul>
-        </div>
-      </ng-container>
     </div>
-    <app-bubble-button
-      (click)="showItems()"
-      [cart]="true"
-      [cartAmount]="itemCartAmount"
-      [custom]="{ width: 56, height: 56, right: '20px', left: 'auto' }"
-      [solo]="false"
-      [color]="'blue'"
-      [lcmargin]="'0'"
-      *ngIf="itemCartAmount > 0"
-    ></app-bubble-button>
+    <div *ngIf="hasParams && selectedParam == null" style="padding: 16px">
+      <span class="params-label">Selecciona entre opciones:</span>
+      <div class="item-grid">
+        <ng-container *ngFor="let param of item.params; index as i">
+          <app-saleflow-item
+            *ngFor="let value of param.values; index as j"
+            [type]="3"
+            [imgURL]="value.image"
+            [price]="value.price"
+            [showPrice]="true"
+            [responsiveWidthVersion]="true"
+            (itemClicked)="selectParamValue(i, j)"
+          ></app-saleflow-item>
+        </ng-container>
+      </div>
+    </div>
 
-    <app-sticky-button
-      *ngIf="!inCart"
-      [mode]="'fixed'"
-      [text]="'ADD AL CARRITO DE COMPRAS'"
-      [size]="'small'"
-      [bgColor]="'#2874AD'"
-      (click)="saveProduct()"
-      [customLeftButtonStyles]="{
-        'font-size': '17px',
-        'font-family': 'RobotoMedium',
-        'letter-spacing': '1px'
-      }"
-    ></app-sticky-button>
+    <ng-container *ngIf="item.content?.length">
+      <hr class="divider" />
+      <div class="content">
+        <span class="includes">Incluye:</span>
+        <ul>
+          <li
+            *ngFor="let content of item.content; index as i"
+            class="list-content"
+          >
+            - {{ content }}
+          </li>
+        </ul>
+      </div>
+    </ng-container>
   </div>
-</ng-container>
+  <app-bubble-button
+    (click)="showItems()"
+    [cart]="true"
+    [cartAmount]="itemCartAmount"
+    [custom]="{ width: 56, height: 56, right: '20px', left: 'auto' }"
+    [solo]="false"
+    [color]="'blue'"
+    [lcmargin]="'0'"
+    *ngIf="itemCartAmount > 0"
+  ></app-bubble-button>
+  <app-sticky-button
+    *ngIf="(!hasParams && !inCart) || (hasParams && !inCart && selectedParam)"
+    [mode]="'fixed'"
+    [text]="'ADD AL CARRITO DE COMPRAS'"
+    [size]="'small'"
+    [bgColor]="'#2874AD'"
+    (click)="saveProduct()"
+    [customLeftButtonStyles]="{
+      'font-size': '17px',
+      'font-family': 'RobotoMedium',
+      'letter-spacing': '1px'
+    }"
+  ></app-sticky-button>
+</div>

@@ -19,8 +19,16 @@
       <div class="card-content">
         <div
           class="image"
-          *ngIf="item.images[0]; else noImage"
-          [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"
+          *ngIf="
+            item.image || (item.images?.length && item.images[0]);
+            else noImage
+          "
+          [ngStyle]="{
+            'background-image':
+              'url(' +
+              (item.image || (item.images?.length && item.images[0])) +
+              ')'
+          }"
         ></div>
         <ng-template #noImage>
           <div class="image placeholder"></div>
@@ -49,10 +57,10 @@
             </div>
           </div>
           <div class="description">
-            {{item.description}}
+            {{ item.description }}
           </div>
         </div>
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center">
           <button
             *ngIf="!orderFinished"
             class="delete-button"
@@ -84,11 +92,7 @@
     </div>
     <div class="price">
       <p class="total">${{ price | number: "1.0-2" }}</p>
-      <div
-        class="dop"
-      >
-        DOP
-      </div>
+      <div class="dop">DOP</div>
     </div>
   </div>
   <ng-template #noProducts>
