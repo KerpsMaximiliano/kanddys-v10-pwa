@@ -62,24 +62,49 @@
               item.item.images?.length && openImageModal(item.item.images[0])
             "
           >
-            <div
-              class="image"
-              [ngStyle]="{
-                backgroundImage: item.item.images?.length
-                  ? 'url(' + item.item.images[0] + ')'
-                  : 'url(/assets/images/noimage.png)'
-              }"
-            >
-              <!-- <img
-                [src]="
-                  item.item.images?.length
-                    ? item.item.images[0]
-                    : '/assets/images/noimage.png'
-                "
-                alt="item image"
-                class="item-image"
-              /> -->
-            </div>
+            <ng-container *ngIf="!item.params?.length">
+              <div
+                class="image"
+                [ngStyle]="{
+                  backgroundImage: item.item.images?.length
+                    ? 'url(' + item.item.images[0] + ')'
+                    : 'url(/assets/images/noimage.png)'
+                }"
+              >
+                <!-- <img
+                  [src]="
+                    item.item.images?.length
+                      ? item.item.images[0]
+                      : '/assets/images/noimage.png'
+                  "
+                  alt="item image"
+                  class="item-image"
+                /> -->
+              </div>
+            </ng-container>
+            <ng-container *ngIf="item.params?.length">
+              <div *ngFor="let paramValue of item.item.params[0].values">
+                <div
+                  class="image"
+                  [ngStyle]="{
+                    backgroundImage: paramValue.image
+                      ? 'url(' + paramValue.image + ')'
+                      : 'url(/assets/images/noimage.png)'
+                  }"
+                  *ngIf="(item.params[0].param == item.item.params[0]._id) && (item.params[0].paramValue == paramValue._id)"
+                >
+                  <!-- <img
+                    [src]="
+                      item.item.images?.length
+                        ? item.item.images[0]
+                        : '/assets/images/noimage.png'
+                    "
+                    alt="item image"
+                    class="item-image"
+                  /> -->
+                </div>
+              </div>
+            </ng-container>
           </button>
         </div>
       </div>
