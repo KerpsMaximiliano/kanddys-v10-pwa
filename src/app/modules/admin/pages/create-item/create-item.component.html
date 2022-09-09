@@ -134,12 +134,46 @@
                       ></app-currency-input>
                     </div>
                   </div>
-                  <textarea
-                    placeholder="Descripción (opcional)"
-                    class="textarea"
-                    formControlName="description"
-                    (keypress)="dynamicInputKeyPress(j)"
-                  ></textarea>
+
+                  <div class="description-and-images-wrapper">
+                    <div class="description-wrapper">
+                      <textarea
+                        placeholder="Descripción (opcional)"
+                        class="textarea"
+                        formControlName="description"
+                        (keypress)="dynamicInputKeyPress(j)"
+                      ></textarea>
+                    </div>
+
+                    <app-image-input
+                      [id]="'image' + j"
+                      [useSwiper]="false"
+                      [allowedTypes]="['png', 'jpg', 'jpeg']"
+                      [multiple]="true"
+                      innerLabel="Imagen o
+                      imágenes"
+                      [expandImage]="true"
+                      [uploadImagesWithoutPlaceholderBox]="true"
+                      [allowDeletion]="true"
+                      [max]="1"
+                      [containerStyles]="{
+                        width: 'auto',
+                        height: 'auto'
+                      }"
+                      [fileStyles]="{
+                        width: '137px',
+                        height: '122px',
+                        border: 'none',
+                        color: '#A1A1A1',
+                        boxShadow: 'lightgrey 0px 3px 13px inset',
+                        justifyContent: 'flex-start',
+                        alignItems: 'flex-start',
+                        paddingLeft: '27px',
+                        paddingTop: '31px',
+                        textAlign: 'left'
+                      }"
+                    ></app-image-input>
+                  </div>
                 </section>
               </div>
               <br /><br />
