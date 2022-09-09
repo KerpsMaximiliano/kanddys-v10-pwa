@@ -132,6 +132,28 @@
     </div>
   </div>
 
+  <div class="about-products" style="margin-top: 68px" *ngIf="webforms">
+    <div class="wrapper">
+      <h2 class="about-name">Sobre los forms</h2>
+
+      <div class="dot-trio">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </div>
+    </div>
+
+    <div class="grid-details">
+      <div class="info-card pointer">
+        <h2 class="amount quantity">
+          {{ answers ? answers.length : '0' }}
+        </h2>
+
+        <h2 class="amount">NUEVAS RESPUESTAS</h2>
+      </div>
+    </div>
+  </div>
+
   <!-- 
     <div class="about-forms" style="margin-top: 32px">
       <div class="wrapper">
