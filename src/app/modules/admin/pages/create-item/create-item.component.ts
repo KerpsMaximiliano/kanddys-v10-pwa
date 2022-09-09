@@ -56,6 +56,7 @@ export class CreateItemComponent implements OnInit {
     values: [],
   };
   curencyFocused = false;
+  submitEventFinished: boolean = true;
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -155,6 +156,7 @@ export class CreateItemComponent implements OnInit {
   }
 
   async onSubmit() {
+    this.submitEventFinished = false;
     const { images, name, description, params, pricing } = this.itemForm
       .value as ItemInput;
     params?.forEach((param) => {
@@ -163,6 +165,7 @@ export class CreateItemComponent implements OnInit {
           values.name || values.price || values.description || values.image
       );
     });
+    // const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
       if (this.item || this.itemService.temporalItem?._id) {
         const itemInput: ItemInput = {
@@ -196,6 +199,8 @@ export class CreateItemComponent implements OnInit {
               updatedItem._id
             );
           }
+
+          this.submitEventFinished = true;
           this.itemService.removeTemporalItem();
           this.router.navigate([`/admin/merchant-items`]);
         }
@@ -244,6 +249,7 @@ export class CreateItemComponent implements OnInit {
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
             this.router.navigate([`/admin/merchant-items`]);
+            this.submitEventFinished = true;
           }
         } else {
           const { createPreItem } = await this.itemService.createPreItem(
@@ -251,6 +257,7 @@ export class CreateItemComponent implements OnInit {
           );
 
           if ('_id' in createPreItem) {
+            this.submitEventFinished = true;
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
             this.router.navigate(
@@ -411,6 +418,32 @@ export class CreateItemComponent implements OnInit {
         ],
       },
     ];
+
+    if (this.itemForm.valid) {
+      list[0].options.push({
+        text: 'Vista del comprador',
+        mode: 'func',
+        func: () => {
+          const { images, name, description } = this.itemForm.value;
+          const pricing = parseFloat(
+            this.formattedPricing.replace(/\$|,/g, '')
+          );
+          this.itemService.storeTemporalItem({
+            ...this.item,
+            _id: this.item?._id,
+            name,
+            description,
+            images: this.imageField,
+            pricing: pricing,
+          });
+          this.itemService.temporalImages = {
+            old: this.item?.images,
+            new: images,
+          };
+          this.router.navigate(['/ecommerce/item-detail']);
+        },
+      });
+    }
 
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',

@@ -1,3 +1,5 @@
+import { Bank } from '../models/wallet';
+
 export interface AnswerIcon {
   src: string;
   styles?: Record<string, any>;
@@ -20,6 +22,11 @@ export interface OptionAnswerSelector {
   click?: boolean;
   description?: string[];
   id?: string;
+}
+
+export interface BankAnswers {
+  type: 'bank';
+  items: Bank[];
 }
 
 export type ComplexOptionAnswerSelector = WebformAnswerLayoutOption;
@@ -57,18 +64,18 @@ export const webformAnswerLayoutOptionDefaultStyles = {
     color: '#000000',
     fontFamily: 'SfProBold',
     fontSize: '13px',
-    width: '100%'
+    width: '100%',
   },
   MIDDLE: {
     fontFamily: 'SfProRegular',
     fontSize: '17px',
     color: '#7B7B7B',
-    width: '100%'
+    width: '100%',
   },
   BOTTOM: {
     fontFamily: 'SfProRegular',
     fontSize: '17px',
     color: '#174B72',
-    width: '100%'
+    width: '100%',
   },
 };

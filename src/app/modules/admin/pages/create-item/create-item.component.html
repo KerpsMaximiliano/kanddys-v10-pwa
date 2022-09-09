@@ -46,6 +46,25 @@
           </label>
         </ng-container>
       </section>
+      <section class="form-group p-side">
+        <div class="name-and-price-wrapper">
+          <div class="name-wrapper">
+            <input
+              class="input-text"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Nombre (opcional)"
+              formControlName="name"
+            />
+          </div>
+
+          <div class="price-wrapper">
+            <!-- Input Number Format -->
+            <div class="formatted-price">
+              <span *ngFor="let letter of formattedPricing.split('')">
+                {{ letter }}
+              </span>
 
       {{ formattedPricing | json }}
 
@@ -211,6 +230,11 @@
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
-    <button class="save" (click)="onSubmit()">Salvar</button>
+    <button
+      class="save"
+      (click)="submitEventFinished && itemForm.valid ? onSubmit() : null"
+    >
+      {{ submitEventFinished ? "Salvar" : "Espere..." }}
+    </button>
   </footer>
 </div>

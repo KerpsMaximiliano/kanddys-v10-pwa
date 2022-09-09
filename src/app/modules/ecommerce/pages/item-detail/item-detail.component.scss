@@ -69,6 +69,15 @@
 				font-weight: normal;
 			}
 
+			margin: 32px;
+
+			.title-name {
+				font-family: "SfProMedium";
+				font-size: 19px;
+				color: #4f4f4f;
+				margin: 0;
+			}
+
 			.wrapper {
 				display: flex;
 				justify-content: space-around;
@@ -186,6 +195,7 @@
 	align-items: flex-end;
 	gap: 8px;
 	margin-top: 25px;
+
 	transition: all 0.2s;
 
 	img {

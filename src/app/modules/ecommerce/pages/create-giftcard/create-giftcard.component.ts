@@ -59,30 +59,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.isComplete.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    if (!this.header.saleflow.module?.delivery?.isActive) {
-      this.router.navigate([`ecommerce/checkout`]);
-      return { ok: true };
-    }
-    if (this.header.saleflow.module.delivery.deliveryLocation) {
-      this.router.navigate([`ecommerce/new-address`]);
-      return { ok: true };
-    }
-    if (
-      this.header.saleflow.module.delivery.pickUpLocations.length === 1 &&
-      !this.header.saleflow.module.delivery.deliveryLocation
-    ) {
-      const { _id, ...addressInput } =
-        this.header.saleflow.module.delivery.pickUpLocations[0];
-      this.header.order.products.forEach((product) => {
-        product.deliveryLocation = addressInput;
-      });
-      this.header.storeLocation(this.header.getSaleflow()._id, addressInput);
-      this.header.isComplete.delivery = true;
-      this.header.storeOrderProgress(
-        this.header.saleflow?._id || this.header.getSaleflow()?._id
-      );
-      this.router.navigate(['ecommerce/checkout']);
-    }
+    this.router.navigate([`ecommerce/new-address`]);
+    return { ok: true };
   }
 
   savePreviousStepsDataBeforeEnteringPreview = (params) => {
@@ -244,7 +222,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'receiver',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl('', Validators.pattern(/[\S]/)),
           },
           label: '¿Para quién es?',
           placeholder: 'Type...',
@@ -273,7 +251,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'sender',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl('', Validators.pattern(/[\S]/)),
           },
           label: '¿De parte de quién o quienes?',
           placeholder: 'Type...',
@@ -289,7 +267,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           name: 'message',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl('', Validators.pattern(/[\S]/)),
           },
           label: '¿Que mensaje escribiremos?',
           inputType: 'textarea',
@@ -342,33 +320,15 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             });
           }
 
-          this.header.post = {
-            message: params.dataModel.value['2']['message'],
-            targets: [
-              {
-                name: params.dataModel.value['2']['receiver'],
-                emailOrPhone: '',
-              },
-            ],
-            from: params.dataModel.value['2']['sender'],
-            // multimedia: [this.header.flowImage],
-            multimedia: this.header.flowImage,
-            socialNetworks: [
-              {
-                url: '',
-              },
-            ],
-          };
-
           const postInput = {
-            message: params.dataModel.value['2']['message'],
+            message: params.dataModel.value['2']['message']?.trim(),
             targets: [
               {
-                name: params.dataModel.value['2']['receiver'],
+                name: params.dataModel.value['2']['receiver']?.trim(),
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['2']['sender'],
+            from: params.dataModel.value['2']['sender']?.trim(),
             // multimedia: this.header.flowImage,
             socialNetworks: [
               {
@@ -386,35 +346,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.isComplete.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
-            if (!this.header.saleflow.module?.delivery?.isActive) {
-              this.router.navigate([`ecommerce/checkout`]);
-              return { ok: true };
-            }
-            if (this.header.saleflow.module.delivery.deliveryLocation) {
-              this.router.navigate([`ecommerce/new-address`]);
-              return { ok: true };
-            }
-            if (
-              this.header.saleflow.module.delivery.pickUpLocations.length ===
-                1 &&
-              !this.header.saleflow.module.delivery.deliveryLocation
-            ) {
-              const { _id, ...addressInput } =
-                this.header.saleflow.module.delivery.pickUpLocations[0];
-              this.header.order.products.forEach((product) => {
-                product.deliveryLocation = addressInput;
-              });
-              this.header.storeLocation(
-                this.header.getSaleflow()._id,
-                addressInput
-              );
-              this.header.isComplete.delivery = true;
-              this.header.storeOrderProgress(
-                this.header.saleflow?._id || this.header.getSaleflow()?._id
-              );
-              this.router.navigate(['ecommerce/checkout']);
-            }
-
+            this.router.navigate([`ecommerce/new-address`]);
             return of({
               ok: true,
             });

@@ -62,8 +62,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
-      this.item = await this.itemsService.item(params.id);
-      if (!this.item || this.item.status !== 'active') return this.back();
+      this.itemData = await this.items.item(params.id);
+      if (
+        !this.itemData ||
+        (this.itemData.status !== 'active' &&
+          this.itemData.status !== 'featured')
+      )
+        return this.back();
 
       if (this.item.images.length > 1) {
         this.swiperConfig.pagination = {
@@ -96,13 +101,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if (!this.itemsService.temporalItem) {
-      // this.header.flowRoute = this.router.url;
-
+    if (!this.items.temporalItem)
       return this.router.navigate([`/admin/create-item`]);
-    }
-    this.item = this.itemsService.temporalItem;
-    if (!this.item.images.length) this.item.showImages = false;
+    this.itemData = this.items.temporalItem;
+    if (!this.itemData.images.length) this.itemData.showImages = false;
     this.previewMode = true;
   }
 
@@ -137,21 +139,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
                   if (this.saleflowData.module?.post)
                     this.router.navigate(['/ecommerce/create-giftcard']);
                   else if (this.saleflowData.module?.delivery)
-                    this.router.navigate(['/ecommerce/shipment-data-form']);
-                  else if (!this.header.orderId) {
-                    lockUI();
-                    const preOrderID = await this.header.newCreatePreOrder();
-                    this.header.orderId = preOrderID;
-                    unlockUI();
-                    this.router.navigate([
-                      `ecommerce/flow-completion-auth-less/${preOrderID}`,
-                    ]);
-                    this.header.createdOrderWithoutDelivery = true;
-                  } else {
-                    this.router.navigate([
-                      `ecommerce/flow-completion-auth-less/${this.header.orderId}`,
-                    ]);
-                  }
+                    this.router.navigate(['/ecommerce/new-address']);
+                  else this.router.navigate([`/ecommerce/checkout`]);
                 }
               }
             });

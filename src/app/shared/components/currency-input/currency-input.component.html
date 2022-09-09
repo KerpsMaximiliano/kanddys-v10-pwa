@@ -19,7 +19,7 @@
     required
     (focus)="curencyFocused = true"
     (blur)="curencyFocused = false"
-    (input)="formatNumber($event, true)"
+    (input)="formatNumber($event)"
     onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
   />
 </div>

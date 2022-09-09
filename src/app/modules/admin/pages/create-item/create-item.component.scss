@@ -220,24 +220,42 @@ footer {
   bottom: 0;
   width: 100%;
   max-width: 500px;
-  padding: 4px 20px;
   color: white;
   font-family: "RobotoMedium";
   font-size: 17px;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
 
-  &.disabled {
-    background-color: #7b7b7b;
-  }
-
   .back {
     border-right: solid 2px #fff;
+    text-align: center;
+
+    &:hover,
+    &:active {
+      opacity: 0.75;
+    }
   }
 
   .save {
     grid-column: 2 / span 11;
     text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+
+    &:hover,
+    &:active {
+      background-color: #2e82c2;
+    }
+  }
+
+  &.disabled {
+    background-color: #7b7b7b;
+    cursor: auto;
+
+    .save {
+      background-color: #7b7b7b;
+      cursor: auto;
+    }
   }
 }
 
@@ -278,6 +296,11 @@ footer {
 
   .image-wrapper {
     flex-basis: 35.12%;
+  }
+
+  .price-wrapper {
+    flex-basis: 35.12%;
+    position: relative;
   }
 }
 

@@ -4,20 +4,46 @@ const webformBody = `
     _id
     name
     description
+    merchant {
+      _id
+      name
+      owner {
+        phone
+      }
+    }
     questions {
         _id
         type
+        index
+        subIndex
         value
+        answerDefault {
+          active
+          isMedia
+          value
+          defaultValue
+        }
+        show
         required
+        active
+        answerMedia
     }
 `;
 
 export const webform = gql`
     query webform($id: ObjectID!) {
         webform(id: $id) {
-            ${webformBody}
+          ${webformBody}
         }
     }
+`;
+
+export const webformByMerchant = gql`
+  query webformByMerchant($merchantId: ObjectID!) {
+    webformByMerchant(merchantId: $merchantId) {
+      _id
+    }
+  }
 `;
 
 export const answerPaginate = gql`

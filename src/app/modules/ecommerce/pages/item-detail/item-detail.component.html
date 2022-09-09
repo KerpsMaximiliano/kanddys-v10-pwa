@@ -59,6 +59,15 @@
             : item.params[selectedParam.param].values[selectedParam.value].name
         }}
       </h2>
+        <button class="nonswiper-button" (click)="openShareDialog()">
+          <img [src]="env + '/upload.svg'" width="15" height="19" />
+          Compartir
+        </button>
+      </div>
+      <div *ngIf="itemData.pricing" class="item-price">
+        <h2 class="title-name">
+          {{ itemData.name }}
+        </h2>
 
       <div class="wrapper">
         <span class="vale">A PAGAR </span>
@@ -104,6 +113,19 @@
         </ul>
       </div>
     </ng-container>
+    <app-sticky-button
+      *ngIf="!inCart"
+      [mode]="'fixed'"
+      [text]="'ADD AL CARRITO DE COMPRAS'"
+      [size]="'small'"
+      [bgColor]="'#2874AD'"
+      (click)="!previewMode && saveProduct()"
+      [customLeftButtonStyles]="{
+        'font-size': '17px',
+        'font-family': 'RobotoMedium',
+        'letter-spacing': '1px'
+      }"
+    ></app-sticky-button>
   </div>
   <app-bubble-button
     (click)="showItems()"

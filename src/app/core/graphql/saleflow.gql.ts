@@ -218,6 +218,7 @@ export const listItems = gql`
       fixedQuantity
       size
       quality
+      status
       iconImage
       hasExtraPrice
       showImages

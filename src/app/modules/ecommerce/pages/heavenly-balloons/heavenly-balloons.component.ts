@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { ReservationOrderlessComponent } from 'src/app/modules/airtable/pages/reservations-orderless/reservations-orderless.component';
@@ -13,6 +18,7 @@ import { CountryISO } from 'ngx-intl-tel-input';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
+import { version } from 'package.json';
 
 const commonContainerStyles = {
   margin: '41px 39px auto 39px',
@@ -58,18 +64,54 @@ export class HeavenlyBalloonsComponent implements OnInit {
   fullFormMessage: string = null;
   formMessageInitialHistory: Record<string, any> = {};
   whatsappLink: string = 'https://wa.me/18492068680?text=';
+  whatsAppMessageParts: string[][] = [];
   reservation: {
     data: Record<string, any>;
     message: string;
   } = null;
   choosedReservation: boolean = false;
+  choosedFlowers: boolean = false;
   defaultImages: (string | ArrayBuffer)[] = [''];
-  recalculateFormWrapperHeight = false;
   files: File[] = [];
   calendarId: string = null;
   logo: string =
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/merchants-images/heavenlyballoons.webp';
+  multistepFormData: any = null;
   loading: boolean = true;
+
+  reservationOrderlessComponent = {
+    afterIndex: 0,
+    component: ReservationOrderlessComponent,
+    inputs: {
+      calendarId: this.calendarId || '62eadec619ae079e9283f355',
+      firstLabel: 'FECHA DE ENTREGA (*)',
+      secondLabel: 'TANDA',
+      timeOfDayMode: true,
+      containerStyles: {
+        minHeight: 'auto',
+      },
+    },
+    outputs: [
+      {
+        name: 'onTimeOfDaySelection',
+        callback: (timeOfDay) => {
+          if ('timeOfDay' in timeOfDay && 'dayName' in timeOfDay) {
+            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
+              timeOfDay
+            );
+          }
+        },
+      },
+      {
+        name: 'componentAndDataLoaded',
+        callback: (loaded) => {
+          if (loaded) {
+            window.dispatchEvent(new Event('resize'));
+          }
+        },
+      },
+    ],
+  };
 
   formSteps: FormStep[] = [
     {
@@ -78,7 +120,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Nombre (*)',
           topLabelAction: {
@@ -112,7 +160,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -134,13 +188,18 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
         {
-          name: 'socialId',
+          name: 'birthday',
           fieldControl: {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'RNC o Cédula (Sólo si deseas Factura con NCF)',
-          placeholder: '???-???????-?',
+          placeholder: 'YYYY-MM-DD',
+          label: 'Fecha de nacimiento',
+          inputType: 'date',
+          maxDate: `${new Date().getFullYear()}-${(
+            '0' +
+            (new Date().getMonth() + 1)
+          ).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
           styles: {
             containerStyles: {
               width: '100%',
@@ -185,34 +244,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '5px',
               display: 'flex',
               alignItems: 'center',
-            },
-          },
-        },
-        {
-          name: 'birthday',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          placeholder: 'YYYY-MM-DD',
-          label: 'Fecha de nacimiento (*)',
-          inputType: 'date',
-          maxDate: `${new Date().getFullYear()}-${(
-            '0' +
-            (new Date().getMonth() + 1)
-          ).slice(-2)}-${('0' + new Date().getDate()).slice(-2)}`,
-          styles: {
-            containerStyles: {
-              width: '100%',
-              padding: '0px 33px',
-            },
-            fieldStyles: {
-              marginTop: '26px',
-              width: '100%',
-            },
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
             },
           },
         },
@@ -269,23 +300,26 @@ export class HeavenlyBalloonsComponent implements OnInit {
       },
       footerConfig,
       stepProcessingFunction: (params) => {
-        const { name, lastname, socialId, instagramUser } =
+        const { name, lastname, birthday, instagramUser } =
           params.dataModel.value['1'];
 
-        this.fullFormMessage = '';
-        this.fullFormMessage += `*Detalles de la orden*\n\n`;
-        this.fullFormMessage += `*Nombre completo:*\n${name} ${lastname}\n\n`;
+        const whatsappMessagePartsOfThe1stStep = [];
 
-        if (socialId && socialId !== '')
-          this.fullFormMessage += `*RNC o Cédula:*\n${socialId}\n\n`;
+        whatsappMessagePartsOfThe1stStep.push(
+          `*Nombre completo:*\n${name} ${lastname}\n\n`
+        );
+
+        if (birthday !== '')
+          whatsappMessagePartsOfThe1stStep.push(
+            `*Fecha de cumpleaños:*\n${birthday}\n\n`
+          );
 
         if (instagramUser && instagramUser !== '')
-          this.fullFormMessage += `*Usuario de Instagram:*\n${instagramUser}\n\n`;
+          whatsappMessagePartsOfThe1stStep.push(
+            `*Usuario de Instagram:*\n${instagramUser}\n\n`
+          );
 
-        if (!this.formMessageInitialHistory['1'])
-          this.formMessageInitialHistory['1'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['2'] = null;
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe1stStep);
 
         return { ok: true };
       },
@@ -310,44 +344,21 @@ export class HeavenlyBalloonsComponent implements OnInit {
               marginBottom: '26px',
             },
           },
-          statusChangeCallbackFunction: (change) => {
-            if (change === 'VALID') {
-              this.formSteps[1].fieldsList[1].styles.containerStyles.display =
-                'block';
-              this.recalculateFormWrapperHeight = true;
-            } else
-              this.formSteps[1].fieldsList[1].styles.containerStyles.display =
-                'none';
-          },
-        },
-        {
-          name: 'receiverPhoneNumber',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(''),
-          },
-          label:
-            'Si tienes otro número al cual deseas que contactemos para realizar la entrega, indícalo aquí',
-          inputType: 'phone',
-          phoneCountryCode: CountryISO.DominicanRepublic,
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-              marginBottom: '26px',
-            },
-            containerStyles: {
-              display: 'none',
-            },
-          },
         },
         {
           name: 'email',
           fieldControl: {
             type: 'single',
-            control: new FormControl(''),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.pattern(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                ),
+              ])
+            ),
           },
-          label: 'Email',
+          label: 'Correo electrónico',
           placeholder: 'example@domain',
           inputType: 'email',
           styles: {
@@ -365,29 +376,27 @@ export class HeavenlyBalloonsComponent implements OnInit {
         },
       ],
       stepProcessingFunction: (params) => {
-        const { email, phoneNumber, receiverPhoneNumber } =
-          params.dataModel.value['2'];
+        const { email, phoneNumber } = params.dataModel.value['2'];
 
-        if (!this.formMessageInitialHistory['2'])
-          this.formMessageInitialHistory['2'] =
-            this.formMessageInitialHistory['1'];
+        const whatsappMessagePartsOfThe2ndStep = [];
 
-        this.fullFormMessage = this.formMessageInitialHistory['1'];
-        this.fullFormMessage += `*Número de teléfono:*\n${phoneNumber.nationalNumber}\n\n`;
+        whatsappMessagePartsOfThe2ndStep.push(
+          `*Número de teléfono:*\n${phoneNumber.nationalNumber}\n\n`
+        );
 
-        if (receiverPhoneNumber && receiverPhoneNumber !== '')
-          this.fullFormMessage += `*Número alternativo:*\n${receiverPhoneNumber.nationalNumber}\n\n`;
         if (email && email !== '')
-          this.fullFormMessage += `*Email:*\n${email}\n\n`;
+          whatsappMessagePartsOfThe2ndStep.push(`*Email:*\n${email}\n\n`);
 
-        this.formMessageInitialHistory['2'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['3'] = null;
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe2ndStep);
 
         return { ok: true };
       },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+        params.scrollToStep(0, false);
+      },
       pageHeader: {
-        text: '¿Donde recibirás las notificaciones de esta orden?',
+        text: '¿Dónde notificamos el estatus de tu orden?',
         styles: {
           fontFamily: 'RobotoBold',
           fontSize: '24px',
@@ -403,227 +412,55 @@ export class HeavenlyBalloonsComponent implements OnInit {
       headerText: '',
       fieldsList: [
         {
-          name: 'articleDescription',
+          name: 'whatWouldYouOrder',
           fieldControl: {
             type: 'single',
             control: new FormControl('', Validators.required),
           },
-          label: 'Describe aquí cómo deseas que preparemos tu arreglo (*)',
-          placeholder: 'Por ejemplo: Arreglo de 6 rosas con lazo blanco',
-          inputType: 'textarea',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingBottom: '26px',
-            },
-            fieldStyles: {
-              borderRadius: '10px',
-              padding: '23px 26px 23px 16px',
-              background: 'white',
-              height: '164px',
-            },
-          },
-        },
-      ],
-      embeddedComponents: [
-        {
-          afterIndex: 0,
-          component: ImageInputComponent,
-          inputs: {
-            imageField:
-              this.defaultImages.length > 0 ? this.defaultImages : null,
-            multiple: true,
-            allowedTypes: ['png', 'jpg', 'jpeg'],
-            imagesPerView: 3,
-            innerLabel: 'Fotos de referencia',
-            expandImage: true,
-            topLabel: {
-              text: '¿Tienes fotos de referencia? Adjúntalas aquí:',
-              styles: {
-                ...labelStyles,
-                paddingTop: '65px',
-                paddingBottom: '26px',
-              },
-            },
-            containerStyles: {
-              width: '157px',
-              height: '137px',
-              margin: '0px',
-            },
-            fileStyles: {
-              width: '157px',
-              height: '137px',
-              paddingLeft: '20px',
-              textAlign: 'left',
-              backgroundSize: 'cover',
-            },
-          },
-          outputs: [
-            {
-              name: 'onFileInputBase64',
-              callback: (result) => {
-                this.defaultImages[result.index] = result.image;
-                this.formSteps[2].embeddedComponents[0].inputs.innerLabel =
-                  'Adiciona otra imagen (opcional)';
-                this.formSteps[2].embeddedComponents[0].shouldRerender = true;
-              },
-            },
-            {
-              name: 'onFileInput',
-              callback: (result) => {
-                this.files[result.index] = result.image;
-              },
-            },
-          ],
-          containerStyles: {
-            marginTop: '0px',
-            paddingBottom: '4rem',
-          },
-        },
-      ],
-      stepProcessingFunction: (params) => {
-        const { articleDescription } = params.dataModel.value['3'];
-
-        if (!this.formMessageInitialHistory['3'])
-          this.formMessageInitialHistory['3'] =
-            this.formMessageInitialHistory['2'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['2'];
-
-        if (articleDescription && articleDescription !== '')
-          this.fullFormMessage += `*Descripción de Artículo:*\n${articleDescription}\n\n`;
-
-        this.formMessageInitialHistory['3'] = this.fullFormMessage;
-        this.formMessageInitialHistory['4'] = null;
-
-        return { ok: true };
-      },
-      pageHeader: {
-        text: 'Sobre el arreglo',
-        styles: {
-          fontFamily: 'RobotoBold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '36px',
-        },
-      },
-      footerConfig,
-      stepButtonInvalidText: 'ESPECIFICA LOS DETALLES DE TU ORDEN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
-        {
-          name: 'sender',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(''),
-          },
-          label:
-            'Remitente (Si no deseas que indiquemos de parte de quien proviene este arreglo puedes escribir "Anónimo" o dejarlo vacío',
-          placeholder: 'Escribe aquí',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingBottom: '26px',
-            },
-          },
-        },
-        {
-          name: 'receiver',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          label: 'Destinatario (Quién recibe este arreglo) (*)',
-          placeholder: 'Escribe aquí',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-              paddingBottom: '26px',
-            },
-            containerStyles: {
-              paddingBottom: '4rem',
-            },
-          },
-        },
-      ],
-      stepProcessingFunction: (params) => {
-        const { sender, receiver } = params.dataModel.value['4'];
-
-        if (!this.formMessageInitialHistory['4'])
-          this.formMessageInitialHistory['4'] =
-            this.formMessageInitialHistory['3'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['3'];
-
-        this.fullFormMessage += `*Remitente:*\n${
-          !sender || sender === '' ? 'Anónimo' : sender
-        }\n\n`;
-        if (receiver && receiver !== '')
-          this.fullFormMessage += `*Destinatario:*\n${receiver}\n\n`;
-
-        this.formMessageInitialHistory['4'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['5'] = null;
-
-        return { ok: true };
-      },
-      pageHeader: {
-        text: 'Sobre la entrega',
-        styles: {
-          fontFamily: 'RobotoBold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '36px',
-        },
-      },
-      footerConfig,
-      stepButtonInvalidText: 'ESPECIFICA LOS DETALLES DE LA ENTREGA',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
-        {
-          name: 'wantToAddADedication',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          selectionOptions: ['Si', 'No'],
+          selectionOptions: ['Arreglo de flores', 'Otro'],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[4].fieldsList[0].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
+            const whatsappMessagePartsOfThe3rdStep = [];
+
+            whatsappMessagePartsOfThe3rdStep.push(
+              `*¿Qué voy a ordenar?:*\n${change}\n\n`
             );
 
-            if (change === 'Si') {
-              this.formSteps[4].fieldsList[1].styles.containerStyles.opacity =
-                '1';
-              this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft =
-                '0px';
-              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators(
-                Validators.required
-              );
-              this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();
+            if (this.whatsAppMessageParts.length < 3)
+              this.whatsAppMessageParts.push(whatsappMessagePartsOfThe3rdStep);
+
+            if (change === 'Arreglo de flores') {
+              this.formSteps[4].fieldsList.forEach((field, index) => {
+                if (index !== this.formSteps[4].fieldsList.length - 1)
+                  field.fieldControl.control.setValue('');
+                else {
+                  field.fieldControl.control.setValue(['']);
+                  field.fileObjects = [];
+                }
+              });
+
+              params.scrollToStep(3);
+              this.choosedFlowers = true;
             } else {
-              this.formSteps[4].fieldsList[1].styles.containerStyles.opacity =
-                '0';
-              this.formSteps[4].fieldsList[1].styles.containerStyles.marginLeft =
-                '1000px';
-              this.formSteps[4].fieldsList[1].fieldControl.control.setValue('');
-              this.formSteps[4].fieldsList[1].fieldControl.control.setValidators(
-                []
-              );
-              this.formSteps[4].fieldsList[1].fieldControl.control.updateValueAndValidity();
+              this.formSteps[3].fieldsList.forEach((field, index) => {
+                if ([1, 2].includes(index)) {
+                  field.fieldControl.control.setValue([]);
+                  field.colorPickerConfiguration.selectedCounter = 0;
+                  field.colorPickerConfiguration.options.forEach(
+                    (color, index) => {
+                      color.selected = false;
+                    }
+                  );
+                } else if (index === 7) {
+                  field.fieldControl.control.setValue(['']);
+                  field.fileObjects = [];
+                } else field.fieldControl.control.setValue('');
+              });
+
+              params.scrollToStep(4);
+              this.choosedFlowers = false;
             }
           },
-          label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
+          label: '¿Qué vas a ordenar?',
           inputType: 'radio',
           styles: {
             containerStyles: {
@@ -638,14 +475,304 @@ export class HeavenlyBalloonsComponent implements OnInit {
             },
           },
         },
+      ],
+      stepProcessingFunction: (params) => {
+        return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+        params.scrollToStep(1, false);
+      },
+      footerConfig,
+      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+    },
+    {
+      headerText: '',
+      fieldsList: [
+        {
+          name: 'howManyRoses',
+          inputType: 'number',
+          label: 'Cantidad de rosas(Si desconoce la cantidad, dejarlo vacío)',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(null, Validators.min(0)),
+          },
+          onlyAllowPositiveNumbers: true,
+          placeholder: 'Escribe un número',
+          styles: {
+            containerStyles: {},
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+          },
+        },
+        {
+          name: 'rosesColor',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(
+              [],
+              Validators.compose([Validators.required, Validators.minLength(1)])
+            ),
+          },
+          colorPickerConfiguration: {
+            options: [
+              {
+                color: 'red',
+                label: 'Roja',
+              },
+              {
+                color: 'white',
+                label: 'Blanco',
+              },
+              {
+                color: 'pink',
+                label: 'Rosado',
+              },
+              {
+                color: '#ff00ff',
+                label: 'Fucsia',
+              },
+              {
+                color: 'yellow',
+                label: 'Amarillo',
+              },
+              {
+                color: '#df02f1',
+                label: 'Morado claro',
+              },
+              {
+                color: 'skyblue',
+                label: 'Azul claro',
+              },
+              {
+                color: 'blue',
+                label: 'Azul oscuro',
+              },
+              {
+                color: 'green',
+                label: 'Verde',
+              },
+              {
+                color: '#572364',
+                label: 'Morado oscuro',
+              },
+              {
+                color: '#b76c77',
+                label: 'Rose gold',
+              },
+              {
+                color: '#CFB53B',
+                label: 'Dorado',
+              },
+            ],
+            selectedCounter: 0,
+            maximumNumberOfSelections: 2,
+          },
+          label: 'Color de rosas (*), Puedes seleccionar máximo 2 colores',
+          inputType: 'color-picker',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+          },
+        },
+        {
+          name: 'ribbonColor',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(
+              [],
+              Validators.compose([Validators.required, Validators.minLength(1)])
+            ),
+          },
+          colorPickerConfiguration: {
+            options: [
+              {
+                color: 'red',
+                label: 'Roja',
+              },
+              {
+                color: 'white',
+                label: 'Blanco',
+              },
+              {
+                color: 'pink',
+                label: 'Rosado',
+              },
+              {
+                color: '#C58FAC',
+                label: 'Rosado viejo',
+              },
+              {
+                color: '#FF007F',
+                label: 'Rosado brillante',
+              },
+              {
+                color: '#CFB53B',
+                label: 'Dorado',
+              },
+              {
+                color: '#ff00ff',
+                label: 'Fucsia',
+              },
+              {
+                color: 'skyblue',
+                label: 'Azul claro',
+              },
+              {
+                color: 'blue',
+                label: 'Azul oscuro',
+              },
+              {
+                color: '#df02f1',
+                label: 'Morado claro',
+              },
+              {
+                color: '#572364',
+                label: 'Morado oscuro',
+              },
+              {
+                color: '#40E0D0',
+                label: 'Turquesa',
+              },
+              {
+                color: '#FF5733',
+                label: 'Crema',
+              },
+              {
+                color: 'orange',
+                label: 'Naranja',
+              },
+              {
+                color: 'yellow',
+                label: 'Amarillo',
+              },
+            ],
+            selectedCounter: 0,
+            maximumNumberOfSelections: 1,
+          },
+          label: 'Color de Lazos (*), Puede seleccionar 1',
+          inputType: 'color-picker',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+          },
+        },
+        {
+          name: 'balloonMessage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Mensaje en el globo',
+          placeholder: 'Escribe aquí',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px',
+            },
+          },
+        },
+        {
+          name: 'additionalDetails',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Describe aquí todos los detalles adicionales de tu arreglo',
+          placeholder: 'Escribe aquí',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px',
+            },
+          },
+        },
+        {
+          name: 'wantToAddADedication',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          selectionOptions: ['Si', 'No'],
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[3].fieldsList[5].fieldControl.control.setValue(
+              change,
+              {
+                emitEvent: false,
+              }
+            );
+
+            if (change === 'Si') {
+              this.formSteps[3].fieldsList[6].styles.containerStyles.opacity =
+                '1';
+              this.formSteps[3].fieldsList[6].styles.containerStyles.height =
+                'auto';
+
+              this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
+                '0px';
+              this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
+              );
+              this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
+            } else {
+              this.formSteps[3].fieldsList[6].styles.containerStyles.opacity =
+                '0';
+              this.formSteps[3].fieldsList[6].styles.containerStyles.height =
+                '0px';
+              this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
+                '1000px';
+              this.formSteps[3].fieldsList[6].fieldControl.control.setValue('');
+              this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
+                []
+              );
+              this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
+            }
+          },
+          label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
+          inputType: 'radio',
+          styles: {
+            fieldStyles: {
+              paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
+            },
+          },
+        },
         {
           name: 'dedicationMessage',
           fieldControl: {
             type: 'single',
             control: new FormControl(''),
           },
-          label:
-            'Indica el mensaje de dedicatoria que te gustaría incluir en la tarjeta',
+          label: 'Mensaje de dedicatoria (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
@@ -660,32 +787,117 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '164px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in',
-              marginTop: '19px',
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
+              height: '0px',
               marginLeft: '1000px',
+            },
+          },
+        },
+        {
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
             },
           },
         },
       ],
       stepProcessingFunction: (params) => {
-        const { wantToAddADedication, dedicationMessage } =
-          params.dataModel.value['5'];
+        const {
+          howManyRoses,
+          rosesColor,
+          ribbonColor,
+          balloonMessage,
+          additionalDetails,
+          wantToAddADedication,
+          dedicationMessage,
+        } = params.dataModel.value['4'];
 
-        if (!this.formMessageInitialHistory['5'])
-          this.formMessageInitialHistory['5'] =
-            this.formMessageInitialHistory['4'];
+        const whatsappMessagePartsOfThe4thStep = [];
 
-        this.fullFormMessage = this.formMessageInitialHistory['4'];
+        if (howManyRoses && howManyRoses !== '' && howManyRoses !== 0) {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Cantidad de rosas:*\n${howManyRoses}\n\n`
+          );
+        }
 
-        if (wantToAddADedication === 'Si')
-          this.fullFormMessage += `*Mensaje de Dedicatoria:*\n${dedicationMessage}\n\n`;
+        if (rosesColor !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Color de rosas:*\n${rosesColor
+              .map((color) => color.label)
+              .join(', ')}\n\n`
+          );
+        }
 
-        this.formMessageInitialHistory['5'] = this.fullFormMessage;
+        if (ribbonColor !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Color de Lazos:*\n${ribbonColor[0].label}\n\n`
+          );
+        }
 
-        this.formMessageInitialHistory['6'] = null;
+        if (balloonMessage !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Mensaje en el globo:*\n${balloonMessage}\n\n`
+          );
+        }
+
+        if (additionalDetails !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Detalles adicionales del arreglo:*\n${additionalDetails}\n\n`
+          );
+        }
+
+        if (wantToAddADedication === 'Si' && dedicationMessage !== '') {
+          whatsappMessagePartsOfThe4thStep.push(
+            `*Dedicatoria:*\n${dedicationMessage}\n\n`
+          );
+        }
+
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe4thStep);
+
+        params.scrollToStep(4);
 
         return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.formSteps[2].fieldsList[0].fieldControl.control.setValue(null);
+
+        params.scrollToStep(2);
+
+        this.whatsAppMessageParts.pop();
       },
       footerConfig,
       stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
@@ -695,98 +907,870 @@ export class HeavenlyBalloonsComponent implements OnInit {
       headerText: '',
       fieldsList: [
         {
-          name: 'orderMedium',
+          name: 'orderDetails',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required),
+          },
+          label: 'Describe aquí todos los detalles de tu arreglo (*)',
+          placeholder: 'Escribe aquí',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px',
+            },
+          },
+        },
+        {
+          name: 'wantToAddADedication',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          selectionOptions: ['Si', 'No'],
+          changeCallbackFunction: (change, params) => {
+            if (change === 'Si') {
+              this.formSteps[4].fieldsList[2].styles.containerStyles.opacity =
+                '1';
+              this.formSteps[4].fieldsList[2].styles.containerStyles.height =
+                'auto';
+
+              this.formSteps[4].fieldsList[2].styles.containerStyles.marginLeft =
+                '0px';
+              this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
+                Validators.required
+              );
+              this.formSteps[4].fieldsList[2].fieldControl.control.updateValueAndValidity();
+            } else {
+              this.formSteps[4].fieldsList[2].styles.containerStyles.opacity =
+                '0';
+              this.formSteps[4].fieldsList[2].styles.containerStyles.height =
+                '0px';
+              this.formSteps[4].fieldsList[2].styles.containerStyles.marginLeft =
+                '1000px';
+              this.formSteps[4].fieldsList[2].fieldControl.control.setValue('');
+              this.formSteps[4].fieldsList[2].fieldControl.control.setValidators(
+                []
+              );
+              this.formSteps[4].fieldsList[2].fieldControl.control.updateValueAndValidity();
+            }
+          },
+          label: '¿Deseas incluir una tarjeta de dedicatoria a tu arreglo?',
+          inputType: 'radio',
+          styles: {
+            fieldStyles: {
+              paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
+            },
+          },
+        },
+        {
+          name: 'dedicationMessage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Mensaje de dedicatoria (*)',
+          placeholder: 'Escribe aquí...',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px',
+            },
+            containerStyles: {
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
+              opacity: '0',
+              height: '0px',
+              marginLeft: '1000px',
+            },
+          },
+        },
+        {
+          name: 'referenceImage2',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            },
+          },
+        },
+      ],
+      stepProcessingFunction: (params) => {
+        const { orderDetails, wantToAddADedication, dedicationMessage } =
+          params.dataModel.value['5'];
+
+        const whatsappMessagePartsOfThe5thStep = [];
+
+        if (orderDetails !== '') {
+          whatsappMessagePartsOfThe5thStep.push(
+            `*Detalles del arreglo:*\n${orderDetails}\n\n`
+          );
+        }
+
+        if (wantToAddADedication === 'Si' && dedicationMessage !== '') {
+          whatsappMessagePartsOfThe5thStep.push(
+            `*Dedicatoria:*\n${dedicationMessage}\n\n`
+          );
+        }
+
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe5thStep);
+
+        return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.formSteps[2].fieldsList[0].fieldControl.control.setValue(null);
+
+        this.formSteps[4].fieldsList.forEach((field, index) => {
+          if (index !== this.formSteps[4].fieldsList.length - 1)
+            field.fieldControl.control.setValue('');
+          else {
+            field.fieldControl.control.setValue(['']);
+            field.fileObjects = [];
+          }
+        });
+
+        params.scrollToStep(2);
+
+        this.whatsAppMessageParts.pop();
+      },
+      footerConfig,
+      stepButtonInvalidText: 'INGRESA LOS DATOS REQUERIDOS',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+    },
+    {
+      fieldsList: [
+        {
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required),
+          },
+          name: 'reservation',
+          label: '',
+          styles: {
+            containerStyles: {
+              display: 'none',
+            },
+          },
+        },
+        {
+          name: 'deliveryMethod',
+          label: 'Método de entrega (*)',
           fieldControl: {
             type: 'single',
             control: new FormControl('', Validators.required),
           },
           selectionOptions: [
-            'Whatsapp',
-            'Instagram',
-            'E-Mail',
-            'Website',
-            'Personal',
+            'Pickup',
+            'Delivery Distrito Nacional',
+            'Delivery Santo Domingo Este',
+            'Delivery Santo Domingo Oeste',
+            'Delivery Santo Domingo Norte',
+            'Fuera de Santo Domingo',
           ],
           changeCallbackFunction: (change, params) => {
-            this.formSteps[5].fieldsList[0].fieldControl.control.setValue(
+            const { deliveryMethod: pastValue } = params.dataModel.value['6'];
+
+            if (
+              change !== 'Pickup' &&
+              (pastValue === '' || pastValue === 'Pickup')
+            ) {
+              this.formSteps[5].fieldsList.forEach((field, index) => {
+                if (
+                  !(
+                    'containerStyles' in
+                    this.formSteps[5].fieldsList[index].styles
+                  )
+                ) {
+                  this.formSteps[5].fieldsList[index].styles.containerStyles =
+                    {};
+                }
+
+                if (index === 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.paddingBottom = '0px';
+                }
+
+                if (index > 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.opacity = '1';
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.height = 'auto';
+                }
+
+                if (index === this.formSteps[5].fieldsList.length - 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.paddingBottom = '20rem';
+                }
+
+                this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
+                  Validators.required
+                );
+                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
+                );
+                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
+                );
+                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+              });
+            } else if (
+              change === 'Pickup' &&
+              (pastValue === '' || pastValue !== 'Pickup')
+            ) {
+              this.formSteps[5].fieldsList.forEach((field, index) => {
+                if (
+                  !(
+                    'containerStyles' in
+                    this.formSteps[5].fieldsList[index].styles
+                  )
+                ) {
+                  this.formSteps[5].fieldsList[index].styles.containerStyles =
+                    {};
+                }
+
+                if (index === 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.paddingBottom = '60px';
+                }
+
+                if (index > 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.height = '0px';
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.opacity = '0';
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].fieldControl.control.setValue('', {
+                    emitEvent: false,
+                  });
+                }
+
+                if (index === this.formSteps[5].fieldsList.length - 1) {
+                  this.formSteps[5].fieldsList[
+                    index
+                  ].styles.containerStyles.paddingBottom = '0rem';
+                }
+
+                this.formSteps[5].fieldsList[2].fieldControl.control.setValue(
+                  '',
+                  {
+                    emitEvent: false,
+                  }
+                );
+                this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
+                  []
+                );
+                this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
+                this.formSteps[5].fieldsList[3].fieldControl.control.setValue(
+                  '',
+                  {
+                    emitEvent: false,
+                  }
+                );
+                this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
+                  []
+                );
+                this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
+                this.formSteps[5].fieldsList[6].fieldControl.control.setValue(
+                  '',
+                  {
+                    emitEvent: false,
+                  }
+                );
+                this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
+                  []
+                );
+                this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
+              });
+            }
+          },
+          inputType: 'radio',
+          styles: {
+            fieldStyles: {
+              paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
+            },
+            containerStyles: {
+              paddingBottom: '60px',
+            },
+          },
+        },
+        {
+          name: 'typeOfBuilding',
+          label: 'Tipo de Edificación (*)',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          selectionOptions: [
+            'Casa',
+            'Edificio Comercial',
+            'Edificio Residencial',
+            'Otro',
+          ],
+          inputType: 'radio',
+          styles: {
+            fieldStyles: {
+              paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },
+        {
+          name: 'deliveryAddress',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Dirección escrita y referencia (*)',
+          placeholder:
+            'calle... #... residencial... edif... apto... cerca de...',
+          inputType: 'textarea',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+              paddingTop: '51px',
+            },
+            fieldStyles: {
+              borderRadius: '10px',
+              padding: '23px 26px 23px 16px',
+              background: 'white',
+              height: '164px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },
+        {
+          name: 'location',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label:
+            'Locación/Ubicación GPS(Esto ayudara al mensajero a hacer la entrega más precisa)',
+          placeholder: 'Escribe aquí...',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingTop: '65px',
+              paddingBottom: '26px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+              paddingBottom: '0rem',
+            },
+          },
+        },
+        /* FUNCIONALIDAD GPS CON GOOGLE MAPS
+        {
+          name: 'location',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Locación',
+          inputType: 'location-map',
+          placeholder:
+            'Esto ayudara al mensajero a hacer la entrega más precisa',
+          clickedOnLocationQuestionButton: false,
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            containerStyles: {
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },*/
+        {
+          name: 'sender',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Nombre del Remitente',
+          placeholder: 'Escribe aquí',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },
+        {
+          name: 'receiver',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Nombre del Destinatario (*)',
+          placeholder: 'Escribe aquí',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },
+        {
+          name: 'receiverPhoneNumber',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'Teléfono del destinatario',
+          inputType: 'phone',
+          phoneCountryCode: CountryISO.DominicanRepublic,
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '30px',
+            },
+            containerStyles: {
+              opacity: '0',
+              height: '0px',
+              paddingBottom: '0rem',
+            },
+          },
+        },
+      ],
+      embeddedComponents: [this.reservationOrderlessComponent],
+      stepProcessingFunction: (params) => {
+        const {
+          reservation: timeOfDay,
+          deliveryMethod,
+          typeOfBuilding,
+          deliveryAddress,
+          location,
+          sender,
+          receiver,
+          receiverPhoneNumber,
+        } = params.dataModel.value['6'];
+
+        const whatsappMessagePartsOfThe6thStep = [];
+
+        if (timeOfDay) {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`
+          );
+        }
+
+        if (deliveryMethod && deliveryMethod !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Método de entrega:*\n${deliveryMethod}\n\n`
+          );
+        }
+
+        if (typeOfBuilding && typeOfBuilding !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Tipo de edificación:*\n${typeOfBuilding}\n\n`
+          );
+        }
+
+        if (deliveryAddress && deliveryAddress !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Dirección de entrega:*\n${deliveryAddress}\n\n`
+          );
+        }
+
+        if (location && location !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Locación/Ubicación exacta:*\n${location}\n\n`
+          );
+        }
+
+        if (sender && sender !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Nombre del Remitente:*\n${sender}\n\n`
+          );
+        }
+
+        if (receiver && receiver !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Nombre del Destinatario:*\n${receiver}\n\n`
+          );
+        }
+
+        if (receiverPhoneNumber && receiverPhoneNumber !== '') {
+          whatsappMessagePartsOfThe6thStep.push(
+            `*Teléfono del destinatario:*\n${receiverPhoneNumber.e164Number}\n\n`
+          );
+        }
+
+        this.whatsAppMessageParts.push(whatsappMessagePartsOfThe6thStep);
+
+        return { ok: true };
+      },
+      customScrollToStepBackwards: (params) => {
+        this.whatsAppMessageParts.pop();
+
+        if (this.choosedFlowers) {
+          params.scrollToStep(3);
+        } else {
+          params.scrollToStep(4);
+        }
+      },
+      pageHeader: {
+        text: '¿Cuándo y dónde entregamos tu pedido?',
+        styles: {
+          fontFamily: 'RobotoBold',
+          fontSize: '24px',
+          margin: '0px',
+          marginTop: '36px',
+        },
+      },
+      footerConfig,
+      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
+    },
+    //por aqui voy
+    {
+      headerText: '',
+      fieldsList: [
+        {
+          name: 'billType',
+          label: 'Tipo de Factura (*)',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.required),
+          },
+          selectionOptions: [
+            'Sin Comprobante',
+            'Comprobante Fiscal (B01)',
+            'Consumo (B02)',
+          ],
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[6].fieldsList[0].fieldControl.control.setValue(
               change,
               {
                 emitEvent: false,
               }
             );
+
+            if (change !== 'Comprobante Fiscal (B01)') {
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValue('');
+              this.formSteps[6].fieldsList[1].styles.containerStyles.opacity =
+                '0';
+              this.formSteps[6].fieldsList[1].styles.containerStyles.height =
+                '0px';
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
+                []
+              );
+              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
+            } else {
+              this.formSteps[6].fieldsList[1].styles.containerStyles.opacity =
+                '1';
+              this.formSteps[6].fieldsList[1].styles.containerStyles.height =
+                'auto';
+              this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
+              );
+              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
+            }
           },
-          label: 'Via de pedido (*)',
           inputType: 'radio',
           styles: {
-            containerStyles: {
-              marginTop: '36px',
-            },
-            labelStyles: {
-              fontSize: '24px',
-              fontFamily: 'RobotoBold',
-              marginBottom: '0px',
-              paddingBottom: '26px',
-            },
             fieldStyles: {
               paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
             },
           },
         },
-      ],
-      stepProcessingFunction: (params) => {
-        const { orderMedium } = params.dataModel.value['6'];
+        {
+          name: 'socialId',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          label: 'RNC o Cédula (*)',
+          placeholder: '???-???????-?',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+            },
+            fieldStyles: {
+              marginTop: '26px',
+            },
+            containerStyles: {
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
+              opacity: '0',
+              height: '0px',
+            },
+          },
+        },
+        {
+          name: 'paymentMethod',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(''),
+          },
+          selectionOptions: [
+            'Cuenta Popular',
+            'Cuenta BHD',
+            'Cuenta Banreservas',
+            'Yoyo App',
+            'Efectivo',
+            'Otro',
+          ],
+          changeCallbackFunction: (change, params) => {
+            this.formSteps[6].fieldsList[3].styles.containerStyles = {};
 
-        if (!this.formMessageInitialHistory['6'])
-          this.formMessageInitialHistory['6'] =
-            this.formMessageInitialHistory['5'];
+            if (change !== 'Efectivo') {
+              this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
+                '1';
+              this.formSteps[6].fieldsList[3].styles.containerStyles.height =
+                'auto';
 
-        this.fullFormMessage = this.formMessageInitialHistory['5'];
+              this.formSteps[6].fieldsList[3].styles.containerStyles.marginLeft =
+                '0px';
 
-        if (orderMedium !== '')
-          this.fullFormMessage += `*Via de pedido:*\n${orderMedium}\n\n`;
+              const detectIfFirstIndexIsAnImageAndIsNotAnEmptyString = (
+                arrayOfValues: Array<string>
+              ) => {
+                return (control: AbstractControl): ValidationErrors | null => {
+                  const isInvalid =
+                    (arrayOfValues.length > 0 && arrayOfValues[0] === '') ||
+                    arrayOfValues.length === 0
+                      ? true
+                      : false;
+                  return isInvalid
+                    ? { proofOfPayment: { value: control.value } }
+                    : null;
+                };
+              };
 
-        this.formMessageInitialHistory['6'] = this.fullFormMessage;
+              this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+                Validators.compose([
+                  Validators.required,
+                  detectIfFirstIndexIsAnImageAndIsNotAnEmptyString(
+                    this.formSteps[6].fieldsList[3].fieldControl.control.value
+                  ),
+                ])
+              );
+            } else {
+              this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
+                '0';
+              this.formSteps[6].fieldsList[3].styles.containerStyles.height =
+                '0px';
+              this.formSteps[6].fieldsList[3].fieldControl.control.setValue([
+                '',
+              ]);
+              this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
+                []
+              );
+            }
 
-        this.formMessageInitialHistory['7'] = null;
-
-        return { ok: true };
-      },
-      footerConfig,
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
+            this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
+          },
+          label: 'Vía o Cuenta a la que realizaste tu pago',
+          inputType: 'radio',
+          styles: {
+            fieldStyles: {
+              paddingLeft: '0px',
+              fontSize: '17px',
+            },
+            labelStyles: {
+              ...labelStyles,
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
+            },
+          },
+        },
+        {
+          name: 'proofOfPayment',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Adjuntar comprobante (*)',
+          inputType: 'file2',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              ...labelStyles,
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingTop: '0px',
+              paddingBottom: '0px',
+              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
+              opacity: '0',
+              height: '0px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            },
+          },
+        },
         {
           name: 'totalAmount',
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
+          onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
             control: new FormControl(0),
           },
           shouldFormatNumber: true,
-          label:
-            'Indica el total de tu orden. Si no lo sabes puedes dejarlo en blanco',
-          bottomLabel: {text: "El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo."},
+          label: 'Total de la orden (*)',
+          bottomLabel: {
+            text: 'El monto debe ser mayor al monto pagado, en caso contrario se vaciará el valor del campo.',
+          },
           inputType: 'number',
           placeholder: 'El total es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                totalAmount,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
+
             if (Number(change) < Number(firstPayment)) {
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(0, {
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(0, {
                 emitEvent: false,
               });
 
-              this.formSteps[6].fieldsList[1].formattedValue =
+              this.formSteps[6].fieldsList[5].formattedValue =
                 '$' + this.decimalPipe.transform(Number(0), '1.2');
             }
 
             try {
-              if (!change.includes('.')) {
+              if (!this.formSteps[6].fieldsList[4].lastInputWasADot) {
                 const plainNumber = change.split(',').join('');
 
                 if (plainNumber[0] === '0') {
@@ -811,10 +1795,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                         );
 
                   if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[0].placeholder = '';
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
 
-                  this.formSteps[6].fieldsList[0].formattedValue =
+                  this.formSteps[6].fieldsList[4].formattedValue =
                     '$' + formatted;
                 } else {
                   const formatted =
@@ -838,37 +1822,80 @@ export class HeavenlyBalloonsComponent implements OnInit {
                         );
 
                   if (formatted === '0.00') {
-                    this.formSteps[6].fieldsList[0].placeholder = '';
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
 
-                  this.formSteps[6].fieldsList[0].formattedValue =
+                  this.formSteps[6].fieldsList[4].formattedValue =
                     '$' + formatted;
                 }
               } else {
-                const convertedNumber = Number(
-                  change
-                    .split('')
-                    .filter((char) => char !== '.')
-                    .join('')
-                );
-                this.formSteps[6].fieldsList[0].fieldControl.control.setValue(
-                  convertedNumber,
-                  {
-                    emitEvent: false,
+                let filteredString = change
+                  .split('')
+                  .filter(
+                    (char) =>
+                      char !== '.' ||
+                      char !== '+' ||
+                      char !== '-' ||
+                      char !== 'e'
+                  )
+                  .join('');
+
+                if (filteredString.length <= 14) {
+                  filteredString += '00';
+
+                  const formatted =
+                    filteredString.length > 2
+                      ? this.decimalPipe.transform(
+                          Number(
+                            filteredString.slice(0, -2) +
+                              '.' +
+                              filteredString.slice(-2)
+                          ),
+                          '1.2'
+                        )
+                      : this.decimalPipe.transform(
+                          Number(
+                            '0.' +
+                              (filteredString.length === 1
+                                ? '0' + filteredString
+                                : filteredString)
+                          ),
+                          '1.2'
+                        );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
-                );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    filteredString,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+                } else {
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    totalAmount,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+                }
               }
             } catch (error) {
-              //console.log(error);
+              console.log(error);
             }
           },
           styles: {
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
-            },
-            bottomLabelStyles: {
-              fontFamily: "RobotoLight",
             },
             containerStyles: {
               position: 'relative',
@@ -882,6 +1909,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               left: '0px',
               boxShadow: 'none',
             },
+            bottomLabelStyles: {
+              fontFamily: 'RobotoLight',
+            },
             formattedInputStyles: {
               bottom: '0px',
               left: '0px',
@@ -894,6 +1924,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
+          onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
             control: new FormControl(0, [
@@ -902,18 +1934,34 @@ export class HeavenlyBalloonsComponent implements OnInit {
             ]),
           },
           shouldFormatNumber: true,
-          label: 'Monto Pagado (*)',
+          label: 'Total pagado (*)',
           inputType: 'number',
           placeholder: 'La compra es de $..',
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
+
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                firstPayment,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
 
             if (
               Number(change) > Number(totalAmount) &&
               totalAmount !== '' &&
               Number(totalAmount) !== 0
             ) {
-              this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
                 firstPayment,
                 {
                   emitEvent: false,
@@ -921,7 +1969,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             } else {
               try {
-                if (!change.includes('.')) {
+                if (!this.formSteps[6].fieldsList[5].lastInputWasADot) {
                   const plainNumber = change.split(',').join('');
 
                   if (plainNumber[0] === '0') {
@@ -946,10 +1994,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
                           );
 
                     if (formatted === '0.00') {
-                      this.formSteps[6].fieldsList[1].placeholder = '';
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
 
-                    this.formSteps[6].fieldsList[1].formattedValue =
+                    this.formSteps[6].fieldsList[5].formattedValue =
                       '$' + formatted;
                   } else {
                     const formatted =
@@ -973,28 +2021,74 @@ export class HeavenlyBalloonsComponent implements OnInit {
                           );
 
                     if (formatted === '0.00') {
-                      this.formSteps[6].fieldsList[1].placeholder = '';
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
 
-                    this.formSteps[6].fieldsList[1].formattedValue =
+                    this.formSteps[6].fieldsList[5].formattedValue =
                       '$' + formatted;
                   }
                 } else {
-                  const convertedNumber = Number(
-                    change
-                      .split('')
-                      .filter((char) => char !== '.')
-                      .join('')
-                  );
-                  this.formSteps[6].fieldsList[1].fieldControl.control.setValue(
-                    convertedNumber,
-                    {
-                      emitEvent: false,
+                  let filteredString = change
+                    .split('')
+                    .filter(
+                      (char) =>
+                        char !== '.' ||
+                        char !== '+' ||
+                        char !== '-' ||
+                        char !== 'e'
+                    )
+                    .join('');
+
+                  if (filteredString.length <= 14) {
+                    filteredString += '00';
+
+                    const formatted =
+                      filteredString.length > 2
+                        ? this.decimalPipe.transform(
+                            Number(
+                              filteredString.slice(0, -2) +
+                                '.' +
+                                filteredString.slice(-2)
+                            ),
+                            '1.2'
+                          )
+                        : this.decimalPipe.transform(
+                            Number(
+                              '0.' +
+                                (filteredString.length === 1
+                                  ? '0' + filteredString
+                                  : filteredString)
+                            ),
+                            '1.2'
+                          );
+
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
-                  );
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      filteredString,
+                      {
+                        emitEvent: false,
+                      }
+                    );
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+                  } else {
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      firstPayment,
+                      {
+                        emitEvent: false,
+                      }
+                    );
+                  }
                 }
               } catch (error) {
-                //console.log(error);
+                console.log(error);
               }
             }
           },
@@ -1002,7 +2096,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
             labelStyles: {
               ...labelStyles,
               paddingBottom: '26px',
-              paddingTop: '65px',
             },
             containerStyles: {
               position: 'relative',
@@ -1024,424 +2117,45 @@ export class HeavenlyBalloonsComponent implements OnInit {
           },
         },
         {
-          name: 'paymentMethod',
+          name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(''),
           },
           selectionOptions: [
-            'Efectivo',
-            'Cuenta Banreservas',
-            'Cuenta BHD',
-            'Cuenta Banco Popular',
-            'Yoyo App',
-            'Otro',
+            'Whatsapp',
+            'Personal',
+            'Website',
+            'E-Mail',
+            'Instagram',
           ],
-          changeCallbackFunction: (change, params) => {
-            this.formSteps[6].fieldsList[2].fieldControl.control.setValue(
-              change,
-              {
-                emitEvent: false,
-              }
-            );
-          },
-          label: 'Vía o Cuenta a la que realizaste tu pago (*)',
+          label: 'Vía del pedido',
           inputType: 'radio',
           styles: {
-            labelStyles: {
-              ...labelStyles,
-              fontFamily: 'RobotoRegular',
-              color: 'black',
-              fontWeight: 500,
-              fontSize: '19px',
-              paddingBottom: '26px',
-              paddingTop: '65px',
-            },
             fieldStyles: {
               paddingLeft: '0px',
-            },
-          },
-        },
-        {
-          name: 'referenceImage',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          label: 'Adjunta aquí tu comprobante de Pago(*)',
-          inputType: 'file',
-          placeholder: 'sube una imagen',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingBottom: '26px',
-              paddingTop: '65px',
-            },
-            fieldStyles: {
-              minWidth: '192px',
-              maxHeight: '163px',
-              width: 'calc((100% - 35px * 2) - 55.14%)',
-              borderRadius: '7px',
-            },
-            containerStyles: {
-              paddingBottom: '4rem',
-            },
-          },
-        },
-      ],
-      stepProcessingFunction: (params) => {
-        const totalAmount = this.formSteps[6].fieldsList[0].formattedValue;
-        const firstPayment = this.formSteps[6].fieldsList[1].formattedValue;
-        const { paymentMethod } = params.dataModel.value['7'];
-
-        if (!this.formMessageInitialHistory['7'])
-          this.formMessageInitialHistory['7'] =
-            this.formMessageInitialHistory['6'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['6'];
-
-        if (totalAmount && totalAmount !== '')
-          this.fullFormMessage += `*Total:*\n${totalAmount}\n\n`;
-
-        if (firstPayment && firstPayment !== '')
-          this.fullFormMessage += `*1er. Pago:*\n${firstPayment}\n\n`;
-
-        if (paymentMethod && paymentMethod !== '')
-          this.fullFormMessage += `*Forma de 1er. Pago:*\n${paymentMethod}\n\n`;
-
-        this.formMessageInitialHistory['7'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['8'] = null;
-
-        return { ok: true };
-      },
-      pageHeader: {
-        text: 'Sobre el pago',
-        styles: {
-          fontFamily: 'RobotoBold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '36px',
-        },
-      },
-      footerConfig,
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      fieldsList: [
-        {
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          name: 'reservation',
-          label: '',
-          styles: {
-            containerStyles: {
-              display: 'none',
-            },
-          },
-        },
-      ],
-      embeddedComponents: [
-        {
-          afterIndex: 0,
-          component: ReservationOrderlessComponent,
-          inputs: {
-            calendarId: this.calendarId,
-            allowSundays: true,
-            firstLabel: 'FECHA EN LA QUE DESEAS QUE ENTREGUEMOS TU ARREGLO',
-            secondLabel: 'HORARIO DE ENTREGA',
-            timeOfDayMode: true,
-          },
-          outputs: [
-            {
-              name: 'onTimeOfDaySelection',
-              callback: (resultObject) => {
-                if ('dayName' in resultObject && 'timeOfDay' in resultObject)
-                  this.formSteps[7].fieldsList[0].fieldControl.control.setValue(
-                    resultObject
-                  );
-              },
-            },
-          ],
-          containerStyles: {
-            paddingBottom: '4rem',
-          },
-        },
-      ],
-      stepProcessingFunction: (params) => {
-        const { reservation: timeOfDay } = params.dataModel.value['8'];
-
-        if (!this.formMessageInitialHistory['8'])
-          this.formMessageInitialHistory['8'] =
-            this.formMessageInitialHistory['6'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['6'];
-
-        if (timeOfDay) {
-          this.fullFormMessage += `*Entrega:*\n${timeOfDay.dayName}, ${timeOfDay.dayNumber} de ${timeOfDay.monthName}\n\n`;
-        }
-
-        this.formMessageInitialHistory['8'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['9'] = null;
-
-        return { ok: true };
-      },
-      footerConfig,
-      stepButtonInvalidText: 'ADICIONA LA FECHA ACORDADA',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
-        {
-          name: 'deliveryMethod',
-          label: '¿Cómo deseas que sea entregado tu arreglo? (*)',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          selectionOptions: [
-            'Pick Up',
-            'Delivery Zona Metropolitana',
-            'Delivery Santo Domingo Norte',
-            'Delivery Santo Domingo Este',
-            'Delivery Zona Oriental',
-          ],
-          inputType: 'radio',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              fontFamily: 'RobotoRegular',
-              color: 'black',
-              fontWeight: 500,
-              fontSize: '19px',
-              paddingBottom: '26px',
-            },
-          },
-        },
-        {
-          name: 'typeOfBuilding',
-          label: 'Indica el tipo de Edificación (*)',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          selectionOptions: [
-            'Casa',
-            'Edificio Residencial',
-            'Edificio Comercial',
-            'Otra Opción',
-          ],
-          inputType: 'radio',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              fontFamily: 'RobotoRegular',
-              color: 'black',
-              fontWeight: 500,
-              fontSize: '19px',
-              paddingBottom: '26px',
-              paddingTop: '65px',
-            },
-          },
-        },
-        {
-          name: 'deliveryAddress',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          label: 'Dirección en la que deseas que sea entregado tu arreglo (*)',
-          placeholder: 'Escribe aquí...',
-          inputType: 'textarea',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingBottom: '26px',
-              paddingTop: '65px',
-            },
-            fieldStyles: {
-              borderRadius: '10px',
-              padding: '23px 26px 23px 16px',
-              background: 'white',
-              height: '164px',
-            },
-          },
-        },
-        {
-          name: 'addressReference',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(''),
-          },
-          label:
-            'Proporciónanos una referencia para que nuestro mensajero pueda encontrar el destino con mayor facilidad ',
-          placeholder: 'Escribe aquí...',
-          inputType: 'textarea',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingBottom: '26px',
-              paddingTop: '65px',
-            },
-            fieldStyles: {
-              borderRadius: '10px',
-              padding: '23px 26px 23px 16px',
-              background: 'white',
-              height: '164px',
-            },
-            containerStyles: {
-              paddingBottom: '4rem',
-            },
-          },
-        },
-        {
-          name: 'location',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl(''),
-          },
-          label: 'Si tienes el location, puedes indicarlo aquí',
-          placeholder: 'Escribe aquí...',
-          styles: {
-            labelStyles: {
-              ...labelStyles,
-              paddingTop: '65px',
-              paddingBottom: '26px',
-            },
-            containerStyles: {
-              paddingBottom: '4rem',
-            },
-          },
-        },
-      ],
-      footerConfig,
-      stepProcessingFunction: (params) => {
-        const {
-          deliveryMethod,
-          typeOfBuilding,
-          deliveryAddress,
-          addressReference,
-          location,
-        } = params.dataModel.value['9'];
-
-        if (!this.formMessageInitialHistory['9'])
-          this.formMessageInitialHistory['9'] =
-            this.formMessageInitialHistory['8'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['8'];
-
-        if (deliveryMethod && deliveryMethod !== '') {
-          this.fullFormMessage += `*Forma de Entrega:*\n${deliveryMethod}\n\n`;
-        }
-
-        if (typeOfBuilding && typeOfBuilding !== '') {
-          this.fullFormMessage += `*Tipo de Edificación:*\n${typeOfBuilding}\n\n`;
-        }
-
-        if (deliveryAddress && deliveryAddress !== '') {
-          this.fullFormMessage += `*Dirección de Entrega:*\n${deliveryAddress}\n\n`;
-        }
-
-        if (addressReference && addressReference !== '') {
-          this.fullFormMessage += `*Referencia Dirección:*\n${addressReference}\n\n`;
-        }
-
-        if (location && location !== '') {
-          this.fullFormMessage += `*Location:*\n${location}\n\n`;
-        }
-
-        this.formMessageInitialHistory['9'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['10'] = null;
-
-        return { ok: true };
-      },
-      pageHeader: {
-        text: 'Cuéntanos más sobre la entrega',
-        styles: {
-          fontFamily: 'RobotoBold',
-          fontSize: '24px',
-          margin: '0px',
-          marginTop: '36px',
-        },
-      },
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
-        {
-          name: 'billType',
-          label: 'Tipo de Factura',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.required),
-          },
-          selectionOptions: [
-            'Sin Comprobante',
-            'Comprobante Fiscal (B01)',
-            'Consumo (B02)',
-          ],
-          inputType: 'radio',
-          styles: {
-            containerStyles: {
-              marginTop: '44px',
+              fontSize: '17px',
             },
             labelStyles: {
               ...labelStyles,
-              fontFamily: 'RobotoRegular',
-              color: 'black',
-              fontWeight: 500,
-              fontSize: '19px',
-              paddingBottom: '26px',
+              fontFamily: 'RobotoMedium',
+              marginBottom: '26px',
             },
           },
         },
-      ],
-      footerConfig,
-      stepProcessingFunction: (params) => {
-        const { billType } = params.dataModel.value['10'];
-
-        if (!this.formMessageInitialHistory['10'])
-          this.formMessageInitialHistory['10'] =
-            this.formMessageInitialHistory['9'];
-
-        this.fullFormMessage = this.formMessageInitialHistory['9'];
-
-        this.fullFormMessage += `*Tipo de Factura:*\n${billType}\n\n`;
-
-        this.formMessageInitialHistory['10'] = this.fullFormMessage;
-
-        this.formMessageInitialHistory['11'] = null;
-
-        return { ok: true };
-      },
-      stepButtonInvalidText: 'SELECCIONA UNA OPCIÓN',
-      stepButtonValidText: 'CONTINUA CON TU ORDEN',
-    },
-    {
-      headerText: '',
-      fieldsList: [
         {
           name: 'howDidYouFindUs',
           fieldControl: {
             type: 'single',
             control: new FormControl(''),
           },
-          label: '',
+          label: '¿Cómo nos conociste?',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
             labelStyles: {
-              height: '0px',
-              padding: '0px',
-              margin: '0px',
+              ...labelStyles,
+              paddingBottom: '26px',
             },
             fieldStyles: {
               borderRadius: '10px',
@@ -1449,39 +2163,107 @@ export class HeavenlyBalloonsComponent implements OnInit {
               background: 'white',
               height: '164px',
             },
+            containerStyles: {
+              paddingBottom: '120px',
+            },
           },
         },
       ],
       pageHeader: {
-        text: '¿Cómo nos conociste?',
+        text: '¿Como deseas realizar el pago?',
         styles: {
           fontFamily: 'RobotoBold',
           fontSize: '24px',
           margin: '0px',
           marginTop: '36px',
-          marginBottom: '26px',
         },
       },
-      footerConfig,
-      stepButtonInvalidText: 'LLENA EL CAMPO',
-      stepButtonValidText: 'ENVIAR',
       asyncStepProcessingFunction: {
         type: 'promise',
         function: async (params) => {
           try {
-            const { instagramUser, name, lastname, socialId, birthday } =
+            const { instagramUser, name, lastname, birthday } =
               params.dataModel.value['1'];
-            const { email, phoneNumber, receiverPhoneNumber } =
-              params.dataModel.value['2'];
-            const { articleDescription } = params.dataModel.value['3'];
-            const { receiver, sender } = params.dataModel.value['4'];
-            const { dedicationMessage, wantToAddADedication } =
-              params.dataModel.value['5'];
-            const { orderMedium } = params.dataModel.value['6'];
-            const { paymentMethod, referenceImage } =
-              params.dataModel.value['7'];
-            let totalAmount = this.formSteps[6].fieldsList[0].formattedValue;
-            let firstPayment = this.formSteps[6].fieldsList[1].formattedValue;
+            const { email, phoneNumber } = params.dataModel.value['2'];
+            const { whatWouldYouOrder } = params.dataModel.value['3'];
+            const {
+              additionalDetails,
+              balloonMessage,
+              dedicationMessage: dedicationMessage4thStep,
+              howManyRoses,
+              ribbonColor,
+              rosesColor,
+              wantToAddADedication: wantToAddADedication4thStep,
+            } = params.dataModel.value['4'];
+            const {
+              dedicationMessage: dedicationMessage5thStep,
+              orderDetails,
+              wantToAddADedication: wantToAddADedication5thStep,
+            } = params.dataModel.value['5'];
+            const {
+              deliveryAddress,
+              deliveryMethod,
+              location,
+              receiver,
+              receiverPhoneNumber,
+              reservation,
+              sender,
+              typeOfBuilding,
+            } = params.dataModel.value['6'];
+            const {
+              billType,
+              howDidYouFindUs,
+              orderMedium,
+              paymentMethod,
+              proofOfPayment,
+              socialId,
+            } = params.dataModel.value['7'];
+            let totalAmount = this.formSteps[6].fieldsList[4].formattedValue;
+            let firstPayment = this.formSteps[6].fieldsList[5].formattedValue;
+
+            const whatsappMessagePartsOfThe7thStep = [];
+
+            if (billType && billType !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Tipo de Factura:*\n${billType}\n\n`
+              );
+
+              if (billType === 'Comprobante Fiscal (B01)' && socialId !== '') {
+                whatsappMessagePartsOfThe7thStep.push(
+                  `*RNC o Cédula :*\n${socialId}\n\n`
+                );
+              }
+            }
+
+            if (paymentMethod && paymentMethod !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Vía de pago:*\n${paymentMethod}\n\n`
+              );
+            }
+
+            if (totalAmount) {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Total de la orden:*\n${totalAmount}\n\n`
+              );
+            }
+
+            if (firstPayment) {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Total pagado:*\n${firstPayment}\n\n`
+              );
+            }
+
+            if (orderMedium && orderMedium !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*Vía del pedido:*\n${orderMedium}\n\n`
+              );
+            }
+
+            if (howDidYouFindUs && howDidYouFindUs !== '') {
+              whatsappMessagePartsOfThe7thStep.push(
+                `*¿Cómo nos conociste?:*\n${howDidYouFindUs}\n\n`
+              );
+            }
 
             const convertedTotalAmount = Number(
               totalAmount
@@ -1516,23 +2298,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               ).toISOString();
             }
 
-            const { reservation: delivery } = params.dataModel.value['8'];
-            const {
-              addressReference,
-              deliveryAddress,
-              deliveryMethod,
-              location,
-              typeOfBuilding,
-            } = params.dataModel.value['9'];
-            const { billType } = params.dataModel.value['10'];
-            const { howDidYouFindUs } = params.dataModel.value['11'];
-
-            // if (this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value.length > 1)
-            //   this.fullFormMessage += `*¿Donde entregaremos?:*\n${this.formSteps[this.formSteps.length - 1].fieldsList[0].fieldControl.control.value}\n\n`;
-
-            const files = [];
-
-            const data: any = {
+            let data: any = {
               instagramUser,
               name,
               lastname,
@@ -1540,15 +2306,19 @@ export class HeavenlyBalloonsComponent implements OnInit {
               email,
               phoneNumber,
               receiverPhoneNumber,
-              articleDescription,
+              articleDescription: orderDetails,
               sender: sender !== '' ? sender : 'Anónimo',
               receiver,
-              dedicationMessage,
-              wantToAddADedication,
+              dedicationMessage: this.choosedFlowers
+                ? dedicationMessage4thStep
+                : dedicationMessage5thStep,
+              wantToAddADedication: this.choosedFlowers
+                ? wantToAddADedication4thStep
+                : wantToAddADedication5thStep,
               orderMedium,
               paymentMethod,
-              timeOfDay: delivery.timeOfDay,
-              addressReference,
+              timeOfDay: reservation.timeOfDay,
+              addressReference: deliveryAddress,
               deliveryAddress,
               deliveryMethod,
               location,
@@ -1558,38 +2328,126 @@ export class HeavenlyBalloonsComponent implements OnInit {
               firstPayment: convertedFirstPayment,
               howDidYouFindUs,
               birthday: birthDayISOString,
+              whatWouldYouOrder,
+              additionalDetails,
+              balloonMessage,
+              howManyRoses,
+              ribbonColor,
+              rosesColor,
             };
 
-            if (referenceImage) {
-              files.push(base64ToFile(referenceImage));
+            const arrayOfReferenceImageFiles = [];
+            const arrayOfProofOfPaymentFiles = [];
 
-              this.defaultImages.forEach((image) => {
-                if (image !== '') {
-                  files.push(base64ToFile(image as string));
+            if (
+              this.formSteps[3].fieldsList[7].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[3].fieldsList[7].fieldControl.control.value[0] !==
+                '' &&
+              whatWouldYouOrder === 'Arreglo de flores'
+            ) {
+              this.formSteps[3].fieldsList[7].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfReferenceImageFiles.push(base64ToFile(base64string));
                 }
-              });
-
-              const fileRoutes =
-                await this.merchantsService.uploadAirtableAttachments(files);
-              this.fullFormMessage += `*Comprobante de Pago:*\n${fileRoutes[0]}\n\n`;
-              this.fullFormMessage += `*Fotos de Referencia:*\n${fileRoutes
-                .slice(1)
-                .join('\n')}\n\n`;
-
-              data.referenceImage = fileRoutes[0];
-              data.articlePhotos = fileRoutes.slice(1);
+              );
             }
 
-            if (delivery) {
+            if (
+              this.formSteps[4].fieldsList[3].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[4].fieldsList[3].fieldControl.control.value[0] !==
+                '' &&
+              whatWouldYouOrder === 'Otro'
+            ) {
+              this.formSteps[4].fieldsList[3].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfReferenceImageFiles.push(base64ToFile(base64string));
+                }
+              );
+            }
+
+            if (
+              this.formSteps[6].fieldsList[3].fieldControl.control.value
+                .length > 0 &&
+              this.formSteps[6].fieldsList[3].fieldControl.control.value[0] !==
+                ''
+            ) {
+              this.formSteps[6].fieldsList[3].fieldControl.control.value.forEach(
+                (base64string) => {
+                  if (base64string && base64string !== '')
+                    arrayOfProofOfPaymentFiles.push(base64ToFile(base64string));
+                }
+              );
+            }
+
+            let uploadFilesResultReferenceImages = null;
+
+            if (arrayOfReferenceImageFiles.length > 0)
+              uploadFilesResultReferenceImages =
+                await this.merchantsService.uploadAirtableAttachments(
+                  arrayOfReferenceImageFiles
+                );
+
+            let uploadFilesResultProofOfPayment = null;
+
+            if (arrayOfProofOfPaymentFiles.length > 0)
+              uploadFilesResultProofOfPayment =
+                await this.merchantsService.uploadAirtableAttachments(
+                  arrayOfProofOfPaymentFiles
+                );
+
+            if (uploadFilesResultReferenceImages) {
+              const fileRoutes = uploadFilesResultReferenceImages;
+              whatsappMessagePartsOfThe7thStep.push(`*Foto de Referencia:*\n`);
+
+              data.referenceImage = fileRoutes;
+
+              fileRoutes.forEach((route, index) => {
+                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+              });
+            }
+
+            if (uploadFilesResultProofOfPayment) {
+              const fileRoutes = uploadFilesResultProofOfPayment;
+              whatsappMessagePartsOfThe7thStep.push(`*Comprobante de pago:*\n`);
+
+              data.proofOfPayment = fileRoutes;
+
+              fileRoutes.forEach((route, index) => {
+                whatsappMessagePartsOfThe7thStep.push(`${route}\n`);
+              });
+            }
+
+            if (reservation) {
               const deliveryISOString = new Date(
                 new Date().getFullYear(),
-                delivery.monthNumber - 1,
-                delivery.dayNumber
+                reservation.monthNumber - 1,
+                reservation.dayNumber
               ).toISOString();
               data.delivery = deliveryISOString;
             }
 
             if (window.navigator.onLine) {
+              data = {
+                data: encodeURIComponent(
+                  JSON.stringify({
+                    ...data,
+                  })
+                ),
+                appVersion: version,
+              };
+
+              const completeWhatsappParts = this.whatsAppMessageParts.concat(
+                whatsappMessagePartsOfThe7thStep
+              );
+
+              //console.log(completeWhatsappParts);
+
+              this.fullFormMessage = completeWhatsappParts.join('');
+
               const success =
                 await this.merchantsService.uploadDataToClientsAirtable(
                   this.merchantId,
@@ -1609,6 +2467,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
+     
               window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
             } else {
@@ -1627,6 +2486,8 @@ export class HeavenlyBalloonsComponent implements OnInit {
               return stepData;
             });
 
+            console.log('El error ', error.message);
+
             this.dialog.open(GeneralFormSubmissionDialogComponent, {
               type: 'centralized-fullscreen',
               props: {
@@ -1644,6 +2505,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
+                appVersion: version,
               }),
               dataJSON: JSON.stringify(formData),
             });
@@ -1652,6 +2514,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
           }
         },
       },
+      footerConfig,
+      stepButtonInvalidText: 'INGRESA LOS DATOS',
+      stepButtonValidText: 'CONTINUA CON TU ORDEN',
     },
   ];
 
@@ -1671,16 +2536,17 @@ export class HeavenlyBalloonsComponent implements OnInit {
       this.automationName = automationName;
       this.calendarId = calendarId;
 
-      this.formSteps[7].embeddedComponents[0].inputs.calendarId =
+      this.formSteps[5].embeddedComponents[0].inputs.calendarId =
         this.calendarId;
-      this.formSteps[7].embeddedComponents[0].shouldRerender = true;
-
-      //console.log('merchantId', this.merchantId);
-      //console.log('automationName', this.automationName);
+      this.formSteps[5].embeddedComponents[0].shouldRerender = true;
     });
 
     setTimeout(() => {
       this.loading = false;
     }, 1000);
+  }
+
+  storeParams(params: any) {
+    this.multistepFormData = params;
   }
 }

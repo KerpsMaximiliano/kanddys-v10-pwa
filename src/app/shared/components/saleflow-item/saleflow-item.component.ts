@@ -21,8 +21,8 @@ export class SaleflowItemComponent implements OnInit {
   @Input() index3: number;
   @Input() selecteds: [];
   @Input() itemExtra: any;
-  @Input() type: 1 | 2 | 3 = 1
-  @Input() description: string
+  @Input() type: 1 | 2 | 3 | 4 = 1;
+  @Input() description: string;
   @Input() showPrice: boolean;
   @Input() showDescription: boolean;
   @Input() income: number;
@@ -40,57 +40,77 @@ export class SaleflowItemComponent implements OnInit {
   @Input() inactive: boolean;
   @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
-  @Input() icon:{
+  @Input() icon: {
     src: string;
     alt?: string;
     width?: number;
     height?: number;
     color?: string;
     cursor?: boolean;
-  }
-  @Input() icon2:{
+  };
+  @Input() icon2: {
     src: string;
     alt?: string;
     width?: number;
     height?: number;
     color?: string;
     cursor?: boolean;
-  }
+  };
   @Input() responsiveWidthVersion: boolean = false;
+  @Input() itemId: string | number = null;
+  @Input() itemIndex: number = null;
+  @Input() dynamicStyles: {
+    itemContainer?: Record<string, string | number>;
+    simpleCard?: Record<string, string | number>;
+    itemImg?: Record<string, string | number>;
+    infoArea?: Record<string, string | number>;
+  } = null;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
+  @Output() onItemSelectionClick = new EventEmitter();
   @Output() iconClicked = new EventEmitter();
   @Output() iconTwoClicked = new EventEmitter();
-  @Output() action = new EventEmitter()
-  
+  @Output() action = new EventEmitter();
+
   env: string = environment.assetsUrl;
 
   toggleSelect(e) {
-    this.changeSelection.emit({
-      item: this.itemExtra,
-      isSelected: !this.isSelected,
-    });
+    if (!this.itemId && !this.itemIndex) {
+      this.changeSelection.emit({
+        item: this.itemExtra,
+        isSelected: !this.isSelected,
+      });
+    } else {
+      this.onItemSelectionClick.emit({
+        id: this.itemId,
+        index: this.itemIndex,
+        selected: !this.isSelected,
+      });
+    }
   }
 
   onClick() {
-    this.itemClicked.emit()
+    this.itemClicked.emit();
   }
 
-  actionator(event){
-    this.action.emit(event)
+  actionator(event) {
+    this.action.emit(event);
   }
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   navigateDetails(): void {
     this.router.navigate([
       '/ecommerce/scenario-details/' + this.itemExtra._id,
       { idProduct: this.itemExtra.idProduct },
     ]);
+  }
+
+  spreadOperator(object1: Record<string, any>, object2: Record<string, any>) {
+    return { ...object1, ...object2 };
   }
 
   onTopBoxClick() {

@@ -1,85 +1,132 @@
 <div class="container">
-
-    <app-helper-headerv2
-    [mode]="'center'"
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [fixed]="true"
     [mainText]="{
-        text:'Artículos',
-        fontFamily: 'SfProBold',
-        fontSize: '21px',
-        color: '#FFF'
-    }"
-    [icon]="{
-        src: '/salealt.svg',
-        width: 24,
-        height: 24,
-        filter: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
-        callback: goToMetrics
+      text: merchant?.name || 'Tienda',
+      fontFamily: 'SfProBold',
+      fontSize: '21px',
+      color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="false"
-    [plus]="{
-        active: true
+    [returnAble]="
+      !selectionConfiguration.active ||
+      (selectionConfiguration.active && selectedItemsCounter > 0)
+    "
+    (returnEvent)="goToEntityDetailMetrics()"
+  ></app-helper-headerv2>
+
+  <div
+    class="header-wrapper"
+    [ngStyle]="{
+      paddingTop: '62px'
     }"
-    (plusEvent)="createItem()"
-    ></app-helper-headerv2>
+  >
+    <h2 class="items-header">
+      {{
+        selectionConfiguration.active
+          ? "Seleccione entre:"
+          : statusQueryParam === "featured"
+          ? "Productos destacados"
+          : statusQueryParam === "disabled"
+          ? "Productos deshabilitados"
+          : "Todos los productos"
+      }}
+    </h2>
 
-
-    <div class="saleflows-grid" *ngIf="items?.length && status === 'complete'">
-        <div class="capsize" *ngFor="let item of items">
-            <app-saleflow-item
-            [type]="3"
-            [imgURL]="item.images ? item.images[0] : ''"
-            [price]="item.pricing"
-            [showPrice]="true"
-            [showIcon]="true"
-            [inactive]="item.status != 'active' ? true : false"
-            (itemClicked)="goToDetail(item._id)"
-            (iconTwoClicked)="openDeleteDialog(item)"
-            [responsiveWidthVersion]="true"
-            [icon]="item.notifications?.length ? {
-                src: '/whatsapp_verde.svg',
-                width: 17,
-                height: 17
-            } : {
-                src: '/open-eye.svg',
-                width: 17,
-                height: 14,
-                color: 'contrast(15%)'
-            }" 
-            [icon2]="{
-                src: '/delete.svg',
-                width: 15,
-                height: 18,
-                cursor: true
-            }"
-            ></app-saleflow-item>
-        </div>
+    <div class="dot-trio" (click)="openDialog()">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
     </div>
-    <h3 class="no-results" *ngIf="status === 'complete' && (!items || !items.length)">
-        No tienes productos creados.
-    </h3>
-    <h3 class="no-results" *ngIf="status === 'loading'">
-        Cargando productos...
-    </h3>
+  </div>
 
+  <div class="saleflows-grid" *ngIf="items?.length && status === 'complete'">
+    <div class="capsize" *ngFor="let item of items; let i = index">
+      <app-saleflow-item
+        [itemIndex]="i"
+        [itemId]="item._id"
+        [type]="4"
+        [inactive]="
+          item.status != 'active' && item.status != 'featured' ? true : false
+        "
+        [selectable]="selectionConfiguration.active"
+        [isSelected]="item.selected"
+        [imgURL]="item.images ? item.images[0] : ''"
+        [price]="item.pricing"
+        [showPrice]="true"
+        (itemClicked)="goToDetail(item._id)"
+        (onItemSelectionClick)="markItemAsSelectedOrRemoveItsSelection($event)"
+        (iconTwoClicked)="openDeleteDialog(item)"
+        [responsiveWidthVersion]="true"
+      ></app-saleflow-item>
+    </div>
+  </div>
+  <h3
+    class="no-results"
+    *ngIf="status === 'complete' && (!items || !items.length)"
+  >
+    No tienes productos creados.
+  </h3>
+  <h3 class="no-results" *ngIf="status === 'loading'">Cargando productos...</h3>
 
-    <app-sticky-button
-    size="small"
-    [mode]="'double'"
-    bgColor="#A1A1A1"
-    [fontSize]="'14px'"
-    [text]="items.length + ' ARTÍCULOS'"
-    [text2]="'$' + (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0')"
-    [color]="'#FFF'"
-    [extra]="{
-        icon:{
+  <!--
+      <app-sticky-button
+        size="small"
+        [mode]="'double'"
+        bgColor="#A1A1A1"
+        [fontSize]="'14px'"
+        [text]="items.length + ' ARTÍCULOS'"
+        [text2]="
+          '$' + (ordersTotal ? ordersTotal.total.toLocaleString('es-MX') : '0')
+        "
+        [color]="'#FFF'"
+        [extra]="{
+          icon: {
             src: '/salealt.svg',
-            color: 'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
+            color:
+              'invert(1%) sepia(99%) saturate(14%) hue-rotate(215deg) brightness(155%) contrast(100%)',
             width: 19,
             height: 19
-        },
-        bgColor: '#2874AD'
-    }"
-    (added)="goToMetrics()"
-    ></app-sticky-button>
+          },
+          bgColor: '#2874AD'
+        }"
+        (added)="goToMetrics()"
+      ></app-sticky-button>
+  -->
+
+  <app-sticky-button
+    *ngIf="selectionConfiguration.active && selectedItemsCounter > 0"
+    size="small"
+    [mode]="'fixed'"
+    bgColor="#2874AD"
+    [fontSize]="'14px'"
+    [text]="
+      selectionConfiguration.mode === 'DELETE'
+        ? 'BORRAR ITEMS'
+        : selectionConfiguration.mode === 'HIDE'
+        ? 'ESCONDER ITEMS'
+        : selectionConfiguration.mode === 'SHOW'
+        ? 'MOSTRAR ITEMS EN LA TIENDA'
+        : selectionConfiguration.mode === 'HIGHLIGHT'
+        ? 'DESTACAR ITEMS EN LA TIENDA'
+        : null
+    "
+    [textCallback]="
+      selectionConfiguration.active &&
+      selectionConfiguration.mode !== 'HIDE' &&
+      selectionConfiguration.mode !== 'HIGHLIGHT'
+        ? openSelectionDialog
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIDE'
+        ? hideMultipleItems
+        : selectionConfiguration.active &&
+          selectionConfiguration.mode === 'HIGHLIGHT'
+        ? highlightMultipleItems
+        : null
+    "
+    [color]="'#FFF'"
+    [backButton]="true"
+    [backButtonCallback]="quitItemSelection"
+  ></app-sticky-button>
 </div>

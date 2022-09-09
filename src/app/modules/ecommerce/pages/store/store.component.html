@@ -1,0 +1,271 @@
+<div class="component">
+  <header>
+    <app-helper-headerv2
+      [mode]="'basic'"
+      [fixed]="true"
+      *ngIf="!(itemsByCategory.length && hasCustomizer)"
+      [mainText]="{
+        text: saleflowData?.merchant?.name || 'Tienda',
+        fontFamily: 'SfProBold',
+        fontSize: '21px',
+        color: '#FFF'
+      }"
+      bgColor="#2874AD"
+      [returnAble]="false"
+    ></app-helper-headerv2>
+
+    <div class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
+
+    <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
+      <app-header-info
+        [profileImage]="saleflowData.banner"
+        [title]="saleflowData.headline"
+        [description]="saleflowData.subheadline"
+        [route]="contactLandingRoute"
+        type="route"
+      ></app-header-info>
+    </div>
+  </header>
+  <main>
+    <div
+      style="margin-bottom: 60px; margin-top: 30px"
+      *ngIf="saleflowData && packageData.length && items.length === 0"
+    >
+      <div class="package-list" *ngFor="let data of packageData; let i = index">
+        <app-package-item
+          [package]="data.package"
+          [packageItems]="data.items"
+          (action)="goToPackageDetail(i)"
+        ></app-package-item>
+      </div>
+    </div>
+
+    <!--REGULAR MERCHANT-->
+    <div
+      class="content"
+      [ngStyle]="{
+        paddingBottom: '1rem'
+      }"
+      *ngIf="!hasCustomizer && items.length"
+    >
+      <div
+        *ngIf="highlightedItems.length > 0"
+        [ngStyle]="{
+          paddingLeft: '25px',
+          paddingBottom: '60px'
+        }"
+      >
+        <div
+          class="header-wrapper"
+          [ngStyle]="{
+            paddingLeft: '0px',
+            paddingBottom: '17px'
+          }"
+        >
+          <h2 class="items-header">Destacados</h2>
+        </div>
+
+        <div></div>
+        <swiper [config]="swiperConfigHighlightedItems">
+          <div
+            *ngFor="let item of highlightedItems; let i = index"
+            [ngStyle]="{
+              width: 'auto',
+              paddingBottom: '10px',
+              paddingRight: '16.5px'
+            }"
+          >
+            <app-saleflow-item
+              [itemIndex]="i"
+              [itemId]="item._id"
+              [type]="4"
+              [imgURL]="item.images ? item.images[0] : ''"
+              [price]="item.pricing"
+              [showPrice]="true"
+              (itemClicked)="onItemClick(item._id, true)"
+              [dynamicStyles]="{
+                itemContainer: {
+                  minWidth: '242px',
+                  height: '315px',
+                  margin: '0px'
+                },
+                simpleCard: {
+                  height: '100%'
+                },
+                itemImg: {
+                  height: '82.8571%'
+                },
+                infoArea: {
+                  height: '17.1429%'
+                }
+              }"
+            ></app-saleflow-item>
+            <div class="blank-space"></div>
+          </div>
+        </swiper>
+      </div>
+
+      <div
+        class="item-list"
+        [ngStyle]="{
+          padding: '0px',
+          paddingLeft: '25px',
+          paddingRight: '17px',
+          paddingBottom: '0px'
+        }"
+        *ngIf="categorylessItems.length"
+      >
+        <ng-container *ngFor="let item of categorylessItems; index as i">
+          <app-item
+            [item]="item"
+            (imageEvent)="onItemClick(item._id, true)"
+          ></app-item>
+        </ng-container>
+      </div>
+
+      <ng-container *ngIf="itemsByCategory.length > 1 && !hasCustomizer">
+        <ng-container
+          *ngFor="let category of itemsByCategory; index as i"
+        >
+          <div
+            class="header-wrapper"
+            [ngStyle]="{
+              paddingTop: '70px',
+              paddingLeft: '25px',
+              paddingBottom: '17px'
+            }"
+          >
+            <h2 class="items-header">
+              {{ category.label || "Titulo de la categoria" }}
+            </h2>
+
+            <div class="dot-trio" (click)="seeCategories(i)">
+              <div class="dot"> </div>
+              <div class="dot"> </div>
+              <div class="dot"> </div>
+            </div>
+          </div>
+
+          <div
+            class="item-list"
+            [ngStyle]="{
+              padding: '0px',
+              paddingLeft: '25px',
+              paddingRight: '17px',
+              paddingBottom: '0px'
+            }"
+          >
+            <ng-container *ngFor="let item of category.items.slice(0, 5); index as i">
+              <app-item
+                [item]="item"
+                (imageEvent)="onItemClick(item._id, true)"
+              ></app-item>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Only for saleflows with customizers -->
+    <ng-container *ngIf="itemsByCategory.length && hasCustomizer">
+      <div
+        *ngFor="let item of itemsByCategory; let i = index"
+        [ngStyle]="{ paddingBottom: '64px' }"
+      >
+        <div
+          class="header-wrapper"
+          [ngStyle]="{ marginTop: i == 0 ? '15px' : '0px' }"
+        >
+          <h6 class="header-text">
+            {{ item.label }}
+          </h6>
+          <h6
+            class="see-all-more"
+            style="font-weight: 100"
+            (click)="seeCategories(i)"
+          >
+            Ver..
+          </h6>
+        </div>
+        <div style="padding: 0 1.2rem">
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let swiperItem of item.items; let j = index"
+              style="max-width: 227px"
+            >
+              <app-saleflow-item
+                [type]="2"
+                [showBox]="swiperItem.customizerId ? false : true"
+                [imgURL]="swiperItem.images[0]"
+                [isSelected]="swiperItem.isSelected"
+                [showSelected]="true"
+                [price]="swiperItem.pricing"
+                [showPrice]="swiperItem.customizerId ? false : true"
+                priceAlign="start"
+                [backgroundSize]="swiperItem.customizerId ? 'contain' : 'cover'"
+                (itemClicked)="onItemClick(swiperItem._id)"
+              ></app-saleflow-item>
+            </div>
+          </swiper>
+        </div>
+        <div class="categories-wrapper" *ngIf="i === 0">
+          <h6 class="header-text">Ver mas de:</h6>
+          <div class="categories-list">
+            <div
+              *ngFor="let category of categories"
+              class="category-item"
+              (click)="seeCategories(category._id)"
+            >
+              {{ category.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <!-- Only for saleflows with customizers -->
+    <section
+      style="margin-bottom: 73px"
+      *ngIf="
+        itemsByCategory.length === 0 &&
+        items.length === 0 &&
+        sliderPackage.length === 0
+      "
+    >
+      <ng-container *ngIf="status === 'loading'">
+        <h3 class="no-results">Cargando productos...</h3>
+      </ng-container>
+      <ng-container *ngIf="status === 'complete'">
+        <h3 class="no-results">No se han encontrado resultados.</h3>
+      </ng-container>
+      <ng-container *ngIf="status === 'error'">
+        <h3 class="no-results">Hubo un problema al conseguir los productos.</h3>
+      </ng-container>
+    </section>
+  </main>
+  <app-bubble-button
+    position="right"
+    color="blue"
+    [solo]="false"
+    [cart]="true"
+    [cartAmount]="itemCartAmount"
+    *ngIf="itemCartAmount && !hasCustomizer"
+    (click)="showShoppingCartDialog()"
+  ></app-bubble-button>
+</div>
+
+<app-bubble-button
+  position="left"
+  [icon]="env + '/arrow-left.svg'"
+  [color]="'blue'"
+  [solo]="false"
+  *ngIf="viewtype == 'preview'"
+  (click)="back()"
+></app-bubble-button>
+<app-bubble-button
+  position="right"
+  [icon]="env + '/upload.svg'"
+  [color]="'blue'"
+  [solo]="false"
+  *ngIf="viewtype == 'preview'"
+  (click)="onShareClick()"
+></app-bubble-button>
