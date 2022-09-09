@@ -29,7 +29,7 @@ import {
 } from 'ngx-intl-tel-input';
 import { SwiperOptions } from 'swiper';
 import { Observable } from 'apollo-link';
-import 'swiper/'
+import 'swiper/';
 
 @Component({
   selector: 'app-multistep-form',
@@ -186,7 +186,6 @@ export class MultistepFormComponent
   finishedExecutingStepProcessingFunction = true;
   colorPickerSwiperConfig: SwiperOptions = {
     slidesPerView: 5,
-    spaceBetween: 50,
   };
   googleMapsApiLoaded: Observable<boolean>;
   location = null;
@@ -680,12 +679,43 @@ export class MultistepFormComponent
     }
   };
 
-  blockCursorMovement(e: any, targetedInput: boolean = false) {
+  blockCursorMovement(
+    e: any,
+    currentField: FormField,
+    targetedInput: boolean = false
+  ) {
     if (!targetedInput) return;
     else {
+      if (e.key === '.') {
+        currentField.lastInputWasADot = true;
+      } else {
+        currentField.lastInputWasADot = false;
+      }
+
       //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
       //ocasiona el el numero formateado se desconfigure
-      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (['ArrowLeft', 'ArrowRight', '+', '-', 'e'].includes(e.key)) {
+        e.preventDefault();
+      }
+    }
+  }
+
+  blockNonNumericStuff(
+    e: any,
+    currentField: FormField,
+    targetedInput: boolean = false
+  ) {
+    if (!targetedInput) return;
+    else {
+      if (e.key === '.') {
+        currentField.lastInputWasADot = true;
+      } else {
+        currentField.lastInputWasADot = false;
+      }
+
+      //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
+      //ocasiona el el numero formateado se desconfigure
+      if (['+', '-', 'e'].includes(e.key)) {
         e.preventDefault();
       }
     }

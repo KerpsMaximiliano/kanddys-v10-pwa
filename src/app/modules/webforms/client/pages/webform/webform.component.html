@@ -175,13 +175,13 @@
   </form>
 
   <app-sticky-button
-    [mode]="form.valid ? 'fixed' : 'disabled-fixed'"
+    [mode]="form.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
     size="small"
     bgColor="#2874AD"
     [text]="
       'NOTIFICAR DEL FORM POR WHATSAPP A ' +
       webform?.merchant?.name?.toUpperCase()
     "
-    (click)="form.valid && onSubmit()"
+    (click)="form.valid && !disableButton && onSubmit()"
   ></app-sticky-button>
 </div>

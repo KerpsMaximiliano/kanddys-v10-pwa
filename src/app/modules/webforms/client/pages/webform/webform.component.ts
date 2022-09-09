@@ -60,6 +60,7 @@ export class WebformComponent implements OnInit {
   PhoneNumberFormat = PhoneNumberFormat;
   webform: Webform;
   questions: QuestionControl[] = [];
+  disableButton: boolean;
 
   constructor(
     private webformsService: WebformsService,
@@ -98,6 +99,7 @@ export class WebformComponent implements OnInit {
   }
 
   async onSubmit() {
+    this.disableButton = true;
     const response: AnswersQuestionInput[] = [];
     for (let i in this.form.value) {
       response.push({
@@ -114,14 +116,19 @@ export class WebformComponent implements OnInit {
       webform: this.webform._id,
       response,
     };
-    await this.webformsService.createAnswer(input);
+    try {
+      await this.webformsService.createAnswer(input);
+    } catch (error) {
+      console.log(error);
+      this.disableButton = false;
+    }
     const message = `Respuestas enviadas al webform "${
       this.webform.name
     }"\n${response.map((answer) => {
       const question = this.webform.questions.find(
         (q) => q._id === answer.question
       )?.value;
-      return `\n${question}: ${answer.isMedia ? 'Archivo' : answer.value}`;
+      return `\n*${question}*: ${answer.isMedia ? 'Archivo' : answer.value}`;
     })}`;
     const whatsappLink = `https://wa.me/${
       this.webform.merchant.owner.phone
@@ -129,11 +136,8 @@ export class WebformComponent implements OnInit {
     window.location.href = whatsappLink;
   }
 
-  onCurrencyInput(
-    form: FormControl | AbstractControl,
-    value: { formatted: string; number: number }
-  ) {
-    form.setValue(value.number);
+  onCurrencyInput(form: FormControl | AbstractControl, value: number) {
+    form.setValue(value);
   }
 
   onSelectInput(

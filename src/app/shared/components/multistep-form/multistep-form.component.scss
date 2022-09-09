@@ -133,7 +133,6 @@ html {
 
 .date-inputs {
   appearance: none;
-  display: inline-block;
   visibility: visible;
   border-radius: 10px;
   padding: 0px 20px;
@@ -147,10 +146,6 @@ html {
   margin: 0px;
   -webkit-appearance: none;
 
-  &::-webkit-date-and-time-value {
-    margin: 0;
-  }
-
   &:focus {
     border: 1px solid #31a4f9;
   }
@@ -162,6 +157,36 @@ html {
   }
 }
 
+input[type="date"] {
+  border: 0;
+  margin: 0;
+  -webkit-appearance: none;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button,
+  &::-webkit-clear-button {
+    -webkit-appearance: none;
+    display: none;
+  }
+
+  &::-webkit-datetime-edit-month-field {
+    padding: 0;
+  }
+  &::-webkit-datetime-edit-day-field {
+    padding: 0;
+  }
+  &::-webkit-datetime-edit-year-field {
+    padding: 0;
+  }
+
+  &::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+
+  &::-webkit-date-and-time-value {
+    margin: 0;
+  }
+}
 
 :host ::ng-deep .swiper-button-next,
 :host ::ng-deep .swiper-button-prev {
@@ -171,6 +196,7 @@ html {
 .color-container {
   padding-top: 5px;
   display: flex;
+  margin-left: 50px;
   flex-direction: column;
   text-align: center;
   align-items: center;
@@ -182,6 +208,10 @@ html {
     position: relative;
     border-radius: 50%;
     border: 0.07px solid lightgrey;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 

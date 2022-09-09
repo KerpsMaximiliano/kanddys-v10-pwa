@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormStep, FooterOptions } from 'src/app/core/types/multistep-form';
-import { FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { HeaderInfoComponent } from 'src/app/shared/components/header-info/header-info.component';
 import { ImageInputComponent } from 'src/app/shared/components/image-input/image-input.component';
 import { ReservationOrderlessComponent } from 'src/app/modules/airtable/pages/reservations-orderless/reservations-orderless.component';
@@ -115,7 +120,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'name',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Nombre (*)',
           topLabelAction: {
@@ -149,7 +160,13 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'lastname',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(
+              '',
+              Validators.compose([
+                Validators.required,
+                Validators.pattern(/[\S]/),
+              ])
+            ),
           },
           label: 'Apellido: (*)',
           placeholder: 'Mi apellido es..',
@@ -379,7 +396,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
         params.scrollToStep(0, false);
       },
       pageHeader: {
-        text: '¿Donde recibirás las notificaciones de esta orden?',
+        text: '¿Dónde notificamos el estatus de tu orden?',
         styles: {
           fontFamily: 'RobotoBold',
           fontSize: '24px',
@@ -497,7 +514,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(
               [],
-              Validators.compose([Validators.required, Validators.minLength(2)])
+              Validators.compose([Validators.required, Validators.minLength(1)])
             ),
           },
           colorPickerConfiguration: {
@@ -715,7 +732,10 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[3].fieldsList[6].styles.containerStyles.marginLeft =
                 '0px';
               this.formSteps[3].fieldsList[6].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
               );
               this.formSteps[3].fieldsList[6].fieldControl.control.updateValueAndValidity();
             } else {
@@ -752,7 +772,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Mensaje de dedicatoria',
+          label: 'Mensaje de dedicatoria (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
@@ -828,7 +848,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
         const whatsappMessagePartsOfThe4thStep = [];
 
-        if (howManyRoses !== '' && howManyRoses !== 0) {
+        if (howManyRoses && howManyRoses !== '' && howManyRoses !== 0) {
           whatsappMessagePartsOfThe4thStep.push(
             `*Cantidad de rosas:*\n${howManyRoses}\n\n`
           );
@@ -962,7 +982,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             type: 'single',
             control: new FormControl(''),
           },
-          label: 'Mensaje de dedicatoria',
+          label: 'Mensaje de dedicatoria (*)',
           placeholder: 'Escribe aquí...',
           inputType: 'textarea',
           styles: {
@@ -1098,7 +1118,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'Fuera de Santo Domingo',
           ],
           changeCallbackFunction: (change, params) => {
-            if (change !== 'Pickup') {
+            const { deliveryMethod: pastValue } = params.dataModel.value['6'];
+
+            if (
+              change !== 'Pickup' &&
+              (pastValue === '' || pastValue === 'Pickup')
+            ) {
               this.formSteps[5].fieldsList.forEach((field, index) => {
                 if (
                   !(
@@ -1136,15 +1161,24 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
-                  Validators.required
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
-                  Validators.required
+                  Validators.compose([
+                    Validators.required,
+                    Validators.pattern(/[\S]/),
+                  ])
                 );
                 this.formSteps[5].fieldsList[6].fieldControl.control.updateValueAndValidity();
               });
-            } else {
+            } else if (
+              change === 'Pickup' &&
+              (pastValue === '' || pastValue !== 'Pickup')
+            ) {
               this.formSteps[5].fieldsList.forEach((field, index) => {
                 if (
                   !(
@@ -1171,7 +1205,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                   ].styles.containerStyles.opacity = '0';
                   this.formSteps[5].fieldsList[
                     index
-                  ].fieldControl.control.setValue('');
+                  ].fieldControl.control.setValue('', {
+                    emitEvent: false,
+                  });
                 }
 
                 if (index === this.formSteps[5].fieldsList.length - 1) {
@@ -1181,21 +1217,30 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 }
 
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.setValidators(
                   []
                 );
                 this.formSteps[5].fieldsList[2].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.setValidators(
                   []
                 );
                 this.formSteps[5].fieldsList[3].fieldControl.control.updateValueAndValidity();
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValue(
-                  ''
+                  '',
+                  {
+                    emitEvent: false,
+                  }
                 );
                 this.formSteps[5].fieldsList[6].fieldControl.control.setValidators(
                   []
@@ -1245,7 +1290,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               marginBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1274,7 +1318,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               height: '164px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1296,7 +1339,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
               paddingBottom: '0rem',
@@ -1341,7 +1383,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1361,7 +1402,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '26px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
             },
@@ -1382,7 +1422,6 @@ export class HeavenlyBalloonsComponent implements OnInit {
               paddingBottom: '30px',
             },
             containerStyles: {
-              transition: 'opacity 0.2s ease-in, height 0.2s ease-in',
               opacity: '0',
               height: '0px',
               paddingBottom: '0rem',
@@ -1519,8 +1558,12 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[6].fieldsList[1].styles.containerStyles.height =
                 'auto';
               this.formSteps[6].fieldsList[1].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  Validators.pattern(/[\S]/),
+                ])
               );
+              this.formSteps[6].fieldsList[1].fieldControl.control.updateValueAndValidity();
             }
           },
           inputType: 'radio',
@@ -1543,7 +1586,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(''),
           },
           label: 'RNC o Cédula (*)',
-          placeholder: 'example@domain',
+          placeholder: '???-???????-?',
           styles: {
             labelStyles: {
               ...labelStyles,
@@ -1583,10 +1626,30 @@ export class HeavenlyBalloonsComponent implements OnInit {
 
               this.formSteps[6].fieldsList[3].styles.containerStyles.marginLeft =
                 '0px';
+
+              const detectIfFirstIndexIsAnImageAndIsNotAnEmptyString = (
+                arrayOfValues: Array<string>
+              ) => {
+                return (control: AbstractControl): ValidationErrors | null => {
+                  const isInvalid =
+                    (arrayOfValues.length > 0 && arrayOfValues[0] === '') ||
+                    arrayOfValues.length === 0
+                      ? true
+                      : false;
+                  return isInvalid
+                    ? { proofOfPayment: { value: control.value } }
+                    : null;
+                };
+              };
+
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
-                Validators.required
+                Validators.compose([
+                  Validators.required,
+                  detectIfFirstIndexIsAnImageAndIsNotAnEmptyString(
+                    this.formSteps[6].fieldsList[3].fieldControl.control.value
+                  ),
+                ])
               );
-              this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
             } else {
               this.formSteps[6].fieldsList[3].styles.containerStyles.opacity =
                 '0';
@@ -1598,8 +1661,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               this.formSteps[6].fieldsList[3].fieldControl.control.setValidators(
                 []
               );
-              this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
             }
+
+            this.formSteps[6].fieldsList[3].fieldControl.control.updateValueAndValidity();
           },
           label: 'Vía o Cuenta a la que realizaste tu pago',
           inputType: 'radio',
@@ -1664,6 +1728,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
           onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
@@ -1679,6 +1744,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                totalAmount,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
+
             if (Number(change) < Number(firstPayment)) {
               this.formSteps[6].fieldsList[5].fieldControl.control.setValue(0, {
                 emitEvent: false,
@@ -1689,7 +1770,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             }
 
             try {
-              if (!change.includes('.')) {
+              if (!this.formSteps[6].fieldsList[4].lastInputWasADot) {
                 const plainNumber = change.split(',').join('');
 
                 if (plainNumber[0] === '0') {
@@ -1748,18 +1829,64 @@ export class HeavenlyBalloonsComponent implements OnInit {
                     '$' + formatted;
                 }
               } else {
-                const convertedNumber = Number(
-                  change
-                    .split('')
-                    .filter((char) => char !== '.')
-                    .join('')
-                );
-                this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
-                  convertedNumber,
-                  {
-                    emitEvent: false,
+                let filteredString = change
+                  .split('')
+                  .filter(
+                    (char) =>
+                      char !== '.' ||
+                      char !== '+' ||
+                      char !== '-' ||
+                      char !== 'e'
+                  )
+                  .join('');
+
+                if (filteredString.length <= 14) {
+                  filteredString += '00';
+
+                  const formatted =
+                    filteredString.length > 2
+                      ? this.decimalPipe.transform(
+                          Number(
+                            filteredString.slice(0, -2) +
+                              '.' +
+                              filteredString.slice(-2)
+                          ),
+                          '1.2'
+                        )
+                      : this.decimalPipe.transform(
+                          Number(
+                            '0.' +
+                              (filteredString.length === 1
+                                ? '0' + filteredString
+                                : filteredString)
+                          ),
+                          '1.2'
+                        );
+
+                  if (formatted === '0.00') {
+                    this.formSteps[6].fieldsList[4].placeholder = '';
                   }
-                );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    filteredString,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+
+                  this.formSteps[6].fieldsList[4].formattedValue =
+                    '$' + formatted;
+                } else {
+                  this.formSteps[6].fieldsList[4].fieldControl.control.setValue(
+                    totalAmount,
+                    {
+                      emitEvent: false,
+                    }
+                  );
+                }
               }
             } catch (error) {
               console.log(error);
@@ -1797,6 +1924,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           customCursorIndex:
             this.decimalPipe.transform(Number(0), '1.2').length + 1,
           formattedValue: '$' + this.decimalPipe.transform(Number(0), '1.2'),
+          lastInputWasADot: false,
           onlyAllowPositiveNumbers: true,
           fieldControl: {
             type: 'single',
@@ -1812,6 +1940,22 @@ export class HeavenlyBalloonsComponent implements OnInit {
           changeCallbackFunction: (change, params) => {
             const { firstPayment, totalAmount } = params.dataModel.value['7'];
 
+            const filteredNewValue = change
+              .split('')
+              .filter((char) => char !== '.')
+              .join('');
+
+            if (filteredNewValue.length > 16) {
+              this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                firstPayment,
+                {
+                  emitEvent: false,
+                }
+              );
+
+              return;
+            }
+
             if (
               Number(change) > Number(totalAmount) &&
               totalAmount !== '' &&
@@ -1825,7 +1969,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             } else {
               try {
-                if (!change.includes('.')) {
+                if (!this.formSteps[6].fieldsList[5].lastInputWasADot) {
                   const plainNumber = change.split(',').join('');
 
                   if (plainNumber[0] === '0') {
@@ -1884,18 +2028,64 @@ export class HeavenlyBalloonsComponent implements OnInit {
                       '$' + formatted;
                   }
                 } else {
-                  const convertedNumber = Number(
-                    change
-                      .split('')
-                      .filter((char) => char !== '.')
-                      .join('')
-                  );
-                  this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
-                    convertedNumber,
-                    {
-                      emitEvent: false,
+                  let filteredString = change
+                    .split('')
+                    .filter(
+                      (char) =>
+                        char !== '.' ||
+                        char !== '+' ||
+                        char !== '-' ||
+                        char !== 'e'
+                    )
+                    .join('');
+
+                  if (filteredString.length <= 14) {
+                    filteredString += '00';
+
+                    const formatted =
+                      filteredString.length > 2
+                        ? this.decimalPipe.transform(
+                            Number(
+                              filteredString.slice(0, -2) +
+                                '.' +
+                                filteredString.slice(-2)
+                            ),
+                            '1.2'
+                          )
+                        : this.decimalPipe.transform(
+                            Number(
+                              '0.' +
+                                (filteredString.length === 1
+                                  ? '0' + filteredString
+                                  : filteredString)
+                            ),
+                            '1.2'
+                          );
+
+                    if (formatted === '0.00') {
+                      this.formSteps[6].fieldsList[5].placeholder = '';
                     }
-                  );
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      filteredString,
+                      {
+                        emitEvent: false,
+                      }
+                    );
+
+                    this.formSteps[6].fieldsList[5].formattedValue =
+                      '$' + formatted;
+                  } else {
+                    this.formSteps[6].fieldsList[5].fieldControl.control.setValue(
+                      firstPayment,
+                      {
+                        emitEvent: false,
+                      }
+                    );
+                  }
                 }
               } catch (error) {
                 console.log(error);
@@ -1930,7 +2120,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
           name: 'orderMedium',
           fieldControl: {
             type: 'single',
-            control: new FormControl('', Validators.required),
+            control: new FormControl(''),
           },
           selectionOptions: [
             'Whatsapp',
@@ -1939,7 +2129,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             'E-Mail',
             'Instagram',
           ],
-          label: 'Vía del pedido (*)',
+          label: 'Vía del pedido',
           inputType: 'radio',
           styles: {
             fieldStyles: {
@@ -1972,6 +2162,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               padding: '23px 26px 23px 16px',
               background: 'white',
               height: '164px',
+            },
+            containerStyles: {
+              paddingBottom: '120px',
             },
           },
         },
@@ -2054,9 +2247,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
               );
             }
 
-            if (paymentMethod) {
+            if (firstPayment) {
               whatsappMessagePartsOfThe7thStep.push(
-                `*Total pagado:*\n$${paymentMethod}\n\n`
+                `*Total pagado:*\n${firstPayment}\n\n`
               );
             }
 
@@ -2274,9 +2467,9 @@ export class HeavenlyBalloonsComponent implements OnInit {
                 flags: ['no-header'],
               });
 
+     
               window.location.href =
                 this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-                
             } else {
               throw new Error('Se perdió la conexion a internet');
             }
@@ -2312,7 +2505,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
-                appVersion: version,  
+                appVersion: version,
               }),
               dataJSON: JSON.stringify(formData),
             });
