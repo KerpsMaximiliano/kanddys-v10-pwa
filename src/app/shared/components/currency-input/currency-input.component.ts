@@ -10,6 +10,7 @@ export class CurrencyInputComponent implements OnInit {
   curencyFocused = false;
   formattedPricing = '$0.00';
   @Input() initialValue: number;
+  @Input() fieldStyles: Record<string, any> = null;
   @Output() onInputEvent = new EventEmitter<number>();
 
   constructor(private decimalPipe: DecimalPipe) {}

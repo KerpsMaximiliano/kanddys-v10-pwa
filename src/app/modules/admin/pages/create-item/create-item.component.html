@@ -73,6 +73,9 @@
               </div>
               <div style="flex-basis: 35.12%">
                 <app-currency-input
+                  [fieldStyles]="{
+                    boxShadow: 'lightgrey 0px 3px 8px inset'
+                  }"
                   [initialValue]="
                     parseFloat(formattedPricing.item.substring(1))
                   "
@@ -125,6 +128,9 @@
                     </div>
                     <div style="flex-basis: 35.12%">
                       <app-currency-input
+                        [fieldStyles]="{
+                          boxShadow: 'lightgrey 0px 3px 8px inset'
+                        }"
                         [initialValue]="
                           parseFloat(formattedPricing.values[j].substring(1))
                         "
@@ -145,37 +151,39 @@
                       ></textarea>
                     </div>
 
-                    <app-image-input
-                      [id]="'image' + j"
-                      [useSwiper]="false"
-                      [allowedTypes]="['png', 'jpg', 'jpeg']"
-                      [multiple]="true"
-                      innerLabel="Imagen o
-                      imágenes"
-                      [expandImage]="true"
-                      [uploadImagesWithoutPlaceholderBox]="true"
-                      [allowDeletion]="true"
-                      [max]="1"
-                      [containerStyles]="{
-                        width: 'auto',
-                        height: 'auto'
-                      }"
-                      [fileStyles]="{
-                        width: 'calc(100% - 16px)',
-                        height: '122px',
-                        border: 'none',
-                        color: '#A1A1A1',
-                        boxShadow: 'lightgrey 0px 3px 8px inset',
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-start',
-                        paddingLeft: '27px',
-                        paddingTop: '31px',
-                        textAlign: 'left',
-                        fontFamily: 'RobotoMedium',
-                        fontWeight: 'normal',
-                        marginLeft: 'auto'
-                      }"
-                    ></app-image-input>
+                    <div class="image-wrapper">
+                      <app-image-input
+                        [id]="'image' + j"
+                        [useSwiper]="false"
+                        [allowedTypes]="['png', 'jpg', 'jpeg']"
+                        [multiple]="true"
+                        innerLabel="Imagen o
+                        imágenes"
+                        [expandImage]="true"
+                        [uploadImagesWithoutPlaceholderBox]="true"
+                        [allowDeletion]="true"
+                        [max]="1"
+                        [containerStyles]="{
+                          width: 'auto',
+                          height: 'auto'
+                        }"
+                        [fileStyles]="{
+                          width: '100%',
+                          height: '122px',
+                          border: 'none',
+                          color: '#A1A1A1',
+                          boxShadow: 'lightgrey 0px 3px 8px inset',
+                          justifyContent: 'flex-start',
+                          alignItems: 'flex-start',
+                          paddingLeft: '27px',
+                          paddingTop: '31px',
+                          textAlign: 'left',
+                          fontFamily: 'RobotoMedium',
+                          fontWeight: 'normal',
+                          marginLeft: 'auto'
+                        }"
+                      ></app-image-input>
+                    </div>
                   </div>
                 </section>
               </div>

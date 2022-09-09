@@ -1,5 +1,5 @@
 <div class="price-wrapper">
-  <div class="formatted-price">
+  <div class="formatted-price" [ngStyle]="fieldStyles">
     <span *ngFor="let letter of formattedPricing.split('')">
       {{ letter }}
     </span>
