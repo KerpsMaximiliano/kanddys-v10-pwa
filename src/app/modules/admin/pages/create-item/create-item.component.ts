@@ -426,7 +426,7 @@ export class CreateItemComponent implements OnInit {
         func: () => {
           const { images, name, description } = this.itemForm.value;
           const pricing = parseFloat(
-            this.formattedPricing.replace(/\$|,/g, '')
+            this.formattedPricing.item.replace(/\$|,/g, '')
           );
           this.itemService.storeTemporalItem({
             ...this.item,

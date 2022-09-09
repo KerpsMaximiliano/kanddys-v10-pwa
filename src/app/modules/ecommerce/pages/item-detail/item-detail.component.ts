@@ -62,11 +62,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflow);
       if (!this.saleflowData) return new Error(`Saleflow doesn't exist`);
 
-      this.itemData = await this.items.item(params.id);
+      this.item = await this.itemsService.item(params.id);
       if (
-        !this.itemData ||
-        (this.itemData.status !== 'active' &&
-          this.itemData.status !== 'featured')
+        !this.item ||
+        (this.item.status !== 'active' &&
+          this.item.status !== 'featured')
       )
         return this.back();
 
@@ -101,10 +101,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   previewItem() {
-    if (!this.items.temporalItem)
+    if (!this.itemsService.temporalItem)
       return this.router.navigate([`/admin/create-item`]);
-    this.itemData = this.items.temporalItem;
-    if (!this.itemData.images.length) this.itemData.showImages = false;
+    this.item = this.itemsService.temporalItem;
+    if (!this.item.images.length) this.item.showImages = false;
     this.previewMode = true;
   }
 
