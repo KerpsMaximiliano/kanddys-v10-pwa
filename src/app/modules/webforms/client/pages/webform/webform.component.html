@@ -1,0 +1,187 @@
+<div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    bgColor="#2874AD"
+    [mainText]="{
+      text: webform?.name,
+      fontSize: '21px',
+      fontFamily: 'SfProBold'
+    }"
+    [returnAble]="false"
+  ></app-helper-headerv2>
+
+  <form [formGroup]="form" class="client-form">
+    <div *ngFor="let question of questions; index as i">
+      <div class="input-container">
+        <label [for]="question._id" class="input-label">{{
+          question.value
+        }}</label>
+        <app-image-input
+          *ngIf="question.answerMedia"
+          style="margin-left: 5px"
+          [allowedTypes]="['png', 'jpg', 'jpeg']"
+          [expandImage]="true"
+          (onFileInput)="onFileInput(question.formControl, $event)"
+        ></app-image-input>
+        <ng-container *ngIf="!question.answerMedia">
+          <input
+            *ngIf="question.type === 'text'"
+            [id]="question._id"
+            [name]="question.value"
+            [type]="question.type"
+            class="text-input"
+            [formControl]="question.formControl"
+          />
+          <app-answer-selector
+            *ngIf="question.type === 'multiple'"
+            [options]="question.choices"
+            [indicator]="true"
+            [showDescription]="false"
+            [containerStyles]="{
+              margin: '0px',
+              paddingBottom: '16px'
+            }"
+            (onSelector)="onSelectInput(question.formControl, i, $event)"
+          ></app-answer-selector>
+          <app-currency-input
+            *ngIf="question.type === 'number'"
+            (onInputEvent)="onCurrencyInput(question.formControl, $event)"
+          ></app-currency-input>
+        </ng-container>
+      </div>
+      <!-- <div *ngIf="question.type === 'text'" class="input-container">
+        <label [for]="question._id" class="input-label">{{ question.value }}</label>
+        <textarea
+          cols="30"
+          rows="8"
+          [id]="question._id"
+          [name]="question.value"
+          class="text-input area"
+        ></textarea>
+      </div> -->
+    </div>
+    <!-- <ng-container *ngIf="inputType == 'text'">
+      <div class="input-container">
+        <label for="Text" class="input-label">Mensaje:</label>
+        <textarea
+          cols="30"
+          rows="8"
+          id="text1"
+          name="Message"
+          class="text-input area"
+          formControlName="text"
+          placeholder="Escribe aquí tú mensaje"
+        >
+        </textarea>
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'fullName'">
+      <div class="input-container double">
+        <div class="name">
+          <label for="Name" class="input-label">Nombre:</label>
+          <input
+            type="text"
+            class="text-input"
+            formControlName="name"
+            placeholder="Mi nombre es..."
+          />
+        </div>
+
+        <div class="last-name">
+          <label for="Last Name" class="input-label">Apellido:</label>
+          <input
+            type="text"
+            class="text-input"
+            formControlName="lastName"
+            placeholder="Mi apellido es..."
+          />
+        </div>
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'phone'">
+      <div class="input-container">
+        <label for="phone number" class="input-label"
+          >Número de Teléfono:</label
+        >
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [enableAutoCountrySelect]="true"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [preferredCountries]="preferredCountries"
+          [selectedCountryISO]="CountryISO"
+          maxLength="13"
+          minlength="10"
+          [phoneValidation]="true"
+          [separateDialCode]="true"
+          [customPlaceholder]="'(000) 000-0000'"
+          [numberFormat]="PhoneNumberFormat.International"
+          formControlName="phoneNumber"
+          tabindex="1"
+        ></ngx-intl-tel-input>
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'email'">
+      <div class="input-container">
+        <label for="email" class="input-label">Correo electrónico:</label>
+        <input
+          type="email"
+          class="text-input"
+          formControlName="email"
+          placeholder="miMail@mail.com"
+        />
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'number'">
+      <div class="input-container">
+        <label for="Number" class="input-label">Cantidad:</label>
+        <input
+          type="number"
+          class="text-input"
+          formControlName="number"
+          placeholder="Número"
+        />
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'image'">
+      <div class="input-container">
+        <label for="Image" class="input-label">Sube la imagen:</label>
+        <app-image-input
+          style="margin-left: 5px"
+          [allowedTypes]="['png', 'jpg', 'jpeg']"
+          [expandImage]="true"
+          (onFileInput)="onFileInput($event)"
+        ></app-image-input>
+      </div>
+    </ng-container> -->
+
+    <!-- <ng-container *ngIf="inputType == 'url'">
+      <div class="input-container">
+        <label for="Number" class="input-label">Cantidad:</label>
+        <input
+          type="url"
+          class="text-input"
+          formControlName="url"
+          placeholder="mipágina.com"
+        />
+      </div>
+    </ng-container> -->
+  </form>
+
+  <app-sticky-button
+    [mode]="form.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
+    size="small"
+    bgColor="#2874AD"
+    [text]="
+      'NOTIFICAR DEL FORM POR WHATSAPP A ' +
+      webform?.merchant?.name?.toUpperCase()
+    "
+    (click)="form.valid && !disableButton && onSubmit()"
+  ></app-sticky-button>
+</div>

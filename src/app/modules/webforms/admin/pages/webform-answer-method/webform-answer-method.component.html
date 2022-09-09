@@ -1,0 +1,39 @@
+<div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    bgColor="#2874AD"
+    [returnAble]="true"
+    [dots]="{
+      active: true
+    }"
+    [mainText]="{
+      text: 'Pregunta #1 Pantalla #1',
+      fontFamily: 'SfProBold',
+      fontSize: '21px'
+    }"
+  ></app-helper-headerv2>
+
+  <div class="questions-area">
+    <div class="top-area">
+      <label for="Answers Choice" id="answers" class="answers-label"
+        >METODO DE RESPUESTAS</label
+      >
+
+      <div class="dot-trio">
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+        <div class="dot"> </div>
+      </div>
+    </div>
+
+    <app-answer-selector
+      [options]="options"
+      [activeOption]="optionIndex"
+      [indicator]="true"
+      [showDescription]="false"
+      [containerStyles]="{
+        margin: '0 0 30px'
+      }"
+    ></app-answer-selector>
+  </div>
+</div>

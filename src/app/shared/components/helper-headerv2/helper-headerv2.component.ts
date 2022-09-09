@@ -47,7 +47,7 @@ interface Icon {
   styleUrls: ['./helper-headerv2.component.scss'],
 })
 export class HelperHeaderv2Component implements OnInit {
-  @Input() bgColor: string = '#4773D8';
+  @Input() bgColor: string = '#2874AD';
   @Input() mode:
     | 'basic'
     | 'double'
@@ -152,11 +152,10 @@ export class HelperHeaderv2Component implements OnInit {
 
   highlight(i) {
     if (this.icons && this.icons[i].highlight.active === true) {
-      console.log(this.icons[i].highlight)
+      console.log(this.icons[i].highlight);
       this.icons[i].highlight.highlighted =
         !this.icons[i].highlight.highlighted;
-      console.log(this.icons[i].highlight)
-
+      console.log(this.icons[i].highlight);
     } else {
       console.log('');
     }

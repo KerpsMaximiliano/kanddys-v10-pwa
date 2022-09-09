@@ -1,0 +1,28 @@
+<div class="select-wrapper">
+  <div style="width: 100%">
+    <button
+      class="btn-dropdown"
+      [ngClass]="{ active: isActive }"
+      (click)="isActive = !isActive"
+    >
+      <span>{{ options[selectedIndex]?.name }}</span>
+      <span>{{ isActive ? "-" : "+" }}</span>
+    </button>
+    <div class="dropdown" [ngClass]="{ active: isActive }">
+      <ul>
+        <li
+          *ngFor="let option of options; index as i"
+          (click)="selectOption(i)"
+        >
+          {{ option.name }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <input type="checkbox" class="checkbox" />
+  <!-- <select name="field" id="field">
+    <option value="text">Texto</option>
+    <option value="media">Imagen</option>
+    <option value="number">Numero</option>
+  </select> -->
+</div>
