@@ -364,8 +364,10 @@ export class CreateItemComponent implements OnInit {
             mode: 'func',
             func: () => {
               if (!this.hasParams) {
-                if (!this.getArrayLength(this.itemForm, 'params'))
+                if (!this.getArrayLength(this.itemForm, 'params')) {
                   this.generateFields();
+                  this.generateFields();
+                }
               }
               this.hasParams = !this.hasParams;
             },
