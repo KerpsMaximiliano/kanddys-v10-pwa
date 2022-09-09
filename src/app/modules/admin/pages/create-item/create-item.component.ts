@@ -409,8 +409,8 @@ export class CreateItemComponent implements OnInit {
               if (!this.hasParams) {
                 this.itemForm.get('pricing').clearValidators();
                 this.itemForm.patchValue({
-                  pricing: 0
-                })
+                  pricing: 0,
+                });
                 this.itemForm.updateValueAndValidity();
 
                 if (!this.getArrayLength(this.itemForm, 'params')) {
@@ -423,6 +423,7 @@ export class CreateItemComponent implements OnInit {
                   .setValidators(
                     Validators.compose([Validators.required, Validators.min(1)])
                   );
+                this.itemForm.get('pricing').updateValueAndValidity();
                 this.itemForm.updateValueAndValidity();
 
                 while (this.itemForm.get('params').value.length !== 0) {
