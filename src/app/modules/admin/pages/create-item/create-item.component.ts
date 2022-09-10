@@ -236,12 +236,16 @@ export class CreateItemComponent implements OnInit {
                 {
                   name: params[0].name,
                   formType: 'color',
-                  values: params[0].values.map((value) => ({
-                    name: value.name,
-                    image: value.image,
-                    price: value.price,
-                    description: value.description,
-                  })),
+                  values: params[0].values.map((value) => {
+                    console.log(value, value.image);
+
+                    return {
+                      name: value.name,
+                      image: value.image,
+                      price: value.price,
+                      description: value.description,
+                    };
+                  }),
                 }
               );
             }
@@ -299,8 +303,8 @@ export class CreateItemComponent implements OnInit {
     value: any,
     operation: 'ADD' | 'DELETE'
   ) {
-    if (operation === 'ADD' && 'image' in value)
-      form.get(controlName).setValue(value.image, {
+    if (operation === 'ADD' && value instanceof FileList)
+      form.get(controlName).setValue(value[0], {
         emitEvent: false,
       });
     else {
