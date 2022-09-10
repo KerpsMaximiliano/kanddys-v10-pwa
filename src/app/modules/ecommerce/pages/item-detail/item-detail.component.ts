@@ -104,6 +104,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (!this.itemsService.temporalItem)
       return this.router.navigate([`/admin/create-item`]);
     this.item = this.itemsService.temporalItem;
+    if (this.item.images.length > 1) {
+      this.swiperConfig.pagination = {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true,
+      };
+    }
     if (!this.item.images.length) this.item.showImages = false;
     this.previewMode = true;
   }
