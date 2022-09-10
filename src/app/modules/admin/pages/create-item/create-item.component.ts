@@ -407,11 +407,25 @@ export class CreateItemComponent implements OnInit {
             mode: 'func',
             func: () => {
               if (!this.hasParams) {
+                this.itemForm.get('pricing').clearValidators();
+                this.itemForm.patchValue({
+                  pricing: 0,
+                });
+                this.itemForm.updateValueAndValidity();
+
                 if (!this.getArrayLength(this.itemForm, 'params')) {
                   this.generateFields();
                   this.generateFields();
                 }
               } else {
+                this.itemForm
+                  .get('pricing')
+                  .setValidators(
+                    Validators.compose([Validators.required, Validators.min(1)])
+                  );
+                this.itemForm.get('pricing').updateValueAndValidity();
+                this.itemForm.updateValueAndValidity();
+
                 while (this.itemForm.get('params').value.length !== 0) {
                   (<FormArray>this.itemForm.get('params')).removeAt(0);
                 }
@@ -468,24 +482,39 @@ export class CreateItemComponent implements OnInit {
   }
 
   generateFields() {
-    const newFormGroup = new FormGroup({
+    const paramValueFormGroupInput: {
+      name: FormControl;
+      description: FormControl;
+      quantity: FormControl;
+      image: FormControl;
+      price?: FormControl;
+    } = {
       name: new FormControl(),
       description: new FormControl(),
-      price: new FormControl(null, [Validators.required, Validators.min(1)]),
       quantity: new FormControl(),
       image: new FormControl(),
-    });
+    };
+
     const params = <FormArray>this.itemForm.get('params');
     if (this.getArrayLength(this.itemForm, 'params') === 0) {
+      paramValueFormGroupInput.price = new FormControl(null, [
+        Validators.required,
+        Validators.min(1),
+      ]);
+
       params.push(
         new FormGroup({
           name: new FormControl('Tipos', Validators.required),
-          category: new FormControl('', Validators.required),
+          category: new FormControl(''),
           formType: new FormControl('color', Validators.required),
           values: new FormArray([]),
         })
       );
+    } else {
+      paramValueFormGroupInput.price = new FormControl(null);
     }
+    const newFormGroup = new FormGroup(paramValueFormGroupInput);
+
     const values = <FormArray>params.at(0).get('values');
     values.push(newFormGroup);
     this.formattedPricing.values.push('$0.00');

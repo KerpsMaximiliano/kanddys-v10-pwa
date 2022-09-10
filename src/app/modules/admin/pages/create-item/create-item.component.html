@@ -210,7 +210,7 @@
     <button class="save" (click)="onSubmit()">Salvar</button>
   </footer>
 
-  <footer *ngIf="hasParams">
+  <footer *ngIf="hasParams" [ngClass]="{ disabled: !itemForm.valid }">
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
