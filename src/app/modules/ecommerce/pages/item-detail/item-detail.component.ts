@@ -55,6 +55,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     spaceBetween: 5,
   };
   previewMode: boolean;
+  hasImage: boolean;
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
@@ -65,11 +66,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       this.item = await this.itemsService.item(params.id);
       if (
         !this.item ||
-        (this.item.status !== 'active' &&
-          this.item.status !== 'featured')
+        (this.item.status !== 'active' && this.item.status !== 'featured')
       )
         return this.back();
 
+      this.hasImage = this.item.images?.length > 0;
       if (this.item.images.length > 1) {
         this.swiperConfig.pagination = {
           el: '.swiper-pagination',
@@ -77,9 +78,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           clickable: true,
         };
       }
-      if (this.item.params?.some((param) => param.values?.length)) {
+      if (this.item.params?.some((param) => param.values?.length))
         this.hasParams = true;
-      }
 
       const whatsappMessage = encodeURIComponent(
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`
@@ -112,6 +112,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       };
     }
     if (!this.item.images.length) this.item.showImages = false;
+    if (this.item.params?.some((param) => param.values?.length))
+      this.hasParams = true;
     this.previewMode = true;
   }
 
@@ -200,16 +202,18 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       ];
     }
     this.header.storeOrderProduct(this.saleflowData._id, product);
-    const itemParamValue: ItemParamValue = this.selectedParam ? {
-      ...this.item.params[this.selectedParam.param].values[
-        this.selectedParam.value
-      ],
-      price:
-        this.item.pricing +
-        this.item.params[this.selectedParam.param].values[
-          this.selectedParam.value
-        ].price,
-    } : null;
+    const itemParamValue: ItemParamValue = this.selectedParam
+      ? {
+          ...this.item.params[this.selectedParam.param].values[
+            this.selectedParam.value
+          ],
+          price:
+            this.item.pricing +
+            this.item.params[this.selectedParam.param].values[
+              this.selectedParam.value
+            ].price,
+        }
+      : null;
     this.header.storeItem(
       this.saleflowData._id,
       this.selectedParam ? itemParamValue : this.item
@@ -264,10 +268,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   selectParamValue(param: number, value: number) {
+    if (this.previewMode) return;
     this.selectedParam = {
       param,
       value,
     };
+    if (this.item.params[param].values[value].image) this.hasImage = true;
+    else this.hasImage = false;
     this.itemInCart();
   }
 
