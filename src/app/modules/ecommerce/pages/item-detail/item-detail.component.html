@@ -40,38 +40,41 @@
           "
         />
       </button>
-      <div class="shadowWrapper">
-        <swiper [config]="swiperConfig">
-          <ng-container *ngIf="!hasParams || selectedParam == null">
-            <div
-              *ngFor="let item of item.images; let i = index"
-              (click)="openImageModal(item)"
-              class="item"
-              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-            ></div>
+      <swiper [config]="swiperConfig">
+         <ng-container *ngIf="!hasParams || selectedParam == null">
+            <div class="shadowWrapper" *ngFor="let item of item.images; let i = index">
+               <div
+               (click)="openImageModal(item)"
+               class="item"
+               [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+               ></div>
+               <div class="blank-space"></div>
+            </div>
           </ng-container>
           <ng-container *ngIf="hasParams && selectedParam != null">
-            <div
-              (click)="
-                openImageModal(
-                  item.params[selectedParam?.param]?.values[
-                    selectedParam?.value
-                  ]?.image
-                )
-              "
-              class="item"
-              [ngStyle]="{
-                'background-image':
-                  'url(' +
-                  item.params[selectedParam?.param]?.values[
-                    selectedParam?.value
-                  ]?.image +
-                  ')'
-              }"
-            ></div>
+            <div class="shadowWrapper">
+               <div
+                 (click)="
+                   openImageModal(
+                     item.params[selectedParam?.param]?.values[
+                       selectedParam?.value
+                     ]?.image
+                   )
+                 "
+                 class="item"
+                 [ngStyle]="{
+                   'background-image':
+                     'url(' +
+                     item.params[selectedParam?.param]?.values[
+                       selectedParam?.value
+                     ]?.image +
+                     ')'
+                 }"
+               ></div>
+               <div class="blank-space"></div>
+            </div>
           </ng-container>
         </swiper>
-      </div>
     </div>
     <div
       *ngIf="!item.images?.length"
