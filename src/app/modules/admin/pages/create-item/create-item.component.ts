@@ -48,7 +48,7 @@ export class CreateItemComponent implements OnInit {
     images: new FormControl([]),
     name: new FormControl(),
     description: new FormControl(),
-    pricing: new FormControl(null, [Validators.required, Validators.min(1)]),
+    pricing: new FormControl(null, [Validators.required, Validators.min(0.01)]),
     params: new FormArray([]),
   });
   formattedPricing = {
@@ -425,7 +425,7 @@ export class CreateItemComponent implements OnInit {
                 this.itemForm
                   .get('pricing')
                   .setValidators(
-                    Validators.compose([Validators.required, Validators.min(1)])
+                    Validators.compose([Validators.required, Validators.min(0.01)])
                   );
                 this.itemForm.get('pricing').updateValueAndValidity();
                 this.itemForm.updateValueAndValidity();
@@ -503,7 +503,7 @@ export class CreateItemComponent implements OnInit {
     if (this.getArrayLength(this.itemForm, 'params') === 0) {
       paramValueFormGroupInput.price = new FormControl(null, [
         Validators.required,
-        Validators.min(1),
+        Validators.min(0.01),
       ]);
 
       params.push(

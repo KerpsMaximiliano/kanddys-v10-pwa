@@ -11,6 +11,9 @@
   </div>
   <input
     class="formatted-input"
+    [ngClass]="{
+      'currency-input-focused': curencyFocused 
+    }"
     type="number"
     id="pricing"
     name="pricing"
