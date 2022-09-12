@@ -39,8 +39,8 @@
             <div class="image">
               <img
                 [src]="
-                  item.images?.length
-                    ? item.images[0]
+                  item.image || item.images.length
+                    ? item.image || item.images[0]
                     : '/assets/images/noimage.png'
                 "
                 alt="item image"
