@@ -78,10 +78,19 @@
             : item.params[selectedParam.param].values[selectedParam.value].name
         }}
       </h2>
-      <button class="nonswiper-button" (click)="openShareDialog()">
-        <img [src]="env + '/upload.svg'" width="15" height="19" />
-        Compartir
-      </button>
+
+      <div class="wrapper">
+        <span class="vale">A PAGAR </span>
+        <h3 class="price">
+          RD$
+          {{
+            selectedParam == null
+              ? item.pricing
+              : (item.params[selectedParam.param].values[selectedParam.value]
+                  .price | number)
+          }}
+        </h3>
+      </div>
     </div>
     <div *ngIf="item.pricing" class="item-price">
       <h2 class="title-name">
