@@ -714,6 +714,7 @@ export class ItemDisplayComponent implements OnInit {
             flexDirection: 'column',
             alignItems: 'flex-start',
             paddingBottom: '42px',
+            paddingTop: '25px',
           },
           dialogCard: {
             paddingBottom: '64px',
