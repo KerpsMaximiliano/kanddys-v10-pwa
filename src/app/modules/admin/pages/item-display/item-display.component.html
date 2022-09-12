@@ -24,16 +24,19 @@
           "
         />
       </button>
-      <div class="shadowWrapper">
-        <swiper [config]="swiperConfig">
+      <swiper [config]="swiperConfig">
+        <div
+          class="shadowWrapper"
+          *ngFor="let item of item.images; let i = index"
+        >
           <div
-            *ngFor="let item of item.images; let i = index"
             (click)="openImageModal(item)"
             class="item"
             [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
           ></div>
-        </swiper>
-      </div>
+          <div class="blank-space"></div>
+        </div>
+      </swiper>
     </div>
     <div class="flex-box" style="color: #4f4f4f; margin-top: 32px">
       <h1 class="small-title">{{ item.name }}</h1>
@@ -49,16 +52,19 @@
       </button>
     </div>
 
-    <section class="dynamic-items-section" *ngIf="item.params && item.params.length && item.params[0].values.length">
+    <section
+      class="dynamic-items-section"
+      *ngIf="item.params && item.params.length && item.params[0].values.length"
+    >
       <p class="item-detail">Selecciona entre opciones:</p>
       <div class="saleflows-grid">
         <div class="capsize" *ngFor="let paramValue of item.params[0].values">
           <app-saleflow-item
-              [type]="3"
-              [imgURL]="paramValue.image ? paramValue.image : ''"
-              [price]="paramValue.price"
-              [showPrice]="true"
-              [responsiveWidthVersion]="true"
+            [type]="3"
+            [imgURL]="paramValue.image ? paramValue.image : ''"
+            [price]="paramValue.price"
+            [showPrice]="true"
+            [responsiveWidthVersion]="true"
           ></app-saleflow-item>
         </div>
       </div>
