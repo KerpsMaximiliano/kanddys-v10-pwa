@@ -520,6 +520,10 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openShareDialog = () => {
+   const styles = [
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+    ];
     const list: StoreShareList[] = [
       {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
@@ -530,10 +534,7 @@ export class ItemDisplayComponent implements OnInit {
               : this.item.status === 'featured'
               ? 'VISIBLE (Y DESTACADO)'
               : 'INVISIBLE',
-          labelStyles: this.item.status !== 'active' && {
-            backgroundColor: '#B17608',
-            color: '#fff',
-          },
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0]
         },
         options: [
           {
@@ -704,25 +705,6 @@ export class ItemDisplayComponent implements OnInit {
         list,
         alternate: true,
         hideCancelButtton: true,
-        headerIcon: {
-          src: '/upload.svg',
-          cursor: 'none',
-          styles: {
-            wrapper: {
-              height: '19px',
-              paddingTop: '26px',
-              paddingBottom: '30px',
-              position: 'relative',
-              width: '100%',
-            },
-            image: {
-              position: 'absolute',
-              right: '28px',
-              filter:
-                'sepia(100%) hue-rotate(190deg) saturate(500%) brightness(0.7)',
-            },
-          },
-        },
         dynamicStyles: {
           container: {
             paddingBottom: '64px',
