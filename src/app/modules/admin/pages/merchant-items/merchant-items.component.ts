@@ -543,7 +543,7 @@ export class MerchantItemsComponent implements OnInit {
         titleStyles: {
           margin: '0px',
           marginTop: '15px',
-          marginBottom: '65px',
+          marginBottom: '25px',
         },
         options: [
           {
