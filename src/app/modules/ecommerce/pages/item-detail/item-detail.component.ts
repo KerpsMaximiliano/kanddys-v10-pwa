@@ -200,7 +200,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       ];
     }
     this.header.storeOrderProduct(this.saleflowData._id, product);
-    const itemParamValue: ItemParamValue = {
+    const itemParamValue: ItemParamValue = this.selectedParam ? {
       ...this.item.params[this.selectedParam.param].values[
         this.selectedParam.value
       ],
@@ -209,7 +209,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         this.item.params[this.selectedParam.param].values[
           this.selectedParam.value
         ].price,
-    };
+    } : null;
     this.header.storeItem(
       this.saleflowData._id,
       this.selectedParam ? itemParamValue : this.item
