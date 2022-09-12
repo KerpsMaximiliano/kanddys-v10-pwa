@@ -1,6 +1,25 @@
 <div class="container">
   <app-helper-headerv2
-    [mode]="'basic'"
+    [mode]="'options'"
+    [flexDirection]="'flex-start'"
+    [alignItems]="'center'"
+    [leftText]="
+      hasParams && selectedParam
+        ? {
+            text: 'Mas opciones',
+            fontSize: '21px'
+          }
+        : null
+    "
+    [leftTextStyles]="
+      hasParams && selectedParam
+        ? {
+            fontSize: '21px',
+            fontFamily: 'SfProRegular',
+            marginLeft: '-13px'
+          }
+        : null
+    "
     [returnAble]="true"
     cartColor="blue"
     bgColor="#2874ad"
@@ -59,15 +78,15 @@
             : item.params[selectedParam.param].values[selectedParam.value].name
         }}
       </h2>
-        <button class="nonswiper-button" (click)="openShareDialog()">
-          <img [src]="env + '/upload.svg'" width="15" height="19" />
-          Compartir
-        </button>
-      </div>
-      <div *ngIf="item.pricing" class="item-price">
-        <h2 class="title-name">
-          {{ item.name }}
-        </h2>
+      <button class="nonswiper-button" (click)="openShareDialog()">
+        <img [src]="env + '/upload.svg'" width="15" height="19" />
+        Compartir
+      </button>
+    </div>
+    <div *ngIf="item.pricing" class="item-price">
+      <h2 class="title-name">
+        {{ item.name }}
+      </h2>
 
       <div class="wrapper">
         <span class="vale">A PAGAR </span>
