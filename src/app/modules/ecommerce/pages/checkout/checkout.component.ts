@@ -32,7 +32,7 @@ export class CheckoutComponent implements OnInit {
   };
   saleflow: SaleFlow;
   order: ItemOrderInput;
-  items: Item[];
+  items: any[];
   post: PostInput;
   payment: number;
   hasPayment: boolean;
@@ -150,6 +150,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.saleflow || this.headerService.getSaleflow();
     this.order = this.headerService.getOrder(this.saleflow?._id);
     this.items = this.headerService.getItems(this.saleflow?._id);
+    console.log(this.items);
     this.post =
       this.headerService.post ||
       this.headerService.getPost(
