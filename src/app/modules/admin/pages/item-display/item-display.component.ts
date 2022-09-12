@@ -628,9 +628,9 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#82F18D', color: '#174B72' },
-      { 'background-color': '#82F18D', color: '#174B72' },
-      { 'background-color': '#B17608', color: '#FFFFFF' },
+      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
+      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
+      { 'background-color': '#B17608', color: '#FFFFFF', 'margin-top': this.item.name? 0 : '40px' },
     ];
     const list: StoreShareList[] = [
       {
