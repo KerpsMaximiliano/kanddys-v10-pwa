@@ -125,6 +125,9 @@ export class CreateItemComponent implements OnInit {
       params[0].values.forEach(() => {
         this.generateFields();
       });
+
+      console.log('los params', params);
+
       this.itemForm.get('params').patchValue(params);
       (
         (this.itemForm.get('params') as FormArray)
@@ -184,6 +187,35 @@ export class CreateItemComponent implements OnInit {
             : this.itemService.temporalItem?.images?.length > 0 ||
               this.item.images.length > 0,
         };
+
+        //Borra los param values anteriores de este item
+        for await (const value of this.item.params[0].values) {
+          await this.itemService.deleteItemParamValue(
+            value._id,
+            this.item.params[0]._id,
+            this.merchant._id,
+            this.item._id
+          );
+        }
+
+        const paramValues = params[0].values.map((value) => {
+          console.log(value, value.image);
+
+          return {
+            name: value.name,
+            image: value.image,
+            price: value.price,
+            description: value.description,
+          };
+        });
+
+        await this.itemService.addItemParamValue(
+          paramValues,
+          this.item.params[0]._id,
+          this.merchant._id,
+          this.item._id
+        );
+
         const { updateItem: updatedItem } = await this.itemService.updateItem(
           itemInput,
           this.item?._id || this.itemService.temporalItem?._id
@@ -209,7 +241,7 @@ export class CreateItemComponent implements OnInit {
         const itemInput = {
           name: name || null,
           description: description || null,
-          pricing: !this.hasParams ? pricing : pricing ? pricing : 0,
+          pricing: !this.hasParams ? pricing : pricing ? pricing : 0.01,
           images: images,
           merchant: this.merchant?._id,
           content: [],
@@ -231,17 +263,18 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createItem) {
             if (this.hasParams) {
-              const { createItemParam } = await this.itemService.createItemParam(
-                this.merchant._id,
-                createItem._id,
-                {
-                  name: params[0].name,
-                  formType: 'color',
-                  values: [],
-                }
-              );
+              const { createItemParam } =
+                await this.itemService.createItemParam(
+                  this.merchant._id,
+                  createItem._id,
+                  {
+                    name: params[0].name,
+                    formType: 'color',
+                    values: [],
+                  }
+                );
 
-              console.log(createItemParam, "FR")
+              console.log(createItemParam, 'FR');
 
               const paramValues = params[0].values.map((value) => {
                 console.log(value, value.image);
@@ -261,7 +294,7 @@ export class CreateItemComponent implements OnInit {
                 createItem._id
               );
 
-              console.log("Resultado", result);
+              console.log('Resultado', result);
             }
 
             this.headerService.flowRoute = this.router.url;
@@ -524,5 +557,9 @@ export class CreateItemComponent implements OnInit {
 
   getArrayLength(form: FormGroup | AbstractControl, controlName: string) {
     return (form.get(controlName) as FormArray).length;
+  }
+
+  getImageFromFieldControl(valuesControls: any): string[] {
+    return valuesControls.value.image ? [valuesControls.value.image] : [''];
   }
 }
