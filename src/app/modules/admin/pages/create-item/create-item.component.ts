@@ -441,7 +441,7 @@ export class CreateItemComponent implements OnInit {
       },
     ];
 
-    if (this.itemForm.valid) {
+    /* if (this.itemForm.valid) {
       list[0].options.push({
         text: 'Vista del comprador',
         mode: 'func',
@@ -465,7 +465,8 @@ export class CreateItemComponent implements OnInit {
           this.router.navigate(['/ecommerce/item-detail']);
         },
       });
-    }
+    } 
+    NO SE QUE FUNCCIÓN CUMPLÍA ESTO PERO CREABA UNA OPCION QUE YA HAY*/
 
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
