@@ -279,6 +279,24 @@ export const createItemParam = gql`
   }
 `;
 
+export const addItemParamValue = gql`
+  mutation addItemParamValue (
+    $itemParamId: ObjectID!
+    $merchantId: ObjectID!
+    $itemId: ObjectID!
+    $input: [ItemParamValueInput!]!
+  ) {
+    addItemParamValue(
+      itemParamId: $itemParamId,
+      merchantId: $merchantId,
+      itemId: $itemId,
+      input: $input
+    ) {
+      _id
+    }
+  }
+`;
+
 export const createPreItem = gql`
   mutation createPreItem($input: ItemInput!) {
     createPreItem(input: $input) {

@@ -230,24 +230,37 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createItem) {
             if (this.hasParams) {
-              await this.itemService.createItemParam(
+              const { createItemParam } = await this.itemService.createItemParam(
                 this.merchant._id,
                 createItem._id,
                 {
                   name: params[0].name,
                   formType: 'color',
-                  values: params[0].values.map((value) => {
-                    console.log(value, value.image);
-
-                    return {
-                      name: value.name,
-                      image: value.image,
-                      price: value.price,
-                      description: value.description,
-                    };
-                  }),
+                  values: [],
                 }
               );
+
+              console.log(createItemParam, "FR")
+
+              const paramValues = params[0].values.map((value) => {
+                console.log(value, value.image);
+
+                return {
+                  name: value.name,
+                  image: value.image,
+                  price: value.price,
+                  description: value.description,
+                };
+              });
+
+              const result = await this.itemService.addItemParamValue(
+                paramValues,
+                createItemParam._id,
+                this.merchant._id,
+                createItem._id
+              );
+
+              console.log("Resultado", result);
             }
 
             this.headerService.flowRoute = this.router.url;
@@ -425,7 +438,10 @@ export class CreateItemComponent implements OnInit {
                 this.itemForm
                   .get('pricing')
                   .setValidators(
-                    Validators.compose([Validators.required, Validators.min(0.01)])
+                    Validators.compose([
+                      Validators.required,
+                      Validators.min(0.01),
+                    ])
                   );
                 this.itemForm.get('pricing').updateValueAndValidity();
                 this.itemForm.updateValueAndValidity();
