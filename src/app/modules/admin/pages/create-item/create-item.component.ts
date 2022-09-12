@@ -138,6 +138,7 @@ export class CreateItemComponent implements OnInit {
           index
         );
       });
+      this.hasParams = true;
     }
     this.status = 'complete';
   }
@@ -230,24 +231,37 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createItem) {
             if (this.hasParams) {
-              await this.itemService.createItemParam(
+              const { createItemParam } = await this.itemService.createItemParam(
                 this.merchant._id,
                 createItem._id,
                 {
                   name: params[0].name,
                   formType: 'color',
-                  values: params[0].values.map((value) => {
-                    console.log(value, value.image);
-
-                    return {
-                      name: value.name,
-                      image: value.image,
-                      price: value.price,
-                      description: value.description,
-                    };
-                  }),
+                  values: [],
                 }
               );
+
+              console.log(createItemParam, "FR")
+
+              const paramValues = params[0].values.map((value) => {
+                console.log(value, value.image);
+
+                return {
+                  name: value.name,
+                  image: value.image,
+                  price: value.price,
+                  description: value.description,
+                };
+              });
+
+              const result = await this.itemService.addItemParamValue(
+                paramValues,
+                createItemParam._id,
+                this.merchant._id,
+                createItem._id
+              );
+
+              console.log("Resultado", result);
             }
 
             this.headerService.flowRoute = this.router.url;
@@ -377,36 +391,6 @@ export class CreateItemComponent implements OnInit {
             },
           },
           {
-            text: 'Vista del comprador',
-            mode: 'func',
-            func: () => {
-              const { images, name, description, params } = this.itemForm
-                .value as ItemInput;
-              const pricing = parseFloat(
-                this.formattedPricing.item.replace(/\$|,/g, '')
-              );
-              params?.forEach((param) => {
-                param.values = param.values.filter(
-                  (values) => values.name || values.price || values.description
-                );
-              });
-              this.itemService.storeTemporalItem({
-                ...this.item,
-                _id: this.item?._id,
-                name,
-                description,
-                params,
-                images: this.imageField,
-                pricing: pricing,
-              });
-              this.itemService.temporalImages = {
-                old: this.item?.images,
-                new: images,
-              };
-              this.router.navigate(['/ecommerce/item-detail']);
-            },
-          },
-          {
             text: !this.hasParams ? 'Dinámico' : 'Estático',
             mode: 'func',
             func: () => {
@@ -425,7 +409,10 @@ export class CreateItemComponent implements OnInit {
                 this.itemForm
                   .get('pricing')
                   .setValidators(
-                    Validators.compose([Validators.required, Validators.min(0.01)])
+                    Validators.compose([
+                      Validators.required,
+                      Validators.min(0.01),
+                    ])
                   );
                 this.itemForm.get('pricing').updateValueAndValidity();
                 this.itemForm.updateValueAndValidity();
@@ -441,20 +428,27 @@ export class CreateItemComponent implements OnInit {
       },
     ];
 
-    /* if (this.itemForm.valid) {
+    if (this.itemForm.valid) {
       list[0].options.push({
         text: 'Vista del comprador',
         mode: 'func',
         func: () => {
-          const { images, name, description } = this.itemForm.value;
+          const { images, name, description, params } = this.itemForm
+            .value as ItemInput;
           const pricing = parseFloat(
             this.formattedPricing.item.replace(/\$|,/g, '')
           );
+          params?.forEach((param) => {
+            param.values = param.values.filter(
+              (values) => values.name || values.price || values.description
+            );
+          });
           this.itemService.storeTemporalItem({
             ...this.item,
             _id: this.item?._id,
             name,
             description,
+            params,
             images: this.imageField,
             pricing: pricing,
           });
@@ -465,8 +459,7 @@ export class CreateItemComponent implements OnInit {
           this.router.navigate(['/ecommerce/item-detail']);
         },
       });
-    } 
-    NO SE QUE FUNCCIÓN CUMPLÍA ESTO PERO CREABA UNA OPCION QUE YA HAY*/
+    }
 
     this.dialogService.open(StoreShareComponent, {
       type: 'fullscreen-translucent',

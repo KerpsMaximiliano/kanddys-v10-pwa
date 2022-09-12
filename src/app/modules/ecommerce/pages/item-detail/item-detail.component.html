@@ -28,7 +28,7 @@
     (returnEvent)="back()"
   ></app-helper-headerv2>
   <div class="item-info" *ngIf="item">
-    <div class="fullScreenSwiper" *ngIf="item.images?.length">
+    <div class="fullScreenSwiper" *ngIf="hasImage">
       <button class="swiper-button" (click)="openShareDialog()">
         <img
           [src]="env + '/upload.svg'"
@@ -42,12 +42,34 @@
       </button>
       <div class="shadowWrapper">
         <swiper [config]="swiperConfig">
-          <div
-            *ngFor="let item of item.images; let i = index"
-            (click)="openImageModal(item)"
-            class="item"
-            [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-          ></div>
+          <ng-container *ngIf="!hasParams || selectedParam == null">
+            <div
+              *ngFor="let item of item.images; let i = index"
+              (click)="openImageModal(item)"
+              class="item"
+              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+            ></div>
+          </ng-container>
+          <ng-container *ngIf="hasParams && selectedParam != null">
+            <div
+              (click)="
+                openImageModal(
+                  item.params[selectedParam?.param]?.values[
+                    selectedParam?.value
+                  ]?.image
+                )
+              "
+              class="item"
+              [ngStyle]="{
+                'background-image':
+                  'url(' +
+                  item.params[selectedParam?.param]?.values[
+                    selectedParam?.value
+                  ]?.image +
+                  ')'
+              }"
+            ></div>
+          </ng-container>
         </swiper>
       </div>
     </div>
@@ -69,34 +91,16 @@
         class="title-name"
         *ngIf="
           item.name ||
-          item.params[selectedParam?.param]?.values[selectedParam?.value].name
+          item.params[selectedParam?.param]?.values[selectedParam?.value]?.name
         "
       >
         {{
           selectedParam == null
             ? item.name
-            : item.params[selectedParam.param].values[selectedParam.value].name
+            : item.params[selectedParam?.param]?.values[selectedParam?.value]
+                ?.name
         }}
       </h2>
-
-      <div class="wrapper">
-        <span class="vale">A PAGAR </span>
-        <h3 class="price">
-          RD$
-          {{
-            selectedParam == null
-              ? item.pricing
-              : (item.params[selectedParam.param].values[selectedParam.value]
-                  .price | number)
-          }}
-        </h3>
-      </div>
-    </div>
-    <div *ngIf="item.pricing && item.name && hasParams" class="item-price">
-      <h2 class="title-name">
-        {{ item.name }}
-      </h2>
-
       <div class="wrapper">
         <span class="vale">A PAGAR </span>
         <h3 class="price">
@@ -141,19 +145,6 @@
         </ul>
       </div>
     </ng-container>
-    <app-sticky-button
-      *ngIf="!inCart"
-      [mode]="'fixed'"
-      [text]="'ADD AL CARRITO DE COMPRAS'"
-      [size]="'small'"
-      [bgColor]="'#2874AD'"
-      (click)="!previewMode && saveProduct()"
-      [customLeftButtonStyles]="{
-        'font-size': '17px',
-        'font-family': 'RobotoMedium',
-        'letter-spacing': '1px'
-      }"
-    ></app-sticky-button>
   </div>
   <app-bubble-button
     (click)="showItems()"
@@ -171,7 +162,7 @@
     [text]="'ADD AL CARRITO DE COMPRAS'"
     [size]="'small'"
     [bgColor]="'#2874AD'"
-    (click)="saveProduct()"
+    (click)="!previewMode && saveProduct()"
     [customLeftButtonStyles]="{
       'font-size': '17px',
       'font-family': 'RobotoMedium',

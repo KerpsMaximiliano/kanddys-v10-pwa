@@ -71,6 +71,7 @@ const orderData = `
         values {
           _id
           name
+          image
         }
       }
     }

@@ -47,7 +47,6 @@
         </ng-container>
       </section>
 
-      
       <!--
         {{ formattedPricing | json }}
       -->
@@ -186,10 +185,20 @@
                           marginLeft: 'auto'
                         }"
                         (onFileInputMultiple)="
-                          handleImageInput(valuesControl, 'image', $event, 'ADD')
+                          handleImageInput(
+                            valuesControl,
+                            'image',
+                            $event,
+                            'ADD'
+                          )
                         "
                         (onFileDeletion)="
-                          handleImageInput(valuesControl, 'image', $event, 'DELETE')
+                          handleImageInput(
+                            valuesControl,
+                            'image',
+                            $event,
+                            'DELETE'
+                          )
                         "
                       ></app-image-input>
                     </div>
@@ -214,6 +223,8 @@
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
-    <button class="save" (click)="onSubmit()">Salvar</button>
+    <button class="save" (click)="submitEventFinished ? onSubmit() : null">
+      Salvar
+    </button>
   </footer>
 </div>

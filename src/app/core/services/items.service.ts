@@ -31,6 +31,7 @@ import {
   itemExtras,
   updateItem,
   deleteItem,
+  addItemParamValue,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -358,6 +359,22 @@ export class ItemsService {
     const result = await this.graphql.mutate({
       mutation: createItemParam,
       variables: { merchantId, itemId, input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async addItemParamValue(
+    input: any,
+    itemParamId: string,
+    merchantId: string,
+    itemId: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: addItemParamValue,
+      variables: { itemParamId, merchantId, itemId, input },
       context: { useMultipart: true },
     });
 

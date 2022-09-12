@@ -570,6 +570,7 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
         dynamicStyles: {
          container: {
            paddingBottom: '64px',
