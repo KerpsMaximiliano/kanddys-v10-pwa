@@ -69,7 +69,7 @@
         class="title-name"
         *ngIf="
           item.name ||
-          item.params[selectedParam.param].values[selectedParam.value].name
+          item.params[selectedParam?.param]?.values[selectedParam?.value].name
         "
       >
         {{
@@ -92,7 +92,7 @@
         </h3>
       </div>
     </div>
-    <div *ngIf="item.pricing" class="item-price">
+    <div *ngIf="item.pricing && item.name && hasParams" class="item-price">
       <h2 class="title-name">
         {{ item.name }}
       </h2>
