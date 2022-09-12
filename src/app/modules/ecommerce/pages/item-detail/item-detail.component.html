@@ -145,19 +145,6 @@
         </ul>
       </div>
     </ng-container>
-    <app-sticky-button
-      *ngIf="!inCart"
-      [mode]="'fixed'"
-      [text]="'ADD AL CARRITO DE COMPRAS'"
-      [size]="'small'"
-      [bgColor]="'#2874AD'"
-      (click)="!previewMode && saveProduct()"
-      [customLeftButtonStyles]="{
-        'font-size': '17px',
-        'font-family': 'RobotoMedium',
-        'letter-spacing': '1px'
-      }"
-    ></app-sticky-button>
   </div>
   <app-bubble-button
     (click)="showItems()"
@@ -175,7 +162,7 @@
     [text]="'ADD AL CARRITO DE COMPRAS'"
     [size]="'small'"
     [bgColor]="'#2874AD'"
-    (click)="saveProduct()"
+    (click)="!previewMode && saveProduct()"
     [customLeftButtonStyles]="{
       'font-size': '17px',
       'font-family': 'RobotoMedium',
