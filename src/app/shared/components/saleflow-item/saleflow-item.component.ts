@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { ItemsService } from 'src/app/core/services/items.service';
+import { ItemParam } from 'src/app/core/models/item';
 
 @Component({
   selector: 'app-saleflow-item',
@@ -38,6 +38,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showIcon: boolean;
   @Input() displaying: boolean;
   @Input() inactive: boolean;
+  @Input() itemParams: ItemParam[];
   @Input() big: boolean = false;
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
   @Input() icon: {
@@ -100,7 +101,18 @@ export class SaleflowItemComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.itemParams?.length) {
+      let lowest = 0;
+      this.itemParams.forEach((params) => {
+        params.values.forEach((values) => {
+          if (lowest === 0) lowest = values.price;
+          if (values.price < lowest) lowest = values.price;
+        });
+      });
+      this.price = lowest;
+    }
+  }
 
   navigateDetails(): void {
     this.router.navigate([

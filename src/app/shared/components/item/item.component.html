@@ -12,6 +12,6 @@
     />
   </button>
   <div class="item-info">
-    <div class="flex-column">${{ item.pricing | number }}</div>
+    <div class="flex-column">${{ price || item.pricing | number }}</div>
   </div>
 </div>

@@ -70,6 +70,17 @@ export const itemsByMerchant = gql`
         _id
         name
       }
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
       featuredImage
       pricing
       status
