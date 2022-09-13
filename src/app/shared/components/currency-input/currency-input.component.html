@@ -1,0 +1,28 @@
+<div class="price-wrapper">
+  <div class="formatted-price" [ngStyle]="fieldStyles">
+    <span *ngFor="let letter of formattedPricing.split('')">
+      {{ letter }}
+    </span>
+    <div
+      class="cursor blinking-cursor"
+      [ngClass]="{ 'blinking-cursor': curencyFocused }"
+      style="width: 1px; height: 1rem"
+    ></div>
+  </div>
+  <input
+    class="formatted-input"
+    [ngClass]="{
+      'currency-input-focused': curencyFocused 
+    }"
+    type="number"
+    id="pricing"
+    name="pricing"
+    [defaultValue]="initialValue"
+    min="1"
+    required
+    (focus)="curencyFocused = true"
+    (blur)="curencyFocused = false"
+    (input)="formatNumber($event, true)"
+    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
+  />
+</div>

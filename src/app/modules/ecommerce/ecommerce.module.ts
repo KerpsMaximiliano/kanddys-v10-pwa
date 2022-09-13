@@ -7,7 +7,6 @@ import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
-import { MegaphoneV3Component } from './pages/megaphone-v3/megaphone-v3.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
@@ -20,6 +19,7 @@ import { NewAddressComponent } from './pages/new-address/new-address.component';
 import { EcommerceComponent } from './ecommerce/ecommerce.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
+import { StoreComponent } from './pages/store/store.component';
 
 const routes: Routes = [
   {
@@ -63,7 +63,7 @@ const routes: Routes = [
       { path: 'megaphone-v3/:id', redirectTo: 'store/:id', pathMatch: 'full' },
       {
         path: 'store/:id',
-        component: MegaphoneV3Component,
+        component: StoreComponent,
       },
       {
         path: 'order-info/:id',
@@ -118,7 +118,7 @@ const routes: Routes = [
     CustomItemDetailComponent,
     CustomizerRedirectComponent,
     ProviderStoreComponent,
-    MegaphoneV3Component,
+    StoreComponent,
     ItemDetailComponent,
     CustomizerRedirectComponent,
     UserInfoComponent,

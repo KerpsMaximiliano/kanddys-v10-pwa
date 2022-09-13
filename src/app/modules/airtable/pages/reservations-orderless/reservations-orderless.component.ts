@@ -41,6 +41,7 @@ export class ReservationOrderlessComponent implements OnInit {
   @Input() firstLabel: string = 'DIA CONVENIENTE';
   @Input() secondLabel: string = 'HORA CONVENIENTE';
   @Input() timeOfDayMode: boolean = false;
+  @Input() containerStyles: Record<string, any> = null;
   @Input() hourRangeInDays: Record<
     string,
     Array<{

@@ -9,6 +9,7 @@ import { SwiperOptions } from 'swiper';
 })
 export class ImageInputComponent implements OnInit {
   @Input() imageField: (string | ArrayBuffer)[] = [''];
+  @Input() formControlName: string = null;
   error: boolean[] = [];
   acceptTypes: string;
   @Output() onFileInput = new EventEmitter<
@@ -46,6 +47,7 @@ export class ImageInputComponent implements OnInit {
   @Input() expandImage: boolean = false;
   @Input() imagesAlreadyLoaded: boolean = false;
   @Input() allowDeletion: boolean = false;
+  @Input() useSwiper: boolean = true;
   @Input() id: string = null;
 
   public swiperConfig: SwiperOptions = {

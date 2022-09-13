@@ -70,6 +70,17 @@ export const itemsByMerchant = gql`
         _id
         name
       }
+      params {
+        _id
+        name
+        values {
+          _id
+          name
+          price
+          image
+          quantity
+        }
+      }
       featuredImage
       pricing
       status
@@ -140,10 +151,13 @@ export const item = gql`
       params {
         _id
         name
+        category
+        formType
         values {
           _id
           name
           price
+          description
           image
           quantity
         }
@@ -259,6 +273,54 @@ export const itemPackage = gql`
 export const createItem = gql`
   mutation createItem($input: ItemInput!) {
     createItem(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const createItemParam = gql`
+  mutation createItemParam($merchantId: ObjectID!, $itemId: ObjectID!, $input: ItemParamInput!) {
+    createItemParam(
+      merchantId: $merchantId,
+      itemId: $itemId,
+      input: $input
+    ) {
+      _id
+    }
+  }
+`;
+
+export const addItemParamValue = gql`
+  mutation addItemParamValue (
+    $itemParamId: ObjectID!
+    $merchantId: ObjectID!
+    $itemId: ObjectID!
+    $input: [ItemParamValueInput!]!
+  ) {
+    addItemParamValue(
+      itemParamId: $itemParamId,
+      merchantId: $merchantId,
+      itemId: $itemId,
+      input: $input
+    ) {
+      _id
+    }
+  }
+`;
+
+export const deleteItemParamValue = gql`
+  mutation deleteItemParamValue (
+    $itemParamValueId: ObjectID!
+    $itemParamId: ObjectID!
+    $merchantId: ObjectID!
+    $itemId: ObjectID!
+  ) {
+    deleteItemParamValue(
+      itemParamValueId: $itemParamValueId,
+      itemParamId: $itemParamId,
+      merchantId: $merchantId,
+      itemId: $itemId
+    ) {
       _id
     }
   }

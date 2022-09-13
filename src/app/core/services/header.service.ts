@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { CustomizerValueInput } from '../models/customizer-value';
-import { Item, ItemPackage } from '../models/item';
 import { Merchant } from '../models/merchant';
 import {
   ItemOrderInput,
@@ -18,6 +17,7 @@ import { User } from '../models/user';
 import { AuthService } from './auth.service';
 import { BookmarksService } from './bookmarks.service';
 import { CustomizerValueService } from './customizer-value.service';
+import { Item, ItemPackage, ItemParamValue } from '../models/item';
 import { MerchantsService } from './merchants.service';
 import { OrderService } from './order.service';
 import { PostsService } from './posts.service';
@@ -236,7 +236,10 @@ export class HeaderService {
     if (!order) order = {};
     if (!order.products) order.products = [];
     const index = order.products.findIndex(
-      (subOrder) => subOrder.item === product.item
+      (subOrder) =>
+        (!product.params?.length && subOrder.item === product.item) ||
+        (product.params?.length &&
+          subOrder.params?.[0]?.paramValue === product.params[0].paramValue)
     );
     console.log(this.order);
     if (!this.order) {
@@ -255,7 +258,7 @@ export class HeaderService {
   }
 
   // Stores item data in localStorage
-  storeItem(saleflow: string, product: Item | ItemPackage) {
+  storeItem(saleflow: string, product: Item | ItemPackage | ItemParamValue) {
     let { itemData, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!itemData) itemData = [];
@@ -450,7 +453,9 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order) return;
     if (!order.products) return;
-    const index = order.products.findIndex((subOrder) => subOrder.item === id);
+    const index = order.products.findIndex(
+      (subOrder) => subOrder.item === id || subOrder.params[0].paramValue === id
+    );
     if (index >= 0) {
       order.products.splice(index, 1);
       this.order.products.splice(index, 1);

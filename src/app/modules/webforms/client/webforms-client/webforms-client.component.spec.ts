@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WebformClientComponent } from './webform-client.component';
+import { WebformsClientComponent } from './webforms-client.component';
 
-describe('WebformClientComponent', () => {
-  let component: WebformClientComponent;
-  let fixture: ComponentFixture<WebformClientComponent>;
+describe('WebformsClientComponent', () => {
+  let component: WebformsClientComponent;
+  let fixture: ComponentFixture<WebformsClientComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WebformClientComponent ]
+      declarations: [ WebformsClientComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WebformClientComponent);
+    fixture = TestBed.createComponent(WebformsClientComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

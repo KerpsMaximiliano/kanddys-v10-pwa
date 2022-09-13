@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { Tag } from '../../../../core/models/tags';
+import { Tag } from '../../../../../core/models/tags';
 
 const dummyTags = [ {
   messageNotify: 'prueba Nº1',

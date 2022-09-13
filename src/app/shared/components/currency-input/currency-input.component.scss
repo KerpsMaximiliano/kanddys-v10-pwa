@@ -1,0 +1,65 @@
+.price-wrapper {
+  position: relative;
+}
+.formatted-price {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: white;
+  bottom: 0px;
+  left: 0px;
+  z-index: 1;
+
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: 100%;
+  height: 73px;
+  font-family: RobotoMedium;
+  font-size: 1rem;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 20px -18px inset;
+}
+.formatted-input {
+  background-color: transparent;
+  color: transparent;
+  z-index: 50;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  border: none;
+  box-shadow: none;
+
+  padding: 0px 20px;
+  width: 100%;
+  height: 73px;
+}
+.blinking-cursor {
+  animation-name: blinkinCursor;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  width: 1px;
+  height: 1rem;
+
+  @keyframes blinkinCursor {
+    0% {
+      background-color: black;
+    }
+
+    50% {
+      background-color: white;
+    }
+
+    100% {
+      background-color: black;
+    }
+  }
+}
+
+.currency-input-focused {
+  width: 0px;
+  height: 0px;
+  border: none;
+}

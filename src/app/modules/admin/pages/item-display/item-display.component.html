@@ -18,19 +18,25 @@
           [src]="env + '/upload.svg'"
           width="15"
           height="19"
-          style="filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg) brightness(80%) contrast(104%);"
+          style="
+            filter: invert(35%) sepia(72%) saturate(451%) hue-rotate(163deg)
+              brightness(80%) contrast(104%);
+          "
         />
       </button>
-      <div class="shadowWrapper">
-        <swiper [config]="swiperConfig">
+      <swiper [config]="swiperConfig">
+        <div
+          class="shadowWrapper"
+          *ngFor="let item of item.images; let i = index"
+        >
           <div
-            *ngFor="let item of item.images; let i = index"
             (click)="openImageModal(item)"
             class="item"
             [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
           ></div>
-        </swiper>
-      </div>
+          <div class="blank-space"></div>
+        </div>
+      </swiper>
     </div>
     <div class="flex-box" style="color: #4f4f4f; margin-top: 32px">
       <h1 class="small-title">{{ item.name }}</h1>
@@ -38,21 +44,31 @@
     </div>
     <div
       *ngIf="!item.images?.length"
-      style="
-        display: flex;
-        justify-content: flex-end;
-        padding: 0 16px;
-      "
+      style="display: flex; justify-content: flex-end; padding: 0 16px"
     >
       <button class="nonswiper-button" (click)="openShareDialog()">
-        <img
-          [src]="env + '/upload.svg'"
-          width="15"
-          height="19"
-        />
+        <img [src]="env + '/upload.svg'" width="15" height="19" />
         Compartir
       </button>
     </div>
+
+    <section
+      class="dynamic-items-section"
+      *ngIf="item.params && item.params.length && item.params[0].values.length"
+    >
+      <p class="item-detail">Selecciona entre opciones:</p>
+      <div class="saleflows-grid">
+        <div class="capsize" *ngFor="let paramValue of item.params[0].values">
+          <app-saleflow-item
+            [type]="3"
+            [imgURL]="paramValue.image ? paramValue.image : ''"
+            [price]="paramValue.price"
+            [showPrice]="true"
+            [responsiveWidthVersion]="true"
+          ></app-saleflow-item>
+        </div>
+      </div>
+    </section>
 
     <section>
       <p class="item-detail">Sobre {{ item.name || "el producto" }}</p>
@@ -74,6 +90,14 @@
           </h2>
 
           <h2 class="amount">EN INGRESOS TOTALES</h2>
+        </div>
+
+        <div class="info-card">
+          <h2 class="amount quantity">
+            {{ buyersByItem && buyersByItem.length ? buyersByItem.length : 0 }}
+          </h2>
+
+          <h2 class="amount">COMPRADORES</h2>
         </div>
       </div>
     </section>

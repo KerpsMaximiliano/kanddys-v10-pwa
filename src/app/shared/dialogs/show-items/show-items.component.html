@@ -19,8 +19,16 @@
       <div class="card-content">
         <div
           class="image"
-          *ngIf="item.images[0]; else noImage"
-          [ngStyle]="{ 'background-image': 'url(' + item.images[0] + ')' }"
+          *ngIf="
+            item.image || (item.images?.length && item.images[0]);
+            else noImage
+          "
+          [ngStyle]="{
+            'background-image':
+              'url(' +
+              (item.image || (item.images?.length && item.images[0])) +
+              ')'
+          }"
         ></div>
         <ng-template #noImage>
           <div class="image placeholder"></div>

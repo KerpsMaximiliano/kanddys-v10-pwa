@@ -32,7 +32,7 @@ export class CheckoutComponent implements OnInit {
   };
   saleflow: SaleFlow;
   order: ItemOrderInput;
-  items: Item[];
+  items: any[];
   post: PostInput;
   payment: number;
   messageLink: string;
@@ -149,6 +149,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.saleflow || this.headerService.getSaleflow();
     this.order = this.headerService.getOrder(this.saleflow?._id);
     this.items = this.headerService.getItems(this.saleflow?._id);
+    console.log(this.items);
     this.post =
       this.headerService.post ||
       this.headerService.getPost(
@@ -174,7 +175,10 @@ export class CheckoutComponent implements OnInit {
       };
     }
     if (!this.customizer)
-      this.payment = this.items?.reduce((prev, curr) => prev + curr.pricing, 0);
+      this.payment = this.items?.reduce(
+        (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
+        0
+      );
   }
 
   placeholder() {

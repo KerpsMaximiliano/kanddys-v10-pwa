@@ -91,6 +91,8 @@ import { LoadingScreenComponent } from './components/loading-screen/loading-scre
 import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
+import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
+import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
 
 const imports = [
   CommonModule,
@@ -188,6 +190,8 @@ const declarations = [
   ItemComponent,
   ReloadComponent,
   WhatsappMessageComponent,
+  CurrencyInputComponent,
+  SelectDropdownComponent
 ];
 
 @NgModule({

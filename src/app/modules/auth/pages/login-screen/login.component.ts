@@ -283,7 +283,7 @@ export class LoginComponent implements OnInit {
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
-        if (this.auth === 'order') {
+        if (this.auth === 'order' && !this.toValidate) {
           this.router.navigate([`ecommerce/new-address`], {
             replaceUrl: true,
             state: {
@@ -292,7 +292,7 @@ export class LoginComponent implements OnInit {
           });
           return;
         }
-        if (this.orderId) {
+        if (this.orderId && !this.toValidate) {
           this.authOrder(checkOTP.user._id);
           return;
         }

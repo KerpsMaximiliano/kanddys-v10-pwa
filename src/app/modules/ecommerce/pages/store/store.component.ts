@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
@@ -19,6 +21,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -27,11 +30,11 @@ import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
 @Component({
-  selector: 'app-megaphone-v3',
-  templateUrl: './megaphone-v3.component.html',
-  styleUrls: ['./megaphone-v3.component.scss'],
+  selector: 'app-store',
+  templateUrl: './store.component.html',
+  styleUrls: ['./store.component.scss'],
 })
-export class MegaphoneV3Component implements OnInit {
+export class StoreComponent implements OnInit {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
   saleflowData: SaleFlow;
@@ -59,6 +62,10 @@ export class MegaphoneV3Component implements OnInit {
   sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
+  highlightedItems: Item[] = [];
+  // canOpenCart: boolean;
+  itemCartAmount: number;
+  deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   viewtype: 'preview' | 'merchant';
   admin: boolean;
@@ -66,6 +73,12 @@ export class MegaphoneV3Component implements OnInit {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 5,
+  };
+
+  swiperConfigHighlightedItems: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 0,
   };
 
   constructor(
@@ -107,6 +120,18 @@ export class MegaphoneV3Component implements OnInit {
     this.categorylessItems = this.items
       .filter((item) => !item.category.length)
       .sort((a, b) => a.pricing - b.pricing);
+    const highlightedItemsObject = {};
+    this.highlightedItems = [];
+
+    for (const item of this.categorylessItems) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
+        highlightedItemsObject[item._id] = true;
+      }
+    }
+
+    console.log(this.categories);
+
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
       if (
@@ -148,6 +173,18 @@ export class MegaphoneV3Component implements OnInit {
           callback: () => this.router.navigate([url]),
           shareCallback: () => this.onShareCallback(url),
         });
+
+        for (const itemCategory of this.itemsByCategory) {
+          for (const item of itemCategory.items) {
+            if (!highlightedItemsObject[item._id]) {
+              this.highlightedItems.push(item);
+              highlightedItemsObject[item._id] = true;
+            }
+          }
+        }
+
+        console.log(this.itemsByCategory, 'itemsporcategoria');
+
         unlockUI();
       }
     });
@@ -238,7 +275,6 @@ export class MegaphoneV3Component implements OnInit {
             _id: {
               __in: ([] = saleflowItems.map((items) => items.item)),
             },
-            status: 'active',
           },
           options: {
             limit: 60,
@@ -247,7 +283,10 @@ export class MegaphoneV3Component implements OnInit {
         const selectedItems = orderData?.products?.length
           ? orderData.products.map((subOrder) => subOrder.item)
           : [];
-        this.items = items.listItems;
+        this.items = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
+
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id

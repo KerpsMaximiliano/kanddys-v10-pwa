@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MegaphoneV3Component } from './megaphone-v3.component';
+import { CurrencyInputComponent } from './currency-input.component';
 
-describe('MegaphoneV3Component', () => {
-  let component: MegaphoneV3Component;
-  let fixture: ComponentFixture<MegaphoneV3Component>;
+describe('CurrencyInputComponent', () => {
+  let component: CurrencyInputComponent;
+  let fixture: ComponentFixture<CurrencyInputComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MegaphoneV3Component ]
+      declarations: [ CurrencyInputComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MegaphoneV3Component);
+    fixture = TestBed.createComponent(CurrencyInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,12 +1,14 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { webform } from 'src/app/core/graphql/webforms.gql';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Calendar } from 'src/app/core/models/calendar';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
+import { Answer, Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -14,6 +16,7 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   StoreShareComponent,
@@ -36,6 +39,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   items: Item[];
   activeItems: Item[];
   inactiveItems: Item[];
+  highlightedItems: Item[];
   // user: User;
   users: User[];
   mode: 'collections' | 'store' = 'store';
@@ -46,6 +50,8 @@ export class EntityDetailMetricsComponent implements OnInit {
   // tags: { text: string }[];
   // categories: { text: string }[];
   saleflow: SaleFlow;
+  webforms: Webform[];
+  answers: Answer[];
   // calendars: ExtraCalendar[];
 
   constructor(
@@ -59,13 +65,15 @@ export class EntityDetailMetricsComponent implements OnInit {
     private dialogService: DialogService,
     private headerService: HeaderService,
     private calendarService: CalendarService,
-    private location: Location
+    private location: Location,
+    private webformsService: WebformsService
   ) {}
 
   async ngOnInit(): Promise<void> {
     lockUI();
     this.merchant = await this.merchantsService.merchantDefault();
     if (!this.merchant) {
+      this.headerService.flowRoute = this.router.url;
       this.router.navigate([`auth/login/`]);
       unlockUI();
       return;
@@ -78,6 +86,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       // this.getTags(),
       // this.getCategories(),
       this.getSaleflow(),
+      this.getWebformsData(),
       // this.getCalendars(),
     ]);
     unlockUI();
@@ -88,9 +97,14 @@ export class EntityDetailMetricsComponent implements OnInit {
       this.items = (
         await this.merchantsService.itemsByMerchant(this.merchant._id)
       )?.itemsByMerchant;
-      this.activeItems = this.items.filter((item) => item.status === 'active');
+      this.activeItems = this.items.filter(
+        (item) => item.status === 'active' || item.status === 'featured'
+      );
       this.inactiveItems = this.items.filter(
         (item) => item.status === 'disabled'
+      );
+      this.highlightedItems = this.items.filter(
+        (item) => item.status === 'featured'
       );
     } catch (error) {
       console.log(error);
@@ -156,6 +170,33 @@ export class EntityDetailMetricsComponent implements OnInit {
     }
   }
 
+  async getWebformsData() {
+    try {
+      this.webforms = await this.webformsService.webformsByMerchant(
+        this.merchant._id
+      );
+      console.log(this.webforms);
+
+      const webformIDs = this.webforms.map((value) => value._id);
+
+      await this.getWebformsAnswers({
+        findBy: {
+          webform: webformIDs,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getWebformsAnswers(input: PaginationInput) {
+    try {
+      this.answers = await this.webformsService.answerPaginate(input);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // async getTags() {
   //   try {
   //     const tags = (
@@ -207,6 +248,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -230,12 +272,36 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
+        alternate: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
         buttonText: 'Cerrar Sesión',
         buttonCallback: () => {
           // TODO: replace the signout function
           this.authService.signoutThree();
-          this.router.navigate([`auth/login`])
-        }
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate([`auth/login`]);
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -261,6 +327,28 @@ export class EntityDetailMetricsComponent implements OnInit {
       props: {
         list,
         alternate: true,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -276,6 +364,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             text: 'Crea un nuevo artículo',
             mode: 'func',
             func: () => {
+              this.headerService.flowRoute = this.router.url;
               this.router.navigate([`admin/create-item`]);
             },
           },
@@ -292,6 +381,29 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
+        alternate: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -299,6 +411,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onPencilClick = () => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['admin/create-item']);
   };
 
@@ -309,6 +422,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   redirectMerchantItems = (url: string) => {
+    this.headerService.flowRoute = this.router.url;
     this.router.navigate(['/admin/' + url]);
   };
 
