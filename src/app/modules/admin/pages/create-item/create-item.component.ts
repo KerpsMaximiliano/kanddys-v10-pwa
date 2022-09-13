@@ -407,6 +407,11 @@ export class CreateItemComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: 'Articulo',
+        titleStyles: {
+          fontFamily: 'Roboto',
+          fontWeight: 'bold',
+          fontSize: '29px',
+        },
         options: [
           {
             text: 'Simple',
@@ -498,6 +503,28 @@ export class CreateItemComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '0px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
