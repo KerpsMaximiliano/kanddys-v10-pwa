@@ -48,7 +48,7 @@ export class CreateItemComponent implements OnInit {
     images: new FormControl([]),
     name: new FormControl(),
     description: new FormControl(),
-    pricing: new FormControl(null, [Validators.required, Validators.min(0.01)]),
+    pricing: new FormControl(null, [Validators.required, Validators.min(0)]),
     params: new FormArray([]),
   });
   formattedPricing = {
@@ -449,7 +449,7 @@ export class CreateItemComponent implements OnInit {
                   .setValidators(
                     Validators.compose([
                       Validators.required,
-                      Validators.min(0.01),
+                      Validators.min(0),
                     ])
                   );
                 this.itemForm.get('pricing').updateValueAndValidity();
