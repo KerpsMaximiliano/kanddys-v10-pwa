@@ -83,6 +83,7 @@
               [type]="4"
               [imgURL]="item.images ? item.images[0] : ''"
               [price]="item.pricing"
+              [itemParams]="item.params"
               [showPrice]="true"
               (itemClicked)="onItemClick(item._id, true)"
               [dynamicStyles]="{

@@ -139,11 +139,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   paramFromSameItem(id: string) {
-    const products = this.header.getItems(this.header.saleflow?._id ?? this.header.getSaleflow()?._id);
-    products.forEach(product => {
+    const products = this.header.getItems(
+      this.header.saleflow?._id ?? this.header.getSaleflow()?._id
+    );
+    products.forEach((product) => {
       if (!product.params) {
-        this.item.params[0].values.forEach(value => {
-          if ((id != product._id) && (value._id == product._id)) {
+        this.item.params[0].values.forEach((value) => {
+          if (id != product._id && value._id == product._id) {
             this.header.removeItem(this.saleflowData._id, product._id);
             this.header.removeOrderProduct(this.saleflowData._id, product._id);
           }
@@ -221,9 +223,10 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             ]._id,
         },
       ];
-      const paramValue = this.item.params[this.selectedParam.param].values[
-        this.selectedParam.value
-      ]._id;
+      const paramValue =
+        this.item.params[this.selectedParam.param].values[
+          this.selectedParam.value
+        ]._id;
       this.paramFromSameItem(paramValue);
     }
     this.header.storeOrderProduct(this.saleflowData._id, product);
@@ -232,6 +235,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           ...this.item.params[this.selectedParam.param].values[
             this.selectedParam.value
           ],
+          price:
+            this.item.pricing +
+            this.item.params[this.selectedParam.param].values[
+              this.selectedParam.value
+            ].price,
         }
       : null;
     this.header.storeItem(
