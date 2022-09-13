@@ -93,7 +93,7 @@ export class ItemDisplayComponent implements OnInit {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
 
-          if (this.item.status !== 'draft')
+          if (this.item && this.item.status !== 'draft')
             this.initialStatus = this.item.status;
 
           if (!this.item) return this.redirect();
