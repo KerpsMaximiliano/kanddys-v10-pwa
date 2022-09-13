@@ -159,6 +159,7 @@
                         [useSwiper]="false"
                         [allowedTypes]="['png', 'jpg', 'jpeg']"
                         [multiple]="true"
+                        [imageField]="[valuesControl?.value?.image]"
                         innerLabel="Imagen o
                         imágenes"
                         [expandImage]="true"
@@ -212,14 +213,8 @@
       </ng-container>
     </form>
   </main>
-  <footer [ngClass]="{ disabled: !itemForm.valid }" *ngIf="!hasParams">
-    <button class="back" (click)="goBack()">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <button class="save" (click)="onSubmit()">Salvar</button>
-  </footer>
 
-  <footer *ngIf="hasParams" [ngClass]="{ disabled: !itemForm.valid }">
+  <footer [ngClass]="{ disabled: !itemForm.valid }">
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
