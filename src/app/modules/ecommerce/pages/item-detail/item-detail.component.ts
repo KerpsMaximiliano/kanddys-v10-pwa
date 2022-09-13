@@ -78,8 +78,14 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           clickable: true,
         };
       }
-      if (this.item.params?.some((param) => param.values?.length))
+      if (this.item.params?.some((param) => param.values?.length)) {
         this.hasParams = true;
+        const param = this.route.snapshot.queryParamMap.get('param');
+        const value = this.route.snapshot.queryParamMap.get('value');
+        if (this.item.params[param]?.values[value]) {
+          this.selectParamValue(+param, +value);
+        }
+      }
 
       const whatsappMessage = encodeURIComponent(
         `Hola, tengo una pregunta sobre este producto: ${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`
@@ -226,17 +232,44 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     if (this.previewMode) return;
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
+        qrlink: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
+          this.item._id
+        }${
+          this.selectedParam
+            ? '?param=' +
+              this.selectedParam.param +
+              '&value=' +
+              this.selectedParam.value
+            : ''
+        }`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
+              this.item._id
+            }${
+              this.selectedParam
+                ? '?param=' +
+                  this.selectedParam.param +
+                  '&value=' +
+                  this.selectedParam.value
+                : ''
+            }`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowData._id}/${
+              this.item._id
+            }${
+              this.selectedParam
+                ? '?param=' +
+                  this.selectedParam.param +
+                  '&value=' +
+                  this.selectedParam.value
+                : ''
+            }`,
           },
         ],
       },
