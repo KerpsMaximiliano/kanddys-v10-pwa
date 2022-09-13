@@ -12,6 +12,8 @@
       }"
       bgColor="#2874AD"
       [returnAble]="false"
+      [ngStyle]="{ cursor: admin ? 'pointer' : 'auto' }"
+      [routerLink]="admin && ['admin/entity-detail-metrics']"
     ></app-helper-headerv2>
 
     <div class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
@@ -124,9 +126,7 @@
       </div>
 
       <ng-container *ngIf="itemsByCategory.length > 1 && !hasCustomizer">
-        <ng-container
-          *ngFor="let category of itemsByCategory; index as i"
-        >
+        <ng-container *ngFor="let category of itemsByCategory; index as i">
           <div
             class="header-wrapper"
             [ngStyle]="{
@@ -155,7 +155,9 @@
               paddingBottom: '0px'
             }"
           >
-            <ng-container *ngFor="let item of category.items.slice(0, 5); index as i">
+            <ng-container
+              *ngFor="let item of category.items.slice(0, 5); index as i"
+            >
               <app-item
                 [item]="item"
                 (imageEvent)="onItemClick(item._id, true)"

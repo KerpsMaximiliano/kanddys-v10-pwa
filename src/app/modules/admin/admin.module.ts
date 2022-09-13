@@ -37,6 +37,7 @@ import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
   {
     path: 'admin-login',
     component: AdminLoginComponent,
