@@ -213,11 +213,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           ...this.item.params[this.selectedParam.param].values[
             this.selectedParam.value
           ],
-          price:
-            this.item.pricing +
-            this.item.params[this.selectedParam.param].values[
-              this.selectedParam.value
-            ].price,
         }
       : null;
     this.header.storeItem(
