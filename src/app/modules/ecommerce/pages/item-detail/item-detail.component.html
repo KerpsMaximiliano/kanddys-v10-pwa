@@ -74,7 +74,7 @@
       </div>
     </div>
     <div
-      *ngIf="!item.images?.length"
+      *ngIf="!hasImage"
       style="display: flex; justify-content: flex-end; padding: 0 16px"
     >
       <button class="nonswiper-button" (click)="openShareDialog()">
