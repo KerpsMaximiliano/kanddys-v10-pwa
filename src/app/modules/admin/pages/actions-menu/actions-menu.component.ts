@@ -97,7 +97,7 @@ const options = [
   },
   {
     status: true,
-    id: 'new',
+    id: 'dynamic',
     click: true,
     value: 'Nuevo artículo',
     valueStyles: {
@@ -223,6 +223,7 @@ export class ActionsMenuComponent implements OnInit {
             justdynamicmode: true,
           },
         });
+        break;
     }
   }
 
