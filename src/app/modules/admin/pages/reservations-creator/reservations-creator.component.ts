@@ -6,8 +6,10 @@ import {
   CountryISO,
   PhoneNumberFormat,
 } from 'ngx-intl-tel-input';
+import { Merchant } from 'src/app/core/models/merchant';
 import { CalendarsService } from 'src/app/core/services/calendars.service';
 import { ExtendedCalendar } from 'src/app/core/services/calendars.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 
 interface HourOption {
@@ -54,7 +56,25 @@ export class ReservationsCreatorComponent implements OnInit {
     callback(...params): any;
   } = null;
   calendarData: ExtendedCalendar = null;
+  calendarMerchant: Merchant = null;
   timeRangeOptions: OptionAnswerSelector[] = [];
+  selectedDate: {
+    dayName: string;
+    monthName: string;
+    date: Date;
+    fromHour: HourOption;
+    toHour: HourOption;
+    fromLabel?: string;
+    toLabel?: string;
+    filled: boolean;
+    dayOfTheMonthNumber: number;
+  } = null;
+  listOfHourRangesForSelectedDay: Array<{
+    from: HourOption;
+    fromLabel?: string;
+    to: HourOption;
+    toLabel?: string;
+  }> = [];
 
   allMonths: {
     id: number;
@@ -127,6 +147,16 @@ export class ReservationsCreatorComponent implements OnInit {
     },
   ];
 
+  allDaysOfTheWeekArrayInSpanishAndEnglish = [
+    { spanishName: 'Lunes', name: 'MONDAY' },
+    { spanishName: 'Martes', name: 'TUESDAY' },
+    { spanishName: 'Miercoles', name: 'WEDNESDAY' },
+    { spanishName: 'Jueves', name: 'THURSDAY' },
+    { spanishName: 'Viernes', name: 'FRIDAY' },
+    { spanishName: 'Sabado', name: 'SATURDAY' },
+    { spanishName: 'Domingo', name: 'SUNDAY' },
+  ];
+
   currentMonth: {
     name: string;
     number: number;
@@ -145,7 +175,9 @@ export class ReservationsCreatorComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private calendarsService: CalendarsService
+    private calendarsService: CalendarsService,
+    private router: Router,
+    private merchantsService: MerchantsService
   ) {}
 
   ngOnInit(): void {
@@ -155,41 +187,50 @@ export class ReservationsCreatorComponent implements OnInit {
       this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
       if (this.calendarData) {
-        await this.generateHourList();
+        this.calendarMerchant = await this.merchantsService.merchant(
+          this.calendarData.merchant
+        );
+        this.headerConfiguration.headerText =
+          'Reserva la fecha con ' + this.calendarMerchant.name;
+
+        this.generateHourList();
+
+        const currentDateObject = new Date();
+        const monthNumber = currentDateObject.getMonth();
+
+        this.currentMonth = {
+          name: this.allMonths[monthNumber].name,
+          number: monthNumber + 1,
+        };
+
+        const { userInfo, reservationConvenience } =
+          this.reservationCreatorForm.controls;
+        this.stickyButton = {
+          text: 'SELECCIONA CUANDO TE CONVIENE',
+          mode: 'disabled-fixed',
+          callback: (params) => {
+            this.currentStep = 'RESERVATION_CONVENIENCE';
+          },
+        };
+
+        userInfo.statusChanges.subscribe((newStatus) => {
+          if (newStatus === 'VALID') {
+            this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
+            this.stickyButton.mode = 'fixed';
+          } else {
+            this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
+            this.stickyButton.mode = 'disabled-fixed';
+          }
+        });
+      } else {
+        this.router.navigate(['others/error-screen']);
       }
-
-      const currentDateObject = new Date();
-      const monthNumber = currentDateObject.getMonth();
-
-      this.currentMonth = {
-        name: this.allMonths[monthNumber].name,
-        number: monthNumber + 1,
-      };
-
-      const { userInfo, reservationConvenience } =
-        this.reservationCreatorForm.controls;
-      this.stickyButton = {
-        text: 'SELECCIONA CUANDO TE CONVIENE',
-        mode: 'disabled-fixed',
-        callback: (params) => {
-          this.currentStep = 'RESERVATION_CONVENIENCE';
-        },
-      };
-
-      userInfo.statusChanges.subscribe((newStatus) => {
-        if (newStatus === 'VALID') {
-          this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
-          this.stickyButton.mode = 'fixed';
-        } else {
-          this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
-          this.stickyButton.mode = 'disabled-fixed';
-        }
-      });
     });
   }
 
   generateHourList(selectedDayNumber: number = null) {
     this.timeRangeOptions = [];
+    this.listOfHourRangesForSelectedDay = [];
 
     const currentDateObject = new Date();
     const currentHour = currentDateObject.getHours();
@@ -204,7 +245,8 @@ export class ReservationsCreatorComponent implements OnInit {
       this.calendarData.limits.toHour.split(':')[0]
     );
 
-    const loopFirstHour = !selectedDayNumber
+    //first "Available hour" after current hour
+    let loopFirstHour = !selectedDayNumber
       ? currentHour > calendarHourRangeStart
         ? currentHour + 1
         : calendarHourRangeStart
@@ -213,11 +255,54 @@ export class ReservationsCreatorComponent implements OnInit {
       ? currentHour + 1
       : calendarHourRangeStart;
 
-    console.log('Start', calendarHourRangeStart);
-    console.log('End', calendarHourRangeLimit);
-
     let loopCurrentHour = loopFirstHour;
+
+    let loopValidHour = calendarHourRangeStart;
     let hourFractionAccumulator = 0;
+
+    if (loopCurrentHour !== loopValidHour) {
+      //this loop will generate the valid range of hours
+      //and assing the first valid option that comes after
+      //the available hour found on loopFirstHour
+      while (loopCurrentHour !== loopValidHour) {
+        if (
+          this.calendarData.timeChunkSize + hourFractionAccumulator === 60 &&
+          this.calendarData.timeChunkSize <= 60
+        ) {
+          hourFractionAccumulator = 0;
+          loopValidHour++;
+        } else if (this.calendarData.timeChunkSize < 60) {
+          hourFractionAccumulator += this.calendarData.timeChunkSize;
+        } else {
+          hourFractionAccumulator = 0;
+          const hoursInsideChunkSize = Math.floor(
+            this.calendarData.timeChunkSize / 60
+          );
+          const remainingMinutes =
+            this.calendarData.timeChunkSize - hoursInsideChunkSize * 60;
+
+          loopValidHour += hoursInsideChunkSize;
+          hourFractionAccumulator = remainingMinutes;
+        }
+
+        if (loopValidHour > loopCurrentHour) {
+          loopCurrentHour = loopValidHour;
+        }
+      }
+    } else if (
+      loopCurrentHour === loopValidHour &&
+      loopValidHour !== calendarHourRangeStart
+    ) {
+      //this block of code will skip hour ranges that contain the currentHour
+      if (
+        this.calendarData.timeChunkSize >= 60 &&
+        this.calendarData.timeChunkSize <= 180
+      ) {
+        loopCurrentHour += this.calendarData.timeChunkSize / 60;
+      }
+    }
+
+    hourFractionAccumulator = 0;
 
     //hourFractionAccumulator could be
     //0,15,30,45,50 if chunkSize were 15
@@ -284,16 +369,60 @@ export class ReservationsCreatorComponent implements OnInit {
         timeOfDay: loopCurrentHour < 12 ? 'AM' : 'PM',
       };
 
+      //this block of code ensures the options shown won't include
+      //an option that surpasses the upper limit
       if (
         toHour.hourNumber <
-        Number(this.calendarData.limits.toHour.split(':')[0])
+          Number(this.calendarData.limits.toHour.split(':')[0]) ||
+        (toHour.hourNumber ===
+          Number(this.calendarData.limits.toHour.split(':')[0]) &&
+          hourFractionAccumulator === 0)
       ) {
         this.timeRangeOptions.push({
           click: true,
           value: `De ${fromHour.hourNumber}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourNumber}:${toHour.minutesString} ${toHour.timeOfDay}`,
           status: true,
         });
+        this.listOfHourRangesForSelectedDay.push({
+          from: fromHour,
+          fromLabel: `${fromHour.hourNumber}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
+          to: toHour,
+          toLabel: `${toHour.hourNumber}:${toHour.minutesString} ${toHour.timeOfDay}`,
+        });
       }
     }
+  }
+
+  rerenderAvailableHours(selectedDateObject: Date) {
+    const dayOfTheMonthNumber = selectedDateObject.getDate();
+    const monthNumber = selectedDateObject.getMonth();
+    const dayOfTheWeekNumber = selectedDateObject.getDay();
+    this.selectedDate = {
+      date: selectedDateObject,
+      fromHour: null,
+      toHour: null,
+      filled: false,
+      dayName:
+        this.allDaysOfTheWeekArrayInSpanishAndEnglish[dayOfTheWeekNumber]
+          .spanishName,
+      dayOfTheMonthNumber,
+      monthName: this.allMonths[monthNumber].name,
+    };
+
+    this.generateHourList(dayOfTheMonthNumber);
+  }
+
+  setClickedDate(dateOptionIndex: number) {
+    this.selectedDate.fromHour =
+      this.listOfHourRangesForSelectedDay[dateOptionIndex].from;
+    this.selectedDate.fromLabel =
+      this.listOfHourRangesForSelectedDay[dateOptionIndex].fromLabel;
+
+    this.selectedDate.toHour =
+      this.listOfHourRangesForSelectedDay[dateOptionIndex].to;
+    this.selectedDate.toLabel =
+      this.listOfHourRangesForSelectedDay[dateOptionIndex].toLabel;
+
+    this.selectedDate.filled = true;
   }
 }

@@ -10,12 +10,17 @@
     *ngFor="let day of monthDays"
     class="day"
     [ngClass]="{
-      'selected': selectedDay?.getDate() === day.dayNumber,
-      'disabled': day.weekDayNumber === 0
+      selected: selectedDay?.getDate() === day.dayNumber,
+      disabled:
+        !allowSundays && day.weekDayNumber === 0 && !allowedDays
+          ? true
+          : allowedDays
+          ? !isThisDayAValidOne(day)
+          : false
     }"
-    (click)="onClick(day)"
+    (click)="!allowedDays || isThisDayAValidOne(day) ? onClick(day) : null"
   >
-    <span>{{day.dayName[0]}}{{day.dayName[1]}}{{day.dayName[2]}}</span>
-    <span>{{day.dayNumber}}</span>
+    <span>{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span>
+    <span>{{ day.dayNumber }}</span>
   </div>
 </div>

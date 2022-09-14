@@ -5,18 +5,20 @@ interface Day {
   dayNumber: number;
   dayName: string;
   weekDayNumber: number;
-};
+}
 
 @Component({
   selector: 'app-short-calendar',
   templateUrl: './short-calendar.component.html',
-  styleUrls: ['./short-calendar.component.scss']
+  styleUrls: ['./short-calendar.component.scss'],
 })
 export class ShortCalendarComponent implements OnInit {
-  constructor(public calendarService: CalendarService) { }
+  constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
   @Input() monthNameSelected: string;
   @Input() dateNumber: string;
+  @Input() allowSundays: boolean = false;
+  @Input() allowedDays: string[] = null;
   monthDays: Day[] = [];
   selectedDay: Date;
 
@@ -24,8 +26,8 @@ export class ShortCalendarComponent implements OnInit {
     this.calendarService.setInitalState();
     this.calendarService.getToday();
     if (this.monthNameSelected) {
-      const index = this.calendarService.months.findIndex((month) => 
-        month.name === this.monthNameSelected
+      const index = this.calendarService.months.findIndex(
+        (month) => month.name === this.monthNameSelected
       );
       this.getMonthId(index);
     } else {
@@ -35,13 +37,26 @@ export class ShortCalendarComponent implements OnInit {
 
   getMonthId(id: number) {
     this.calendarService.monthIndex = id;
-    this.monthDays = this.calendarService.months[
-      this.calendarService.monthIndex
-    ].dates;
+    this.monthDays =
+      this.calendarService.months[this.calendarService.monthIndex].dates;
+  }
+
+  isThisDayAValidOne(day: Day): boolean {
+    const daysOfTheWeekTranslation = {
+      Sabado: 'SATURDAY',
+      Domingo: 'SUNDAY',
+      Lunes: 'MONDAY',
+      Martes: 'TUESDAY',
+      Miercoles: 'WEDNESDAY',
+      Jueves: 'THURSDAY',
+      Viernes: 'FRIDAY',
+    };
+
+    return this.allowedDays.includes(daysOfTheWeekTranslation[day.dayName]);
   }
 
   onClick(day: Day) {
-    if(!day.weekDayNumber) return;
+    if (!day.weekDayNumber) return;
     this.selectedDay = new Date(
       this.calendarService.year,
       this.calendarService.months[this.calendarService.monthIndex].id,
@@ -71,5 +86,4 @@ export class ShortCalendarComponent implements OnInit {
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
   }
-
 }

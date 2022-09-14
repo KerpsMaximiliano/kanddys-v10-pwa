@@ -87,10 +87,16 @@
       >
         <div class="calendar">
           <h3>DIA De {{ currentMonth?.name }}</h3>
-          <app-short-calendar></app-short-calendar>
+          <app-short-calendar
+            [allowedDays]="calendarData?.limits?.inDays"
+            (selectedDate)="rerenderAvailableHours($event)"
+          ></app-short-calendar>
         </div>
 
-        <div class="time-range-options-list">
+        <div
+          class="time-range-options-list"
+          *ngIf="selectedDate && selectedDate.date"
+        >
           <h3>Hora:</h3>
 
           <app-answer-selector
@@ -100,9 +106,40 @@
             [containerStyles]="{
               margin: '0px'
             }"
+            (onSelector)="setClickedDate($event)"
           ></app-answer-selector>
         </div>
+
+        <div
+          class="selectedReservation"
+          *ngIf="selectedDate && selectedDate.filled"
+        >
+          <h3>Fecha reservada:</h3>
+
+          <div class="reservation-wrapper">
+            {{
+              selectedDate.dayName.slice(0, 3) +
+                ". " +
+                selectedDate.dayOfTheMonthNumber +
+                " de " +
+                selectedDate.monthName.slice(0, 3) +
+                ". de " +
+                selectedDate.fromLabel +
+                " a " +
+                selectedDate.toLabel
+            }}
+          </div>
+        </div>
       </div>
+
+      <app-sticky-button
+        *ngIf="selectedDate && selectedDate.filled"
+        text="CONFIRMALA POR WHATSAPP"
+        [mode]="'fixed'"
+        [bgColor]="'#2874AD'"
+        [height]="'max-content'"
+        [padding]="'8px 0px'"
+      ></app-sticky-button>
     </ng-container>
   </form>
 </div>
