@@ -311,7 +311,7 @@ export class CheckoutComponent implements OnInit {
           .replace(
             /[^\w\s]/gi,
             ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
         window.location.href = this.messageLink;
         return;
       }
