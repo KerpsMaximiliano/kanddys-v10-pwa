@@ -228,7 +228,7 @@
       <i class="fas fa-chevron-left"></i>
     </button>
     <button class="save" (click)="submitEventFinished ? onSubmit() : null">
-      Salvar
+      {{submitEventFinished ? 'Salvar' : 'Salvando...'}}
     </button>
   </footer>
 </div>

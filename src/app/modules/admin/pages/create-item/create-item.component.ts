@@ -154,10 +154,12 @@ export class CreateItemComponent implements OnInit {
   goBack() {
     if (this.hasParams) {
       this.hasParams = false;
+      this.router.navigate(['/admin/merchant-items']);
       return;
+    } else {
+      this.itemService.removeTemporalItem();
+      this.router.navigate(['/admin/merchant-items']);
     }
-    this.itemService.removeTemporalItem();
-    this.router.navigate(['/admin/merchant-items']);
   }
 
   toggleStatus() {
@@ -192,31 +194,65 @@ export class CreateItemComponent implements OnInit {
               this.item.images.length > 0,
         };
 
-        //Borra los param values anteriores de este item
-        for await (const value of this.item.params[0].values) {
-          await this.itemService.deleteItemParamValue(
-            value._id,
-            this.item.params[0]._id,
+        if (this.item.params.length > 0) {
+          //Borra los param values anteriores de este item
+          for await (const value of this.item.params[0].values) {
+            await this.itemService.deleteItemParamValue(
+              value._id,
+              this.item.params[0]._id,
+              this.merchant._id,
+              this.item._id
+            );
+
+            const paramValues = params[0].values.map((value) => {
+              return {
+                name: value.name,
+                image: value.image,
+                price: value.price,
+                description: value.description,
+              };
+            });
+
+            await this.itemService.addItemParamValue(
+              paramValues,
+              this.item.params[0]._id,
+              this.merchant._id,
+              this.item._id
+            );
+          }
+        } else if (
+          this.item.params.length === 0 &&
+          params.length > 0 &&
+          this.hasParams
+        ) {
+          //Actualizando un item estatico a uno dinamico
+          itemInput.pricing = 0;
+
+          const { createItemParam } = await this.itemService.createItemParam(
+            this.merchant._id,
+            this.item._id,
+            {
+              name: params[0].name,
+              formType: 'color',
+              values: [],
+            }
+          );
+          const paramValues = params[0].values.map((value) => {
+            return {
+              name: value.name,
+              image: value.image,
+              price: value.price,
+              description: value.description,
+            };
+          });
+
+          await this.itemService.addItemParamValue(
+            paramValues,
+            createItemParam._id,
             this.merchant._id,
             this.item._id
           );
         }
-
-        const paramValues = params[0].values.map((value) => {
-          return {
-            name: value.name,
-            image: value.image,
-            price: value.price,
-            description: value.description,
-          };
-        });
-
-        await this.itemService.addItemParamValue(
-          paramValues,
-          this.item.params[0]._id,
-          this.merchant._id,
-          this.item._id
-        );
 
         const { updateItem: updatedItem } = await this.itemService.updateItem(
           itemInput,
