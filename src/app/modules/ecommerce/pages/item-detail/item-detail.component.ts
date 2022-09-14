@@ -117,7 +117,8 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
         clickable: true,
       };
     }
-    if (!this.item.images.length) this.item.showImages = false;
+    if (!this.item.images?.length) this.item.showImages = false;
+    this.hasImage = this.item.images?.length > 0;
     if (this.item.params?.some((param) => param.values?.length))
       this.hasParams = true;
     this.previewMode = true;
