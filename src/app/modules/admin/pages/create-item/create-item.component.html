@@ -62,8 +62,8 @@
                 <div class="dot blue"> </div>
               </button>
             </div>
-            <div class="name-and-price-wrapper">
-              <div class="name-wrapper">
+            <div class="template-grid">
+              <div class="col-span-8">
                 <input
                   class="input-text"
                   type="text"
@@ -73,7 +73,7 @@
                   formControlName="name"
                 />
               </div>
-              <div style="flex-basis: 35.12%">
+              <div class="col-span-4">
                 <app-currency-input
                   [fieldStyles]="{
                     boxShadow: 'lightgrey 0px 3px 8px inset'
@@ -122,8 +122,8 @@
                   "
                   [formGroupName]="j"
                 >
-                  <div class="name-and-price-wrapper">
-                    <div class="name-wrapper">
+                  <div class="template-grid">
+                    <div class="col-span-8">
                       <input
                         class="input-text"
                         type="text"
@@ -132,7 +132,7 @@
                         (keypress)="dynamicInputKeyPress(j)"
                       />
                     </div>
-                    <div style="flex-basis: 35.12%">
+                    <div class="col-span-4">
                       <app-currency-input
                         [fieldStyles]="{
                           boxShadow: 'lightgrey 0px 3px 8px inset'
@@ -147,8 +147,8 @@
                     </div>
                   </div>
 
-                  <div class="description-and-images-wrapper">
-                    <div class="description-wrapper">
+                  <div class="template-grid">
+                    <div class="col-span-8">
                       <textarea
                         placeholder="Descripción (opcional)"
                         class="textarea"
@@ -157,7 +157,7 @@
                       ></textarea>
                     </div>
 
-                    <div class="image-wrapper">
+                    <div class="col-span-4">
                       <app-image-input
                         [id]="'image' + j"
                         [useSwiper]="false"
@@ -186,6 +186,7 @@
                           paddingTop: '31px',
                           textAlign: 'left',
                           fontFamily: 'RobotoMedium',
+                          fontSize: '16px',
                           fontWeight: 'normal',
                           marginLeft: 'auto'
                         }"

@@ -39,8 +39,8 @@ header {
   font-size: 1rem;
 
   img {
-    filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%)
-      hue-rotate(346deg) brightness(104%) contrast(102%);
+    filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(12%) hue-rotate(346deg) brightness(104%)
+      contrast(102%);
   }
 }
 
@@ -284,24 +284,18 @@ footer {
   }
 }
 
-.name-and-price-wrapper,
-.description-and-images-wrapper {
-  display: flex;
-  justify-content: space-between;
+.template-grid {
   margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
 
-  .name-wrapper,
-  .description-wrapper {
-    flex-basis: 61.53%;
+  .col-span-8 {
+    grid-column: span 8 / span 8;
   }
 
-  .image-wrapper {
-    flex-basis: 35.12%;
-  }
-
-  .price-wrapper {
-    flex-basis: 35.12%;
-    position: relative;
+  .col-span-4 {
+    grid-column: span 4 / span 4;
   }
 }
 

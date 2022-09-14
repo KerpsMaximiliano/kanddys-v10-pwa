@@ -41,6 +41,7 @@ import {
   ItemCategoryInput,
   ItemInput,
   ItemPackage,
+  ItemParamValueInput,
 } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
@@ -368,7 +369,7 @@ export class ItemsService {
   }
 
   async addItemParamValue(
-    input: any,
+    input: ItemParamValueInput[],
     itemParamId: string,
     merchantId: string,
     itemId: string
