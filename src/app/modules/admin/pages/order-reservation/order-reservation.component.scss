@@ -1,0 +1,43 @@
+.main-container{
+   width: 100%;
+   min-height: 100vh;
+
+   .input-area{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 43px 0 53px;
+
+      .text-input{
+         all: unset;
+         width: 90%;
+         height: 72px;
+         background-color: #FFFFFF;
+         text-indent: 16px;
+         font-family: 'RobotoMedium';
+         font-size: 20px;
+         border-radius: 9px;
+         box-shadow: inset 0px 3px 6px 3px rgba(0, 0, 0, 12%) !important;
+
+         &::placeholder{
+            font-family: 'RobotoMedium';
+            font-size: 20px;
+            text-indent: 16px;
+            color: rgba(161, 161, 161, 60%);
+         }
+      }
+   }
+
+   .answers-area{
+      width: 90%;
+      margin: 0 auto 30px;
+
+      .title{
+         font-family: 'RobotoMedium';
+         font-size: 1.063rem;
+         color: #7B7B7B;
+         margin: 0 0 22px;
+      }
+   }
+}
