@@ -221,14 +221,16 @@
   <footer
     [ngClass]="{
       disabled:
-        (!hasParams && !itemForm.valid) || (hasParams && !itemParamsForm.valid)
+        (!hasParams && !itemForm.valid) ||
+        (hasParams && !itemParamsForm.valid) ||
+        !submitEventFinished
     }"
   >
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
     <button class="save" (click)="submitEventFinished ? onSubmit() : null">
-      {{submitEventFinished ? 'Salvar' : 'Salvando...'}}
+      {{ submitEventFinished ? "Salvar" : "Salvando..." }}
     </button>
   </footer>
 </div>
