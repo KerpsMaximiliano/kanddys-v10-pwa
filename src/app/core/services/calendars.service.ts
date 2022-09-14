@@ -13,7 +13,7 @@ export interface ExtendedCalendar extends Calendar {
 })
 export class CalendarsService {
   calendarsCount = 0;
-  calendarsObtained: Record<string, ExtendedCalendar>;
+  calendarsObtained: Record<string, ExtendedCalendar> = {};
 
   constructor(private graphql: GraphQLWrapper) {}
 

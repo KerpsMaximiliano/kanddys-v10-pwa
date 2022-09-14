@@ -183,7 +183,6 @@ export class CalendarCreatorComponent implements OnInit {
         Validators.compose([
           Validators.required,
           Validators.min(1),
-          Validators.max(60),
         ])
       ),
       minutesBetweenReservations: new FormControl(null, Validators.required),

@@ -91,7 +91,7 @@
                 <label for="minutesPerReservation" class="input-label">
                     Minutos que dura cada reserva?
                 </label>
-                <input class="input customWidth" type="number" min="1" max="60" formControlName="reservationDurationInMinutes" placeholder="Escribe..."/>    
+                <input class="input customWidth" type="number" min="0" [step]="15" formControlName="reservationDurationInMinutes" placeholder="Escribe..."/>    
     
                 <label for="freeTime" class="input-label">
                     Minutos entre reservas?
