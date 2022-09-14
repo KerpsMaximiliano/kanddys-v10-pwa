@@ -58,9 +58,6 @@
         >
           <button
             *ngFor="let item of order?.items"
-            (click)="
-              item.item.images?.length && openImageModal(item.item.images[0])
-            "
           >
             <ng-container *ngIf="!item.params?.length">
               <div
@@ -70,6 +67,9 @@
                     ? 'url(' + item.item.images[0] + ')'
                     : 'url(/assets/images/noimage.png)'
                 }"
+                (click)="
+                item.item.images?.length && openImageModal(item.item.images[0])
+                "
               >
                 <!-- <img
                   [src]="
@@ -92,6 +92,7 @@
                       : 'url(/assets/images/noimage.png)'
                   }"
                   *ngIf="(item.params[0].param == item.item.params[0]._id) && (item.params[0].paramValue == paramValue._id)"
+                  (click)="openImageModal(paramValue.image)"
                 >
                   <!-- <img
                     [src]="

@@ -22,7 +22,7 @@ export class ItemComponent implements OnInit {
           if (values.price < lowest) lowest = values.price;
         });
       });
-      this.price = lowest;
+      this.price = this.item.pricing + lowest;
     }
   }
 }

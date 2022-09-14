@@ -110,7 +110,7 @@ export class SaleflowItemComponent implements OnInit {
           if (values.price < lowest) lowest = values.price;
         });
       });
-      this.price = lowest;
+      this.price = this.price + lowest;
     }
   }
 

@@ -94,14 +94,18 @@
             ></textarea>
           </section>
         </ng-container>
+      </ng-container>
+    </form>
+    <form [formGroup]="itemParamsForm" (ngSubmit)="onSubmit()">
+      <ng-container *ngIf="status === 'complete'">
         <ng-container *ngIf="hasParams">
           <div
             formArrayName="params"
-            *ngIf="getArrayLength(itemForm, 'params')"
+            *ngIf="getArrayLength(itemParamsForm, 'params')"
           >
             <div
               *ngFor="
-                let paramsControl of getControls(itemForm, 'params');
+                let paramsControl of getControls(itemParamsForm, 'params');
                 index as i
               "
               [formGroupName]="i"
@@ -214,12 +218,17 @@
     </form>
   </main>
 
-  <footer [ngClass]="{ disabled: !itemForm.valid }">
+  <footer
+    [ngClass]="{
+      disabled:
+        (!hasParams && !itemForm.valid) || (hasParams && !itemParamsForm.valid)
+    }"
+  >
     <button class="back" (click)="goBack()">
       <i class="fas fa-chevron-left"></i>
     </button>
     <button class="save" (click)="submitEventFinished ? onSubmit() : null">
-      Salvar
+      {{submitEventFinished ? 'Salvar' : 'Salvando...'}}
     </button>
   </footer>
 </div>

@@ -12,7 +12,7 @@
   <input
     class="formatted-input"
     [ngClass]="{
-      'currency-input-focused': curencyFocused 
+      'currency-input-focused': curencyFocused
     }"
     type="number"
     id="pricing"
@@ -23,6 +23,6 @@
     (focus)="curencyFocused = true"
     (blur)="curencyFocused = false"
     (input)="formatNumber($event, true)"
-    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109"
+    onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39"
   />
 </div>

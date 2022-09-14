@@ -34,7 +34,10 @@
         >
           <button
             *ngFor="let item of items"
-            (click)="item.images?.length && openImageModal(item.images[0])"
+            (click)="
+              (item.image || item.images?.length) &&
+                openImageModal(item.image || item.images[0])
+            "
           >
             <div class="image">
               <img

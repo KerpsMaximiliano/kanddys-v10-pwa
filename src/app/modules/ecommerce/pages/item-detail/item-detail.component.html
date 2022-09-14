@@ -41,40 +41,43 @@
         />
       </button>
       <swiper [config]="swiperConfig">
-         <ng-container *ngIf="!hasParams || selectedParam == null">
-            <div class="shadowWrapper" *ngFor="let item of item.images; let i = index">
-               <div
-               (click)="openImageModal(item)"
-               class="item"
-               [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-               ></div>
-               <div class="blank-space"></div>
-            </div>
-          </ng-container>
-          <ng-container *ngIf="hasParams && selectedParam != null">
-            <div class="shadowWrapper">
-               <div
-                 (click)="
-                   openImageModal(
-                     item.params[selectedParam?.param]?.values[
-                       selectedParam?.value
-                     ]?.image
-                   )
-                 "
-                 class="item"
-                 [ngStyle]="{
-                   'background-image':
-                     'url(' +
-                     item.params[selectedParam?.param]?.values[
-                       selectedParam?.value
-                     ]?.image +
-                     ')'
-                 }"
-               ></div>
-               <div class="blank-space"></div>
-            </div>
-          </ng-container>
-        </swiper>
+        <ng-container *ngIf="!hasParams || selectedParam == null">
+          <div
+            class="shadowWrapper"
+            *ngFor="let item of item.images; let i = index"
+          >
+            <div
+              (click)="openImageModal(item)"
+              class="item"
+              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+            ></div>
+            <div class="blank-space"></div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="hasParams && selectedParam != null">
+          <div class="shadowWrapper">
+            <div
+              (click)="
+                openImageModal(
+                  item.params[selectedParam?.param]?.values[
+                    selectedParam?.value
+                  ]?.image
+                )
+              "
+              class="item"
+              [ngStyle]="{
+                'background-image':
+                  'url(' +
+                  item.params[selectedParam?.param]?.values[
+                    selectedParam?.value
+                  ]?.image +
+                  ')'
+              }"
+            ></div>
+            <div class="blank-space"></div>
+          </div>
+        </ng-container>
+      </swiper>
     </div>
     <div
       *ngIf="!hasImage"
@@ -111,8 +114,9 @@
           {{
             selectedParam == null
               ? item.pricing
-              : (item.params[selectedParam.param].values[selectedParam.value]
-                  .price | number)
+              : (item.pricing +
+                  item.params[selectedParam.param].values[selectedParam.value]
+                    .price | number)
           }}
         </h3>
       </div>
@@ -125,7 +129,7 @@
             *ngFor="let value of param.values; index as j"
             [type]="3"
             [imgURL]="value.image"
-            [price]="value.price"
+            [price]="item.pricing + value.price"
             [showPrice]="true"
             [responsiveWidthVersion]="true"
             (itemClicked)="selectParamValue(i, j)"

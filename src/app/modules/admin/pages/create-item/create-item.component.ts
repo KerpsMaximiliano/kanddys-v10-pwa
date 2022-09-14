@@ -48,7 +48,9 @@ export class CreateItemComponent implements OnInit {
     images: new FormControl([]),
     name: new FormControl(),
     description: new FormControl(),
-    pricing: new FormControl(null, [Validators.required, Validators.min(0.01)]),
+    pricing: new FormControl(0, [Validators.required, Validators.min(0.01)]),
+  });
+  itemParamsForm = new FormGroup({
     params: new FormArray([]),
   });
   formattedPricing = {
@@ -108,7 +110,12 @@ export class CreateItemComponent implements OnInit {
       throw new Error('No eres el merchant dueño de este item');
     }
     this.imageField = images;
-    if (this.itemService.temporalImages?.new?.length) this.changedImages = true;
+    if (this.itemService.temporalImages?.new?.length) {
+      this.itemForm
+        .get('images')
+        .setValue(this.itemService.temporalImages?.new);
+      this.changedImages = true;
+    }
     if (
       this.item?.images?.length > 1 ||
       this.itemService.temporalItem?.images?.length > 1
@@ -126,11 +133,9 @@ export class CreateItemComponent implements OnInit {
         this.generateFields();
       });
 
-      console.log('los params', params);
-
-      this.itemForm.get('params').patchValue(params);
+      this.itemParamsForm.get('params').patchValue(params);
       (
-        (this.itemForm.get('params') as FormArray)
+        (this.itemParamsForm.get('params') as FormArray)
           .at(0)
           .get('values') as FormArray
       ).controls.forEach((control, index) => {
@@ -149,10 +154,12 @@ export class CreateItemComponent implements OnInit {
   goBack() {
     if (this.hasParams) {
       this.hasParams = false;
+      this.router.navigate(['/admin/merchant-items']);
       return;
+    } else {
+      this.itemService.removeTemporalItem();
+      this.router.navigate(['/admin/merchant-items']);
     }
-    this.itemService.removeTemporalItem();
-    this.router.navigate(['/admin/merchant-items']);
   }
 
   toggleStatus() {
@@ -161,16 +168,15 @@ export class CreateItemComponent implements OnInit {
 
   async onSubmit() {
     this.submitEventFinished = false;
-    const { images, name, description, params, pricing } = this.itemForm
+    const { images, name, description, pricing } = this.itemForm
       .value as ItemInput;
+    const { params } = this.itemParamsForm.value as ItemInput;
     params?.forEach((param) => {
       param.values = param.values.filter(
         (values) =>
           values.name || values.price || values.description || values.image
       );
     });
-
-    // const pricing = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
     try {
       if (this.item || this.itemService.temporalItem?._id) {
         const itemInput: ItemInput = {
@@ -188,33 +194,65 @@ export class CreateItemComponent implements OnInit {
               this.item.images.length > 0,
         };
 
-        //Borra los param values anteriores de este item
-        for await (const value of this.item.params[0].values) {
-          await this.itemService.deleteItemParamValue(
-            value._id,
-            this.item.params[0]._id,
+        if (this.item.params.length > 0) {
+          //Borra los param values anteriores de este item
+          for await (const value of this.item.params[0].values) {
+            await this.itemService.deleteItemParamValue(
+              value._id,
+              this.item.params[0]._id,
+              this.merchant._id,
+              this.item._id
+            );
+
+            const paramValues = params[0].values.map((value) => {
+              return {
+                name: value.name,
+                image: value.image,
+                price: value.price,
+                description: value.description,
+              };
+            });
+
+            await this.itemService.addItemParamValue(
+              paramValues,
+              this.item.params[0]._id,
+              this.merchant._id,
+              this.item._id
+            );
+          }
+        } else if (
+          this.item.params.length === 0 &&
+          params.length > 0 &&
+          this.hasParams
+        ) {
+          //Actualizando un item estatico a uno dinamico
+          itemInput.pricing = 0;
+
+          const { createItemParam } = await this.itemService.createItemParam(
+            this.merchant._id,
+            this.item._id,
+            {
+              name: params[0].name,
+              formType: 'color',
+              values: [],
+            }
+          );
+          const paramValues = params[0].values.map((value) => {
+            return {
+              name: value.name,
+              image: value.image,
+              price: value.price,
+              description: value.description,
+            };
+          });
+
+          await this.itemService.addItemParamValue(
+            paramValues,
+            createItemParam._id,
             this.merchant._id,
             this.item._id
           );
         }
-
-        const paramValues = params[0].values.map((value) => {
-          console.log(value, value.image);
-
-          return {
-            name: value.name,
-            image: value.image,
-            price: value.price,
-            description: value.description,
-          };
-        });
-
-        await this.itemService.addItemParamValue(
-          paramValues,
-          this.item.params[0]._id,
-          this.merchant._id,
-          this.item._id
-        );
 
         const { updateItem: updatedItem } = await this.itemService.updateItem(
           itemInput,
@@ -241,8 +279,8 @@ export class CreateItemComponent implements OnInit {
         const itemInput = {
           name: name || null,
           description: description || null,
-          pricing: !this.hasParams ? pricing : pricing ? pricing : 0.01,
-          images: images,
+          pricing,
+          images,
           merchant: this.merchant?._id,
           content: [],
           currencies: [],
@@ -273,12 +311,7 @@ export class CreateItemComponent implements OnInit {
                     values: [],
                   }
                 );
-
-              console.log(createItemParam, 'FR');
-
               const paramValues = params[0].values.map((value) => {
-                console.log(value, value.image);
-
                 return {
                   name: value.name,
                   image: value.image,
@@ -293,8 +326,6 @@ export class CreateItemComponent implements OnInit {
                 this.merchant._id,
                 createItem._id
               );
-
-              console.log('Resultado', result);
             }
 
             this.headerService.flowRoute = this.router.url;
@@ -407,11 +438,6 @@ export class CreateItemComponent implements OnInit {
     const list: StoreShareList[] = [
       {
         title: 'Articulo',
-        titleStyles: {
-          fontFamily: 'Roboto',
-          fontWeight: 'bold',
-          fontSize: '29px',
-        },
         options: [
           {
             text: 'Simple',
@@ -433,31 +459,21 @@ export class CreateItemComponent implements OnInit {
             mode: 'func',
             func: () => {
               if (!this.hasParams) {
-                this.itemForm.get('pricing').clearValidators();
-                this.itemForm.patchValue({
-                  pricing: 0,
-                });
-                this.itemForm.updateValueAndValidity();
-
-                if (!this.getArrayLength(this.itemForm, 'params')) {
+                this.itemForm.get('pricing').reset(0);
+                this.itemForm.get('name').reset();
+                this.itemForm.get('description').reset();
+                this.formattedPricing.item = '$0.00';
+                if (!this.getArrayLength(this.itemParamsForm, 'params')) {
                   this.generateFields();
                   this.generateFields();
                 }
               } else {
-                this.itemForm
-                  .get('pricing')
-                  .setValidators(
-                    Validators.compose([
-                      Validators.required,
-                      Validators.min(0.01),
-                    ])
-                  );
-                this.itemForm.get('pricing').updateValueAndValidity();
-                this.itemForm.updateValueAndValidity();
+                this.itemParamsForm.reset();
 
-                while (this.itemForm.get('params').value.length !== 0) {
-                  (<FormArray>this.itemForm.get('params')).removeAt(0);
+                while (this.itemParamsForm.get('params').value.length !== 0) {
+                  (<FormArray>this.itemParamsForm.get('params')).removeAt(0);
                 }
+                this.formattedPricing.values = [];
               }
               this.hasParams = !this.hasParams;
             },
@@ -466,16 +482,17 @@ export class CreateItemComponent implements OnInit {
       },
     ];
 
-    if (this.itemForm.valid) {
+    if (
+      (!this.hasParams && this.itemForm.valid) ||
+      (this.hasParams && this.itemParamsForm.valid)
+    ) {
       list[0].options.push({
         text: 'Vista del comprador',
         mode: 'func',
         func: () => {
-          const { images, name, description, params } = this.itemForm
+          const { images, name, description, pricing } = this.itemForm
             .value as ItemInput;
-          const pricing = parseFloat(
-            this.formattedPricing.item.replace(/\$|,/g, '')
-          );
+          const { params } = this.itemParamsForm.value as ItemInput;
           params?.forEach((param) => {
             param.values = param.values.filter(
               (values) => values.name || values.price || values.description
@@ -488,7 +505,7 @@ export class CreateItemComponent implements OnInit {
             description,
             params,
             images: this.imageField,
-            pricing: pricing,
+            pricing,
           });
           this.itemService.temporalImages = {
             old: this.item?.images,
@@ -503,28 +520,6 @@ export class CreateItemComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '0px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -532,7 +527,7 @@ export class CreateItemComponent implements OnInit {
   };
 
   dynamicInputKeyPress(index: number) {
-    const params = (<FormArray>this.itemForm.get('params')).at(0);
+    const params = (<FormArray>this.itemParamsForm.get('params')).at(0);
     const valuesLength = this.getArrayLength(params, 'values');
     if (index === valuesLength - 1) {
       this.generateFields();
@@ -553,8 +548,8 @@ export class CreateItemComponent implements OnInit {
       image: new FormControl(),
     };
 
-    const params = <FormArray>this.itemForm.get('params');
-    if (this.getArrayLength(this.itemForm, 'params') === 0) {
+    const params = <FormArray>this.itemParamsForm.get('params');
+    if (this.getArrayLength(this.itemParamsForm, 'params') === 0) {
       paramValueFormGroupInput.price = new FormControl(null, [
         Validators.required,
         Validators.min(0.01),

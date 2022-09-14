@@ -40,6 +40,7 @@ import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.componen
 import { CreateDynamicItemComponent } from './pages/create-dynamic-item/create-dynamic-item.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
   {
     path: 'admin-login',
     component: AdminLoginComponent,
