@@ -95,27 +95,27 @@ const options = [
       },
     ],
   },
-  // {
-  //   status: true,
-  //   id: 'new',
-  //   click: true,
-  //   value: 'Nuevo artículo',
-  //   valueStyles: {
-  //     'font-family': 'SfProBold',
-  //     'font-size': '13px',
-  //     color: '#202020',
-  //   },
-  //   subtexts: [
-  //     {
-  //       text: `Crear un nuevo articulo de precio dinámico.`,
-  //       styles: {
-  //         fontFamily: 'SfProRegular',
-  //         fontSize: '1rem',
-  //         color: '#7B7B7B',
-  //       },
-  //     },
-  //   ],
-  // },
+  {
+    status: true,
+    id: 'new',
+    click: true,
+    value: 'Nuevo artículo',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Crear un nuevo articulo de precio dinámico.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
 ];
 
 @Component({
@@ -201,7 +201,7 @@ export class ActionsMenuComponent implements OnInit {
           },
           this.item._id
         );
-        this.itemsByMerchant?.forEach(async item => {
+        this.itemsByMerchant?.forEach(async (item) => {
           if (item._id != this.item._id) {
             await this.itemsService.updateItem(
               {
@@ -217,6 +217,12 @@ export class ActionsMenuComponent implements OnInit {
       case 3:
         this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]);
         break;
+      case 4:
+        this.router.navigate([`admin/create-item`], {
+          queryParams: {
+            justdynamicmode: true,
+          },
+        });
     }
   }
 

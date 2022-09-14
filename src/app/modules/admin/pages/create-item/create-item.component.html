@@ -1,13 +1,17 @@
 <div class="component">
   <header class="flex-between">
-    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <a (click)="goBack()" *ngIf="!justDynamicMode"><i class="fas fa-chevron-left"></i></a>
+
+    <span>Adicionando la alegria del dia</span>
 
     <!--  *ngIf="itemForm.valid" iba aqui abajo -->
-    <button class="dot-trio" (click)="onOpenDialog()">
+    <button class="dot-trio" (click)="!justDynamicMode ? onOpenDialog() : null">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
     </button>
+
+    
   </header>
   <main>
     <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
@@ -35,7 +39,7 @@
           [accept]="['.png', '.jpg', '.jpeg']"
         />
         <input formControlName="images" style="display: none" />
-        <ng-container *ngIf="!imageField.length">
+        <ng-container *ngIf="!imageField.length && !justDynamicMode">
           <label
             [style.background]="sanitize('')"
             [for]="'filemultiple'"
@@ -164,8 +168,11 @@
                         [allowedTypes]="['png', 'jpg', 'jpeg']"
                         [multiple]="true"
                         [imageField]="[valuesControl?.value?.image]"
-                        innerLabel="Imagen o
-                        imágenes"
+                        [innerLabel]="
+                          !justDynamicMode
+                            ? 'Imagen o imágenes'
+                            : 'Sube la imagen o imágenes que representa este precio.'
+                        "
                         [expandImage]="true"
                         [uploadImagesWithoutPlaceholderBox]="true"
                         [allowDeletion]="true"
@@ -178,16 +185,17 @@
                           width: '100%',
                           height: '122px',
                           border: 'none',
-                          color: '#A1A1A1',
+                          color: !justDynamicMode ? '#A1A1A1' : '#2874AD',
                           boxShadow: 'lightgrey 0px 3px 8px inset',
-                          justifyContent: 'flex-start',
-                          alignItems: 'flex-start',
-                          paddingLeft: '27px',
-                          paddingTop: '31px',
+                          justifyContent: !justDynamicMode ? 'flex-start' : null,
+                          alignItems: !justDynamicMode ? 'flex-start' : null,
+                          paddingLeft: !justDynamicMode ? '27px' : '17px',
+                          paddingTop: !justDynamicMode ? '31px' : null,
                           textAlign: 'left',
                           fontFamily: 'RobotoMedium',
                           fontWeight: 'normal',
-                          marginLeft: 'auto'
+                          marginLeft: 'auto',
+                          fontSize: !justDynamicMode ? null : '17px'
                         }"
                         (onFileInputMultiple)="
                           handleImageInput(
@@ -228,7 +236,7 @@
       <i class="fas fa-chevron-left"></i>
     </button>
     <button class="save" (click)="submitEventFinished ? onSubmit() : null">
-      {{submitEventFinished ? 'Salvar' : 'Salvando...'}}
+      {{ submitEventFinished ? "Salvar" : "Salvando..." }}
     </button>
   </footer>
 </div>
