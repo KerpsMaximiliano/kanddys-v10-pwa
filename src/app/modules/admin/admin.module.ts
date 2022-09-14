@@ -37,6 +37,7 @@ import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
+import { CreateDynamicItemComponent } from './pages/create-dynamic-item/create-dynamic-item.component';
 
 const routes: Routes = [
   {
@@ -215,12 +216,16 @@ const routes: Routes = [
   },
   {
     path: 'options/:itemId',
-    component: ActionsMenuComponent
+    component: ActionsMenuComponent,
   },
   {
     path: 'metrics-info',
-    component: MetricsInfoComponent
-  }
+    component: MetricsInfoComponent,
+  },
+  {
+    path: 'create-dynamic-item',
+    component: CreateDynamicItemComponent,
+  },
 ];
 
 @NgModule({
@@ -260,6 +265,7 @@ const routes: Routes = [
     MerchantSharedComponent,
     ActionsMenuComponent,
     MetricsInfoComponent,
+    CreateDynamicItemComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -17,6 +17,7 @@ import {
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SwiperOptions } from 'swiper';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-item-detail',
