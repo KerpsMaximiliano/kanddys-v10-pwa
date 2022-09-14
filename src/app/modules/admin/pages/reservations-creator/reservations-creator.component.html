@@ -5,7 +5,7 @@
         [color]="headerConfiguration.color"
         [justifyContent]="headerConfiguration.justifyContent"
         [alignItems]="headerConfiguration.alignItems"
-        [rightTextStyles]="headerConfiguration.rightTextStyles"
+        [leftTextStyles]="headerConfiguration.leftTextStyles"
         [leftText]="{text: headerConfiguration.headerTextSide === 'LEFT' ? headerConfiguration.headerText : ''}" 
         [rightText]="{text: headerConfiguration.headerTextSide === 'RIGHT' ? headerConfiguration.headerText : ''}" [returnAble]="true"
         (agnosticAction)="headerConfiguration.headerTextSide === 'RIGHT' ? headerConfiguration.headerTextCallback() : null"

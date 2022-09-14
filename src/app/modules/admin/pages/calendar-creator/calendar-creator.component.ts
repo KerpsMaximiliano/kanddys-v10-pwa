@@ -101,7 +101,6 @@ export class CalendarCreatorComponent implements OnInit {
           text: 'Cualquier mes',
           styles: {
             color: '#7B7B7B',
-            marginLeft: 'auto',
           },
         },
       ],

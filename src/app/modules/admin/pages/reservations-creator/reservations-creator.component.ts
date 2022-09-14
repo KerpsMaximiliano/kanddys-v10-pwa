@@ -20,11 +20,12 @@ export class ReservationsCreatorComponent implements OnInit {
     color: '#ffffff',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    rightTextStyles: {
-      fontSize: '17px',
-      fontFamily: 'RobotoMedium',
+    leftTextStyles: {
+      fontSize: '21px',
+      fontFamily: 'SfProBold',
+      fontWeight: 'normal'
     },
-    headerText: 'TIENDA NAME ID',
+    headerText: 'Reserva la fecha con Merchant ID',
     headerTextSide: 'LEFT',
     headerTextCallback: () => {},
   };
