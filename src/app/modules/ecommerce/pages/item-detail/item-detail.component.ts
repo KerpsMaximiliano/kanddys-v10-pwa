@@ -8,7 +8,6 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AppService } from 'src/app/app.service';
 import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Subscription } from 'rxjs';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import {
@@ -31,8 +30,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     private header: HeaderService,
     private router: Router,
     private dialog: DialogService,
-    private appService: AppService,
-    private saleflowService: SaleFlowService
+    private appService: AppService
   ) {}
   item: Item;
   saleflowData: SaleFlow;
@@ -157,21 +155,14 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       type: 'flat-action-sheet',
       props: {
         headerButton: 'Ver más productos',
-        headerCallback: () => this.back(),
+        headerCallback: () =>
+          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]),
         footerCallback: () => {
-          this.saleflowService
-            .saleflow(this.saleflowData._id, true)
-            .then(async (data) => {
-              for (let i = 0; i < data.saleflow.items.length; i++) {
-                if (data.saleflow.items[i].item._id === this.item._id) {
-                  if (this.saleflowData.module?.post)
-                    this.router.navigate(['/ecommerce/create-giftcard']);
-                  else if (this.saleflowData.module?.delivery)
-                    this.router.navigate(['/ecommerce/new-address']);
-                  else this.router.navigate([`/ecommerce/checkout`]);
-                }
-              }
-            });
+          if (this.saleflowData.module?.post)
+            this.router.navigate(['/ecommerce/create-giftcard']);
+          else if (this.saleflowData.module?.delivery)
+            this.router.navigate(['/ecommerce/new-address']);
+          else this.router.navigate([`/ecommerce/checkout`]);
         },
       },
       customClass: 'app-dialog',
