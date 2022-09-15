@@ -13,7 +13,10 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 interface ExtendedItem extends Item {
   selected?: boolean;
   changedSelection?: boolean;
@@ -115,7 +118,7 @@ export class MerchantItemsComponent implements OnInit {
           }
         }
         this.status = 'complete';
-        if (this.ordersTotal.total) this.hasSalesData = true;
+        if (this.ordersTotal?.total) this.hasSalesData = true;
         unlockUI();
       } else {
         this.errorScreen();
@@ -543,7 +546,7 @@ export class MerchantItemsComponent implements OnInit {
         titleStyles: {
           margin: '0px',
           marginTop: '15px',
-          marginBottom: '65px',
+          marginBottom: '25px',
         },
         options: [
           {

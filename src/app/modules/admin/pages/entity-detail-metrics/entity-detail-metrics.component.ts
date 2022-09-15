@@ -86,7 +86,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       // this.getTags(),
       // this.getCategories(),
       this.getSaleflow(),
-      this.getWebformsData()
+      this.getWebformsData(),
       // this.getCalendars(),
     ]);
     unlockUI();
@@ -172,15 +172,17 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async getWebformsData() {
     try {
-      this.webforms = await this.webformsService.webformsByMerchant(this.merchant._id);
+      this.webforms = await this.webformsService.webformsByMerchant(
+        this.merchant._id
+      );
       console.log(this.webforms);
 
-      const webformIDs = this.webforms.map(value => value._id);
+      const webformIDs = this.webforms.map((value) => value._id);
 
       await this.getWebformsAnswers({
         findBy: {
-          webform: webformIDs
-        }
+          webform: webformIDs,
+        },
       });
     } catch (error) {
       console.log(error);
@@ -270,6 +272,29 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
+        alternate: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
         buttonText: 'Cerrar Sesión',
         buttonCallback: () => {
           // TODO: replace the signout function
@@ -302,6 +327,28 @@ export class EntityDetailMetricsComponent implements OnInit {
       props: {
         list,
         alternate: true,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -334,6 +381,29 @@ export class EntityDetailMetricsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
+        alternate: true,
+        dynamicStyles: {
+          container: {
+            paddingBottom: '45px',
+          },
+          dialogCard: {
+            borderRadius: '25px',
+            paddingTop: '47px',
+            paddingBottom: '30px',
+          },
+          titleWrapper: {
+            margin: 0,
+            marginBottom: '42px',
+          },
+          description: {
+            marginTop: '12px',
+          },
+          button: {
+            border: 'none',
+            margin: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

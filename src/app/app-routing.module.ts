@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-const redirectTo = '/home';
+const redirectTo = 'admin/entity-detail-metrics';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
   // { path: 'invitation/community/:identifier', component: InvitationComponent },

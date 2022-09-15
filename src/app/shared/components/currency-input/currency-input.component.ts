@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-currency-input',
@@ -7,15 +7,19 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./currency-input.component.scss'],
 })
 export class CurrencyInputComponent implements OnInit {
-  formattedPricing = '$0.00';
   curencyFocused = false;
+  formattedPricing = '$0.00';
+  @Input() initialValue: number;
+  @Input() fieldStyles: Record<string, any> = null;
   @Output() onInputEvent = new EventEmitter<number>();
 
   constructor(private decimalPipe: DecimalPipe) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.initialValue && this.formatNumber(this.initialValue);
+  }
 
-  formatNumber(event: Event | number) {
+  formatNumber(event: Event | number, emit?: boolean) {
     let value: string;
     if (typeof event === 'number') value = `${event}`;
     else value = (<HTMLInputElement>event.target).value;
@@ -24,7 +28,6 @@ export class CurrencyInputComponent implements OnInit {
         .split('')
         .filter((char) => char !== '.')
         .join('');
-      console.log(value);
     }
     const plainNumber = value.split(',').join('');
     if (plainNumber[0] === '0') {
@@ -60,6 +63,7 @@ export class CurrencyInputComponent implements OnInit {
             );
       this.formattedPricing = '$' + formatted;
     }
+    if (!emit) return;
     this.onInputEvent.emit(
       parseFloat(this.formattedPricing.replace(/\$|,/g, ''))
     );

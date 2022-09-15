@@ -8,6 +8,7 @@ import {
   itemCategory,
   itemCategoriesList,
   createItem,
+  createItemParam,
   createPreItem,
   addImageItem,
   deleteImageItem,
@@ -30,6 +31,8 @@ import {
   itemExtras,
   updateItem,
   deleteItem,
+  addItemParamValue,
+  deleteItemParamValue,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -38,6 +41,7 @@ import {
   ItemCategoryInput,
   ItemInput,
   ItemPackage,
+  ItemParamValueInput,
 } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
@@ -347,6 +351,48 @@ export class ItemsService {
       mutation: createItem,
       variables: { input },
       context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async createItemParam(merchantId: string, itemId: string, input: any) {
+    const result = await this.graphql.mutate({
+      mutation: createItemParam,
+      variables: { merchantId, itemId, input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async addItemParamValue(
+    input: ItemParamValueInput[],
+    itemParamId: string,
+    merchantId: string,
+    itemId: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: addItemParamValue,
+      variables: { itemParamId, merchantId, itemId, input },
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async deleteItemParamValue(
+    itemParamValueId: string,
+    itemParamId: string,
+    merchantId: string,
+    itemId: string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: deleteItemParamValue,
+      variables: { itemParamId, merchantId, itemId, itemParamValueId },
     });
 
     if (!result || result?.errors) return undefined;

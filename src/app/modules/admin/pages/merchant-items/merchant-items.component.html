@@ -55,6 +55,7 @@
         [imgURL]="item.images ? item.images[0] : ''"
         [price]="item.pricing"
         [showPrice]="true"
+        [itemParams]="item.params"
         (itemClicked)="goToDetail(item._id)"
         (onItemSelectionClick)="markItemAsSelectedOrRemoveItsSelection($event)"
         (iconTwoClicked)="openDeleteDialog(item)"

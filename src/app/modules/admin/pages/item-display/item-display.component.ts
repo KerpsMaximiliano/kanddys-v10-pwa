@@ -93,7 +93,7 @@ export class ItemDisplayComponent implements OnInit {
           lockUI();
           this.item = await this.itemsService.item(params.itemId);
 
-          if (this.item.status !== 'draft')
+          if (this.item && this.item.status !== 'draft')
             this.initialStatus = this.item.status;
 
           if (!this.item) return this.redirect();
@@ -520,6 +520,10 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openShareDialog = () => {
+   const styles = [
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+    ];
     const list: StoreShareList[] = [
       {
         title: 'Sobre ' + (this.item.name || 'el artículo'),
@@ -530,10 +534,7 @@ export class ItemDisplayComponent implements OnInit {
               : this.item.status === 'featured'
               ? 'VISIBLE (Y DESTACADO)'
               : 'INVISIBLE',
-          labelStyles: this.item.status !== 'active' && {
-            backgroundColor: '#B17608',
-            color: '#fff',
-          },
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0]
         },
         options: [
           {
@@ -569,6 +570,7 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         list,
+        hideCancelButtton: true,
         dynamicStyles: {
          container: {
            paddingBottom: '64px',
@@ -627,9 +629,9 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#82F18D', color: '#174B72' },
-      { 'background-color': '#82F18D', color: '#174B72' },
-      { 'background-color': '#B17608', color: '#FFFFFF' },
+      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
+      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
+      { 'background-color': '#B17608', color: '#FFFFFF', 'margin-top': this.item.name? 0 : '40px' },
     ];
     const list: StoreShareList[] = [
       {
@@ -704,25 +706,6 @@ export class ItemDisplayComponent implements OnInit {
         list,
         alternate: true,
         hideCancelButtton: true,
-        headerIcon: {
-          src: '/upload.svg',
-          cursor: 'none',
-          styles: {
-            wrapper: {
-              height: '19px',
-              paddingTop: '26px',
-              paddingBottom: '30px',
-              position: 'relative',
-              width: '100%',
-            },
-            image: {
-              position: 'absolute',
-              right: '28px',
-              filter:
-                'sepia(100%) hue-rotate(190deg) saturate(500%) brightness(0.7)',
-            },
-          },
-        },
         dynamicStyles: {
           container: {
             paddingBottom: '64px',
@@ -732,6 +715,7 @@ export class ItemDisplayComponent implements OnInit {
             flexDirection: 'column',
             alignItems: 'flex-start',
             paddingBottom: '42px',
+            paddingTop: '25px',
           },
           dialogCard: {
             paddingBottom: '64px',
