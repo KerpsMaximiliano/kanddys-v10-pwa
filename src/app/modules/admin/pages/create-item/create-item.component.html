@@ -187,15 +187,15 @@
                           border: 'none',
                           color: !justDynamicMode ? '#A1A1A1' : '#2874AD',
                           boxShadow: 'lightgrey 0px 3px 8px inset',
-                          justifyContent: !justDynamicMode ? 'flex-start' : null,
+                          justifyContent: !justDynamicMode ? 'center' : null,
                           alignItems: !justDynamicMode ? 'flex-start' : null,
-                          paddingLeft: !justDynamicMode ? '27px' : '17px',
+                          paddingLeft: !justDynamicMode ? '0' : '17px',
                           paddingTop: !justDynamicMode ? '31px' : null,
-                          textAlign: 'left',
+                          textAlign: !justDynamicMode? 'center':'left',
                           fontFamily: 'RobotoMedium',
                           fontWeight: 'normal',
                           marginLeft: 'auto',
-                          fontSize: !justDynamicMode ? null : '0.9rem'
+                          fontSize: !justDynamicMode ? '1.25rem' : '0.9rem'
                         }"
                         (onFileInputMultiple)="
                           handleImageInput(
