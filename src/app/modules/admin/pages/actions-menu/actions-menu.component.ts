@@ -164,7 +164,9 @@ export class ActionsMenuComponent implements OnInit {
           this.itemsService.item(itemId),
         ]);
         if (!user || !merchant || !item) return;
-        console.log('dasdasdas');
+
+        options[3].value = merchant.name || "MerchantID";
+
         this.user = user;
         this.item = item;
         const [saleflow, merchantItems] = await Promise.all([
