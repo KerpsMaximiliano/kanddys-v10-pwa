@@ -321,14 +321,19 @@ export class ReservationsCreatorComponent implements OnInit {
     }
 
     while (loopCurrentHour < calendarHourRangeLimit) {
+      let hourIn12HourFormat = null;
+
+      if(loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
+      else hourIn12HourFormat = loopCurrentHour;
+
       const fromHour: HourOption = {
-        hourNumber: loopCurrentHour,
+        hourNumber: hourIn12HourFormat,
         minutesNumber: hourFractionAccumulator,
         timeOfDay: loopCurrentHour < 12 ? 'AM' : 'PM',
         hourString:
-          String(loopCurrentHour).length < 2
-            ? '0' + loopCurrentHour
-            : String(loopCurrentHour),
+          String(hourIn12HourFormat).length < 2
+            ? '0' + hourIn12HourFormat
+            : String(hourIn12HourFormat),
         minutesString:
           String(hourFractionAccumulator).length < 2
             ? '0' + hourFractionAccumulator
@@ -354,18 +359,21 @@ export class ReservationsCreatorComponent implements OnInit {
         loopCurrentHour += hoursInsideChunkSize;
         hourFractionAccumulator = remainingMinutes;
       }
+      
+      if(loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
+      else hourIn12HourFormat = loopCurrentHour;
 
       const toHour: HourOption = {
-        hourNumber: loopCurrentHour,
+        hourNumber: hourIn12HourFormat,
         minutesNumber: hourFractionAccumulator,
         minutesString:
           String(hourFractionAccumulator).length < 2
             ? '0' + hourFractionAccumulator
             : String(hourFractionAccumulator),
         hourString:
-          String(loopCurrentHour).length < 2
-            ? '0' + loopCurrentHour
-            : String(loopCurrentHour),
+          String(hourIn12HourFormat).length < 2
+            ? '0' + hourIn12HourFormat
+            : String(hourIn12HourFormat),
         timeOfDay: loopCurrentHour < 12 ? 'AM' : 'PM',
       };
 
