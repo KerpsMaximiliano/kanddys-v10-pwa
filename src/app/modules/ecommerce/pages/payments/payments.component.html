@@ -8,14 +8,20 @@
     }"
     [returnAble]="false"
   ></app-helper-headerv2>
-  <div class="total-paid">
-    <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
-    <p class="total">Total Facturado</p>
-  </div>
-  <div class="payment-method">
-    <label for="Payment-selection" class="payment-selection"
-      >Selecciona el metodo que te convenga:</label
-    >
+  <div class="payment-method" *ngIf="status === 'complete'">
+    <div class="total-paid" *ngIf="order">
+      <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
+      <p class="total">Total Facturado</p>
+    </div>
+    <div class="amount-input" *ngIf="!order">
+      <span class="payment-selection"> Monto del depósito </span>
+      <app-currency-input
+        (onInputEvent)="onAmountChange($event)"
+      ></app-currency-input>
+    </div>
+    <span class="payment-selection">
+      Selecciona el metodo que te convenga:
+    </span>
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{
@@ -55,10 +61,14 @@
       (onFileInput)="onFileInput($event)"
     ></app-image-input>
   </div>
-  <a [href]="whatsappLink" target="_blank" [ngClass]="{disabled: !image}">
+  <a
+    *ngIf="image && selectedBank && (order || (!order && depositAmount > 0))"
+    [href]="whatsappLink"
+    target="_blank"
+    [ngClass]="{ disabled: !image }"
+  >
     <app-sticky-button
-      *ngIf="image || selectedBank"
-      (click)="image && !disableButton && submitPayment()"
+      (click)="!disableButton && submitPayment()"
       [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
       [text]="
         image

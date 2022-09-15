@@ -1,3 +1,14 @@
+.payment-selection {
+	font-family: "RobotoMedium";
+	font-size: 17px;
+	color: #7b7b7b;
+	margin-bottom: 24px;
+	display: inline-block;
+}
+.amount-input {
+	margin-top: 24px;
+	margin-bottom: 32px;
+}
 .container {
 	width: 100%;
 	min-height: 100vh;
@@ -10,37 +21,27 @@
 		align-items: center;
 		justify-content: center;
 		margin: 29px 0 58px;
+		text-align: center;
 
 		.paid {
 			font-family: "RobotoMedium";
-			font-size: 45px;
+			font-size: 2.75rem;
 			color: #7b7b7b;
-			text-align: center;
 			margin: 0;
 		}
 
 		.total {
 			font-family: "RobotoLight";
-			font-size: 14px;
+			font-size: 0.875rem;
 			color: #000000;
-			text-align: center;
 			margin: 2px 0;
 		}
 	}
 
 	.payment-method {
-		display: flex;
-		flex-direction: column;
-		margin-left: 7%;
-		margin-right: 8.6%;
-		margin-bottom: 35px;
-
-		.payment-selection {
-			font-family: "RobotoMedium";
-			font-size: 17px;
-			color: #7b7b7b;
-			margin-bottom: 24px;
-		}
+		margin-left: 8%;
+		margin-right: 8%;
+		margin-bottom: 32px;
 	}
 
 	.image-area {
@@ -50,7 +51,7 @@
 
 		.image-label {
 			font-family: "RobotoMedium";
-			font-size: 17px;
+			font-size: 1rem;
 			color: #7b7b7b;
 			margin-bottom: 15px;
 		}

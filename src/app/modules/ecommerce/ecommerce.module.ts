@@ -124,6 +124,10 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: ':saleflowId/payments',
+    component: PaymentsComponent,
+  },
 ];
 
 @NgModule({

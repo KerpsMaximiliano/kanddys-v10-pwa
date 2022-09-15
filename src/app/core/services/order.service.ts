@@ -14,6 +14,7 @@ import {
   updateTagsInOrder,
   ordersTotal,
   ordersByItem,
+  createOCR,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -194,6 +195,15 @@ export class OrderService {
     if (!result || result?.errors) return undefined;
 
     console.log(result);
+    return result;
+  }
+
+  async createOCR(input: OCRInput) {
+    const result = await this.graphql.mutate({
+      mutation: createOCR,
+      variables: { input },
+      context: { useMultipart: true },
+    });
     return result;
   }
 

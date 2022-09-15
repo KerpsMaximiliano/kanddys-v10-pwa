@@ -281,8 +281,18 @@ export const ordersByUser = gql`
 `;
 
 export const ordersTotal = gql`
-  query ordersTotal($status: [String!]!, $merchantId: ObjectID!, $orders: [ObjectID!], $itemCategoryId: ObjectID) {
-    ordersTotal(status: $status, merchantId: $merchantId, orders: $orders, itemCategoryId: $itemCategoryId)
+  query ordersTotal(
+    $status: [String!]!
+    $merchantId: ObjectID!
+    $orders: [ObjectID!]
+    $itemCategoryId: ObjectID
+  ) {
+    ordersTotal(
+      status: $status
+      merchantId: $merchantId
+      orders: $orders
+      itemCategoryId: $itemCategoryId
+    )
   }
 `;
 
@@ -327,6 +337,14 @@ export const ordersByItem = gql`
       }
       dateId
       createdAt
+    }
+  }
+`;
+
+export const createOCR = gql`
+  mutation createOCR($input: OCRInput!) {
+    createOCR(input: $input) {
+      _id
     }
   }
 `;
