@@ -233,23 +233,13 @@ export class CreateItemComponent implements OnInit {
               this.merchant._id,
               this.item._id
             );
-
-            const paramValues = params[0].values.map((value) => {
-              return {
-                name: value.name,
-                image: value.image,
-                price: value.price,
-                description: value.description,
-              };
-            });
-
-            await this.itemService.addItemParamValue(
-              paramValues,
-              this.item.params[0]._id,
-              this.merchant._id,
-              this.item._id
-            );
           }
+          await this.itemService.addItemParamValue(
+            params[0].values,
+            this.item.params[0]._id,
+            this.merchant._id,
+            this.item._id
+          );
         } else if (
           this.item.params.length === 0 &&
           params.length > 0 &&

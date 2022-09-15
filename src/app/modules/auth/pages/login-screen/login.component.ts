@@ -105,6 +105,21 @@ export class LoginComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         order.merchants?.[0]?._id
       );
+      if (
+        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      )
+        this.hasPayment = true;
+      else {
+        const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+        this.messageLink = `https://wa.me/${
+          this.merchant.owner.phone
+        }?text=Hola%20${this.merchant.name
+          .replace('&', 'and')
+          .replace(
+            /[^\w\s]/gi,
+            ''
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+      }
     }
 
     if (this.auth === 'password') {

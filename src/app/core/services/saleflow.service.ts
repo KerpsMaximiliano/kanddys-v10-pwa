@@ -73,7 +73,7 @@ export class SaleFlowService {
     }
   }
 
-  async listItems(params: any): Promise<{ listItems: Item[] }> {
+  async listItems(params: PaginationInput): Promise<{ listItems: Item[] }> {
     try {
       const response = await this.graphql.query({
         query: listItems,

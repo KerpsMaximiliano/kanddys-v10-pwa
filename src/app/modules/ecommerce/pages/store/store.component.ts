@@ -117,9 +117,8 @@ export class StoreComponent implements OnInit {
   }
 
   async organizeItems(merchant: Merchant) {
-    this.categorylessItems = this.items
-      .filter((item) => !item.category.length)
-      .sort((a, b) => a.pricing - b.pricing);
+    this.categorylessItems = this.items.filter((item) => !item.category.length);
+    // .sort((a, b) => a.pricing - b.pricing);
     const highlightedItemsObject = {};
     this.highlightedItems = [];
 
@@ -277,6 +276,7 @@ export class StoreComponent implements OnInit {
             },
           },
           options: {
+            sortBy: 'createdAt:desc',
             limit: 60,
           },
         });

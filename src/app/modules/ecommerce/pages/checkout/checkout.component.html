@@ -42,7 +42,7 @@
             <div class="image">
               <img
                 [src]="
-                  item.image || item.images.length
+                  item.image || item.images?.length
                     ? item.image || item.images[0]
                     : '/assets/images/noimage.png'
                 "

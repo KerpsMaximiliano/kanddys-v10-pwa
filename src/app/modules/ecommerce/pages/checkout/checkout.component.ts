@@ -308,21 +308,17 @@ export class CheckoutComponent implements OnInit {
         const merchant = await this.merchantService.merchant(
           order.merchants?.[0]?._id
         );
-        const fullLink = `ecommerce/order-info/${order._id}`;
-        this.orderService.openWhatsAppMessage(
-          merchant.owner.phone,
-          `Hola%20${merchant.name
-            .replace('&', 'and')
-            .replace(
-              /[^\w\s]/gi,
-              ''
-            )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${
-            environment.uri
-          }/${fullLink}`
-        );
-        this.router.navigate([fullLink], {
-          replaceUrl: true,
-        });
+        const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+        this.messageLink = `https://wa.me/${
+          merchant.owner.phone
+        }?text=Hola%20${merchant.name
+          .replace('&', 'and')
+          .replace(
+            /[^\w\s]/gi,
+            ''
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+        window.location.href = this.messageLink;
+        return;
       }
     }
   }
