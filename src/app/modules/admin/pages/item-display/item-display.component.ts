@@ -664,7 +664,15 @@ export class ItemDisplayComponent implements OnInit {
             text: 'Editar producto',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/create-item/${this.item._id}`]);
+              if(this.item.params.length === 0) {
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+              } else if(this.item.params.length > 0 && this.item.params[0].values.length > 0) {
+                this.router.navigate([`admin/create-item/${this.item._id}`], {
+                  queryParams: {
+                    justdynamicmode: true
+                  }
+                });
+              }
             },
           },
           {

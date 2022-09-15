@@ -96,6 +96,7 @@ export class CreateItemComponent implements OnInit {
 
     if (justdynamicmode) {
       this.hasParams = true;
+
       this.generateFields();
       this.generateFields();
       this.generateFields();
@@ -107,12 +108,12 @@ export class CreateItemComponent implements OnInit {
 
       valuesArray.at(0).patchValue({
         name: 'Alegria sin Chinoski',
-        price: 1275.00,
+        price: 1275.0,
       });
       this.formattedPricing.values[0] = '$127500';
       valuesArray.at(1).patchValue({
         name: 'Alegria con Chinoski',
-        price: 1675.00,
+        price: 1675.0,
       });
       this.formattedPricing.values[1] = '$167500';
     }
@@ -159,7 +160,7 @@ export class CreateItemComponent implements OnInit {
     this.handleCurrencyInput(this.itemForm, 'pricing', pricing);
     if (params?.[0]?.values?.length) {
       params[0].values.forEach(() => {
-        this.generateFields();
+        if (!this.item) this.generateFields();
       });
 
       this.itemParamsForm.get('params').patchValue(params);
@@ -168,12 +169,14 @@ export class CreateItemComponent implements OnInit {
           .at(0)
           .get('values') as FormArray
       ).controls.forEach((control, index) => {
-        this.handleCurrencyInput(
-          control,
-          'price',
-          params[0].values[index].price,
-          index
-        );
+        if (params[0].values[index]) {
+          this.handleCurrencyInput(
+            control,
+            'price',
+            params[0].values[index].price,
+            index
+          );
+        }
       });
       this.hasParams = true;
     }
