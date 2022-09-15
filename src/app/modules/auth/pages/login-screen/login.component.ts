@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
   userID: string;
   messageLink: string;
   items: Item[] | ItemPackage[] = [];
+  hasPayment: boolean;
   itemCartAmount: number;
   phoneNumber = new FormControl('', [
     Validators.required,
