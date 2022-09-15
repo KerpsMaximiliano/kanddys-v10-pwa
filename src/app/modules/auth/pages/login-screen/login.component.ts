@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
   toValidate: boolean = false;
   sneaky: string;
   userID: string;
+  fullLink: string;
   messageLink: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
@@ -110,7 +111,7 @@ export class LoginComponent implements OnInit {
       )
         this.hasPayment = true;
       else {
-        const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+        this.fullLink = `/ecommerce/order-info/${order._id}`;
         this.messageLink = `https://wa.me/${
           this.merchant.owner.phone
         }?text=Hola%20${this.merchant.name
@@ -118,7 +119,9 @@ export class LoginComponent implements OnInit {
           .replace(
             /[^\w\s]/gi,
             ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
+          environment.uri
+        }${this.fullLink}`;
       }
     }
 
@@ -249,20 +252,20 @@ export class LoginComponent implements OnInit {
         } catch (error) {
           console.log(error);
         }
-      } else if (validUser && validUser.validatedAt === null){
-         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-         this.userID = validUser._id;
-         this.loggin = true;
-         await this.generateTOP();
-         this.toValidate = true;
-
-      }else if(this.orderId && this.auth === 'anonymous'){
-        const anonymous = await this.authService.signup({
-         phone: this.phoneNumber.value.e164Number.split('+')[1]
-        },
-        'none',
-        null,
-        false
+      } else if (validUser && validUser.validatedAt === null) {
+        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+        this.userID = validUser._id;
+        this.loggin = true;
+        await this.generateTOP();
+        this.toValidate = true;
+      } else if (this.orderId && this.auth === 'anonymous') {
+        const anonymous = await this.authService.signup(
+          {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+          },
+          'none',
+          null,
+          false
         );
         if (anonymous) {
           this.authOrder(anonymous._id);
@@ -312,12 +315,12 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if(this.toValidate){
-         this.loggin = false;
-         this.signUp = true;
-         this.password.reset();
-         return;
-       }
+        if (this.toValidate) {
+          this.loggin = false;
+          this.signUp = true;
+          this.password.reset();
+          return;
+        }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
@@ -429,9 +432,9 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
-        console.log("Creando nuevo user");
+        console.log('Creando nuevo user');
         this.sneaky = this.password.value;
-        
+
         await this.generateTOP();
 
         // await this.authService.generateMagicLink(
@@ -447,33 +450,32 @@ export class LoginComponent implements OnInit {
         });
       }
     } else {
-      if(this.toValidate){
-         const validateUser = await this.authService.updateMe({
+      if (this.toValidate) {
+        const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
           lastname: this.lastName.value,
           email:
             this.email.value && this.email.valid ? this.email.value : undefined,
-         });
+        });
 
-         if(validateUser){
-            this.password.reset();
-            this.OTP = false;
-            this.toValidate = false;
-            this.signUp = false;
-            this.loggin = true;
-            
-            this.toastr.info('¡Usuario actualizado exitosamente!', null, {
-               timeOut: 2000
-            });
-            return;
-         } 
-         else{
-            this.toastr.error('Algo no funciona', null, {
-               timeOut: 2200
-            });
-            return;
-         };
+        if (validateUser) {
+          this.password.reset();
+          this.OTP = false;
+          this.toValidate = false;
+          this.signUp = false;
+          this.loggin = true;
+
+          this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+            timeOut: 2000,
+          });
+          return;
+        } else {
+          this.toastr.error('Algo no funciona', null, {
+            timeOut: 2200,
+          });
+          return;
+        }
       }
       this.toastr.info('Ese Usuario ya esta registrado', null, {
         timeOut: 2200,
@@ -500,7 +502,12 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
         replaceUrl: true,
       });
-    else window.location.href = this.messageLink;
+    else {
+      this.router.navigate([this.fullLink], {
+        replaceUrl: true,
+      });
+      window.location.href = this.messageLink;
+    }
   }
 
   showShoppingCartDialog = () => {
