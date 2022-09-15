@@ -1,6 +1,8 @@
 <div class="component">
   <header class="flex-between">
-    <a (click)="goBack()" *ngIf="!justDynamicMode"><i class="fas fa-chevron-left"></i></a>
+    <a (click)="goBack()" *ngIf="!justDynamicMode"
+      ><i class="fas fa-chevron-left"></i
+    ></a>
 
     <span>Adicionando la alegria del dia</span>
 
@@ -10,8 +12,6 @@
       <div class="dot"> </div>
       <div class="dot"> </div>
     </button>
-
-    
   </header>
   <main>
     <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
@@ -120,6 +120,9 @@
               >
                 <section
                   class="form-group p-side"
+                  [ngStyle]="{
+                    marginTop: justDynamicMode ? '27px' : null
+                  }"
                   *ngFor="
                     let valuesControl of getControls(paramsControl, 'values');
                     index as j
@@ -191,7 +194,7 @@
                           alignItems: !justDynamicMode ? 'flex-start' : null,
                           paddingLeft: !justDynamicMode ? '0' : '17px',
                           paddingTop: !justDynamicMode ? '31px' : null,
-                          textAlign: !justDynamicMode? 'center':'left',
+                          textAlign: !justDynamicMode ? 'center' : 'left',
                           fontFamily: 'RobotoMedium',
                           fontWeight: 'normal',
                           marginLeft: 'auto',
@@ -216,6 +219,12 @@
                       ></app-image-input>
                     </div>
                   </div>
+
+                  <hr
+                    *ngIf="
+                      j !== getControls(paramsControl, 'values').length - 1
+                    "
+                  />
                 </section>
               </div>
               <br /><br />
