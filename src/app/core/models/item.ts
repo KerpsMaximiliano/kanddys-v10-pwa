@@ -163,6 +163,7 @@ export class ItemInput {
   content?: string[];
   quality?: String;
   toPromotion?: boolean;
+  showImages?: boolean;
   status?: ItemStatus;
 }
 

@@ -25,9 +25,12 @@ input {
   flex-direction: column;
 }
 
-header {
+.flex-between {
   display: flex;
   justify-content: space-between;
+}
+
+header {
   padding: 4px 20px;
   align-items: center;
   color: white;
@@ -62,6 +65,12 @@ main {
   color: #2e2e2e;
 }
 
+.info-label {
+  font-size: 1rem;
+  color: #7b7b7b;
+  font-family: RobotoMedium;
+}
+
 .input-label {
   font-family: "RobotoMedium";
   font-size: 17px;
@@ -79,7 +88,7 @@ main {
   font-size: 1rem;
   border: none;
   color: #0b1f38;
-  box-shadow: 0px 7px 20px -18px inset;
+  box-shadow: lightgrey 0px 3px 8px inset;
 }
 
 .border-button {
@@ -159,7 +168,7 @@ main {
 }
 
 .textarea {
-  box-shadow: 0px 7px 20px -18px inset;
+  box-shadow: lightgrey 0px 3px 8px inset;
   color: rgb(11, 31, 56);
   width: 100%;
   font-family: RobotoMedium;
@@ -220,6 +229,7 @@ footer {
   .back {
     border-right: solid 2px #fff;
     text-align: center;
+    background-color: #2874ad;
 
     &:hover,
     &:active {
@@ -267,55 +277,25 @@ footer {
     border-radius: 50%;
     background-color: #ffffff;
     margin: 0 1px;
+
+    &.blue {
+      background-color: #2874ad;
+    }
   }
 }
 
-.formatted-price {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-color: white;
-  bottom: 0px;
-  left: 0px;
-  z-index: 1;
-
-  border-radius: 10px;
-  padding: 0px 20px;
-  width: 100%;
-  height: 73px;
-  font-family: RobotoMedium;
-  font-size: 1rem;
-  border: none;
-  color: #0b1f38;
-  box-shadow: 0px 7px 20px -18px inset;
-}
-.formatted-input {
-  background-color: transparent;
-  color: transparent;
-  z-index: 50;
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  border: none;
-  box-shadow: none;
-
-  padding: 0px 20px;
-  width: 100%;
-  height: 73px;
-}
-
-.name-and-price-wrapper {
-  display: flex;
-  justify-content: space-between;
+.template-grid {
   margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
 
-  .name-wrapper {
-    flex-basis: 61.53%;
+  .col-span-8 {
+    grid-column: span 8 / span 8;
   }
 
-  .price-wrapper {
-    flex-basis: 35.12%;
-    position: relative;
+  .col-span-4 {
+    grid-column: span 4 / span 4;
   }
 }
 

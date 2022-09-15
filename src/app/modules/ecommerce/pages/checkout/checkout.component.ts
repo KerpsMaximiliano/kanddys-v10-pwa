@@ -32,7 +32,7 @@ export class CheckoutComponent implements OnInit {
   };
   saleflow: SaleFlow;
   order: ItemOrderInput;
-  items: Item[];
+  items: any[];
   post: PostInput;
   payment: number;
   hasPayment: boolean;
@@ -175,7 +175,10 @@ export class CheckoutComponent implements OnInit {
       };
     }
     if (!this.customizer)
-      this.payment = this.items?.reduce((prev, curr) => prev + curr.pricing, 0);
+      this.payment = this.items?.reduce(
+        (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
+        0
+      );
   }
 
   placeholder() {
@@ -308,7 +311,7 @@ export class CheckoutComponent implements OnInit {
           .replace(
             /[^\w\s]/gi,
             ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${fullLink}`;
         window.location.href = this.messageLink;
         return;
       }
