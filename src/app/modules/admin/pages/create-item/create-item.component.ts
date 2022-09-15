@@ -65,6 +65,7 @@ export class CreateItemComponent implements OnInit {
     spaceBetween: 5,
   };
   hasParams: boolean;
+  justDynamicMode: boolean = false;
   parseFloat = parseFloat;
 
   constructor(
@@ -81,6 +82,9 @@ export class CreateItemComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const itemId = this.route.snapshot.paramMap.get('itemId');
+    const justdynamicmode =
+      this.route.snapshot.queryParamMap.get('justdynamicmode');
+
     const promises: Promise<User | Merchant | Item>[] = [
       this.authService.me(),
       this.merchantService.merchantDefault(),
@@ -89,6 +93,30 @@ export class CreateItemComponent implements OnInit {
       promises.push(this.itemService.item(itemId));
     this.status = 'loading';
     const [user, userMerchant, item] = await Promise.all(promises);
+
+    if (justdynamicmode) {
+      this.hasParams = true;
+      this.generateFields();
+      this.generateFields();
+      this.generateFields();
+
+      this.justDynamicMode = true;
+
+      const paramsFormArray = this.itemParamsForm.get('params') as FormArray;
+      const valuesArray = paramsFormArray.at(0).get('values') as FormArray;
+
+      valuesArray.at(0).patchValue({
+        name: 'Alegria sin Chinoski',
+        price: 1275.00,
+      });
+      this.formattedPricing.values[0] = '$127500';
+      valuesArray.at(1).patchValue({
+        name: 'Alegria con Chinoski',
+        price: 1675.00,
+      });
+      this.formattedPricing.values[1] = '$167500';
+    }
+
     if (!user || !userMerchant) {
       this.status = 'complete';
       return;
@@ -125,6 +153,7 @@ export class CreateItemComponent implements OnInit {
         type: 'bullets',
         clickable: true,
       };
+
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('description').setValue(description);
     this.handleCurrencyInput(this.itemForm, 'pricing', pricing);
@@ -148,6 +177,7 @@ export class CreateItemComponent implements OnInit {
       });
       this.hasParams = true;
     }
+
     this.status = 'complete';
   }
 
@@ -320,7 +350,7 @@ export class CreateItemComponent implements OnInit {
 
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
-            this.router.navigate([`/admin/merchant-items`]);
+            this.router.navigate([`/admin/options/${createItem._id}`]);
             this.submitEventFinished = true;
           }
         } else {

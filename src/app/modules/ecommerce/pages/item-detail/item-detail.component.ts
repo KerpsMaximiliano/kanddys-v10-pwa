@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { Item, ItemParamValue } from '../../../../core/models/item';
@@ -10,15 +10,14 @@ import { filter } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Subscription } from 'rxjs';
-import { SwiperOptions } from 'swiper';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SwiperOptions } from 'swiper';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-item-detail',
@@ -38,8 +37,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   item: Item;
   saleflowData: SaleFlow;
   inCart: boolean;
-  showCartCallBack: () => void;
-  itemCartAmount: number;
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   hasParams: boolean;
@@ -92,7 +89,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       );
       this.whatsappLink = `https://wa.me/${this.saleflowData.merchant.owner.phone}?text=${whatsappMessage}`;
       this.itemInCart();
-      this.showCartCallBack = () => this.showItems();
     });
 
     this.deleteEvent = this.appService.events
@@ -126,7 +122,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   itemInCart() {
     const productData = this.header.getItems(this.saleflowData._id);
-    this.itemCartAmount = productData?.length;
     if (productData?.length) {
       this.inCart = productData.some(
         (item) =>
@@ -195,19 +190,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  onCartClick() {
-    if (this.previewMode) return;
-    if (this.inCart) {
-      this.saveProduct();
-    } else {
-      if (!this.saleflowData.canBuyMultipleItems) {
-        this.header.emptyOrderProducts(this.saleflowData._id);
-        this.header.emptyItems(this.saleflowData._id);
-      }
-      this.saveProduct();
-    }
-  }
-
   saveProduct() {
     const product: ItemSubOrderInput = {
       item: this.item._id,
@@ -243,6 +225,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             ].price,
         }
       : null;
+
+    this.appService.events.emit({
+      type: 'added-item',
+      data: this.item._id,
+    });
     this.header.storeItem(
       this.saleflowData._id,
       this.selectedParam ? itemParamValue : this.item

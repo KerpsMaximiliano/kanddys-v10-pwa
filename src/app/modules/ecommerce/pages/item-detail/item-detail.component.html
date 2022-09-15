@@ -153,16 +153,7 @@
       </div>
     </ng-container>
   </div>
-  <app-bubble-button
-    (click)="showItems()"
-    [cart]="true"
-    [cartAmount]="itemCartAmount"
-    [custom]="{ width: 56, height: 56, right: '20px', left: 'auto' }"
-    [solo]="false"
-    [color]="'blue'"
-    [lcmargin]="'0'"
-    *ngIf="itemCartAmount > 0"
-  ></app-bubble-button>
+
   <app-sticky-button
     *ngIf="(!hasParams && !inCart) || (hasParams && !inCart && selectedParam)"
     [mode]="'fixed'"

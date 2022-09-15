@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShipmentDataFormComponent } from './shipment-data-form.component';
+import { CreateDynamicItemComponent } from './create-dynamic-item.component';
 
-describe('ShipmentDataFormComponent', () => {
-  let component: ShipmentDataFormComponent;
-  let fixture: ComponentFixture<ShipmentDataFormComponent>;
+describe('CreateDynamicItemComponent', () => {
+  let component: CreateDynamicItemComponent;
+  let fixture: ComponentFixture<CreateDynamicItemComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ShipmentDataFormComponent ]
+      declarations: [ CreateDynamicItemComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShipmentDataFormComponent);
+    fixture = TestBed.createComponent(CreateDynamicItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

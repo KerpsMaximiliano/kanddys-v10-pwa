@@ -35,7 +35,6 @@ export class CheckoutComponent implements OnInit {
   items: any[];
   post: PostInput;
   payment: number;
-  hasPayment: boolean;
   messageLink: string;
   disableButton: boolean;
   date: {
@@ -157,7 +156,7 @@ export class CheckoutComponent implements OnInit {
           this.headerService.getSaleflow()?._id
       )?.data;
     this.setCustomizerPreview();
-    if (this.order.products[0].reservation) {
+    if (this.order?.products?.[0].reservation) {
       const fromDate = new Date(this.order.products[0].reservation.date.from);
       const untilDate = new Date(this.order.products[0].reservation.date.until);
       this.date = {
@@ -268,7 +267,6 @@ export class CheckoutComponent implements OnInit {
       this.headerService.orderId = createPreOrder._id;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
-      this.headerService.locationData = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.headerService.user && !anonymous) {
         await this.authOrder(this.headerService.user._id);
@@ -294,12 +292,19 @@ export class CheckoutComponent implements OnInit {
       this.headerService.orderId
     );
     if (orderStatus === 'draft') {
+      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
+      this.headerService.resetIsComplete();
       const order = (
         await this.orderService.authOrder(this.headerService.orderId, id)
       ).authOrder;
-      if (this.saleflow?.module?.paymentMethod?.paymentModule?._id)
-        this.hasPayment = true;
-      else {
+      if (this.saleflow?.module?.paymentMethod?.paymentModule?._id) {
+        this.router.navigate(
+          [`/ecommerce/payments/${this.headerService.orderId}`],
+          {
+            replaceUrl: true,
+          }
+        );
+      } else {
         const merchant = await this.merchantService.merchant(
           order.merchants?.[0]?._id
         );
@@ -315,23 +320,7 @@ export class CheckoutComponent implements OnInit {
         window.location.href = this.messageLink;
         return;
       }
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
-      this.headerService.resetIsComplete();
     }
-    if (this.hasPayment)
-      this.router.navigate(
-        [`/ecommerce/payments/${this.headerService.orderId}`],
-        {
-          replaceUrl: true,
-        }
-      );
-    else
-      this.router.navigate(
-        [`/ecommerce/order-info/${this.headerService.orderId}`],
-        {
-          replaceUrl: true,
-        }
-      );
   }
 
   mouseDown: boolean;

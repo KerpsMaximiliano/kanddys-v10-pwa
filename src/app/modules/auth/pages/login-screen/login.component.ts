@@ -36,8 +36,6 @@ export class LoginComponent implements OnInit {
   loggin: boolean;
   signUp: boolean;
   orderId: string;
-  orderStatus: string;
-  hasPayment: boolean;
   OTP: boolean = false;
   authCode: boolean = false;
   toValidate: boolean = false;
@@ -92,13 +90,15 @@ export class LoginComponent implements OnInit {
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
 
     if (this.orderId) {
-      this.orderStatus = (
-        await this.orderService.getOrderStatus(this.orderId)
-      )?.orderStatus;
-      const order = await this.getOrderData(
-        this.orderId,
-        this.orderStatus === 'draft'
-      );
+      const orderStatus = (await this.orderService.getOrderStatus(this.orderId))
+        ?.orderStatus;
+      if (orderStatus !== 'draft') {
+        this.router.navigate([`ecommerce/order-info/${this.orderId}`], {
+          replaceUrl: true,
+        });
+        return;
+      }
+      const order = await this.orderService.getOrderData(this.orderId, true);
       this.headerService.saleflow = await this.headerService.fetchSaleflow(
         order.items?.[0].saleflow._id
       );
@@ -249,37 +249,35 @@ export class LoginComponent implements OnInit {
         } catch (error) {
           console.log(error);
         }
-      } else if (validUser && validUser.validatedAt === null){
-         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-         this.userID = validUser._id;
-         this.loggin = true;
-         await this.generateTOP();
-         this.toValidate = true;
-
-      }else if(this.orderId && this.auth === 'anonymous'){
-        const anonymous = await this.authService.signup({
-         phone: this.phoneNumber.value.e164Number.split('+')[1]
-        },
-        'none',
-        null,
-        false
+      } else if (validUser && validUser.validatedAt === null) {
+        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+        this.userID = validUser._id;
+        this.loggin = true;
+        await this.generateTOP();
+        this.toValidate = true;
+      } else if (this.orderId && this.auth === 'anonymous') {
+        const anonymous = await this.authService.signup(
+          {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+          },
+          'none',
+          null,
+          false
         );
         if (anonymous) {
           this.authOrder(anonymous._id);
           return;
-        } else {
-          this.toastr.error('Algo salio mal', null, {
-            timeOut: 1500,
-          });
         }
-      } else {
-        this.toastr.error('Número no registrado', null, { timeOut: 2000 });
+        this.toastr.error('Algo salio mal', null, {
+          timeOut: 1500,
+        });
         return;
       }
-    } else {
-      this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
+      this.toastr.error('Número no registrado', null, { timeOut: 2000 });
       return;
     }
+    this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
+    return;
   }
 
   async signIn() {
@@ -287,7 +285,9 @@ export class LoginComponent implements OnInit {
       this.toastr.error('Error en campo de contraseña', null, {
         timeOut: 1500,
       });
-    } else if (this.OTP) {
+      return;
+    }
+    if (this.OTP) {
       const checkOTP = await this.authService.verify(
         this.password.value,
         this.userID
@@ -311,13 +311,12 @@ export class LoginComponent implements OnInit {
           this.authOrder(checkOTP.user._id);
           return;
         }
-
-        if(this.toValidate){
-         this.loggin = false;
-         this.signUp = true;
-         this.password.reset();
-         return;
-       }
+        if (this.toValidate) {
+          this.loggin = false;
+          this.signUp = true;
+          this.password.reset();
+          return;
+        }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
@@ -332,31 +331,30 @@ export class LoginComponent implements OnInit {
       if (!authCoded) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
         return;
-      } else {
-        this.toastr.info('Código válido', null, { timeOut: 2000 });
-        const session = await this.authService.signin(
-          this.merchantNumber,
-          this.sneaky,
-          true
-        );
-        if (!session) return console.log('Error logging in');
-        if (this.auth === 'order') {
-          this.router.navigate([`ecommerce/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
-          return;
-        }
-        if (this.orderId) {
-          this.authOrder(session.user._id);
-          return;
-        }
-        this.router.navigate([`admin/entity-detail-metrics`], {
-          replaceUrl: true,
-        });
       }
+      this.toastr.info('Código válido', null, { timeOut: 2000 });
+      const session = await this.authService.signin(
+        this.merchantNumber,
+        this.sneaky,
+        true
+      );
+      if (!session) return console.log('Error logging in');
+      if (this.auth === 'order') {
+        this.router.navigate([`ecommerce/new-address`], {
+          replaceUrl: true,
+          state: {
+            loggedIn: true,
+          },
+        });
+        return;
+      }
+      if (this.orderId) {
+        this.authOrder(session.user._id);
+        return;
+      }
+      this.router.navigate([`admin/entity-detail-metrics`], {
+        replaceUrl: true,
+      });
     } else {
       const signin = await this.authService.signin(
         this.merchantNumber,
@@ -429,9 +427,9 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
-        console.log("Creando nuevo user");
+        console.log('Creando nuevo user');
         this.sneaky = this.password.value;
-        
+
         await this.generateTOP();
 
         // await this.authService.generateMagicLink(
@@ -447,33 +445,31 @@ export class LoginComponent implements OnInit {
         });
       }
     } else {
-      if(this.toValidate){
-         const validateUser = await this.authService.updateMe({
+      if (this.toValidate) {
+        const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
           lastname: this.lastName.value,
           email:
             this.email.value && this.email.valid ? this.email.value : undefined,
-         });
+        });
 
-         if(validateUser){
-            this.password.reset();
-            this.OTP = false;
-            this.toValidate = false;
-            this.signUp = false;
-            this.loggin = true;
-            
-            this.toastr.info('¡Usuario actualizado exitosamente!', null, {
-               timeOut: 2000
-            });
-            return;
-         } 
-         else{
-            this.toastr.error('Algo no funciona', null, {
-               timeOut: 2200
-            });
-            return;
-         };
+        if (validateUser) {
+          this.password.reset();
+          this.OTP = false;
+          this.toValidate = false;
+          this.signUp = false;
+          this.loggin = true;
+
+          this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+            timeOut: 2000,
+          });
+          return;
+        }
+        this.toastr.error('Algo no funciona', null, {
+          timeOut: 2200,
+        });
+        return;
       }
       this.toastr.info('Ese Usuario ya esta registrado', null, {
         timeOut: 2200,
@@ -482,25 +478,33 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async getOrderData(id: string, preOrder?: boolean): Promise<ItemOrder> {
-    if (!preOrder) return (await this.orderService.order(id))?.order;
-    return (await this.orderService.preOrder(id))?.order;
-  }
-
   async authOrder(id: string) {
-    const { orderStatus } = await this.orderService.getOrderStatus(
-      this.orderId
-    );
-    if (orderStatus === 'draft') {
-      await this.orderService.authOrder(this.orderId, id);
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
-      this.headerService.resetIsComplete();
-    }
-    if (this.hasPayment)
+    await this.orderService.authOrder(this.orderId, id);
+    this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
+    this.headerService.resetIsComplete();
+    if (
+      this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+    ) {
       this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
         replaceUrl: true,
       });
-    else window.location.href = this.messageLink;
+    } else {
+      const fullLink = `ecommerce/order-info/${this.orderId}`;
+      this.orderService.openWhatsAppMessage(
+        this.merchant.owner.phone,
+        `Hola%20${this.merchant.name
+          .replace('&', 'and')
+          .replace(
+            /[^\w\s]/gi,
+            ''
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${
+          environment.uri
+        }/${fullLink}`
+      );
+      this.router.navigate([fullLink], {
+        replaceUrl: true,
+      });
+    }
   }
 
   showShoppingCartDialog = () => {

@@ -38,14 +38,24 @@ export class PaymentsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const orderId = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(orderId)).order;
+    if (!this.headerService.saleflow)
+      this.headerService.saleflow = this.headerService.getSaleflow();
+    if (
+      !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+    ) {
+      this.orderCompleted();
+      return;
+    }
+    if (this.order.orderStatus !== 'in progress') {
+      this.orderCompleted();
+      return;
+    }
     this.paymentAmount = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     if (this.order.items[0].customizer)
       this.paymentAmount = this.paymentAmount * 1.18;
     this.merchant = await this.merchantService.merchant(
       this.order.merchants?.[0]?._id
     );
-    if (!this.headerService.saleflow)
-      this.headerService.saleflow = this.headerService.getSaleflow();
     this.banks = (
       await this.walletService.exchangeData(
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
@@ -78,6 +88,12 @@ export class PaymentsComponent implements OnInit {
     this.image = null;
   }
 
+  orderCompleted() {
+    this.router.navigate([`ecommerce/order-info/${this.order._id}`], {
+      replaceUrl: true,
+    });
+  }
+
   async submitPayment() {
     this.disableButton = true;
     lockUI();
@@ -92,6 +108,6 @@ export class PaymentsComponent implements OnInit {
       this.order._id
     );
     unlockUI();
-    this.router.navigate([`ecommerce/order-info/${this.order._id}`]);
+    this.orderCompleted();
   }
 }
