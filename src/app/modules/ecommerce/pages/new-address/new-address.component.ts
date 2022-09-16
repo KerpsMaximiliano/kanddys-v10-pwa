@@ -154,7 +154,7 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
-    if (!this.user) return;
+    // if (!this.user) return;
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
@@ -165,29 +165,33 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
+
+    // TODO: meter esto dentro del if de abajo
     this.addresses.push(...this.user.deliveryLocations);
-    this.user.deliveryLocations?.forEach((locations) => {
-      this.addressesOptions.push({
-        status: true,
-        id: locations._id,
-        click: true,
-        value: locations.nickName,
-        valueStyles: {
-          fontFamily: 'SfProBold',
-          fontSize: '0.875rem',
-          color: '#000000',
-        },
-        subtexts: [
-          {
-            text: `${locations.street}, ${locations.city}, República Dominicana`,
-            styles: {
-              fontFamily: 'SfProRegular',
-              fontSize: '1rem',
-            },
+    if (this.user) {
+      this.user.deliveryLocations?.forEach((locations) => {
+        this.addressesOptions.push({
+          status: true,
+          id: locations._id,
+          click: true,
+          value: locations.nickName,
+          valueStyles: {
+            fontFamily: 'SfProBold',
+            fontSize: '0.875rem',
+            color: '#000000',
           },
-        ],
+          subtexts: [
+            {
+              text: `${locations.street}, ${locations.city}, República Dominicana`,
+              styles: {
+                fontFamily: 'SfProRegular',
+                fontSize: '1rem',
+              },
+            },
+          ],
+        });
       });
-    });
+    }
   }
 
   onOpenDialog = () => {
@@ -302,7 +306,7 @@ export class NewAddressComponent implements OnInit {
         if (this.user || this.headerService.user) {
           this.authService.signoutThree();
           this.addressesOptions.length = 1;
-          this.newAddressOption = null;
+          // this.newAddressOption = null;
           this.user = null;
         }
         this.headerService.storeOrderAnonymous(this.saleflow._id);
@@ -334,7 +338,7 @@ export class NewAddressComponent implements OnInit {
     }
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length > 1 ||
-      (this.headerService.saleflow.module.delivery.deliveryLocation && !isAnon)
+      (this.headerService.saleflow.module.delivery.deliveryLocation)
     ) {
       this.mode = 'normal';
       return;

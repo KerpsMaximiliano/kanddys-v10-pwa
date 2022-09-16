@@ -169,8 +169,10 @@
           }"
           *ngIf="order.items[0].deliveryLocation.street"
         >
+          {{ order.items[0].deliveryLocation.houseNumber ? '#' + order.items[0].deliveryLocation.houseNumber + ', ' : '' }}
           {{ order.items[0].deliveryLocation.street }},
-          {{ order.items[0].deliveryLocation.city }}, República Dominicana
+          {{ order.items[0].deliveryLocation.referencePoint ? order.items[0].deliveryLocation.referencePoint + ', ' : '' }}
+           {{ order.items[0].deliveryLocation.city }}, República Dominicana
         </p>
       </div>
     </section>
