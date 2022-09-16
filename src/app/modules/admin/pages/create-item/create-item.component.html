@@ -171,11 +171,7 @@
                         [allowedTypes]="['png', 'jpg', 'jpeg']"
                         [multiple]="true"
                         [imageField]="[valuesControl?.value?.image]"
-                        [innerLabel]="
-                          !justDynamicMode
-                            ? 'Imagen o imágenes'
-                            : 'Sube la imagen o imágenes que representa este precio.'
-                        "
+                        [placeholderImage]="true"
                         [expandImage]="true"
                         [uploadImagesWithoutPlaceholderBox]="true"
                         [allowDeletion]="true"
@@ -192,13 +188,7 @@
                           boxShadow: 'lightgrey 0px 3px 8px inset',
                           justifyContent: !justDynamicMode ? 'center' : null,
                           alignItems: !justDynamicMode ? 'flex-start' : null,
-                          paddingLeft: !justDynamicMode ? '0' : '17px',
-                          paddingTop: !justDynamicMode ? '31px' : null,
-                          textAlign: !justDynamicMode ? 'center' : 'left',
-                          fontFamily: 'RobotoMedium',
-                          fontWeight: 'normal',
-                          marginLeft: 'auto',
-                          fontSize: !justDynamicMode ? '1.25rem' : '0.9rem'
+                          marginLeft: 'auto'
                         }"
                         (onFileInputMultiple)="
                           handleImageInput(
