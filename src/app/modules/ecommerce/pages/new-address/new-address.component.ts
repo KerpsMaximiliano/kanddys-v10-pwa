@@ -165,6 +165,8 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
+
+    // TODO: meter esto dentro del if de abajo
     this.addresses.push(...this.user.deliveryLocations);
     if (this.user) {
       this.user.deliveryLocations?.forEach((locations) => {
@@ -304,7 +306,7 @@ export class NewAddressComponent implements OnInit {
         if (this.user || this.headerService.user) {
           this.authService.signoutThree();
           this.addressesOptions.length = 1;
-          this.newAddressOption = null;
+          // this.newAddressOption = null;
           this.user = null;
         }
         this.headerService.storeOrderAnonymous(this.saleflow._id);
