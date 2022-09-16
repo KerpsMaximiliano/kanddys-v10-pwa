@@ -10,6 +10,7 @@ import { Merchant } from 'src/app/core/models/merchant';
 import { CalendarsService } from 'src/app/core/services/calendars.service';
 import { ExtendedCalendar } from 'src/app/core/services/calendars.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 
 interface HourOption {
@@ -177,7 +178,8 @@ export class ReservationsCreatorComponent implements OnInit {
     private route: ActivatedRoute,
     private calendarsService: CalendarsService,
     private router: Router,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private reservationsService: ReservationService
   ) {}
 
   ngOnInit(): void {
@@ -228,7 +230,7 @@ export class ReservationsCreatorComponent implements OnInit {
     });
   }
 
-  generateHourList(selectedDayNumber: number = null) {
+  async generateHourList(selectedDayNumber: number = null) {
     this.timeRangeOptions = [];
     this.listOfHourRangesForSelectedDay = [];
 
@@ -323,7 +325,7 @@ export class ReservationsCreatorComponent implements OnInit {
     while (loopCurrentHour < calendarHourRangeLimit) {
       let hourIn12HourFormat = null;
 
-      if(loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
+      if (loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
       else hourIn12HourFormat = loopCurrentHour;
 
       const fromHour: HourOption = {
@@ -359,21 +361,31 @@ export class ReservationsCreatorComponent implements OnInit {
         loopCurrentHour += hoursInsideChunkSize;
         hourFractionAccumulator = remainingMinutes;
       }
-      
-      if(loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
+
+      if (loopCurrentHour > 12) hourIn12HourFormat = loopCurrentHour - 12;
       else hourIn12HourFormat = loopCurrentHour;
 
+      const toHourToShow =
+        hourFractionAccumulator === 0
+          ? hourIn12HourFormat - 1
+          : hourIn12HourFormat;
+
+      const minutesToShow =
+        hourFractionAccumulator === 0
+          ? 60 - this.calendarData.breakTime
+          : hourFractionAccumulator - this.calendarData.breakTime;
+
       const toHour: HourOption = {
-        hourNumber: hourIn12HourFormat,
+        hourNumber: loopCurrentHour,
         minutesNumber: hourFractionAccumulator,
         minutesString:
-          String(hourFractionAccumulator).length < 2
-            ? '0' + hourFractionAccumulator
-            : String(hourFractionAccumulator),
+          String(minutesToShow).length < 2
+            ? '0' + minutesToShow
+            : String(minutesToShow),
         hourString:
-          String(hourIn12HourFormat).length < 2
-            ? '0' + hourIn12HourFormat
-            : String(hourIn12HourFormat),
+          String(toHourToShow).length < 2
+            ? '0' + toHourToShow
+            : String(toHourToShow),
         timeOfDay: loopCurrentHour < 12 ? 'AM' : 'PM',
       };
 
@@ -388,16 +400,20 @@ export class ReservationsCreatorComponent implements OnInit {
       ) {
         this.timeRangeOptions.push({
           click: true,
-          value: `De ${fromHour.hourNumber}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourNumber}:${toHour.minutesString} ${toHour.timeOfDay}`,
+          value: `De ${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourString}:${toHour.minutesString} ${toHour.timeOfDay}`,
           status: true,
         });
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
-          fromLabel: `${fromHour.hourNumber}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
+          fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
           to: toHour,
-          toLabel: `${toHour.hourNumber}:${toHour.minutesString} ${toHour.timeOfDay}`,
+          toLabel: `${toHour.hourString}:${toHour.minutesString} ${toHour.timeOfDay}`,
         });
       }
+    }
+
+    for await (const hourRange of this.listOfHourRangesForSelectedDay) {
+      console.log('hourRange', hourRange);
     }
   }
 
@@ -432,5 +448,29 @@ export class ReservationsCreatorComponent implements OnInit {
       this.listOfHourRangesForSelectedDay[dateOptionIndex].toLabel;
 
     this.selectedDate.filled = true;
+  }
+
+  async makeReservation() {
+    /*
+    const utcOffset = this.selectedDate.date.getTimezoneOffset();
+
+    this.selectedDate.date.setUTCHours(this.selectedDate.)
+    */
+
+
+    /*
+    this.reservationsService.createReservationAuthLess({
+      calendar: this.calendarData._id,
+      merchant: this.calendarMerchant._id,
+      type: 'ORDER',
+      breakTime: this.calendarData.breakTime,
+      date: {
+        dateType: 'RANGE',
+        from: from,
+        until: untilString,
+        fromHour: convertedFromHour,
+        toHour: convertedToHour,
+      },
+    });*/
   }
 }
