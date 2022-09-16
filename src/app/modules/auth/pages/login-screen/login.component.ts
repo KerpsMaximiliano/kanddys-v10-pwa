@@ -625,7 +625,9 @@ export class LoginComponent implements OnInit {
           }
         }
 
-        this.router.navigate(['admin/options/' + this.itemId]);
+        this.router.navigate(['admin/options/' + this.itemId], {
+          replaceUrl: true,
+        });
         return;
 
         break;

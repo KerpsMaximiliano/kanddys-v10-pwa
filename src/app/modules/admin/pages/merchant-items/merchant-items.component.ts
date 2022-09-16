@@ -644,14 +644,6 @@ export class MerchantItemsComponent implements OnInit {
         list,
         alternate: true,
         hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '64px',
-          },
-          dialogCard: {
-            paddingBottom: '64px',
-          },
-        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
