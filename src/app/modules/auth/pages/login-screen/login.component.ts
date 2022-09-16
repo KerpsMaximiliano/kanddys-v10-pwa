@@ -625,7 +625,7 @@ export class LoginComponent implements OnInit {
           }
         }
 
-        this.router.navigate(['admin/item-display/' + this.itemId]);
+        this.router.navigate(['admin/options/' + this.itemId]);
         return;
 
         break;
