@@ -41,6 +41,8 @@ import {
   ItemCategoryInput,
   ItemInput,
   ItemPackage,
+  ItemParam,
+  ItemParamInput,
   ItemParamValueInput,
 } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
@@ -49,6 +51,7 @@ import { ListParams } from '../types/general.types';
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  temporalItemParams: ItemParamInput[];
   temporalImages: {
     old: string[];
     new: File[];

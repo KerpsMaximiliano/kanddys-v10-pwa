@@ -13,10 +13,13 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
@@ -36,6 +39,9 @@ export class LoginComponent implements OnInit {
   loggin: boolean;
   signUp: boolean;
   orderId: string;
+  itemId: string;
+  doesItemHasParams: boolean;
+  action: string;
   orderStatus: string;
   hasPayment: boolean;
   OTP: boolean = false;
@@ -82,12 +88,19 @@ export class LoginComponent implements OnInit {
     private headerService: HeaderService,
     private orderService: OrderService,
     private merchantService: MerchantsService,
+    private itemsService: ItemsService,
+    private saleflowsService: SaleFlowService,
     private location: Location,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
+    this.itemId = this.route.snapshot.queryParamMap.get('itemId');
+    this.action = this.route.snapshot.queryParamMap.get('action');
+    this.doesItemHasParams = Boolean(
+      this.route.snapshot.queryParamMap.get('hasParams')
+    );
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -315,6 +328,12 @@ export class LoginComponent implements OnInit {
           return;
         }
 
+        if (this.itemId) {
+          await this.createItem(checkOTP.user);
+
+          return;
+        }
+
         if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
@@ -356,6 +375,13 @@ export class LoginComponent implements OnInit {
           this.authOrder(session.user._id);
           return;
         }
+
+        if (this.itemId) {
+          await this.createItem(session.user);
+
+          return;
+        }
+
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
@@ -387,6 +413,12 @@ export class LoginComponent implements OnInit {
         this.authOrder(signin.user._id);
         return;
       }
+
+      if (this.itemId) {
+        await this.createItem(signin.user);
+        return;
+      }
+
       this.router.navigate([`admin/entity-detail-metrics`], {
         replaceUrl: true,
       });
@@ -481,6 +513,122 @@ export class LoginComponent implements OnInit {
         timeOut: 2200,
       });
       return;
+    }
+  }
+
+  async getDefaultMerchantAndSaleflows(user: User): Promise<{
+    merchantDefault: Merchant;
+    saleflowDefault: SaleFlow;
+  }> {
+    if (!user?._id) return null;
+
+    let userMerchantDefault = await this.merchantService.merchantDefault(
+      user._id
+    );
+
+    if (!userMerchantDefault) {
+      const merchants = await this.merchantService.myMerchants();
+
+      if (merchants.length === 0) {
+        const { createMerchant: createdMerchant } =
+          await this.merchantService.createMerchant({
+            owner: user._id,
+            name: user.name + ' mechant #' + Math.floor(Math.random() * 100000),
+          });
+
+        const { merchantSetDefault: defaultMerchant } =
+          await this.merchantService.setDefaultMerchant(createdMerchant._id);
+
+        if (defaultMerchant) userMerchantDefault = defaultMerchant;
+      }
+    }
+
+    let userSaleflowDefault = await this.saleflowsService.saleflowDefault(
+      userMerchantDefault._id
+    );
+
+    if (!userSaleflowDefault) {
+      const { createSaleflow: createdSaleflow } =
+        await this.saleflowsService.createSaleflow({
+          merchant: userMerchantDefault._id,
+          name:
+            userMerchantDefault._id +
+            ' saleflow #' +
+            Math.floor(Math.random() * 100000),
+          items: [],
+        });
+
+      const { saleflowSetDefault: defaultSaleflow } =
+        await this.saleflowsService.setDefaultSaleflow(
+          userMerchantDefault._id,
+          createdSaleflow._id
+        );
+
+      this.saleflowsService.createSaleFlowModule({
+        saleflow: createdSaleflow._id,
+      });
+
+      userSaleflowDefault = defaultSaleflow;
+    }
+
+    return {
+      merchantDefault: userMerchantDefault,
+      saleflowDefault: userSaleflowDefault,
+    };
+  }
+
+  async createItem(user: User) {
+    switch (this.action) {
+      case 'precreateitem':
+        const {
+          merchantDefault: userMerchantDefault,
+          saleflowDefault: userSaleflowDefault,
+        } = await this.getDefaultMerchantAndSaleflows(user);
+
+        await this.itemsService.authItem(userMerchantDefault._id, this.itemId);
+
+        await this.saleflowsService.addItemToSaleFlow(
+          {
+            item: this.itemId,
+          },
+          userSaleflowDefault._id
+        );
+
+        if (this.doesItemHasParams) {
+          const itemParams = this.itemsService.temporalItemParams;
+
+          if (itemParams.length > 0 && itemParams[0].values.length > 0) {
+            const { createItemParam } = await this.itemsService.createItemParam(
+              userMerchantDefault._id,
+              this.itemId,
+              {
+                name: itemParams[0].name,
+                formType: 'color',
+                values: [],
+              }
+            );
+            const paramValues = itemParams[0].values.map((value) => {
+              return {
+                name: value.name,
+                image: value.image,
+                price: value.price,
+                description: value.description,
+              };
+            });
+
+            await this.itemsService.addItemParamValue(
+              paramValues,
+              createItemParam._id,
+              userMerchantDefault._id,
+              this.itemId
+            );
+          }
+        }
+
+        this.router.navigate(['admin/item-display/' + this.itemId]);
+        return;
+
+        break;
     }
   }
 

@@ -365,14 +365,16 @@ export class CreateItemComponent implements OnInit {
             this.submitEventFinished = true;
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
-            this.router.navigate(
-              [`/auth/authentication/${createPreItem?._id}`],
-              {
-                queryParams: {
-                  type: 'create-item',
-                },
-              }
-            );
+
+            if (this.hasParams) this.itemService.temporalItemParams = params;
+
+            this.router.navigate([`/auth/login`], {
+              queryParams: {
+                itemId: createPreItem?._id,
+                hasParams: this.hasParams,
+                action: 'precreateitem',
+              },
+            });
           }
         }
       }
