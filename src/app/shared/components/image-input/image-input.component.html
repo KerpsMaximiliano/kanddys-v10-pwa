@@ -107,7 +107,15 @@
             [ngStyle]="fileStyles ? fileStyles : null"
             [ngClass]="{ error: error[i], small: small }"
           >
-            <ng-container *ngIf="!image">{{ innerLabel }}</ng-container>
+            <ng-container *ngIf="!image && placeholderImage"
+              ><img
+                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/upload.svg"
+                alt="Imagen de subida"
+                style="width: 35%"
+            /></ng-container>
+            <ng-container *ngIf="!image && !placeholderImage">{{
+              innerLabel
+            }}</ng-container>
           </label>
 
           <div
