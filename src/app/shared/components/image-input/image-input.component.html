@@ -108,11 +108,7 @@
             [ngClass]="{ error: error[i], small: small }"
           >
             <ng-container *ngIf="!image && placeholderImage"
-              ><img
-                src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/upload.svg"
-                alt="Imagen de subida"
-                style="width: 35%"
-            /></ng-container>
+              ><i class="far fa-light fa-image"></i></ng-container>
             <ng-container *ngIf="!image && !placeholderImage">{{
               innerLabel
             }}</ng-container>
