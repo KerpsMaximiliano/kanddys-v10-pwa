@@ -101,6 +101,31 @@ export class LoginComponent implements OnInit {
     this.doesItemHasParams = Boolean(
       this.route.snapshot.queryParamMap.get('hasParams')
     );
+
+    if (this.action === 'precreateitem' && this.doesItemHasParams) {
+      const itemParams = this.itemsService.temporalItemParams;
+
+      if (typeof itemParams === 'undefined' || !itemParams) {
+        const flowRoute = localStorage.getItem('flowRoute');
+        if (flowRoute && flowRoute.length > 1) {
+          const [baseRoute, paramsString] = flowRoute.split('?');
+          const paramsArray = paramsString.split('&');
+          const queryParams = {};
+
+          paramsArray.forEach((param) => {
+            const [key, value] = param.split('=');
+
+            queryParams[key] = value;
+          });
+
+          localStorage.removeItem('flowRoute');
+          this.router.navigate([baseRoute], {
+            queryParams,
+          });
+        }
+      }
+    }
+
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -595,8 +620,14 @@ export class LoginComponent implements OnInit {
         );
 
         if (this.doesItemHasParams) {
+          const itemParams = this.itemsService.temporalItemParams;
+
+          if (!itemParams) this.router.navigate([this.headerService.flowRoute]);
+
+          /*
           const itemParams = JSON.parse(localStorage.getItem("temporalItemParams"));
           localStorage.removeItem("temporalItemParams");
+          */
 
           if (itemParams.length > 0 && itemParams[0].values.length > 0) {
             const { createItemParam } = await this.itemsService.createItemParam(
@@ -626,9 +657,7 @@ export class LoginComponent implements OnInit {
           }
         }
 
-        this.router.navigate(['admin/options/' + this.itemId], {
-          replaceUrl: true,
-        });
+        this.router.navigate(['admin/options/' + this.itemId]);
         return;
 
         break;

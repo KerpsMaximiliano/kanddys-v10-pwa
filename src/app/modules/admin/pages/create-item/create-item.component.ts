@@ -81,6 +81,7 @@ export class CreateItemComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const justdynamicmode =
       this.route.snapshot.queryParamMap.get('justdynamicmode');
@@ -363,14 +364,17 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createPreItem) {
             this.submitEventFinished = true;
-            this.headerService.flowRoute = this.router.url;
+            localStorage.setItem('flowRoute', this.router.url);
             this.itemService.removeTemporalItem();
 
             if (this.hasParams) {
+              this.itemService.temporalItemParams = params;
+              /*
               localStorage.setItem(
                 'temporalItemParams',
                 JSON.stringify(params)
               );
+              */
             }
 
             this.router.navigate([`/auth/login`], {
@@ -469,13 +473,13 @@ export class CreateItemComponent implements OnInit {
       {
         title: 'Articulo',
         options: [
-          // {
-          //   text: 'Simple',
-          //   mode: 'func',
-          //   func: () => {
-          //     //this.router.navigate(['/ecommerce/item-detail']);
-          //   },
-          // },
+          {
+            text: 'Simple',
+            mode: 'func',
+            func: () => {
+              //this.router.navigate(['/ecommerce/item-detail']);
+            },
+          },
           {
             text: 'WhatsApp Form',
             mode: 'func',
@@ -485,7 +489,7 @@ export class CreateItemComponent implements OnInit {
             },
           },
           {
-            text: !this.hasParams ? 'Compuesto' : 'Simple',
+            text: !this.hasParams ? 'Dinámico' : 'Estático',
             mode: 'func',
             func: () => {
               if (!this.hasParams) {
