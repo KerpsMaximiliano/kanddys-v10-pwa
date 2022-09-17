@@ -24,7 +24,7 @@ export class MetricsInfoComponent implements OnInit {
       },
       subtexts: [
          {
-            text: `Crear un nuevo articulo de precio dinámico`,
+            text: `Crear un nuevo articulo compuesto`,
             styles: {
                fontFamily: 'SfProRegular',
                fontSize: '1rem',

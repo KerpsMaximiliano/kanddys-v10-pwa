@@ -469,13 +469,13 @@ export class CreateItemComponent implements OnInit {
       {
         title: 'Articulo',
         options: [
-          {
-            text: 'Simple',
-            mode: 'func',
-            func: () => {
-              //this.router.navigate(['/ecommerce/item-detail']);
-            },
-          },
+          // {
+          //   text: 'Simple',
+          //   mode: 'func',
+          //   func: () => {
+          //     //this.router.navigate(['/ecommerce/item-detail']);
+          //   },
+          // },
           {
             text: 'WhatsApp Form',
             mode: 'func',
@@ -485,7 +485,7 @@ export class CreateItemComponent implements OnInit {
             },
           },
           {
-            text: !this.hasParams ? 'Dinámico' : 'Estático',
+            text: !this.hasParams ? 'Compuesto' : 'Simple',
             mode: 'func',
             func: () => {
               if (!this.hasParams) {

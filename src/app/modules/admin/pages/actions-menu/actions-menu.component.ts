@@ -15,7 +15,7 @@ const options = [
     status: true,
     id: 'articles',
     click: true,
-    value: 'Artículos',
+    value: 'Ver artículos',
     valueStyles: {
       'font-family': 'SfProBold',
       'font-size': '13px',
@@ -23,7 +23,7 @@ const options = [
     },
     subtexts: [
       {
-        text: `Ir a mi galeria de mis artículos`,
+        text: `Ir a la galeria de mis artículos`,
         styles: {
           fontFamily: 'SfProRegular',
           fontSize: '1rem',
@@ -36,7 +36,7 @@ const options = [
     status: true,
     id: 'articleID',
     click: true,
-    value: 'Ocultar',
+    value: 'Ocultar este',
     valueStyles: {
       'font-family': 'SfProBold',
       'font-size': '13px',
@@ -57,7 +57,7 @@ const options = [
     status: true,
     id: 'group',
     click: true,
-    value: 'Este y otro artículos',
+    value: 'Ocultar el resto',
     valueStyles: {
       'font-family': 'SfProBold',
       'font-size': '13px',
@@ -65,7 +65,7 @@ const options = [
     },
     subtexts: [
       {
-        text: `Poner invisible los otros artículos excepto este`,
+        text: `Poner invisible todos los artículos excepto este`,
         styles: {
           fontFamily: 'SfProRegular',
           fontSize: '1rem',
@@ -78,7 +78,7 @@ const options = [
     status: true,
     id: 'home',
     click: true,
-    value: 'D` Licianthus',
+    value: 'Saleflow',
     valueStyles: {
       'font-family': 'SfProBold',
       'font-size': '13px',
@@ -86,7 +86,7 @@ const options = [
     },
     subtexts: [
       {
-        text: `Ir al Home`,
+        text: `Ir a la tienda`,
         styles: {
           fontFamily: 'SfProRegular',
           fontSize: '1rem',
@@ -107,7 +107,7 @@ const options = [
     },
     subtexts: [
       {
-        text: `Crear un nuevo articulo de precio dinámico.`,
+        text: `Crear un nuevo artículo.`,
         styles: {
           fontFamily: 'SfProRegular',
           fontSize: '1rem',
@@ -165,7 +165,7 @@ export class ActionsMenuComponent implements OnInit {
         ]);
         if (!user || !merchant || !item) return;
 
-        options[3].value = merchant.name || "MerchantID";
+        options[3].value = merchant.name || 'MerchantID';
 
         this.user = user;
         this.item = item;
