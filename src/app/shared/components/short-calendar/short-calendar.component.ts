@@ -56,7 +56,8 @@ export class ShortCalendarComponent implements OnInit {
   }
 
   onClick(day: Day) {
-    if (!day.weekDayNumber) return;
+    if (!day.weekDayNumber && !this.allowedDays) return;
+
     this.selectedDay = new Date(
       this.calendarService.year,
       this.calendarService.months[this.calendarService.monthIndex].id,
