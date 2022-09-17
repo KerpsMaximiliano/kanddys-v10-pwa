@@ -62,6 +62,7 @@ export class ReservationsCreatorComponent implements OnInit {
   selectedDate: {
     dayName: string;
     monthName: string;
+    monthNumber?: number;
     date: Date;
     fromHour: HourOption;
     toHour: HourOption;
@@ -431,6 +432,7 @@ export class ReservationsCreatorComponent implements OnInit {
           .spanishName,
       dayOfTheMonthNumber,
       monthName: this.allMonths[monthNumber].name,
+      monthNumber: selectedDateObject.getMonth() + 1,
     };
 
     this.generateHourList(dayOfTheMonthNumber);
@@ -451,26 +453,54 @@ export class ReservationsCreatorComponent implements OnInit {
   }
 
   async makeReservation() {
-    /*
     const utcOffset = this.selectedDate.date.getTimezoneOffset();
+    const currentYear = new Date().getFullYear();
 
-    this.selectedDate.date.setUTCHours(this.selectedDate.)
-    */
+    const fromDateObject = new Date(
+      currentYear,
+      this.selectedDate.monthNumber,
+      this.selectedDate.dayOfTheMonthNumber,
+      this.selectedDate.fromHour.timeOfDay === 'PM'
+        ? this.selectedDate.fromHour.hourNumber + 12
+        : this.selectedDate.fromHour.hourNumber,
+      this.selectedDate.fromHour.minutesNumber
+    );
+    const toDateObject = new Date(
+      currentYear,
+      this.selectedDate.monthNumber,
+      this.selectedDate.dayOfTheMonthNumber,
+      this.selectedDate.toHour.hourNumber,
+      this.selectedDate.toHour.minutesNumber
+    );
 
+    const fromHourNumber =
+      this.selectedDate.fromHour.timeOfDay === 'PM'
+        ? this.selectedDate.fromHour.hourNumber + 12
+        : this.selectedDate.fromHour.hourNumber;
 
-    /*
-    this.reservationsService.createReservationAuthLess({
+    const fromHourString =
+      String(fromHourNumber).length < 2
+        ? '0' + String(fromHourNumber)
+        : String(fromHourNumber);
+
+    const toHourString =
+      String(this.selectedDate.toHour.hourNumber).length < 2
+        ? '0' + String(this.selectedDate.toHour.hourNumber)
+        : String(this.selectedDate.toHour.hourNumber);
+
+    await this.reservationsService.createReservationAuthLess({
       calendar: this.calendarData._id,
       merchant: this.calendarMerchant._id,
       type: 'ORDER',
       breakTime: this.calendarData.breakTime,
       date: {
         dateType: 'RANGE',
-        from: from,
-        until: untilString,
-        fromHour: convertedFromHour,
-        toHour: convertedToHour,
+        from: fromDateObject,
+        until: toDateObject,
+        fromHour:
+          fromHourString + ':' + this.selectedDate.fromHour.minutesString,
+        toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
-    });*/
+    });
   }
 }
