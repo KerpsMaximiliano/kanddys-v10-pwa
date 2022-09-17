@@ -21,8 +21,13 @@
                   ? 'selector-option active'
                   : 'selector-option'
               "
+              [ngClass]="{ disabledOption: blockIndexes.includes(i) }"
               [ngStyle]="itemStyles ? itemStyles : null"
-              (click)="editable && option.status && clickSelector(i)"
+              (click)="
+                editable && option.status && !blockIndexes.includes(i)
+                  ? clickSelector(i)
+                  : null
+              "
             >
               <div class="background"></div>
 

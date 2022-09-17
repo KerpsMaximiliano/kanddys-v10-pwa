@@ -12,6 +12,7 @@ import { ExtendedCalendar } from 'src/app/core/services/calendars.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import * as moment from 'moment';
 
 interface HourOption {
   hourNumber: number;
@@ -77,6 +78,7 @@ export class ReservationsCreatorComponent implements OnInit {
     to: HourOption;
     toLabel?: string;
   }> = [];
+  hourRangesBlocked: number[] = [];
 
   allMonths: {
     id: number;
@@ -234,6 +236,7 @@ export class ReservationsCreatorComponent implements OnInit {
   async generateHourList(selectedDayNumber: number = null) {
     this.timeRangeOptions = [];
     this.listOfHourRangesForSelectedDay = [];
+    this.hourRangesBlocked = [];
 
     const currentDateObject = new Date();
     const currentHour = currentDateObject.getHours();
@@ -404,6 +407,28 @@ export class ReservationsCreatorComponent implements OnInit {
           value: `De ${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay} a ${toHour.hourString}:${toHour.minutesString} ${toHour.timeOfDay}`,
           status: true,
         });
+
+        /****************** aqui va el codigo que convierte las horas a formato 24 horas **************/
+        const [fromHourString, toHourString] = this.getHourIn24HourFormat(
+          fromHour,
+          toHour
+        );
+
+        console.log(fromHourString, toHourString);
+        /**************aqui termina el codigo que convierte las horas a formato 24 horas **************/
+
+        for (const reservation of this.calendarData.reservations) {
+          console.log()
+          if (
+            fromHourString === reservation.date.fromHour &&
+            toHourString === reservation.date.toHour &&
+            reservation.reservation.length ===
+              this.calendarData.reservationLimits
+          ) {
+            this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+          }
+        }
+
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
           fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
@@ -413,9 +438,9 @@ export class ReservationsCreatorComponent implements OnInit {
       }
     }
 
-    for await (const hourRange of this.listOfHourRangesForSelectedDay) {
+    /*for await (const hourRange of this.listOfHourRangesForSelectedDay) {
       console.log('hourRange', hourRange);
-    }
+    }*/
   }
 
   rerenderAvailableHours(selectedDateObject: Date) {
@@ -453,10 +478,10 @@ export class ReservationsCreatorComponent implements OnInit {
   }
 
   async makeReservation() {
-    const utcOffset = this.selectedDate.date.getTimezoneOffset();
+    const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
     const currentYear = new Date().getFullYear();
 
-    const fromDateObject = new Date(
+    let fromDateObject = new Date(
       currentYear,
       this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
@@ -465,13 +490,21 @@ export class ReservationsCreatorComponent implements OnInit {
         : this.selectedDate.fromHour.hourNumber,
       this.selectedDate.fromHour.minutesNumber
     );
-    const toDateObject = new Date(
+    fromDateObject = moment(fromDateObject)
+      .subtract(utcOffset, 'hours')
+      .toDate();
+
+    let toDateObject = new Date(
       currentYear,
       this.selectedDate.monthNumber,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
     );
+    toDateObject = moment(toDateObject).subtract(utcOffset, 'hours').toDate();
+
+    console.log(fromDateObject);
+    console.log(toDateObject);
 
     const fromHourNumber =
       this.selectedDate.fromHour.timeOfDay === 'PM'
@@ -483,10 +516,16 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(fromHourNumber)
         : String(fromHourNumber);
 
+    let realToHour = Number(this.selectedDate.toHour.hourString);
+    realToHour =
+      this.selectedDate.toHour.timeOfDay === 'PM'
+        ? realToHour + 12
+        : realToHour;
+
     const toHourString =
-      String(this.selectedDate.toHour.hourNumber).length < 2
-        ? '0' + String(this.selectedDate.toHour.hourNumber)
-        : String(this.selectedDate.toHour.hourNumber);
+      String(realToHour).length < 2
+        ? '0' + String(realToHour)
+        : String(realToHour);
 
     await this.reservationsService.createReservationAuthLess({
       calendar: this.calendarData._id,
@@ -502,5 +541,30 @@ export class ReservationsCreatorComponent implements OnInit {
         toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
     });
+  }
+
+  getHourIn24HourFormat(
+    fromHour: HourOption,
+    toHour: HourOption
+  ): Array<string> {
+    const fromHourNumber =
+      fromHour.timeOfDay === 'PM'
+        ? fromHour.hourNumber + 12
+        : fromHour.hourNumber;
+
+    const fromHourString =
+      String(fromHourNumber).length < 2
+        ? '0' + String(fromHourNumber) + ':' + fromHour.minutesString
+        : String(fromHourNumber) + ':' + fromHour.minutesString;
+
+    let realToHour = Number(toHour.hourString);
+    realToHour = toHour.timeOfDay === 'PM' ? realToHour + 12 : realToHour;
+
+    const toHourString =
+      String(realToHour).length < 2
+        ? '0' + String(realToHour) + ':' + toHour.minutesString
+        : String(realToHour) + ':' + toHour.minutesString;
+
+    return [fromHourString, toHourString];
   }
 }

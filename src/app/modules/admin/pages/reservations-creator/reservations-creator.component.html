@@ -101,6 +101,7 @@
 
           <app-answer-selector
             [options]="timeRangeOptions"
+            [blockIndexes]="hourRangesBlocked"
             [indicator]="true"
             [showDescription]="false"
             [containerStyles]="{
@@ -134,7 +135,7 @@
 
       <app-sticky-button
         *ngIf="selectedDate && selectedDate.filled"
-        text="CONFIRMALA POR WHATSAPP"
+        text="Continuar al resumen de la factura"
         [mode]="'fixed'"
         [bgColor]="'#2874AD'"
         [height]="'max-content'"

@@ -28,6 +28,7 @@ export class AnswerSelectorComponent {
     { value: '¿Dónde es?', status: true, click: false, description: [] },
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
+  @Input() blockIndexes: number[];
   @Input() complexOptions: ComplexOptionAnswerSelector[];
   @Input() values: BankAnswers;
 
