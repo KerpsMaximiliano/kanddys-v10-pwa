@@ -366,7 +366,12 @@ export class CreateItemComponent implements OnInit {
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
 
-            if (this.hasParams) this.itemService.temporalItemParams = params;
+            if (this.hasParams) {
+              localStorage.setItem(
+                'temporalItemParams',
+                JSON.stringify(params)
+              );
+            }
 
             this.router.navigate([`/auth/login`], {
               queryParams: {

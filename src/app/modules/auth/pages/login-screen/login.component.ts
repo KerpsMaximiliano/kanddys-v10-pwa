@@ -595,7 +595,8 @@ export class LoginComponent implements OnInit {
         );
 
         if (this.doesItemHasParams) {
-          const itemParams = this.itemsService.temporalItemParams;
+          const itemParams = JSON.parse(localStorage.getItem("temporalItemParams"));
+          localStorage.removeItem("temporalItemParams");
 
           if (itemParams.length > 0 && itemParams[0].values.length > 0) {
             const { createItemParam } = await this.itemsService.createItemParam(
