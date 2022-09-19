@@ -26,11 +26,19 @@ export class AdminOrderComponent implements OnInit {
   payment: number;
   items: any[];
   registerForm = new FormGroup({
-    firstName: new FormControl(),
-    lastName: new FormControl(),
-    phoneNumber: new FormControl(),
-    email: new FormControl(),
-    password: new FormControl(),
+    firstName: new FormControl('',[
+      Validators.required,
+      Validators.minLength(2),
+      Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    ]),
+    lastName: new FormControl('',[
+      Validators.required,
+      Validators.minLength(2),
+      Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    ]),
+    phoneNumber: new FormControl('',[Validators.required]),
+    email: new FormControl('',[Validators.required, Validators.email]),
+    password: new FormControl('',[Validators.required, Validators.minLength(3)]),
   });
   order: ItemOrderInput;
   date: {
