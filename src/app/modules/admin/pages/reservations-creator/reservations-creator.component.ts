@@ -418,12 +418,14 @@ export class ReservationsCreatorComponent implements OnInit {
         /**************aqui termina el codigo que convierte las horas a formato 24 horas **************/
 
         for (const reservation of this.calendarData.reservations) {
-          console.log()
+          console.log();
           if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
             reservation.reservation.length ===
-              this.calendarData.reservationLimits
+              this.calendarData.reservationLimits &&
+            selectedDayNumber === new Date(reservation.date.from).getDate() &&
+            selectedDayNumber === new Date(reservation.date.until).getDate()
           ) {
             this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
           }
@@ -483,33 +485,41 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let fromDateObject = new Date(
       currentYear,
-      this.selectedDate.monthNumber,
+      this.selectedDate.monthNumber - 1,
       this.selectedDate.dayOfTheMonthNumber,
-      this.selectedDate.fromHour.timeOfDay === 'PM'
+      this.selectedDate.fromHour.timeOfDay === 'PM' &&
+      this.selectedDate.fromHour.hourNumber !== 12
         ? this.selectedDate.fromHour.hourNumber + 12
         : this.selectedDate.fromHour.hourNumber,
       this.selectedDate.fromHour.minutesNumber
     );
-    fromDateObject = moment(fromDateObject)
+    /*fromDateObject = moment(fromDateObject)
       .subtract(utcOffset, 'hours')
       .toDate();
+    */
 
     let toDateObject = new Date(
       currentYear,
-      this.selectedDate.monthNumber,
+      this.selectedDate.monthNumber - 1,
       this.selectedDate.dayOfTheMonthNumber,
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
     );
-    toDateObject = moment(toDateObject).subtract(utcOffset, 'hours').toDate();
+    //toDateObject = moment(toDateObject).subtract(utcOffset, 'hours').toDate();
 
     console.log(fromDateObject);
     console.log(toDateObject);
 
-    const fromHourNumber =
-      this.selectedDate.fromHour.timeOfDay === 'PM'
+    let fromHourNumber =
+      this.selectedDate.fromHour.timeOfDay === 'PM' &&
+      this.selectedDate.fromHour.hourNumber !== 12
         ? this.selectedDate.fromHour.hourNumber + 12
         : this.selectedDate.fromHour.hourNumber;
+
+    fromHourNumber =
+      fromHourNumber + utcOffset < 24
+        ? fromHourNumber + utcOffset
+        : 0 + Math.abs(24 - (fromHourNumber + 24));
 
     const fromHourString =
       String(fromHourNumber).length < 2
@@ -518,9 +528,15 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let realToHour = Number(this.selectedDate.toHour.hourString);
     realToHour =
-      this.selectedDate.toHour.timeOfDay === 'PM'
+      this.selectedDate.toHour.timeOfDay === 'PM' &&
+      this.selectedDate.toHour.hourNumber !== 12
         ? realToHour + 12
         : realToHour;
+
+    realToHour =
+      realToHour + utcOffset < 24
+        ? realToHour + utcOffset
+        : 0 + Math.abs(24 - (realToHour + 24));
 
     const toHourString =
       String(realToHour).length < 2
@@ -547,10 +563,17 @@ export class ReservationsCreatorComponent implements OnInit {
     fromHour: HourOption,
     toHour: HourOption
   ): Array<string> {
-    const fromHourNumber =
-      fromHour.timeOfDay === 'PM'
+    const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
+
+    let fromHourNumber =
+      fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
         ? fromHour.hourNumber + 12
         : fromHour.hourNumber;
+
+    fromHourNumber =
+      fromHourNumber + utcOffset < 24
+        ? fromHourNumber + utcOffset
+        : 0 + Math.abs(24 - (fromHourNumber + 24));
 
     const fromHourString =
       String(fromHourNumber).length < 2
@@ -558,7 +581,15 @@ export class ReservationsCreatorComponent implements OnInit {
         : String(fromHourNumber) + ':' + fromHour.minutesString;
 
     let realToHour = Number(toHour.hourString);
-    realToHour = toHour.timeOfDay === 'PM' ? realToHour + 12 : realToHour;
+    realToHour =
+      toHour.timeOfDay === 'PM' && toHour.hourNumber !== 12
+        ? realToHour + 12
+        : realToHour;
+
+    realToHour =
+      realToHour + utcOffset < 24
+        ? realToHour + utcOffset
+        : 0 + Math.abs(24 - (realToHour + 24));
 
     const toHourString =
       String(realToHour).length < 2

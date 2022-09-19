@@ -21,10 +21,13 @@
                   ? 'selector-option active'
                   : 'selector-option'
               "
-              [ngClass]="{ disabledOption: blockIndexes.includes(i) }"
+              [ngClass]="{
+                disabledOption: blockIndexes && blockIndexes.includes(i)
+              }"
               [ngStyle]="itemStyles ? itemStyles : null"
               (click)="
-                editable && option.status && !blockIndexes.includes(i)
+                (editable && option.status) ||
+                (blockIndexes && !blockIndexes.includes(i))
                   ? clickSelector(i)
                   : null
               "
