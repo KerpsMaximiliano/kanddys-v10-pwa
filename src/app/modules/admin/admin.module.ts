@@ -36,6 +36,7 @@ import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
+import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
@@ -217,6 +218,10 @@ const routes: Routes = [
     path: 'order-reservation',
     component: OrderReservationComponent
   },
+  {
+    path: 'admin-order',
+    component: AdminOrderComponent
+  },
 ];
 
 @NgModule({
@@ -255,6 +260,7 @@ const routes: Routes = [
     UserItemsComponent,
     MerchantSharedComponent,
     OrderReservationComponent,
+    AdminOrderComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
