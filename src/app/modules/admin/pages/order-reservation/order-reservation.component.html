@@ -50,12 +50,14 @@
           color: '#fff',
           textAlign: 'right',
           paddingRight: '22px',
-          backgroundColor: '#A1A1A1'
+          backgroundColor: '#A1A1A1',
+          cursor: 'unset'
         }"
         [customLeftButtonStyles]="{
           'border-left': '1px solid #ffffff',
           height: '30px',
-          backgroundColor: '#A1A1A1'
+          backgroundColor: '#A1A1A1',
+          cursor: 'unset'
         }"
         [height]="'30px'"
         [bgColor]="'#2874AD'"
@@ -65,7 +67,7 @@
       </app-sticky-button>
     </div>
 
-    <div *ngSwitchCase="'edit'">
+    <div class="edit" *ngSwitchCase="'edit'">
       <div class="answers-area">
         <h2 class="title">Selecciona entre estos para ID:</h2>
 
@@ -97,7 +99,7 @@
             margin: '0px',
             paddingBottom: '16px'
           }"
-          (onSelector)="optionClicked($event)"
+          (onSelector)="optionClickedArray($event)"
         ></app-answer-selector>
       </div>
 
@@ -116,16 +118,14 @@
             width: '85%',
             'max-width': 'none',
             'border-left': '1px solid #FFFFFF',
-            color: '#FFFFFF',
-            cursor: 'unset'
+            color: '#FFFFFF'
           }"
           [customRightButtonStyles]="{
             width: '1px',
-            heigth: '1px',
-            cursor: 'unset'
+            heigth: '1px'
           }"
           [text2]="''"
-          size="small"
+          [size]="'small'"
       ></app-sticky-button>
     </div>
 

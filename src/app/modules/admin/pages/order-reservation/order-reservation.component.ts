@@ -200,6 +200,11 @@ export class OrderReservationComponent implements OnInit {
     console.log(e);
   }
 
+  optionClickedArray(e){
+   console.log(e)
+   console.log(this.optionIndexArray);
+  }
+
   openDialog() {
     const list: StoreShareList[] = [
       {
@@ -216,7 +221,7 @@ export class OrderReservationComponent implements OnInit {
             text: 'EDITAR',
             mode: 'func',
             func: () => {
-              this.mode === 'edit';
+              this.mode = 'edit';
               console.log(this.mode)
             },
           },
@@ -224,7 +229,7 @@ export class OrderReservationComponent implements OnInit {
             text: 'BORRAR',
             mode: 'func',
             func: () => {
-              this.mode == 'delete';
+              this.mode = 'delete';
               console.log(this.mode)
             },
           },
