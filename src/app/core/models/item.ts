@@ -165,6 +165,7 @@ export class ItemInput {
   toPromotion?: boolean;
   showImages?: boolean;
   status?: ItemStatus;
+  collaboration?: number;
 }
 
 export class ItemCategoryInput {

@@ -185,8 +185,6 @@ export class ProviderStoreComponent implements OnInit {
             if (
               this.header.saleflow.module.delivery.pickUpLocations.length === 1
             ) {
-              this.header.locationData =
-                this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
               this.header.isComplete.delivery = true;

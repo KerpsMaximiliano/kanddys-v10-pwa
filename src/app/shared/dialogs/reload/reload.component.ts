@@ -5,21 +5,17 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-reload',
   templateUrl: './reload.component.html',
-  styleUrls: ['./reload.component.scss']
+  styleUrls: ['./reload.component.scss'],
 })
 export class ReloadComponent implements OnInit {
+  @Input() closeEvent: () => void;
+  env: string = environment.assetsUrl;
 
-   @Input() closeEvent: () => void;
-   env: string = environment.assetsUrl;
+  constructor(private ref: DialogRef) {}
 
-   constructor(
-   private ref: DialogRef
-   ) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   close() {
-   this.ref.close();
- }
+    this.ref.close();
+  }
 }

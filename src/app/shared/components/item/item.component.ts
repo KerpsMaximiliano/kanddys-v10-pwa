@@ -18,8 +18,14 @@ export class ItemComponent implements OnInit {
       let lowest = 0;
       this.item.params.forEach((params) => {
         params.values.forEach((values) => {
-          if (lowest === 0) lowest = values.price;
-          if (values.price < lowest) lowest = values.price;
+          if (lowest === 0) {
+            lowest = values.price;
+            if (this.item.images.length === 0) this.item.images.push(values.image);
+          } 
+          if (values.price < lowest) {
+            lowest = values.price;
+            if (this.item.images.length === 0) this.item.images.push(values.image);
+          }
         });
       });
       this.price = this.item.pricing + lowest;

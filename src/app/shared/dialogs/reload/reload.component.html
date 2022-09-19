@@ -1,14 +1,35 @@
 <div class="dialog-container">
-   <main class="main-body">
-      <h1 class="title">Actualización disponible</h1>
+  <main class="main-body">
+    <h1 class="title">Actualización disponible</h1>
 
-      <p class="subtext">Hay una actualización de página disponible.<br> ¿Desea recargar?</p>
+    <p class="subtext">
+      Hay una actualización de página disponible.<br />
+      ¿Desea recargar?
+    </p>
 
-      <p class="aclaratory">Al recargar perderás el progreso de los últimos segundos</p>
+    <p class="aclaratory">
+      Al recargar perderás el progreso de los últimos segundos
+    </p>
 
-      <div class="buttons-area">
-         <button class="half-button" (click)="closeEvent()" style="border-bottom-right-radius: 0px; border-bottom-left-radius: 10px; color: #127d12;">Recargar</button>
-         <button class="half-button" (click)="close()" style="border: none; color: #c50808;">Cancelar</button>
-      </div>
-   </main>
+    <div class="buttons-area">
+      <button
+        class="half-button"
+        (click)="closeEvent()"
+        style="
+          border-bottom-right-radius: 0px;
+          border-bottom-left-radius: 10px;
+          color: #127d12;
+        "
+      >
+        Recargar
+      </button>
+      <button
+        class="half-button"
+        (click)="close()"
+        style="border: none; color: #c50808"
+      >
+        Cancelar
+      </button>
+    </div>
+  </main>
 </div>

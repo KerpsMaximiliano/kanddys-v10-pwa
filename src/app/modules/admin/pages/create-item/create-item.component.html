@@ -1,9 +1,13 @@
 <div class="component">
   <header class="flex-between">
-    <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
+    <a (click)="goBack()" *ngIf="!justDynamicMode"
+      ><i class="fas fa-chevron-left"></i
+    ></a>
+
+    <span>Adicionando la alegria del dia</span>
 
     <!--  *ngIf="itemForm.valid" iba aqui abajo -->
-    <button class="dot-trio" (click)="onOpenDialog()">
+    <button class="dot-trio" (click)="!justDynamicMode ? onOpenDialog() : null" *ngIf="!justDynamicMode">
       <div class="dot"> </div>
       <div class="dot"> </div>
       <div class="dot"> </div>
@@ -35,7 +39,7 @@
           [accept]="['.png', '.jpg', '.jpeg']"
         />
         <input formControlName="images" style="display: none" />
-        <ng-container *ngIf="!imageField.length">
+        <ng-container *ngIf="!imageField.length && !justDynamicMode">
           <label
             [style.background]="sanitize('')"
             [for]="'filemultiple'"
@@ -56,11 +60,11 @@
           <section class="form-group p-side">
             <div class="flex-between" style="margin-bottom: 8px">
               <span class="info-label">Info</span>
-              <button type="button" class="dot-trio">
+              <!-- <button type="button" class="dot-trio">
                 <div class="dot blue"> </div>
                 <div class="dot blue"> </div>
                 <div class="dot blue"> </div>
-              </button>
+              </button> -->
             </div>
             <div class="template-grid">
               <div class="col-span-8">
@@ -116,6 +120,9 @@
               >
                 <section
                   class="form-group p-side"
+                  [ngStyle]="{
+                    marginTop: justDynamicMode ? '27px' : null
+                  }"
                   *ngFor="
                     let valuesControl of getControls(paramsControl, 'values');
                     index as j
@@ -164,8 +171,7 @@
                         [allowedTypes]="['png', 'jpg', 'jpeg']"
                         [multiple]="true"
                         [imageField]="[valuesControl?.value?.image]"
-                        innerLabel="Imagen o
-                        imágenes"
+                        [placeholderImage]="true"
                         [expandImage]="true"
                         [uploadImagesWithoutPlaceholderBox]="true"
                         [allowDeletion]="true"
@@ -178,16 +184,10 @@
                           width: '100%',
                           height: '122px',
                           border: 'none',
-                          color: '#A1A1A1',
+                          color: !justDynamicMode ? '#A1A1A1' : '#2874AD',
                           boxShadow: 'lightgrey 0px 3px 8px inset',
-                          justifyContent: 'flex-start',
-                          alignItems: 'flex-start',
-                          paddingLeft: '27px',
-                          paddingTop: '31px',
-                          textAlign: 'left',
-                          fontFamily: 'RobotoMedium',
-                          fontSize: '16px',
-                          fontWeight: 'normal',
+                          justifyContent: !justDynamicMode ? 'center' : null,
+                          alignItems: !justDynamicMode ? 'center' : null,
                           marginLeft: 'auto'
                         }"
                         (onFileInputMultiple)="
@@ -209,6 +209,12 @@
                       ></app-image-input>
                     </div>
                   </div>
+
+                  <hr
+                    *ngIf="
+                      j !== getControls(paramsControl, 'values').length - 1
+                    "
+                  />
                 </section>
               </div>
               <br /><br />

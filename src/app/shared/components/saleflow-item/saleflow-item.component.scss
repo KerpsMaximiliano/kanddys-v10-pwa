@@ -258,6 +258,12 @@
     margin-bottom: 0;
   }
 
+  .dynamic-choices {
+    .quantity {
+      font-weight: bold;
+    }
+  }
+
   .checkBox {
     margin-top: 17px;
     width: 100%;
@@ -320,7 +326,7 @@
     }
 
     .info-area {
-      padding: 12px;
+      padding: 12px 5.67%;
       box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
       border-bottom-left-radius: 14px;
       border-bottom-right-radius: 14px;
@@ -507,7 +513,7 @@
   }
 }
 
-@media (max-width: 374px) {
+@media (max-width: 399px) {
   .itemContainer {
     width: 78%;
 
@@ -557,11 +563,16 @@
         font-size: 9.72px;
       }
     }
-  }
+
+    .price2{
+     font-size: 13px;
+    }
+   }
 
   .inactive-img {
     font-size: 2em !important;
   }
+
 }
 
 @media only screen and (max-width: 320px) {

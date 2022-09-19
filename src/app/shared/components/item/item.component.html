@@ -12,6 +12,15 @@
     />
   </button>
   <div class="item-info">
-    <div class="flex-column">${{ price || item.pricing | number }}</div>
+    <div class="flex-column" *ngIf="item.params.length === 0">
+      ${{ price || item.pricing | number }}
+    </div>
+
+    <div
+      class="flex-column"
+      *ngIf="item.params.length > 0 && item.params[0].values.length > 0"
+    >
+      {{ (item.params[0].values.length || 0) + " " }} opciones
+    </div>
   </div>
 </div>
