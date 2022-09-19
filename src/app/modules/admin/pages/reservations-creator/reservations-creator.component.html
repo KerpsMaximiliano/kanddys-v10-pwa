@@ -88,6 +88,7 @@
         <div class="calendar">
           <h3>DIA De {{ currentMonth?.name }}</h3>
           <app-short-calendar
+            [allowUsersToChangeTheMonthShown]="true"
             [allowedDays]="calendarData?.limits?.inDays"
             (selectedDate)="rerenderAvailableHours($event)"
           ></app-short-calendar>

@@ -1,26 +1,46 @@
-<div
-  class="scroller"
-  #elemt
-  (mousedown)="startDragging($event, elemt)"
-  (mouseup)="stopDragging()"
-  (mouseleave)="stopDragging()"
-  (mousemove)="moveEvent($event, elemt)"
->
+<div class="wrapper">
   <div
-    *ngFor="let day of monthDays"
-    class="day"
-    [ngClass]="{
-      selected: selectedDay?.getDate() === day.dayNumber,
-      disabled:
-        !allowSundays && day.weekDayNumber === 0 && !allowedDays
-          ? true
-          : allowedDays
-          ? !isThisDayAValidOne(day)
-          : false
-    }"
-    (click)="!allowedDays || isThisDayAValidOne(day) ? onClick(day) : null"
+    class="scroller2"
+    #elemt2
+    (mousedown)="startDragging($event, elemt2)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt2)"
   >
-    <span>{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span>
-    <span>{{ day.dayNumber }}</span>
+    <div
+      class="month"
+      [ngClass]="{ selected: month.selected }"
+      *ngFor="let month of allMonths; index as i"
+      (click)="changeMonth(month, i)"
+    >
+      {{ month.name }}
+    </div>
+  </div>
+
+  <div
+    class="scroller"
+    #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <div
+      *ngFor="let day of monthDays"
+      class="day"
+      [ngClass]="{
+        selected: selectedDay?.getDate() === day.dayNumber,
+        disabled:
+          !allowSundays && day.weekDayNumber === 0 && !allowedDays
+            ? true
+            : allowedDays
+            ? !isThisDayAValidOne(day)
+            : false
+      }"
+      (click)="!allowedDays || isThisDayAValidOne(day) ? onClick(day) : null"
+    >
+      <span>{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span>
+      <span>{{ day.dayNumber }}</span>
+    </div>
   </div>
 </div>

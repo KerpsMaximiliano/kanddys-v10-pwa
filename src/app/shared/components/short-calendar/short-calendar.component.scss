@@ -1,9 +1,30 @@
-.scroller {
+.scroller, .scroller2 {
   display: flex;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   gap: 10px;
 }
+
+.month {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-family: "SfProRegular";
+  font-size: 21px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color 0.3s ease-in-out,
+    color 0.3s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.selected {
+    background-color: #82f18d;
+  }
+}
+
 .day {
   display: flex;
   flex-direction: column;
@@ -11,12 +32,11 @@
   font-family: "SfProRegular";
   font-size: 17px;
   padding: 10px;
-  
+
   border-radius: 6px;
   gap: 5px;
   color: #272727;
 
-  
   &:not(.disabled) {
     cursor: pointer;
     &:hover {
@@ -29,6 +49,6 @@
   }
 
   &.selected {
-    background-color: #82F18D;
+    background-color: #82f18d;
   }
 }

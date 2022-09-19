@@ -7,6 +7,12 @@ interface Day {
   weekDayNumber: number;
 }
 
+interface Month {
+  id: number;
+  name: string;
+  selected?: boolean;
+}
+
 @Component({
   selector: 'app-short-calendar',
   templateUrl: './short-calendar.component.html',
@@ -16,10 +22,12 @@ export class ShortCalendarComponent implements OnInit {
   constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
   @Input() monthNameSelected: string;
+  @Input() allowUsersToChangeTheMonthShown: boolean;
   @Input() dateNumber: string;
   @Input() allowSundays: boolean = false;
   @Input() allowedDays: string[] = null;
   monthDays: Day[] = [];
+  allMonths: Array<Month> = [];
   selectedDay: Date;
 
   ngOnInit(): void {
@@ -33,12 +41,29 @@ export class ShortCalendarComponent implements OnInit {
     } else {
       this.getMonthId(0);
     }
+
+    if (this.allowUsersToChangeTheMonthShown) {
+      this.allMonths = this.calendarService.months;
+      this.allMonths[0].selected = true;
+    }
   }
 
   getMonthId(id: number) {
     this.calendarService.monthIndex = id;
     this.monthDays =
       this.calendarService.months[this.calendarService.monthIndex].dates;
+  }
+
+  changeMonth(month: Month, index: number) {
+    const currentMonthIndex = new Date().getMonth();
+
+    this.getMonthId(index);
+
+    for (const month of this.allMonths) {
+      month.selected = false;
+    }
+
+    this.allMonths[index].selected = true;
   }
 
   isThisDayAValidOne(day: Day): boolean {
