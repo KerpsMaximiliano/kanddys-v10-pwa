@@ -85,25 +85,7 @@
         >
           Por favor introduzca contraseña valida
         </div>
-        <a [href]="messageLink" target="_blank" *ngIf="orderId && !hasPayment">
-          <button
-            class="confirm"
-            (click)="signIn()"
-            [disabled]="
-              (password.invalid || password.pristine || password.untouched) &&
-              !password.valid
-            "
-            [ngClass]="{
-              disabled:
-                (password.invalid || password.pristine || password.untouched) &&
-                !password.valid
-            }"
-          >
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </a>
         <button
-          *ngIf="!orderId || (orderId && hasPayment)"
           class="confirm"
           (click)="signIn()"
           [disabled]="

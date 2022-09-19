@@ -34,7 +34,7 @@ import { SwiperOptions } from 'swiper';
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.scss'],
 })
-export class StoreComponent implements OnInit, OnDestroy {
+export class StoreComponent implements OnInit {
   URI: string = environment.uri;
   env: string = environment.assetsUrl;
   saleflowData: SaleFlow;
@@ -193,27 +193,7 @@ export class StoreComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.header.resetIsComplete();
-    this.header.disableNav();
-    this.header.hide();
-    this.header.packId = 0;
     this.executeProcessesAfterLoading();
-    this.deleteEvent = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item'))
-      .subscribe((e) => {
-        let productData: Item[] = this.header.getItems(this.saleflowData._id);
-        const selectedItems = productData?.length
-          ? productData.map((item) => item._id)
-          : [];
-        this.items.forEach((item) => {
-          if (!item.customizerId)
-            item.isSelected = selectedItems.includes(item._id);
-        });
-        this.itemCartAmount = productData?.length;
-      });
-  }
-
-  ngOnDestroy() {
-    this.deleteEvent.unsubscribe();
   }
 
   executeProcessesAfterLoading() {
@@ -341,8 +321,6 @@ export class StoreComponent implements OnInit, OnDestroy {
             (product) => !itemIDs.includes(product.item)
           );
         }
-        // this.canOpenCart = orderData?.products?.length > 0;
-        this.itemCartAmount = orderData?.products?.length;
         await this.organizeItems(merchant);
         this.status = 'complete';
         unlockUI();
@@ -489,7 +467,6 @@ export class StoreComponent implements OnInit, OnDestroy {
   }
 
   save(index?: number) {
-    if (index) this.header.packId = index;
     this.header.items = [];
     let products = [];
     let order;
@@ -526,23 +503,6 @@ export class StoreComponent implements OnInit, OnDestroy {
       `/ecommerce/item-detail/${this.saleflowData._id}/${id}`,
     ]);
   }
-
-  showShoppingCartDialog = () => {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        footerCallback: async () => {
-          if (this.saleflowData.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
-          else if (this.saleflowData.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
-          else this.router.navigate([`/ecommerce/checkout`]);
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 
   async itemOfPackage(packages: ItemPackage[]) {
     let index = 0;

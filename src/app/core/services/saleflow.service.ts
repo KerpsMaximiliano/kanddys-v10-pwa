@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item, ItemPackage } from '../models/item';
 import {
@@ -26,6 +27,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class SaleFlowService {
+  saleflowSubject = new Subject();
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
@@ -36,6 +38,7 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
+        this.saleflowSubject.next(response?.saleflow);
         return response;
       } else {
         const response = await this.graphql.query({
@@ -43,6 +46,7 @@ export class SaleFlowService {
           variables: { id },
           fetchPolicy: 'no-cache',
         });
+        this.saleflowSubject.next(response?.saleflow);
         return response;
       }
     } catch (e) {

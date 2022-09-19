@@ -65,6 +65,7 @@ export class CreateItemComponent implements OnInit {
     spaceBetween: 5,
   };
   hasParams: boolean;
+  justDynamicMode: boolean = false;
   parseFloat = parseFloat;
 
   constructor(
@@ -80,7 +81,11 @@ export class CreateItemComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
+    const justdynamicmode =
+      this.route.snapshot.queryParamMap.get('justdynamicmode');
+
     const promises: Promise<User | Merchant | Item>[] = [
       this.authService.me(),
       this.merchantService.merchantDefault(),
@@ -89,6 +94,31 @@ export class CreateItemComponent implements OnInit {
       promises.push(this.itemService.item(itemId));
     this.status = 'loading';
     const [user, userMerchant, item] = await Promise.all(promises);
+
+    if (justdynamicmode) {
+      this.hasParams = true;
+
+      this.generateFields();
+      this.generateFields();
+      this.generateFields();
+
+      this.justDynamicMode = true;
+
+      const paramsFormArray = this.itemParamsForm.get('params') as FormArray;
+      const valuesArray = paramsFormArray.at(0).get('values') as FormArray;
+
+      valuesArray.at(0).patchValue({
+        name: 'Alegria sin Chinoski',
+        price: 1275.0,
+      });
+      this.formattedPricing.values[0] = '$127500';
+      valuesArray.at(1).patchValue({
+        name: 'Alegria con Chinoski',
+        price: 1675.0,
+      });
+      this.formattedPricing.values[1] = '$167500';
+    }
+
     if (!user || !userMerchant) {
       this.status = 'complete';
       return;
@@ -125,12 +155,13 @@ export class CreateItemComponent implements OnInit {
         type: 'bullets',
         clickable: true,
       };
+
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('description').setValue(description);
     this.handleCurrencyInput(this.itemForm, 'pricing', pricing);
     if (params?.[0]?.values?.length) {
       params[0].values.forEach(() => {
-        this.generateFields();
+        if (!this.item) this.generateFields();
       });
 
       this.itemParamsForm.get('params').patchValue(params);
@@ -139,15 +170,18 @@ export class CreateItemComponent implements OnInit {
           .at(0)
           .get('values') as FormArray
       ).controls.forEach((control, index) => {
-        this.handleCurrencyInput(
-          control,
-          'price',
-          params[0].values[index].price,
-          index
-        );
+        if (params[0].values[index]) {
+          this.handleCurrencyInput(
+            control,
+            'price',
+            params[0].values[index].price,
+            index
+          );
+        }
       });
       this.hasParams = true;
     }
+
     this.status = 'complete';
   }
 
@@ -320,7 +354,7 @@ export class CreateItemComponent implements OnInit {
 
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
-            this.router.navigate([`/admin/merchant-items`]);
+            this.router.navigate([`/admin/options/${createItem._id}`]);
             this.submitEventFinished = true;
           }
         } else {
@@ -330,16 +364,26 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createPreItem) {
             this.submitEventFinished = true;
-            this.headerService.flowRoute = this.router.url;
+            localStorage.setItem('flowRoute', this.router.url);
             this.itemService.removeTemporalItem();
-            this.router.navigate(
-              [`/auth/authentication/${createPreItem?._id}`],
-              {
-                queryParams: {
-                  type: 'create-item',
-                },
-              }
-            );
+
+            if (this.hasParams) {
+              this.itemService.temporalItemParams = params;
+              /*
+              localStorage.setItem(
+                'temporalItemParams',
+                JSON.stringify(params)
+              );
+              */
+            }
+
+            this.router.navigate([`/auth/login`], {
+              queryParams: {
+                itemId: createPreItem?._id,
+                hasParams: this.hasParams,
+                action: 'precreateitem',
+              },
+            });
           }
         }
       }

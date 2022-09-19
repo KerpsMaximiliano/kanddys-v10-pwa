@@ -1,0 +1,35 @@
+.main-container{
+   width: 100%;
+   min-height: 100vh;
+
+   .message-card{
+      width: 85%;
+      margin: 24px auto 30px;
+      background-color: #FFFFFF;
+      padding: 20px 16.2%;
+      border-radius: 19px;
+      font-family: 'RobotoBold';
+      font-size: 1.80rem;
+      color: #40772F;
+      text-align: center;
+      word-break: break-word;
+      box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 12%);
+   }
+
+   .answers-area{
+     width: 86%;
+     margin: 0 auto 45px;
+
+     .actions{
+      font-family: 'RobotoMedium';
+      font-weight: normal;
+      font-size: 17px;
+      color: #7B7B7B;
+      text-align: left;
+     }
+
+     .template{
+      margin-top: 34px
+     }
+   }
+}

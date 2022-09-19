@@ -49,6 +49,7 @@ export class ImageInputComponent implements OnInit {
   @Input() allowDeletion: boolean = false;
   @Input() useSwiper: boolean = true;
   @Input() id: string = null;
+  @Input() placeholderImage: boolean;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
