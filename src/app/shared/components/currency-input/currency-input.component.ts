@@ -27,6 +27,9 @@ export class CurrencyInputComponent implements OnInit {
     let value: string;
     if (typeof event === 'number') value = `${event}`;
     else value = (<HTMLInputElement>event.target).value;
+    if (value == '') {
+      return;
+    }
     if (value.includes('.')) {
       value = value
         .split('')
