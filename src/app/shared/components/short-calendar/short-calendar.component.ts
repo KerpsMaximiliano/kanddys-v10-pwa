@@ -33,6 +33,7 @@ export class ShortCalendarComponent implements OnInit {
   constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
   @Output() changedMonth = new EventEmitter<ChangedMonthEventData>();
+  @Output() beforeAnimation = new EventEmitter<boolean>();
   @Input() monthNameSelected: string;
   @Input() allowUsersToChangeTheMonthShown: boolean;
   @Input() showMonthsSwiper: boolean;
@@ -45,6 +46,7 @@ export class ShortCalendarComponent implements OnInit {
   selectedDay: Date;
   executeSwipeToNextMonthAnimation: boolean;
   executeSwipeToPrevAnimation: boolean;
+  alreadyExecutedAnimation: boolean;
   prevScrollLeftData: {
     scrollLeft: number;
     counter: number;
@@ -75,12 +77,12 @@ export class ShortCalendarComponent implements OnInit {
 
   getMonthId(id: number) {
     this.calendarService.monthIndex = id;
+
     this.monthDays =
       this.calendarService.months[this.calendarService.monthIndex].dates;
   }
 
   changeMonth(index: number) {
-    console.log(index);
     this.getMonthId(index);
 
     for (const month of this.allMonths) {
@@ -144,11 +146,13 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     if (
-      this.prevScrollLeftData.counter > 30 &&
+      this.prevScrollLeftData.counter > 10 &&
       this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
       this.prevScrollLeftData.scrollLeft !== 0 &&
-      this.currentMonthIndex !== this.allMonths.length - 1
+      this.currentMonthIndex !== this.allMonths.length - 1 &&
+      !this.alreadyExecutedAnimation
     ) {
+      this.alreadyExecutedAnimation = true;
       this.executeSwipeToNextMonthAnimation = true;
 
       setTimeout(() => {
@@ -157,13 +161,16 @@ export class ShortCalendarComponent implements OnInit {
         this.prevScrollLeftData.counter = 0;
         this.prevScrollLeftData.scrollLeft = 0;
         this.executeSwipeToNextMonthAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
     } else if (
-      this.prevScrollLeftData.counter > 30 &&
+      this.prevScrollLeftData.counter > 10 &&
       this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
       this.prevScrollLeftData.scrollLeft === 0 &&
-      this.currentMonthIndex !== 0
+      this.currentMonthIndex !== 0 &&
+      !this.alreadyExecutedAnimation
     ) {
+      this.alreadyExecutedAnimation = true;
       this.executeSwipeToPrevAnimation = true;
 
       setTimeout(() => {
@@ -172,6 +179,7 @@ export class ShortCalendarComponent implements OnInit {
         this.prevScrollLeftData.counter = 0;
 
         this.executeSwipeToPrevAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
     }
 
@@ -204,8 +212,6 @@ export class ShortCalendarComponent implements OnInit {
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
 
-    console.log(el.scrollLeft, this.prevScrollLeftData.scrollLeft);
-
     if (this.prevScrollLeftData.scrollLeft === el.scrollLeft) {
       this.prevScrollLeftData.counter++;
     }
@@ -214,9 +220,12 @@ export class ShortCalendarComponent implements OnInit {
       this.prevScrollLeftData.counter > 5 &&
       this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
       this.prevScrollLeftData.scrollLeft !== 0 &&
-      this.currentMonthIndex !== this.allMonths.length - 1
+      this.currentMonthIndex !== this.allMonths.length - 1 &&
+      !this.alreadyExecutedAnimation
     ) {
       this.executeSwipeToNextMonthAnimation = true;
+      this.alreadyExecutedAnimation = true;
+      this.beforeAnimation.emit(true);
 
       setTimeout(() => {
         this.currentMonthIndex++;
@@ -224,21 +233,28 @@ export class ShortCalendarComponent implements OnInit {
         this.prevScrollLeftData.counter = 0;
         this.prevScrollLeftData.scrollLeft = 0;
         this.executeSwipeToNextMonthAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
     } else if (
       this.prevScrollLeftData.counter > 5 &&
       this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
       this.prevScrollLeftData.scrollLeft === 0 &&
-      this.currentMonthIndex !== 0
+      this.currentMonthIndex !== 0 &&
+      !this.alreadyExecutedAnimation
     ) {
       this.executeSwipeToPrevAnimation = true;
+      this.alreadyExecutedAnimation = true;
+      this.beforeAnimation.emit(true);
 
       setTimeout(() => {
+        console.log(this.currentMonthIndex);
+
         this.currentMonthIndex--;
+
         this.changeMonth(this.currentMonthIndex);
         this.prevScrollLeftData.counter = 0;
-
         this.executeSwipeToPrevAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
 
       /*this.currentMonthIndex--;

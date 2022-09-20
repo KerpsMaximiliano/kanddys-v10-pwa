@@ -595,6 +595,10 @@ export class ReservationsCreatorComponent implements OnInit {
     return [fromHourString, toHourString];
   }
 
+  setDateAsNull() {
+    this.selectedDate = null;
+  }
+
   updateMonth(monthData: ChangedMonthEventData) {
     console.log(monthData);
     this.currentMonth = {

@@ -92,6 +92,7 @@
             [allowedDays]="calendarData?.limits?.inDays"
             (selectedDate)="rerenderAvailableHours($event)"
             (changedMonth)="updateMonth($event)"
+            (beforeAnimation)="setDateAsNull()"
           ></app-short-calendar>
         </div>
 
