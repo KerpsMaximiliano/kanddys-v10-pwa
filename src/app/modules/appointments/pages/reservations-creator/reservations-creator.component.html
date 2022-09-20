@@ -91,6 +91,7 @@
             [allowUsersToChangeTheMonthShown]="true"
             [allowedDays]="calendarData?.limits?.inDays"
             (selectedDate)="rerenderAvailableHours($event)"
+            (changedMonth)="updateMonth($event)"
           ></app-short-calendar>
         </div>
 

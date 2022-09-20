@@ -12,6 +12,7 @@ import { ExtendedCalendar } from 'src/app/core/services/calendars.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
 import * as moment from 'moment';
 
 interface HourOption {
@@ -408,17 +409,12 @@ export class ReservationsCreatorComponent implements OnInit {
           status: true,
         });
 
-        /****************** aqui va el codigo que convierte las horas a formato 24 horas **************/
         const [fromHourString, toHourString] = this.getHourIn24HourFormat(
           fromHour,
           toHour
         );
 
-        console.log(fromHourString, toHourString);
-        /**************aqui termina el codigo que convierte las horas a formato 24 horas **************/
-
         for (const reservation of this.calendarData.reservations) {
-          console.log();
           if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
@@ -563,7 +559,7 @@ export class ReservationsCreatorComponent implements OnInit {
     fromHour: HourOption,
     toHour: HourOption
   ): Array<string> {
-    const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
+    const utcOffset: number = new Date().getTimezoneOffset() / 60;
 
     let fromHourNumber =
       fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
@@ -597,5 +593,14 @@ export class ReservationsCreatorComponent implements OnInit {
         : String(realToHour) + ':' + toHour.minutesString;
 
     return [fromHourString, toHourString];
+  }
+
+  updateMonth(monthData: ChangedMonthEventData) {
+    console.log(monthData);
+    this.currentMonth = {
+      name: monthData.name,
+      number: monthData.id,
+    };
+    this.selectedDate = null;
   }
 }

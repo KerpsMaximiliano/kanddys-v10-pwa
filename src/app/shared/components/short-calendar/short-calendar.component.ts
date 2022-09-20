@@ -7,10 +7,14 @@ interface Day {
   weekDayNumber: number;
 }
 
-interface Month {
+export interface Month {
   id: number;
   name: string;
   selected?: boolean;
+}
+
+export interface ChangedMonthEventData extends Month {
+  monthsLeftOfTheYear: number;
 }
 
 @Component({
@@ -21,6 +25,7 @@ interface Month {
 export class ShortCalendarComponent implements OnInit {
   constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
+  @Output() changedMonth = new EventEmitter<ChangedMonthEventData>();
   @Input() monthNameSelected: string;
   @Input() allowUsersToChangeTheMonthShown: boolean;
   @Input() showMonthsSwiper: boolean;
@@ -75,6 +80,11 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     this.allMonths[index].selected = true;
+
+    this.changedMonth.emit({
+      ...this.allMonths[index],
+      monthsLeftOfTheYear: this.allMonths.length,
+    });
   }
 
   isThisDayAValidOne(day: Day): boolean {
@@ -133,6 +143,8 @@ export class ShortCalendarComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+
+    console.log(el.scrollLeft, this.prevScrollLeftData.scrollLeft);
 
     if (this.prevScrollLeftData.scrollLeft === el.scrollLeft) {
       this.prevScrollLeftData.counter++;

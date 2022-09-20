@@ -28,7 +28,6 @@ import { NotificationsLogComponent } from './pages/notifications-log/notificatio
 import { OrderSalesComponent } from './pages/order-sales/order-sales.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
@@ -193,10 +192,6 @@ const routes: Routes = [
     component: ReservationsComponent,
   },
   {
-    path: 'reservations-creator/:calendarId',
-    component: ReservationsCreatorComponent,
-  },
-  {
     path: 'sale-detail/:orderId',
     component: SaleDetailComponent,
   },
@@ -243,7 +238,6 @@ const routes: Routes = [
     OrderSalesComponent,
     ReservationDetailComponent,
     ReservationsComponent,
-    ReservationsCreatorComponent,
     SaleDetailComponent,
     TagDetailComponent,
     TagsEditComponent,
