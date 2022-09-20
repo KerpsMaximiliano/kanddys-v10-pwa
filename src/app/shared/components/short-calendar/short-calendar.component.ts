@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  HostListener,
+} from '@angular/core';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 
 interface Day {
@@ -73,6 +80,7 @@ export class ShortCalendarComponent implements OnInit {
   }
 
   changeMonth(index: number) {
+    console.log(index);
     this.getMonthId(index);
 
     for (const month of this.allMonths) {
@@ -122,6 +130,58 @@ export class ShortCalendarComponent implements OnInit {
   scrollLeft: number;
   scroll: boolean;
   sameDataCounter: number = 0;
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(event) {
+    const scrollerElement = document.querySelector('.scroller');
+
+    console.log(this.prevScrollLeftData);
+
+    if (this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft) {
+      this.prevScrollLeftData.counter++;
+    } else {
+      this.prevScrollLeftData.counter = 0;
+    }
+
+    if (
+      this.prevScrollLeftData.counter > 30 &&
+      this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
+      this.prevScrollLeftData.scrollLeft !== 0 &&
+      this.currentMonthIndex !== this.allMonths.length - 1
+    ) {
+      this.executeSwipeToNextMonthAnimation = true;
+
+      setTimeout(() => {
+        this.currentMonthIndex++;
+        this.changeMonth(this.currentMonthIndex);
+        this.prevScrollLeftData.counter = 0;
+        this.prevScrollLeftData.scrollLeft = 0;
+        this.executeSwipeToNextMonthAnimation = false;
+      }, 1000);
+    } else if (
+      this.prevScrollLeftData.counter > 30 &&
+      this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
+      this.prevScrollLeftData.scrollLeft === 0 &&
+      this.currentMonthIndex !== 0
+    ) {
+      this.executeSwipeToPrevAnimation = true;
+
+      setTimeout(() => {
+        this.currentMonthIndex--;
+        this.changeMonth(this.currentMonthIndex);
+        this.prevScrollLeftData.counter = 0;
+
+        this.executeSwipeToPrevAnimation = false;
+      }, 1000);
+    }
+
+    this.prevScrollLeftData.scrollLeft = scrollerElement.scrollLeft;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onTouchEnd(event) {
+    this.prevScrollLeftData.counter = 0;
+  }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
