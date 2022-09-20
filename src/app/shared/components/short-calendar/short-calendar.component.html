@@ -1,5 +1,6 @@
 <div class="wrapper">
   <div
+    *ngIf="showMonthsSwiper"
     class="scroller2"
     #elemt2
     (mousedown)="startDragging($event, elemt2)"
@@ -11,7 +12,7 @@
       class="month"
       [ngClass]="{ selected: month.selected }"
       *ngFor="let month of allMonths; index as i"
-      (click)="changeMonth(month, i)"
+      (click)="changeMonth(i)"
     >
       {{ month.name }}
     </div>
@@ -24,10 +25,15 @@
     (mouseup)="stopDragging()"
     (mouseleave)="stopDragging()"
     (mousemove)="moveEvent($event, elemt)"
+    [ngClass]="{
+      fadingNext: executeSwipeToNextMonthAnimation,
+      fadingPrev: executeSwipeToPrevAnimation
+    }"
   >
     <div
       *ngFor="let day of monthDays"
       class="day"
+      ng
       [ngClass]="{
         selected: selectedDay?.getDate() === day.dayNumber,
         disabled:
