@@ -111,23 +111,24 @@ export class PaymentsComponent implements OnInit {
       this.router.navigate([`ecommerce/order-info/${this.order._id}`]);
       return;
     }
-    this.whatsappLink = `https://wa.me/${
-      this.headerService.saleflow.merchant.owner.phone
-    }?text=${this.headerService.saleflow.merchant.name
+    const payment = await this.orderService.createPartialOCR(
+      this.depositAmount,
+      this.headerService.saleflow.merchant._id,
+      this.image,
+      this.headerService.user?._id
+    );
+    const message = `${this.headerService.saleflow.merchant.name
       .replace('&', 'and')
       .replace(
         /[^\w\s]/gi,
         ''
-      )}: Acabo de hacer un pago de $${this.depositAmount.toLocaleString(
+      )}: Acabo de hacer un pago de *$${this.depositAmount.toLocaleString(
       'es-MX'
-    )}`;
-    this.orderService.createOCR({
-      image: this.image,
-      platform: 'bank-transfer',
-      total: this.depositAmount,
-      subtotal: this.depositAmount,
-      transactionCode: '',
-    });
+    )}*.\n\nEl link de la referencia es: ${payment.image}`;
+    this.whatsappLink = `https://wa.me/${
+      this.headerService.saleflow.merchant.owner.phone
+    }?text=${encodeURIComponent(message)}`;
+    window.location.href = this.whatsappLink;
   }
 
   onAmountChange(value: number) {

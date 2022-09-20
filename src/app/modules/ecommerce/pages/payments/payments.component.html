@@ -62,7 +62,7 @@
     ></app-image-input>
   </div>
   <a
-    *ngIf="image && selectedBank && (order || (!order && depositAmount > 0))"
+    *ngIf="image && selectedBank && order"
     [href]="whatsappLink"
     target="_blank"
     [ngClass]="{ disabled: !image }"
@@ -87,4 +87,24 @@
       }"
     ></app-sticky-button>
   </a>
+  <app-sticky-button
+    *ngIf="image && selectedBank && !order && depositAmount > 0"
+    (click)="!disableButton && submitPayment()"
+    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
+    [text]="
+      image
+        ? 'MANDAR FACTURA POR WHATSAPP'
+        : selectedBank
+        ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
+        : ''
+    "
+    [size]="'small'"
+    [bgColor]="image ? '#2874AD' : '#C1C1C1'"
+    [customLeftButtonStyles]="{
+      'letter-space': '1px',
+      'font-family': 'RobotoMedium',
+      'font-size': '17px',
+      color: '#FFFFFF'
+    }"
+  ></app-sticky-button>
 </div>

@@ -348,3 +348,24 @@ export const createOCR = gql`
     }
   }
 `;
+
+export const createPartialOCR = gql`
+  mutation createPartialOCR(
+    $subtotal: Float
+    $userID: ObjectID
+    $merchant: ObjectID!
+    $code: String
+    $image: Upload!
+  ) {
+    createPartialOCR(
+      subtotal: $subtotal
+      userID: $userID
+      merchant: $merchant
+      code: $code
+      image: $image
+    ) {
+      _id
+      image
+    }
+  }
+`;
