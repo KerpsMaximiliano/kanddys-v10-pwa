@@ -37,6 +37,9 @@ import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
 import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
 import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
+import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
+import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
+import { CreateDynamicItemComponent } from './pages/create-dynamic-item/create-dynamic-item.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
@@ -222,6 +225,18 @@ const routes: Routes = [
     path: 'admin-order',
     component: AdminOrderComponent
   },
+  {
+    path: 'options/:itemId',
+    component: ActionsMenuComponent,
+  },
+  {
+    path: 'metrics-info',
+    component: MetricsInfoComponent,
+  },
+  {
+    path: 'create-dynamic-item',
+    component: CreateDynamicItemComponent,
+  }
 ];
 
 @NgModule({
@@ -261,6 +276,9 @@ const routes: Routes = [
     MerchantSharedComponent,
     OrderReservationComponent,
     AdminOrderComponent,
+    ActionsMenuComponent,
+    MetricsInfoComponent,
+    CreateDynamicItemComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

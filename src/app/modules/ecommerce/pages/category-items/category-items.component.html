@@ -55,10 +55,6 @@
   </main>
   <footer *ngIf="!hasCustomizer && !isMerchant">
     <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
-    <app-cart-button
-      [shopCartCallback]="showShoppingCartDialog"
-      [cartAmount]="itemCartAmount"
-    ></app-cart-button>
   </footer>
   <app-sticky-button
     *ngIf="isMerchant"

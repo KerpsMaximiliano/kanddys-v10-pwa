@@ -128,15 +128,6 @@
     </ng-container>
   </main>
 </div>
-<app-bubble-button
-  position="right"
-  color="blue"
-  [solo]="false"
-  [cart]="true"
-  [cartAmount]="itemCartAmount"
-  *ngIf="itemCartAmount"
-  (click)="showShoppingCartDialog()"
-></app-bubble-button>
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"
   [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"

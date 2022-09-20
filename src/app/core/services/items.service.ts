@@ -41,6 +41,9 @@ import {
   ItemCategoryInput,
   ItemInput,
   ItemPackage,
+  ItemParam,
+  ItemParamInput,
+  ItemParamValueInput,
 } from '../models/item';
 import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
@@ -48,6 +51,7 @@ import { ListParams } from '../types/general.types';
 @Injectable({ providedIn: 'root' })
 export class ItemsService {
   temporalItem: Item = null;
+  temporalItemParams: ItemParamInput[];
   temporalImages: {
     old: string[];
     new: File[];
@@ -345,7 +349,7 @@ export class ItemsService {
     }
   }
 
-  async createItem(input: any) {
+  async createItem(input: ItemInput): Promise<{ createItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: createItem,
       variables: { input },
@@ -368,7 +372,7 @@ export class ItemsService {
   }
 
   async addItemParamValue(
-    input: any,
+    input: ItemParamValueInput[],
     itemParamId: string,
     merchantId: string,
     itemId: string
@@ -398,7 +402,7 @@ export class ItemsService {
     return result;
   }
 
-  async createPreItem(input: any) {
+  async createPreItem(input: ItemInput): Promise<{ createPreItem: Item }> {
     const result = await this.graphql.mutate({
       mutation: createPreItem,
       variables: { input },

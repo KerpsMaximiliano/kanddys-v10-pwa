@@ -19,6 +19,7 @@ export type AppEventType =
   | 'action'
   | 'singleAuth'
   | 'order-done'
+  | 'added-item'
   | 'deleted-item';
 
 export interface AppEvent {

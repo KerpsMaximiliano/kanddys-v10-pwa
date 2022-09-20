@@ -520,7 +520,7 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openShareDialog = () => {
-   const styles = [
+    const styles = [
       { 'background-color': '#82F18D', color: '#174B72' },
       { 'background-color': '#B17608', color: '#FFFFFF' },
     ];
@@ -534,7 +534,7 @@ export class ItemDisplayComponent implements OnInit {
               : this.item.status === 'featured'
               ? 'VISIBLE (Y DESTACADO)'
               : 'INVISIBLE',
-          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0]
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0],
         },
         options: [
           {
@@ -572,20 +572,16 @@ export class ItemDisplayComponent implements OnInit {
         list,
         hideCancelButtton: true,
         dynamicStyles: {
-         container: {
-           paddingBottom: '64px',
-         },
-         titleWrapper: {
-           display: 'flex',
-           flexDirection: 'column',
-           alignItems: 'flex-start',
-           paddingBottom: '26px',
-         },
-         dialogCard: {
-           paddingBottom: '64px',
-           paddingTop: '0px',
-         },
-       }
+          titleWrapper: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            paddingBottom: '26px',
+          },
+          dialogCard: {
+            paddingTop: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -629,9 +625,21 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
-      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
-      { 'background-color': '#B17608', color: '#FFFFFF', 'margin-top': this.item.name? 0 : '40px' },
+      {
+        'background-color': '#82F18D',
+        color: '#174B72',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
+      {
+        'background-color': '#82F18D',
+        color: '#174B72',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
+      {
+        'background-color': '#B17608',
+        color: '#FFFFFF',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
     ];
     const list: StoreShareList[] = [
       {
@@ -664,7 +672,18 @@ export class ItemDisplayComponent implements OnInit {
             text: 'Editar producto',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/create-item/${this.item._id}`]);
+              if (this.item.params.length === 0) {
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+              } else if (
+                this.item.params.length > 0 &&
+                this.item.params[0].values.length > 0
+              ) {
+                this.router.navigate([`admin/create-item/${this.item._id}`], {
+                  queryParams: {
+                    justdynamicmode: true,
+                  },
+                });
+              }
             },
           },
           {
@@ -707,9 +726,6 @@ export class ItemDisplayComponent implements OnInit {
         alternate: true,
         hideCancelButtton: true,
         dynamicStyles: {
-          container: {
-            paddingBottom: '64px',
-          },
           titleWrapper: {
             display: 'flex',
             flexDirection: 'column',
@@ -718,7 +734,6 @@ export class ItemDisplayComponent implements OnInit {
             paddingTop: '25px',
           },
           dialogCard: {
-            paddingBottom: '64px',
             paddingTop: '0px',
           },
         },

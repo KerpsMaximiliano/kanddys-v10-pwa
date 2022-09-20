@@ -29,9 +29,11 @@ export class ShowItemsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.products.length === 0) {
-      this.products = this.header.getItems(this.header.saleflow?._id ?? this.header.getSaleflow()?._id);
+      this.products = this.header.getItems(
+        this.header.saleflow?._id ?? this.header.getSaleflow()?._id
+      );
     }
-    if(!this.products) return;
+    if (!this.products) return;
     this.price = this.products.reduce((prev, curr) => {
       const itemPrice = curr.total ?? curr.pricing ?? curr.price;
       return prev + itemPrice;
@@ -56,7 +58,10 @@ export class ShowItemsComponent implements OnInit {
       this.header.saleflow?._id || this.header.getSaleflow()?._id,
       this.products[i]._id
     );
-    this.header.removeItem(this.header.saleflow?._id || this.header.getSaleflow()?._id, this.products[i]._id);
+    this.header.removeItem(
+      this.header.saleflow?._id || this.header.getSaleflow()?._id,
+      this.products[i]._id
+    );
     const index = this.products.findIndex(
       (product) => product._id === this.products[i]._id
     );

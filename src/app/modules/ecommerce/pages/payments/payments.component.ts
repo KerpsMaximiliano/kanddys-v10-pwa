@@ -70,6 +70,25 @@ export class PaymentsComponent implements OnInit {
           ''
         )}: TAP en el link para que visualices mi pago.%0a${fullLink}`;
     }
+    this.order = (await this.orderService.order(orderId)).order;
+    if (!this.headerService.saleflow)
+      this.headerService.saleflow = this.headerService.getSaleflow();
+    if (
+      !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+    ) {
+      this.orderCompleted();
+      return;
+    }
+    if (this.order.orderStatus !== 'in progress') {
+      this.orderCompleted();
+      return;
+    }
+    this.paymentAmount = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+    if (this.order.items[0].customizer)
+      this.paymentAmount = this.paymentAmount * 1.18;
+    this.merchant = await this.merchantService.merchant(
+      this.order.merchants?.[0]?._id
+    );
     this.banks = (
       await this.walletService.exchangeData(
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
@@ -91,6 +110,12 @@ export class PaymentsComponent implements OnInit {
     this.selectedOption = null;
     this.selectedBank = null;
     this.image = null;
+  }
+
+  orderCompleted() {
+    this.router.navigate([`ecommerce/order-info/${this.order._id}`], {
+      replaceUrl: true,
+    });
   }
 
   async submitPayment() {
@@ -133,5 +158,7 @@ export class PaymentsComponent implements OnInit {
 
   onAmountChange(value: number) {
     this.depositAmount = value;
+    unlockUI();
+    this.orderCompleted();
   }
 }

@@ -107,7 +107,11 @@
             [ngStyle]="fileStyles ? fileStyles : null"
             [ngClass]="{ error: error[i], small: small }"
           >
-            <ng-container *ngIf="!image">{{ innerLabel }}</ng-container>
+            <ng-container *ngIf="!image && placeholderImage"
+              ><i class="far fa-light fa-image"></i></ng-container>
+            <ng-container *ngIf="!image && !placeholderImage">{{
+              innerLabel
+            }}</ng-container>
           </label>
 
           <div

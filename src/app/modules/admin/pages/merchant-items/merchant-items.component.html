@@ -9,10 +9,7 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="
-      !selectionConfiguration.active ||
-      (selectionConfiguration.active && selectedItemsCounter > 0)
-    "
+    [returnAble]="true"
     (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 

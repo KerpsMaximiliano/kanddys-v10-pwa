@@ -11,10 +11,9 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
-  StoreShareList,
+  StoreShareList
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -56,7 +55,6 @@ export class NewAddressComponent implements OnInit {
   loggedIn: boolean;
   disableButton: boolean;
   env = environment.assetsUrl;
-  itemCartAmount: number;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
   newAddressOption: OptionAnswerSelector[] = [];
@@ -131,7 +129,6 @@ export class NewAddressComponent implements OnInit {
       });
     }
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
-    this.itemCartAmount = this.headerService.order?.products?.length;
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
@@ -154,7 +151,7 @@ export class NewAddressComponent implements OnInit {
         ],
       });
     });
-    if (!this.user) return;
+    // if (!this.user) return;
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
@@ -165,29 +162,33 @@ export class NewAddressComponent implements OnInit {
         color: '#000000',
       },
     });
+
+    // TODO: meter esto dentro del if de abajo
     this.addresses.push(...this.user.deliveryLocations);
-    this.user.deliveryLocations?.forEach((locations) => {
-      this.addressesOptions.push({
-        status: true,
-        id: locations._id,
-        click: true,
-        value: locations.nickName,
-        valueStyles: {
-          fontFamily: 'SfProBold',
-          fontSize: '0.875rem',
-          color: '#000000',
-        },
-        subtexts: [
-          {
-            text: `${locations.street}, ${locations.city}, República Dominicana`,
-            styles: {
-              fontFamily: 'SfProRegular',
-              fontSize: '1rem',
-            },
+    if (this.user) {
+      this.user.deliveryLocations?.forEach((locations) => {
+        this.addressesOptions.push({
+          status: true,
+          id: locations._id,
+          click: true,
+          value: locations.nickName,
+          valueStyles: {
+            fontFamily: 'SfProBold',
+            fontSize: '0.875rem',
+            color: '#000000',
           },
-        ],
+          subtexts: [
+            {
+              text: `${locations.street}, ${locations.city}, República Dominicana`,
+              styles: {
+                fontFamily: 'SfProRegular',
+                fontSize: '1rem',
+              },
+            },
+          ],
+        });
       });
-    });
+    }
   }
 
   onOpenDialog = () => {
@@ -302,7 +303,7 @@ export class NewAddressComponent implements OnInit {
         if (this.user || this.headerService.user) {
           this.authService.signoutThree();
           this.addressesOptions.length = 1;
-          this.newAddressOption = null;
+          // this.newAddressOption = null;
           this.user = null;
         }
         this.headerService.storeOrderAnonymous(this.saleflow._id);
@@ -334,7 +335,7 @@ export class NewAddressComponent implements OnInit {
     }
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length > 1 ||
-      (this.headerService.saleflow.module.delivery.deliveryLocation && !isAnon)
+      (this.headerService.saleflow.module.delivery.deliveryLocation)
     ) {
       this.mode = 'normal';
       return;
@@ -465,15 +466,4 @@ export class NewAddressComponent implements OnInit {
       flags: ['no-header'],
     });
   }
-
-  showShoppingCartDialog = () => {
-    this.dialogService.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        orderFinished: true,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 }

@@ -1,8 +1,6 @@
 <div class="price-wrapper">
   <div class="formatted-price" [ngStyle]="fieldStyles">
-    <span *ngFor="let letter of formattedPricing.split('')">
-      {{ letter }}
-    </span>
+    {{ formattedPricing }}
     <div
       class="cursor blinking-cursor"
       [ngClass]="{ 'blinking-cursor': curencyFocused }"

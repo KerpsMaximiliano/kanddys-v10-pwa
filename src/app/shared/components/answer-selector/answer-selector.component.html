@@ -9,7 +9,11 @@
   <ul class="container-options" *ngIf="!hasComplexOptionsLayout">
     <ng-container *ngIf="!values">
       <li *ngFor="let option of options; index as i">
-        <div class="container-text-option" *ngIf="!isMultipleOption">
+        <div
+          class="container-text-option"
+          [ngStyle]="optionContainerStyles ? optionContainerStyles : null"
+          *ngIf="!isMultipleOption"
+        >
           <div class="selector-flex-wrapper">
             <div
               [class]="
