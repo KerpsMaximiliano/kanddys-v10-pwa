@@ -15,9 +15,11 @@
     </div>
     <div class="amount-input" *ngIf="!order">
       <span class="payment-selection"> Monto del depósito </span>
-      <app-currency-input
-        (onInputEvent)="onAmountChange($event)"
-      ></app-currency-input>
+      <div style="height: 64px">
+        <app-currency-input
+          (onInputEvent)="depositAmount = $event"
+        ></app-currency-input>
+      </div>
     </div>
     <span class="payment-selection">
       Selecciona el metodo que te convenga:

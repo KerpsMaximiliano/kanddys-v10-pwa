@@ -60,6 +60,16 @@ export class PaymentsComponent implements OnInit {
       );
       if (!this.headerService.saleflow)
         this.headerService.saleflow = this.headerService.getSaleflow();
+      if (
+        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      ) {
+        this.orderCompleted();
+        return;
+      }
+      if (this.order.orderStatus !== 'in progress') {
+        this.orderCompleted();
+        return;
+      }
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
       this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${(
         this.order.user.name || this.merchant.name
@@ -70,25 +80,6 @@ export class PaymentsComponent implements OnInit {
           ''
         )}: TAP en el link para que visualices mi pago.%0a${fullLink}`;
     }
-    this.order = (await this.orderService.order(orderId)).order;
-    if (!this.headerService.saleflow)
-      this.headerService.saleflow = this.headerService.getSaleflow();
-    if (
-      !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-    ) {
-      this.orderCompleted();
-      return;
-    }
-    if (this.order.orderStatus !== 'in progress') {
-      this.orderCompleted();
-      return;
-    }
-    this.paymentAmount = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
-    if (this.order.items[0].customizer)
-      this.paymentAmount = this.paymentAmount * 1.18;
-    this.merchant = await this.merchantService.merchant(
-      this.order.merchants?.[0]?._id
-    );
     this.banks = (
       await this.walletService.exchangeData(
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
@@ -133,7 +124,7 @@ export class PaymentsComponent implements OnInit {
         this.order._id
       );
       unlockUI();
-      this.router.navigate([`ecommerce/order-info/${this.order._id}`]);
+      this.orderCompleted();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -154,11 +145,5 @@ export class PaymentsComponent implements OnInit {
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
     window.location.href = this.whatsappLink;
-  }
-
-  onAmountChange(value: number) {
-    this.depositAmount = value;
-    unlockUI();
-    this.orderCompleted();
   }
 }
