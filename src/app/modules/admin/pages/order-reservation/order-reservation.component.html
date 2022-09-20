@@ -1,0 +1,133 @@
+<div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [mainText]="{
+      text: mode !== 'edit' || 'delete' ? 'Reservaciones' : 'id',
+      fontSize: '1.313rem',
+      fontFamily: 'SfProBold'
+    }"
+    [returnAble]="true"
+    [dots]="{
+      active: true
+    }"
+    (dotEvent)="openDialog()"
+  ></app-helper-headerv2>
+
+  <div class="container" [ngSwitch]="mode">
+    <div class="default" *ngSwitchDefault>
+      <div class="input-area">
+        <input
+          type="text"
+          class="text-input"
+          placeholder="Busca reservaciones"
+        />
+      </div>
+
+      <div class="answers-area">
+        <h1 class="title">Seleccione entre:</h1>
+
+        <app-answer-selector
+          [options]="dummyOptions"
+          [activeOption]="optionIndex"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0px',
+            paddingBottom: '16px'
+          }"
+          (onSelector)="optionClicked($event)"
+        ></app-answer-selector>
+      </div>
+
+      <app-sticky-button
+        [mode]="'double'"
+        [text]="''"
+        [text2]="'$14,451 INGRESO'"
+        [fontSize]="'1.063rem'"
+        [customRightButtonStyles]="{
+          marginLeft: 'auto',
+          height: '30px',
+          color: '#fff',
+          textAlign: 'right',
+          paddingRight: '22px',
+          backgroundColor: '#A1A1A1',
+          cursor: 'unset'
+        }"
+        [customLeftButtonStyles]="{
+          'border-left': '1px solid #ffffff',
+          height: '30px',
+          backgroundColor: '#A1A1A1',
+          cursor: 'unset'
+        }"
+        [height]="'30px'"
+        [bgColor]="'#2874AD'"
+        [extra]="{ return: true, height: '30px', bgColor: '#2874AD' }"
+        [addBottomSeparator]="true"
+      >
+      </app-sticky-button>
+    </div>
+
+    <div class="edit" *ngSwitchCase="'edit'">
+      <div class="answers-area">
+        <h2 class="title">Selecciona entre estos para ID:</h2>
+
+        <app-answer-selector
+          [options]="dummyOptions"
+          [activeOption]="optionIndex"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0px',
+            paddingBottom: '16px'
+          }"
+          (onSelector)="optionClicked($event)"
+        ></app-answer-selector>
+      </div>
+    </div>
+
+    <div class="delete" *ngSwitchCase="'delete'">
+      <div class="answers-area">
+        <h2 class="title">Selecciona entre estos para ID:</h2>
+
+        <app-answer-selector
+          [options]="dummyOptions"
+          [activeMultipleOption]="optionIndexArray"
+          [isMultipleOption]="true"
+          [indicator]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0px',
+            paddingBottom: '16px'
+          }"
+          (onSelector)="optionClickedArray($event)"
+        ></app-answer-selector>
+      </div>
+
+      <app-sticky-button
+         *ngIf="optionIndexArray.length >= 1"
+         [mode]="'double'"
+         [extra]="{
+            bgColor: '#2874AD',
+            return: true
+          }"
+          [color]="'#FFF'"
+          [fontSize]="'1.063rem'"
+          [bgColor]="'#2874AD'"
+          [text]="'BORRAR ESTAS RESERVACIONES'"
+          [customLeftButtonStyles]="{
+            width: '85%',
+            'max-width': 'none',
+            'border-left': '1px solid #FFFFFF',
+            color: '#FFFFFF'
+          }"
+          [customRightButtonStyles]="{
+            width: '1px',
+            heigth: '1px'
+          }"
+          [text2]="''"
+          [size]="'small'"
+      ></app-sticky-button>
+    </div>
+
+  </div>
+</div>

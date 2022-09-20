@@ -29,25 +29,45 @@ export class PackageDetailComponent implements OnInit {
   packageData: ItemPackage;
   scenarios: ItemExtra[] = [];
   showScenarios: any[] = [];
-  limitScenarios: number = 0;
+  limitScenarios: number = 3;
   selectedsQty: number = 0;
   filters: any[] = [
-    {
-      title: 'Filters',
-      subtitle: 'Package Filters',
-      options: [],
-    },
-  ];
-  saleflowData: SaleFlow;
-  orderProducts: ItemSubOrderInput[] = [];
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 'auto',
-    freeMode: true,
-    spaceBetween: 5,
-  };
+     {
+        title: 'Filters',
+        subtitle: 'Package Filters',
+        options: [],
+      },
+   ];
+   saleflowData: SaleFlow;
+   orderProducts: ItemSubOrderInput[] = [];
+   tags: string[] = ['#tag ID','#tag ID','#tag ID','#tag ID','#tag ID','#tag ID','#tag ID'];
+   dummyscenarios: any[] = [{
+    name: 'test1',
+    isActive: false
+   },
+   {
+    name: 'test1',
+    isActive: false
+   },
+   {
+    name: 'test1',
+    isActive: false
+   },
+   {
+    name: 'test1',
+    isActive: false
+   },
+   {
+    name: 'test1',
+    isActive: false
+   },
+   {
+    name: 'test1',
+    isActive: false
+   },];
 
   ngOnInit(): void {
-    this.route.params.subscribe(async (params) => {
+    /* this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflowId);
       if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
       this.packageData = (await this.items.itemPacakge(params.packageId)).itemPackage;
@@ -73,7 +93,7 @@ export class PackageDetailComponent implements OnInit {
         });
       this.header.flowRoute = `package-detail/${this.saleflowData._id}/${params.id}`;
       localStorage.setItem('flowRoute', `package-detail/${this.saleflowData._id}/${params.id}`);
-    });
+    }); */
   }
 
   async listItems() {
