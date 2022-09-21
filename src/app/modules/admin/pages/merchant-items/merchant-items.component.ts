@@ -3,9 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemStatus } from 'src/app/core/models/item';
-import { Merchant } from 'src/app/core/models/merchant';
-import { SaleFlow } from 'src/app/core/models/saleflow';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -28,8 +25,6 @@ interface ExtendedItem extends Item {
   styleUrls: ['./merchant-items.component.scss'],
 })
 export class MerchantItemsComponent implements OnInit {
-  merchant: Merchant;
-  saleflow: SaleFlow;
   items: ExtendedItem[] = [];
   highlightedItems: ExtendedItem[] = [];
   ordersTotal: {
@@ -76,11 +71,10 @@ export class MerchantItemsComponent implements OnInit {
   ];
 
   constructor(
-    private merchantsService: MerchantsService,
+    public merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     private itemsService: ItemsService,
     private ordersService: OrderService,
-    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     // private location: Location,
@@ -94,48 +88,22 @@ export class MerchantItemsComponent implements OnInit {
       'status'
     ) as ItemStatus;
     if (status) this.statusQueryParam = status;
-    this.authService.ready.subscribe(async (observer) => {
-      if (observer != undefined) {
-        this.status = 'loading';
+    this.status = 'loading';
 
-        await this.getMerchant();
-        if (!this.merchant) {
-          this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`auth/login/`]);
-          unlockUI();
-          return;
-        }
+    await Promise.all([
+      this.getOrderTotal(this.merchantsService.merchantData._id),
+      this.getItems(this.merchantsService.merchantData._id, status),
+    ]);
 
-        await Promise.all([
-          this.getOrderTotal(this.merchant._id),
-          this.getItems(this.merchant._id, status),
-        ]);
-
-        this.highlightedItems = [];
-        for (const item of this.items) {
-          if (item.status === 'featured') {
-            this.highlightedItems.push(item);
-          }
-        }
-        this.status = 'complete';
-        if (this.ordersTotal?.total) this.hasSalesData = true;
-        unlockUI();
-      } else {
-        this.errorScreen();
+    this.highlightedItems = [];
+    for (const item of this.items) {
+      if (item.status === 'featured') {
+        this.highlightedItems.push(item);
       }
-    });
-  }
-
-  async getMerchant() {
-    try {
-      this.merchant = await this.merchantsService.merchantDefault();
-      this.saleflow = await this.saleflowService.saleflowDefault(
-        this.merchant._id
-      );
-    } catch (error) {
-      this.status = 'error';
-      console.log(error);
     }
+    this.status = 'complete';
+    if (this.ordersTotal?.total) this.hasSalesData = true;
+    unlockUI();
   }
 
   async getItems(merchantID: string, status?: ItemStatus) {
@@ -173,10 +141,6 @@ export class MerchantItemsComponent implements OnInit {
     this.selectedItemsCounter = this.items.reduce((total, number, index) => {
       return this.items[index].selected ? total + 1 : total + 0;
     }, 0);
-  };
-
-  testing = () => {
-    console.log('test');
   };
 
   async getOrderTotal(merchantID: string) {
@@ -226,7 +190,7 @@ export class MerchantItemsComponent implements OnInit {
           const removeItemFromSaleFlow =
             await this.saleflowService.removeItemFromSaleFlow(
               item._id,
-              this.saleflow._id
+              this.saleflowService.saleflowData._id
             );
           if (!removeItemFromSaleFlow) return;
           const deleteItem = await this.itemsService.deleteItem(item._id);
@@ -397,9 +361,12 @@ export class MerchantItemsComponent implements OnInit {
           }
 
           if (this.statusQueryParam) {
-            await this.getItems(this.merchant._id, this.statusQueryParam);
+            await this.getItems(
+              this.merchantsService.merchantData._id,
+              this.statusQueryParam
+            );
           } else {
-            await this.getItems(this.merchant._id, null);
+            await this.getItems(this.merchantsService.merchantData._id, null);
           }
 
           this.highlightedItems = [];
@@ -456,7 +423,7 @@ export class MerchantItemsComponent implements OnInit {
         const removedItemFromSaleFlow =
           await this.saleflowService.removeItemFromSaleFlow(
             item._id,
-            this.saleflow._id
+            this.saleflowService.saleflowData._id
           );
 
         if (!removedItemFromSaleFlow) return;
@@ -493,9 +460,12 @@ export class MerchantItemsComponent implements OnInit {
       Promise.all(arrayOfMutationsForHightlightItemsPromises)
         .then(async (arrayOfResults) => {
           if (this.statusQueryParam) {
-            await this.getItems(this.merchant._id, this.statusQueryParam);
+            await this.getItems(
+              this.merchantsService.merchantData._id,
+              this.statusQueryParam
+            );
           } else {
-            await this.getItems(this.merchant._id, null);
+            await this.getItems(this.merchantsService.merchantData._id, null);
           }
 
           this.highlightedItems = [];
@@ -562,7 +532,7 @@ export class MerchantItemsComponent implements OnInit {
             func: async () => {
               this.selectedItemsCounter = 0;
 
-              await this.getItems(this.merchant._id, null);
+              await this.getItems(this.merchantsService.merchantData._id, null);
               this.items = this.items.filter((item) => {
                 if (item.status === 'featured') return false;
                 else {
@@ -584,7 +554,7 @@ export class MerchantItemsComponent implements OnInit {
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
 
-              await this.getItems(this.merchant._id, null);
+              await this.getItems(this.merchantsService.merchantData._id, null);
 
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') return false;
@@ -604,7 +574,7 @@ export class MerchantItemsComponent implements OnInit {
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
 
-              await this.getItems(this.merchant._id, null);
+              await this.getItems(this.merchantsService.merchantData._id, null);
 
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') {
@@ -623,7 +593,7 @@ export class MerchantItemsComponent implements OnInit {
             func: async () => {
               this.selectedItemsCounter = 0;
 
-              await this.getItems(this.merchant._id, null);
+              await this.getItems(this.merchantsService.merchantData._id, null);
 
               this.items.forEach((item) => {
                 item.selected = false;
@@ -694,8 +664,11 @@ export class MerchantItemsComponent implements OnInit {
       this.selectedItemsCounter = 0;
 
       if (this.statusQueryParam)
-        await this.getItems(this.merchant._id, this.statusQueryParam);
-      else await this.getItems(this.merchant._id, null);
+        await this.getItems(
+          this.merchantsService.merchantData._id,
+          this.statusQueryParam
+        );
+      else await this.getItems(this.merchantsService.merchantData._id, null);
 
       this.items.forEach((item) => {
         item.selected = false;
