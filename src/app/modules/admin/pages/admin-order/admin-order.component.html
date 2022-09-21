@@ -1,0 +1,154 @@
+<div class="main-container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="true"
+    [bgColor]="'#2874AD'"
+  ></app-helper-headerv2>
+
+  <div class="information">
+    <section class="section" style="margin-bottom: 36px;">
+      <h2 class="section-title">Selección del plan:</h2>
+
+      <div class="items-container">
+        <div class="items-container space-between" style="padding: 10px 32px">
+          <p class="total">planID</p>
+          <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 36px;">
+      <h2 class="section-title">Selección de escenarios:</h2>
+
+      <div class="items-container">
+        <div
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            *ngFor="let item of items"
+            (click)="
+              (item.image || item.images?.length) &&
+                openImageModal(item.image || item.images[0])
+            "
+          >
+            <div class="image">
+              <img
+                [src]="
+                  item.image || item.images.length
+                    ? item.image || item.images[0]
+                    : '/assets/images/noimage.png'
+                "
+                alt="item image"
+                class="item-image"
+              />
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <!-- *ngIf="order?.products[0].reservation && date" -->
+      <h2 class="section-title" style="margin-top: 32px">
+        Fecha de la sesión:
+      </h2>
+
+      <div class="items-container" style="padding: 10px 32px">
+        <p class="amount">
+         Sab. 14 de Abr. De 9:00am a 9:45am
+        </p>
+        <!-- {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
+          {{ date.time }} -->
+      </div>
+    </section>
+  </div>
+  
+  <form [formGroup]="registerForm">
+   <div class="phone-input-wrapper">
+      <div class="names-area">
+        <div class="name">
+          <label for="Name" class="names-label">Nombre:</label>
+          <input
+            type="text"
+            class="names-input"
+            placeholder="Mi nombre es..."
+            formControlName="firstName"
+            required
+          />
+        </div>
+
+        <div class="last-name">
+          <label for="Last name" class="names-label">Apellido:</label>
+          <input
+            type="text"
+            class="names-input"
+            placeholder="Mi apellido es..."
+            formControlName="lastName"
+            required
+          />
+        </div>
+      </div>
+
+      <label for="Phone number" class="phone-label"
+        >Celular que recibe las notificaciones:</label
+      >
+
+      <div style="margin-bottom: 63px">
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [enableAutoCountrySelect]="true"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="true"
+          [selectFirstCountry]="false"
+          [preferredCountries]="preferredCountries"
+          [selectedCountryISO]="CountryISO"
+          [phoneValidation]="true"
+          [separateDialCode]="true"
+          [customPlaceholder]="'Mi # de WhatsApp es....'"
+          [numberFormat]="PhoneNumberFormat.International"
+          formControlName="phoneNumber"
+          tabindex="1"
+        ></ngx-intl-tel-input>
+      </div>
+
+      <div class="mail-inputs">
+        <label for="Email" class="phone-label"
+          >Correo Electronico (opcional):</label
+        >
+
+        <input
+          type="email"
+          class="email-input"
+          placeholder="miEmail@mail.com"
+          formControlName="email"
+        />
+      </div>
+
+      <label for="Password" class="phone-label">Clave de Acceso:</label>
+
+      <input
+        class="pass"
+        type="password"
+        placeholder="Adiciona la Clave"
+        formControlName="password"
+        name="password"
+        id="password"
+        placeholder="Escribe..."
+        required
+      />
+    </div>
+  </form>
+
+  <app-sticky-button
+  [mode]="'fixed'"
+  [text]="'CONFIRMA A WS DEL COMPRADOR'"
+  [bgColor]="'#2874AD'"
+  [color]="'#ffffff'"
+  [size]="'small'"
+  ></app-sticky-button>
+</div>
