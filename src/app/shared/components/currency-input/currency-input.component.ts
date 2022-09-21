@@ -19,7 +19,11 @@ export class CurrencyInputComponent implements OnInit {
     this.initialValue && this.formatNumber(this.initialValue);
   }
 
-  formatNumber(event: Event | number, emit?: boolean) {
+  formatNumber(
+    event: Event | number,
+    emit?: boolean,
+    input?: HTMLInputElement
+  ) {
     let value: string;
     if (typeof event === 'number') value = `${event}`;
     else value = (<HTMLInputElement>event.target).value;
@@ -46,6 +50,10 @@ export class CurrencyInputComponent implements OnInit {
               ),
               '1.2'
             );
+      if (parseFloat(formatted.replace(/,/g, '')) > 9999999999999.99) {
+        input.value = this.formattedPricing.replace(/\$|,/g, '');
+        return;
+      }
       this.formattedPricing = '$' + formatted;
     } else {
       const formatted =
@@ -61,11 +69,14 @@ export class CurrencyInputComponent implements OnInit {
               ),
               '1.2'
             );
+      if (parseFloat(formatted.replace(/,/g, '')) > 9999999999999.99) {
+        input.value = this.formattedPricing.replace(/\$|,/g, '');
+        return;
+      }
       this.formattedPricing = '$' + formatted;
     }
     if (!emit) return;
-    this.onInputEvent.emit(
-      parseFloat(this.formattedPricing.replace(/\$|,/g, ''))
-    );
+    const num = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));
+    this.onInputEvent.emit(num);
   }
 }

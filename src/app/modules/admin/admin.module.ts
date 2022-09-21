@@ -35,6 +35,8 @@ import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
 import { UserItemsComponent } from './pages/user-items/user-items.component';
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
+import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
+import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
 import { CreateDynamicItemComponent } from './pages/create-dynamic-item/create-dynamic-item.component';
@@ -216,6 +218,14 @@ const routes: Routes = [
     component: UserItemsComponent,
   },
   {
+    path: 'order-reservation',
+    component: OrderReservationComponent
+  },
+  {
+    path: 'admin-order',
+    component: AdminOrderComponent
+  },
+  {
     path: 'options/:itemId',
     component: ActionsMenuComponent,
   },
@@ -226,7 +236,7 @@ const routes: Routes = [
   {
     path: 'create-dynamic-item',
     component: CreateDynamicItemComponent,
-  },
+  }
 ];
 
 @NgModule({
@@ -264,9 +274,11 @@ const routes: Routes = [
     TagsEditComponent,
     UserItemsComponent,
     MerchantSharedComponent,
+    OrderReservationComponent,
+    AdminOrderComponent,
     ActionsMenuComponent,
     MetricsInfoComponent,
-    CreateDynamicItemComponent,
+    CreateDynamicItemComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

@@ -658,10 +658,10 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
+
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
-        this.datePreview &&
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayNumber === currentDayNumber) ||

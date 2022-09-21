@@ -100,7 +100,78 @@
           </div>
         </div>
         <div class="container-text-option" *ngIf="isMultipleOption">
-          <p
+         <div class="selector-flex-wrapper">
+            <div
+              [class]="
+                !indicator
+                  ? i === activeMultipleOption[i] && showSelectedFeedback
+                    ? 'option selected'
+                    : 'option'
+                  : i === activeMultipleOption[i] && showSelectedFeedback
+                  ? 'selector-option active'
+                  : 'selector-option'
+              "
+              [ngStyle]="itemStyles ? itemStyles : null"
+              (click)="editable && option.status && clickSelector(i)"
+            >
+              <div class="background"></div>
+
+              <ng-container *ngIf="!option.isOptionAnArray">
+                <span [ngStyle]="option.valueStyles">{{ option.value }}</span>
+                <div>
+                  <span
+                    *ngFor="let subtext of option.subtexts"
+                    [ngStyle]="subtext.styles"
+                    >{{ subtext.text }}</span
+                  >
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="option.isOptionAnArray && option.valueArray">
+                <span>
+                  <ng-container *ngFor="let part of option.valueArray">
+                    <span
+                      *ngIf="part.highlight"
+                      [ngStyle]="{
+                        display: 'inline-block',
+                        margin: '0px 10px',
+                        marginBottom: '10px',
+                        backgroundColor: '#2874AD',
+                        color: '#fff',
+                        borderRadius: '5px',
+                        padding: '5px 10px'
+                      }"
+                      >{{ part.text }}</span
+                    >
+
+                    <span
+                      *ngIf="!part.highlight"
+                      [ngStyle]="{
+                        display: 'inline-block',
+                        margin: '0px 4px',
+                        marginBottom: '10px'
+                      }"
+                      >{{ part.text }}</span
+                    >
+                  </ng-container>
+                </span>
+              </ng-container>
+            </div>
+            <div class="icons-flex-wrapper" *ngIf="option.icons?.length > 0">
+              <ng-container *ngFor="let icon of option.icons">
+                <button
+                  class="icon-button"
+                  (click)="icon.callback ? icon.callback() : null"
+                >
+                  <img
+                    [src]="icon.src"
+                    [ngStyle]="icon.styles ? icon.styles : null"
+                  />
+                </button>
+              </ng-container>
+            </div>
+          </div>
+          <!-- <p
             class="option"
             [ngClass]="
               option.click && showSelectedFeedback
@@ -109,7 +180,7 @@
             "
           >
             {{ option.value }}
-          </p>
+          </p> -->
         </div>
       </li>
     </ng-container>

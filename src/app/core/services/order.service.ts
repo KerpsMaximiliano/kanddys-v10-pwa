@@ -16,10 +16,13 @@ import {
   updateTagsInOrder,
   ordersTotal,
   ordersByItem,
+  createOCR,
+  createPartialOCR,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
   ItemOrderInput,
+  OCR,
   OCRInput,
   OrderStatusNameType,
   OrderStatusType,
@@ -200,6 +203,30 @@ export class OrderService {
 
     console.log(result);
     return result;
+  }
+
+  async createOCR(input: OCRInput) {
+    const result = await this.graphql.mutate({
+      mutation: createOCR,
+      variables: { input },
+      context: { useMultipart: true },
+    });
+    return result;
+  }
+
+  async createPartialOCR(
+    subtotal: number,
+    merchant: string,
+    image: File,
+    userID?: string,
+    code?: string
+  ): Promise<OCR> {
+    const result = await this.graphql.mutate({
+      mutation: createPartialOCR,
+      variables: { subtotal, userID, merchant, code, image },
+      context: { useMultipart: true },
+    });
+    return result?.createPartialOCR;
   }
 
   getOrderStatusName(status: OrderStatusType): OrderStatusNameType {

@@ -314,6 +314,9 @@ export class CreateItemComponent implements OnInit {
             images.length > 0 ||
             this.itemService.temporalImages?.new?.length > 0,
         };
+
+        alert(JSON.stringify(this.user, null, 4));
+
         if (this.user) {
           const { createItem } = await this.itemService.createItem(itemInput);
           await this.saleflowService.addItemToSaleFlow(
