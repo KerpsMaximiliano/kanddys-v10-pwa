@@ -373,6 +373,7 @@ export class LoginComponent implements OnInit {
         if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
+          this.phoneNumber.disable();
           if (this.validateData) {
             this.firstName.setValue(this.validateData.name);
             this.lastName.setValue(this.validateData.lastName);
@@ -526,21 +527,22 @@ export class LoginComponent implements OnInit {
           '¡Usuario registrado con exito! Se ha enviado un código para verificar',
           null,
           {
-            timeOut: 2000,
+            timeOut: 5000,
+            disableTimeOut: 'extendedTimeOut',
           }
         );
       }
-    } else if (valid && valid.validatedAt === null){
+    } else if (valid && valid.validatedAt === null) {
       await this.generateTOP(true);
       this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-      this.userID = valid._id
+      this.userID = valid._id;
       this.validateData = {
-         name: this.firstName.value,
-         lastName: this.lastName.value,
-         password: this.password.value,
-         email:
-            this.email.value && this.email.valid ? this.email.value : undefined
-      }
+        name: this.firstName.value,
+        lastName: this.lastName.value,
+        password: this.password.value,
+        email:
+          this.email.value && this.email.valid ? this.email.value : undefined,
+      };
 
       this.signUp = false;
       this.loggin = true;
@@ -548,10 +550,10 @@ export class LoginComponent implements OnInit {
       this.password.reset();
 
       this.toastr.info('Ingrese el código para completar su registro', null, {
-         timeOut: 5500,
+        timeOut: 5500,
       });
-    }else{
-       if (this.toValidate) {
+    } else {
+      if (this.toValidate) {
         const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
@@ -567,9 +569,13 @@ export class LoginComponent implements OnInit {
           this.signUp = false;
           this.loggin = true;
 
-          this.toastr.info('¡Usuario actualizado exitosamente! Ingrese su contraseña', null, {
-            timeOut: 2000,
-          });
+          this.toastr.info(
+            '¡Usuario actualizado exitosamente! Ingrese su contraseña',
+            null,
+            {
+              timeOut: 2000,
+            }
+          );
           return;
         } else {
           this.toastr.error('Algo no funciona', null, {
