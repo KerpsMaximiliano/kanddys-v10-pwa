@@ -103,9 +103,13 @@
           <i class="fas fa-chevron-right"></i>
         </button>
 
-        <button class="alternate" (click)="generateTOP()">
+        <button class="alternate" (click)="generateTOP()" *ngIf="!OTP">
           PREFIERO RECIBIR UN MENSAJE CON EL CODIGO
         </button>
+
+        <button class="alternate" (click)="generateTOP()" *ngIf="OTP">
+         ¿NO RECIBISTE EL CÓDIGO? ENVÍALO DE NUEVO
+       </button>
       </div>
     </ng-container>
   </div>
