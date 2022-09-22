@@ -463,10 +463,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async generateTOP() {
+  async generateTOP(toast?: boolean) {
     const OTP = await this.authService.generateOTP(this.merchantNumber);
     if (OTP) {
-      this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
+      toast? null : this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
       this.OTP = true;
     }
   }
@@ -505,7 +505,7 @@ export class LoginComponent implements OnInit {
         console.log('Creando nuevo user');
         this.sneaky = this.password.value;
 
-        await this.generateTOP();
+        await this.generateTOP(true);
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
@@ -515,7 +515,7 @@ export class LoginComponent implements OnInit {
         //   null
         // );
         this.toPassword();
-        this.toastr.info('¡Usuario registrado con exito!', null, {
+        this.toastr.info('¡Usuario registrado con exito! Se ha enviado un código para verificar', null, {
           timeOut: 2000,
         });
       }
