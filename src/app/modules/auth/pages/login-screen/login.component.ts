@@ -563,19 +563,24 @@ export class LoginComponent implements OnInit {
         });
 
         if (validateUser) {
-          this.password.reset();
-          this.OTP = false;
-          this.toValidate = false;
-          this.signUp = false;
-          this.loggin = true;
-
-          this.toastr.info(
-            '¡Usuario actualizado exitosamente! Ingrese su contraseña',
-            null,
-            {
-              timeOut: 2000,
-            }
+          await this.authService.signin(
+            this.merchantNumber,
+            this.password.value,
+            true
           );
+
+          this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+            timeOut: 2000,
+          });
+          if (this.auth === 'order') {
+            this.router.navigate([`ecommerce/new-address`], {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            });
+            return;
+          }
           return;
         } else {
           this.toastr.error('Algo no funciona', null, {
