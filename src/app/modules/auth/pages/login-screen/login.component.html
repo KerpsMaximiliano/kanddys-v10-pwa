@@ -4,15 +4,17 @@
     [mainText]="{
       text: loggin
         ? merchantNumber
-        : signUp
+        : signUp && !toValidate
         ? 'Contacto de las facturas'
+        : signUp && toValidate 
+        ? 'Completa tu registro'
         : 'Login',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="auth === 'order' || loggin || signUp ? true : false"
+    [returnAble]="auth === 'order' || loggin || signUp && !toValidate ? true : false"
     (returnEvent)="loggin ? toggleLog() : signUp ? toSignUp() : auth === 'order' ? back() : null"
   ></app-helper-headerv2>
 
