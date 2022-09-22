@@ -241,7 +241,7 @@ export const listItems = gql`
         _id
         images
         name
-        isActive
+        active
         createdAt
       }
     }
