@@ -468,10 +468,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async generateTOP(toast?: boolean) {
+  async generateTOP(notoast?: boolean) {
     const OTP = await this.authService.generateOTP(this.merchantNumber);
     if (OTP) {
-      toast
+      notoast
         ? null
         : this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
       this.OTP = true;
@@ -530,21 +530,28 @@ export class LoginComponent implements OnInit {
           }
         );
       }
-    } else if (valid && valid.validatedAt === null) {
+    } else if (valid && valid.validatedAt === null){
+      await this.generateTOP(true);
+      this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+      this.userID = valid._id
       this.validateData = {
-        name: this.firstName.value,
-        lastName: this.lastName.value,
-        password: this.password.value,
-        email:
-          this.email.value && this.email.valid ? this.email.value : undefined,
-      };
-      this.toastr.info('Ingrese para completar su registro', null, {
-        timeOut: 5500,
-      });
+         name: this.firstName.value,
+         lastName: this.lastName.value,
+         password: this.password.value,
+         email:
+            this.email.value && this.email.valid ? this.email.value : undefined
+      }
+
       this.signUp = false;
+      this.loggin = true;
+      this.toValidate = true;
       this.password.reset();
-    } else {
-      if (this.toValidate) {
+
+      this.toastr.info('Ingrese el código para completar su registro', null, {
+         timeOut: 5500,
+      });
+    }else{
+       if (this.toValidate) {
         const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
@@ -560,7 +567,7 @@ export class LoginComponent implements OnInit {
           this.signUp = false;
           this.loggin = true;
 
-          this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+          this.toastr.info('¡Usuario actualizado exitosamente! Ingrese su contraseña', null, {
             timeOut: 2000,
           });
           return;
