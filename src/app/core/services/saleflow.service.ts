@@ -28,6 +28,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class SaleFlowService {
   saleflowSubject = new Subject();
+  saleflowData: SaleFlow;
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {

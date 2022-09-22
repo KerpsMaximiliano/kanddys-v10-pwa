@@ -41,6 +41,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   constructor(private graphql: GraphQLWrapper) {}
+  merchantData: Merchant;
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {

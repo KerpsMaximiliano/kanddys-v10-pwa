@@ -56,7 +56,6 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   constructor(
     private merchantsService: MerchantsService,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private ordersService: OrderService,
@@ -71,21 +70,12 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.merchant = await this.merchantsService.merchantDefault();
-    if (!this.merchant) {
-      this.headerService.flowRoute = this.router.url;
-      this.router.navigate([`auth/login/`]);
-      unlockUI();
-      return;
-    }
-
     await Promise.all([
       this.getItemsByMerchant(),
       this.getOrderTotal(),
       this.getMerchantBuyers(),
       // this.getTags(),
       // this.getCategories(),
-      this.getSaleflow(),
       this.getWebformsData(),
       // this.getCalendars(),
     ]);
@@ -95,7 +85,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getItemsByMerchant() {
     try {
       this.items = (
-        await this.merchantsService.itemsByMerchant(this.merchant._id)
+        await this.merchantsService.itemsByMerchant(this.merchantsService.merchantData._id)
       )?.itemsByMerchant;
       this.activeItems = this.items.filter(
         (item) => item.status === 'active' || item.status === 'featured'
@@ -114,7 +104,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getCalendars() {
   //   try {
   //     this.calendars = await this.calendarService.getCalendarsByMerchant(
-  //       this.merchant._id
+  //       this.merchantsService.merchantData._id
   //     );
   //     this.calendars = this.calendars.map((calendar) => {
   //       calendar.subtitle =
@@ -153,7 +143,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     try {
       this.ordersTotal = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
     } catch (error) {
       console.log(error);
@@ -163,7 +153,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getMerchantBuyers() {
     try {
       this.users = await this.merchantsService.usersOrderMerchant(
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
     } catch (error) {
       console.log(error);
@@ -173,7 +163,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getWebformsData() {
     try {
       this.webforms = await this.webformsService.webformsByMerchant(
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
       console.log(this.webforms);
 
@@ -200,7 +190,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getTags() {
   //   try {
   //     const tags = (
-  //       await this.merchantsService.tagsByMerchant(this.merchant._id)
+  //       await this.merchantsService.tagsByMerchant(this.merchantsService.merchantData._id)
   //     )?.tagsByMerchant;
   //     if (!tags) return;
   //     this.tags = tags
@@ -214,7 +204,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getCategories() {
   //   try {
   //     const categories = (
-  //       await this.itemsService.itemCategories(this.merchant._id, {
+  //       await this.itemsService.itemCategories(this.merchantsService.merchantData._id, {
   //         options: {
   //           limit: 1000,
   //         },
@@ -229,20 +219,10 @@ export class EntityDetailMetricsComponent implements OnInit {
   //   }
   // }
 
-  async getSaleflow() {
-    try {
-      this.saleflow = await this.saleflowService.saleflowDefault(
-        this.merchant._id
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   onOptionsClick = () => {
     const list: StoreShareList[] = [
       {
-        title: 'Sobre ' + this.merchant.name,
+        title: 'Sobre ' + this.merchantsService.merchantData.name,
         options: [
           {
             text: 'Crea un nuevo artículo',
@@ -255,7 +235,7 @@ export class EntityDetailMetricsComponent implements OnInit {
           {
             text: 'Vende online. Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`,
           },
           /* {
             text: 'Cerrar sesión',
@@ -316,7 +296,7 @@ export class EntityDetailMetricsComponent implements OnInit {
           {
             text: 'Vende online. Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`,
           },
         ],
       },
@@ -371,7 +351,7 @@ export class EntityDetailMetricsComponent implements OnInit {
           {
             text: 'Vende online. Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`,
           },
         ],
       },

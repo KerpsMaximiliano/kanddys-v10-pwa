@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -9,12 +8,9 @@ import {
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { User } from 'src/app/core/models/user';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -39,7 +35,6 @@ export class CreateItemComponent implements OnInit {
   imageField: (string | ArrayBuffer)[] = [];
   item: Item;
   disableFooter = true;
-  user: User;
   merchant: Merchant;
   saleflow: SaleFlow;
   changedImages = false;
@@ -70,7 +65,6 @@ export class CreateItemComponent implements OnInit {
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
-    private authService: AuthService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
     private route: ActivatedRoute,
@@ -86,14 +80,13 @@ export class CreateItemComponent implements OnInit {
     const justdynamicmode =
       this.route.snapshot.queryParamMap.get('justdynamicmode');
 
-    const promises: Promise<User | Merchant | Item>[] = [
-      this.authService.me(),
+    const promises: Promise<Merchant | Item>[] = [
       this.merchantService.merchantDefault(),
     ];
     if (itemId && !this.itemService.temporalItem)
       promises.push(this.itemService.item(itemId));
     this.status = 'loading';
-    const [user, userMerchant, item] = await Promise.all(promises);
+    const [userMerchant, item] = await Promise.all(promises);
 
     if (justdynamicmode) {
       this.hasParams = true;
@@ -119,11 +112,10 @@ export class CreateItemComponent implements OnInit {
       this.formattedPricing.values[1] = '$167500';
     }
 
-    if (!user || !userMerchant) {
+    if (!userMerchant) {
       this.status = 'complete';
       return;
     }
-    this.user = user as User;
     this.merchant = userMerchant as Merchant;
     this.saleflow = await this.saleflowService.saleflowDefault(
       this.merchant._id
@@ -135,9 +127,10 @@ export class CreateItemComponent implements OnInit {
     this.item = item as Item;
     const { images, name, description, merchant, params, pricing } =
       this.item || this.itemService.temporalItem;
-    if (merchant && this.user._id !== merchant.owner._id) {
+    if (merchant && this.merchant.owner._id !== merchant.owner._id) {
       this.status = 'error';
-      throw new Error('No eres el merchant dueño de este item');
+      this.router.navigate(['/admin/merchant-items']);
+      return;
     }
     this.imageField = images;
     if (this.itemService.temporalImages?.new?.length) {
@@ -315,9 +308,7 @@ export class CreateItemComponent implements OnInit {
             this.itemService.temporalImages?.new?.length > 0,
         };
 
-        alert(JSON.stringify(this.user, null, 4));
-
-        if (this.user) {
+        if (this.merchant) {
           const { createItem } = await this.itemService.createItem(itemInput);
           await this.saleflowService.addItemToSaleFlow(
             {
