@@ -579,7 +579,10 @@ export class LoginComponent implements OnInit {
                 loggedIn: true,
               },
             });
-            return;
+          } else {
+            this.router.navigate([`admin/entity-detail-metrics`], {
+              replaceUrl: true,
+            });
           }
           return;
         } else {
