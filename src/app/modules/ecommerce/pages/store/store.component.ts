@@ -220,7 +220,7 @@ export class StoreComponent implements OnInit {
         this.merchant.merchant(this.saleflowData.merchant._id),
         this.authService.me(),
       ]);
-      if (user?._id === merchant?.owner._id) {
+      if (user?._id === merchant?.owner?._id) {
         this.admin = true;
       }
       this.categories = this.getCategories(
