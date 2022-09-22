@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -14,22 +15,31 @@ export class AdminComponent implements OnInit {
     public merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
     private headerService: HeaderService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.merchantsService.merchantData =
-      await this.merchantsService.merchantDefault();
+    this.authService.ready.subscribe(async (observer) => {
+      if (observer == undefined) {
+        this.headerService.flowRoute = this.router.url;
+        this.router.navigate([`auth/login/`]);
+        return;
+      }
 
-    if (!this.merchantsService.merchantData) {
-      this.headerService.flowRoute = this.router.url;
-      this.router.navigate([`auth/login/`]);
-      return;
-    }
+      this.merchantsService.merchantData =
+        await this.merchantsService.merchantDefault();
 
-    this.saleflowService.saleflowData =
-      await this.saleflowService.saleflowDefault(
-        this.merchantsService.merchantData._id
-      );
+      if (!this.merchantsService.merchantData) {
+        this.headerService.flowRoute = this.router.url;
+        this.router.navigate([`auth/login/`]);
+        return;
+      }
+
+      this.saleflowService.saleflowData =
+        await this.saleflowService.saleflowDefault(
+          this.merchantsService.merchantData._id
+        );
+    });
   }
 }
