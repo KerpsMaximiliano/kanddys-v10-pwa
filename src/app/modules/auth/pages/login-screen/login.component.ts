@@ -26,6 +26,13 @@ import { environment } from 'src/environments/environment';
 
 type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
 
+interface ValidateData{
+   name: string;
+   lastName: string;
+   password: string;
+   email?: string;
+}
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -53,6 +60,7 @@ export class LoginComponent implements OnInit {
   messageLink: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
+  validateData: ValidateData;
   phoneNumber = new FormControl('', [
     Validators.required,
     Validators.minLength(10),
@@ -171,7 +179,7 @@ export class LoginComponent implements OnInit {
 
         if (exists) {
           const { countryIso, nationalNumber } =
-            this.authService.getPhoneInformation(phone);
+          this.authService.getPhoneInformation(phone);
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
           this.loggin = true;
@@ -362,6 +370,11 @@ export class LoginComponent implements OnInit {
         if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
+          if(this.validateData){
+            this.firstName.setValue(this.validateData.name);
+            this.lastName.setValue(this.validateData.lastName);
+            this.validateData?.email? this.email.setValue(this.validateData.email) : ''
+          }
           this.password.reset();
           return;
         }
@@ -506,7 +519,20 @@ export class LoginComponent implements OnInit {
           timeOut: 2000,
         });
       }
-    } else {
+    } else if(valid && valid.validatedAt === null){
+      this.validateData = {
+         name: this.firstName.value,
+         lastName: this.lastName.value,
+         password: this.password.value,
+         email:
+            this.email.value && this.email.valid ? this.email.value : undefined
+      }
+      this.toastr.info('Ingrese para completar su registro', null, {
+         timeOut: 5500,
+       });
+      this.signUp = false;
+      this.password.reset();
+    }else{
       if (this.toValidate) {
         const validateUser = await this.authService.updateMe({
           password: this.password.value,

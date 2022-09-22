@@ -111,7 +111,7 @@ export class NewAddressComponent implements OnInit {
       this.authOptions.push({
         status: true,
         id: 'withUser',
-        value: `Continuar como ${this.user.name}`,
+        value: this.user.name ? `Continuar como ${this.user.name}` : 'Continuar con la sesión actual',
         valueStyles: {
           fontFamily: 'SfProBold',
           fontSize: '0.875rem',
