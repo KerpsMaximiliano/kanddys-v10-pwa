@@ -17,7 +17,9 @@ export class WhatsappMessageComponent implements OnInit {
   constructor(private ref: DialogRef) {}
 
   ngOnInit(): void {
-    this.link = `https://wa.me/${this.data.phone}?text=${this.data.message}`;
+    this.link = `https://wa.me/${this.data.phone}?text=${encodeURIComponent(
+      this.data.message
+    )}`;
   }
 
   closeEvent() {
