@@ -1,13 +1,26 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+// import Swiper core and required modules
 import { SwiperOptions } from 'swiper';
+import SwiperCore, { Virtual } from "swiper/core";
+
+SwiperCore.use([Virtual]);
 
 @Component({
   selector: 'app-image-input',
   templateUrl: './image-input.component.html',
   styleUrls: ['./image-input.component.scss'],
 })
-export class ImageInputComponent implements OnInit {
+export class ImageInputComponent implements OnInit, AfterViewInit {
   @Input() imageField: (string | ArrayBuffer)[] = [''];
   @Input() formControlName: string = null;
   error: boolean[] = [];
@@ -20,16 +33,14 @@ export class ImageInputComponent implements OnInit {
     index: number;
   }>();
 
-  @Output() onFileInputMultiple = new EventEmitter<
-    FileList
-  >();
+  @Output() onFileInputMultiple = new EventEmitter<FileList>();
   @Output() onFileInputBase64Multiple = new EventEmitter<{
     image: string | ArrayBuffer;
     index: number;
   }>();
 
   @Output() onFileDeletion = new EventEmitter<{
-    index: number
+    index: number;
   }>();
 
   @Input() topLabel?: {
@@ -48,8 +59,10 @@ export class ImageInputComponent implements OnInit {
   @Input() imagesAlreadyLoaded: boolean = false;
   @Input() allowDeletion: boolean = false;
   @Input() useSwiper: boolean = true;
+  @Input() showAddImagesButton: boolean = false;
   @Input() id: string = null;
   @Input() placeholderImage: boolean;
+  appendImageToTheEnd: boolean = false;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -57,20 +70,33 @@ export class ImageInputComponent implements OnInit {
     spaceBetween: 16,
   };
 
-  constructor(protected _DomSanitizer: DomSanitizer) {}
+  @ViewChild('swiperRef') swiper: SwiperComponent;
+
+  constructor(protected _DomSanitizer: DomSanitizer) {
+  }
 
   ngOnInit(): void {
     if (this.allowedTypes.length > 0)
       this.acceptTypes = '.' + this.allowedTypes.join(', .');
     else this.acceptTypes = 'image/*';
 
-    if(this.imagesAlreadyLoaded && this.imageField[this.imageField.length - 1] !== '' && !this.uploadImagesWithoutPlaceholderBox) this.imageField.push('');
+    if (
+      this.imagesAlreadyLoaded &&
+      this.imageField[this.imageField.length - 1] !== '' &&
+      !this.uploadImagesWithoutPlaceholderBox
+    )
+      this.imageField.push('');
+  }
+
+  ngAfterViewInit(): void {
+    //Swiper instance will be displayed in console
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {
-    
     return this._DomSanitizer.bypassSecurityTrustStyle(
-      `url(${image}) no-repeat center center / ${!expandImage ? 'contain' : 'cover'} #fff`
+      `url(${image}) no-repeat center center / ${
+        !expandImage ? 'contain' : 'cover'
+      } #fff`
     );
   }
 
@@ -102,7 +128,7 @@ export class ImageInputComponent implements OnInit {
         this.onFileInputBase64.emit({ image: reader.result, index });
       };
       reader.readAsDataURL(files[0]);
-      if(this.max && this.imageField.length >= this.max) return;
+      if (this.max && this.imageField.length >= this.max) return;
       if (this.multiple && this.imageField.length - 1 === index) {
         this.imageField.push('');
         this.error.push(false);
@@ -114,14 +140,14 @@ export class ImageInputComponent implements OnInit {
   fileProgressMultiple(e: Event) {
     const fileList = (e.target as HTMLInputElement).files;
 
-    if(fileList.length > 0) {
+    if (fileList.length > 0) {
       let emitData = fileList;
-      
+
       this.onFileInputMultiple.emit(emitData);
 
       this.imageField = [];
 
-      for(let i = 0; i < fileList.length; i++) {
+      for (let i = 0; i < fileList.length; i++) {
         const file = fileList.item(i);
 
         if (
@@ -136,13 +162,23 @@ export class ImageInputComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imageField[i] = reader.result;
-          this.onFileInputBase64Multiple.emit({ image: reader.result, index: i });
+          this.onFileInputBase64Multiple.emit({
+            image: reader.result,
+            index: i,
+          });
+
+          if (
+            this.appendImageToTheEnd &&
+            this.uploadImagesWithoutPlaceholderBox
+          ) {
+            this.appendImageToTheEnd = false;
+          } 
         };
 
         reader.readAsDataURL(file);
       }
 
-      if(this.max && this.imageField.length >= this.max) return;
+      if (this.max && this.imageField.length >= this.max) return;
       return;
     }
   }
@@ -150,8 +186,14 @@ export class ImageInputComponent implements OnInit {
   deleteImageFromIndex(index: number) {
     this.imageField.splice(index, 1);
 
-    this.onFileDeletion.emit({index});
+    this.onFileDeletion.emit({ index });
 
-    if(this.imageField.length === 0) this.imageField.push('');
+    if (this.imageField.length === 0) this.imageField.push('');
+  }
+
+  clickImageInputWithId(id: string) {
+    this.appendImageToTheEnd = true;
+    const htmlElement: HTMLElement = document.querySelector('#' + id);
+    htmlElement.click();
   }
 }

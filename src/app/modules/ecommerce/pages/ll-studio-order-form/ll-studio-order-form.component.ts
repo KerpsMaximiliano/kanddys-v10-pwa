@@ -15,7 +15,6 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { User } from 'src/app/core/models/user';
 import { version } from 'package.json';
 
-
 const commonContainerStyles = {
   margin: '41px 39px auto 39px',
 };
@@ -648,7 +647,7 @@ export class LlStudioOrderFormComponent implements OnInit {
         params.scrollToStep(1, false);
       },
       footerConfig,
-      stepButtonInvalidText: 'INDRESA LOS DATOS REQUERIDOS',
+      stepButtonInvalidText: 'INGRESA LOS DATOS REQUERIDOS',
       stepButtonValidText: 'CONTINÚA CON TU ORDEN',
     },
     {
@@ -1748,7 +1747,7 @@ export class LlStudioOrderFormComponent implements OnInit {
               route: window.location.href,
               log: JSON.stringify({
                 error: error.message,
-                appVersion: version
+                appVersion: version,
               }),
               dataJSON: JSON.stringify(formData),
             });
@@ -1829,6 +1828,8 @@ export class LlStudioOrderFormComponent implements OnInit {
     );
 
     const dateOffset = new Date().getTimezoneOffset() / 60;
+
+    console.log(proofOfPaymentImages, fileRoutesReferenceImages);
 
     const data = {
       data: encodeURIComponent(
@@ -1913,8 +1914,10 @@ export class LlStudioOrderFormComponent implements OnInit {
       flags: ['no-header'],
     });
 
+    /*
     window.location.href =
       this.whatsappLink + encodeURIComponent(this.fullFormMessage);
+      */
   }
 
   constructor(

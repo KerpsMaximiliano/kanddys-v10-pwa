@@ -1344,6 +1344,68 @@
               </div>
             </div>
 
+            <!-- FILE INPUTS GO HERE -->
+            <div
+              *ngIf="currentField.inputType === 'file3'"
+              [ngStyle]="
+                currentField.styles.containerStyles
+                  ? currentField.styles.containerStyles
+                  : null
+              "
+            >
+              <span
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.labelStyles
+                    ? currentField.styles.labelStyles
+                    : null
+                "
+              >
+                {{ currentField.label }}
+              </span>
+
+              <label
+                [for]="currentField.name"
+                *ngIf="currentField.sublabel"
+                class="input-label"
+                [ngStyle]="
+                  currentField.styles.subLabelStyles
+                    ? currentField.styles.subLabelStyles
+                    : null
+                "
+              >
+                {{ currentField.sublabel }}
+              </label>
+
+              <div [id]="currentField.name">
+                <app-image-input
+                  [id]="currentField.name"
+                  [allowedTypes]="['png', 'jpg', 'jpeg']"
+                  [imagesPerView]="3"
+                  [multiple]="true"
+                  [showAddImagesButton]="true"
+                  [innerLabel]="currentField.placeholder"
+                  [expandImage]="true"
+                  [imageField]="currentField.fieldControl.control.value"
+                  [uploadImagesWithoutPlaceholderBox]="true"
+                  [allowDeletion]="true"
+                  [containerStyles]="currentField.styles.innerContainerStyles"
+                  [fileStyles]="currentField.styles.fieldStyles"
+                  (onFileInputMultiple)="
+                    handleImageInput($event, currentField.name, currentField)
+                  "
+                  (onFileInputBase64Multiple)="
+                    handleImageInputBase64(
+                      $event,
+                      currentField.name,
+                      currentField.fieldControl
+                    )
+                  "
+                  (onFileDeletion)="handleFileDeletion($event, currentField)"
+                ></app-image-input>
+              </div>
+            </div>
+
             <!-- DATE INPUTS GO HERE     -->
             <div
               *ngIf="
