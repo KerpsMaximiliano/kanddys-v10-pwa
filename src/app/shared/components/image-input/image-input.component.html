@@ -50,7 +50,7 @@
             tabindex="-1"
             class="d-none"
             accept="image/*"
-            multiple
+            [multiple]="blockMultipleFileInput ? false : true"
             [accept]="acceptTypes"
           />
 
@@ -165,12 +165,11 @@
       </swiper>
     </ng-container>
 
-    <div
-      class="add-btn-wrapper"
-      *ngIf="showAddImagesButton"
-      (click)="clickImageInputWithId(id + '-fileinput' || 'filemultiple')"
-    >
-      <button tabindex="-1"></button>
+    <div class="add-btn-wrapper" *ngIf="showAddImagesButton">
+      <button
+        tabindex="-1"
+        (click)="clickImageInputWithId(id + '-fileinput' || 'filemultiple')"
+      ></button>
     </div>
   </div>
 

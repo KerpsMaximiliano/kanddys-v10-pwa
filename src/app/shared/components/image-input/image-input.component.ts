@@ -62,6 +62,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   @Input() showAddImagesButton: boolean = false;
   @Input() id: string = null;
   @Input() placeholderImage: boolean;
+  @Input() blockMultipleFileInput: boolean;
   appendImageToTheEnd: boolean = false;
 
   public swiperConfig: SwiperOptions = {
@@ -182,6 +183,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
             this.uploadImagesWithoutPlaceholderBox
           ) {
             this.appendImageToTheEnd = false;
+            this.blockMultipleFileInput = false;
           }
 
           setTimeout(() => {
@@ -207,7 +209,11 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
 
   clickImageInputWithId(id: string) {
     this.appendImageToTheEnd = true;
+    this.blockMultipleFileInput = true;
     const htmlElement: HTMLElement = document.querySelector('#' + id);
-    htmlElement.click();
+
+    setTimeout(() => {
+      htmlElement.click();
+    }, 100);
   }
 }
