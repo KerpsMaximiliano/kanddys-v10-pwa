@@ -117,6 +117,7 @@ export class ReservationOrderlessComponent implements OnInit {
   weekDay: string;
   orderData: any;
   dialogProps: any;
+  @Input() reservationTextLabel: string = 'FECHA CONVENIENTE PARA LA ENTREGA';
   @Input() allowSundays: boolean = false;
 
   //calendar: 6149f790eb8b911a707523ce
