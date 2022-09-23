@@ -8,10 +8,10 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
 // import Swiper core and required modules
 import { SwiperOptions } from 'swiper';
-import SwiperCore, { Virtual } from "swiper/core";
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
 
 SwiperCore.use([Virtual]);
 
@@ -72,8 +72,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
 
   @ViewChild('swiperRef') swiper: SwiperComponent;
 
-  constructor(protected _DomSanitizer: DomSanitizer) {
-  }
+  constructor(protected _DomSanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     if (this.allowedTypes.length > 0)
@@ -89,7 +88,6 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    //Swiper instance will be displayed in console
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {
@@ -145,7 +143,7 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
 
       this.onFileInputMultiple.emit(emitData);
 
-      this.imageField = [];
+      this.imageField = !this.appendImageToTheEnd ? [] : this.imageField;
 
       for (let i = 0; i < fileList.length; i++) {
         const file = fileList.item(i);
@@ -161,10 +159,22 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.imageField[i] = reader.result;
+          if (!this.appendImageToTheEnd) {
+            this.imageField[i] = reader.result;
+          } else if (this.appendImageToTheEnd) {
+            if (this.imageField.length === 1 && this.imageField[0] === '') {
+              this.imageField[0] = reader.result;
+            } else if (
+              this.imageField.length >= 1 &&
+              this.imageField[0] !== ''
+            ) {
+              this.imageField.push(reader.result);
+            }
+          }
+
           this.onFileInputBase64Multiple.emit({
             image: reader.result,
-            index: i,
+            index: !this.appendImageToTheEnd ? i : this.imageField.length - 1,
           });
 
           if (
@@ -172,7 +182,11 @@ export class ImageInputComponent implements OnInit, AfterViewInit {
             this.uploadImagesWithoutPlaceholderBox
           ) {
             this.appendImageToTheEnd = false;
-          } 
+          }
+
+          setTimeout(() => {
+            this.swiper.directiveRef.setIndex(this.imageField.length - 1);
+          }, 300);
         };
 
         reader.readAsDataURL(file);

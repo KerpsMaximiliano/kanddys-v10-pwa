@@ -1329,9 +1329,6 @@
                   [allowDeletion]="true"
                   [containerStyles]="currentField.styles.innerContainerStyles"
                   [fileStyles]="currentField.styles.fieldStyles"
-                  (onFileInputMultiple)="
-                    handleImageInput($event, currentField.name, currentField)
-                  "
                   (onFileInputBase64Multiple)="
                     handleImageInputBase64(
                       $event,

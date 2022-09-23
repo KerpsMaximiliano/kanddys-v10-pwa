@@ -23,6 +23,7 @@
               [id]="'file' + i"
               class="file-input"
               (change)="fileProgress($event, i)"
+              tabindex="-1"
               type="file"
               class="d-none"
               [accept]="acceptTypes"
@@ -44,8 +45,9 @@
           <input
             [id]="id + '-fileinput' || 'filemultiple'"
             (change)="fileProgressMultiple($event)"
-            (click)="clearFiles()"
+            (click)="!appendImageToTheEnd ? clearFiles() : null"
             type="file"
+            tabindex="-1"
             class="d-none"
             accept="image/*"
             multiple
@@ -99,6 +101,7 @@
               [id]="'file' + i"
               (change)="fileProgress($event, i)"
               type="file"
+              tabindex="-1"
               class="d-none"
               [accept]="acceptTypes"
             />
@@ -121,6 +124,7 @@
             (change)="fileProgressMultiple($event)"
             (click)="clearFiles()"
             type="file"
+            tabindex="-1"
             class="d-none"
             accept="image/*"
             multiple
@@ -166,7 +170,7 @@
       *ngIf="showAddImagesButton"
       (click)="clickImageInputWithId(id + '-fileinput' || 'filemultiple')"
     >
-      <button></button>
+      <button tabindex="-1"></button>
     </div>
   </div>
 
@@ -177,6 +181,7 @@
         (change)="fileProgressMultiple($event)"
         (click)="clearFiles()"
         type="file"
+        tabindex="-1"
         class="d-none"
         accept="image/*"
         [multiple]="!max || max > 1"

@@ -801,7 +801,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(['']),
           },
           label: 'Foto de referencia',
-          inputType: 'file2',
+          inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
@@ -1011,7 +1011,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(['']),
           },
           label: 'Foto de referencia',
-          inputType: 'file2',
+          inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
@@ -1686,7 +1686,7 @@ export class HeavenlyBalloonsComponent implements OnInit {
             control: new FormControl(['']),
           },
           label: 'Adjuntar comprobante (*)',
-          inputType: 'file2',
+          inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {

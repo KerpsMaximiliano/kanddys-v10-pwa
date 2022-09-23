@@ -592,7 +592,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           label: 'Foto de referencia',
           sublabel: 'Adjuntar foto de referencia de su orden:',
-          inputType: 'file2',
+          inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
@@ -1046,7 +1046,7 @@ export class LlStudioOrderFormComponent implements OnInit {
           },
           label: 'Comprobante de Pago',
           sublabel: 'Adjuntar foto de referencia de su orden:',
-          inputType: 'file2',
+          inputType: 'file3',
           fileObjects: [],
           placeholder: 'sube una imagen',
           styles: {
@@ -1914,10 +1914,8 @@ export class LlStudioOrderFormComponent implements OnInit {
       flags: ['no-header'],
     });
 
-    /*
     window.location.href =
       this.whatsappLink + encodeURIComponent(this.fullFormMessage);
-      */
   }
 
   constructor(
