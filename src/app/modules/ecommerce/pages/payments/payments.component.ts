@@ -9,6 +9,9 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { environment } from 'src/environments/environment';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
@@ -34,7 +37,8 @@ export class PaymentsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private merchantService: MerchantsService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private dialogService: DialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -145,5 +149,23 @@ export class PaymentsComponent implements OnInit {
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
     window.location.href = this.whatsappLink;
+  }
+
+  singleAction(){
+   this.dialogService.open(SingleActionDialogComponent,{
+      type: 'fullscreen-translucent',
+      props:{
+         topButton: false,
+         title: 'Factura creada exitosamente',
+         buttonText: `Confirmar al WhatsApp de ${this.merchant.name}` ,
+         mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
+         mainButton: () => {
+            this.submitPayment();
+         }
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true
+   })
   }
 }

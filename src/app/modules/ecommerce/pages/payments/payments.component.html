@@ -65,12 +65,10 @@
   </div>
   <a
     *ngIf="image && selectedBank && order"
-    [href]="whatsappLink"
-    target="_blank"
     [ngClass]="{ disabled: !image }"
   >
     <app-sticky-button
-      (click)="!disableButton && submitPayment()"
+      (click)="!disableButton && singleAction()"
       [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
       [text]="
         image
@@ -91,7 +89,7 @@
   </a>
   <app-sticky-button
     *ngIf="image && selectedBank && !order && depositAmount > 0"
-    (click)="!disableButton && submitPayment()"
+    (click)="!disableButton && singleAction()"
     [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
     [text]="
       image
