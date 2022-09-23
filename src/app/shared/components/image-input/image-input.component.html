@@ -165,7 +165,12 @@
       </swiper>
     </ng-container>
 
-    <div class="add-btn-wrapper" *ngIf="showAddImagesButton">
+    <div
+      class="add-btn-wrapper"
+      *ngIf="
+        showAddImagesButton && imageField[0] !== '' && imageField.length > 0
+      "
+    >
       <button
         tabindex="-1"
         (click)="clickImageInputWithId(id + '-fileinput' || 'filemultiple')"
