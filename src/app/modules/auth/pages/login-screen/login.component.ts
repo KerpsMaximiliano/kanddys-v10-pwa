@@ -26,6 +26,13 @@ import { environment } from 'src/environments/environment';
 
 type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
 
+interface ValidateData {
+  name: string;
+  lastName: string;
+  password: string;
+  email?: string;
+}
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -53,6 +60,7 @@ export class LoginComponent implements OnInit {
   messageLink: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
+  validateData: ValidateData;
   phoneNumber = new FormControl('', [
     Validators.required,
     Validators.minLength(10),
@@ -60,16 +68,19 @@ export class LoginComponent implements OnInit {
   password = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
+    Validators.pattern(/[\S]/),
   ]);
   firstName = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
     Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    Validators.pattern(/[\S]/),
   ]);
   lastName = new FormControl('', [
     Validators.required,
     Validators.minLength(2),
     Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    Validators.pattern(/[\S]/),
   ]);
   email = new FormControl('', [Validators.minLength(12)]);
   SearchCountryField = SearchCountryField;
@@ -362,6 +373,14 @@ export class LoginComponent implements OnInit {
         if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
+          this.phoneNumber.disable();
+          if (this.validateData) {
+            this.firstName.setValue(this.validateData.name);
+            this.lastName.setValue(this.validateData.lastName);
+            this.validateData?.email
+              ? this.email.setValue(this.validateData.email)
+              : '';
+          }
           this.password.reset();
           return;
         }
@@ -450,10 +469,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async generateTOP() {
+  async generateTOP(notoast?: boolean) {
     const OTP = await this.authService.generateOTP(this.merchantNumber);
     if (OTP) {
-      this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
+      notoast
+        ? null
+        : this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
       this.OTP = true;
     }
   }
@@ -492,7 +513,7 @@ export class LoginComponent implements OnInit {
         console.log('Creando nuevo user');
         this.sneaky = this.password.value;
 
-        await this.generateTOP();
+        await this.generateTOP(true);
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
@@ -502,10 +523,35 @@ export class LoginComponent implements OnInit {
         //   null
         // );
         this.toPassword();
-        this.toastr.info('¡Usuario registrado con exito!', null, {
-          timeOut: 2000,
-        });
+        this.toastr.info(
+          '¡Usuario registrado con exito! Se ha enviado un código para verificar',
+          null,
+          {
+            timeOut: 5000,
+            disableTimeOut: 'extendedTimeOut',
+          }
+        );
       }
+    } else if (valid && valid.validatedAt === null) {
+      await this.generateTOP(true);
+      this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+      this.userID = valid._id;
+      this.validateData = {
+        name: this.firstName.value,
+        lastName: this.lastName.value,
+        password: this.password.value,
+        email:
+          this.email.value && this.email.valid ? this.email.value : undefined,
+      };
+
+      this.signUp = false;
+      this.loggin = true;
+      this.toValidate = true;
+      this.password.reset();
+
+      this.toastr.info('Ingrese el código para completar su registro', null, {
+        timeOut: 5500,
+      });
     } else {
       if (this.toValidate) {
         const validateUser = await this.authService.updateMe({
@@ -517,15 +563,27 @@ export class LoginComponent implements OnInit {
         });
 
         if (validateUser) {
-          this.password.reset();
-          this.OTP = false;
-          this.toValidate = false;
-          this.signUp = false;
-          this.loggin = true;
+          await this.authService.signin(
+            this.merchantNumber,
+            this.password.value,
+            true
+          );
 
           this.toastr.info('¡Usuario actualizado exitosamente!', null, {
             timeOut: 2000,
           });
+          if (this.auth === 'order') {
+            this.router.navigate([`ecommerce/new-address`], {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            });
+          } else {
+            this.router.navigate([`admin/entity-detail-metrics`], {
+              replaceUrl: true,
+            });
+          }
           return;
         } else {
           this.toastr.error('Algo no funciona', null, {

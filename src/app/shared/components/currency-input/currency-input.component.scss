@@ -31,6 +31,7 @@
   left: 0px;
   border: none;
   box-shadow: none;
+  font-size: 1px;
 
   padding: 0px 20px;
   width: 100%;
@@ -64,4 +65,15 @@
   width: 0px;
   height: 0px;
   border: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  display: none;
+  // -webkit-appearance: none;
+  // margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
