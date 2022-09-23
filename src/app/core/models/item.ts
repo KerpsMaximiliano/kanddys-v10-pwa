@@ -113,7 +113,7 @@ export class ItemCategoryHeadline extends Model<ItemCategoryHeadline> {
 export class ItemExtra extends Model<ItemExtra> {
   images: string[];
   name: string;
-  isActive: boolean;
+  active: boolean;
   merchant: Merchant;
   categories: ItemCategory[];
 }

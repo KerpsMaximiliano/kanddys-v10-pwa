@@ -16,7 +16,7 @@
       [routerLink]="admin && ['admin/entity-detail-metrics']"
     ></app-helper-headerv2>
 
-    <div class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
+    <div *ngIf="!hasCustomizer" class="blank" [ngStyle]="{ paddingBottom: '36px' }"></div>
 
     <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
       <app-header-info
