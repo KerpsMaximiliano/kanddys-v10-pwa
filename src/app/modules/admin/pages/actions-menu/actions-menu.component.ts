@@ -136,9 +136,7 @@ export class ActionsMenuComponent implements OnInit {
   template: boolean;
   isTag: boolean;
   activeIndex: number;
-  user: User;
   item: Item;
-  saleflow: SaleFlow;
   itemsByMerchant: Item[];
   tag: Tag = {
     _id: '1',
@@ -155,33 +153,19 @@ export class ActionsMenuComponent implements OnInit {
   options: OptionAnswerSelector[] = options;
 
   async ngOnInit(): Promise<void> {
-    this.authService.ready.subscribe(async (observer) => {
-      if (observer != undefined) {
-        const itemId = this.route.snapshot.paramMap.get('itemId');
-        const [user, merchant, item] = await Promise.all([
-          this.authService.me(),
-          this.merchantsService.merchantDefault(),
-          this.itemsService.item(itemId),
-        ]);
-        if (!user || !merchant || !item) return;
+    const itemId = this.route.snapshot.paramMap.get('itemId');
+    this.item = await this.itemsService.item(itemId);
+    if (!this.item) return;
 
-        options[3].value = merchant.name || 'MerchantID';
+    options[3].value = this.merchantsService.merchantData.name || 'MerchantID';
 
-        this.user = user;
-        this.item = item;
-        const [saleflow, merchantItems] = await Promise.all([
-          this.saleflowService.saleflowDefault(merchant._id),
-          this.merchantsService.itemsByMerchant(merchant._id),
-        ]);
-        this.saleflow = saleflow;
-        this.itemsByMerchant = merchantItems?.itemsByMerchant;
-      }
-    });
+    const merchantItems = await this.merchantsService.itemsByMerchant(
+      this.merchantsService.merchantData._id
+    );
+    this.itemsByMerchant = merchantItems?.itemsByMerchant;
   }
 
   async selectedOption(e: number) {
-    console.log(e);
-    console.log(this.options[e]);
     switch (e) {
       case 0:
         this.router.navigate([`/admin/merchant-items`]);
@@ -217,14 +201,19 @@ export class ActionsMenuComponent implements OnInit {
         break;
       }
       case 3:
-        this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]);
+        this.router.navigate([
+          `/ecommerce/store/${this.saleflowService.saleflowData._id}`,
+        ]);
         break;
       case 4:
-        this.router.navigate([`admin/create-item`], {
-          queryParams: {
-            justdynamicmode: true,
-          },
-        });
+        this.router.navigate(
+          [`admin/create-item`],
+          this.item.params?.[0]?.values?.length && {
+            queryParams: {
+              justdynamicmode: true,
+            },
+          }
+        );
         break;
     }
   }

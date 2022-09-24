@@ -13,7 +13,7 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   StoreShareComponent,
-  StoreShareList
+  StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 
@@ -111,7 +111,9 @@ export class NewAddressComponent implements OnInit {
       this.authOptions.push({
         status: true,
         id: 'withUser',
-        value: `Continuar como ${this.user.name}`,
+        value: this.user.name
+          ? `Continuar como ${this.user.name}`
+          : 'Continuar con la sesión actual',
         valueStyles: {
           fontFamily: 'SfProBold',
           fontSize: '0.875rem',
@@ -164,8 +166,8 @@ export class NewAddressComponent implements OnInit {
     });
 
     // TODO: meter esto dentro del if de abajo
-    this.addresses.push(...this.user.deliveryLocations);
     if (this.user) {
+      this.addresses.push(...this.user.deliveryLocations);
       this.user.deliveryLocations?.forEach((locations) => {
         this.addressesOptions.push({
           status: true,
@@ -335,7 +337,7 @@ export class NewAddressComponent implements OnInit {
     }
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length > 1 ||
-      (this.headerService.saleflow.module.delivery.deliveryLocation)
+      this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
       this.mode = 'normal';
       return;

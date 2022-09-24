@@ -180,10 +180,6 @@ export class CheckoutComponent implements OnInit {
       );
   }
 
-  placeholder() {
-    // console.log('placeholder');
-  }
-
   back() {
     this.location.back();
   }

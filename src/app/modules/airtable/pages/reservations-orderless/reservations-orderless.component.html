@@ -38,8 +38,11 @@
         Selección del paquete fotográfico:
     </div>
     <app-selectable-card [item]="packItem"></app-selectable-card> -->
-  <div class="content-container" (click)="toggleBlurSelectable()"
-    [ngStyle]="{ filter: blurContent ? 'blur(2px)' : 'blur(0px)' }">
+  <div
+    class="content-container"
+    (click)="toggleBlurSelectable()"
+    [ngStyle]="{ filter: blurContent ? 'blur(2px)' : 'blur(0px)' }"
+  >
     <div class="background" *ngIf="blurContent"></div>
     <div class="input" *ngIf="done">
       <section class="input-header">
@@ -118,8 +121,7 @@
             </ng-template>
           </div>
         </div>
-      -->
-      </section>
+      --></section>
 
       <!-- Fin del scroll de Días---------------------------------------------------------------------------------------->
 
@@ -127,54 +129,83 @@
 
       <span class="reservation-text">{{ firstLabel }}</span>
 
-      <div [style.width]="'90%'" [style.margin-left]="'auto'" [style.margin-right]="'auto'"
-        [style.margin-bottom]="'35px'" [style.margin-top]="'30px'">
-        <app-calendar [monthNameSelected]="dateComponentFrom" [dateNumber]="dateFrom" [time]="timeComponentFrom"
-          [weekDay]="weekDay" (selectedMonth)="!timeOfDayMode ? test2($event) : selectedDate($event)" [allowSundays]="allowSundays">
-        </app-calendar> 
+      <div
+        [style.width]="'90%'"
+        [style.margin-left]="'auto'"
+        [style.margin-right]="'auto'"
+        [style.margin-bottom]="'35px'"
+        [style.margin-top]="'30px'"
+      >
+        <app-calendar
+          [monthNameSelected]="dateComponentFrom"
+          [dateNumber]="dateFrom"
+          [time]="timeComponentFrom"
+          [weekDay]="weekDay"
+          (selectedMonth)="
+            !timeOfDayMode ? test2($event) : selectedDate($event)
+          "
+          [allowSundays]="allowSundays"
+        >
+        </app-calendar>
       </div>
 
       <!--Fin del calendario de días ------------------------------------------------------------------------------------->
 
       <!--scroll de horas (se añade margin top y se modifica el estilo)-->
       <div class="container-scroll-hours" [style.paddingTop.px]="35">
-        <span class="reservation-text">{{secondLabel}}</span>
+        <span class="reservation-text">{{ secondLabel }}</span>
         <ng-container *ngIf="!sliders">
-          <div class="buttons" *ngIf="calendar.availableHours && calendar.showHours && !timeOfDayMode">
-            <ng-container *ngFor="let slide of todayHours; let i = index; let isLast = last">
-              <ng-container *ngIf="
+          <div
+            class="buttons"
+            *ngIf="
+              calendar.availableHours && calendar.showHours && !timeOfDayMode
+            "
+          >
+            <ng-container
+              *ngFor="let slide of todayHours; let i = index; let isLast = last"
+            >
+              <ng-container
+                *ngIf="
                   calendar.monthIndex == 0 && calendar.dayIndex == 0;
                   else notToday
-                ">
-                <div class="swiper-slide" 
+                "
+              >
+                <div
+                  class="swiper-slide"
                   *ngIf="!isHourBeforeOrBeyondLimits(num(slide) + offset)"
                   (click)="
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
-                  " [ngStyle]="
+                  "
+                  [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#949494' }
-                  " [ngClass]="{ 'btn-add': filterHours(num(slide) + offset) && i == activeHour }">
+                  "
+                  [ngClass]="{
+                    'btn-add':
+                      filterHours(num(slide) + offset) && i == activeHour
+                  }"
+                >
                   <ng-container *ngIf="calendar">
-                    <ng-container *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available">
+                    <ng-container
+                      *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available"
+                    >
                       <div class="slide-content">
                         <ng-container> Día Ocupado </ng-container>
                       </div>
                     </ng-container>
                     <ng-template #available>
                       <div class="slide-content">
-                        <ng-container *ngIf="
+                        <ng-container
+                          *ngIf="
                             calendar.hours[0] !== 'Día Ocupado';
                             else nonAvailable
-                          ">
+                          "
+                        >
                           De {{ formatDayHourToAmOrPm(slide) }} a
                           <ng-container *ngIf="!isLast; else notLast">
-                            {{
-                            formatDayHourToAmOrPm(slide, true)
-                            }}
+                            {{ formatDayHourToAmOrPm(slide, true) }}
                           </ng-container>
                           <ng-template #notLast>
-                            {{
-                            formatDayHourToAmOrPm(slide, true)
-                            }}
+                            {{ formatDayHourToAmOrPm(slide, true) }}
                           </ng-template>
                         </ng-container>
                         <ng-template #nonAvailable>
@@ -186,35 +217,42 @@
                 </div>
               </ng-container>
               <ng-template #notToday>
-                <div class="swiper-slide"
+                <div
+                  class="swiper-slide"
                   *ngIf="!isHourBeforeOrBeyondLimits(num(slide) + offset)"
                   (click)="
                     !filterHours(num(slide) + offset) ? null : getId(i, slide)
-                  " [ngStyle]="
+                  "
+                  [ngStyle]="
                     !filterHours(num(slide) + offset) && { color: '#C6C6C8' }
-                  " [ngClass]="{ 'btn-add': filterHours(num(slide) + offset) && i == activeHour }">
+                  "
+                  [ngClass]="{
+                    'btn-add':
+                      filterHours(num(slide) + offset) && i == activeHour
+                  }"
+                >
                   <ng-container *ngIf="calendar">
-                    <ng-container *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available">
+                    <ng-container
+                      *ngIf="calendar.hours[0] == 'Dia Ocupado'; else available"
+                    >
                       <div class="slide-content">
                         <ng-container> Día Ocupado </ng-container>
                       </div>
                     </ng-container>
                     <ng-template #available>
                       <div class="slide-content">
-                        <ng-container *ngIf="
+                        <ng-container
+                          *ngIf="
                             calendar.hours[0] !== 'Día Ocupado';
                             else nonAvailable
-                          ">
+                          "
+                        >
                           De {{ formatDayHourToAmOrPm(slide) }} a
                           <ng-container *ngIf="!isLast; else notLast">
-                            {{
-                            formatDayHourToAmOrPm(slide, true)
-                            }}
+                            {{ formatDayHourToAmOrPm(slide, true) }}
                           </ng-container>
                           <ng-template #notLast>
-                            {{
-                            formatDayHourToAmOrPm(slide, true)
-                            }}
+                            {{ formatDayHourToAmOrPm(slide, true) }}
                           </ng-template>
                         </ng-container>
                         <ng-template #nonAvailable>
@@ -229,12 +267,14 @@
           </div>
 
           <div class="buttons" *ngIf="timeOfDayMode">
-            <ng-container *ngFor="let slide of ['AM', 'PM']; let i = index;">
-              <div class="swiper-slide" 
-              (click)="selectTimeOfDay(slide)"
-              [ngClass]="{ 'btn-add': slide === timeOfDay }">
+            <ng-container *ngFor="let slide of ['AM', 'PM']; let i = index">
+              <div
+                class="swiper-slide"
+                (click)="selectTimeOfDay(slide)"
+                [ngClass]="{ 'btn-add': slide === timeOfDay }"
+              >
                 <div class="slide-content">
-                  {{slide}}  
+                  {{ slide }}
                 </div>
               </div>
             </ng-container>
@@ -252,13 +292,14 @@
 
   <!--Fecha y Hora-->
 
-  <div class="container-scroll-hours"
-    *ngIf="!timeOfDayMode"
-  >
+  <div class="container-scroll-hours" *ngIf="!timeOfDayMode">
     <div class="content">
-      <span class="reservation-text">FECHA CONVENIENTE</span>
+      <span class="reservation-text">{{ reservationTextLabel }}</span>
     </div>
-    <div class="date-info" *ngIf="datePreview" style="
+    <div
+      class="date-info"
+      *ngIf="datePreview"
+      style="
         text-align: center;
         color: #ffffff;
         background-image: linear-gradient(
@@ -276,12 +317,11 @@
         border-radius: 10px;
         min-width: 300px;
         max-width: 385px;
-      ">
-      {{reservationMessage}}
+      "
+    >
+      {{ reservationMessage }}
       <div class="delete-button" (click)="deleteSelection()">
-        <div class="text" style="font-size: 12.5px; cursor: pointer;">
-          x
-        </div>
+        <div class="text" style="font-size: 12.5px; cursor: pointer">x</div>
       </div>
     </div>
 

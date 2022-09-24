@@ -4,16 +4,28 @@
     [mainText]="{
       text: loggin
         ? merchantNumber
-        : signUp
+        : signUp && !toValidate
         ? 'Contacto de las facturas'
+        : signUp && toValidate
+        ? 'Completa tu registro'
         : 'Login',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="auth === 'order' || loggin || signUp ? true : false"
-    (returnEvent)="loggin ? toggleLog() : signUp ? toSignUp() : auth === 'order' ? back() : null"
+    [returnAble]="
+      auth === 'order' || loggin || (signUp && !toValidate) ? true : false
+    "
+    (returnEvent)="
+      loggin
+        ? toggleLog()
+        : signUp
+        ? toSignUp()
+        : auth === 'order'
+        ? back()
+        : null
+    "
   ></app-helper-headerv2>
 
   <div class="input-area">
@@ -59,7 +71,11 @@
           </button>
         </div>
 
-        <button class="adiciona" (click)="toSignUp()" *ngIf="auth !== 'anonymous'">
+        <button
+          class="adiciona"
+          (click)="toSignUp()"
+          *ngIf="auth !== 'anonymous'"
+        >
           CREAR UNA NUEVA CUENTA
         </button>
       </div>
@@ -102,7 +118,14 @@
         </button>
 
         <button class="alternate" (click)="generateTOP()">
-          PREFIERO RECIBIR UN MENSAJE CON EL CODIGO
+          {{
+            !OTP && !authCode
+              ? "PREFIERO RECIBIR UN MENSAJE CON EL CODIGO"
+              : null
+          }}
+          {{
+            OTP || authCode ? "¿NO RECIBISTE EL CÓDIGO? ENVÍALO DE NUEVO" : null
+          }}
         </button>
       </div>
     </ng-container>
