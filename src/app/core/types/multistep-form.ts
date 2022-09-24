@@ -96,6 +96,7 @@ export interface FormField {
     | 'phone'
     | 'file'
     | 'file2'
+    | 'file3'
     | 'radio'
     | 'button'
     | 'radio-simple'
