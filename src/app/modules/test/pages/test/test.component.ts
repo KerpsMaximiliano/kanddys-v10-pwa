@@ -13,6 +13,8 @@ import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
+import { FormStep, FormField } from 'src/app/core/types/multistep-form';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-test',
@@ -46,6 +48,53 @@ export class TestComponent implements OnInit {
       {from: 14, to: 15}
     ],
   };
+
+  formSteps: Array<FormStep> = [
+    {
+      fieldsList: [
+        {
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file3',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            },
+          },
+        },
+      ],
+      hideHeader: true,
+    }
+  ]
   
   constructor(private dialog: DialogService) { }
 
