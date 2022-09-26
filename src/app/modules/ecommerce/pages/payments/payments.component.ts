@@ -11,6 +11,7 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 import { environment } from 'src/environments/environment';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-payments',
@@ -30,6 +31,7 @@ export class PaymentsComponent implements OnInit {
   whatsappLink: string;
   disableButton: boolean;
   depositAmount: number;
+  billId: string;
 
   constructor(
     private walletService: WalletService,
@@ -74,15 +76,13 @@ export class PaymentsComponent implements OnInit {
         this.orderCompleted();
         return;
       }
+      this.billId = (this.order ? await this.formatId(this.order?.dateId) : ''); //No se pero no funca al ponerlo en "FACTURA"
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${(
-        this.order.user.name || this.merchant.name
-      )
-        .replace('&', 'and')
-        .replace(
-          /[^\w\s]/gi,
-          ''
-        )}: TAP en el link para que visualices mi pago.%0a${fullLink}`;
+      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=
+      POR: ${this.headerService.user.name}, \n
+      ARTICULO: ${this.order.items[0].item.images[0]}, \n
+      PAGO: $${this.paymentAmount.toLocaleString('es-MX')}, \n
+      FACTURA: ${fullLink}`;
     }
     this.banks = (
       await this.walletService.exchangeData(
@@ -161,6 +161,7 @@ export class PaymentsComponent implements OnInit {
          mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
          mainButton: () => {
             this.submitPayment();
+            window.open(this.whatsappLink, "_blank");
          }
       },
       customClass: 'app-dialog',
@@ -168,4 +169,8 @@ export class PaymentsComponent implements OnInit {
       notCancellable: true
    })
   }
+
+  async formatId(dateId: string) {
+   return formatID(dateId);
+ }
 }
