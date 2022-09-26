@@ -1,0 +1,64 @@
+.main-container{
+   width: 100%;
+   position: absolute;
+   bottom: 0;
+   left: 0;
+
+   .top-button-flex{
+      display: flex;
+      justify-content: flex-end;
+      background-color: transparent;
+
+      .top-button{
+         all: unset;
+         font-family: 'SfProBold';
+         font-size: 1.438rem;
+         color: #fff;
+         margin-right: 5%;
+         margin-bottom: 12px;
+         cursor: pointer;
+      }
+   }
+
+   .body{
+      width: 100%;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 5.25% 57px;
+
+      .title{
+         font-family: 'SfProBold';
+         font-size: 1.438rem;
+         font-weight: 500;
+         color: #4F4F4F;
+         margin: 0;
+         margin-bottom: 12px;
+      }
+
+      .center-button{
+         all: unset;
+         width: 46.72%;
+         max-width: 233px;
+         font-family: 'SfProRegular'; 
+         font-size: 1.063rem;
+         text-align: center;
+         color: #FFFFFF;
+         background-color: #2874AD;
+         padding: 7px 5%;
+         border-radius: 19px;
+         cursor: pointer;
+      }
+
+      .main-text{
+         font-family: 'RobotoRegular';
+         font-size: 1.063rem;
+         color: #7b7b7b;
+         text-align: center;
+         margin: 0;
+         margin-top: 22px;
+      }
+   }
+}
