@@ -40,6 +40,7 @@ interface ValidateData {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+   mode: 'login' | 'signUp';
   saleflow: SaleFlow;
   auth: AuthTypes;
   merchantNumber: string = '(000) 000-0000';
@@ -191,7 +192,7 @@ export class LoginComponent implements OnInit {
           this.merchantNumber = phone;
         } else {
           unlockUI();
-          this.toastr.info('Número no registrado o inválido 2', null, {
+          this.toastr.info('Número no registrado o inválido', null, {
             timeOut: 1500,
           });
         }
@@ -315,8 +316,8 @@ export class LoginComponent implements OnInit {
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.userID = validUser._id;
         this.loggin = true;
-        await this.generateTOP();
         this.toValidate = true;
+        await this.generateTOP();
       } else if (this.orderId && this.auth === 'anonymous') {
         const anonymous = await this.authService.signup(
           {
@@ -335,7 +336,10 @@ export class LoginComponent implements OnInit {
           });
         }
       } else {
-        this.toastr.error('Número no registrado', null, { timeOut: 2000 });
+        this.toastr.info('Al registro', null, { timeOut: 2000 });
+        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+        this.password.setValue(this.merchantNumber.slice(-4));
+        this.signUp = true;
         return;
       }
     } else {
@@ -820,5 +824,22 @@ export class LoginComponent implements OnInit {
 
   back() {
     this.location.back();
+  }
+
+ async signUpNew() {
+   const register = await this.authService.signup({
+      phone: this.merchantNumber,
+      password: this.password.value,
+   },
+   'none',
+   null,
+   false
+   );
+   if(register){
+      this.sneaky = this.password.value;
+      await this.generateTOP(true);
+      this.toPassword();
+      this.toastr.success('Número Registrado con exito. Se ha enviado un código para verificar', null, {timeOut: 2000});
+   } else this.toastr.error('Registro fallido', null, {timeOut: 2000});
   }
 }
