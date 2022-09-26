@@ -47,13 +47,15 @@ export class NewAddressComponent implements OnInit {
       houseNumber: fb.control(null, Validators.pattern(/[\S]/)),
       referencePoint: fb.control(null, Validators.pattern(/[\S]/)),
       note: fb.control(null, Validators.pattern(/[\S]/)),
+      save: fb.control(false),
     });
     this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
   }
-  mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
+  mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
   editingId: string;
   loggedIn: boolean;
   disableButton: boolean;
+  user: User;
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
@@ -61,8 +63,8 @@ export class NewAddressComponent implements OnInit {
   authOptions: OptionAnswerSelector[] = [
     {
       status: true,
-      id: 'continue',
-      value: 'Continuar de forma anónima',
+      id: 'withUser',
+      value: 'Selecciona entre mis direcciones guardadas',
       valueStyles: {
         fontFamily: 'SfProBold',
         fontSize: '0.875rem',
@@ -70,26 +72,7 @@ export class NewAddressComponent implements OnInit {
       },
       subtexts: [
         {
-          text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
-          styles: {
-            fontFamily: 'SfProRegular',
-            fontSize: '1rem',
-          },
-        },
-      ],
-    },
-    {
-      status: true,
-      id: 'toLogin',
-      value: 'Login o crea tu nueva cuenta',
-      valueStyles: {
-        fontFamily: 'SfProBold',
-        fontSize: '0.875rem',
-        color: '#000000',
-      },
-      subtexts: [
-        {
-          text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+          text: 'Ver direcciones que he guardado y seleccionar entre ellas',
           styles: {
             fontFamily: 'SfProRegular',
             fontSize: '1rem',
@@ -100,36 +83,12 @@ export class NewAddressComponent implements OnInit {
   ];
   saleflow: SaleFlow;
   selectedDeliveryIndex: number;
-  selectedAuthIndex: number;
-  user: User;
+  // selectedAuthIndex: number;
 
   async ngOnInit(): Promise<void> {
     this.saleflow = this.headerService.getSaleflow();
     if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
-    if (this.user) {
-      this.authOptions.push({
-        status: true,
-        id: 'withUser',
-        value: this.user.name
-          ? `Continuar como ${this.user.name}`
-          : 'Continuar con la sesión actual',
-        valueStyles: {
-          fontFamily: 'SfProBold',
-          fontSize: '0.875rem',
-          color: '#000000',
-        },
-        subtexts: [
-          {
-            text: 'Sigues ganando Kanddys. Seleccionas entre tus direcciones sin re-escribirlas',
-            styles: {
-              fontFamily: 'SfProRegular',
-              fontSize: '1rem',
-            },
-          },
-        ],
-      });
-    }
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
@@ -283,7 +242,7 @@ export class NewAddressComponent implements OnInit {
     this.addresses = this.addresses.filter((address) => address._id !== id);
   }
 
-  selectAddress() {
+  selectAddress(save?: boolean) {
     const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
     this.headerService.order.products.forEach((product) => {
       product.deliveryLocation = addressInput;
@@ -296,37 +255,20 @@ export class NewAddressComponent implements OnInit {
     this.headerService.storeOrderProgress(
       this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
     );
+    if (save) {
+      this.authSelect('address');
+      return;
+    }
     this.router.navigate(['ecommerce/checkout']);
   }
 
-  authSelect(index: Number) {
-    switch (index) {
-      case 0:
-        if (this.user || this.headerService.user) {
-          this.authService.signoutThree();
-          this.addressesOptions.length = 1;
-          // this.newAddressOption = null;
-          this.user = null;
-        }
-        this.headerService.storeOrderAnonymous(this.saleflow._id);
-        this.checkAddresses(true);
-        break;
-
-      case 1:
-        this.headerService.deleteOrderAnonymous(this.saleflow._id);
-        this.router.navigate([`auth/login`], {
-          queryParams: { auth: 'order', saleflow: this.saleflow._id },
-        });
-        break;
-
-      case 2:
-        this.headerService.deleteOrderAnonymous(this.saleflow._id);
-        this.checkAddresses();
-        break;
-    }
+  authSelect(auth: 'order' | 'address') {
+    this.router.navigate([`auth/login`], {
+      queryParams: { auth, saleflow: this.saleflow._id },
+    });
   }
 
-  checkAddresses(isAnon?: boolean) {
+  checkAddresses() {
     if (!this.headerService.saleflow.module?.delivery?.isActive) {
       this.toastr.info('Este Saleflow no contiene delivery o pick-up.', null, {
         timeOut: 3000,
@@ -345,7 +287,7 @@ export class NewAddressComponent implements OnInit {
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length ===
         1 &&
-      (!this.headerService.saleflow.module.delivery.deliveryLocation || isAnon)
+      !this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
       const { _id, ...addressInput } =
         this.headerService.saleflow.module.delivery.pickUpLocations[0];
@@ -363,9 +305,7 @@ export class NewAddressComponent implements OnInit {
       );
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
-        !this.headerService.saleflow.module.delivery.deliveryLocation
-          ? 'Este Saleflow no contiene delivery'
-          : 'Has decidido hacer la orden de forma anónima',
+        'Este Saleflow no contiene delivery',
         {
           timeOut: 5000,
           positionClass: 'toast-top-center',
@@ -390,11 +330,10 @@ export class NewAddressComponent implements OnInit {
       note: this.addressForm.value.note?.trim(),
       city: 'Santo Domingo',
     };
-    if (this.user) {
+    if (this.user && (this.addressForm.value.save || this.mode === 'edit')) {
       result = await this.usersService.addLocation(newAddress);
     } else result = newAddress;
-    if (!result) return;
-    const newAddressOption = {
+    const addedAddressOption = {
       status: true,
       id: result._id,
       click: true,
@@ -422,12 +361,12 @@ export class NewAddressComponent implements OnInit {
         (option) => option.id === this.editingId
       );
       this.addresses[addressIndex] = result;
-      this.addressesOptions[optionIndex] = newAddressOption;
+      this.addressesOptions[optionIndex] = addedAddressOption;
     } else {
       this.addresses.push(result);
-      this.addressesOptions.push(newAddressOption);
+      this.addressesOptions.push(addedAddressOption);
       this.selectedDeliveryIndex = this.addresses.length - 1;
-      this.selectAddress();
+      this.selectAddress(this.addressForm.value.save);
     }
     this.disableButton = false;
     unlockUI();
@@ -435,8 +374,7 @@ export class NewAddressComponent implements OnInit {
   }
 
   goBack() {
-    if (this.mode === 'auth') return this.location.back();
-    if (this.mode === 'normal') return (this.mode = 'auth');
+    if (this.mode === 'normal') return this.location.back();
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset();

@@ -20,11 +20,12 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
-type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
+type AuthTypes = 'phone' | 'password' | 'order' | 'address' | 'anonymous';
 
 interface ValidateData {
   name: string;
@@ -102,6 +103,7 @@ export class LoginComponent implements OnInit {
     private itemsService: ItemsService,
     private saleflowsService: SaleFlowService,
     private location: Location,
+    private usersService: UsersService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {}
 
@@ -232,6 +234,14 @@ export class LoginComponent implements OnInit {
         this.loggin = false;
         unlockUI();
       }
+    } else if (this.auth === 'address') {
+      const address = this.headerService.getLocation(SaleFlow);
+      if (!address) {
+        this.router.navigate([`ecommerce/new-address`], {
+          replaceUrl: true,
+        });
+      }
+      unlockUI();
     } else if (this.auth === 'anonymous') {
       unlockUI();
     } else {
@@ -350,6 +360,18 @@ export class LoginComponent implements OnInit {
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth === 'address') {
+          const address = this.headerService.getLocation(
+            this.route.snapshot.queryParamMap.get('saleflow')
+          );
+          const result = await this.usersService.addLocation(address);
+          if (result) {
+            this.router.navigate(['ecommerce/checkout'], {
+              replaceUrl: true,
+            });
+          }
+          return;
+        }
         if (this.auth === 'order' && !this.toValidate) {
           this.router.navigate([`ecommerce/new-address`], {
             replaceUrl: true,
@@ -406,6 +428,18 @@ export class LoginComponent implements OnInit {
           true
         );
         if (!session) return console.log('Error logging in');
+        if (this.auth === 'address') {
+          const address = this.headerService.getLocation(
+            this.route.snapshot.queryParamMap.get('saleflow')
+          );
+          const result = await this.usersService.addLocation(address);
+          if (result) {
+            this.router.navigate(['ecommerce/checkout'], {
+              replaceUrl: true,
+            });
+          }
+          return;
+        }
         if (this.auth === 'order') {
           this.router.navigate([`ecommerce/new-address`], {
             replaceUrl: true,
@@ -442,6 +476,18 @@ export class LoginComponent implements OnInit {
           timeOut: 2500,
         });
         console.log('error');
+        return;
+      }
+      if (this.auth === 'address') {
+        const address = this.headerService.getLocation(
+          this.route.snapshot.queryParamMap.get('saleflow')
+        );
+        const result = await this.usersService.addLocation(address);
+        if (result) {
+          this.router.navigate(['ecommerce/checkout'], {
+            replaceUrl: true,
+          });
+        }
         return;
       }
       if (this.auth === 'order') {
@@ -572,6 +618,18 @@ export class LoginComponent implements OnInit {
           this.toastr.info('¡Usuario actualizado exitosamente!', null, {
             timeOut: 2000,
           });
+          if (this.auth === 'address') {
+            const address = this.headerService.getLocation(
+              this.route.snapshot.queryParamMap.get('saleflow')
+            );
+            const result = await this.usersService.addLocation(address);
+            if (result) {
+              this.router.navigate(['ecommerce/checkout'], {
+                replaceUrl: true,
+              });
+            }
+            return;
+          }
           if (this.auth === 'order') {
             this.router.navigate([`ecommerce/new-address`], {
               replaceUrl: true,

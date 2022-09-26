@@ -423,6 +423,12 @@ export class HeaderService {
     return deliveryOption;
   }
 
+  getLocation(saleflow: string) {
+    let { order }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return order?.products?.[0]?.deliveryLocation;
+  }
+
   // Returns order creation progress
   getOrderProgress(saleflow: string) {
     let { orderProgress }: SaleflowData =
