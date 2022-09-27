@@ -46,7 +46,7 @@ export class EcommerceComponent implements OnInit {
         this.activePath = this.route.firstChild.routeConfig.path;
       });
     this.itemEvent = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item' || e.type === 'added-item'))
+      .pipe(filter((e) => e.type === 'deleted-item' || e.type === 'added-item' || e.type === 'order-done'))
       .subscribe((e) => {
         this.getItemsAmount();
       });

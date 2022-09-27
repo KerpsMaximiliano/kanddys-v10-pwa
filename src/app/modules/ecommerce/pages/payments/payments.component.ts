@@ -54,7 +54,23 @@ export class PaymentsComponent implements OnInit {
       }
       await this.headerService.fetchSaleflow(saleflowId);
     } else {
-      this.order = (await this.orderService.order(orderId)).order;
+      const { orderStatus } = await this.orderService.getOrderStatus(orderId);
+      if (orderStatus === 'draft')
+        this.order = (await this.orderService.preOrder(orderId)).order;
+      else if (orderStatus === 'in progress')
+        this.order = (await this.orderService.order(orderId)).order;
+      else {
+        this.orderCompleted(orderId);
+        return;
+      }
+      if (!this.headerService.saleflow)
+        this.headerService.saleflow = this.headerService.getSaleflow();
+      if (
+        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      ) {
+        this.orderCompleted();
+        return;
+      }
       this.paymentAmount = this.order.subtotals.reduce(
         (a, b) => a + b.amount,
         0
@@ -104,8 +120,8 @@ export class PaymentsComponent implements OnInit {
     this.image = null;
   }
 
-  orderCompleted() {
-    this.router.navigate([`ecommerce/order-info/${this.order._id}`], {
+  orderCompleted(id?: string) {
+    this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
       replaceUrl: true,
     });
   }
@@ -114,6 +130,18 @@ export class PaymentsComponent implements OnInit {
     this.disableButton = true;
     lockUI();
     if (this.order) {
+      if (this.order.orderStatus === 'draft') {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            auth: 'payment',
+          },
+          state: {
+            image: this.image,
+          },
+        });
+        return;
+      }
       await this.orderService.payOrder(
         {
           image: this.image,
@@ -125,7 +153,7 @@ export class PaymentsComponent implements OnInit {
         this.order._id
       );
       unlockUI();
-      this.orderCompleted();
+      this.singleAction();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -148,26 +176,41 @@ export class PaymentsComponent implements OnInit {
     window.location.href = this.whatsappLink;
   }
 
-  singleAction(){
-   this.dialogService.open(SingleActionDialogComponent,{
+  async authOrder() {
+    return (
+      await this.orderService.authOrder(
+        this.headerService.orderId,
+        this.headerService.user._id
+      )
+    ).authOrder;
+  }
+
+  singleAction() {
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+    this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=
+      POR: ${this.headerService.user.name}, \n
+      ARTICULO: ${this.order.items[0].item.images[0]}, \n
+      PAGO: $${this.paymentAmount.toLocaleString('es-MX')}, \n
+      FACTURA: ${fullLink}`;
+    this.dialogService.open(SingleActionDialogComponent, {
       type: 'fullscreen-translucent',
-      props:{
-         topButton: false,
-         title: 'Factura creada exitosamente',
-         buttonText: `Confirmar al WhatsApp de ${this.merchant.name}` ,
-         mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
-         mainButton: () => {
-            this.submitPayment();
-            window.open(this.whatsappLink, "_blank");
-         }
+      props: {
+        topButton: false,
+        title: 'Factura creada exitosamente',
+        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
+        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
+        mainButton: () => {
+          this.orderCompleted();
+          window.open(this.whatsappLink, '_blank');
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-      notCancellable: true
-   })
+      notCancellable: true,
+    });
   }
 
   async formatId(dateId: string) {
-   return formatID(dateId);
- }
+    return formatID(dateId);
+  }
 }

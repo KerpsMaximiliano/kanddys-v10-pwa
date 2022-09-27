@@ -25,7 +25,13 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
-type AuthTypes = 'phone' | 'password' | 'order' | 'address' | 'anonymous';
+type AuthTypes =
+  | 'phone'
+  | 'password'
+  | 'order'
+  | 'address'
+  | 'anonymous'
+  | 'payment';
 
 interface ValidateData {
   name: string;
@@ -40,7 +46,7 @@ interface ValidateData {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-   mode: 'login' | 'signUp';
+  mode: 'login' | 'signUp';
   saleflow: SaleFlow;
   auth: AuthTypes;
   merchantNumber: string = '(000) 000-0000';
@@ -52,8 +58,8 @@ export class LoginComponent implements OnInit {
   doesItemHasParams: boolean;
   action: string;
   orderStatus: string;
-  hasPayment: boolean;
   OTP: boolean = false;
+  image: File;
   authCode: boolean = false;
   toValidate: boolean = false;
   sneaky: string;
@@ -106,7 +112,9 @@ export class LoginComponent implements OnInit {
     private location: Location,
     private usersService: UsersService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
-  ) {}
+  ) {
+    this.image = this.router.getCurrentNavigation().extras.state?.image;
+  }
 
   async ngOnInit(): Promise<void> {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
@@ -158,23 +166,17 @@ export class LoginComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         order.merchants?.[0]?._id
       );
-      if (
-        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      )
-        this.hasPayment = true;
-      else {
-        this.fullLink = `/ecommerce/order-info/${order._id}`;
-        this.messageLink = `https://wa.me/${
-          this.merchant.owner.phone
-        }?text=Hola%20${this.merchant.name
-          .replace('&', 'and')
-          .replace(
-            /[^\w\s]/gi,
-            ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
-          environment.uri
-        }${this.fullLink}`;
-      }
+      this.fullLink = `/ecommerce/order-info/${order._id}`;
+      this.messageLink = `https://wa.me/${
+        this.merchant.owner.phone
+      }?text=Hola%20${this.merchant.name
+        .replace('&', 'and')
+        .replace(
+          /[^\w\s]/gi,
+          ''
+        )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
+        environment.uri
+      }${this.fullLink}`;
     }
 
     if (this.auth === 'password') {
@@ -245,6 +247,12 @@ export class LoginComponent implements OnInit {
       unlockUI();
     } else if (this.auth === 'anonymous') {
       unlockUI();
+    } else if (this.auth === 'payment') {
+      if (!this.image) {
+        this.router.navigate([`ecommerce/payments/${this.orderId}`], {
+          replaceUrl: true,
+        });
+      }
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -790,24 +798,25 @@ export class LoginComponent implements OnInit {
   }
 
   async authOrder(id: string) {
-    const { orderStatus } = await this.orderService.getOrderStatus(
-      this.orderId
-    );
-    if (orderStatus === 'draft') {
-      await this.orderService.authOrder(this.orderId, id);
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
-      this.headerService.resetIsComplete();
+    if (this.orderStatus !== 'draft') return;
+    const order = (await this.orderService.authOrder(this.orderId, id))
+      .authOrder;
+    if (this.auth === 'payment') {
+      await this.orderService.payOrder(
+        {
+          image: this.image,
+          platform: 'bank-transfer',
+          transactionCode: '',
+        },
+        order.user._id,
+        'bank-transfer',
+        order._id
+      );
     }
-    if (this.hasPayment)
-      this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
-        replaceUrl: true,
-      });
-    else {
-      this.router.navigate([this.fullLink], {
-        replaceUrl: true,
-      });
-      window.location.href = this.messageLink;
-    }
+    this.router.navigate([this.fullLink], {
+      replaceUrl: true,
+    });
+    window.location.href = this.messageLink;
   }
 
   showShoppingCartDialog = () => {
@@ -826,20 +835,25 @@ export class LoginComponent implements OnInit {
     this.location.back();
   }
 
- async signUpNew() {
-   const register = await this.authService.signup({
-      phone: this.merchantNumber,
-      password: this.password.value,
-   },
-   'none',
-   null,
-   false
-   );
-   if(register){
+  async signUpNew() {
+    const register = await this.authService.signup(
+      {
+        phone: this.merchantNumber,
+        password: this.password.value,
+      },
+      'none',
+      null,
+      false
+    );
+    if (register) {
       this.sneaky = this.password.value;
       await this.generateTOP(true);
       this.toPassword();
-      this.toastr.success('Número Registrado con exito. Se ha enviado un código para verificar', null, {timeOut: 2000});
-   } else this.toastr.error('Registro fallido', null, {timeOut: 2000});
+      this.toastr.success(
+        'Número Registrado con exito. Se ha enviado un código para verificar',
+        null,
+        { timeOut: 2000 }
+      );
+    } else this.toastr.error('Registro fallido', null, { timeOut: 2000 });
   }
 }

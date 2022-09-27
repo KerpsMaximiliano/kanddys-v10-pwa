@@ -53,10 +53,8 @@
           (mouseleave)="stopDragging()"
           (mousemove)="moveEvent($event, elemt)"
         >
-          <button
-            *ngFor="let item of order?.items"
-          >
-            <ng-container *ngIf="!item.params?.length">
+          <button *ngFor="let item of order?.items">
+            <ng-container *ngIf="!item.params?.length || customizer">
               <div
                 class="image"
                 [ngStyle]="{
@@ -65,7 +63,8 @@
                     : 'url(/assets/images/noimage.png)'
                 }"
                 (click)="
-                item.item.images?.length && openImageModal(item.item.images[0])
+                  item.item.images?.length &&
+                    openImageModal(item.item.images[0])
                 "
               >
                 <!-- <img
@@ -79,7 +78,7 @@
                 /> -->
               </div>
             </ng-container>
-            <ng-container *ngIf="item.params?.length">
+            <ng-container *ngIf="item.params?.length && !customizer">
               <div *ngFor="let paramValue of item.item.params[0].values">
                 <div
                   class="image"
@@ -88,7 +87,10 @@
                       ? 'url(' + paramValue.image + ')'
                       : 'url(/assets/images/noimage.png)'
                   }"
-                  *ngIf="(item.params[0].param == item.item.params[0]._id) && (item.params[0].paramValue == paramValue._id)"
+                  *ngIf="
+                    item.params[0].param == item.item.params[0]._id &&
+                    item.params[0].paramValue == paramValue._id
+                  "
                   (click)="openImageModal(paramValue.image)"
                 >
                   <!-- <img
@@ -166,10 +168,18 @@
           }"
           *ngIf="order.items[0].deliveryLocation.street"
         >
-          {{ order.items[0].deliveryLocation.houseNumber ? '#' + order.items[0].deliveryLocation.houseNumber + ', ' : '' }}
+          {{
+            order.items[0].deliveryLocation.houseNumber
+              ? "#" + order.items[0].deliveryLocation.houseNumber + ", "
+              : ""
+          }}
           {{ order.items[0].deliveryLocation.street }},
-          {{ order.items[0].deliveryLocation.referencePoint ? order.items[0].deliveryLocation.referencePoint + ', ' : '' }}
-           {{ order.items[0].deliveryLocation.city }}, República Dominicana
+          {{
+            order.items[0].deliveryLocation.referencePoint
+              ? order.items[0].deliveryLocation.referencePoint + ", "
+              : ""
+          }}
+          {{ order.items[0].deliveryLocation.city }}, República Dominicana
         </p>
       </div>
     </section>
