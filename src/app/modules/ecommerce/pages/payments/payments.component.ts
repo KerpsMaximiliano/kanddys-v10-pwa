@@ -31,7 +31,6 @@ export class PaymentsComponent implements OnInit {
   whatsappLink: string;
   disableButton: boolean;
   depositAmount: number;
-  billId: string;
 
   constructor(
     private walletService: WalletService,
@@ -88,11 +87,6 @@ export class PaymentsComponent implements OnInit {
         this.orderCompleted();
         return;
       }
-      if (this.order.orderStatus !== 'in progress') {
-        this.orderCompleted();
-        return;
-      }
-      this.billId = this.order ? await this.formatId(this.order?.dateId) : ''; //No se pero no funca al ponerlo en "FACTURA"
     }
     this.banks = (
       await this.walletService.exchangeData(
@@ -210,9 +204,5 @@ export class PaymentsComponent implements OnInit {
       flags: ['no-header'],
       notCancellable: true,
     });
-  }
-
-  async formatId(dateId: string) {
-    return formatID(dateId);
   }
 }
