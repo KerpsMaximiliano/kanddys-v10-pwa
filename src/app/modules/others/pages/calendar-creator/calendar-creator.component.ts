@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { FormControl, FormGroup, Validator, Validators } from '@angular/forms';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import {
+  ComplexOptionAnswerSelector,
+  OptionAnswerSelector,
+  webformAnswerLayoutOptionDefaultStyles,
+} from 'src/app/core/types/answer-selector';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { Router } from '@angular/router';
@@ -15,95 +19,131 @@ import { CalendarService } from 'src/app/core/services/calendar.service';
   styleUrls: ['./calendar-creator.component.scss'],
 })
 export class CalendarCreatorComponent implements OnInit {
-  currentStep: 'MAIN' | 'RESERVATION_PARAMS' | 'RESERVATION_AVAILABILITY' =
-    'MAIN';
+  currentStep:
+    | 'MAIN'
+    | 'RESERVATION_DURATION_AND_BREAKTIME'
+    | 'RESERVATION_DAYS_HOURS_AVAILABILITY'
+    | 'RESERVATION_SLOT_CAPACITY' = 'MAIN';
   user: User = null;
   merchantDefault: Merchant = null;
 
   headerConfiguration = {
     bgcolor: '#2874AD',
     color: '#ffffff',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    rightTextStyles: {
+    headerText: 'Parámetros de las reservas',
+    headerTextSide: 'LEFT',
+    headerTextCallback: this.changeActiveStatus.bind(this),
+    leftTextStyles: {
+      marginLeft: '4px',
       fontSize: '17px',
       fontFamily: 'RobotoMedium',
     },
-    headerText: 'CALENDARIO EXPUESTO EN TIENDA',
-    headerTextSide: 'RIGHT',
-    icon: {
-      src: `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/open-eye-white.svg`,
-      width: 32,
-      height: 28,
-      cursor: 'pointer',
-      margin: '0px 0px 0px 6px',
-      callback: this.changeActiveStatus.bind(this),
-    },
-    headerTextCallback: this.changeActiveStatus.bind(this),
   };
 
-  reservationDurationAndCounterCTA: OptionAnswerSelector[] = [
-    {
-      value: 'Ingresa la cantidad de reservas por rango de tiempo',
-      status: true,
-      icons: [
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/pencil.svg',
-          styles: {
-            width: '23px',
-            height: '23px',
-            marginLeft: '29px',
-          },
-          callback: (...params) => {
-            this.changeStepTo('RESERVATION_PARAMS');
-          },
-        },
-      ],
-      subtexts: [
-        {
-          text: '+ los minutos de recesos antes de la siguiente',
-          styles: {
-            color: '#7B7B7B',
-            marginRight: '6px',
-          },
-        },
-      ],
+  listStyles: Record<string, Record<string, string | number>> = {
+    TOP_RIGHT: {
+      color: '#7B7B7B',
     },
-  ];
+    TOP_LEFT: {
+      paddingBottom: '8px',
+    },
+    MIDDLE_TEXTS: {
+      fontSize: '17px',
+    },
+    BOTTOM_LEFT: {
+      paddingTop: '10px',
+      fontWeight: 'bold',
+      fontSize: '17px',
+      color: '#2874ad',
+    },
+  };
 
-  reservationTimeAvailability: OptionAnswerSelector[] = [
+  reservationParamsStepOptions: ComplexOptionAnswerSelector[] = [
     {
-      value:
-        'Ingresa el rango de tiempo en el cuál se podrán hacer reservaciones',
-      status: true,
-      icons: [
-        {
-          src: 'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/pencil.svg',
-          styles: {
-            width: '23px',
-            height: '23px',
-            marginLeft: '29px',
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      texts: {
+        topRight: {
+          text: '',
+          styles: this.listStyles['TOP_RIGHT'],
+        },
+        topLeft: {
+          text: '¿Cuándo estarán disponibles las reservas?',
+          styles: this.listStyles['TOP_LEFT'],
+        },
+        middleTexts: [
+          {
+            text: 'Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones',
+            styles: this.listStyles['MIDDLE_TEXTS'],
           },
-          callback: (...params) => {
-            this.changeStepTo('RESERVATION_AVAILABILITY');
+        ],
+        bottomLeft: {
+          text: 'Editar parámetros',
+          styles: this.listStyles['BOTTOM_LEFT'],
+          callback: () => {
+            this.changeStepTo('RESERVATION_DAYS_HOURS_AVAILABILITY');
           },
         },
-      ],
-      subtexts: [
-        {
-          text: 'Dom, Mar, Mie, Jue',
-          styles: {
-            color: '#7B7B7B',
-            marginRight: '6px',
+      },
+    },
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      texts: {
+        topRight: {
+          text: '',
+          styles: this.listStyles['TOP_RIGHT'],
+        },
+        topLeft: {
+          text: '¿Qué tiempo durará cada reserva?',
+          styles: this.listStyles['TOP_LEFT'],
+        },
+        middleTexts: [
+          {
+            text: 'Especifica los minutos que durará cada reserva y el tiempo entre cada una de ellas',
+            styles: this.listStyles['MIDDLE_TEXTS'],
+          },
+        ],
+        bottomLeft: {
+          text: 'Editar parámetros',
+          styles: this.listStyles['BOTTOM_LEFT'],
+          callback: () => {
+            this.changeStepTo('RESERVATION_DURATION_AND_BREAKTIME');
           },
         },
-        {
-          text: 'Cualquier mes',
-          styles: {
-            color: '#7B7B7B',
+      },
+    },
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      texts: {
+        topRight: {
+          text: '',
+          styles: this.listStyles['TOP_RIGHT'],
+        },
+        topLeft: {
+          text: '¿De cuántas reservaciones al mismo tiempo dispones?',
+          styles: this.listStyles['TOP_LEFT'],
+        },
+        middleTexts: [
+          {
+            text: 'Por especificar',
+            styles: this.listStyles['MIDDLE_TEXTS'],
+          },
+        ],
+        bottomLeft: {
+          text: 'Editar parámetros',
+          styles: this.listStyles['BOTTOM_LEFT'],
+          callback: () => {
+            this.changeStepTo('RESERVATION_SLOT_CAPACITY');
           },
         },
-      ],
+      },
     },
   ];
 
@@ -153,7 +193,11 @@ export class CalendarCreatorComponent implements OnInit {
   ];
 
   hours = [];
+  toHours = [];
+  toMinutes = [];
   minutes = [];
+  chunkSizeList: number[] = [15, 30, 60, 120, 180];
+  breakTimeList: number[] = [10, 15, 30, 60];
   selectedFromHour: {
     index: number;
     hour: number;
@@ -170,20 +214,24 @@ export class CalendarCreatorComponent implements OnInit {
     index: number;
     minute: number;
   } = null;
+  selectedChunkSize: {
+    index: number;
+    chunkSize: number;
+  } = null;
+  selectedBreakTime: {
+    index: number;
+    breakTime: number;
+  } = null;
   activeCalendar: boolean = true;
 
   calendarCreatorForm: FormGroup = new FormGroup({
+    reservationSlotCapacity: new FormGroup({
+      amount: new FormControl(null, Validators.required),
+    }),
     reservationParams: new FormGroup({
-      amountOfReservationsAtTheSameTime: new FormControl(
-        null,
-        Validators.compose([Validators.required, Validators.min(1)])
-      ),
       reservationDurationInMinutes: new FormControl(
         null,
-        Validators.compose([
-          Validators.required,
-          Validators.min(1),
-        ])
+        Validators.compose([Validators.required, Validators.min(1)])
       ),
       minutesBetweenReservations: new FormControl(null, Validators.required),
     }),
@@ -212,6 +260,7 @@ export class CalendarCreatorComponent implements OnInit {
 
     this.user = await this.authService.me();
 
+    console.log('Usuario', this.user);
     if (this.user) {
       const merchantDefault = await this.merchantsService.merchantDefault();
 
@@ -219,11 +268,17 @@ export class CalendarCreatorComponent implements OnInit {
       else {
         this.router.navigate(['others/error-screen']);
       }
+    } else {
+      this.router.navigate(['auth/login']);
     }
   }
 
   changeStepTo(
-    step: 'MAIN' | 'RESERVATION_PARAMS' | 'RESERVATION_AVAILABILITY'
+    step:
+      | 'MAIN'
+      | 'RESERVATION_DURATION_AND_BREAKTIME'
+      | 'RESERVATION_DAYS_HOURS_AVAILABILITY'
+      | 'RESERVATION_SLOT_CAPACITY'
   ) {
     this.currentStep = step;
   }
@@ -265,6 +320,12 @@ export class CalendarCreatorComponent implements OnInit {
       this.selectedFromHour = { index: null, hour: null };
       this.selectedFromHour.index = index;
       this.selectedFromHour.hour = hour;
+
+      this.toHours = [];
+
+      for (let number = hour; number <= 23; number++) {
+        this.toHours.push(number.toString().length < 2 ? '0' + number : number);
+      }
     } else {
       this.selectedToHour = { index: null, hour: null };
       this.selectedToHour.index = index;
@@ -311,41 +372,61 @@ export class CalendarCreatorComponent implements OnInit {
     }
   }
 
+  selectChunkSize(index: number, chunkSize: number) {
+    const reservationParamsFormGroup = this.calendarCreatorForm.controls
+      .reservationParams as FormGroup;
+
+    this.selectedChunkSize = { index: null, chunkSize: null };
+    this.selectedChunkSize.index = index;
+    this.selectedChunkSize.chunkSize = chunkSize;
+
+    if (this.selectedChunkSize?.chunkSize) {
+      reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
+        chunkSize
+      );
+    }
+  }
+
+  selectBreakTime(index: number, breakTime: number) {
+    const reservationParamsFormGroup = this.calendarCreatorForm.controls
+      .reservationParams as FormGroup;
+
+    this.selectedBreakTime = { index: null, breakTime: null };
+    this.selectedBreakTime.index = index;
+    this.selectedBreakTime.breakTime = breakTime;
+
+    if (this.selectedBreakTime?.breakTime) {
+      reservationParamsFormGroup.controls.minutesBetweenReservations.setValue(
+        breakTime
+      );
+    }
+  }
+
   goBackwards() {
     switch (this.currentStep) {
       case 'MAIN':
         break;
-      case 'RESERVATION_PARAMS':
+      case 'RESERVATION_DURATION_AND_BREAKTIME':
         this.currentStep = 'MAIN';
         break;
-      case 'RESERVATION_AVAILABILITY':
+      case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
         this.currentStep = 'MAIN';
         break;
     }
   }
 
   async save() {
-    const {
-      amountOfReservationsAtTheSameTime,
-      reservationDurationInMinutes,
-      minutesBetweenReservations,
-    } = this.calendarCreatorForm.value.reservationParams;
+    const { reservationDurationInMinutes, minutesBetweenReservations } =
+      this.calendarCreatorForm.value.reservationParams;
 
     const { daysAvailability, fromHour, toHour } =
       this.calendarCreatorForm.value.reservationAvailability;
 
+    const { amount: amountOfReservationsAtTheSameTime } =
+      this.calendarCreatorForm.value.reservationSlotCapacity;
+
     switch (this.currentStep) {
       case 'MAIN':
-        /*
-        console.log(
-          amountOfReservationsAtTheSameTime,
-          reservationDurationInMinutes,
-          minutesBetweenReservations, daysAvailability,
-          fromHour,
-          toHour
-        );
-        console.log(daysAvailability);
-        */
         const daysInOrder = daysAvailability.map(
           (dayObject) => dayObject.fullname
         );
@@ -369,32 +450,29 @@ export class CalendarCreatorComponent implements OnInit {
             toHour,
           },
         });
-
-        console.log(result);
         break;
-      case 'RESERVATION_PARAMS':
+      case 'RESERVATION_DURATION_AND_BREAKTIME':
         if (
-          this.isNotEmpty(Number(amountOfReservationsAtTheSameTime)) &&
           this.isNotEmpty(Number(reservationDurationInMinutes)) &&
           this.isNotEmpty(Number(minutesBetweenReservations))
         ) {
-          this.reservationDurationAndCounterCTA[0].value = `${amountOfReservationsAtTheSameTime} reservas cada ${reservationDurationInMinutes} min`;
-
-          this.reservationDurationAndCounterCTA[0].subtexts[0].text = `
-            + ${minutesBetweenReservations} de receso antes de la siguiente
-          `;
+          const realDuration =
+            Number(reservationDurationInMinutes) -
+            Number(minutesBetweenReservations);
+          this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `${realDuration} min + ${minutesBetweenReservations} min de receso`;
         } else {
-          this.reservationDurationAndCounterCTA[0].value = `
-            Ingresa la cantidad de reservas por rango de tiempo
+          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
+            Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
           `;
-          this.reservationDurationAndCounterCTA[0].subtexts[0].text = `
-            + los minutos de recesos antes de la siguiente
+
+          this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `
+            Especifica los minutos que durará cada reserva y el tiempo entre cada una de ellas
           `;
         }
 
         this.currentStep = 'MAIN';
         break;
-      case 'RESERVATION_AVAILABILITY':
+      case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
         if (
           this.isNotEmpty(daysAvailability) &&
           this.isNotEmpty(fromHour) &&
@@ -415,16 +493,27 @@ export class CalendarCreatorComponent implements OnInit {
             toHourFinal = `${toHourNumber - 12}:${toHour.split(':')[1]} PM`;
           else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} AM`;
 
-          this.reservationTimeAvailability[0].value = `${fromHourFinal} a ${toHourFinal}`;
+          console.log('days available', daysAvailability);
+
+          const commaSeparatedDays = daysAvailability
+            .map((dayObject) => dayObject.name)
+            .join(', ');
+
+          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `${fromHourFinal} a ${toHourFinal} los ${commaSeparatedDays} de cualquier mes y año`;
         } else {
-          this.reservationDurationAndCounterCTA[0].value = `
-            Ingresa la cantidad de reservas por rango de tiempo
-          `;
-          this.reservationDurationAndCounterCTA[0].subtexts[0].text = `
-            Ingresa el rango de tiempo en el cuál se podrán hacer reservaciones
+          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
+            Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
           `;
         }
 
+        this.currentStep = 'MAIN';
+        break;
+      case 'RESERVATION_SLOT_CAPACITY':
+        if (this.isNotEmpty(amountOfReservationsAtTheSameTime)) {
+          this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Capacidad para ${amountOfReservationsAtTheSameTime} al mismo tiempo`;
+        } else {
+          this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Por especificar`;
+        }
         this.currentStep = 'MAIN';
         break;
     }
@@ -440,10 +529,6 @@ export class CalendarCreatorComponent implements OnInit {
 
   changeActiveStatus() {
     this.activeCalendar = !this.activeCalendar;
-
-    this.headerConfiguration.icon.src = `https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/${
-      this.activeCalendar ? 'open' : 'closed'
-    }-eye-white.svg`;
 
     this.headerConfiguration.headerText = this.activeCalendar
       ? 'ACTIVO (EXPUESTO EN TIENDA)'
