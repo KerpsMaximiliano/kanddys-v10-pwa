@@ -263,7 +263,7 @@ export class CheckoutComponent implements OnInit {
         createdOrder = (await this.orderService.createPreOrder(this.order))
           ?.createPreOrder._id;
       }
-      // const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
+      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
       this.headerService.deleteSaleflowOrder(this.saleflow._id);
       this.headerService.resetIsComplete();
       this.headerService.orderId = createdOrder;
@@ -278,6 +278,15 @@ export class CheckoutComponent implements OnInit {
           }
         );
       } else {
+        if (!this.headerService.user || anonymous) {
+          this.router.navigate([`/auth/login`], {
+            queryParams: {
+              orderId: createdOrder,
+              auth: anonymous && 'anonymous',
+            },
+          });
+          return;
+        }
         const fullLink = `/ecommerce/order-info/${createdOrder}`;
         this.messageLink = `https://wa.me/${
           this.saleflow.merchant.owner.phone

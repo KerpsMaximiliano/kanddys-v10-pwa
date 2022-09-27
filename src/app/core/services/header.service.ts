@@ -440,11 +440,11 @@ export class HeaderService {
   }
 
   // Returns order auth type
-  // getOrderAnonymous(saleflow: string) {
-  //   let { anonymous }: SaleflowData =
-  //     JSON.parse(localStorage.getItem(saleflow)) || {};
-  //   return anonymous;
-  // }
+  getOrderAnonymous(saleflow: string) {
+    let { anonymous }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return anonymous;
+  }
 
   // Returns CustomizerValueInput from saleflow
   getCustomizer(saleflow: string) {
