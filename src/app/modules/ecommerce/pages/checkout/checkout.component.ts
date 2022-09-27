@@ -85,11 +85,12 @@ export class CheckoutComponent implements OnInit {
         value: selectedQuality,
       });
     const backgroundColor = this.customizer.backgroundColor.color.name;
-    if (backgroundColor)
+    if (backgroundColor) {
       this.customizerDetails.push({
         name: 'Color de fondo',
         value: backgroundColor,
       });
+    }
     if (this.customizer.texts.length) {
       this.customizerDetails.push({
         name: 'Texto',
@@ -107,12 +108,12 @@ export class CheckoutComponent implements OnInit {
           selectedTypography = 'Classic';
           break;
       }
-      if (selectedTypography)
+      if (selectedTypography) {
         this.customizerDetails.push({
           name: 'Nombre de tipografía',
           value: selectedTypography,
         });
-
+      }
       const typographyColorCode = this.customizer.texts[0].color.name;
       const typographyColorName = this.customizer.texts[0].color.nickname;
       if (typographyColorCode && typographyColorName) {
@@ -254,45 +255,21 @@ export class CheckoutComponent implements OnInit {
     }
     // ++++++++++++++++++++++ Managing Delivery ++++++++++++++++++++++++++++
     try {
-      const { createPreOrder } = await this.orderService.createPreOrder(
-        this.order
-      );
-      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
+      let createdOrder: string;
+      if (this.headerService.user) {
+        createdOrder = (await this.orderService.createOrder(this.order))
+          .createOrder._id;
+      } else {
+        createdOrder = (await this.orderService.createPreOrder(this.order))
+          ?.createPreOrder._id;
+      }
+      // const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
       this.headerService.deleteSaleflowOrder(this.saleflow._id);
       this.headerService.resetIsComplete();
-      this.headerService.orderId = createPreOrder._id;
+      this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      if (this.headerService.user && !anonymous) {
-        await this.authOrder(this.headerService.user._id);
-        unlockUI();
-        return;
-      }
-      unlockUI();
-      this.router.navigate([`/auth/login`], {
-        queryParams: {
-          orderId: createPreOrder._id,
-          auth: anonymous && 'anonymous',
-        },
-      });
-    } catch (error) {
-      console.log(error);
-      unlockUI();
-      this.disableButton = false;
-    }
-  };
-
-  async authOrder(id: string) {
-    const { orderStatus } = await this.orderService.getOrderStatus(
-      this.headerService.orderId
-    );
-    if (orderStatus === 'draft') {
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
-      this.headerService.resetIsComplete();
-      const order = (
-        await this.orderService.authOrder(this.headerService.orderId, id)
-      ).authOrder;
       if (this.saleflow?.module?.paymentMethod?.paymentModule?._id) {
         this.router.navigate(
           [`/ecommerce/payments/${this.headerService.orderId}`],
@@ -301,13 +278,10 @@ export class CheckoutComponent implements OnInit {
           }
         );
       } else {
-        const merchant = await this.merchantService.merchant(
-          order.merchants?.[0]?._id
-        );
-        const fullLink = `/ecommerce/order-info/${order._id}`;
+        const fullLink = `/ecommerce/order-info/${createdOrder}`;
         this.messageLink = `https://wa.me/${
-          merchant.owner.phone
-        }?text=Hola%20${merchant.name
+          this.saleflow.merchant.owner.phone
+        }?text=Hola%20${this.saleflow.merchant.name
           .replace('&', 'and')
           .replace(
             /[^\w\s]/gi,
@@ -321,8 +295,13 @@ export class CheckoutComponent implements OnInit {
         window.location.href = this.messageLink;
         return;
       }
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+      this.disableButton = false;
     }
-  }
+  };
 
   mouseDown: boolean;
   startX: number;

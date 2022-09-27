@@ -440,11 +440,11 @@ export class HeaderService {
   }
 
   // Returns order auth type
-  getOrderAnonymous(saleflow: string) {
-    let { anonymous }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    return anonymous;
-  }
+  // getOrderAnonymous(saleflow: string) {
+  //   let { anonymous }: SaleflowData =
+  //     JSON.parse(localStorage.getItem(saleflow)) || {};
+  //   return anonymous;
+  // }
 
   // Returns CustomizerValueInput from saleflow
   getCustomizer(saleflow: string) {
@@ -495,11 +495,11 @@ export class HeaderService {
   }
 
   // Deletes anonymous property from order
-  deleteOrderAnonymous(saleflow: string) {
-    let { anonymous, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify(rest));
-  }
+  // deleteOrderAnonymous(saleflow: string) {
+  //   let { anonymous, ...rest }: SaleflowData =
+  //     JSON.parse(localStorage.getItem(saleflow)) || {};
+  //   localStorage.setItem(saleflow, JSON.stringify(rest));
+  // }
 
   // Empties order products from localStorage
   emptyOrderProducts(saleflow: string) {
