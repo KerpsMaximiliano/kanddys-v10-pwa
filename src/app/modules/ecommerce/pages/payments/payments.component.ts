@@ -78,11 +78,8 @@ export class PaymentsComponent implements OnInit {
       }
       this.billId = (this.order ? await this.formatId(this.order?.dateId) : ''); //No se pero no funca al ponerlo en "FACTURA"
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=
-      POR: ${this.headerService.user.name}, \n
-      ARTICULO: ${this.order.items[0].item.images[0]}, \n
-      PAGO: $${this.paymentAmount.toLocaleString('es-MX')}, \n
-      FACTURA: ${fullLink}`;
+      const message = ` POR: ${this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'},\n ARTICULO: ${this.order.items[0].item.images[0]},\n PAGO: $${this.paymentAmount.toLocaleString('es-MX')},\n FACTURA: ${fullLink}`; //Asi no se rompe el mensaje
+      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${encodeURIComponent(message)}`;
     }
     this.banks = (
       await this.walletService.exchangeData(
