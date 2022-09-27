@@ -18,6 +18,7 @@ export class AnswerSelectorComponent {
   @Input() showSelectedFeedback: boolean = true;
   @Input() showDescription: boolean = true;
   @Input() containerStyles: Record<string, any> | null = null;
+  @Input() optionContainerStyles: Record<string, any> | null = null;
   @Input() itemStyles: Record<string, any> | null = null;
   @Input() isMultipleOption: boolean = false;
   @Input() isMultipleOption2: boolean = false;

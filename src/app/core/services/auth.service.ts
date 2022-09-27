@@ -157,7 +157,9 @@ export class AuthService {
     try {
       const variables = { code, userId };
       const mutation = verifyUser;
-      const result = await this.graphql.mutate({ mutation, variables });
+      const promise = this.graphql.mutate({ mutation, variables });
+      this.ready = from(promise);
+      const result = await promise;
       session = new Session(result?.session, use);
       if (use) this.session = session;
     } catch (e) {}

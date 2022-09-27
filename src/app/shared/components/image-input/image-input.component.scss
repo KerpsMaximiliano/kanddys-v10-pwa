@@ -12,6 +12,42 @@
 .d-none {
     display: none;
 }
+
+.showAddBtn {
+  display: flex;
+
+  .swiper-component-flex-wrapper {
+    flex-basis: 87%;
+    overflow: hidden;
+  }
+
+  .add-btn-wrapper {
+    flex-basis: 13%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    button {
+      position: absolute;
+      top: 40px;
+      background-color: limegreen;
+      border-radius: 50%;
+      border: none;
+      width: 30px;
+      height: 30px;
+      box-shadow: 0px 2px 5px lightslategray;
+      background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/plus.svg);
+      background-size: 40%;
+      background-repeat: no-repeat;
+      background-position: center;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
   
 .file {
   box-shadow: rgb(0 0 0 / 35%) 0px 15px 36px -28px inset;
@@ -73,4 +109,9 @@
   &:active {
     box-shadow: 0px 2px 5px darkgray, 0px 0px 5px inset orangered;
   }
+  
+}
+
+.fa-image{
+   font-size: 3.75rem;
 }

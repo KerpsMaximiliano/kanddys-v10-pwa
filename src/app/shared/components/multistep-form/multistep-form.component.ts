@@ -590,10 +590,9 @@ export class MultistepFormComponent
   handleImageInput = (
     result: any,
     fieldName: string,
-    currentField: FormField
+    currentField: FormField,
+    appendToTheEnd?: boolean
   ) => {
-    console.log(fieldName);
-    console.log(currentField);
     currentField.fileObjects = result;
   };
 

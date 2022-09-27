@@ -238,12 +238,17 @@ headline="EXPUESTO EN TAB (S)"
 [tags]="onlyTags"
 ></app-question-item> -->
 <!--<app-multistep-form></app-multistep-form> -->
-<!-- <app-reservation-orderless
-    [calendarId]="'62eade2619ae079e9283f352'"
-    [hourRangeInDays]="hourRangeInDays"
-></app-reservation-orderless> -->
-<app-reservation-orderless
-  calendarId="62eadec619ae079e9283f355"
-  [timeOfDayMode]="true"
-  [allowSundays]="true"
-></app-reservation-orderless>
+<!--
+    <app-reservation-orderless
+      [calendarId]="'62eade2619ae079e9283f352'"
+      [hourRangeInDays]="hourRangeInDays"
+    ></app-reservation-orderless>
+-->
+
+<app-multistep-form
+  [steps]="formSteps"
+  [disableSmoothScroll]="false"
+  [scrollableForm]="true"
+  [showStepNumbers]="false"
+  [usesGoogleMaps]="true"
+></app-multistep-form>

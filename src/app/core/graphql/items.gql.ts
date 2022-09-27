@@ -166,7 +166,7 @@ export const item = gql`
         _id
         images
         name
-        isActive
+        active
         createdAt
       }
       merchant {
@@ -406,7 +406,7 @@ export const addImageItem = gql`
         _id
         images
         name
-        isActive
+        active
         createdAt
       }
       merchant {
@@ -463,7 +463,7 @@ export const deleteImageItem = gql`
         _id
         images
         name
-        isActive
+        active
         createdAt
       }
       merchant {

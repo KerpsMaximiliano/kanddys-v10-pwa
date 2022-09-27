@@ -1,13 +1,26 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+// import Swiper core and required modules
 import { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
 
 @Component({
   selector: 'app-image-input',
   templateUrl: './image-input.component.html',
   styleUrls: ['./image-input.component.scss'],
 })
-export class ImageInputComponent implements OnInit {
+export class ImageInputComponent implements OnInit, AfterViewInit {
   @Input() imageField: (string | ArrayBuffer)[] = [''];
   @Input() formControlName: string = null;
   error: boolean[] = [];
@@ -20,16 +33,14 @@ export class ImageInputComponent implements OnInit {
     index: number;
   }>();
 
-  @Output() onFileInputMultiple = new EventEmitter<
-    FileList
-  >();
+  @Output() onFileInputMultiple = new EventEmitter<FileList>();
   @Output() onFileInputBase64Multiple = new EventEmitter<{
     image: string | ArrayBuffer;
     index: number;
   }>();
 
   @Output() onFileDeletion = new EventEmitter<{
-    index: number
+    index: number;
   }>();
 
   @Input() topLabel?: {
@@ -48,13 +59,19 @@ export class ImageInputComponent implements OnInit {
   @Input() imagesAlreadyLoaded: boolean = false;
   @Input() allowDeletion: boolean = false;
   @Input() useSwiper: boolean = true;
+  @Input() showAddImagesButton: boolean = false;
   @Input() id: string = null;
+  @Input() placeholderImage: boolean;
+  @Input() blockMultipleFileInput: boolean;
+  appendImageToTheEnd: boolean = false;
 
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 16,
   };
+
+  @ViewChild('swiperRef') swiper: SwiperComponent;
 
   constructor(protected _DomSanitizer: DomSanitizer) {}
 
@@ -63,13 +80,22 @@ export class ImageInputComponent implements OnInit {
       this.acceptTypes = '.' + this.allowedTypes.join(', .');
     else this.acceptTypes = 'image/*';
 
-    if(this.imagesAlreadyLoaded && this.imageField[this.imageField.length - 1] !== '' && !this.uploadImagesWithoutPlaceholderBox) this.imageField.push('');
+    if (
+      this.imagesAlreadyLoaded &&
+      this.imageField[this.imageField.length - 1] !== '' &&
+      !this.uploadImagesWithoutPlaceholderBox
+    )
+      this.imageField.push('');
+  }
+
+  ngAfterViewInit(): void {
   }
 
   sanitize(image: string | ArrayBuffer, expandImage) {
-    
     return this._DomSanitizer.bypassSecurityTrustStyle(
-      `url(${image}) no-repeat center center / ${!expandImage ? 'contain' : 'cover'} #fff`
+      `url(${image}) no-repeat center center / ${
+        !expandImage ? 'contain' : 'cover'
+      } #fff`
     );
   }
 
@@ -101,7 +127,7 @@ export class ImageInputComponent implements OnInit {
         this.onFileInputBase64.emit({ image: reader.result, index });
       };
       reader.readAsDataURL(files[0]);
-      if(this.max && this.imageField.length >= this.max) return;
+      if (this.max && this.imageField.length >= this.max) return;
       if (this.multiple && this.imageField.length - 1 === index) {
         this.imageField.push('');
         this.error.push(false);
@@ -113,14 +139,14 @@ export class ImageInputComponent implements OnInit {
   fileProgressMultiple(e: Event) {
     const fileList = (e.target as HTMLInputElement).files;
 
-    if(fileList.length > 0) {
+    if (fileList.length > 0) {
       let emitData = fileList;
-      
+
       this.onFileInputMultiple.emit(emitData);
 
-      this.imageField = [];
+      this.imageField = !this.appendImageToTheEnd ? [] : this.imageField;
 
-      for(let i = 0; i < fileList.length; i++) {
+      for (let i = 0; i < fileList.length; i++) {
         const file = fileList.item(i);
 
         if (
@@ -134,14 +160,41 @@ export class ImageInputComponent implements OnInit {
 
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.imageField[i] = reader.result;
-          this.onFileInputBase64Multiple.emit({ image: reader.result, index: i });
+          if (!this.appendImageToTheEnd) {
+            this.imageField[i] = reader.result;
+          } else if (this.appendImageToTheEnd) {
+            if (this.imageField.length === 1 && this.imageField[0] === '') {
+              this.imageField[0] = reader.result;
+            } else if (
+              this.imageField.length >= 1 &&
+              this.imageField[0] !== ''
+            ) {
+              this.imageField.push(reader.result);
+            }
+          }
+
+          this.onFileInputBase64Multiple.emit({
+            image: reader.result,
+            index: !this.appendImageToTheEnd ? i : this.imageField.length - 1,
+          });
+
+          if (
+            this.appendImageToTheEnd &&
+            this.uploadImagesWithoutPlaceholderBox
+          ) {
+            this.appendImageToTheEnd = false;
+            this.blockMultipleFileInput = false;
+          }
+
+          setTimeout(() => {
+            this.swiper.directiveRef.setIndex(this.imageField.length - 1);
+          }, 300);
         };
 
         reader.readAsDataURL(file);
       }
 
-      if(this.max && this.imageField.length >= this.max) return;
+      if (this.max && this.imageField.length >= this.max) return;
       return;
     }
   }
@@ -149,8 +202,18 @@ export class ImageInputComponent implements OnInit {
   deleteImageFromIndex(index: number) {
     this.imageField.splice(index, 1);
 
-    this.onFileDeletion.emit({index});
+    this.onFileDeletion.emit({ index });
 
-    if(this.imageField.length === 0) this.imageField.push('');
+    if (this.imageField.length === 0) this.imageField.push('');
+  }
+
+  clickImageInputWithId(id: string) {
+    this.appendImageToTheEnd = true;
+    this.blockMultipleFileInput = true;
+    const htmlElement: HTMLElement = document.querySelector('#' + id);
+
+    setTimeout(() => {
+      htmlElement.click();
+    }, 100);
   }
 }

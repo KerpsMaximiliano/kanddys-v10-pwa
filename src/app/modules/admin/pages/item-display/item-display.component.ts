@@ -1,29 +1,27 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Item, ItemCategory, ItemPackage } from 'src/app/core/models/item';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { environment } from 'src/environments/environment';
-import { WalletService } from 'src/app/core/services/wallet.service';
+import { ToastrService } from 'ngx-toastr';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Item, ItemCategory } from 'src/app/core/models/item';
+import { Notification } from 'src/app/core/models/notification';
 import { User } from 'src/app/core/models/user';
-import { SaleFlow } from 'src/app/core/models/saleflow';
-import { Merchant } from 'src/app/core/models/merchant';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { NotificationsService } from 'src/app/core/services/notifications.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
+import { WalletService } from 'src/app/core/services/wallet.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-import { NotificationsService } from 'src/app/core/services/notifications.service';
-import { Notification } from 'src/app/core/models/notification';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { ToastrService } from 'ngx-toastr';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -38,38 +36,18 @@ export class ItemDisplayComponent implements OnInit {
   URI: string = environment.uri;
   item: Item;
   shouldRedirectToPreviousPage: boolean = false;
-  loggedIn: boolean = false;
-  hasToken: boolean = false;
-  isPreItem: boolean = false;
-  newMerchant: boolean = false;
-  initialStatus: 'active' | 'featured' | 'disabled' = null;
-  // providerView: boolean;
-  // mode: 'new-item' | 'edit';
-  defaultMerchant: Merchant = null;
   buyersByItem: User[];
   totalByItem: any;
-  isOwner: boolean;
-
-  tagsData: Array<any> = ['', '', '', ''];
-
-  categories: ItemCategory[] = [];
-  tapped: boolean = false;
   env: string = environment.assetsUrl;
-  user: User;
-  canCreateBank: boolean;
-  testActive: boolean = true;
-  saleflow: SaleFlow = null;
   notifications: ExtraNotification[];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService,
     private itemsService: ItemsService,
     private dialogService: DialogService,
-    private merchantService: MerchantsService,
+    private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
-    private walletService: WalletService,
     private usersService: UsersService,
     private headerService: HeaderService,
     private notificationsService: NotificationsService,
@@ -85,322 +63,26 @@ export class ItemDisplayComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      this.route.queryParams.subscribe(async (queryParams) => {
-        const { token: magicLinkToken, mode } = queryParams;
+      lockUI();
+      this.item = await this.itemsService.item(params.itemId);
+      if (!this.item) return this.redirect();
+      if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
+        return this.redirect();
+      if (this.item.images.length > 1)
+        this.swiperConfig.pagination = {
+          el: '.swiper-pagination',
+          type: 'bullets',
+          clickable: true,
+        };
 
-        // this.mode = mode;
-        if (params.itemId) {
-          lockUI();
-          this.item = await this.itemsService.item(params.itemId);
-
-          if (this.item && this.item.status !== 'draft')
-            this.initialStatus = this.item.status;
-
-          if (!this.item) return this.redirect();
-
-          if (
-            (this.item && !this.item.merchant) ||
-            (this.item && this.item.status === 'draft')
-          )
-            this.isPreItem = true;
-
-          // this.item.images = null;
-          // this.item.status = 'disabled';
-          // this.item.description = 'gdfgdfgdf';
-          // this.item.content = ["fdsdfsdf", "ggggggggg"]
-
-          if (this.item.images.length > 1)
-            this.swiperConfig.pagination = {
-              el: '.swiper-pagination',
-              type: 'bullets',
-              clickable: true,
-            };
-
-          this.shouldRedirectToPreviousPage = true;
-
-          this.categories = this.item.category;
-
-          if (localStorage.getItem('session-token')) {
-            this.hasToken = true;
-          }
-
-          if (this.hasToken) {
-            this.user = await this.authService.me();
-
-            if (this.user) this.loggedIn = true;
-            try {
-              await this.checkBanks();
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        }
-
-        const myUser = await this.authService.me();
-
-        if (myUser && mode === 'new-item') {
-          let defaultMerchant = null;
-
-          try {
-            defaultMerchant = await this.merchantService.merchantDefault();
-          } catch (error) {
-            console.log(error);
-          }
-
-          if (!defaultMerchant) {
-            const merchants = await this.merchantService.myMerchants();
-
-            if (merchants.length === 0) {
-              const { createMerchant: createdMerchant } =
-                await this.merchantService.createMerchant({
-                  owner: myUser._id,
-                  name:
-                    myUser.name +
-                    ' mechant #' +
-                    Math.floor(Math.random() * 100000),
-                });
-
-              const { merchantSetDefault: defaultMerchant } =
-                await this.merchantService.setDefaultMerchant(
-                  createdMerchant._id
-                );
-
-              if (this.isPreItem) {
-                await this.itemsService.authItem(
-                  defaultMerchant._id,
-                  params.itemId
-                );
-                await this.itemsService.updateItem(
-                  {
-                    status: 'active',
-                  },
-                  params.itemId
-                );
-              }
-
-              const defaultSaleflow =
-                await this.saleflowService.saleflowDefault(
-                  defaultMerchant?._id
-                );
-
-              if (!defaultSaleflow) {
-                const { createSaleflow: createdSaleflow } =
-                  await this.saleflowService.createSaleflow({
-                    merchant: defaultMerchant._id,
-                    name:
-                      defaultMerchant._id +
-                      ' saleflow #' +
-                      Math.floor(Math.random() * 100000),
-                    items: [],
-                  });
-
-                const { saleflowSetDefault: defaultSaleflow } =
-                  await this.saleflowService.setDefaultSaleflow(
-                    defaultMerchant._id,
-                    createdSaleflow._id
-                  );
-                this.saleflow = defaultSaleflow;
-
-                this.saleflowService.createSaleFlowModule({
-                  saleflow: createdSaleflow._id,
-                });
-
-                await this.saleflowService.addItemToSaleFlow(
-                  {
-                    item: params.itemId,
-                  },
-                  defaultSaleflow._id
-                );
-
-                this.newMerchant = true;
-              }
-            } else {
-              const { merchantSetDefault: defaultMerchant } =
-                await this.merchantService.setDefaultMerchant(merchants[0]._id);
-
-              if (this.isPreItem) {
-                await this.itemsService.authItem(
-                  defaultMerchant._id,
-                  params.itemId
-                );
-                await this.itemsService.updateItem(
-                  {
-                    status: 'active',
-                  },
-                  params.itemId
-                );
-              }
-
-              const defaultSaleflow =
-                await this.saleflowService.saleflowDefault(
-                  defaultMerchant?._id
-                );
-
-              if (!defaultSaleflow) {
-                const saleflows = await this.saleflowService.saleflows(
-                  merchants[0]._id,
-                  {}
-                );
-
-                if (!saleflows || saleflows.length === 0) {
-                  const { createSaleflow: createdSaleflow } =
-                    await this.saleflowService.createSaleflow({
-                      merchant: defaultMerchant._id,
-                      name:
-                        defaultMerchant._id +
-                        ' saleflow #' +
-                        Math.floor(Math.random() * 100000),
-                      items: [],
-                    });
-
-                  const { saleflowSetDefault: defaultSaleflow } =
-                    await this.saleflowService.setDefaultSaleflow(
-                      defaultMerchant._id,
-                      createdSaleflow._id
-                    );
-                  this.saleflow = defaultSaleflow;
-
-                  this.saleflowService.createSaleFlowModule({
-                    saleflow: createdSaleflow._id,
-                  });
-
-                  await this.saleflowService.addItemToSaleFlow(
-                    {
-                      item: params.itemId,
-                    },
-                    defaultSaleflow._id
-                  );
-                  this.newMerchant = true;
-                } else {
-                  const { saleflowSetDefault: defaultSaleflow } =
-                    await this.saleflowService.setDefaultSaleflow(
-                      defaultMerchant._id,
-                      saleflows[0]._id
-                    );
-                  this.saleflow = defaultSaleflow;
-
-                  await this.saleflowService.addItemToSaleFlow(
-                    {
-                      item: params.itemId,
-                    },
-                    defaultSaleflow._id
-                  );
-                  this.newMerchant = true;
-                }
-              } else {
-                this.saleflow = defaultSaleflow;
-
-                await this.saleflowService.addItemToSaleFlow(
-                  {
-                    item: params.itemId,
-                  },
-                  defaultSaleflow._id
-                );
-
-                this.newMerchant = true;
-              }
-            }
-            unlockUI();
-          } else {
-            this.defaultMerchant = defaultMerchant;
-            if (this.defaultMerchant?._id === this.item?.merchant?._id)
-              this.isOwner = true;
-
-            if (this.isPreItem) {
-              await this.itemsService.authItem(
-                defaultMerchant._id,
-                params.itemId
-              );
-              await this.itemsService.updateItem(
-                {
-                  status: 'active',
-                },
-                params.itemId
-              );
-            }
-
-            const defaultSaleflow = await this.saleflowService.saleflowDefault(
-              defaultMerchant?._id
-            );
-
-            if (!defaultSaleflow) {
-              const { createSaleflow: createdSaleflow } =
-                await this.saleflowService.createSaleflow({
-                  merchant: defaultMerchant._id,
-                  name:
-                    defaultMerchant._id +
-                    ' saleflow #' +
-                    Math.floor(Math.random() * 100000),
-                  items: [],
-                });
-
-              const { saleflowSetDefault: defaultSaleflow } =
-                await this.saleflowService.setDefaultSaleflow(
-                  defaultMerchant._id,
-                  createdSaleflow._id
-                );
-
-              this.saleflowService.createSaleFlowModule({
-                saleflow: createdSaleflow._id,
-              });
-
-              await this.saleflowService.addItemToSaleFlow(
-                {
-                  item: params.itemId,
-                },
-                defaultSaleflow._id
-              );
-              unlockUI();
-              this.router.navigate([`/admin/merchant-items`]);
-            } else {
-              await this.saleflowService.addItemToSaleFlow(
-                {
-                  item: params.itemId,
-                },
-                defaultSaleflow._id
-              );
-              unlockUI();
-              this.router.navigate([`/admin/merchant-items`]);
-            }
-          }
-        } else {
-          try {
-            this.defaultMerchant = await this.merchantService.merchantDefault();
-          } catch (error) {
-            console.log(error);
-          }
-
-          if (!this.defaultMerchant) return unlockUI();
-          if (this.defaultMerchant._id === this.item?.merchant?._id) {
-            this.isOwner = true;
-            await Promise.all([
-              this.getTotalByItem(this.item._id),
-              this.getBuyersByItem(this.item._id),
-              this.getSaleflow(),
-              this.getNotifications(),
-            ]);
-            // }
-          }
-          unlockUI();
-        }
-      });
+      this.shouldRedirectToPreviousPage = true;
+      await Promise.all([
+        this.getTotalByItem(this.item._id),
+        this.getBuyersByItem(this.item._id),
+        this.getNotifications(),
+      ]);
+      unlockUI();
     });
-  }
-
-  async checkBanks() {
-    if (!this.loggedIn) return;
-    const wallet = await this.walletService.exchangeDataByUser(this.user._id);
-    if (!wallet) this.canCreateBank = true;
-  }
-
-  async getSaleflow() {
-    try {
-      this.saleflow = await this.saleflowService.saleflowDefault(
-        this.defaultMerchant._id
-      );
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   async getNotifications() {
@@ -409,12 +91,12 @@ export class ItemDisplayComponent implements OnInit {
       const [notifications, notificationCheckers] = await Promise.all([
         this.notificationsService.notifications(
           {},
-          this.defaultMerchant._id,
+          this.merchantsService.merchantData._id,
           this.item.notifications
         ),
         this.notificationsService.notificationCheckers({
           findBy: {
-            merchant: this.defaultMerchant._id,
+            merchant: this.merchantsService.merchantData._id,
             status: 'sent',
             notification: this.item.notifications,
           },
@@ -451,7 +133,10 @@ export class ItemDisplayComponent implements OnInit {
   async getTotalByItem(itemID: string) {
     try {
       this.totalByItem = (
-        await this.itemsService.totalByItem(this.defaultMerchant._id, [itemID])
+        await this.itemsService.totalByItem(
+          this.merchantsService.merchantData._id,
+          [itemID]
+        )
       )[0];
     } catch (error) {
       console.log(error);
@@ -485,14 +170,8 @@ export class ItemDisplayComponent implements OnInit {
   }
 
   goToMerchantStore() {
-    if (this.defaultMerchant)
-      // this.router.navigate([`/admin/merchant-dashboard/${this.defaultMerchant._id}/my-store`]);
-      this.router.navigate([`/admin/merchant-items`]);
-  }
-
-  goToBanksForm() {
-    if (this.canCreateBank && this.saleflow)
-      this.router.navigate([`/admin/bank-registration/${this.saleflow._id}`]);
+    // this.router.navigate([`/admin/merchant-dashboard/${this.merchantsService.merchantData._id}/my-store`]);
+    this.router.navigate([`/admin/merchant-items`]);
   }
 
   toggleActivateItem = () => {
@@ -520,7 +199,7 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openShareDialog = () => {
-   const styles = [
+    const styles = [
       { 'background-color': '#82F18D', color: '#174B72' },
       { 'background-color': '#B17608', color: '#FFFFFF' },
     ];
@@ -534,18 +213,18 @@ export class ItemDisplayComponent implements OnInit {
               : this.item.status === 'featured'
               ? 'VISIBLE (Y DESTACADO)'
               : 'INVISIBLE',
-          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0]
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0],
         },
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -559,7 +238,7 @@ export class ItemDisplayComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate([
-                `/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`,
+                `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
               ]);
             },
           },
@@ -572,20 +251,16 @@ export class ItemDisplayComponent implements OnInit {
         list,
         hideCancelButtton: true,
         dynamicStyles: {
-         container: {
-           paddingBottom: '64px',
-         },
-         titleWrapper: {
-           display: 'flex',
-           flexDirection: 'column',
-           alignItems: 'flex-start',
-           paddingBottom: '26px',
-         },
-         dialogCard: {
-           paddingBottom: '64px',
-           paddingTop: '0px',
-         },
-       }
+          titleWrapper: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            paddingBottom: '26px',
+          },
+          dialogCard: {
+            paddingTop: '0px',
+          },
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -629,9 +304,21 @@ export class ItemDisplayComponent implements OnInit {
 
   openDialog() {
     const styles = [
-      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
-      { 'background-color': '#82F18D', color: '#174B72', 'margin-top': this.item.name? 0 : '40px' },
-      { 'background-color': '#B17608', color: '#FFFFFF', 'margin-top': this.item.name? 0 : '40px' },
+      {
+        'background-color': '#82F18D',
+        color: '#174B72',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
+      {
+        'background-color': '#82F18D',
+        color: '#174B72',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
+      {
+        'background-color': '#B17608',
+        color: '#FFFFFF',
+        'margin-top': this.item.name ? 0 : '40px',
+      },
     ];
     const list: StoreShareList[] = [
       {
@@ -664,7 +351,18 @@ export class ItemDisplayComponent implements OnInit {
             text: 'Editar producto',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/create-item/${this.item._id}`]);
+              if (this.item.params.length === 0) {
+                this.router.navigate([`admin/create-item/${this.item._id}`]);
+              } else if (
+                this.item.params.length > 0 &&
+                this.item.params[0].values.length > 0
+              ) {
+                this.router.navigate([`admin/create-item/${this.item._id}`], {
+                  queryParams: {
+                    justdynamicmode: true,
+                  },
+                });
+              }
             },
           },
           {
@@ -707,9 +405,6 @@ export class ItemDisplayComponent implements OnInit {
         alternate: true,
         hideCancelButtton: true,
         dynamicStyles: {
-          container: {
-            paddingBottom: '64px',
-          },
           titleWrapper: {
             display: 'flex',
             flexDirection: 'column',
@@ -718,7 +413,6 @@ export class ItemDisplayComponent implements OnInit {
             paddingTop: '25px',
           },
           dialogCard: {
-            paddingBottom: '64px',
             paddingTop: '0px',
           },
         },
@@ -737,7 +431,7 @@ export class ItemDisplayComponent implements OnInit {
 
   copyLink() {
     this.clipboard.copy(
-      `${this.URI}/ecommerce/item-detail/${this.saleflow._id}/${this.item._id}`
+      `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`
     );
     this.toastr.info('Enlace del producto copiado en el clipboard', null, {
       timeOut: 2000,

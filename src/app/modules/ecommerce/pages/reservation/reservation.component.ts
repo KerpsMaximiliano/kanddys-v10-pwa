@@ -85,8 +85,6 @@ export class ReservationComponent implements OnInit {
     if (merchantId && merchantId !== '') this.merchant = merchantId;
     this.mode = mode;
 
-    this.header.disableNav();
-    this.header.hide();
     this.header.flowRoute = 'reservations';
     localStorage.setItem('flowRoute', 'reservations');
     this.version = this.router.url.split('/')[2];
