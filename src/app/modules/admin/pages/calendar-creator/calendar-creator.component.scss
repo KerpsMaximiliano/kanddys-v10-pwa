@@ -1,147 +1,189 @@
 @import "forms";
 
 .body {
-    background-color: #f6f6f6;
-    min-height: calc(100vh - 36px);
-    padding-top: 50px;
-    padding-left: 33px;
-    padding-right: 20px;
+  background-color: #f6f6f6;
+  min-height: calc(100vh - 36px);
+  padding: 0px 19px;
+  padding-top: 38px;
 
-    h2 {
-        font-family: RobotoBold;
-        font-size: 24px;
-        margin: 0px;
-        margin-bottom: 56px;
+  h2 {
+    font-family: RobotoBold;
+    font-size: 24px;
+    margin: 0px;
+    margin-bottom: 56px;
+  }
+
+  .action-preview {
+    margin-top: 56px;
+
+    &.second {
+      margin-top: 24px;
     }
 
-    .action-preview {
-        margin-top: 56px;
+    h3 {
+      margin: 0px;
+      margin-bottom: 20px;
+      font-family: RobotoMedium;
+      font-weight: normal;
+      font-size: 17px;
+      color: #7b7b7b;
+    }
+  }
 
-        &.second {
-            margin-top: 24px;
-        }
+  .input-label {
+    color: #7b7b7b;
+    font-family: RobotoMedium;
+    font-weight: normal;
+    font-size: 17px;
+    margin-top: 52px;
+    margin-bottom: 20px;
+    margin-left: 8px;
+  }
 
-        h3 {
-            margin: 0px;
-            margin-bottom: 20px;
-            font-family: RobotoMedium;
-            font-weight: normal;
-            font-size: 17px;
-            color: #7B7B7B;
-        }
+  .input {
+    &.customWidth {
+      width: 157px;
+    }
+  }
+
+  .daysOfTheWeek {
+    display: flex;
+    gap: 12px;
+
+    .day {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      height: 50px;
+      font-size: 17px;
+      font-family: SfProRegular;
+      color: black;
+      cursor: pointer;
+      transition: 0.3s background-color ease-in-out;
+
+      &:hover {
+        background-color: lightgray;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      &.selected {
+        background-color: #82f18d;
+        border-radius: 5px;
+      }
+    }
+  }
+
+  .from-to-flex-wrapper {
+    display: flex;
+    gap: 1rem;
+    width: fit-content;
+    justify-content: center;
+    margin: auto;
+
+    justify-content: space-between;
+
+    .hour-swiper,
+    .minutes-swiper {
+      height: 100px;
+      overflow-y: scroll;
+      flex: 1;
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
-    .input-label {
-        color: #7B7B7B;
-        font-family: RobotoMedium;
-        font-weight: normal;
-        font-size: 17px;
-        margin-top: 52px;
-        margin-bottom: 20px;
-        margin-left: 8px;
+    .swiper-item {
+      margin-bottom: 10px;
+      width: 100px;
+
+      padding: 4px;
+      font-size: 16px;
+      border-radius: 5px;
+      color: black;
+      font-family: SfProRegular;
+      color: black;
+      cursor: pointer;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s background-color ease-in-out;
+
+      &:hover {
+        background-color: darken($color: #fff, $amount: 10);
+      }
+
+      &:active {
+        background-color: darken($color: #fff, $amount: 20);
+      }
+
+      &.selected {
+        background-color: #82f18d;
+      }
+    }
+  }
+
+  .custom-swiper {
+    height: 100px;
+    overflow-y: scroll;
+    flex: 1;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .swiper-item {
+    margin-bottom: 10px;
+    width: 100px;
+
+    padding: 4px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: black;
+    font-family: SfProRegular;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s background-color ease-in-out;
+
+    &:hover {
+      background-color: darken($color: #fff, $amount: 10);
     }
 
-    .input {
-        &.customWidth {
-            width: 157px;
-        }
+    &:active {
+      background-color: darken($color: #fff, $amount: 20);
     }
 
-    .daysOfTheWeek {
-        display: flex;
-        gap: 12px;
-
-        .day {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
-            height: 50px;
-            font-size: 17px;
-            font-family: SfProRegular;
-            color: black;
-            cursor: pointer;
-            transition: 0.3s background-color ease-in-out;
-
-            &:hover {
-                background-color: lightgray;
-                cursor: pointer;
-                border-radius: 5px;
-            }
-
-            &.selected {
-                background-color: #82F18D;
-                border-radius: 5px;
-            }
-        }
+    &.selected {
+      background-color: #82f18d;
     }
+  }
 
-    .from-to-flex-wrapper {
-        display: flex;
-        gap: 1rem;
-        width: fit-content;
-        justify-content: center;
-        margin: auto;
+  .links {
+    list-style: none;
+    padding-bottom: 224px;
 
-        justify-content: space-between;
+    li {
+      font-family: SfProRegular;
+      color: #2874ad;
+      font-size: 17px;
+      margin-bottom: 24px;
 
-        .hour-swiper, .minutes-swiper {
-            height: 100px;
-            overflow-y: scroll;
-            flex: 1;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-
-            &::-webkit-scrollbar {
-                display: none;
-            }
-        }
-
-        .swiper-item {
-            margin-bottom: 10px;
-            width: 100px;
-
-            padding: 4px;
-            font-size: 16px;
-            border-radius: 5px;
-            color: black;
-            font-family: SfProRegular;
-            color: black;
-            cursor: pointer;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.3s background-color ease-in-out;
-
-            &:hover {
-                background-color: darken($color: #fff, $amount: 10);
-            }
-
-            &:active {
-                background-color: darken($color: #fff, $amount: 20);
-            }
-
-            &.selected {
-                background-color: #82F18D;
-            }
-        }
+      &:hover {
+        cursor: pointer;
+        color: darken($color: #2874ad, $amount: 10);
+      }
     }
-
-    .links {
-        list-style: none;
-        padding-bottom: 224px;
-
-        li {
-            font-family: SfProRegular;
-            color: #2874AD;
-            font-size: 17px;
-            margin-bottom: 24px;
-
-            &:hover {
-                cursor: pointer;
-                color: darken($color: #2874AD, $amount: 10);
-            }
-        }
-    }
+  }
 }
