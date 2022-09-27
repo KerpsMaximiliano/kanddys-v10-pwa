@@ -80,6 +80,8 @@ export class ReservationsCreatorComponent implements OnInit {
     toLabel?: string;
   }> = [];
   hourRangesBlocked: number[] = [];
+  clientPhone: string = null;
+  clientEmail: string = null;
 
   allMonths: {
     id: number;
@@ -89,68 +91,7 @@ export class ReservationsCreatorComponent implements OnInit {
       dayName: string;
       weekDayNumber: number;
     }[];
-  }[] = [
-    {
-      id: 0,
-      name: 'Enero',
-      dates: [],
-    },
-    {
-      id: 1,
-      name: 'Febrero',
-      dates: [],
-    },
-    {
-      id: 2,
-      name: 'Marzo',
-      dates: [],
-    },
-    {
-      id: 3,
-      name: 'Abril',
-      dates: [],
-    },
-    {
-      id: 4,
-      name: 'Mayo',
-      dates: [],
-    },
-    {
-      id: 5,
-      name: 'Junio',
-      dates: [],
-    },
-    {
-      id: 6,
-      name: 'Julio',
-      dates: [],
-    },
-    {
-      id: 7,
-      name: 'Agosto',
-      dates: [],
-    },
-    {
-      id: 8,
-      name: 'Septiembre',
-      dates: [],
-    },
-    {
-      id: 9,
-      name: 'Octubre',
-      dates: [],
-    },
-    {
-      id: 10,
-      name: 'Noviembre',
-      dates: [],
-    },
-    {
-      id: 11,
-      name: 'Diciembre',
-      dates: [],
-    },
-  ];
+  }[] = [];
 
   allDaysOfTheWeekArrayInSpanishAndEnglish = [
     { spanishName: 'Lunes', name: 'MONDAY' },
@@ -187,50 +128,58 @@ export class ReservationsCreatorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.allMonths = this.calendarsService.allMonths;
+
     this.route.params.subscribe(async (routeParams) => {
-      const { calendarId } = routeParams;
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { calendarId } = routeParams;
+        const { clientEmail, clientPhone } = queryParams;
 
-      this.calendarData = await this.calendarsService.getCalendar(calendarId);
+        this.clientEmail = clientEmail;
+        this.clientPhone = clientPhone;
 
-      if (this.calendarData) {
-        this.calendarMerchant = await this.merchantsService.merchant(
-          this.calendarData.merchant
-        );
-        this.headerConfiguration.headerText =
-          'Reserva la fecha con ' + this.calendarMerchant.name;
+        this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
-        this.generateHourList();
+        if (this.calendarData) {
+          this.calendarMerchant = await this.merchantsService.merchant(
+            this.calendarData.merchant
+          );
+          this.headerConfiguration.headerText =
+            'Reserva la fecha con ' + this.calendarMerchant.name;
 
-        const currentDateObject = new Date();
-        const monthNumber = currentDateObject.getMonth();
+          this.generateHourList();
 
-        this.currentMonth = {
-          name: this.allMonths[monthNumber].name,
-          number: monthNumber + 1,
-        };
+          const currentDateObject = new Date();
+          const monthNumber = currentDateObject.getMonth();
 
-        const { userInfo, reservationConvenience } =
-          this.reservationCreatorForm.controls;
-        this.stickyButton = {
-          text: 'SELECCIONA CUANDO TE CONVIENE',
-          mode: 'disabled-fixed',
-          callback: (params) => {
-            this.currentStep = 'RESERVATION_CONVENIENCE';
-          },
-        };
+          this.currentMonth = {
+            name: this.allMonths[monthNumber].name,
+            number: monthNumber + 1,
+          };
 
-        userInfo.statusChanges.subscribe((newStatus) => {
-          if (newStatus === 'VALID') {
-            this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
-            this.stickyButton.mode = 'fixed';
-          } else {
-            this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
-            this.stickyButton.mode = 'disabled-fixed';
-          }
-        });
-      } else {
-        this.router.navigate(['others/error-screen']);
-      }
+          const { userInfo, reservationConvenience } =
+            this.reservationCreatorForm.controls;
+          this.stickyButton = {
+            text: 'SELECCIONA CUANDO TE CONVIENE',
+            mode: 'disabled-fixed',
+            callback: (params) => {
+              this.currentStep = 'RESERVATION_CONVENIENCE';
+            },
+          };
+
+          userInfo.statusChanges.subscribe((newStatus) => {
+            if (newStatus === 'VALID') {
+              this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
+              this.stickyButton.mode = 'fixed';
+            } else {
+              this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
+              this.stickyButton.mode = 'disabled-fixed';
+            }
+          });
+        } else {
+          this.router.navigate(['others/error-screen']);
+        }
+      });
     });
   }
 
@@ -478,6 +427,9 @@ export class ReservationsCreatorComponent implements OnInit {
   async makeReservation() {
     const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
     const currentYear = new Date().getFullYear();
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailSubject = `Reservación realizada a ${this.calendarMerchant.name}`;
 
     let fromDateObject = new Date(
       currentYear,
@@ -553,6 +505,28 @@ export class ReservationsCreatorComponent implements OnInit {
         toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
     });
+
+    const message = `Saludos, se ha creado una reservación asociada a su ${
+      this.clientPhone ? 'número de teléfono' : 'correo electrónico'
+    }, con el negocio ${this.calendarMerchant.name}, para el dia ${
+      this.selectedDate.dayName
+    }, ${this.selectedDate.dayOfTheMonthNumber} de ${
+      this.selectedDate.monthName
+    }, en el rango de tiempo ${this.selectedDate.fromLabel} a ${
+      this.selectedDate.toLabel
+    }`;
+
+    if (this.clientPhone) {
+      window.location.href = `https://wa.me/${this.clientPhone}?text=${message}`;
+    }
+
+    if (this.clientEmail && emailRegex.test(this.clientEmail)) {
+      window.location.href = `mailto:${
+        this.clientEmail
+      }?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(
+        message
+      )}`;
+    }
   }
 
   getHourIn24HourFormat(

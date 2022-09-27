@@ -260,7 +260,6 @@ export class CalendarCreatorComponent implements OnInit {
 
     this.user = await this.authService.me();
 
-    console.log('Usuario', this.user);
     if (this.user) {
       const merchantDefault = await this.merchantsService.merchantDefault();
 

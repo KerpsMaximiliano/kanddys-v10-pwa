@@ -8,12 +8,84 @@ export interface ExtendedCalendar extends Calendar {
   limitToDay?: number;
 }
 
+export interface Month {
+  id: number;
+  name: string;
+  dates: {
+    dayNumber: number;
+    dayName: string;
+    weekDayNumber: number;
+  }[];
+}
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CalendarsService {
   calendarsCount = 0;
   calendarsObtained: Record<string, ExtendedCalendar> = {};
+  allMonths: Array<Month> = [
+    {
+      id: 0,
+      name: 'Enero',
+      dates: [],
+    },
+    {
+      id: 1,
+      name: 'Febrero',
+      dates: [],
+    },
+    {
+      id: 2,
+      name: 'Marzo',
+      dates: [],
+    },
+    {
+      id: 3,
+      name: 'Abril',
+      dates: [],
+    },
+    {
+      id: 4,
+      name: 'Mayo',
+      dates: [],
+    },
+    {
+      id: 5,
+      name: 'Junio',
+      dates: [],
+    },
+    {
+      id: 6,
+      name: 'Julio',
+      dates: [],
+    },
+    {
+      id: 7,
+      name: 'Agosto',
+      dates: [],
+    },
+    {
+      id: 8,
+      name: 'Septiembre',
+      dates: [],
+    },
+    {
+      id: 9,
+      name: 'Octubre',
+      dates: [],
+    },
+    {
+      id: 10,
+      name: 'Noviembre',
+      dates: [],
+    },
+    {
+      id: 11,
+      name: 'Diciembre',
+      dates: [],
+    },
+  ];
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -30,12 +102,16 @@ export class CalendarsService {
       });
       const result = response.getCalendar;
 
-      if(result) {
+      if (result) {
         this.calendarsObtained[result._id] = result;
       }
 
-      this.calendarsObtained[result._id].limitFromDay = this.getLimit(result.limits?.fromDay);
-      this.calendarsObtained[result._id].limitToDay = this.getLimit(result.limits?.toDay);
+      this.calendarsObtained[result._id].limitFromDay = this.getLimit(
+        result.limits?.fromDay
+      );
+      this.calendarsObtained[result._id].limitToDay = this.getLimit(
+        result.limits?.toDay
+      );
 
       return this.calendarsObtained[result._id];
 
@@ -79,6 +155,4 @@ export class CalendarsService {
       return 6;
     }
   }
-
-
 }

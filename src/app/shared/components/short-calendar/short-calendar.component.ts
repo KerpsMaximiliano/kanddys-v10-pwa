@@ -217,11 +217,15 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     if (
-      this.prevScrollLeftData.counter > 5 &&
-      this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
-      this.prevScrollLeftData.scrollLeft !== 0 &&
-      this.currentMonthIndex !== this.allMonths.length - 1 &&
-      !this.alreadyExecutedAnimation
+      (this.prevScrollLeftData.counter > 5 &&
+        this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
+        this.prevScrollLeftData.scrollLeft !== 0 &&
+        this.currentMonthIndex !== this.allMonths.length - 1 &&
+        !this.alreadyExecutedAnimation) ||
+      (this.prevScrollLeftData.counter > 5 &&
+        this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
+        this.currentMonthIndex !== this.allMonths.length - 1 &&
+        this.monthDays.length < 7)
     ) {
       this.executeSwipeToNextMonthAnimation = true;
       this.alreadyExecutedAnimation = true;
