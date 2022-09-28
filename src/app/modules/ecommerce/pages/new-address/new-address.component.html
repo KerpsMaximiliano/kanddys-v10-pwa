@@ -34,7 +34,7 @@
           }"
         ></app-answer-selector>
       </div>
-      <div *ngIf="newAddressOption?.length">
+      <div *ngIf="newAddressOption?.length && mode === 'normal'">
         <app-answer-selector
           [options]="newAddressOption"
           [indicator]="true"
@@ -88,13 +88,14 @@
           >
           <input
             type="number"
-            min="0"
+            min="1"
             inputmode="numeric"
             pattern="[0-9]*"
             class="input-text"
             id="houseNumber"
             name="houseNumber"
             formControlName="houseNumber"
+            onkeydown="return event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 69 && event.keyCode !== 190"
           />
         </div>
         <div class="form-group">

@@ -256,14 +256,14 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Delivery ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
-      if (this.headerService.user) {
+      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
+      if (this.headerService.user && !anonymous) {
         createdOrder = (await this.orderService.createOrder(this.order))
           .createOrder._id;
       } else {
         createdOrder = (await this.orderService.createPreOrder(this.order))
           ?.createPreOrder._id;
       }
-      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
       this.headerService.deleteSaleflowOrder(this.saleflow._id);
       this.headerService.resetIsComplete();
       this.headerService.orderId = createdOrder;
