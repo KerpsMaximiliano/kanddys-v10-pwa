@@ -169,14 +169,14 @@ export class LoginComponent implements OnInit {
       );
       this.fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
       let paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
-      order.items[0].customizer ? paymentAmount = paymentAmount * 1.18 : null;
+      order.items[0].customizer ? (paymentAmount = paymentAmount * 1.18) : null;
       const message = `COMPRADOR: ${
-         this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-       }\nARTICULO: ${
-         order.items[0].item.images[0]
-       }\nPAGO: $${paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-         order.dateId
-       )}: ${this.fullLink}`
+        this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
+      }\nARTICULO: ${
+        order.items[0].item.images[0]
+      }\nPAGO: $${paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+        order.dateId
+      )}: ${this.fullLink}`;
       this.messageLink = `https://wa.me/${
         this.merchant.owner.phone
       }?text=${encodeURIComponent(message)}`;
@@ -360,10 +360,12 @@ export class LoginComponent implements OnInit {
   }
 
   async signIn() {
+    lockUI();
     if (this.password.invalid) {
       this.toastr.error('Error en campo de contraseña', null, {
         timeOut: 1500,
       });
+      unlockUI();
     } else if (this.OTP) {
       const checkOTP = await this.authService.verify(
         this.password.value,
@@ -372,6 +374,7 @@ export class LoginComponent implements OnInit {
 
       if (!checkOTP) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
+        unlockUI();
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
@@ -385,6 +388,7 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             });
           }
+          unlockUI();
           return;
         }
         if (this.auth === 'order' && !this.toValidate) {
@@ -394,6 +398,7 @@ export class LoginComponent implements OnInit {
               loggedIn: true,
             },
           });
+          unlockUI();
           return;
         }
         if (this.orderId && !this.toValidate) {
@@ -419,12 +424,14 @@ export class LoginComponent implements OnInit {
               : '';
           }
           this.password.reset();
+          unlockUI();
           return;
         }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
+        unlockUI();
       }
     } else if (this.authCode) {
       const authCoded = await this.authService.verify(
@@ -434,6 +441,7 @@ export class LoginComponent implements OnInit {
 
       if (!authCoded) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
+        unlockUI();
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
@@ -442,7 +450,11 @@ export class LoginComponent implements OnInit {
           this.sneaky,
           true
         );
-        if (!session) return console.log('Error logging in');
+        if (!session) {
+          console.log('Error logging in');
+          unlockUI();
+          return;
+        }
         if (this.auth === 'address') {
           const address = this.headerService.getLocation(
             this.route.snapshot.queryParamMap.get('saleflow')
@@ -453,6 +465,7 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             });
           }
+          unlockUI();
           return;
         }
         if (this.auth === 'order') {
@@ -462,22 +475,25 @@ export class LoginComponent implements OnInit {
               loggedIn: true,
             },
           });
+          unlockUI();
           return;
         }
         if (this.orderId) {
           this.authOrder(session.user._id);
+          unlockUI();
           return;
         }
 
         if (this.itemId) {
           await this.createItem(session.user);
-
+          unlockUI();
           return;
         }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
+        unlockUI();
       }
     } else {
       const signin = await this.authService.signin(
@@ -491,6 +507,7 @@ export class LoginComponent implements OnInit {
           timeOut: 2500,
         });
         console.log('error');
+        unlockUI();
         return;
       }
       if (this.auth === 'address') {
@@ -503,6 +520,7 @@ export class LoginComponent implements OnInit {
             replaceUrl: true,
           });
         }
+        unlockUI();
         return;
       }
       if (this.auth === 'order') {
@@ -512,6 +530,7 @@ export class LoginComponent implements OnInit {
             loggedIn: true,
           },
         });
+        unlockUI();
         return;
       }
       if (this.orderId) {
@@ -527,6 +546,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`admin/entity-detail-metrics`], {
         replaceUrl: true,
       });
+      unlockUI();
     }
   }
 
