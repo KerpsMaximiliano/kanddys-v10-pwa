@@ -407,14 +407,20 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         );
         this.header.order = this.header.getOrder(saleflow._id);
         if (!this.header.order) {
-          this.router.navigate([`/ecommerce/trivias`]);
+          this.router.navigate([
+            `/ecommerce/store/${this.header.saleflow._id}`,
+          ]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if (items && items.length > 0) this.header.items = items;
-        else this.router.navigate([`/ecommerce/trivias`]);
-      } else this.router.navigate([`/ecommerce/trivias`]);
+        else
+          this.router.navigate([
+            `/ecommerce/store/${this.header.saleflow._id}`,
+          ]);
+      } else
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
     } else {
       this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
       localStorage.setItem(
@@ -423,12 +429,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       );
       this.header.order = this.header.getOrder(this.header.saleflow._id);
       if (!this.header.order) {
-        this.router.navigate([`/ecommerce/trivias`]);
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
       if (items && items.length > 0) this.header.items = items;
-      else this.router.navigate([`/ecommerce/trivias`]);
+      else
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
     }
   }
 

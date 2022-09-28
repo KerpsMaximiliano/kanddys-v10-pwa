@@ -45,7 +45,10 @@ export class NewAddressComponent implements OnInit {
         Validators.required,
         Validators.pattern(/[\S]/),
       ]),
-      houseNumber: fb.control(null, Validators.pattern(/[\S]/)),
+      houseNumber: fb.control(null, [
+        Validators.pattern(/[\S]/),
+        Validators.min(1),
+      ]),
       referencePoint: fb.control(null, Validators.pattern(/[\S]/)),
       note: fb.control(null, Validators.pattern(/[\S]/)),
       save: fb.control(false),
@@ -89,9 +92,13 @@ export class NewAddressComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
     this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
+    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
+    if (!this.headerService.order)
+      this.router.navigate([
+        `/ecommerce/store/${this.headerService.saleflow._id}`,
+      ]);
     if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
-    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
