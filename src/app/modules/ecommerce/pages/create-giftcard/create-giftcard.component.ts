@@ -168,6 +168,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '32px',
             },
+            labelStyles: {
+              fontFamily: 'RobotoBold',
+            },
             fieldStyles: {
               marginTop: '14px',
             },
