@@ -54,6 +54,7 @@ export class LoginComponent implements OnInit {
   merchant: Merchant;
   loggin: boolean;
   signUp: boolean;
+  nope: boolean;
   orderId: string;
   itemId: string;
   doesItemHasParams: boolean;
@@ -409,7 +410,7 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if (this.toValidate) {
+        /* if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
           this.phoneNumber.disable();
@@ -423,7 +424,7 @@ export class LoginComponent implements OnInit {
           this.password.reset();
           unlockUI();
           return;
-        }
+        } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
@@ -588,10 +589,10 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
+         this.nope = true;
+        await this.generateTOP(true);
         console.log('Creando nuevo user');
         this.sneaky = this.password.value;
-
-        await this.generateTOP(true);
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
