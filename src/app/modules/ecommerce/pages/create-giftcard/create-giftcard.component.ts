@@ -10,7 +10,7 @@ import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-bu
 import { FormStep } from 'src/app/core/types/multistep-form';
 
 const lightLabelStyles = {
-  fontFamily: 'Roboto',
+  fontFamily: 'RobotoRegular',
   fontSize: '19px',
   fontWeight: 300,
   marginBottom: '18px',
