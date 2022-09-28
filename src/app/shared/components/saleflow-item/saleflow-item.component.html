@@ -16,7 +16,10 @@
       class="itemImg opacity-hover"
       [ngStyle]="{
         'background-image': imgURL
-          ? 'url(' + imgURL + '), url(/assets/images/noimage.png)'
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
           : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
@@ -68,7 +71,10 @@
       class="itemImg opacity-hover cursor"
       [ngStyle]="{
         'background-image': imgURL
-          ? 'url(' + imgURL + '), url(/assets/images/noimage.png)'
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
           : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
@@ -150,7 +156,10 @@
       class="itemImg opacity-hover"
       [ngStyle]="{
         'background-image': imgURL
-          ? 'url(' + imgURL + '), url(/assets/images/noimage.png)'
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
           : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
@@ -215,13 +224,23 @@
         dynamicStyles?.itemImg
           ? spreadOperator(dynamicStyles?.itemImg, {
               'background-image': imgURL
-                ? 'url(' + imgURL + '), url(/assets/images/noimage.png)'
+                ? 'url(' +
+                  imgURL +
+                  ')' +
+                  (shouldHaveFallbackImage
+                    ? ', url(/assets/images/noimage.png)'
+                    : '')
                 : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             })
           : {
               'background-image': imgURL
-                ? 'url(' + imgURL + '), url(/assets/images/noimage.png)'
+                ? 'url(' +
+                  imgURL +
+                  ')' +
+                  (shouldHaveFallbackImage
+                    ? ', url(/assets/images/noimage.png)'
+                    : '')
                 : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             }

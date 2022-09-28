@@ -265,6 +265,10 @@ export class LoginComponent implements OnInit {
     this.merchantNumber = '';
   }
 
+  logToggle = () =>{
+   this.toSignUp()
+  }
+
   toSignUp() {
     this.signUp = !this.signUp;
     this.OTP = false;
