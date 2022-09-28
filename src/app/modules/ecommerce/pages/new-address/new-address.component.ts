@@ -199,6 +199,8 @@ export class NewAddressComponent implements OnInit {
                     },
                   },
                 ];
+              } else {
+                option.hidden = true;
               }
             });
           },
@@ -222,6 +224,8 @@ export class NewAddressComponent implements OnInit {
                     },
                   },
                 ];
+              } else {
+                option.hidden = true;
               }
             });
           },
@@ -390,7 +394,10 @@ export class NewAddressComponent implements OnInit {
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset();
-    this.addressesOptions.forEach((option) => (option.icons = null));
+    this.addressesOptions.forEach((option) => {
+      option.icons = null;
+      option.hidden = false;
+    });
   }
 
   openDeleteDialog(id: string) {
