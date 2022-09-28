@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
@@ -27,6 +27,7 @@ export class NewAddressComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private dialogService: DialogService,
     private headerService: HeaderService,
     private authService: AuthService,
@@ -86,7 +87,8 @@ export class NewAddressComponent implements OnInit {
   // selectedAuthIndex: number;
 
   async ngOnInit(): Promise<void> {
-    this.saleflow = this.headerService.getSaleflow();
+    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+    this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
     if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
@@ -255,7 +257,7 @@ export class NewAddressComponent implements OnInit {
     this.headerService.storeOrderProgress(
       this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
     );
-    if (save) {
+    if (save && !this.headerService.user) {
       this.authSelect('address');
       return;
     }
@@ -270,7 +272,7 @@ export class NewAddressComponent implements OnInit {
 
   checkAddresses() {
     if (!this.headerService.saleflow.module?.delivery?.isActive) {
-      this.toastr.info('Este Saleflow no contiene delivery o pick-up.', null, {
+      this.toastr.info('Esta tienda no contiene delivery o pick-up.', null, {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
@@ -305,7 +307,7 @@ export class NewAddressComponent implements OnInit {
       );
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
-        'Este Saleflow no contiene delivery',
+        'Esta tienda no contiene delivery',
         {
           timeOut: 5000,
           positionClass: 'toast-top-center',
@@ -330,7 +332,10 @@ export class NewAddressComponent implements OnInit {
       note: this.addressForm.value.note?.trim(),
       city: 'Santo Domingo',
     };
-    if (this.user && (this.addressForm.value.save || this.mode === 'edit')) {
+    if (
+      this.headerService.user &&
+      (this.addressForm.value.save || this.mode === 'edit')
+    ) {
       result = await this.usersService.addLocation(newAddress);
     } else result = newAddress;
     const addedAddressOption = {

@@ -240,7 +240,7 @@ export class LoginComponent implements OnInit {
     } else if (this.auth === 'address') {
       const address = this.headerService.getLocation(SaleFlow);
       if (!address) {
-        this.router.navigate([`ecommerce/new-address`], {
+        this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
           replaceUrl: true,
         });
       }
@@ -385,7 +385,7 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'order' && !this.toValidate) {
-          this.router.navigate([`ecommerce/new-address`], {
+          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
               loggedIn: true,
@@ -453,7 +453,7 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'order') {
-          this.router.navigate([`ecommerce/new-address`], {
+          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
               loggedIn: true,
@@ -503,7 +503,7 @@ export class LoginComponent implements OnInit {
         return;
       }
       if (this.auth === 'order') {
-        this.router.navigate([`ecommerce/new-address`], {
+        this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
           replaceUrl: true,
           state: {
             loggedIn: true,
@@ -643,12 +643,15 @@ export class LoginComponent implements OnInit {
             return;
           }
           if (this.auth === 'order') {
-            this.router.navigate([`ecommerce/new-address`], {
-              replaceUrl: true,
-              state: {
-                loggedIn: true,
-              },
-            });
+            this.router.navigate(
+              [`ecommerce/${this.saleflow._id}/new-address`],
+              {
+                replaceUrl: true,
+                state: {
+                  loggedIn: true,
+                },
+              }
+            );
           } else {
             this.router.navigate([`admin/entity-detail-metrics`], {
               replaceUrl: true,

@@ -159,9 +159,13 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
           this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]),
         footerCallback: () => {
           if (this.saleflowData.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
+            this.router.navigate([
+              `/ecommerce/${this.saleflowData._id}/create-giftcard`,
+            ]);
           else if (this.saleflowData.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
+            this.router.navigate([
+              `/ecommerce/${this.saleflowData._id}/new-address`,
+            ]);
           else this.router.navigate([`/ecommerce/checkout`]);
         },
       },
