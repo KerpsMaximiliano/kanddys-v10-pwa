@@ -215,6 +215,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
       stepButtonValidText: 'CONTINUAR',
+      headerMode: 'v2',
+      headerTextSide: 'LEFT',
+      headerTextStyles: {
+        marginLeft: '0px',
+        fontFamily: 'RobotoMedium',
+        fontWeight: 'normal',
+        fontSize: '17px',
+      },
     },
     {
       fieldsList: [
@@ -370,6 +378,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       headerTextSide: 'LEFT',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
       stepButtonValidText: 'CONTINUAR',
+      headerMode: 'v2',
+      headerTextStyles: {
+        marginLeft: '0px',
+        fontFamily: 'RobotoMedium',
+        fontWeight: 'normal',
+        fontSize: '17px',
+      },
     },
   ];
 
