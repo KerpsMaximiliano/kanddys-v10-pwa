@@ -253,6 +253,7 @@ export class NewAddressComponent implements OnInit {
     )
       this.selectedDeliveryIndex = null;
     this.addresses = this.addresses.filter((address) => address._id !== id);
+    if (this.addressesOptions.length === 1) this.goBack();
   }
 
   selectAddress(save?: boolean) {

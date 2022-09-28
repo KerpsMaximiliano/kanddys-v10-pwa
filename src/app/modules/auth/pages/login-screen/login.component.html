@@ -2,11 +2,18 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-      text: loggin
-        ? merchantNumber
-        : signUp && !toValidate
-        ? 'Crear contraseña'
-        : 'Login',
+      text:
+        auth === 'address'
+          ? 'Salvar Dirección'
+          : auth === 'payment'
+          ? 'Salvar el pago de la factura'
+          : auth === 'anonymous'
+          ? 'Salvar la orden'
+          : loggin
+          ? merchantNumber
+          : signUp && !toValidate
+          ? 'Crear contraseña'
+          : 'Login',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'
@@ -130,46 +137,48 @@
   </div>
 
   <ng-template #elseTemplate>
-   <div class="column-flex">
-      <label for="Password" class="phone-label" style="margin-bottom: 11px;">Adiciona la clave:</label>
+    <div class="column-flex">
+      <label for="Password" class="phone-label" style="margin-bottom: 11px"
+        >Adiciona la clave:</label
+      >
 
       <input
-          class="pass"
-          type="password"
-          placeholder="Adiciona la Clave"
-          [formControl]="password"
-          name="password"
-          id="password"
-          placeholder="Escribe..."
-          required
-        />
+        class="pass"
+        type="password"
+        placeholder="Adiciona la Clave"
+        [formControl]="password"
+        name="password"
+        id="password"
+        placeholder="Escribe..."
+        required
+      />
 
-        <button
-          class="confirm"
-          (click)="signMeUp()"
-          [disabled]="
+      <button
+        class="confirm"
+        (click)="signMeUp()"
+        [disabled]="
+          (password.invalid || password.pristine || password.untouched) &&
+          !password.valid
+        "
+        [ngClass]="{
+          disabled:
             (password.invalid || password.pristine || password.untouched) &&
             !password.valid
-          "
-          [ngClass]="{
-            disabled:
-              (password.invalid || password.pristine || password.untouched) &&
-              !password.valid
-          }"
-          style="top: 53px; right: 26px"
-        >
-          <i class="fas fa-chevron-right"></i>
-        </button>
-    
-        <div
+        }"
+        style="top: 53px; right: 26px"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <div
         [hidden]="password.valid || password.pristine"
         class="invalid-pass-register"
-        >
+      >
         Por favor introduzca contraseña valida
       </div>
 
       <p class="subtext">Por default son los últimos 4 dígitos de tu celular</p>
-   </div>
+    </div>
   </ng-template>
 
   <app-sticky-button
@@ -181,22 +190,20 @@
     [customLeftButtonStyles]="{
       width: '100%',
       'max-width': 'none',
-      color: '#fff'
+      color: '#fff',
+      cursor: 'unset'
     }"
     [text2]="''"
     [customRightButtonStyles]="{
       width: '1px',
-      height: '1px'
+      height: '1px',
+      cursor: 'unset'
     }"
     [bgColor]="'#2874AD'"
-    (click)="
-      !(
-        password.invalid ||
-        password.pristine
-      )
-        ? signMeUp()
-        : null
-    "
+    [extra]="{
+      return: true,
+      returnCallback: logToggle
+    }"
   ></app-sticky-button>
 
   <app-bubble-button
