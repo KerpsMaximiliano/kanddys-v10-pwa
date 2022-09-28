@@ -45,15 +45,16 @@ mode="basic"
     return: true,
     returnStyles: {
       'border-right': '1.5px solid #fff',
-      backgroundColor:'#2874ad'
+      backgroundColor: 'dodgerblue'
     }
   }"
   [customRightButtonStyles]="{
-    color:'#fff'
+    color: '#fff'
   }"
   [text]="''"
   [text2]="text2"
   [size]="'small'"
-  bgColor="#ababab"
+  [bgColor]="text2?'dodgerblue':'#ababab'"
   (right)="handleSubmit()"
+  fontSize="12px"
 ></app-sticky-button>
