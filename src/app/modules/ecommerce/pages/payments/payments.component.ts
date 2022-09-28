@@ -158,11 +158,12 @@ export class PaymentsComponent implements OnInit {
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
     }\nARTICULO: ${this.order.items.map(
       (itemSubOrder) =>
-        itemSubOrder.item.name ||
-        `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`
-    )}\nPAGO: $${this.paymentAmount.toLocaleString(
-      'es-MX'
-    )}\nFACTURA ${formatID(this.order.dateId)}: ${fullLink}, ${payment.image}`;
+        (itemSubOrder.item.name ||
+          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
+        '\n'
+    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}FACTURA ${formatID(
+      this.order.dateId
+    )}: ${fullLink}, ${payment.image}`.replace(/,/g, '');
     this.whatsappLink = `https://wa.me/${
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
@@ -199,11 +200,12 @@ export class PaymentsComponent implements OnInit {
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
     }\nARTICULO: ${this.order.items.map(
       (itemSubOrder) =>
-        itemSubOrder.item.name ||
-        `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`
-    )}\nPAGO: $${this.paymentAmount.toLocaleString(
-      'es-MX'
-    )}\nFACTURA ${formatID(this.order.dateId)}: ${fullLink}`;
+        (itemSubOrder.item.name ||
+          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
+        '\n'
+    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+      this.order.dateId
+    )}: ${fullLink}`.replace(/,/g, '');
     this.whatsappLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
