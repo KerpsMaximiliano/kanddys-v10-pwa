@@ -58,6 +58,7 @@ export class LoginComponent implements OnInit {
   itemId: string;
   doesItemHasParams: boolean;
   action: string;
+  paymentAmount: number;
   orderStatus: string;
   OTP: boolean = false;
   image: File;
@@ -168,18 +169,10 @@ export class LoginComponent implements OnInit {
         order.merchants?.[0]?._id
       );
       this.fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
-      let paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
-      order.items[0].customizer ? (paymentAmount = paymentAmount * 1.18) : null;
-      const message = `COMPRADOR: ${
-        this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-      }\nARTICULO: ${
-        order.items[0].item.images[0]
-      }\nPAGO: $${paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-        order.dateId
-      )}: ${this.fullLink}`;
-      this.messageLink = `https://wa.me/${
-        this.merchant.owner.phone
-      }?text=${encodeURIComponent(message)}`;
+      this.paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
+      order.items[0].customizer
+        ? (this.paymentAmount = this.paymentAmount * 1.18)
+        : null;
     }
 
     if (this.auth === 'password') {
@@ -842,6 +835,16 @@ export class LoginComponent implements OnInit {
     this.router.navigate([this.fullLink], {
       replaceUrl: true,
     });
+    const message = `COMPRADOR: ${
+      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
+    }\nARTICULO: ${
+      order.items[0].item.images[0]
+    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+      order.dateId
+    )}: ${this.fullLink}`;
+    this.messageLink = `https://wa.me/${
+      this.merchant.owner.phone
+    }?text=${encodeURIComponent(message)}`;
     window.location.href = this.messageLink;
   }
 
