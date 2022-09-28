@@ -156,15 +156,16 @@ export class PaymentsComponent implements OnInit {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items[0].item.images[0]
-    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-      this.order.dateId
-    )}: ${fullLink}, ${payment.image}`;
+    }\nARTICULO: ${this.order.items.map(
+      (itemSubOrder) =>
+        itemSubOrder.item.name ||
+        `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`
+    )}\nPAGO: $${this.paymentAmount.toLocaleString(
+      'es-MX'
+    )}\nFACTURA ${formatID(this.order.dateId)}: ${fullLink}, ${payment.image}`;
     this.whatsappLink = `https://wa.me/${
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
-   //  window.location.href = this.whatsappLink;
     this.dialogService.open(SingleActionDialogComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -196,11 +197,13 @@ export class PaymentsComponent implements OnInit {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items[0].item.images[0]
-    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-      this.order.dateId
-    )}: ${fullLink}`;
+    }\nARTICULO: ${this.order.items.map(
+      (itemSubOrder) =>
+        itemSubOrder.item.name ||
+        `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`
+    )}\nPAGO: $${this.paymentAmount.toLocaleString(
+      'es-MX'
+    )}\nFACTURA ${formatID(this.order.dateId)}: ${fullLink}`;
     this.whatsappLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
