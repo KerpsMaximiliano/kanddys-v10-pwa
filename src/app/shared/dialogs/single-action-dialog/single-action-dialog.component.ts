@@ -11,6 +11,7 @@ export class SingleActionDialogComponent implements OnInit {
    @Input() title: string;
    @Input() buttonText: string;
    @Input() mainText: string;
+   @Input() topButton: boolean;
    @Input() public mainButton: () => void;
 
   constructor(
@@ -22,6 +23,7 @@ export class SingleActionDialogComponent implements OnInit {
 
   buttonAction(){
    this.mainButton();
+   this.ref.close();
   }
 
   return(){

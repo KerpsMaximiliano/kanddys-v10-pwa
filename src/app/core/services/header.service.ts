@@ -423,6 +423,12 @@ export class HeaderService {
     return deliveryOption;
   }
 
+  getLocation(saleflow: string) {
+    let { order }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return order?.products?.[0]?.deliveryLocation;
+  }
+
   // Returns order creation progress
   getOrderProgress(saleflow: string) {
     let { orderProgress }: SaleflowData =
@@ -489,11 +495,11 @@ export class HeaderService {
   }
 
   // Deletes anonymous property from order
-  deleteOrderAnonymous(saleflow: string) {
-    let { anonymous, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify(rest));
-  }
+  // deleteOrderAnonymous(saleflow: string) {
+  //   let { anonymous, ...rest }: SaleflowData =
+  //     JSON.parse(localStorage.getItem(saleflow)) || {};
+  //   localStorage.setItem(saleflow, JSON.stringify(rest));
+  // }
 
   // Empties order products from localStorage
   emptyOrderProducts(saleflow: string) {

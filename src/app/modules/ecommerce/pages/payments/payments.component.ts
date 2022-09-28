@@ -9,6 +9,10 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { environment } from 'src/environments/environment';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
@@ -34,7 +38,8 @@ export class PaymentsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private merchantService: MerchantsService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private dialogService: DialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -48,7 +53,23 @@ export class PaymentsComponent implements OnInit {
       }
       await this.headerService.fetchSaleflow(saleflowId);
     } else {
-      this.order = (await this.orderService.order(orderId)).order;
+      const { orderStatus } = await this.orderService.getOrderStatus(orderId);
+      if (orderStatus === 'draft')
+        this.order = (await this.orderService.preOrder(orderId)).order;
+      else if (orderStatus === 'in progress')
+        this.order = (await this.orderService.order(orderId)).order;
+      else {
+        this.orderCompleted(orderId);
+        return;
+      }
+      if (!this.headerService.saleflow)
+        this.headerService.saleflow = this.headerService.getSaleflow();
+      if (
+        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      ) {
+        this.orderCompleted();
+        return;
+      }
       this.paymentAmount = this.order.subtotals.reduce(
         (a, b) => a + b.amount,
         0
@@ -66,19 +87,6 @@ export class PaymentsComponent implements OnInit {
         this.orderCompleted();
         return;
       }
-      if (this.order.orderStatus !== 'in progress') {
-        this.orderCompleted();
-        return;
-      }
-      const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${(
-        this.order.user.name || this.merchant.name
-      )
-        .replace('&', 'and')
-        .replace(
-          /[^\w\s]/gi,
-          ''
-        )}: TAP en el link para que visualices mi pago.%0a${fullLink}`;
     }
     this.banks = (
       await this.walletService.exchangeData(
@@ -103,8 +111,8 @@ export class PaymentsComponent implements OnInit {
     this.image = null;
   }
 
-  orderCompleted() {
-    this.router.navigate([`ecommerce/order-info/${this.order._id}`], {
+  orderCompleted(id?: string) {
+    this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
       replaceUrl: true,
     });
   }
@@ -113,6 +121,18 @@ export class PaymentsComponent implements OnInit {
     this.disableButton = true;
     lockUI();
     if (this.order) {
+      if (this.order.orderStatus === 'draft') {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            auth: 'payment',
+          },
+          state: {
+            image: this.image,
+          },
+        });
+        return;
+      }
       await this.orderService.payOrder(
         {
           image: this.image,
@@ -124,7 +144,7 @@ export class PaymentsComponent implements OnInit {
         this.order._id
       );
       unlockUI();
-      this.orderCompleted();
+      this.singleAction();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -145,5 +165,44 @@ export class PaymentsComponent implements OnInit {
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
     window.location.href = this.whatsappLink;
+  }
+
+  async authOrder() {
+    return (
+      await this.orderService.authOrder(
+        this.headerService.orderId,
+        this.headerService.user._id
+      )
+    ).authOrder;
+  }
+
+  singleAction() {
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+    const message = `COMPRADOR: ${
+      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
+    }\nARTICULO: ${
+      this.order.items[0].item.images[0]
+    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+      this.order.dateId
+    )}: ${fullLink}`;
+    this.whatsappLink = `https://wa.me/${
+      this.merchant.owner.phone
+    }?text=${encodeURIComponent(message)}`;
+    this.dialogService.open(SingleActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        topButton: false,
+        title: 'Factura creada exitosamente',
+        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
+        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
+        mainButton: () => {
+          this.orderCompleted();
+          window.open(this.whatsappLink, '_blank');
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+    });
   }
 }
