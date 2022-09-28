@@ -272,7 +272,7 @@ export class NewAddressComponent implements OnInit {
 
   checkAddresses() {
     if (!this.headerService.saleflow.module?.delivery?.isActive) {
-      this.toastr.info('Este Saleflow no contiene delivery o pick-up.', null, {
+      this.toastr.info('Esta tienda no contiene delivery o pick-up.', null, {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
@@ -307,7 +307,7 @@ export class NewAddressComponent implements OnInit {
       );
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
-        'Este Saleflow no contiene delivery',
+        'Esta tienda no contiene delivery',
         {
           timeOut: 5000,
           positionClass: 'toast-top-center',
