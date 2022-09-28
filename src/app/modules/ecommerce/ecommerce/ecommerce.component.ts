@@ -46,7 +46,14 @@ export class EcommerceComponent implements OnInit {
         this.activePath = this.route.firstChild.routeConfig.path;
       });
     this.itemEvent = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item' || e.type === 'added-item' || e.type === 'order-done'))
+      .pipe(
+        filter(
+          (e) =>
+            e.type === 'deleted-item' ||
+            e.type === 'added-item' ||
+            e.type === 'order-done'
+        )
+      )
       .subscribe((e) => {
         this.getItemsAmount();
       });
@@ -82,9 +89,13 @@ export class EcommerceComponent implements OnInit {
           ]),
         footerCallback: async () => {
           if (this.headerService.saleflow.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
+            ]);
           else if (this.headerService.saleflow.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+            ]);
           else this.router.navigate([`/ecommerce/checkout`]);
         },
       },

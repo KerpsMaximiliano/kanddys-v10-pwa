@@ -215,6 +215,7 @@ export class HeaderService {
   async fetchSaleflow(id: string) {
     if (!this.saleflow || this.saleflow._id !== id)
       this.saleflow = (await this.saleflowService.saleflow(id))?.saleflow;
+    else this.saleflowService.saleflowSubject.next(this.saleflow);
     this.storeSaleflow(this.saleflow);
     return this.saleflow;
   }
@@ -226,6 +227,7 @@ export class HeaderService {
   getSaleflow(): SaleFlow {
     const saleflow = JSON.parse(localStorage.getItem('saleflow-data'));
     this.saleflow = saleflow;
+    this.saleflowService.saleflowSubject.next(this.saleflow);
     return saleflow;
   }
 
@@ -241,7 +243,6 @@ export class HeaderService {
         (product.params?.length &&
           subOrder.params?.[0]?.paramValue === product.params[0].paramValue)
     );
-    console.log(this.order);
     if (!this.order) {
       this.order = {
         products: [],
@@ -521,6 +522,7 @@ export class HeaderService {
   // Deletes saleflow order object from localStorage
   deleteSaleflowOrder(saleflow: string) {
     localStorage.removeItem(saleflow);
+    this.order = null;
   }
 
   storeNewItemTemporarily(item: any, prevRoute: string) {
