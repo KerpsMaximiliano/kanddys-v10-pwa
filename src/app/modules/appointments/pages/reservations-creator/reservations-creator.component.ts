@@ -14,6 +14,8 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
 import * as moment from 'moment';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 interface HourOption {
   hourNumber: number;
@@ -124,7 +126,8 @@ export class ReservationsCreatorComponent implements OnInit {
     private calendarsService: CalendarsService,
     private router: Router,
     private merchantsService: MerchantsService,
-    private reservationsService: ReservationService
+    private reservationsService: ReservationService,
+    private dialog: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -441,10 +444,6 @@ export class ReservationsCreatorComponent implements OnInit {
         : this.selectedDate.fromHour.hourNumber,
       this.selectedDate.fromHour.minutesNumber
     );
-    /*fromDateObject = moment(fromDateObject)
-      .subtract(utcOffset, 'hours')
-      .toDate();
-    */
 
     let toDateObject = new Date(
       currentYear,
@@ -453,7 +452,6 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
     );
-    //toDateObject = moment(toDateObject).subtract(utcOffset, 'hours').toDate();
 
     console.log(fromDateObject);
     console.log(toDateObject);
@@ -491,20 +489,21 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(realToHour)
         : String(realToHour);
 
-    await this.reservationsService.createReservationAuthLess({
-      calendar: this.calendarData._id,
-      merchant: this.calendarMerchant._id,
-      type: 'ORDER',
-      breakTime: this.calendarData.breakTime,
-      date: {
-        dateType: 'RANGE',
-        from: fromDateObject,
-        until: toDateObject,
-        fromHour:
-          fromHourString + ':' + this.selectedDate.fromHour.minutesString,
-        toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
-      },
-    });
+    const { createReservationAuthLess: result } =
+      await this.reservationsService.createReservationAuthLess({
+        calendar: this.calendarData._id,
+        merchant: this.calendarMerchant._id,
+        type: 'ORDER',
+        breakTime: this.calendarData.breakTime,
+        date: {
+          dateType: 'RANGE',
+          from: fromDateObject,
+          until: toDateObject,
+          fromHour:
+            fromHourString + ':' + this.selectedDate.fromHour.minutesString,
+          toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
+        },
+      });
 
     const message = `Saludos, se ha creado una reservación asociada a su ${
       this.clientPhone ? 'número de teléfono' : 'correo electrónico'
@@ -518,14 +517,35 @@ export class ReservationsCreatorComponent implements OnInit {
 
     if (this.clientPhone) {
       window.location.href = `https://wa.me/${this.clientPhone}?text=${message}`;
-    }
-
-    if (this.clientEmail && emailRegex.test(this.clientEmail)) {
+    } else if (this.clientEmail && emailRegex.test(this.clientEmail)) {
       window.location.href = `mailto:${
         this.clientEmail
       }?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(
         message
       )}`;
+    } else {
+      let whatsappMessageToSendToTheMerchant = `**SLOT OF TIME RESERVADO**\n\n`;
+      whatsappMessageToSendToTheMerchant += `PARA: ${this.selectedDate.dayName}, ${this.selectedDate.dayOfTheMonthNumber} de ${this.selectedDate.monthName}\n\n`;
+      whatsappMessageToSendToTheMerchant += `DESDE ${this.selectedDate.fromLabel}\n\n`;
+      whatsappMessageToSendToTheMerchant += `HASTA ${this.selectedDate.toLabel}\n\n`;
+      whatsappMessageToSendToTheMerchant += `RESERVACIÓN ${result._id}\n\n`;
+
+      this.dialog.open(SingleActionDialogComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          title: 'Slot of Time reservado exitosamente',
+          buttonText: `Confirmar al whatsapp de ${this.calendarMerchant.name}`,
+          mainText: `Al "confirmar" se abrirá tu WhatsApp con el resumen de la reserva para ${this.calendarMerchant.name}`,
+          mainButton: () => {
+            window.location.href = `https://wa.me/${
+              this.calendarMerchant.owner.phone
+            }?text=${encodeURIComponent(whatsappMessageToSendToTheMerchant)}`;
+          },
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+        notCancellable: true,
+      });
     }
   }
 
