@@ -24,6 +24,7 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 
 type AuthTypes =
   | 'phone'
@@ -166,17 +167,19 @@ export class LoginComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         order.merchants?.[0]?._id
       );
-      this.fullLink = `/ecommerce/order-info/${order._id}`;
+      this.fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+      let paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
+      order.items[0].customizer ? paymentAmount = paymentAmount * 1.18 : null;
+      const message = `COMPRADOR: ${
+         this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
+       }\nARTICULO: ${
+         order.items[0].item.images[0]
+       }\nPAGO: $${paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+         order.dateId
+       )}: ${this.fullLink}`
       this.messageLink = `https://wa.me/${
         this.merchant.owner.phone
-      }?text=Hola%20${this.merchant.name
-        .replace('&', 'and')
-        .replace(
-          /[^\w\s]/gi,
-          ''
-        )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
-        environment.uri
-      }${this.fullLink}`;
+      }?text=${encodeURIComponent(message)}`;
     }
 
     if (this.auth === 'password') {
