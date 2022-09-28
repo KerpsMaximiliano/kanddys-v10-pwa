@@ -34,7 +34,7 @@
           }"
         ></app-answer-selector>
       </div>
-      <div *ngIf="newAddressOption?.length">
+      <div *ngIf="newAddressOption?.length && mode === 'normal'">
         <app-answer-selector
           [options]="newAddressOption"
           [indicator]="true"

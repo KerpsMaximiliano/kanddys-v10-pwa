@@ -20,6 +20,7 @@ export interface OptionAnswerSelector {
   isOptionAnArray?: boolean;
   status: boolean;
   click?: boolean;
+  hidden?: boolean;
   description?: string[];
   id?: string;
 }
