@@ -13,6 +13,9 @@ import { SetConfigComponent } from 'src/app/shared/dialogs/set-config/set-config
 import { StoreShareList } from '../../../../shared/dialogs/store-share/store-share.component';
 import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item-settings.component';
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
+import { FormStep, FormField } from 'src/app/core/types/multistep-form';
+import { FormControl } from '@angular/forms';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 @Component({
   selector: 'app-test',
@@ -20,6 +23,7 @@ import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component'
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
+   textSample: string = 'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
   hourRangeInDays = {
     'MONDAY': [
       {from: 9, to: 11},
@@ -46,6 +50,53 @@ export class TestComponent implements OnInit {
       {from: 14, to: 15}
     ],
   };
+
+  formSteps: Array<FormStep> = [
+    {
+      fieldsList: [
+        {
+          name: 'referenceImage',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(['']),
+          },
+          label: 'Foto de referencia',
+          inputType: 'file3',
+          fileObjects: [],
+          placeholder: 'sube una imagen',
+          styles: {
+            labelStyles: {
+              paddingBottom: '26px',
+            },
+            subLabelStyles: {
+              color: '#7B7B7B',
+              fontFamily: 'RobotoRegular',
+              fontSize: '16px',
+              fontWeight: 500,
+              padding: '0px',
+              margin: '0px',
+              marginBottom: '18px',
+            },
+            fieldStyles: {
+              width: '157px',
+              height: '137px',
+              padding: '34px',
+              textAlign: 'center',
+            },
+            containerStyles: {
+              marginTop: '0px',
+              paddingBottom: '60px',
+            },
+            innerContainerStyles: {
+              width: '157px',
+              textAlign: 'center',
+            },
+          },
+        },
+      ],
+      hideHeader: true,
+    }
+  ]
   
   constructor(private dialog: DialogService) { }
 
@@ -100,7 +151,7 @@ export class TestComponent implements OnInit {
         flags: ['no-header'],
     });*/
     
-    this.dialog.open(GeneralFormSubmissionDialogComponent, {
+    /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
       props: {
         icon: 'sadFace.svg',
@@ -109,7 +160,19 @@ export class TestComponent implements OnInit {
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    });
+    }); */
+
+    this.dialog.open(SingleActionDialogComponent, {
+      type: 'centralized-fullscreen',
+      props:{
+         title: 'Borrar Reservaciones?',
+         buttonText: 'Borrar Reservación',
+         mainText: this.textSample,
+         mainButton: this.actionDialog
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header']
+    })
   }
 
 openDeleteDialog() {
@@ -154,6 +217,11 @@ openDeleteDialog() {
 
  reload() {
    window.location.reload();
+ }
+
+ actionDialog(e: string){
+   console.log('Esta funcion esta aparte');
+   console.log(e)
  }
 }
 
