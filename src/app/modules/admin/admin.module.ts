@@ -8,6 +8,7 @@ import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.co
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
+import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,11 @@ const routes: Routes = [
       {
         path: 'options/:itemId',
         component: ActionsMenuComponent,
+      },
+      {
+        path: 'entity-detail-metrics/reservations/:calendar/:type',
+        component: ReservationListComponent,
+        data: { animation: 'EntityDetailMetrics' },
       },
     ],
   },

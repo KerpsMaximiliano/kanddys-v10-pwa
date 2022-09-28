@@ -123,3 +123,9 @@ export const listReservations = gql`
   }
 }
 `;
+
+export const deleteReservation = gql`
+  mutation deleteReservation($id: ObjectID!) {
+    deleteReservation(id: $id)
+  }
+`;

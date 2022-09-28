@@ -94,6 +94,8 @@ import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
+import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
+import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 
 const imports = [
   CommonModule,
@@ -193,7 +195,10 @@ const declarations = [
   ReloadComponent,
   WhatsappMessageComponent,
   CurrencyInputComponent,
-  SelectDropdownComponent
+  SelectDropdownComponent,
+  MetricsReservationComponent,
+  ReservationListComponent,
+  SingleActionDialogComponent
 ];
 
 @NgModule({

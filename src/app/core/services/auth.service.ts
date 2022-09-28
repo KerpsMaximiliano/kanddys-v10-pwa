@@ -41,11 +41,9 @@ export class AuthService {
     private readonly app: AppService,
     private readonly router: Router
   ) {
-    /*
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
     else this.ready = from([undefined]);
-    */
   }
 
   public async userExist(emailOrPhone: string) {

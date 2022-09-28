@@ -115,7 +115,7 @@
                   ? i === activeMultipleOption[i] && showSelectedFeedback
                     ? 'option selected'
                     : 'option'
-                  : i === activeMultipleOption[i] && showSelectedFeedback
+                  : activeMultipleOption.includes(i) && showSelectedFeedback
                   ? 'selector-option active'
                   : 'selector-option'
               "

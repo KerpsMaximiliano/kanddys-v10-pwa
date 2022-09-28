@@ -11,6 +11,7 @@ import {
   getReservationByCalendar,
   getReservationByMerchant,
   updateReservation,
+  deleteReservation,
 } from '../graphql/reservations.gql';
 import { Reservation, ReservationInput } from '../models/reservation';
 import { PaginationInput } from '../models/saleflow';
@@ -133,5 +134,15 @@ export class ReservationService {
       fetchPolicy: 'no-cache',
     });
     return response;
+  }
+
+  async deleteReservation(id: string) {
+    const result = await this.graphql.mutate({
+      mutation: deleteReservation,
+      variables: { id },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 }

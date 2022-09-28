@@ -1,0 +1,59 @@
+<app-helper-headerv2
+[mainText]="mainText"
+mode="basic"
+[dots]="dots"
+(returnEvent)="navigate()"
+(dotEvent)="handleDotsEvent()"
+></app-helper-headerv2>
+<div class="container">
+  <input [formControl]="controller" class="search" type="text" placeholder="Busca reservaciones">
+  <ng-container [ngSwitch]="status">
+    <ng-container *ngSwitchCase="'complete'">
+      <p class="title">Seleccione entre:</p>
+      <div class="content">
+        <app-answer-selector
+          [options]="options"
+          [activeOption]="activeIndex"
+          [indicator]="true"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+          [optionContainerStyles]="{
+            marginBottom: '10px'
+          }"
+          [isMultipleOption]="true"
+          [isMultipleOption2]="true"
+          [editable]="editable"
+          [activeMultipleOption]="optionIndexArray"
+          (activeMultipleOptionValue)="handleValue($event)"
+          [showSelectedFeedback]="true"
+        ></app-answer-selector>
+      </div>
+    </ng-container>
+    <div class="message-container" *ngSwitchCase="'empty'">
+      <p class="message">No hay resultados</p>
+    </div>
+    <div class="message-container" *ngSwitchDefault>
+      <p class="message">Cargando...</p>
+    </div>
+  </ng-container>
+</div>
+<app-sticky-button
+  *ngIf="template"
+  [mode]="'double'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      'border-right': '1.5px solid #fff',
+      backgroundColor:'#2874ad'
+    }
+  }"
+  [customRightButtonStyles]="{
+    color:'#fff'
+  }"
+  [text]="''"
+  [text2]="text2"
+  [size]="'small'"
+  bgColor="#ababab"
+  (right)="handleSubmit()"
+></app-sticky-button>
