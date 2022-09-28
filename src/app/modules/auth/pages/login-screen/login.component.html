@@ -4,8 +4,10 @@
     [mainText]="{
       text: loggin
         ? merchantNumber
-        : signUp && !toValidate
-        ? 'Crear contraseña'
+        : signUp && !toValidate && auth === 'address'
+        ? 'Salvar Dirección'
+        : signUp && !toValidate && auth === 'order'
+        ? 'Salvar Pago de la Factura'
         : 'Login',
       fontFamily: 'SfProBold',
       fontSize: '21px',
@@ -181,22 +183,20 @@
     [customLeftButtonStyles]="{
       width: '100%',
       'max-width': 'none',
-      color: '#fff'
+      color: '#fff',
+      cursor: 'unset'
     }"
     [text2]="''"
     [customRightButtonStyles]="{
       width: '1px',
-      height: '1px'
+      height: '1px',
+      cursor: 'unset'
     }"
     [bgColor]="'#2874AD'"
-    (click)="
-      !(
-        password.invalid ||
-        password.pristine
-      )
-        ? signMeUp()
-        : null
-    "
+    [extra]="{
+      return: true,
+      returnCallback: logToggle
+    }"
   ></app-sticky-button>
 
   <app-bubble-button
