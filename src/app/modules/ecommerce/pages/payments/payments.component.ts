@@ -156,15 +156,17 @@ export class PaymentsComponent implements OnInit {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items[0].item.images[0]
-    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+    }\nARTICULO: ${this.order.items.map(
+      (itemSubOrder) =>
+        (itemSubOrder.item.name ||
+          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
+        '\n'
+    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}FACTURA ${formatID(
       this.order.dateId
-    )}: ${fullLink}, ${payment.image}`;
+    )}: ${fullLink}, ${payment.image}`.replace(/,/g, '');
     this.whatsappLink = `https://wa.me/${
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
-   //  window.location.href = this.whatsappLink;
     this.dialogService.open(SingleActionDialogComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -196,11 +198,14 @@ export class PaymentsComponent implements OnInit {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items[0].item.images[0]
-    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+    }\nARTICULO: ${this.order.items.map(
+      (itemSubOrder) =>
+        (itemSubOrder.item.name ||
+          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
+        '\n'
+    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
       this.order.dateId
-    )}: ${fullLink}`;
+    )}: ${fullLink}`.replace(/,/g, '');
     this.whatsappLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;

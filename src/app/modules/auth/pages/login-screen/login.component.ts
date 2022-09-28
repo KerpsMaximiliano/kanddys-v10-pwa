@@ -266,9 +266,9 @@ export class LoginComponent implements OnInit {
     this.merchantNumber = '';
   }
 
-  logToggle = () =>{
-   this.toSignUp()
-  }
+  logToggle = () => {
+    this.toSignUp();
+  };
 
   toSignUp() {
     this.signUp = !this.signUp;
@@ -842,11 +842,14 @@ export class LoginComponent implements OnInit {
     });
     const message = `COMPRADOR: ${
       this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${
-      order.items[0].item.images[0]
-    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-      order.dateId
-    )}: ${this.fullLink}`;
+    }\nARTICULO: ${order.items.map(
+      (itemSubOrder) =>
+        (itemSubOrder.item.name ||
+          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
+        '\n'
+    )}\nPAGO: $${this.paymentAmount.toLocaleString(
+      'es-MX'
+    )}\nFACTURA ${formatID(order.dateId)}: ${this.fullLink}`.replace(/,/g, '');
     this.messageLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;

@@ -38,22 +38,22 @@ a {
 
 					.image {
 						position: relative;
-                  background-size : cover;
-                  background-position: center;                  
-                  background-repeat: no-repeat;
-                  width: 86px;
-                  height: 86px;
-                  border-radius: 6px;
+						background-size: cover;
+						background-position: center;
+						background-repeat: no-repeat;
+						width: 86px;
+						height: 86px;
+						border-radius: 6px;
 
 						.item-image {
-                     min-width: 86px;
-							max-width: 90px;
-                     min-height: 74px;
+							min-width: 86px;
+							max-width: 86px;
+							min-height: 74px;
 							max-height: 110px;
 							background-color: #e9e371;
 							border-radius: 6px;
 							-webkit-user-drag: none;
-                     object-fit: contain;
+							object-fit: contain;
 						}
 
 						&:after {

@@ -61,18 +61,15 @@
                   item.item.images?.length &&
                     openImageModal(item.item.images[0])
                 "
-              >
-                <img
-                  [src]="
-                    item.item.images?.length
-                      ? item.item.images[0]
-                      : '/assets/images/noimage.png'
-                  "
-                  (error)="item.item.images[0] = '/assets/images/noimage.png'"
-                  alt="item image"
-                  class="item-image"
-                />
-              </div>
+                [ngStyle]="{
+                  backgroundImage: item.item.images?.length
+                    ? 'url(' + item.item.images[0] + ')'
+                    : '/assets/images/noimage.png',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover'
+                }"
+              ></div>
             </ng-container>
             <ng-container *ngIf="item.params?.length && !customizer">
               <div *ngFor="let paramValue of item.item.params[0].values">
@@ -82,19 +79,18 @@
                     item.params[0].param == item.item.params[0]._id &&
                     item.params[0].paramValue == paramValue._id
                   "
+                  [ngStyle]="{
+                    backgroundImage: paramValue.image
+                      ? 'url(' +
+                        paramValue.image +
+                        '), url(/assets/images/noimage.png)'
+                      : '/assets/images/noimage.png',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover'
+                  }"
                   (click)="openImageModal(paramValue.image)"
-                >
-                  <img
-                    [src]="
-                      paramValue.image
-                        ? paramValue.image
-                        : '/assets/images/noimage.png'
-                    "
-                    (error)="paramValue.image = '/assets/images/noimage.png'"
-                    alt="item image"
-                    class="item-image"
-                  />
-                </div>
+                ></div>
               </div>
             </ng-container>
           </button>
