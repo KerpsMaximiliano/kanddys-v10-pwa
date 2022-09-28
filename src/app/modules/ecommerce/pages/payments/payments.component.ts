@@ -153,18 +153,34 @@ export class PaymentsComponent implements OnInit {
       this.image,
       this.headerService.user?._id
     );
-    const message = `${this.headerService.saleflow.merchant.name
-      .replace('&', 'and')
-      .replace(
-        /[^\w\s]/gi,
-        ''
-      )}: Acabo de hacer un pago de *$${this.depositAmount.toLocaleString(
-      'es-MX'
-    )}*.\n\nEl link de la referencia es: ${payment.image}`;
+    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+    const message = `COMPRADOR: ${
+      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
+    }\nARTICULO: ${
+      this.order.items[0].item.images[0]
+    }\nPAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+      this.order.dateId
+    )}: ${fullLink}, ${payment.image}`;
     this.whatsappLink = `https://wa.me/${
       this.headerService.saleflow.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
-    window.location.href = this.whatsappLink;
+   //  window.location.href = this.whatsappLink;
+    this.dialogService.open(SingleActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        topButton: false,
+        title: 'Factura creada exitosamente',
+        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
+        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
+        mainButton: () => {
+          this.orderCompleted();
+          window.open(this.whatsappLink, '_blank');
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+    });
   }
 
   async authOrder() {
