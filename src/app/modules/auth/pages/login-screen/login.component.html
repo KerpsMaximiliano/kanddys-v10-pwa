@@ -116,12 +116,12 @@
           (click)="signIn()"
           [disabled]="
             (password.invalid || password.pristine || password.untouched) &&
-            !password.valid
+            !password.valid || status === 'draft'
           "
           [ngClass]="{
             disabled:
               (password.invalid || password.pristine || password.untouched) &&
-              !password.valid
+              !password.valid || status === 'draft'
           }"
         >
           <i class="fas fa-chevron-right"></i>
