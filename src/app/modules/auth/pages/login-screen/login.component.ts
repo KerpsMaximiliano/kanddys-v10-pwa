@@ -840,9 +840,6 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
-    this.router.navigate([this.fullLink], {
-      replaceUrl: true,
-    });
     const message = `COMPRADOR: ${
       this.headerService.user
         ? this.headerService.user.name || 'Sin nombre'
