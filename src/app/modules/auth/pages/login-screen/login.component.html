@@ -43,9 +43,11 @@
   <div class="input-area">
     <ng-container *ngIf="!signUp; else elseTemplate">
       <div class="phone-input-wrapper" *ngIf="!loggin">
-        <label for="phone number" class="account"
-          >Donde la guardarás?</label
-        >
+        <label for="phone number" class="account">{{
+          auth === "order"
+            ? "Escribe tu número de WhatsApp para acceder a tus direcciones guardadas"
+            : "Donde la guardarás?"
+        }}</label>
 
         <div class="wrapper">
           <ngx-intl-tel-input
@@ -117,13 +119,15 @@
           class="confirm"
           (click)="signIn()"
           [disabled]="
-            (password.invalid || password.pristine || password.untouched) &&
-            !password.valid || status === 'draft'
+            ((password.invalid || password.pristine || password.untouched) &&
+              !password.valid) ||
+            status === 'draft'
           "
           [ngClass]="{
             disabled:
-              (password.invalid || password.pristine || password.untouched) &&
-              !password.valid || status === 'draft'
+              ((password.invalid || password.pristine || password.untouched) &&
+                !password.valid) ||
+              status === 'draft'
           }"
         >
           <i class="fas fa-chevron-right"></i>

@@ -159,8 +159,8 @@ export class PaymentsComponent implements OnInit {
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
     }\nARTICULO${
-      this.order.items.length > 1 ? 'S\n' : ''
-    }: ${this.order.items.map(
+      this.order.items.length > 1 ? 'S: \n' : ': '
+    }${this.order.items.map(
       (itemSubOrder) =>
         (this.order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||
@@ -206,8 +206,8 @@ export class PaymentsComponent implements OnInit {
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
     }\nARTICULO${
-      this.order.items.length > 1 ? 'S\n' : ''
-    }: ${this.order.items.map(
+      this.order.items.length > 1 ? 'S: \n' : ': '
+    }${this.order.items.map(
       (itemSubOrder) =>
         (this.order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||

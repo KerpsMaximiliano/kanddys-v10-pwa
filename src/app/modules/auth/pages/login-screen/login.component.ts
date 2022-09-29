@@ -843,7 +843,7 @@ export class LoginComponent implements OnInit {
       this.headerService.user
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
-    }\nARTICULO${order.items.length > 1 ? 'S\n' : ''}: ${order.items.map(
+    }\nARTICULO${order.items.length > 1 ? 'S: \n' : ': '}${order.items.map(
       (itemSubOrder) =>
         (order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||
