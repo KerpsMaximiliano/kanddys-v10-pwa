@@ -589,7 +589,7 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
-         this.nope = true;
+        this.nope = true;
         await this.generateTOP(true);
         console.log('Creando nuevo user');
         this.sneaky = this.password.value;
@@ -841,15 +841,18 @@ export class LoginComponent implements OnInit {
       replaceUrl: true,
     });
     const message = `COMPRADOR: ${
-      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${order.items.map(
+      this.headerService.user
+        ? this.headerService.user.name || 'Sin nombre'
+        : 'Anónimo'
+    }\nARTICULO: ${order.items.length > 1 ? '\n' : null}${order.items.map(
       (itemSubOrder) =>
+        '- ' +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'
-    )}\nPAGO: $${this.paymentAmount.toLocaleString(
-      'es-MX'
-    )}\nFACTURA ${formatID(order.dateId)}: ${this.fullLink}`.replace(/,/g, '');
+    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+      order.dateId
+    )}: ${this.fullLink}`.replace(/,/g, '');
     this.messageLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;

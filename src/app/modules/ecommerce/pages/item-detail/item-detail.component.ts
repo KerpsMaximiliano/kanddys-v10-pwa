@@ -136,7 +136,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     const products = this.header.getItems(
       this.header.saleflow?._id ?? this.header.getSaleflow()?._id
     );
-    products.forEach((product) => {
+    products?.forEach((product) => {
       if (!product.params) {
         this.item.params[0].values.forEach((value) => {
           if (id != product._id && value._id == product._id) {

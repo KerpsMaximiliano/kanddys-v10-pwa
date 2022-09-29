@@ -155,9 +155,14 @@ export class PaymentsComponent implements OnInit {
     );
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
-      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${this.order.items.map(
+      this.headerService.user
+        ? this.headerService.user.name || 'Sin nombre'
+        : 'Anónimo'
+    }\nARTICULO: ${
+      this.order.items.length > 1 ? '\n' : null
+    }${this.order.items.map(
       (itemSubOrder) =>
+        '- ' +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'
@@ -197,9 +202,14 @@ export class PaymentsComponent implements OnInit {
   singleAction() {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
     const message = `COMPRADOR: ${
-      this.headerService.user?.name ? this.headerService.user.name : 'Anónimo'
-    }\nARTICULO: ${this.order.items.map(
+      this.headerService.user
+        ? this.headerService.user.name || 'Sin nombre'
+        : 'Anónimo'
+    }\nARTICULO: ${
+      this.order.items.length > 1 ? '\n' : null
+    }${this.order.items.map(
       (itemSubOrder) =>
+        '- ' +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'
