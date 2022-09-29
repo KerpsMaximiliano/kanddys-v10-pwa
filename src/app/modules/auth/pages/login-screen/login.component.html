@@ -20,14 +20,19 @@
     }"
     bgColor="#2874AD"
     [returnAble]="
-      !nope || auth === 'order' || (loggin && auth !== 'payment') || (signUp && !toValidate) ? true : false
+      (!nope && auth !== 'anonymous') ||
+      auth === 'order' ||
+      (loggin && auth !== 'payment') ||
+      (signUp && !toValidate)
+        ? true
+        : false
     "
     (returnEvent)="
       loggin
         ? toggleLog()
         : signUp
         ? toSignUp()
-        : auth === 'order'
+        : auth === 'order' || auth === 'payment'
         ? back()
         : null
     "
