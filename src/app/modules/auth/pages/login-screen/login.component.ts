@@ -364,7 +364,6 @@ export class LoginComponent implements OnInit {
       this.toastr.error('Error en campo de contraseña', null, {
         timeOut: 1500,
       });
-      console.log(this.status);
       this.status = 'ready';
     } else if (this.OTP) {
       const checkOTP = await this.authService.verify(
@@ -451,7 +450,7 @@ export class LoginComponent implements OnInit {
           true
         );
         if (!session) {
-          console.log('Error logging in');
+         //  console.log('Error logging in');
           this.status = 'ready';
           return;
         }
@@ -506,7 +505,7 @@ export class LoginComponent implements OnInit {
         this.toastr.error('Contraseña inválida o usuario no verificado', null, {
           timeOut: 2500,
         });
-        console.log('error');
+      //   console.log('error');
         this.status = 'ready';
         return;
       }
