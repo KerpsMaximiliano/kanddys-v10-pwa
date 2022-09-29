@@ -25,6 +25,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 
 type AuthTypes =
   | 'phone'
@@ -844,9 +845,9 @@ export class LoginComponent implements OnInit {
       this.headerService.user
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
-    }\nARTICULO: ${order.items.length > 1 ? '\n' : ''}${order.items.map(
+    }\nARTICULO${order.items.length > 1 ? 'S\n' : ''}: ${order.items.map(
       (itemSubOrder) =>
-        '- ' +
+        (order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'
@@ -856,7 +857,24 @@ export class LoginComponent implements OnInit {
     this.messageLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
-    window.location.href = this.messageLink;
+    this.dialog.open(SingleActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        topButton: false,
+        title: 'Factura creada exitosamente',
+        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
+        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
+        mainButton: () => {
+          this.router.navigate([`ecommerce/order-info/${order._id}`], {
+            replaceUrl: true,
+          });
+          window.open(this.messageLink, '_blank');
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+    });
   }
 
   showShoppingCartDialog = () => {

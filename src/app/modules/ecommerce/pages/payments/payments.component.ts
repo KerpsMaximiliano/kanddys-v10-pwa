@@ -158,11 +158,11 @@ export class PaymentsComponent implements OnInit {
       this.headerService.user
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items.length > 1 ? '\n' : ''
-    }${this.order.items.map(
+    }\nARTICULO${
+      this.order.items.length > 1 ? 'S\n' : ''
+    }: ${this.order.items.map(
       (itemSubOrder) =>
-        '- ' +
+        (this.order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'
@@ -205,11 +205,11 @@ export class PaymentsComponent implements OnInit {
       this.headerService.user
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
-    }\nARTICULO: ${
-      this.order.items.length > 1 ? '\n' : ''
-    }${this.order.items.map(
+    }\nARTICULO${
+      this.order.items.length > 1 ? 'S\n' : ''
+    }: ${this.order.items.map(
       (itemSubOrder) =>
-        '- ' +
+        (this.order.items.length > 1 ? '- ' : '') +
         (itemSubOrder.item.name ||
           `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
         '\n'

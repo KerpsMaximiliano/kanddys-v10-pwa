@@ -9,6 +9,8 @@
           ? 'Salvar el pago de la factura'
           : auth === 'anonymous'
           ? 'Salvar la orden'
+          : auth === 'order'
+          ? 'Ver direcciones guardadas'
           : loggin
           ? merchantNumber
           : signUp && !toValidate
