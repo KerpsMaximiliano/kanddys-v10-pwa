@@ -41,6 +41,7 @@ import { ReservationsComponent } from './pages/reservations/reservations.compone
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
+import { TimeBlockComponent } from 'src/app/shared/components/time-block/time-block.component';
 
 const routes: Routes = [
   {
@@ -235,6 +236,10 @@ const routes: Routes = [
   {
     path: 'merchant-shared/:merchantId',
     component: MerchantSharedComponent,
+  },
+  {
+    path: 'time-block/:calendarId',
+    component: TimeBlockComponent,
   },
   // FROM ADMIN 21/9/2022
 ];

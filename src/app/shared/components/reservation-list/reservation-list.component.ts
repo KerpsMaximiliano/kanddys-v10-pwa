@@ -185,7 +185,7 @@ export class ReservationListComponent implements OnInit {
 
   handleValue(list): void {
     this.optionIndexArray = list;
-    this.text2 = this.optionIndexArray.length ? 'BORRAR' : '';
+    this.text2 = this.optionIndexArray.length ? 'BORRAR ESTAS RESREVACIONES' : '';
   }
 
   handleSubmit(): void {

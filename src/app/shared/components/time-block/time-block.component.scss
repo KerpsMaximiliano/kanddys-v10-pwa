@@ -1,0 +1,89 @@
+.container {
+  padding: 0px 30px;
+  height: 100vh;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
+}
+
+.day {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.message-container {
+  width: 100%;
+  padding: 40px 0px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.base-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: auto;
+  height: 53px;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 4px auto;
+  display: inline;
+  margin-left: 0;
+  width: 140px;
+  &:focus {
+    border: 1px solid dodgerblue;
+  }
+}
+
+.base-label {
+  font-size: 19px;
+  font-family: "RobotoMedium";
+  color: gray;
+  text-align: left;
+  margin-top: 38px;
+}
+
+.limit {
+  text-align: left;
+  font-size: 16px;
+  color: dodgerblue;
+  margin: 10px 0px;
+  cursor: pointer;
+}
+
+.limit-container {
+  padding-left: 20px;
+}
+
+.mr {
+  padding-right: 12px;
+  display: inline;
+}
+
+.without_ampm::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+input[type=time]::-webkit-clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance:none;
+  appearance: none;
+  margin: -10px; 
+}
+
+.my {
+  margin: 10px 0px;
+}

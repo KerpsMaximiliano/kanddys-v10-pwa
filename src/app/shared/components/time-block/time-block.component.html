@@ -1,0 +1,61 @@
+<app-helper-headerv2
+[mainText]="mainText"
+mode="basic"
+[dots]="dots"
+(returnEvent)="navigate()"
+></app-helper-headerv2>
+<div class="container" [ngSwitch]="status">
+  <div class="my" *ngFor="let item of [0]; let i = index">
+    <h3>DIA De {{ months[i] }}</h3>
+    <app-short-calendar
+    [allowUsersToChangeTheMonthShown]="true"
+    [allowedDays]="null"
+    (selectedDate)="rerenderAvailableHours($event,i)"
+    (changedMonth)="updateMonth($event,i)"
+    (beforeAnimation)="setDateAsNull()"
+    [allowSundays]="true"
+    ></app-short-calendar>
+  </div>
+  <form [formGroup]="controller">
+    <p class="base-label">Hora</p>
+    <div class="mr">
+      <input formControlName="start" class="base-input" type="number" min="1" max="12" placeholder="Desde las.." />
+    </div>
+    <div class="mr">
+      <select formControlName="startPeriod" class="base-input">
+        <option value="PM">PM</option>
+        <option value="AM">AM</option>
+      </select>
+    </div>
+    <br>
+    <div class="mr">
+      <input formControlName="end" class="base-input" type="number" min="1" max="12" placeholder="Hasta las.." />
+    </div>
+    <div class="mr">
+      <select formControlName="endPeriod" class="base-input">
+        <option value="PM">PM</option>
+        <option value="AM">AM</option>
+      </select>
+    </div>
+    <p *ngIf="controller.valid&&days[0]" class="base-label">{{days[0]}} y {{days[0]}} de {{ month }} de {{formattedStart}}{{controller.get('startPeriod').value}} a {{formattedEnd}}{{controller.get('endPeriod').value}}</p>
+  </form>
+</div>
+<app-sticky-button
+  [mode]="'double'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      'border-right': '1.5px solid #fff',
+      backgroundColor: 'dodgerblue'
+    }
+  }"
+  [customRightButtonStyles]="{
+    color: '#fff'
+  }"
+  [text]="''"
+  [text2]="'SALVAR'"
+  [size]="'small'"
+  bgColor="dodgerblue"
+  fontSize="12px"
+  (right)="handleData()"
+></app-sticky-button>

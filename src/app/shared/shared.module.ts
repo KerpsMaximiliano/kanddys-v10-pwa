@@ -96,6 +96,7 @@ import { CurrencyInputComponent } from './components/currency-input/currency-inp
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
 import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
+import { TimeBlockComponent } from './components/time-block/time-block.component';
 
 const imports = [
   CommonModule,
@@ -198,7 +199,8 @@ const declarations = [
   SelectDropdownComponent,
   MetricsReservationComponent,
   ReservationListComponent,
-  SingleActionDialogComponent
+  SingleActionDialogComponent,
+  TimeBlockComponent
 ];
 
 @NgModule({
