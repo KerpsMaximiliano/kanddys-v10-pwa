@@ -159,7 +159,7 @@ export class PaymentsComponent implements OnInit {
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
     }\nARTICULO: ${
-      this.order.items.length > 1 ? '\n' : null
+      this.order.items.length > 1 ? '\n' : ''
     }${this.order.items.map(
       (itemSubOrder) =>
         '- ' +
@@ -206,7 +206,7 @@ export class PaymentsComponent implements OnInit {
         ? this.headerService.user.name || 'Sin nombre'
         : 'Anónimo'
     }\nARTICULO: ${
-      this.order.items.length > 1 ? '\n' : null
+      this.order.items.length > 1 ? '\n' : ''
     }${this.order.items.map(
       (itemSubOrder) =>
         '- ' +
