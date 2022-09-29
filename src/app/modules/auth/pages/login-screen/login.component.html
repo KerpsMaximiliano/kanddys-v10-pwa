@@ -32,7 +32,7 @@
         ? toggleLog()
         : signUp
         ? toSignUp()
-        : auth === 'order' || auth === 'payment'
+        : ['order', 'payment', 'address'].includes(auth)
         ? back()
         : null
     "
