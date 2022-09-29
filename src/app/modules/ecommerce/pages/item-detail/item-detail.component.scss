@@ -126,9 +126,9 @@
 .fullScreenSwiper {
 	position: relative;
 	font-family: "Roboto";
-	background-color: white;
+	background-color: transparent;
 	& .shadowWrapper {
-      background-color: #F6F6F6;
+      background-color: transparent;
       & .item {
          height: 300px;
          width: 100%;

@@ -44,7 +44,7 @@
     <ng-container *ngIf="!signUp; else elseTemplate">
       <div class="phone-input-wrapper" *ngIf="!loggin">
         <label for="phone number" class="account"
-          >Adiciona tu Cuenta (ganas puntos):</label
+          >Donde la guardarás?</label
         >
 
         <div class="wrapper">
@@ -118,12 +118,12 @@
           (click)="signIn()"
           [disabled]="
             (password.invalid || password.pristine || password.untouched) &&
-            !password.valid
+            !password.valid || status === 'draft'
           "
           [ngClass]="{
             disabled:
               (password.invalid || password.pristine || password.untouched) &&
-              !password.valid
+              !password.valid || status === 'draft'
           }"
         >
           <i class="fas fa-chevron-right"></i>

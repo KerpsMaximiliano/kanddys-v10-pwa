@@ -48,6 +48,7 @@ interface ValidateData {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  status: 'draft' | 'ready' = 'ready';
   mode: 'login' | 'signUp';
   saleflow: SaleFlow;
   auth: AuthTypes;
@@ -359,12 +360,13 @@ export class LoginComponent implements OnInit {
   }
 
   async signIn() {
-    lockUI();
+    this.status = 'draft';
     if (this.password.invalid) {
       this.toastr.error('Error en campo de contraseña', null, {
         timeOut: 1500,
       });
-      unlockUI();
+      console.log(this.status);
+      this.status = 'ready';
     } else if (this.OTP) {
       const checkOTP = await this.authService.verify(
         this.password.value,
@@ -373,7 +375,7 @@ export class LoginComponent implements OnInit {
 
       if (!checkOTP) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
-        unlockUI();
+        this.status = 'ready';
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
@@ -387,7 +389,7 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             });
           }
-          unlockUI();
+          this.status = 'ready';
           return;
         }
         if (this.auth === 'order' && !this.toValidate) {
@@ -397,7 +399,7 @@ export class LoginComponent implements OnInit {
               loggedIn: true,
             },
           });
-          unlockUI();
+          this.status = 'ready';
           return;
         }
         if (this.orderId && !this.toValidate) {
@@ -430,7 +432,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
-        unlockUI();
+        this.status = 'ready';
       }
     } else if (this.authCode) {
       const authCoded = await this.authService.verify(
@@ -440,7 +442,7 @@ export class LoginComponent implements OnInit {
 
       if (!authCoded) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
-        unlockUI();
+        this.status = 'ready';
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });
@@ -451,7 +453,7 @@ export class LoginComponent implements OnInit {
         );
         if (!session) {
           console.log('Error logging in');
-          unlockUI();
+          this.status = 'ready';
           return;
         }
         if (this.auth === 'address') {
@@ -464,7 +466,7 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             });
           }
-          unlockUI();
+          this.status = 'ready';
           return;
         }
         if (this.auth === 'order') {
@@ -474,25 +476,25 @@ export class LoginComponent implements OnInit {
               loggedIn: true,
             },
           });
-          unlockUI();
+          this.status = 'ready';
           return;
         }
         if (this.orderId) {
           this.authOrder(session.user._id);
-          unlockUI();
+          this.status = 'ready';
           return;
         }
 
         if (this.itemId) {
           await this.createItem(session.user);
-          unlockUI();
+          this.status = 'ready';
           return;
         }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
-        unlockUI();
+        this.status = 'ready';
       }
     } else {
       const signin = await this.authService.signin(
@@ -506,7 +508,7 @@ export class LoginComponent implements OnInit {
           timeOut: 2500,
         });
         console.log('error');
-        unlockUI();
+        this.status = 'ready';
         return;
       }
       if (this.auth === 'address') {
@@ -519,7 +521,7 @@ export class LoginComponent implements OnInit {
             replaceUrl: true,
           });
         }
-        unlockUI();
+        this.status = 'ready';
         return;
       }
       if (this.auth === 'order') {
@@ -529,7 +531,7 @@ export class LoginComponent implements OnInit {
             loggedIn: true,
           },
         });
-        unlockUI();
+        this.status = 'ready';
         return;
       }
       if (this.orderId) {
@@ -545,7 +547,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`admin/entity-detail-metrics`], {
         replaceUrl: true,
       });
-      unlockUI();
+      this.status = 'ready';
     }
   }
 
