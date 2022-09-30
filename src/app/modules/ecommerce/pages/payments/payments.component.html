@@ -45,7 +45,9 @@
           <li>Tipo de cuenta: {{ selectedBank.typeAccount }}</li>
           <li>{{ selectedBank.ownerAccount }}</li>
           <li>Cuenta: {{ selectedBank.account }}</li>
-          <li>RNC: {{ selectedBank.routingNumber }}</li>
+          <li *ngIf="selectedBank.routingNumber">
+            RNC: {{ selectedBank.routingNumber }}
+          </li>
         </ul>
         <p class="option-footer">{{ selectedBank.bankName }}</p>
         <button class="option-remove" (click)="removeBank()">
