@@ -157,6 +157,36 @@
         border-radius: 15px;
         background-color: #f6f6f6;
       }
+
+      &.reservation-params {
+        grid-column: span 2;
+        max-width: none;
+        min-height: 173px;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 31px 27px 29px 27px;
+
+        h3 {
+          padding: 0px;
+          margin: 0px;
+          font-family: RobotoMedium;
+          font-weight: normal;
+          color: #7b7b7b;
+          font-size: 15px;
+          text-transform: uppercase;
+        }
+
+        h4 {
+          padding: 0px;
+          margin: 0px;
+          color: #7b7b7b;
+          font-size: 17px;
+          font-family: SfProRegular;
+          font-weight: normal;
+          margin-top: 4px;
+        }
+      }
     }
   }
 }
@@ -189,7 +219,6 @@
     font-size: 0.88em !important;
   }
 }
-
 
 .container {
   width: 100%;

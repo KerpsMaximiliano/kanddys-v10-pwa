@@ -50,7 +50,7 @@ export class CalendarInput {
   reservationLimits: number;
   timeChunkSize: number;
   breakTime: number;
-  expirationTime: number;
+  expirationTime?: number;
   merchant: string;
   limits: DateModelInput
   mode: string;

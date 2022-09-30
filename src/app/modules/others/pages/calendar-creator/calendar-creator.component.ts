@@ -441,7 +441,6 @@ export class CalendarCreatorComponent implements OnInit {
           reservationLimits: amountOfReservationsAtTheSameTime,
           mode: 'standar',
           merchant: this.merchantDefault._id,
-          expirationTime: 10,
           limits: {
             dateType: 'DAYS',
             inDays: daysInOrder,

@@ -87,6 +87,7 @@ export const getCalendarsByMerchant = gql`
         dateType
         fromDay
         toDay
+        inDays
         fromHour
         toHour
       }

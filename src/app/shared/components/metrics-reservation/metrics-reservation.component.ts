@@ -22,44 +22,79 @@ export class MetricsReservationComponent implements OnInit {
   items = [];
   reservations: any = [];
   status = 'loading';
-  calendarId:string = '';
+  calendarId: string = '';
+
+  daysOfTheWeekInSpanish = {
+    MONDAY: 'Lunes',
+    TUESDAY: 'Martes',
+    WEDNESDAY: 'Miercoles',
+    THURSDAY: 'Jueves',
+    FRIDAY: 'Viernes',
+    SATURDAY: 'Sabado',
+    SUNDAY: 'Domingo',
+  };
+
   constructor(
     private _MerchantsService: MerchantsService,
     private _ReservationService: ReservationService,
     private _CalendarService: CalendarService,
     private _DialogService: DialogService,
-    private _Router: Router,
+    private _Router: Router
   ) {}
 
   ngOnInit(): void {
     const getMerchant = async () => {
-      const { _id } = await this._MerchantsService.merchantDefault();
+      const merchantDefault = await this._MerchantsService.merchantDefault();
+      this.merchant = merchantDefault;
+
+      console.log(this.merchant);
+
       const calendars = await this._CalendarService.getCalendarsByMerchant(
-        _id
+        merchantDefault._id
       );
+
       const currentDate = new Date();
       const today = currentDate;
-      for(const calendar of calendars){
+      for (const calendar of calendars) {
         const params = {
-          findBy: {calendar:calendar._id}
+          findBy: { calendar: calendar._id },
         };
-        const result:any = await this._ReservationService.getReservationByCalendar(params);
+        const result: any =
+          await this._ReservationService.getReservationByCalendar(params);
 
-        const past = result.filter(({date}) => {
-          const {from} = date;
+        const past = result.filter(({ date }) => {
+          const { from } = date;
           const _date = new Date(from);
           const flag = _date <= today;
           const result = flag;
           return result;
         });
-        const future = result.filter(({date}) => {
-          const {from} = date;
+        const future = result.filter(({ date }) => {
+          const { from } = date;
           const _date = new Date(from);
           const flag = _date > today;
           const result = flag;
           return result;
         });
-        this.reservations.push({calendar:calendar._id,past,future});
+
+        let daysSeparatedByComma = null;
+        if ('inDays' in calendar.limits) {
+          daysSeparatedByComma = calendar.limits.inDays
+            .map((dayInEnglish) =>
+              this.daysOfTheWeekInSpanish[dayInEnglish].slice(0, 3)
+            )
+            .join(', ');
+        }
+
+        this.reservations.push({
+          calendar: calendar._id,
+          past,
+          future,
+          calendarObj: {
+            ...calendar,
+            daysSeparatedByComma,
+          },
+        });
       }
       this.status = 'complete';
     };
@@ -82,7 +117,9 @@ export class MetricsReservationComponent implements OnInit {
             text: 'COMPARTE EL LINK DE SLOTS',
             mode: 'func',
             func: () => {
-              this._Router.navigate([`/others/reservations-creator/${calendarId}`]);
+              this._Router.navigate([
+                `/others/reservations-creator/${calendarId}`,
+              ]);
             },
           },
         ],
