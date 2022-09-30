@@ -143,15 +143,7 @@
           </div>
         </div>
 
-        <ng-container
-          *ngIf="
-            selectedFromHour &&
-            selectedFromHour.hour &&
-            selectedFromMinutes &&
-            selectedFromMinutes.minute &&
-            toHours.length > 0
-          "
-        >
+        <ng-container *ngIf="toHours.length > 0">
           <div class="input-label">¿Hasta que hora?</div>
           <div class="from-to-flex-wrapper">
             <div class="hour-wrapper">

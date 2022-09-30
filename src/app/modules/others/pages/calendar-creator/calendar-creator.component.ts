@@ -329,6 +329,7 @@ export class CalendarCreatorComponent implements OnInit {
     reservationAvailabilityFormGroup.controls.toHour.setValue(toHour);
 
     const [initialHour, initialMinute] = fromHour.split(':');
+    const [initialToHour, initialToMinute] = toHour.split(':');
     const initialHourIndex = this.hours.findIndex((hour) =>
       typeof initialHour === 'string'
         ? hour === initialHour
@@ -346,6 +347,26 @@ export class CalendarCreatorComponent implements OnInit {
     for (let number = Number(initialHour); number <= 23; number++) {
       this.toHours.push(number.toString().length < 2 ? '0' + number : number);
     }
+
+    this.toHours = [];
+
+    for (let number = Number(initialHour); number <= 23; number++) {
+      this.toHours.push(number.toString().length < 2 ? '0' + number : number);
+    }
+
+    /*
+    const initialToHourIndex = this.toHours.findIndex((hour) =>
+      typeof initialHour === 'string'
+        ? hour === initialHour
+        : hour === Number(initialHour)
+    );
+    const initialToMinuteIndex = this.minutes.findIndex((minute) =>
+      typeof initialMinute === 'string'
+        ? minute === initialMinute
+        : minute === Number(initialMinute)
+    );
+    */
+
 
     this.setReservationAvailabilityLabel(
       daysAllowedForThisCalendar,
