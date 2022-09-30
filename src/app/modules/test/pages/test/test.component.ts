@@ -165,6 +165,7 @@ export class TestComponent implements OnInit {
     this.dialog.open(SingleActionDialogComponent, {
       type: 'centralized-fullscreen',
       props:{
+         extraTitle:'compradorID',
          title: 'Borrar Reservaciones?',
          buttonText: 'Borrar Reservación',
          mainText: this.textSample,
