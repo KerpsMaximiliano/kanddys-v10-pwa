@@ -8,10 +8,17 @@ import {
 } from 'src/app/core/types/answer-selector';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/user';
 import { Merchant } from 'src/app/core/models/merchant';
 import { CalendarService } from 'src/app/core/services/calendar.service';
+
+interface DayOfTheWeek {
+  name: string;
+  fullname: string;
+  selected: boolean;
+  order: number;
+}
 
 @Component({
   selector: 'app-calendar-creator',
@@ -26,6 +33,7 @@ export class CalendarCreatorComponent implements OnInit {
     | 'RESERVATION_SLOT_CAPACITY' = 'MAIN';
   user: User = null;
   merchantDefault: Merchant = null;
+  calendarId: string = null;
 
   headerConfiguration = {
     bgcolor: '#2874AD',
@@ -147,7 +155,7 @@ export class CalendarCreatorComponent implements OnInit {
     },
   ];
 
-  daysOfTheWeek = [
+  daysOfTheWeek: Array<DayOfTheWeek> = [
     {
       name: 'Dom',
       fullname: 'SUNDAY',
@@ -246,30 +254,123 @@ export class CalendarCreatorComponent implements OnInit {
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private router: Router,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    for (let number = 0; number <= 23; number++) {
-      this.hours.push(number.toString().length < 2 ? '0' + number : number);
-    }
+    this.route.params.subscribe(async (routeParams) => {
+      const { calendarId } = routeParams;
 
-    for (let minute = 0; minute <= 60; minute++) {
-      this.minutes.push(minute.toString().length < 2 ? '0' + minute : minute);
-    }
-
-    this.user = await this.authService.me();
-
-    if (this.user) {
-      const merchantDefault = await this.merchantsService.merchantDefault();
-
-      if (merchantDefault) this.merchantDefault = merchantDefault;
-      else {
-        this.router.navigate(['others/error-screen']);
+      for (let number = 0; number <= 23; number++) {
+        this.hours.push(number.toString().length < 2 ? '0' + number : number);
       }
-    } else {
-      this.router.navigate(['auth/login']);
+
+      for (let minute = 0; minute <= 60; minute++) {
+        this.minutes.push(minute.toString().length < 2 ? '0' + minute : minute);
+      }
+
+      this.user = await this.authService.me();
+
+      if (this.user) {
+        const merchantDefault = await this.merchantsService.merchantDefault();
+
+        if (merchantDefault) this.merchantDefault = merchantDefault;
+        else {
+          this.router.navigate(['others/error-screen']);
+        }
+
+        if (calendarId) await this.inicializeExistingCalendarData(calendarId);
+      } else {
+        this.router.navigate(['auth/login']);
+      }
+    });
+  }
+
+  async inicializeExistingCalendarData(calendarId: string) {
+    const { getCalendar: calendar } = await this.calendarService.getCalendar(
+      calendarId
+    );
+    if (!calendar) this.router.navigate(['others/error-screen']);
+    this.calendarId = calendarId;
+
+    const reservationAvailabilityFormGroup = this.calendarCreatorForm.controls
+      .reservationAvailability as FormGroup;
+
+    const reservationParamsFormGroup = this.calendarCreatorForm.controls
+      .reservationParams as FormGroup;
+
+    const reservationSlotCapacityFormGroup = this.calendarCreatorForm.controls
+      .reservationSlotCapacity as FormGroup;
+
+    const fromHour = calendar.limits.fromHour;
+    const toHour = calendar.limits.toHour;
+
+    const daysAllowedForThisCalendar = [];
+
+    this.daysOfTheWeek.forEach((dayOfTheWeekObject) => {
+      const foundDay = calendar.limits.inDays.find(
+        (dayOfTheCalendarName) =>
+          dayOfTheWeekObject.fullname === dayOfTheCalendarName
+      );
+
+      if (foundDay) {
+        dayOfTheWeekObject.selected = true;
+        daysAllowedForThisCalendar.push(dayOfTheWeekObject);
+      }
+    });
+
+    daysAllowedForThisCalendar.forEach((day) => {
+      reservationAvailabilityFormGroup.controls.daysAvailability.value.push(
+        day
+      );
+    });
+    reservationAvailabilityFormGroup.controls.fromHour.setValue(fromHour);
+    reservationAvailabilityFormGroup.controls.toHour.setValue(toHour);
+
+    const [initialHour, initialMinute] = fromHour.split(':');
+    const initialHourIndex = this.hours.findIndex((hour) =>
+      typeof initialHour === 'string'
+        ? hour === initialHour
+        : hour === Number(initialHour)
+    );
+    const initialMinuteIndex = this.minutes.findIndex((minute) =>
+      typeof initialMinute === 'string'
+        ? minute === initialMinute
+        : minute === Number(initialMinute)
+    );
+
+    this.selectHour('from', initialHourIndex, Number(initialHour));
+    this.selectMinutes('from', initialMinuteIndex, Number(initialMinute));
+
+    for (let number = Number(initialHour); number <= 23; number++) {
+      this.toHours.push(number.toString().length < 2 ? '0' + number : number);
     }
+
+    this.setReservationAvailabilityLabel(
+      daysAllowedForThisCalendar,
+      fromHour,
+      toHour
+    );
+
+    reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
+      calendar.timeChunkSize
+    );
+
+    reservationParamsFormGroup.controls.minutesBetweenReservations.setValue(
+      calendar.breakTime
+    );
+
+    this.setReservationDurationsLabel(
+      calendar.timeChunkSize,
+      calendar.breakTime
+    );
+
+    reservationSlotCapacityFormGroup.controls.amount.setValue(
+      calendar.reservationLimits
+    );
+
+    this.setReservationSlotCapacityLabel(calendar.reservationLimits);
   }
 
   changeStepTo(
@@ -374,7 +475,6 @@ export class CalendarCreatorComponent implements OnInit {
   selectChunkSize(index: number, chunkSize: number) {
     const reservationParamsFormGroup = this.calendarCreatorForm.controls
       .reservationParams as FormGroup;
-
     this.selectedChunkSize = { index: null, chunkSize: null };
     this.selectedChunkSize.index = index;
     this.selectedChunkSize.chunkSize = chunkSize;
@@ -450,68 +550,24 @@ export class CalendarCreatorComponent implements OnInit {
         });
         break;
       case 'RESERVATION_DURATION_AND_BREAKTIME':
-        if (
-          this.isNotEmpty(Number(reservationDurationInMinutes)) &&
-          this.isNotEmpty(Number(minutesBetweenReservations))
-        ) {
-          const realDuration =
-            Number(reservationDurationInMinutes) -
-            Number(minutesBetweenReservations);
-          this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `${realDuration} min + ${minutesBetweenReservations} min de receso`;
-        } else {
-          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
-            Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
-          `;
-
-          this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `
-            Especifica los minutos que durará cada reserva y el tiempo entre cada una de ellas
-          `;
-        }
+        this.setReservationDurationsLabel(
+          reservationDurationInMinutes,
+          minutesBetweenReservations
+        );
 
         this.currentStep = 'MAIN';
         break;
       case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
-        if (
-          this.isNotEmpty(daysAvailability) &&
-          this.isNotEmpty(fromHour) &&
-          this.isNotEmpty(toHour)
-        ) {
-          let fromHourFinal;
-          let toHourFinal;
-          let fromHourNumber = Number(fromHour.split(':')[0]);
-          let toHourNumber = Number(toHour.split(':')[0]);
-
-          if (fromHourNumber > 12)
-            fromHourFinal = `${fromHourNumber - 12}:${
-              fromHour.split(':')[1]
-            } PM`;
-          else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} AM`;
-
-          if (toHourNumber > 12)
-            toHourFinal = `${toHourNumber - 12}:${toHour.split(':')[1]} PM`;
-          else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} AM`;
-
-          console.log('days available', daysAvailability);
-
-          const commaSeparatedDays = daysAvailability
-            .map((dayObject) => dayObject.name)
-            .join(', ');
-
-          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `${fromHourFinal} a ${toHourFinal} los ${commaSeparatedDays} de cualquier mes y año`;
-        } else {
-          this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
-            Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
-          `;
-        }
+        this.setReservationAvailabilityLabel(
+          daysAvailability,
+          fromHour,
+          toHour
+        );
 
         this.currentStep = 'MAIN';
         break;
       case 'RESERVATION_SLOT_CAPACITY':
-        if (this.isNotEmpty(amountOfReservationsAtTheSameTime)) {
-          this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Capacidad para ${amountOfReservationsAtTheSameTime} al mismo tiempo`;
-        } else {
-          this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Por especificar`;
-        }
+        this.setReservationSlotCapacityLabel(amountOfReservationsAtTheSameTime);
         this.currentStep = 'MAIN';
         break;
     }
@@ -535,5 +591,73 @@ export class CalendarCreatorComponent implements OnInit {
     this.headerConfiguration.bgcolor = this.activeCalendar
       ? '#2874AD'
       : '#B17608';
+  }
+
+  setReservationAvailabilityLabel(
+    daysAvailability: Array<DayOfTheWeek>,
+    fromHour: string,
+    toHour: string
+  ) {
+    if (
+      this.isNotEmpty(daysAvailability) &&
+      this.isNotEmpty(fromHour) &&
+      this.isNotEmpty(toHour)
+    ) {
+      let fromHourFinal;
+      let toHourFinal;
+      let fromHourNumber = Number(fromHour.split(':')[0]);
+      let toHourNumber = Number(toHour.split(':')[0]);
+
+      if (fromHourNumber > 12)
+        fromHourFinal = `${fromHourNumber - 12}:${fromHour.split(':')[1]} PM`;
+      else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} AM`;
+
+      if (toHourNumber > 12)
+        toHourFinal = `${toHourNumber - 12}:${toHour.split(':')[1]} PM`;
+      else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} AM`;
+
+      console.log('days available', daysAvailability);
+
+      const commaSeparatedDays = daysAvailability
+        .map((dayObject) => dayObject.name)
+        .join(', ');
+
+      this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `${fromHourFinal} a ${toHourFinal} los ${commaSeparatedDays} de cualquier mes y año`;
+    } else {
+      this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
+        Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
+      `;
+    }
+  }
+
+  setReservationDurationsLabel(
+    reservationDurationInMinutes: number,
+    minutesBetweenReservations: number
+  ) {
+    if (
+      this.isNotEmpty(Number(reservationDurationInMinutes)) &&
+      this.isNotEmpty(Number(minutesBetweenReservations))
+    ) {
+      const realDuration =
+        Number(reservationDurationInMinutes) -
+        Number(minutesBetweenReservations);
+      this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `${realDuration} min + ${minutesBetweenReservations} min de receso`;
+    } else {
+      this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
+        Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
+      `;
+
+      this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `
+        Especifica los minutos que durará cada reserva y el tiempo entre cada una de ellas
+      `;
+    }
+  }
+
+  setReservationSlotCapacityLabel(amountOfReservationsAtTheSameTime: number) {
+    if (this.isNotEmpty(amountOfReservationsAtTheSameTime)) {
+      this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Capacidad para ${amountOfReservationsAtTheSameTime} al mismo tiempo`;
+    } else {
+      this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Por especificar`;
+    }
   }
 }

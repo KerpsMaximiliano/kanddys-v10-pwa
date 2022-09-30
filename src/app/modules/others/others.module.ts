@@ -134,6 +134,10 @@ const routes: Routes = [
     component: CalendarCreatorComponent,
   },
   {
+    path: 'calendar-creator/:calendarId',
+    component: CalendarCreatorComponent,
+  },
+  {
     path: 'calendar-detail',
     component: CalendarDetailComponent,
   },
