@@ -21,20 +21,7 @@
     </button>
   </header>
   <main>
-    <ng-container *ngIf="mode === 'auth'">
-      <h3 class="title">Seleccione entre:</h3>
-
-      <app-answer-selector
-        [options]="authOptions"
-        [activeOption]="selectedAuthIndex"
-        [indicator]="true"
-        [containerStyles]="{
-          margin: '0px'
-        }"
-        (onSelector)="selectedAuthIndex = $event"
-      ></app-answer-selector>
-    </ng-container>
-    <ng-container *ngIf="mode !== 'auth' && mode !== 'add' && !editingId">
+    <ng-container *ngIf="mode !== 'add' && !editingId">
       <h3 class="title">Seleccione entre:</h3>
       <div>
         <app-answer-selector
@@ -47,18 +34,26 @@
           }"
         ></app-answer-selector>
       </div>
-      <ng-container *ngIf="newAddressOption?.length">
-        <div>
-          <app-answer-selector
-            [options]="newAddressOption"
-            [indicator]="true"
-            (onSelector)="mode = 'add'"
-            [containerStyles]="{
-              margin: '0px'
-            }"
-          ></app-answer-selector>
-        </div>
-      </ng-container>
+      <div *ngIf="newAddressOption?.length && mode === 'normal'">
+        <app-answer-selector
+          [options]="newAddressOption"
+          [indicator]="true"
+          (onSelector)="mode = 'add'"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+        ></app-answer-selector>
+      </div>
+      <div *ngIf="!user">
+        <app-answer-selector
+          [options]="authOptions"
+          [indicator]="true"
+          (onSelector)="authSelect('order')"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+        ></app-answer-selector>
+      </div>
     </ng-container>
     <ng-container *ngIf="mode === 'add' || editingId">
       <form [formGroup]="addressForm">
@@ -77,7 +72,7 @@
           />
         </div>
         <div class="form-group">
-          <label class="input-label" for="nickName">Calle</label>
+          <label class="input-label" for="street">Calle</label>
           <input
             type="text"
             class="input-text"
@@ -88,22 +83,23 @@
           />
         </div>
         <div class="form-group">
-          <label class="input-label" for="nickName"
+          <label class="input-label" for="houseNumber"
             >Número de casa/apartamento (opcional)</label
           >
           <input
             type="number"
-            min="0"
+            min="1"
             inputmode="numeric"
             pattern="[0-9]*"
             class="input-text"
             id="houseNumber"
             name="houseNumber"
             formControlName="houseNumber"
+            onkeydown="return event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 69 && event.keyCode !== 190 && event.keyCode !== 109 && event.keyCode !== 107"
           />
         </div>
         <div class="form-group">
-          <label class="input-label" for="nickName"
+          <label class="input-label" for="referencePoint"
             >Punto de referencia (opcional)</label
           >
           <input
@@ -115,7 +111,7 @@
           />
         </div>
         <div class="form-group">
-          <label class="input-label" for="nickName">Nota (opcional)</label>
+          <label class="input-label" for="note">Nota (opcional)</label>
           <input
             type="text"
             class="input-text"
@@ -123,6 +119,24 @@
             name="note"
             formControlName="note"
           />
+        </div>
+        <div class="form-group check-input" *ngIf="mode !== 'edit'">
+          <input
+            type="checkbox"
+            class="checkbox"
+            id="save"
+            name="save"
+            formControlName="save"
+          />
+          <div>
+            <label
+              class="input-label"
+              for="save"
+              style="margin: 0; font-size: 19px"
+              >Guardar Direccion</label
+            >
+            <p>Para que no la re-escribiras en futuros pedidos.</p>
+          </div>
         </div>
       </form>
     </ng-container>
@@ -143,14 +157,6 @@
   bgColor="#2874AD"
   size="small"
   (click)="selectAddress()"
-></app-sticky-button>
-<app-sticky-button
-  *ngIf="mode === 'auth' && selectedAuthIndex != null"
-  mode="fixed"
-  text="CONFIRMAR ELECCIÓN"
-  bgColor="#2874AD"
-  size="small"
-  (click)="authSelect(selectedAuthIndex)"
 ></app-sticky-button>
 <app-sticky-button
   *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"

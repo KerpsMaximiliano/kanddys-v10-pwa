@@ -2,27 +2,39 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-      text: loggin
-        ? merchantNumber
-        : signUp && !toValidate
-        ? 'Contacto de las facturas'
-        : signUp && toValidate
-        ? 'Completa tu registro'
-        : 'Login',
+      text:
+        auth === 'address'
+          ? 'Salvar Dirección'
+          : auth === 'payment'
+          ? 'Salvar el pago de la factura'
+          : auth === 'anonymous'
+          ? 'Salvar la orden'
+          : auth === 'order'
+          ? 'Ver direcciones guardadas'
+          : loggin
+          ? merchantNumber
+          : signUp && !toValidate
+          ? 'Crear contraseña'
+          : 'Login',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'
     }"
     bgColor="#2874AD"
     [returnAble]="
-      auth === 'order' || loggin || (signUp && !toValidate) ? true : false
+      (!nope && auth !== 'anonymous') ||
+      auth === 'order' ||
+      (loggin && auth !== 'payment') ||
+      (signUp && !toValidate)
+        ? true
+        : false
     "
     (returnEvent)="
       loggin
         ? toggleLog()
         : signUp
         ? toSignUp()
-        : auth === 'order'
+        : ['order', 'payment', 'address'].includes(auth)
         ? back()
         : null
     "
@@ -31,9 +43,11 @@
   <div class="input-area">
     <ng-container *ngIf="!signUp; else elseTemplate">
       <div class="phone-input-wrapper" *ngIf="!loggin">
-        <label for="phone number" class="account"
-          >Adiciona tu Cuenta (ganas puntos):</label
-        >
+        <label for="phone number" class="account">{{
+          auth === "order"
+            ? "Escribe tu número de WhatsApp para acceder a tus direcciones guardadas"
+            : "Donde la guardarás?"
+        }}</label>
 
         <div class="wrapper">
           <ngx-intl-tel-input
@@ -71,13 +85,13 @@
           </button>
         </div>
 
-        <button
+        <!-- <button
           class="adiciona"
           (click)="toSignUp()"
           *ngIf="auth !== 'anonymous'"
         >
           CREAR UNA NUEVA CUENTA
-        </button>
+        </button> -->
       </div>
 
       <div class="password-input" *ngIf="loggin">
@@ -105,13 +119,15 @@
           class="confirm"
           (click)="signIn()"
           [disabled]="
-            (password.invalid || password.pristine || password.untouched) &&
-            !password.valid
+            ((password.invalid || password.pristine || password.untouched) &&
+              !password.valid) ||
+            status === 'draft'
           "
           [ngClass]="{
             disabled:
-              (password.invalid || password.pristine || password.untouched) &&
-              !password.valid
+              ((password.invalid || password.pristine || password.untouched) &&
+                !password.valid) ||
+              status === 'draft'
           }"
         >
           <i class="fas fa-chevron-right"></i>
@@ -132,7 +148,88 @@
   </div>
 
   <ng-template #elseTemplate>
-    <div class="phone-input-wrapper">
+    <div class="column-flex">
+      <label for="Password" class="phone-label" style="margin-bottom: 11px"
+        >Adiciona la clave:</label
+      >
+
+      <input
+        class="pass"
+        type="password"
+        placeholder="Adiciona la Clave"
+        [formControl]="password"
+        name="password"
+        id="password"
+        placeholder="Escribe..."
+        required
+      />
+
+      <button
+        class="confirm"
+        (click)="signMeUp()"
+        [disabled]="
+          (password.invalid || password.pristine || password.untouched) &&
+          !password.valid
+        "
+        [ngClass]="{
+          disabled:
+            (password.invalid || password.pristine || password.untouched) &&
+            !password.valid
+        }"
+        style="top: 53px; right: 26px"
+      >
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <div
+        [hidden]="password.valid || password.pristine"
+        class="invalid-pass-register"
+      >
+        Por favor introduzca contraseña valida
+      </div>
+
+      <p class="subtext">Por default son los últimos 4 dígitos de tu celular</p>
+    </div>
+  </ng-template>
+
+  <app-sticky-button
+    *ngIf="signUp"
+    [mode]="'double'"
+    [text]="''"
+    [size]="'small'"
+    [fontSize]="'17px'"
+    [customLeftButtonStyles]="{
+      width: '100%',
+      'max-width': 'none',
+      color: '#fff',
+      cursor: 'unset'
+    }"
+    [text2]="''"
+    [customRightButtonStyles]="{
+      width: '1px',
+      height: '1px',
+      cursor: 'unset'
+    }"
+    [bgColor]="'#2874AD'"
+    [extra]="{
+      return: true,
+      returnCallback: logToggle
+    }"
+  ></app-sticky-button>
+
+  <app-bubble-button
+    *ngIf="itemCartAmount"
+    position="right"
+    color="blue"
+    [solo]="false"
+    [cart]="true"
+    [cartAmount]="itemCartAmount"
+    (click)="showShoppingCartDialog()"
+  ></app-bubble-button>
+</div>
+
+<!-- old signUp
+<div class="phone-input-wrapper">
       <div class="names-area">
         <div class="name">
           <label for="Name" class="names-label">Nombre:</label>
@@ -214,29 +311,12 @@
         Por favor introduzca contraseña valida
       </div>
 
-      <!-- <button class="signUp-btn" (click)="signMeUp()" 
-         [ngClass]="{
-            'disabled': password.invalid || password.pristine || 
-            phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid || 
-            firstName.untouched || firstName.pristine || firstName.invalid ||
-            lastName.untouched || lastName.pristine || lastName.invalid
-            }"
-
-            [disabled]="password.invalid || password.pristine || 
-            phoneNumber.untouched || phoneNumber.pristine || phoneNumber.invalid ||
-            firstName.untouched || firstName.pristine || firstName.invalid ||
-            lastName.untouched || lastName.pristine || lastName.invalid"
-            >
-           Registrarme
-         </button> -->
-
       <p class="clarification">
         Te llegará una confirmación a tu # de WhatsApp
       </p>
-    </div>
-  </ng-template>
-
-  <app-sticky-button
+    </div> 
+   
+   <app-sticky-button
     *ngIf="signUp"
     [mode]="'double'"
     [text]="'REGISTRARME'"
@@ -287,14 +367,4 @@
         : null
     "
   ></app-sticky-button>
-
-  <app-bubble-button
-    *ngIf="itemCartAmount"
-    position="right"
-    color="blue"
-    [solo]="false"
-    [cart]="true"
-    [cartAmount]="itemCartAmount"
-    (click)="showShoppingCartDialog()"
-  ></app-bubble-button>
-</div>
+-->

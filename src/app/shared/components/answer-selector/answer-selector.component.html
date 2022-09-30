@@ -12,7 +12,7 @@
         <div
           class="container-text-option"
           [ngStyle]="optionContainerStyles ? optionContainerStyles : null"
-          *ngIf="!isMultipleOption"
+          *ngIf="!isMultipleOption && !option.hidden"
         >
           <div class="selector-flex-wrapper">
             <div
@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="container-text-option" *ngIf="isMultipleOption">
-         <div class="selector-flex-wrapper">
+          <div class="selector-flex-wrapper">
             <div
               [class]="
                 !indicator
