@@ -11,9 +11,27 @@
     }"
   ></app-helper-headerv2>
 
+  <!-- <header class="header">
+   <a> <i class="fas fa-chevron-left"></i></a>
+
+   <div class="right-area">
+      <span class="header-text">{{order.user.name? order.user.name : (order.user.phone ? order.user.phone : order.user.email)}}</span>
+      <img [src]="env + '/person.svg'" alt="Icono de una persona" (click)="redirectToUserContact">
+   </div>
+  </header> -->
+
   <main class="information">
+    <section class="top">
+      <h2 class="top-h">
+        Pre-Factura en <br />
+        <span class="top-name">{{ saleflow.merchant.name }}</span>
+      </h2>
+    </section>
     <section class="section">
-      <h2 class="section-title">Articulos facturados:</h2>
+      <div class="between">
+        <h2 class="section-title">Articulos facturados:</h2>
+        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      </div>
 
       <div class="items-container">
         <div
@@ -49,7 +67,10 @@
     </section>
 
     <section class="section" style="margin-top: 32px">
-      <h2 class="section-title">Sobre el pago:</h2>
+      <div class="between">
+        <h2 class="section-title">Sobre el pago:</h2>
+        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      </div>
 
       <div class="items-container">
         <div class="items-container space-between" style="padding: 10px 32px">
@@ -60,10 +81,14 @@
     </section>
 
     <section class="section" *ngIf="order?.products[0].deliveryLocation">
-      <h2 class="section-title" style="margin-top: 32px">
-        Lugar de
-        {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
-      </h2>
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">
+          Lugar de
+          {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
+        </h2>
+
+        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      </div>
 
       <div class="items-container column">
         <p
@@ -96,9 +121,11 @@
     </section>
 
     <section class="section" *ngIf="order?.products[0].reservation && date">
-      <h2 class="section-title" style="margin-top: 32px">
-        Fecha de la sesión:
-      </h2>
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Fecha de la sesión:</h2>
+
+        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      </div>
 
       <div class="items-container" style="padding: 10px 32px">
         <p class="amount">
@@ -113,7 +140,11 @@
       *ngIf="post?.message || post?.from || post?.targets[0].name"
       style="margin-top: 32px"
     >
-      <h2 class="section-title">Mensaje de regalo:</h2>
+      <div class="between">
+        <h2 class="section-title">Mensaje de regalo:</h2>
+
+        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+      </div>
 
       <div class="message-box">
         <section *ngIf="post.message">

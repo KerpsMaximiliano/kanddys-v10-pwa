@@ -43,6 +43,7 @@ export class CheckoutComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  env: string = environment.assetsUrl;
   constructor(
     private dialogService: DialogService,
     private headerService: HeaderService,

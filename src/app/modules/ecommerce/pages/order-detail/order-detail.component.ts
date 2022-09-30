@@ -58,8 +58,9 @@ export class OrderDetailComponent implements OnInit {
         queryParams: { type: 'order' },
       });
       return;
-    }
-    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+   }
+   console.log(this.order)
+   this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
