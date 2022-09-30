@@ -34,10 +34,13 @@ export class ReservationListComponent implements OnInit {
   template: boolean = true;
   activeIndex: number;
   options: OptionAnswerSelector[];
-  optionIndexArray: number[] = [];
+  optionIndexArray: any[] = [];
   editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
+  buttons: string[] = ['futuras', 'pasadas', 'disponibles'];
+  calendar: string = '';
+  option: string;
   constructor(
     private _MerchantsService: MerchantsService,
     private _ReservationService: ReservationService,
@@ -50,21 +53,27 @@ export class ReservationListComponent implements OnInit {
   ngOnInit(): void {
     this._ActivatedRoute.params.subscribe(async (queryParams) => {
       const { calendar, type } = queryParams;
+      this.option = !this.buttons.includes(type)?this.buttons[this.buttons.length-1]:type;
+      this.calendar = calendar;
       const params = {
         findBy: { calendar },
       };
       this.status = 'loading';
       if (type) {
         const today = new Date();
-        const reservations = (
-          await this._ReservationService.getReservationByCalendar(params)
-        );
+        const reservations =
+          await this._ReservationService.getReservationByCalendar(params);
 
         this.reservations = reservations.filter((reservation) => {
           const date = new Date(reservation.date.from);
           const future = date > today;
           const past = date <= today;
-          const result = `${type}`.toLowerCase() === 'future' ? future : past;
+          const result =
+            `${type}`.toLowerCase() === 'futuras'
+              ? future
+              : `${type}`.toLowerCase() === 'pasadas'
+              ? past
+              : true;
           return result;
         });
 
@@ -100,12 +109,15 @@ export class ReservationListComponent implements OnInit {
     this.reservationsList = this.reservations.filter((reservation, index) =>
       this.handleReservation(reservation, value, index)
     );
-    this.options = this.reservationsList.map((reservation) => {
+    // this.options
+    this.reservationsList = this.reservationsList.map((reservation) => {
+      const { _id } = reservation;
       const { from } = reservation.date;
       const { until } = reservation.date;
       const starts = new Date(from);
       const ends = new Date(until);
       const result = {
+        _id,
         value: `Desde ${starts.toLocaleDateString()}, ${starts.getHours()} horas, hasta ${ends.toLocaleDateString()}, ${ends.getHours()} horas`,
         status: true,
       };
@@ -183,9 +195,14 @@ export class ReservationListComponent implements OnInit {
     });
   }
 
-  handleValue(list): void {
-    this.optionIndexArray = list;
-    this.text2 = this.optionIndexArray.length ? 'BORRAR ESTAS RESREVACIONES' : '';
+  handleValue(id: string): void {
+    if(!this.editable) return;
+    if (this.optionIndexArray.includes(id))
+      this.optionIndexArray = this.optionIndexArray.filter((_id) => _id !== id);
+    else this.optionIndexArray.push(id);
+    this.text2 = this.optionIndexArray.length
+      ? 'BORRAR ESTAS RESREVACIONES'
+      : '';
   }
 
   handleSubmit(): void {
@@ -198,25 +215,24 @@ export class ReservationListComponent implements OnInit {
           let results = [];
           const deleteReservations = async () => {
             let results = [];
-            for (const index of this.optionIndexArray) {
-              const { _id } = this.reservationsList[index];
+            for (const _id of this.optionIndexArray) {
               const { deleteReservation } =
                 await this._ReservationService.deleteReservation(_id);
               if (deleteReservation) {
-                results.push({ _id, index });
+                results.push(_id);
               }
             }
-            for (const { _id, index } of results) {
+            for (const _id of results) {
               this.reservations = this.reservations.filter(
                 (reservation) => reservation._id !== _id
               );
               this.fillOptions();
               this.optionIndexArray = this.optionIndexArray.filter(
-                (i) => i !== index
+                (i) => i !== _id
               );
             }
             this.resetEdition();
-            this.status = this.options.length ? 'complete' : 'empty';
+            this.status = this.reservationsList.length ? 'complete' : 'empty';
           };
           deleteReservations();
         },
@@ -253,5 +269,12 @@ export class ReservationListComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  handleOption(option: string): void {
+    this.option = option;
+    this._Router.navigate([
+      `/admin/entity-detail-metrics/reservations/${this.calendar}/${option}`,
+    ]);
   }
 }
