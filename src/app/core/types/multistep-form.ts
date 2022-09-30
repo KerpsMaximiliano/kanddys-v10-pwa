@@ -208,6 +208,7 @@ export interface FormStep {
   headerTextRight?: string;
   headerTextSide?: 'CENTER' | 'LEFT' | 'RIGHT';
   headerTextIcon?: string;
+  headerTextStyles?: Record<string, string>;
   headerTextCallback?(...params): any;
   pageHeader?: PageHeader;
   pageSubHeader?: PageHeader;

@@ -38,6 +38,7 @@
                     ? item.image || item.images[0]
                     : '/assets/images/noimage.png'
                 "
+                (error)="item.image = '/assets/images/noimage.png'"
                 alt="item image"
                 class="item-image"
               />
@@ -78,10 +79,18 @@
           }"
           *ngIf="order?.products[0].deliveryLocation.street"
         >
-          {{ order.products[0].deliveryLocation.houseNumber ? '#' + order.products[0].deliveryLocation.houseNumber + ', ' : '' }}
+          {{
+            order.products[0].deliveryLocation.houseNumber
+              ? "#" + order.products[0].deliveryLocation.houseNumber + ", "
+              : ""
+          }}
           {{ order.products[0].deliveryLocation.street }},
-          {{ order.products[0].deliveryLocation.referencePoint ? order.products[0].deliveryLocation.referencePoint + ', ' : '' }}
-           {{ order.products[0].deliveryLocation.city }}, República Dominicana
+          {{
+            order.products[0].deliveryLocation.referencePoint
+              ? order.products[0].deliveryLocation.referencePoint + ", "
+              : ""
+          }}
+          {{ order.products[0].deliveryLocation.city }}, República Dominicana
         </p>
       </div>
     </section>
@@ -147,7 +156,7 @@
 
   <app-sticky-button
     [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="'CONTINUAR LA FACTURA'"
+    [text]="'CONFIRMA LA FACTURA'"
     [bgColor]="'#2874AD'"
     [customLeftButtonStyles]="{
       'font-size': '17px',
