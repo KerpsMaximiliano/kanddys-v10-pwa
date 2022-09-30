@@ -202,7 +202,7 @@
                     <li>Tipo de cuenta: {{ item.typeAccount }}</li>
                     <li>{{ item.ownerAccount }}</li>
                     <li>Cuenta: {{ item.account }}</li>
-                    <li>RNC: {{ item.routingNumber }}</li>
+                    <li *ngIf="item.routingNumber" >RNC: {{ item.routingNumber }}</li>
                   </ul>
                   <p class="option-footer">{{ item.bankName }}</p>
                 </div>

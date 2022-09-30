@@ -5,7 +5,10 @@
       [fixed]="true"
       *ngIf="!hasCustomizer"
       [mainText]="{
-        text: saleflowData?.merchant?.name || 'Tienda',
+        text:
+          (saleflowData?.merchant?.name.length < 38
+            ? saleflowData?.merchant?.name
+            : saleflowData?.merchant?.name.split(' ')['0']) || 'Tienda',
         fontFamily: 'SfProBold',
         fontSize: '21px',
         color: '#FFF'
