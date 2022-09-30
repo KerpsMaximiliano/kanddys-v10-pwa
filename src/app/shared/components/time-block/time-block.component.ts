@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {
   CalendarsService,
@@ -34,7 +34,8 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
   months = ['',''];
   constructor(
     private _CalendarsService: CalendarsService,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private _Router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -102,7 +103,9 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     this.days[index] = `${new Date(date).getDate()}`;
   }
 
-  navigate(): void {}
+  navigate(): void {
+    this._Router.navigate([`/admin/entity-detail-metrics`]);
+  }
 
   handleData(): void {
     if (this.controller.invalid) return;
