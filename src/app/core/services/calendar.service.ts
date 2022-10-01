@@ -7,6 +7,7 @@ import {
   getCalendarWithMerchantInfo,
   identifyCalendarAdmin,
   getCalendarsByMerchant,
+  updateCalendar,
 } from '../graphql/calendar.gql';
 import * as moment from 'moment';
 import { ReservationList } from '../models/reservation';
@@ -516,6 +517,15 @@ export class CalendarService {
     const result = await this.graphql.mutate({
       mutation: createCalendar,
       variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async updateCalendar(input: CalendarInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateCalendar,
+      variables: { input, id },
     });
     if (!result || result?.errors) return undefined;
     return result;

@@ -325,24 +325,27 @@ export class CalendarCreatorComponent implements OnInit {
         day
       );
     });
+
+    reservationAvailabilityFormGroup.controls.daysAvailability.updateValueAndValidity();
+
     reservationAvailabilityFormGroup.controls.fromHour.setValue(fromHour);
     reservationAvailabilityFormGroup.controls.toHour.setValue(toHour);
 
     const [initialHour, initialMinute] = fromHour.split(':');
     const [initialToHour, initialToMinute] = toHour.split(':');
     const initialHourIndex = this.hours.findIndex((hour) =>
-      typeof initialHour === 'string'
+      String(Number(initialHour)).length < 2
         ? hour === initialHour
         : hour === Number(initialHour)
     );
     const initialMinuteIndex = this.minutes.findIndex((minute) =>
-      typeof initialMinute === 'string'
+      String(Number(initialMinute)).length < 2
         ? minute === initialMinute
         : minute === Number(initialMinute)
     );
 
-    this.selectHour('from', initialHourIndex, Number(initialHour));
-    this.selectMinutes('from', initialMinuteIndex, Number(initialMinute));
+    this.selectHour('from', initialHourIndex, initialHour as any);
+    this.selectMinutes('from', initialMinuteIndex, initialMinute as any);
 
     for (let number = Number(initialHour); number <= 23; number++) {
       this.toHours.push(number.toString().length < 2 ? '0' + number : number);
@@ -354,19 +357,20 @@ export class CalendarCreatorComponent implements OnInit {
       this.toHours.push(number.toString().length < 2 ? '0' + number : number);
     }
 
-    /*
     const initialToHourIndex = this.toHours.findIndex((hour) =>
-      typeof initialHour === 'string'
-        ? hour === initialHour
-        : hour === Number(initialHour)
+      String(Number(initialToHour)).length < 2
+        ? hour === initialToHour
+        : hour === Number(initialToHour)
     );
-    const initialToMinuteIndex = this.minutes.findIndex((minute) =>
-      typeof initialMinute === 'string'
-        ? minute === initialMinute
-        : minute === Number(initialMinute)
-    );
-    */
 
+    let initialToMinuteIndex = this.minutes.findIndex((minute) =>
+      String(Number(initialToMinute)).length < 2
+        ? minute === initialToMinute
+        : minute === Number(initialToMinute)
+    );
+
+    this.selectHour('to', initialToHourIndex, initialToHour as any);
+    this.selectMinutes('to', initialToMinuteIndex, initialToMinute as any);
 
     this.setReservationAvailabilityLabel(
       daysAllowedForThisCalendar,
@@ -392,6 +396,7 @@ export class CalendarCreatorComponent implements OnInit {
     );
 
     this.setReservationSlotCapacityLabel(calendar.reservationLimits);
+    this.calendarCreatorForm.updateValueAndValidity();
   }
 
   changeStepTo(
@@ -443,6 +448,7 @@ export class CalendarCreatorComponent implements OnInit {
       this.selectedFromHour.hour = hour;
 
       this.toHours = [];
+      this.selectedToHour = { index: null, hour: null };
 
       for (let number = hour; number <= 23; number++) {
         this.toHours.push(number.toString().length < 2 ? '0' + number : number);
@@ -532,6 +538,9 @@ export class CalendarCreatorComponent implements OnInit {
       case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
         this.currentStep = 'MAIN';
         break;
+      case 'RESERVATION_SLOT_CAPACITY':
+        this.currentStep = 'MAIN';
+        break;
     }
   }
 
@@ -553,10 +562,7 @@ export class CalendarCreatorComponent implements OnInit {
 
         const fromDate = new Date();
         const toDate = new Date(new Date().getFullYear(), 11, 31);
-
-        const result = await this.calendarService.createCalendar({
-          name:
-            'Calendario genérico ' + Math.floor(Math.random() * (100 - 1)) + 1,
+        const calendarInput: any = {
           breakTime: minutesBetweenReservations,
           timeChunkSize: reservationDurationInMinutes,
           reservationLimits: amountOfReservationsAtTheSameTime,
@@ -568,7 +574,23 @@ export class CalendarCreatorComponent implements OnInit {
             fromHour,
             toHour,
           },
-        });
+        };
+
+        if (!this.calendarId) {
+          calendarInput.name =
+            'Calendario genérico ' + Math.floor(Math.random() * (100 - 1)) + 1;
+          const result = await this.calendarService.createCalendar(
+            calendarInput
+          );
+        } else {
+          delete calendarInput.merchant;
+
+          const result = await this.calendarService.updateCalendar(
+            calendarInput,
+            this.calendarId
+          );
+        }
+
         break;
       case 'RESERVATION_DURATION_AND_BREAKTIME':
         this.setReservationDurationsLabel(
@@ -579,6 +601,8 @@ export class CalendarCreatorComponent implements OnInit {
         this.currentStep = 'MAIN';
         break;
       case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
+        console.log(daysAvailability, fromHour, toHour);
+
         this.setReservationAvailabilityLabel(
           daysAvailability,
           fromHour,

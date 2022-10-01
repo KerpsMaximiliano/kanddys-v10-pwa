@@ -46,6 +46,7 @@
       </div>
 
       <app-sticky-button
+        *ngIf="calendarCreatorForm.status === 'VALID'"
         [mode]="'double'"
         [text]="''"
         [text2]="'SALVAR'"

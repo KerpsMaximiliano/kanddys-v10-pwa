@@ -121,3 +121,11 @@ export const createCalendar = gql`
     }
   }
 `;
+
+export const updateCalendar = gql`
+  mutation updateCalendar($input: CalendarInput!, $id: ObjectID!) {
+    updateCalendar(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
