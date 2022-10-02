@@ -14,7 +14,10 @@ import {
 })
 export class TimeBlockComponent implements OnInit, OnDestroy {
   allMonths = [];
-  month: string = '';
+  month: {
+    name: string;
+    number: number;
+  } = null;
   calendarData: ExtendedCalendar = {} as ExtendedCalendar;
   status: string = 'loading';
   mainText: any = {
@@ -26,16 +29,30 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     active: true,
   };
   numberPattern: string = '^[0-9]*$';
-  controller: FormGroup = new FormGroup({});
-  sub:Subscription;
-  formattedStart:string = '';
-  formattedEnd:string = '';
-  days = ['',''];
-  months = ['',''];
+  controller: FormGroup = new FormGroup({
+    start: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.numberPattern),
+      Validators.min(1),
+      Validators.max(12),
+    ]),
+    startPeriod: new FormControl('PM', [Validators.required]),
+    end: new FormControl('', [
+      Validators.required,
+      Validators.pattern(this.numberPattern),
+      Validators.min(1),
+      Validators.max(12),
+    ]),
+    endPeriod: new FormControl('PM', [Validators.required]),
+  });
+  sub: Subscription;
+  formattedStart: string = '';
+  formattedEnd: string = '';
+  selectedDays: Array<number> = [];
   constructor(
     private _CalendarsService: CalendarsService,
     private _ActivatedRoute: ActivatedRoute,
-    private _Router: Router,
+    private _Router: Router
   ) {}
 
   ngOnInit(): void {
@@ -45,8 +62,9 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       this.calendarData = await this._CalendarsService.getCalendar(calendarId);
       this.allMonths = this._CalendarsService.allMonths;
       const date = new Date();
-      this.month = this.allMonths[date.getMonth()].name;
-      this.months = this.months.map(() => this.month);
+      const monthIndex = date.getMonth();
+      this.month.name = this.allMonths[monthIndex].name;
+      this.month.number = monthIndex + 1;
       this.status = 'complete';
     });
   }
@@ -56,59 +74,36 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
   }
 
   initController(): void {
-    this.controller.addControl(
-      'start',
-      new FormControl('', [
-        Validators.required,
-        Validators.pattern(this.numberPattern),
-        Validators.min(1),
-        Validators.max(12)
-      ])
-    );
-    this.controller.addControl(
-      'startPeriod',
-      new FormControl('PM', [Validators.required])
-    );
-    this.controller.addControl(
-      'end',
-      new FormControl('', [
-        Validators.required,
-        Validators.pattern(this.numberPattern),
-        Validators.min(1),
-        Validators.max(12)
-      ])
-    );
-    this.controller.addControl(
-      'endPeriod',
-      new FormControl('PM', [Validators.required])
-    );
     this.sub = this.controller.valueChanges.subscribe((controller) => {
       this.formattedStart = this.formatInt(controller.start);
       this.formattedEnd = this.formatInt(controller.end);
     });
   }
 
-  formatInt(value:number):string {
-    const result = `${value}`.length>1?`${value}:00`:`0${value}:00`;
+  formatInt(value: number): string {
+    const result = `${value}`.length > 1 ? `${value}:00` : `0${value}:00`;
     return result;
   }
 
   setDateAsNull(): void {}
 
-  updateMonth(data,index:number): void {
-    this.months[index] = data.name;
+  updateMonth(data, index: number): void {
+    console.log('mes', data, index);
   }
 
-  rerenderAvailableHours(date,index): void {
-    this.days[index] = `${new Date(date).getDate()}`;
+  saveSelectedDay(date, index): void {
+    console.log('dia', date, index);
   }
 
   navigate(): void {
     this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
-  handleData(): void {
+  save(): void {
     if (this.controller.invalid) return;
-    console.log(this.controller.value);
+
+    const { start, startPeriod, end, endPeriod } = this.controller.controls;
+
+    console.log(start, end, startPeriod, endPeriod);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { getCalendar } from '../graphql/calendar.gql';
+import { getCalendar, calendarAddExceptions } from '../graphql/calendar.gql';
 import { Calendar } from '../models/calendar';
 
 export interface ExtendedCalendar extends Calendar {
@@ -114,28 +114,18 @@ export class CalendarsService {
       );
 
       return this.calendarsObtained[result._id];
-
-      /*
-      if (!queryParamFromLimit || !queryParamToLimit) {
-        this.handleActiveDays(
-          result.limits?.fromHour,
-          result.limits?.toHour,
-          result.timeChunkSize,
-          result.mode
-        );
-      }
-
-      if (queryParamFromLimit || queryParamToLimit) {
-        this.handleActiveDays(
-          queryParamFromLimit ? queryParamFromLimit + ':00' : null,
-          queryParamToLimit ? queryParamToLimit + ':00' : null,
-          response.getCalendar.timeChunkSize,
-          response.getCalendar.mode
-        );
-      }*/
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async calendarAddExceptions(exception: any, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: calendarAddExceptions,
+      variables: { exception, id },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   getLimit(dayLimit: string) {

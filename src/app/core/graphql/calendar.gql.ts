@@ -129,3 +129,19 @@ export const updateCalendar = gql`
     }
   }
 `;
+
+export const calendarAddExceptions = gql`
+  mutation calendarAddExceptions(
+    $exception: DateExceptionInput!
+    $id: ObjectID!
+  ) {
+    calendarAddExceptions(exception: $exception, id: $id) {
+      _id
+      exceptions {
+        _id
+        from
+        until
+      }
+    }
+  }
+`;
