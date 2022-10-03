@@ -1,7 +1,6 @@
 <app-helper-headerv2
   [mainText]="mainText"
   mode="basic"
-  [dots]="dots"
   (returnEvent)="navigate()"
 ></app-helper-headerv2>
 <div class="container" [ngSwitch]="status">
@@ -18,7 +17,7 @@
     ></app-short-calendar>
   </div>
   <form [formGroup]="controller">
-    <p class="base-label">Hora</p>
+    <p class="base-label" style="margin-top: 53px; margin-bottom: 22px">Hora</p>
     <div class="mr">
       <input
         formControlName="start"
@@ -30,7 +29,7 @@
       />
     </div>
     <div class="mr">
-      <select formControlName="startPeriod" class="base-input">
+      <select formControlName="startPeriod" class="base-input period">
         <option value="PM">PM</option>
         <option value="AM">AM</option>
       </select>
@@ -47,12 +46,16 @@
       />
     </div>
     <div class="mr">
-      <select formControlName="endPeriod" class="base-input">
+      <select formControlName="endPeriod" class="base-input period">
         <option value="PM">PM</option>
         <option value="AM">AM</option>
       </select>
     </div>
-    <p *ngIf="controller.valid && selectedDays.length > 0" class="base-label">
+    <p
+      *ngIf="controller.valid && selectedDays.length > 0"
+      class="base-label"
+      style="margin-top: 21px"
+    >
       {{ selectedDaysLabel }}
     </p>
   </form>
@@ -62,17 +65,22 @@
   [extra]="{
     return: true,
     returnStyles: {
-      'border-right': '1.5px solid #fff',
-      backgroundColor: 'dodgerblue'
+      backgroundColor: 'rgb(40, 116, 173)',
+      justifyContent: 'flex-start'
     }
   }"
+  [text]="''"
+  [text2]="
+    controller.status === 'VALID' && checkIfHoursAreValid() ? 'SALVAR' : ''
+  "
   [customRightButtonStyles]="{
+    width: 'auto',
     color: '#fff'
   }"
-  [text]="''"
-  [text2]="'SALVAR'"
   [size]="'small'"
-  bgColor="dodgerblue"
+  bgColor="rgb(40, 116, 173)"
   fontSize="12px"
-  (right)="controller.status === 'VALID' ? save() : null"
+  (right)="
+    controller.status === 'VALID' && checkIfHoursAreValid() ? save() : null
+  "
 ></app-sticky-button>

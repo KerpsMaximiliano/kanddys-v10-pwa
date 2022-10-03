@@ -39,7 +39,7 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       Validators.min(1),
       Validators.max(12),
     ]),
-    startPeriod: new FormControl('PM', [Validators.required]),
+    startPeriod: new FormControl('AM', [Validators.required]),
     end: new FormControl('', [
       Validators.required,
       Validators.pattern(this.numberPattern),
@@ -134,6 +134,8 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       });
 
       this.selectedDaysLabel += ` de ${this.month.name} de ${this.formattedStart} ${startPeriod} a ${this.formattedEnd} ${endPeriod}`;
+    } else if (this.selectedDays.length === 1) {
+      this.selectedDaysLabel += `${this.selectedDays[0]} de ${this.month.name} de ${this.formattedStart} ${startPeriod} a ${this.formattedEnd} ${endPeriod}`;
     }
   }
 
@@ -188,5 +190,17 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  checkIfHoursAreValid() {
+    const { startPeriod, endPeriod, start, end } = this.controller.value;
+
+    if (startPeriod === 'PM' && endPeriod === 'AM') return false;
+
+    if (startPeriod === endPeriod && start >= end) {
+      return false;
+    }
+
+    return true;
   }
 }
