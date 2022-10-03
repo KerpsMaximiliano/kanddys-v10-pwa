@@ -30,8 +30,9 @@
               }"
               [ngStyle]="itemStyles ? itemStyles : null"
               (click)="
-                (editable && option.status) ||
-                (blockIndexes && !blockIndexes.includes(i))
+                editable &&
+                option.status &&
+                (!blockIndexes || (blockIndexes && !blockIndexes.includes(i)))
                   ? clickSelector(i)
                   : null
               "
@@ -108,7 +109,7 @@
           </div>
         </div>
         <div class="container-text-option" *ngIf="isMultipleOption">
-         <div class="selector-flex-wrapper">
+          <div class="selector-flex-wrapper">
             <div
               [class]="
                 !indicator
