@@ -300,6 +300,7 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone() {
+   this.status = 'draft';
     if (this.phoneNumber.value != undefined || null) {
       const validUser = await this.authService.checkUser(
         this.phoneNumber.value.e164Number.split('+')[1]
@@ -313,23 +314,27 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
-          if (this.orderId && this.auth === 'anonymous') {
+          if (this.orderId && (this.auth === 'anonymous' || this.auth === 'payment')) {
             this.authOrder(this.userID);
+            this.status = 'ready';
             return;
           }
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
+          this.status = 'ready';
           this.loggin = true;
         } catch (error) {
+         this.status = 'ready';
           console.log(error);
         }
       } else if (validUser && validUser.validatedAt === null) {
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.userID = validUser._id;
+        this.status = 'ready';
         this.loggin = true;
         this.toValidate = true;
         await this.generateTOP();
-      } else if (this.orderId && this.auth === 'anonymous') {
+      } else if (this.orderId && (this.auth === 'anonymous' || this.auth === 'payment')) {
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
@@ -345,16 +350,19 @@ export class LoginComponent implements OnInit {
           this.toastr.error('Algo salio mal', null, {
             timeOut: 1500,
           });
+          this.status = 'ready';
         }
       } else {
         this.toastr.info('Al registro', null, { timeOut: 2000 });
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.password.setValue(this.merchantNumber.slice(-4));
+        this.status = 'ready';
         this.signUp = true;
         return;
       }
     } else {
       this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
+      this.status = 'ready';
       return;
     }
   }

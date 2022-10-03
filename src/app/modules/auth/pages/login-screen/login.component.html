@@ -73,12 +73,14 @@
             (click)="submitPhone()"
             [disabled]="
               (phoneNumber.invalid || phoneNumber.untouched) &&
-              !phoneNumber.valid
+              !phoneNumber.valid ||
+              status === 'draft'
             "
             [ngClass]="{
               disabled:
                 (phoneNumber.invalid || phoneNumber.untouched) &&
-                !phoneNumber.valid
+                !phoneNumber.valid ||
+                status === 'draft'
             }"
           >
             <i class="fas fa-chevron-right"></i>
