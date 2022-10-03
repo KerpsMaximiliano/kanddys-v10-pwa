@@ -210,6 +210,8 @@ export class LoginComponent implements OnInit {
       this.headerService.orderId = null;
       this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
       let productData: Item[] = this.headerService.getItems(this.saleflow._id);
+      this.getNumber();
+      // console.log(this.merchantNumber);
       this.itemCartAmount = productData?.length;
       this.items = productData;
 
@@ -233,6 +235,9 @@ export class LoginComponent implements OnInit {
 
         unlockUI();
       } else {
+        this.merchantNumber
+          ? this.phoneNumber.setValue(this.merchantNumber)
+          : null;
         this.loggin = false;
         unlockUI();
       }
@@ -300,12 +305,17 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone() {
-   this.status = 'draft';
+    this.status = 'draft';
     if (this.phoneNumber.value != undefined || null) {
       const validUser = await this.authService.checkUser(
         this.phoneNumber.value.e164Number.split('+')[1]
       );
-
+      validUser
+        ? localStorage.setItem(
+            'phone-number',
+            this.phoneNumber.value.e164Number
+          )
+        : null;
       if (validUser && validUser.validatedAt !== null) {
         try {
           const { countryIso, nationalNumber } =
@@ -314,7 +324,10 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
-          if (this.orderId && (this.auth === 'anonymous' || this.auth === 'payment')) {
+          if (
+            this.orderId &&
+            (this.auth === 'anonymous' || this.auth === 'payment')
+          ) {
             this.authOrder(this.userID);
             this.status = 'ready';
             return;
@@ -324,7 +337,7 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           this.loggin = true;
         } catch (error) {
-         this.status = 'ready';
+          this.status = 'ready';
           console.log(error);
         }
       } else if (validUser && validUser.validatedAt === null) {
@@ -334,7 +347,10 @@ export class LoginComponent implements OnInit {
         this.loggin = true;
         this.toValidate = true;
         await this.generateTOP();
-      } else if (this.orderId && (this.auth === 'anonymous' || this.auth === 'payment')) {
+      } else if (
+        this.orderId &&
+        (this.auth === 'anonymous' || this.auth === 'payment')
+      ) {
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
@@ -459,7 +475,7 @@ export class LoginComponent implements OnInit {
           true
         );
         if (!session) {
-         //  console.log('Error logging in');
+          //  console.log('Error logging in');
           this.status = 'ready';
           return;
         }
@@ -514,7 +530,7 @@ export class LoginComponent implements OnInit {
         this.toastr.error('Contraseña inválida o usuario no verificado', null, {
           timeOut: 2500,
         });
-      //   console.log('error');
+        //   console.log('error');
         this.status = 'ready';
         return;
       }
@@ -919,5 +935,24 @@ export class LoginComponent implements OnInit {
         { timeOut: 2000 }
       );
     } else this.toastr.error('Registro fallido', null, { timeOut: 2000 });
+  }
+
+  async getNumber() {
+    let number = localStorage.getItem('phone-number');
+   //  console.log(number);
+    if (number !== null) {
+      this.merchantNumber = number.split('+')[1];
+      const phoneNumber = await this.authService.checkUser(number);
+      if (phoneNumber) {
+        try {
+          const { countryIso, nationalNumber } =
+            this.authService.getPhoneInformation(number);
+          this.phoneNumber.setValue(nationalNumber);
+          this.CountryISO = countryIso;
+        } catch (e) {
+          console.log(e);
+        }
+      } else return;
+    } else this.merchantNumber = '';
   }
 }
