@@ -13,19 +13,25 @@
 }
 
 .search {
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   visibility: visible;
   border-radius: 10px;
   padding: 0px 20px;
-  width: 80%;
+  width: 100%;
   height: 53px;
   font-family: RobotoMedium;
   font-size: 20px;
   border: none;
-  color: #0b1f38;
+  color: #a1a1a1;
   box-shadow: 0px 7px 25px -18px inset;
   margin: 20px auto;
   display: block;
+  &::placeholder {
+    opacity: 0.6043000221252441;
+    text-align: center;
+  }
 }
 
 .message-container {
@@ -37,13 +43,11 @@
 
 .content {
   width: 100%;
-  padding-left: 30px;
   margin-bottom: 70px;
-  padding-right: 10px;
 }
 
 .container {
-  padding: 0px 5px;
+  padding: 0px 25px;
   height: 100vh;
 }
 
@@ -90,7 +94,7 @@
   padding: 20px 20px;
   margin: 11px 0px;
   border-radius: 10px;
-  box-shadow: 0px 0px 14px -1px #979797;
+  box-shadow: 0px 3px 10px -5px #979797;
   font-family: 'SfProRegular';
   color: #7b7b7b;
 }
