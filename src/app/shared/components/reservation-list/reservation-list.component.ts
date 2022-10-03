@@ -276,4 +276,8 @@ export class ReservationListComponent implements OnInit {
       `/admin/entity-detail-metrics/reservations/${this.calendar}/${option}`,
     ]);
   }
+
+  returnScreen():void {
+    this.resetEdition();
+  }
 }

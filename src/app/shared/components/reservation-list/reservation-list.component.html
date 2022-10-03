@@ -10,7 +10,7 @@
     [formControl]="controller"
     class="search"
     type="text"
-    placeholder="Busca reservaciones"
+    placeholder="Busca por tag, articulo, referencia.."
   />
   <ng-container [ngSwitch]="status">
     <div class="grid">
@@ -20,7 +20,7 @@
         [style]="{
           background: option === button ? '#fff' : 'transparent',
           color: option === button ? '#000' : '#fff',
-          boxShadow: option === button ?'0px 0px 4px 0px #000':''
+          boxShadow: option === button ?'0px 0px 4px 0px rgb(171 171 171)':''
         }"
         (click)="handleOption(button)"
       >
@@ -83,9 +83,10 @@
     return: true,
     returnStyles: {
       'border-right': '1.5px solid #fff',
-      backgroundColor: 'dodgerblue'
+      backgroundColor: '#2874ad'
     }
   }"
+  (added)="returnScreen()"
   [customRightButtonStyles]="{
     color: '#fff',
     width: '100%',
@@ -97,7 +98,7 @@
   [text]="''"
   [text2]="text2"
   [size]="'small'"
-  [bgColor]="text2 ? 'dodgerblue' : '#ababab'"
+  [bgColor]="text2 ? '#2874ad' : '#ababab'"
   (right)="handleSubmit()"
   fontSize="12px"
 ></app-sticky-button>
