@@ -32,6 +32,7 @@ export interface ChangedMonthEventData extends Month {
 export class ShortCalendarComponent implements OnInit {
   constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
+  @Output() selectedDates = new EventEmitter<Array<Date>>();
   @Output() changedMonth = new EventEmitter<ChangedMonthEventData>();
   @Output() beforeAnimation = new EventEmitter<boolean>();
   @Input() monthNameSelected: string;
@@ -39,11 +40,13 @@ export class ShortCalendarComponent implements OnInit {
   @Input() showMonthsSwiper: boolean;
   @Input() dateNumber: string;
   @Input() allowSundays: boolean = false;
+  @Input() multipleSelection: boolean = false;
   @Input() allowedDays: string[] = null;
   currentMonthIndex: number = null;
   monthDays: Day[] = [];
   allMonths: Array<Month> = [];
   selectedDay: Date;
+  selectedDays: Array<Date> = [];
   executeSwipeToNextMonthAnimation: boolean;
   executeSwipeToPrevAnimation: boolean;
   alreadyExecutedAnimation: boolean;
@@ -90,6 +93,9 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     this.allMonths[index].selected = true;
+    
+    if (this.multipleSelection) this.selectedDays = [];
+    else this.selectedDate = null;
 
     this.changedMonth.emit({
       ...this.allMonths[index],
@@ -116,14 +122,32 @@ export class ShortCalendarComponent implements OnInit {
       !this.executeSwipeToNextMonthAnimation ||
       !this.executeSwipeToPrevAnimation
     ) {
-      if (!day.weekDayNumber && !this.allowedDays) return;
+      if (!day.weekDayNumber && !this.allowedDays && !this.allowSundays) return;
 
-      this.selectedDay = new Date(
-        this.calendarService.year,
-        this.calendarService.months[this.calendarService.monthIndex].id,
-        day.dayNumber
-      );
-      this.selectedDate.emit(this.selectedDay);
+      if (!this.multipleSelection) {
+        this.selectedDay = new Date(
+          this.calendarService.year,
+          this.calendarService.months[this.calendarService.monthIndex].id,
+          day.dayNumber
+        );
+        this.selectedDate.emit(this.selectedDay);
+      } else {
+        if (this.checkIfDayIsSelected(day)) {
+          this.selectedDays = this.selectedDays.filter((dateObject) => {
+            return dateObject.getDate() !== day.dayNumber;
+          });
+        } else {
+          this.selectedDays.push(
+            new Date(
+              this.calendarService.year,
+              this.calendarService.months[this.calendarService.monthIndex].id,
+              day.dayNumber
+            )
+          );
+        }
+
+        this.selectedDates.emit(this.selectedDays);
+      }
     }
   }
 
@@ -277,5 +301,19 @@ export class ShortCalendarComponent implements OnInit {
     */
 
     //this.prevScrollLeftData.scrollLeft = el.scrollLeft;
+  }
+
+  checkIfDayIsSelected(day: Day) {
+    if (!this.multipleSelection)
+      return this.selectedDay?.getDate() === day.dayNumber;
+    else {
+      let isDaySelected = false;
+
+      this.selectedDays?.forEach((dateObject) => {
+        if (dateObject.getDate() === day.dayNumber) isDaySelected = true;
+      });
+
+      return isDaySelected;
+    }
   }
 }

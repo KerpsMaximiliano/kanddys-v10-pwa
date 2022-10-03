@@ -17,7 +17,10 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
   month: {
     name: string;
     number: number;
-  } = null;
+  } = {
+    name: null,
+    number: null,
+  };
   calendarData: ExtendedCalendar = {} as ExtendedCalendar;
   status: string = 'loading';
   mainText: any = {
@@ -49,6 +52,8 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
   formattedStart: string = '';
   formattedEnd: string = '';
   selectedDays: Array<number> = [];
+  selectedDaysDateObjects: Array<Date> = [];
+  selectedDaysLabel: string = null;
   constructor(
     private _CalendarsService: CalendarsService,
     private _ActivatedRoute: ActivatedRoute,
@@ -77,6 +82,7 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     this.sub = this.controller.valueChanges.subscribe((controller) => {
       this.formattedStart = this.formatInt(controller.start);
       this.formattedEnd = this.formatInt(controller.end);
+      this.renderSelectedDatesTextMessage();
     });
   }
 
@@ -85,25 +91,102 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  setDateAsNull(): void {}
-
-  updateMonth(data, index: number): void {
-    console.log('mes', data, index);
+  setDateAsNull(): void {
+    this.selectedDaysLabel = '';
+    this.selectedDays = [];
+    this.month = {
+      name: '',
+      number: null,
+    };
   }
 
-  saveSelectedDay(date, index): void {
-    console.log('dia', date, index);
+  updateMonth(data, index: number): void {
+    this.month.name = this.allMonths[data.id].name;
+    this.month.number = this.allMonths[data.id].id;
+  }
+
+  saveSelectedDays(dates: Array<Date>): void {
+    this.selectedDaysLabel = '';
+
+    this.selectedDays = dates
+      .map((dateObject) => dateObject.getDate())
+      .sort((a, b) => a - b);
+
+    this.renderSelectedDatesTextMessage();
+  }
+
+  renderSelectedDatesTextMessage() {
+    const { startPeriod, endPeriod } = this.controller.value;
+
+    this.selectedDaysLabel = '';
+    if (this.selectedDays.length > 1) {
+      this.selectedDays.forEach((day, index) => {
+        if (this.selectedDays.length - 1 === index) {
+          this.selectedDaysLabel += 'y ';
+          this.selectedDaysLabel += day;
+        } else {
+          this.selectedDaysLabel += day;
+
+          if (index !== this.selectedDays.length - 2)
+            this.selectedDaysLabel += ', ';
+          else this.selectedDaysLabel += ' ';
+        }
+      });
+
+      this.selectedDaysLabel += ` de ${this.month.name} de ${this.formattedStart} ${startPeriod} a ${this.formattedEnd} ${endPeriod}`;
+    }
   }
 
   navigate(): void {
     this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
-  save(): void {
+  async save() {
     if (this.controller.invalid) return;
 
     const { start, startPeriod, end, endPeriod } = this.controller.controls;
+    const exceptions: Array<{
+      from: Date;
+      until: Date;
+    }> = [];
 
-    console.log(start, end, startPeriod, endPeriod);
+    this.selectedDays.forEach((dayNumber) => {
+      const currentDateObject = new Date();
+      const fromDateObject = new Date(
+        currentDateObject.getFullYear(),
+        this.month.number - 1,
+        dayNumber,
+        start.value
+      );
+      const untilDateObject = new Date(
+        currentDateObject.getFullYear(),
+        this.month.number - 1,
+        dayNumber,
+        end.value + 12
+      );
+
+      exceptions.push({
+        from: fromDateObject,
+        until: untilDateObject,
+      });
+    });
+
+    const arrayOfPromises = exceptions.map((exception) => {
+      return this._CalendarsService.calendarAddExceptions(
+        {
+          from: exception.from,
+          until: exception.until,
+        },
+        this.calendarData._id
+      );
+    });
+
+    Promise.all(arrayOfPromises)
+      .then((arrayOfResults) => {
+        console.log('Excepciones subidas', arrayOfResults);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 }
