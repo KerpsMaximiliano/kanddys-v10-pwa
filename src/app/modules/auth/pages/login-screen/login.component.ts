@@ -152,7 +152,7 @@ export class LoginComponent implements OnInit {
         }
       }
     }
-
+    this.getNumber();
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -210,8 +210,6 @@ export class LoginComponent implements OnInit {
       this.headerService.orderId = null;
       this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
       let productData: Item[] = this.headerService.getItems(this.saleflow._id);
-      this.getNumber();
-      // console.log(this.merchantNumber);
       this.itemCartAmount = productData?.length;
       this.items = productData;
 
@@ -329,7 +327,6 @@ export class LoginComponent implements OnInit {
             (this.auth === 'anonymous' || this.auth === 'payment')
           ) {
             this.authOrder(this.userID);
-            this.status = 'ready';
             return;
           }
           this.phoneNumber.setValue(nationalNumber);
@@ -341,12 +338,17 @@ export class LoginComponent implements OnInit {
           console.log(error);
         }
       } else if (validUser && validUser.validatedAt === null) {
-        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-        this.userID = validUser._id;
-        this.status = 'ready';
-        this.loggin = true;
-        this.toValidate = true;
-        await this.generateTOP();
+        if (this.auth === 'payment' || this.auth === 'anonymous') {
+          this.authOrder(validUser._id);
+          return;
+        } else {
+          this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+          this.userID = validUser._id;
+          this.status = 'ready';
+          this.loggin = true;
+          this.toValidate = true;
+          await this.generateTOP();
+        }
       } else if (
         this.orderId &&
         (this.auth === 'anonymous' || this.auth === 'payment')
@@ -939,7 +941,7 @@ export class LoginComponent implements OnInit {
 
   async getNumber() {
     let number = localStorage.getItem('phone-number');
-   //  console.log(number);
+    //  console.log(number);
     if (number !== null) {
       this.merchantNumber = number.split('+')[1];
       const phoneNumber = await this.authService.checkUser(number);
