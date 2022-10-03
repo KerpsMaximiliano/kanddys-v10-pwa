@@ -4,13 +4,13 @@
     [mainText]="{
       text:
         auth === 'address'
-          ? 'Salvar Dirección'
+          ? 'Guardando la nueva dirección'
           : auth === 'payment'
           ? 'Salvar el pago de la factura'
           : auth === 'anonymous'
           ? 'Salvar la orden'
           : auth === 'order'
-          ? 'Ver direcciones guardadas'
+          ? 'Direcciones guardadas'
           : loggin
           ? merchantNumber
           : signUp && !toValidate
@@ -44,9 +44,13 @@
     <ng-container *ngIf="!signUp; else elseTemplate">
       <div class="phone-input-wrapper" *ngIf="!loggin">
         <label for="phone number" class="account">{{
-          auth === "order"
-            ? "Escribe tu número de WhatsApp para acceder a tus direcciones guardadas"
-            : "Donde la guardarás?"
+          (auth === "order" &&
+            "Escribe tu número de WhatsApp para acceder a tus direcciones guardadas:") ||
+            (auth === "address" &&
+              "Escribe tu número del WhatsApp que guardará la dirección para tus futuros pedidos") ||
+            (auth === "payment" &&
+              "Escribe tu número de WhatsApp que recibirá la factura:") ||
+            "Login"
         }}</label>
 
         <div class="wrapper">
@@ -72,13 +76,15 @@
             class="confirm"
             (click)="submitPhone()"
             [disabled]="
-              (phoneNumber.invalid || phoneNumber.untouched) &&
-              !phoneNumber.valid
+              ((phoneNumber.invalid || phoneNumber.untouched) &&
+                !phoneNumber.valid) ||
+              status === 'draft'
             "
             [ngClass]="{
               disabled:
-                (phoneNumber.invalid || phoneNumber.untouched) &&
-                !phoneNumber.valid
+                ((phoneNumber.invalid || phoneNumber.untouched) &&
+                  !phoneNumber.valid) ||
+                status === 'draft'
             }"
           >
             <i class="fas fa-chevron-right"></i>
