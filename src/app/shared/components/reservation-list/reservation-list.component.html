@@ -19,7 +19,8 @@
         class="col"
         [style]="{
           background: option === button ? '#fff' : 'transparent',
-          color: option === button ? '#000' : '#fff'
+          color: option === button ? '#000' : '#fff',
+          boxShadow: option === button ?'0px 0px 4px 0px #000':''
         }"
         (click)="handleOption(button)"
       >
@@ -33,13 +34,16 @@
       </div>
       <div class="content">
         <div
-        *ngFor="let reservation of reservationsList"
-        class="reservations"
-        (click)="handleValue(reservation._id)"
-        [style]="{
-          background: optionIndexArray.includes(reservation._id)?'#b9ffb9':'#fff',
-          cursor: editable?'pointer':'initial'
-        }">
+          *ngFor="let reservation of reservationsList"
+          class="reservations"
+          (click)="handleValue(reservation._id)"
+          [style]="{
+            background: optionIndexArray.includes(reservation._id)
+              ? '#b9ffb9'
+              : '#fff',
+            cursor: editable ? 'pointer' : 'initial'
+          }"
+        >
           <p>
             {{ reservation.value }}
           </p>
@@ -61,7 +65,7 @@
           (activeMultipleOptionValue)="handleValue($event)"
           [showSelectedFeedback]="true"
         ></app-answer-selector> -->
-        <button class="reservation">CREA UNA NUEVA RESERVACION</button>
+        <button *ngIf="!editable" class="reservation">CREA UNA NUEVA RESERVACION</button>
       </div>
     </ng-container>
     <div class="message-container" *ngSwitchCase="'empty'">
@@ -73,7 +77,7 @@
   </ng-container>
 </div>
 <app-sticky-button
-  *ngIf="template"
+  *ngIf="editable"
   [mode]="'double'"
   [extra]="{
     return: true,

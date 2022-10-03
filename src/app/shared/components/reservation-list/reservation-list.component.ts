@@ -31,7 +31,6 @@ export class ReservationListComponent implements OnInit {
   dots = {
     active: true,
   };
-  template: boolean = true;
   activeIndex: number;
   options: OptionAnswerSelector[];
   optionIndexArray: any[] = [];

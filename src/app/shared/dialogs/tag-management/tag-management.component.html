@@ -1,0 +1,93 @@
+<app-helper-headerv2
+  [mainText]="mainText"
+  mode="basic"
+  [dots]="dots"
+></app-helper-headerv2>
+<div class="tags-grid">
+  <button *ngFor="let tg of tags"
+  [style]="{
+    background:tag.includes(tg)?'#2874ad':'#fff',
+    border:'1px solid '+(tag.includes(tg)?'#fff':'#2874ad'),
+    color:tag.includes(tg)?'#fff':'#2874ad'
+  }"
+  class="tag" (click)="setTag(tg)">{{tg}}</button>
+</div>
+<div class="container">
+  <form
+    *ngFor="let controller of controllers.controls; let i = index"
+    [formGroup]="getFormGroupAt(i)"
+  >
+    <p
+      *ngIf="multiple && controllers.controls.length > 1"
+      class="remove-item"
+      (click)="removeController(i)"
+    >
+      -
+    </p>
+    <div class="grid">
+      <ng-container *ngFor="let field of fields; let j = index">
+        <ng-container [ngSwitch]="field.type">
+          <div *ngSwitchCase="'file'">
+            <span class="label-title" [style]="field.style">{{
+              field.label
+            }}</span>
+            <div class="images-container" #target>
+              <div
+                *ngFor="
+                  let image of controller.get(field.name)
+                    ? controller.get(field.name).value
+                    : [];
+                  let j = index
+                "
+                class="image-placeholder"
+              >
+                <input
+                  id="{{ i }}{{ j }}"
+                  class="base-input d-none"
+                  type="file"
+                  placeholder="#nombre"
+                  (change)="loadFile($event, i, j)"
+                />
+                <label
+                  for="{{ i }}{{ j }}"
+                  class="image-label"
+                  [style.background]="images[i][j]"
+                >
+                </label>
+                <div
+                  *ngIf="
+                    multipleImages &&
+                    controller.get(field.name).value.length > 1
+                  "
+                  class="absolute"
+                  (click)="removeImage(i, j)"
+                >
+                  -
+                </div>
+              </div>
+              <div
+                *ngIf="multipleImages"
+                class="image-plus"
+                (click)="addImage(i, j, target)"
+              >
+                <p>+</p>
+              </div>
+              <div class="spacer"></div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'text'">
+            <span class="label-title">{{ field.label }}</span>
+            <input
+              [formControlName]="field.name"
+              class="base-input"
+              type="text"
+              placeholder="#nombre"
+            />
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </form>
+  <button *ngIf="multiple" class="add-item" (click)="addController()">+</button>
+  <button *ngIf="controllers.valid" type="submit" class="submit" (click)="submit()">CTAID</button>
+</div>

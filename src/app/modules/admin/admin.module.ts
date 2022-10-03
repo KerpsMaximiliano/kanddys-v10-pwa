@@ -9,6 +9,7 @@ import { ItemDisplayComponent } from './pages/item-display/item-display.componen
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
 import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
+import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 
 const routes: Routes = [
   {
@@ -48,6 +49,11 @@ const routes: Routes = [
       {
         path: 'entity-detail-metrics/reservations/:calendar/:type',
         component: ReservationListComponent,
+        data: { animation: 'EntityDetailMetrics' },
+      },
+      {
+        path: 'tag-dialog',
+        component: TagManagementComponent,
         data: { animation: 'EntityDetailMetrics' },
       },
     ],

@@ -97,6 +97,7 @@ import { SelectDropdownComponent } from './components/select-dropdown/select-dro
 import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 import { TimeBlockComponent } from './components/time-block/time-block.component';
+import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
 
 const imports = [
   CommonModule,
@@ -200,7 +201,8 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   SingleActionDialogComponent,
-  TimeBlockComponent
+  TimeBlockComponent,
+  TagManagementComponent
 ];
 
 @NgModule({
