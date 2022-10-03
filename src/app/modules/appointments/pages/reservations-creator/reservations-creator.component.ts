@@ -379,6 +379,42 @@ export class ReservationsCreatorComponent implements OnInit {
           }
         }
 
+        for (const exception of this.calendarData.exceptions) {
+          const fromDateInLocalTime = moment(exception.from).toDate();
+          const untilDateInLocalTime = moment(exception.until).toDate();
+
+          const exceptionFromHour = fromDateInLocalTime.getHours();
+          const exceptionUntilHour = untilDateInLocalTime.getHours();
+
+          const currentRangeFromHour24HourFormat =
+            fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
+              ? fromHour.hourNumber + 12
+              : fromHour.hourNumber;
+          const currentRangeUntilHour24HourFormat = toHour.hourNumber;
+
+          const isFromHourInsideTheExceptionRange =
+            exceptionFromHour <= currentRangeFromHour24HourFormat &&
+            currentRangeFromHour24HourFormat < exceptionUntilHour;
+          const isUntilHourInsideTheExceptionRange =
+            exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+            currentRangeUntilHour24HourFormat <= exceptionUntilHour;
+
+          const isTheExceptionDayTheSelectedDay =
+            fromDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber &&
+            untilDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber;
+    
+
+          if (
+            isFromHourInsideTheExceptionRange &&
+            isUntilHourInsideTheExceptionRange &&
+            isTheExceptionDayTheSelectedDay
+          ) {
+            this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+          }
+        }
+
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
           fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,

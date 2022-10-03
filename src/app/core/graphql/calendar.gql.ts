@@ -30,6 +30,10 @@ export const getCalendar = gql`
           toHour
         }
       }
+      exceptions {
+        from
+        until
+      }
     }
   }
 `;
