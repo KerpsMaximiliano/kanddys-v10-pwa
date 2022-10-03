@@ -2,10 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/core/services/auth.service';
 import {
   CalendarsService,
   ExtendedCalendar,
 } from 'src/app/core/services/calendars.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 @Component({
   selector: 'app-time-block',
@@ -57,6 +59,8 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
   constructor(
     private _CalendarsService: CalendarsService,
     private _ActivatedRoute: ActivatedRoute,
+    private _AuthService: AuthService,
+    private _MerchantsService: MerchantsService,
     private _Router: Router
   ) {}
 
@@ -65,6 +69,11 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       this.initController();
       const { calendarId } = routeParams;
       this.calendarData = await this._CalendarsService.getCalendar(calendarId);
+
+      if (!this.calendarData) this._Router.navigate(['others/error-screen']);
+
+      await this.checkIfUserIsAMerchant();
+
       this.allMonths = this._CalendarsService.allMonths;
       const date = new Date();
       const monthIndex = date.getMonth();
@@ -84,6 +93,18 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       this.formattedEnd = this.formatInt(controller.end);
       this.renderSelectedDatesTextMessage();
     });
+  }
+
+  async checkIfUserIsAMerchant() {
+    const user = await this._AuthService.me();
+
+    if (user) {
+      const merchantDefault = await this._MerchantsService.merchantDefault();
+
+      if (!merchantDefault) this._Router.navigate(['others/error-screen']);
+    } else {
+      this._Router.navigate(['auth/login']);
+    }
   }
 
   formatInt(value: number): string {
