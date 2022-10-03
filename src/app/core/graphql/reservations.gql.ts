@@ -129,3 +129,9 @@ export const deleteReservation = gql`
     deleteReservation(id: $id)
   }
 `;
+
+export const reservationSpacesAvailable = gql`
+  query reservationSpacesAvailable($until: Date!,$from: Date,$calendarId: ObjectID!) {
+    reservationSpacesAvailable(until: $until,from: $from,calendarId: $calendarId)
+  }
+`;

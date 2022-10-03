@@ -85,11 +85,16 @@ export class MetricsReservationComponent implements OnInit {
             )
             .join(', ');
         }
-
+        const numWeeks = 1;
+        const from = new Date();
+        const until = new Date();
+        until.setDate(from.getDate() + numWeeks * 7);
+        const {reservationSpacesAvailable} = await this._ReservationService.reservationSpacesAvailable(until,from,calendar._id);
         this.reservations.push({
           calendar: calendar._id,
           past,
           future,
+          slots:reservationSpacesAvailable,
           calendarObj: {
             ...calendar,
             daysSeparatedByComma,
