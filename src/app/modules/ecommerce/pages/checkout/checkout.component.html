@@ -78,6 +78,38 @@
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
         </div>
       </div>
+
+      <div class="items-container" style="margin-top: 5px;"> <!-- Quizas esta bien que no este -->
+         <div
+          class="image-container"
+          #elemt
+          (mousedown)="startDragging($event, elemt)"
+          (mouseup)="stopDragging()"
+          (mouseleave)="stopDragging()"
+          (mousemove)="moveEvent($event, elemt)"
+        >
+          <button
+            *ngFor="let item of items"
+            (click)="
+              (item.image || item.images?.length) &&
+                openImageModal(item.image || item.images[0])
+            "
+          >
+            <div class="image">
+              <img
+                [src]="
+                  item.image || item.images?.length
+                    ? item.image || item.images[0]
+                    : '/assets/images/noimage.png'
+                "
+                (error)="item.image = '/assets/images/noimage.png'"
+                alt="item image"
+                class="item-image"
+              />
+            </div>
+          </button>
+        </div>
+      </div>
     </section>
 
     <section class="section" *ngIf="order?.products[0].deliveryLocation">

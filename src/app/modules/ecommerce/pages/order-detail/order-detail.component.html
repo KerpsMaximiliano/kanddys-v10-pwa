@@ -118,34 +118,36 @@
           <p class="total">Total:</p>
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
         </div>
-        <div
-          *ngIf="order?.ocr"
-          class="image-container"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
-        >
-          <button (click)="order.ocr && openImageModal(order.ocr.image)">
-            <div
-              class="image"
-              [ngStyle]="{
-                'background-image': order.ocr.image
-                  ? 'url(' + order.ocr.image + ') '
-                  : 'url(/assets/images/noimage.png)'
-              }"
-            >
-              <!-- <img
-                [src]="
-                  order.ocr ? order.ocr.image : '/assets/images/noimage.png'
-                "
-                alt="item image"
-                class="item-image"
-              /> -->
-            </div>
-          </button>
-        </div>
+      </div>
+      <div class="items-container" style="margin-top: 5px;">
+         <div
+           *ngIf="order?.ocr"
+           class="image-container"
+           #elemt
+           (mousedown)="startDragging($event, elemt)"
+           (mouseup)="stopDragging()"
+           (mouseleave)="stopDragging()"
+           (mousemove)="moveEvent($event, elemt)"
+         >
+           <button (click)="order.ocr && openImageModal(order.ocr.image)">
+             <div
+               class="image"
+               [ngStyle]="{
+                 'background-image': order.ocr.image
+                   ? 'url(' + order.ocr.image + ') '
+                   : 'url(/assets/images/noimage.png)'
+               }"
+             >
+               <!-- <img
+                 [src]="
+                   order.ocr ? order.ocr.image : '/assets/images/noimage.png'
+                 "
+                 alt="item image"
+                 class="item-image"
+               /> -->
+             </div>
+           </button>
+         </div>
       </div>
     </section>
 
