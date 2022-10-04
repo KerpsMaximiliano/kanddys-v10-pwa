@@ -348,7 +348,7 @@ export class LoginComponent implements OnInit {
              this.loggin = true;
              this.toValidate = true;
              await this.generateTOP();
-        }
+         }
       } else if (
         this.orderId &&
         (this.auth === 'anonymous' || this.auth === 'payment')
@@ -356,6 +356,7 @@ export class LoginComponent implements OnInit {
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4)
           },
           'none',
           null,
