@@ -84,20 +84,18 @@
 
     justify-content: space-between;
 
-    .hour-swiper,
-    .minutes-swiper {
+    .hour-swiper-wrapper,
+    .minutes-swiper-wrapper {
       height: 100px;
-      overflow-y: scroll;
-      flex: 1;
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
+      width: 100%;
     }
 
     .swiper-item {
+      &.swiper-slide {
+        margin: 0px;
+        padding: 0px;
+      }
+
       margin-bottom: 10px;
       width: 100px;
 
@@ -112,6 +110,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 26.39px;
+      margin-bottom: 16px;
       transition: 0.3s background-color ease-in-out;
 
       &:hover {
@@ -186,4 +186,9 @@
       }
     }
   }
+}
+
+:host ::ng-deep .swiper-button-next,
+:host ::ng-deep .swiper-button-prev {
+  display: none;
 }

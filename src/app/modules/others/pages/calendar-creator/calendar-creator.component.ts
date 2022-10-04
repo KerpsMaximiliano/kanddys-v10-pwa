@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/user';
 import { Merchant } from 'src/app/core/models/merchant';
 import { CalendarService } from 'src/app/core/services/calendar.service';
+import { SwiperOptions } from 'swiper';
 
 interface DayOfTheWeek {
   name: string;
@@ -231,6 +232,13 @@ export class CalendarCreatorComponent implements OnInit {
     breakTime: number;
   } = null;
   activeCalendar: boolean = true;
+  verticalSwiperConfig: SwiperOptions = {
+    slidesPerView: 3,
+    freeMode: true,
+    direction: 'vertical',
+    mousewheel: true,
+  };
+  blockMinutes: boolean = false;
 
   calendarCreatorForm: FormGroup = new FormGroup({
     reservationSlotCapacity: new FormGroup({
@@ -261,13 +269,10 @@ export class CalendarCreatorComponent implements OnInit {
   async ngOnInit() {
     this.route.params.subscribe(async (routeParams) => {
       const { calendarId } = routeParams;
+      this.calendarId = calendarId;
 
-      for (let number = 0; number <= 23; number++) {
-        this.hours.push(number.toString().length < 2 ? '0' + number : number);
-      }
-
-      for (let minute = 0; minute <= 60; minute++) {
-        this.minutes.push(minute.toString().length < 2 ? '0' + minute : minute);
+      if (!calendarId) {
+        this.setHoursAndMinutesArray();
       }
 
       this.user = await this.authService.me();
@@ -280,19 +285,90 @@ export class CalendarCreatorComponent implements OnInit {
           this.router.navigate(['others/error-screen']);
         }
 
-        if (calendarId) await this.inicializeExistingCalendarData(calendarId);
+        if (calendarId) await this.inicializeExistingCalendarData();
       } else {
         this.router.navigate(['auth/login']);
       }
     });
   }
 
-  async inicializeExistingCalendarData(calendarId: string) {
+  setHoursAndMinutesArray(chunkSize = null) {
+    this.hours = [];
+    this.minutes = [];
+
+    const reservationParamsFormGroup = this.calendarCreatorForm.controls
+      .reservationParams as FormGroup;
+
+    if (!this.calendarId && !chunkSize) {
+      reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
+        15
+      );
+    } else if (chunkSize && this.calendarId) {
+      reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
+        chunkSize
+      );
+    }
+
+    const { reservationDurationInMinutes } =
+      this.calendarCreatorForm.controls.reservationParams.value;
+
+    let hoursToAdvanceInEachSlot = null;
+
+    if (
+      reservationDurationInMinutes >= 60 &&
+      reservationDurationInMinutes % 60 === 0
+    ) {
+      hoursToAdvanceInEachSlot = reservationDurationInMinutes / 60;
+      const chunkSizePercentage = hoursToAdvanceInEachSlot * 60;
+      let minutesFractionAccumulator = 0;
+
+      for (let number = 0; number <= 23; number += hoursToAdvanceInEachSlot) {
+        this.hours.push(number.toString().length < 2 ? '0' + number : number);
+      }
+
+      this.minutes.push('00');
+      this.selectMinutes('from', 0, '00' as any);
+      this.selectMinutes('to', 0, '00' as any);
+      this.blockMinutes = true;
+
+      while (minutesFractionAccumulator !== 60) {
+        minutesFractionAccumulator += chunkSizePercentage;
+
+        if (minutesFractionAccumulator !== 60)
+          this.minutes.push(minutesFractionAccumulator);
+      }
+    }
+
+    if (
+      reservationDurationInMinutes <= 30 &&
+      reservationDurationInMinutes % 15 === 0
+    ) {
+      hoursToAdvanceInEachSlot = reservationDurationInMinutes / 60;
+      const chunkSizePercentage = hoursToAdvanceInEachSlot * 60;
+      let minutesFractionAccumulator = 0;
+
+      for (let number = 0; number <= 23; number++) {
+        this.hours.push(number.toString().length < 2 ? '0' + number : number);
+      }
+
+      this.minutes.push('00');
+
+      while (minutesFractionAccumulator !== 60) {
+        minutesFractionAccumulator += chunkSizePercentage;
+
+        if (minutesFractionAccumulator !== 60)
+          this.minutes.push(minutesFractionAccumulator);
+      }
+    }
+  }
+
+  async inicializeExistingCalendarData() {
     const { getCalendar: calendar } = await this.calendarService.getCalendar(
-      calendarId
+      this.calendarId
     );
     if (!calendar) this.router.navigate(['others/error-screen']);
-    this.calendarId = calendarId;
+
+    this.setHoursAndMinutesArray(calendar.timeChunkSize);
 
     const reservationAvailabilityFormGroup = this.calendarCreatorForm.controls
       .reservationAvailability as FormGroup;
@@ -409,6 +485,10 @@ export class CalendarCreatorComponent implements OnInit {
     this.currentStep = step;
   }
 
+  returnToMenu = () => {
+    this.changeStepTo('MAIN');
+  };
+
   selectDayOfTheWeek(dayIndex: number) {
     this.daysOfTheWeek[dayIndex].selected =
       !this.daysOfTheWeek[dayIndex].selected;
@@ -459,13 +539,21 @@ export class CalendarCreatorComponent implements OnInit {
       this.selectedToHour.hour = hour;
     }
 
-    if (this.selectedFromHour?.hour && this.selectedFromMinutes?.minute) {
+    if (
+      this.selectedFromHour &&
+      this.selectedFromHour.hour !== null &&
+      this.selectedFromMinutes &&
+      this.selectedFromMinutes.minute !== null
+    ) {
       reservationAvailabilityFormGroup.controls.fromHour.setValue(
         `${this.selectedFromHour.hour}:${this.selectedFromMinutes.minute}`
       );
     }
 
-    if (this.selectedToHour?.hour && this.selectedToMinutes?.minute) {
+    if (
+      this.selectedToHour?.hour !== null &&
+      this.selectedToMinutes?.minute !== null
+    ) {
       reservationAvailabilityFormGroup.controls.toHour.setValue(
         `${this.selectedToHour.hour}:${this.selectedToMinutes.minute}`
       );
@@ -597,6 +685,8 @@ export class CalendarCreatorComponent implements OnInit {
           reservationDurationInMinutes,
           minutesBetweenReservations
         );
+
+        this.setHoursAndMinutesArray(reservationDurationInMinutes);
 
         this.currentStep = 'MAIN';
         break;
