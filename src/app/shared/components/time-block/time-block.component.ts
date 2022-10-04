@@ -194,23 +194,17 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       });
     });
 
-    const arrayOfPromises = exceptions.map((exception) => {
-      return this._CalendarsService.calendarAddExceptions(
+    for await (const exception of exceptions) {
+      await this._CalendarsService.calendarAddExceptions(
         {
           from: exception.from,
           until: exception.until,
         },
         this.calendarData._id
       );
-    });
+    }
 
-    Promise.all(arrayOfPromises)
-      .then((arrayOfResults) => {
-        console.log('Excepciones subidas', arrayOfResults);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    console.log('Excepciones subidas');
   }
 
   checkIfHoursAreValid() {
