@@ -8,6 +8,7 @@ import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.co
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
+import { FacturasPrefacturasComponent } from './pages/facturas-prefacturas/facturas-prefacturas.component';
 
 const routes: Routes = [
   {
@@ -44,6 +45,10 @@ const routes: Routes = [
         path: 'options/:itemId',
         component: ActionsMenuComponent,
       },
+      {
+        path: 'facturas',
+        component: FacturasPrefacturasComponent,
+      },
     ],
   },
 ];
@@ -56,6 +61,7 @@ const routes: Routes = [
     ItemDisplayComponent,
     ActionsMenuComponent,
     AdminComponent,
+    FacturasPrefacturasComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
