@@ -284,9 +284,9 @@ export class TagDetailComponent implements OnInit {
             console.log(data.tag._id);
             this.tagName = data.tag.name;
             console.log(this.tagName); //*
-            this.tagMessage = data.tag.messageNotify;
-            console.log(this.transparent); //*
-            this.transparent = data.tag.notify;
+            // this.tagMessage = data.tag.messageNotify;
+            // console.log(this.transparent); //*
+            // this.transparent = data.tag.notify;
             console.log(this.tagMessage); //*
         } else {
             console.log('No Tag Data')
