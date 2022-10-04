@@ -268,7 +268,7 @@ export class LoginComponent implements OnInit {
     this.authCode = false;
     this.phoneNumber.reset();
     this.password.reset();
-    this.merchantNumber = '';
+    this.getNumber();
   }
 
   logToggle = () => {
@@ -917,44 +917,22 @@ export class LoginComponent implements OnInit {
     this.location.back();
   }
 
-  async signUpNew() {
-    const register = await this.authService.signup(
-      {
-        phone: this.merchantNumber,
-        password: this.password.value,
-      },
-      'none',
-      null,
-      false
-    );
-    if (register) {
-      this.sneaky = this.password.value;
-      await this.generateTOP(true);
-      this.toPassword();
-      this.toastr.success(
-        'Número Registrado con exito. Se ha enviado un código para verificar',
-        null,
-        { timeOut: 2000 }
-      );
-    } else this.toastr.error('Registro fallido', null, { timeOut: 2000 });
-  }
-
   async getNumber() {
     let number = localStorage.getItem('phone-number');
     //  console.log(number);
     if (number !== null) {
       this.merchantNumber = number.split('+')[1];
+      try {
       const phoneNumber = await this.authService.checkUser(number);
       if (phoneNumber) {
-        try {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(number);
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
-        } catch (e) {
-          console.log(e);
-        }
-      } else return;
+        } else return
+      } catch(e){
+         console.log(e);
+      }
     } else this.merchantNumber = '';
   }
 }
