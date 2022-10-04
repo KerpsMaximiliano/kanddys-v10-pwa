@@ -85,7 +85,7 @@ export class StoreComponent implements OnInit {
     private dialog: DialogService,
     private router: Router,
     private merchant: MerchantsService,
-    private header: HeaderService,
+    public header: HeaderService,
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private route: ActivatedRoute,

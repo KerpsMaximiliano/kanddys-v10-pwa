@@ -15,7 +15,7 @@
       }"
       bgColor="#2874AD"
       [dots]="{
-        active: true,
+        active: header.user ? true : false,
         func: openLogoutDialog
       }"
       (dotEvent)="openLogoutDialog()"
