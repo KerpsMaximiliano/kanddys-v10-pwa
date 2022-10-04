@@ -342,12 +342,20 @@ export class LoginComponent implements OnInit {
           this.authOrder(validUser._id);
           return;
         } else {
-          this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-          this.userID = validUser._id;
-          this.status = 'ready';
-          this.loggin = true;
-          this.toValidate = true;
-          await this.generateTOP();
+          if(this.auth === 'order'){
+            this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+            this.userID = validUser._id;
+            this.password.setValue(this.merchantNumber.slice(-4));
+            this.status = 'ready';
+            this.signUp = true;
+          }else{
+             this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+             this.userID = validUser._id;
+             this.status = 'ready';
+             this.loggin = true;
+             this.toValidate = true;
+             await this.generateTOP();
+          }
         }
       } else if (
         this.orderId &&
@@ -417,7 +425,7 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
-        if (this.auth === 'order' && !this.toValidate) {
+        if (this.auth === 'order') /* && !this.toValidate*/ {
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
@@ -434,7 +442,6 @@ export class LoginComponent implements OnInit {
 
         if (this.itemId) {
           await this.createItem(checkOTP.user);
-
           return;
         }
 

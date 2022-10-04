@@ -101,13 +101,14 @@
       </div>
 
       <div class="password-input" *ngIf="loggin">
+        <label for="Password area" class="phone-label" style="margin: 0 8% 11px;"> Este WhatsApp fue previamente registrado, por favor adiciona la clave </label>
         <input
           class="pass"
           type="password"
           [placeholder]="
             OTP || authCode
               ? 'Escribe el código que recibiste'
-              : 'Adiciona tu clave'
+              : 'La clave es...'
           "
           [formControl]="password"
           name="password"
@@ -139,7 +140,14 @@
           <i class="fas fa-chevron-right"></i>
         </button>
 
-        <button class="alternate" (click)="generateTOP()">
+        <p class="subtext" style="margin: 16px 8%">Si no lo has cambiado por default son los últimos 4 dígitos de tu celular o los últimos 4 antes del @ de tu email</p>
+
+        <div class="checkbox">
+           <input type="checkbox" class="check-box" (click)="generateTOP()">
+           <p class="check-text">Prefiero recibir el código que me identifique</p>
+        </div>
+
+       <!--  <button class="alternate" (click)="generateTOP()">
           {{
             !OTP && !authCode
               ? "PREFIERO RECIBIR UN MENSAJE CON EL CODIGO"
@@ -148,7 +156,7 @@
           {{
             OTP || authCode ? "¿NO RECIBISTE EL CÓDIGO? ENVÍALO DE NUEVO" : null
           }}
-        </button>
+        </button> -->
       </div>
     </ng-container>
   </div>
@@ -194,7 +202,7 @@
         Por favor introduzca contraseña valida
       </div>
 
-      <p class="subtext">Por default son los últimos 4 dígitos de tu celular</p>
+      <p class="subtext">Si no lo has cambiado por default son los últimos 4 dígitos de tu celular o los últimos 4 antes del @ de tu email</p>
     </div>
   </ng-template>
 
