@@ -341,21 +341,13 @@ export class LoginComponent implements OnInit {
         if (this.auth === 'payment' || this.auth === 'anonymous') {
           this.authOrder(validUser._id);
           return;
-        } else {
-          if(this.auth === 'order'){
-            this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-            this.userID = validUser._id;
-            this.password.setValue(this.merchantNumber.slice(-4));
-            this.status = 'ready';
-            this.signUp = true;
-          }else{
+        } else {     
              this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
              this.userID = validUser._id;
              this.status = 'ready';
              this.loggin = true;
              this.toValidate = true;
              await this.generateTOP();
-          }
         }
       } else if (
         this.orderId &&
