@@ -93,17 +93,21 @@
 
 	.option-remove {
 		all: unset;
-		color: #fc2727;
 		position: absolute;
 		top: 50%;
 		right: 0;
 		transform: translate(50%, -50%);
-		font-size: 1.5rem;
 		cursor: pointer;
+		background-color: #ffffff;
+		border: solid 1px #82f18d;
+		color: #2874ad;
+		padding: 4px 8px;
+		border-radius: 50%;
+		font-size: 13px;
 
 		&:hover,
 		&:active {
-			color: #ff4242;
+			background-color: #f8f8f8;
 		}
 	}
 }
