@@ -14,6 +14,11 @@
         color: '#FFF'
       }"
       bgColor="#2874AD"
+      [dots]="{
+        active: true,
+        func: openLogoutDialog
+      }"
+      (dotEvent)="openLogoutDialog()"
       [returnAble]="false"
       [ngStyle]="{ cursor: admin ? 'pointer' : 'auto' }"
       [routerLink]="admin && ['admin/entity-detail-metrics']"

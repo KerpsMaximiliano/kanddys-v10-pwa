@@ -561,6 +561,21 @@ export class StoreComponent implements OnInit {
     });
   };
 
+  openLogoutDialog() {
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        alternate: true,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+          this.authService.signoutThree();
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   back() {
     this.location.back();
   }
