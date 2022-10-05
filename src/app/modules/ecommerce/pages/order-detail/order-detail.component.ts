@@ -13,7 +13,6 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
 
-
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.component.html',
@@ -21,6 +20,7 @@ import { environment } from 'src/environments/environment';
 })
 export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
+  notify: boolean;
   customizerDetails: { name: string; value: string }[] = [];
   customizer: CustomizerValue;
   order: ItemOrder;
@@ -52,6 +52,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const notification = this.route.snapshot.queryParamMap.get('notify');
     const id = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(id))?.order;
     if (!this.order) {
@@ -59,9 +60,11 @@ export class OrderDetailComponent implements OnInit {
         queryParams: { type: 'order' },
       });
       return;
-   }
-   console.log(this.order);
-   this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+    }
+    if (notification == 'true') {
+      this.notify = true;
+    };
+    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
@@ -214,9 +217,9 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
-  goToStore(){
-   let link = this.order.items[0].saleflow._id;
-   this.router.navigate([`ecommerce/store/${link}`]);
+  goToStore() {
+    let link = this.order.items[0].saleflow._id;
+    this.router.navigate([`ecommerce/store/${link}`]);
   }
 
   mouseDown: boolean;
