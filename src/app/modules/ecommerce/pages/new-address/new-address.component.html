@@ -3,7 +3,12 @@
     <div>
       <a (click)="goBack()"><i class="fas fa-chevron-left"></i></a>
       <h5>
-        {{ mode === "normal" ? "Dirección de entrega" : "Modo de edición" }}
+        {{
+          (mode === "normal" && "Dirección de entrega") ||
+            (mode === "edit" && "Editando dirección") ||
+            (mode === "add" && "Nueva dirección de entrega") ||
+            "Eliminando direcciones"
+        }}
       </h5>
     </div>
     <button
@@ -145,7 +150,7 @@
 <app-sticky-button
   *ngIf="mode === 'add' || editingId"
   [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
-  text="GUARDA Y CONTINUA AL CHECKOUT"
+  text="CONTINUAR"
   bgColor="#2874AD"
   size="small"
   (click)="!disableButton && formSubmit()"
@@ -153,7 +158,7 @@
 <app-sticky-button
   *ngIf="mode === 'normal' && selectedDeliveryIndex != null"
   mode="fixed"
-  text="CONTINUA AL CHECKOUT"
+  text="CONTINUAR"
   bgColor="#2874AD"
   size="small"
   (click)="selectAddress()"

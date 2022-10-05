@@ -5,12 +5,20 @@
       [fixed]="true"
       *ngIf="!hasCustomizer"
       [mainText]="{
-        text: saleflowData?.merchant?.name || 'Tienda',
+        text:
+          (saleflowData?.merchant?.name.length < 38
+            ? saleflowData?.merchant?.name
+            : saleflowData?.merchant?.name.split(' ')['0']) || 'Tienda',
         fontFamily: 'SfProBold',
         fontSize: '21px',
         color: '#FFF'
       }"
       bgColor="#2874AD"
+      [dots]="{
+        active: header.user ? true : false,
+        func: openLogoutDialog
+      }"
+      (dotEvent)="openLogoutDialog()"
       [returnAble]="false"
       [ngStyle]="{ cursor: admin ? 'pointer' : 'auto' }"
       [routerLink]="admin && ['admin/entity-detail-metrics']"

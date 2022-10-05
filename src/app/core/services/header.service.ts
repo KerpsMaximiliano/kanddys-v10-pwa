@@ -461,7 +461,8 @@ export class HeaderService {
     if (!order) return;
     if (!order.products) return;
     const index = order.products.findIndex(
-      (subOrder) => subOrder.item === id || subOrder.params[0].paramValue === id
+      (subOrder) =>
+        subOrder.item === id || subOrder.params?.[0]?.paramValue === id
     );
     if (index >= 0) {
       order.products.splice(index, 1);

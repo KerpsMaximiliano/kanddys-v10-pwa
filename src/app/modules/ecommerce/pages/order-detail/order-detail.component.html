@@ -29,7 +29,10 @@
     bgColor="#2874AD"
     [returnAble]="false"
     [mainText]="{
-      text: order?.items[0].saleflow.headline,
+      text:
+        order?.items[0].saleflow.headline.length < 38
+          ? order?.items[0].saleflow.headline
+          : order?.items[0].saleflow.headline.split(' ')['0'],
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"

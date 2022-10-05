@@ -113,10 +113,10 @@ export class WebformDetailComponent implements OnInit {
     description: 'Dos lineas de descripcion ID',
     image: '',
   };
-  tags: {
-    image: string;
-    tag: Tag
-  }[] = tagTest;
+  // tags: {
+  //   image: string;
+  //   tag: Tag
+  // }[] = tagTest;
   questions = questionData;
 
   constructor() { }
