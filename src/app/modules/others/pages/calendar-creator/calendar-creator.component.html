@@ -274,18 +274,21 @@
           Minutos que dura cada reserva:
         </label>
 
-        <div class="custom-swiper">
-          <div
-            *ngFor="let chunkSize of chunkSizeList; let i = index"
-            [ngClass]="{
-              'swiper-item': 'true',
-              selected: selectedChunkSize?.index === i
-            }"
-            [id]="'chunk-size' + i"
-            (click)="selectChunkSize(i, chunkSize)"
-          >
-            {{ chunkSize }}
-          </div>
+        <div class="minutes-swiper-wrapper">
+          <swiper [config]="verticalSwiperConfig">
+            <div
+              *ngFor="let chunkSize of chunkSizeList; let i = index"
+              [ngClass]="{
+                'swiper-item': 'true',
+                'swiper-slide': 'true',
+                selected: selectedChunkSize?.index === i
+              }"
+              [id]="'chunk-size' + i"
+              (click)="selectChunkSize(i, chunkSize)"
+            >
+              {{ chunkSize }}
+            </div>
+          </swiper>
         </div>
 
         <label
@@ -297,18 +300,21 @@
           Minutos entre reservas:
         </label>
 
-        <div class="custom-swiper">
-          <div
-            *ngFor="let breakTime of breakTimeList; let i = index"
-            [ngClass]="{
-              'swiper-item': 'true',
-              selected: selectedBreakTime?.index === i
-            }"
-            [id]="'chunk-size' + i"
-            (click)="selectBreakTime(i, breakTime)"
-          >
-            {{ breakTime }}
-          </div>
+        <div class="minutes-swiper-wrapper">
+          <swiper [config]="verticalSwiperConfig">
+            <div
+              *ngFor="let breakTime of breakTimeList; let i = index"
+              [ngClass]="{
+                'swiper-item': 'true',
+                'swiper-slide': 'true',
+                selected: selectedBreakTime?.index === i
+              }"
+              [id]="'chunk-size' + i"
+              (click)="selectBreakTime(i, breakTime)"
+            >
+              {{ breakTime }}
+            </div>
+          </swiper>
         </div>
       </div>
 
@@ -329,7 +335,12 @@
         }"
         [height]="'30px'"
         [bgColor]="'#2874AD'"
-        [extra]="{ return: true, height: '30px', bgColor: '#2874AD', returnCallback: returnToMenu }"
+        [extra]="{
+          return: true,
+          height: '30px',
+          bgColor: '#2874AD',
+          returnCallback: returnToMenu
+        }"
         [addBottomSeparator]="true"
         (right)="
           calendarCreatorForm.controls.reservationParams.status === 'VALID'
@@ -381,7 +392,12 @@
         }"
         [height]="'30px'"
         [bgColor]="'#2874AD'"
-        [extra]="{ return: true, height: '30px', bgColor: '#2874AD', returnCallback: returnToMenu }"
+        [extra]="{
+          return: true,
+          height: '30px',
+          bgColor: '#2874AD',
+          returnCallback: returnToMenu
+        }"
         [addBottomSeparator]="true"
         (right)="
           calendarCreatorForm.controls.reservationSlotCapacity.status ===

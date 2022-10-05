@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { getCalendar, calendarAddExceptions } from '../graphql/calendar.gql';
-import { Calendar } from '../models/calendar';
+import {
+  getCalendar,
+  calendarAddExceptions,
+  createCalendar,
+  updateCalendar,
+} from '../graphql/calendar.gql';
+import { Calendar, CalendarInput } from '../models/calendar';
 
 export interface ExtendedCalendar extends Calendar {
   limitFromDay?: number;
@@ -117,6 +122,38 @@ export class CalendarsService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async getCalendarSimple(id: string) {
+    try {
+      const response: { getCalendar: Calendar } = await this.graphql.query({
+        query: getCalendar,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async createCalendar(input: CalendarInput) {
+    const result = await this.graphql.mutate({
+      mutation: createCalendar,
+      variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async updateCalendar(input: CalendarInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateCalendar,
+      variables: { input, id },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   async calendarAddExceptions(exception: any, id: string) {

@@ -13,6 +13,8 @@ import { User } from 'src/app/core/models/user';
 import { Merchant } from 'src/app/core/models/merchant';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { SwiperOptions } from 'swiper';
+import { Calendar } from 'src/app/core/models/calendar';
+import { CalendarsService } from 'src/app/core/services/calendars.service';
 
 interface DayOfTheWeek {
   name: string;
@@ -262,7 +264,7 @@ export class CalendarCreatorComponent implements OnInit {
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private router: Router,
-    private calendarService: CalendarService,
+    private calendarService: CalendarsService,
     private route: ActivatedRoute
   ) {}
 
@@ -292,20 +294,23 @@ export class CalendarCreatorComponent implements OnInit {
     });
   }
 
-  setHoursAndMinutesArray(chunkSize = null) {
+  setHoursAndMinutesArray(
+    calendar?: Calendar,
+    noExistingCalendarChunkSize?: number
+  ) {
     this.hours = [];
     this.minutes = [];
 
     const reservationParamsFormGroup = this.calendarCreatorForm.controls
       .reservationParams as FormGroup;
 
-    if (!this.calendarId && !chunkSize) {
+    if (!this.calendarId && !calendar) {
       reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
-        15
+        !noExistingCalendarChunkSize ? 30 : noExistingCalendarChunkSize
       );
-    } else if (chunkSize && this.calendarId) {
+    } else if (calendar && calendar.timeChunkSize && this.calendarId) {
       reservationParamsFormGroup.controls.reservationDurationInMinutes.setValue(
-        chunkSize
+        calendar.timeChunkSize
       );
     }
 
@@ -328,7 +333,9 @@ export class CalendarCreatorComponent implements OnInit {
 
       this.minutes.push('00');
       this.selectMinutes('from', 0, '00' as any);
-      this.selectMinutes('to', 0, '00' as any);
+
+      if (!calendar) this.selectMinutes('to', 0, '00' as any);
+
       this.blockMinutes = true;
 
       while (minutesFractionAccumulator !== 60) {
@@ -337,6 +344,8 @@ export class CalendarCreatorComponent implements OnInit {
         if (minutesFractionAccumulator !== 60)
           this.minutes.push(minutesFractionAccumulator);
       }
+
+      if (calendar) this.setExistingCalendarFinalHours(calendar);
     }
 
     if (
@@ -359,16 +368,59 @@ export class CalendarCreatorComponent implements OnInit {
         if (minutesFractionAccumulator !== 60)
           this.minutes.push(minutesFractionAccumulator);
       }
+
+      if (calendar) this.setExistingCalendarFinalHours(calendar);
+    }
+  }
+
+  setExistingCalendarFinalHours(calendar: Calendar) {
+    if (calendar) {
+      const [initialHour, initialMinute] = calendar.limits.fromHour.split(':');
+      const [initialToHour, initialToMinute] =
+        calendar.limits.toHour.split(':');
+      const initialHourIndex = this.hours.findIndex((hour) =>
+        String(Number(initialHour)).length < 2
+          ? hour === initialHour
+          : hour === Number(initialHour)
+      );
+      const initialMinuteIndex = this.minutes.findIndex((minute) =>
+        String(Number(initialMinute)).length < 2
+          ? minute === initialMinute
+          : minute === Number(initialMinute)
+      );
+
+      this.selectHour('from', initialHourIndex, initialHour as any);
+      this.selectMinutes('from', initialMinuteIndex, initialMinute as any);
+
+      this.toHours = [];
+
+      for (let number = Number(initialHour); number <= 23; number++) {
+        this.toHours.push(number.toString().length < 2 ? '0' + number : number);
+      }
+
+      const initialToHourIndex = this.toHours.findIndex((hour) =>
+        String(Number(initialToHour)).length < 2
+          ? hour === initialToHour
+          : hour === Number(initialToHour)
+      );
+
+      let initialToMinuteIndex = this.minutes.findIndex((minute) =>
+        String(Number(initialToMinute)).length < 2
+          ? minute === initialToMinute
+          : minute === Number(initialToMinute)
+      );
+
+      this.selectHour('to', initialToHourIndex, initialToHour as any);
+      this.selectMinutes('to', initialToMinuteIndex, initialToMinute as any);
     }
   }
 
   async inicializeExistingCalendarData() {
-    const { getCalendar: calendar } = await this.calendarService.getCalendar(
-      this.calendarId
-    );
+    const { getCalendar: calendar } =
+      await this.calendarService.getCalendarSimple(this.calendarId);
     if (!calendar) this.router.navigate(['others/error-screen']);
 
-    this.setHoursAndMinutesArray(calendar.timeChunkSize);
+    this.setHoursAndMinutesArray(calendar);
 
     const reservationAvailabilityFormGroup = this.calendarCreatorForm.controls
       .reservationAvailability as FormGroup;
@@ -406,47 +458,6 @@ export class CalendarCreatorComponent implements OnInit {
 
     reservationAvailabilityFormGroup.controls.fromHour.setValue(fromHour);
     reservationAvailabilityFormGroup.controls.toHour.setValue(toHour);
-
-    const [initialHour, initialMinute] = fromHour.split(':');
-    const [initialToHour, initialToMinute] = toHour.split(':');
-    const initialHourIndex = this.hours.findIndex((hour) =>
-      String(Number(initialHour)).length < 2
-        ? hour === initialHour
-        : hour === Number(initialHour)
-    );
-    const initialMinuteIndex = this.minutes.findIndex((minute) =>
-      String(Number(initialMinute)).length < 2
-        ? minute === initialMinute
-        : minute === Number(initialMinute)
-    );
-
-    this.selectHour('from', initialHourIndex, initialHour as any);
-    this.selectMinutes('from', initialMinuteIndex, initialMinute as any);
-
-    for (let number = Number(initialHour); number <= 23; number++) {
-      this.toHours.push(number.toString().length < 2 ? '0' + number : number);
-    }
-
-    this.toHours = [];
-
-    for (let number = Number(initialHour); number <= 23; number++) {
-      this.toHours.push(number.toString().length < 2 ? '0' + number : number);
-    }
-
-    const initialToHourIndex = this.toHours.findIndex((hour) =>
-      String(Number(initialToHour)).length < 2
-        ? hour === initialToHour
-        : hour === Number(initialToHour)
-    );
-
-    let initialToMinuteIndex = this.minutes.findIndex((minute) =>
-      String(Number(initialToMinute)).length < 2
-        ? minute === initialToMinute
-        : minute === Number(initialToMinute)
-    );
-
-    this.selectHour('to', initialToHourIndex, initialToHour as any);
-    this.selectMinutes('to', initialToMinuteIndex, initialToMinute as any);
 
     this.setReservationAvailabilityLabel(
       daysAllowedForThisCalendar,
@@ -551,7 +562,9 @@ export class CalendarCreatorComponent implements OnInit {
     }
 
     if (
+      this.selectedToHour &&
       this.selectedToHour?.hour !== null &&
+      this.selectedToMinutes &&
       this.selectedToMinutes?.minute !== null
     ) {
       reservationAvailabilityFormGroup.controls.toHour.setValue(
@@ -574,13 +587,23 @@ export class CalendarCreatorComponent implements OnInit {
       this.selectedToMinutes.minute = minute;
     }
 
-    if (this.selectedFromHour?.hour && this.selectedFromMinutes?.minute) {
+    if (
+      this.selectedFromHour &&
+      this.selectedFromHour.hour !== null &&
+      this.selectedFromMinutes &&
+      this.selectedFromMinutes?.minute !== null
+    ) {
       reservationAvailabilityFormGroup.controls.fromHour.setValue(
         `${this.selectedFromHour.hour}:${this.selectedFromMinutes.minute}`
       );
     }
 
-    if (this.selectedToHour?.hour && this.selectedToMinutes?.minute) {
+    if (
+      this.selectedToHour &&
+      this.selectedToHour?.hour !== null &&
+      this.selectedToMinutes &&
+      this.selectedToMinutes?.minute !== null
+    ) {
       reservationAvailabilityFormGroup.controls.toHour.setValue(
         `${this.selectedToHour.hour}:${this.selectedToMinutes.minute}`
       );
@@ -686,13 +709,17 @@ export class CalendarCreatorComponent implements OnInit {
           minutesBetweenReservations
         );
 
-        this.setHoursAndMinutesArray(reservationDurationInMinutes);
+        this.setHoursAndMinutesArray(null, reservationDurationInMinutes);
+
+        this.setReservationAvailabilityLabel(
+          daysAvailability,
+          fromHour,
+          toHour
+        );
 
         this.currentStep = 'MAIN';
         break;
       case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
-        console.log(daysAvailability, fromHour, toHour);
-
         this.setReservationAvailabilityLabel(
           daysAvailability,
           fromHour,

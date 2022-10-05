@@ -267,11 +267,13 @@ export class CalendarService {
   handleActiveDays(from: string, to: string, chunkSize: number, mode: string) {
     let brakes = false;
 
+    
     if (mode === 'standar' || !mode) {
       let hour;
       this.hours.push(from);
       this.allHours.push(from);
       let fromHour = from.split(':')[0];
+      console.log(fromHour);
 
       let index = 0;
       this.showDays = false;
