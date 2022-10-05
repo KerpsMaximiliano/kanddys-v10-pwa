@@ -877,40 +877,7 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
-    const message = `COMPRADOR: ${
-      this.headerService.user
-        ? this.headerService.user.name || 'Sin nombre'
-        : 'Anónimo'
-    }\nARTICULO${order.items.length > 1 ? 'S: \n' : ': '}${order.items.map(
-      (itemSubOrder) =>
-        (order.items.length > 1 ? '- ' : '') +
-        (itemSubOrder.item.name ||
-          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
-        '\n'
-    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-      order.dateId
-    )}: ${this.fullLink}`.replace(/,/g, '');
-    this.messageLink = `https://wa.me/${
-      this.merchant.owner.phone
-    }?text=${encodeURIComponent(message)}`;
-    this.dialog.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        topButton: false,
-        title: 'Factura creada exitosamente',
-        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
-        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
-        mainButton: () => {
-          this.router.navigate([`ecommerce/order-info/${order._id}`], {
-            replaceUrl: true,
-          });
-          window.open(this.messageLink, '_blank');
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
+    this.router.navigate([`ecommerce/order-info/${order._id}`], {queryParams: {notify: 'true'}});
   }
 
   showShoppingCartDialog = () => {
