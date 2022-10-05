@@ -94,6 +94,8 @@ import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-me
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
 import { SingleActionDialogComponent } from './dialogs/single-action-dialog/single-action-dialog.component';
+import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
+import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
 
 const imports = [
   CommonModule,
@@ -193,7 +195,9 @@ const declarations = [
   WhatsappMessageComponent,
   CurrencyInputComponent,
   SelectDropdownComponent,
-  SingleActionDialogComponent
+  SingleActionDialogComponent,
+  TagsSelectorComponent,
+  TagsCarousellComponent
 ];
 
 @NgModule({

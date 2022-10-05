@@ -1,0 +1,16 @@
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 9px 4px;
+  padding: 20px 16px;
+  background: #2874ad;
+}
+
+.tag {
+  border-radius: 30px;
+  padding: 4px;
+  border: none;
+  font-family: 'SfProDisplay';
+  cursor: pointer;
+}

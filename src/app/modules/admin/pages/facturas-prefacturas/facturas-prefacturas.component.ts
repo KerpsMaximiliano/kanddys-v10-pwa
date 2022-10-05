@@ -48,6 +48,8 @@ export class FacturasPrefacturasComponent implements OnInit {
     freeMode: false,
     spaceBetween: 5,
   };
+  tags:any[] = [];
+  multipleTags:boolean = true;
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
@@ -246,5 +248,18 @@ export class FacturasPrefacturasComponent implements OnInit {
 
   returnScreen(): void {
     this.resetEdition();
+  }
+
+  handleTag(tag):void {
+    if (this.tags.includes(tag)) this.tags = this.tags.filter((tg) => tg !== tag);
+    else {
+      const value = this.multipleTags ? [...this.tags, tag] : [tag];
+      this.tags = value;
+    }
+    this.mainText = {
+      text: this.tags.length?'Ingreso: $IngresoID':'Facturas y Pre-facturas',
+      fontSize: '21px',
+      fontFamily: 'SfPro',
+    };
   }
 }

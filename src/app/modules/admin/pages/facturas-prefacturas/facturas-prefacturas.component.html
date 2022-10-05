@@ -1,12 +1,33 @@
 <app-helper-headerv2
+  *ngIf="!tags.length"
   [mainText]="mainText"
   mode="basic"
   [dots]="dots"
   (returnEvent)="navigate()"
   (dotEvent)="handleDotsEvent()"
 ></app-helper-headerv2>
+<div *ngIf="tags.length" class="header-grid">
+  <div class="arrows" (click)="tags=[]">
+    <i
+      class="fas fa-chevron-up"
+      aria-hidden="true"
+      style="color: rgb(255, 255, 255); display: block"
+    ></i>
+    <i
+      class="fas fa-chevron-up"
+      aria-hidden="true"
+      style="color: rgb(255, 255, 255); display: block"
+    ></i>
+  </div>
+  <div class="header-text">Ingreso: $IngresoID</div>
+  <div class="dots">
+    <div class="dot-trio">
+      <div class="dot" *ngFor="let dot of ['', '', '']"></div>
+    </div>
+  </div>
+</div>
 <div class="container">
-  <div class="pr-25px">
+  <div *ngIf="!tags.length" class="pr-25px">
     <input
       [formControl]="controller"
       class="search"
@@ -15,7 +36,7 @@
     />
   </div>
   <ng-container [ngSwitch]="status">
-    <div class="grid">
+    <div *ngIf="!tags.length" class="grid">
       <button
         *ngFor="let button of buttons"
         class="col"
@@ -29,12 +50,8 @@
         {{ button | titlecase }}
       </button>
     </div>
-    <div class="tags">
-      <div *ngFor="let circle of ['','','','','']" class="tag-container">
-        <div class="circle"></div>
-        <p class="tag-title">#tagid</p>
-      </div>
-    </div>
+    <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
+    <app-tags-carousell (tag)="handleTag($event)"></app-tags-carousell>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div
@@ -42,42 +59,42 @@
           class="item"
           (click)="handleValue('')"
         >
-          <div class="text-grid">
-            <div class="destacada">{{i===0?'Destacadas':'Tag ID'}}</div>
+          <div *ngIf="!tags.length" class="text-grid">
+            <div class="destacada">{{ i === 0 ? "Destacadas" : "Tag ID" }}</div>
             <div class="mb-3 middle">Ingreso: $IngresoID</div>
             <div class="mb-3 text-right">VER</div>
           </div>
-          <p *ngIf="i===0" class="tap">
+          <p *ngIf="i === 0 && !tags.length" class="tap">
             Tap dos veces encima para destacar <br />algunas facturas.
           </p>
           <!-- <div class="card"> -->
-            <swiper [config]="swiperConfig">
-              <div
-                *ngFor="let factura of facturas; let j = index"
-                class=""
-                (click)="handleValue('')"
-              >
-                <div class="factura">
-                  <div class="w-100">
-                    <div class="factura-grid">
-                      <span class="id">
-                        {{ factura.dateId }}
-                      </span>
-                      <span class="reference">{{factura.createdAt}}</span>
-                    </div>
-                    <p *ngFor="let product of factura.products" class="input">
-                      {{ product }}
-                    </p>
-                    <div class="factura-grid">
-                      <span class="price">
-                        {{ factura.total }}
-                      </span>
-                      <span class="tag"> Tag ID, Tag ID, Tag ID </span>
-                    </div>
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let factura of facturas; let j = index"
+              class=""
+              (click)="handleValue('')"
+            >
+              <div class="factura">
+                <div class="w-100">
+                  <div class="factura-grid">
+                    <span class="id">
+                      {{ factura.dateId }}
+                    </span>
+                    <span class="reference">{{ factura.createdAt }}</span>
+                  </div>
+                  <p *ngFor="let product of factura.products" class="input">
+                    {{ product }}
+                  </p>
+                  <div class="factura-grid">
+                    <span class="price">
+                      {{ factura.total }}
+                    </span>
+                    <span class="tag"> Tag ID, Tag ID, Tag ID </span>
                   </div>
                 </div>
               </div>
-            </swiper>
+            </div>
+          </swiper>
           <!-- </div> -->
         </div>
       </div>
