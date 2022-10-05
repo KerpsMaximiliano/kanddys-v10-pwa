@@ -191,7 +191,7 @@ export class OrderDetailComponent implements OnInit {
         address += location.street + ', ';
         if (location.referencePoint) address += location.referencePoint + ', ';
         address += location.city + ', República Dominicana';
-        if (location.note) address += ` (nota: ${location.note})`;
+        if (location.note) address += ` (${location.note})`;
       } else {
         address = location.nickName;
       }
@@ -272,7 +272,7 @@ export class OrderDetailComponent implements OnInit {
         'Anónimo'
       }\n\nDirección: ${address}${
         giftMessage
-          ? '\n\nMensaje en la tarjetita de regalo: ' + giftMessage
+          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
       this.messageLink = `https://wa.me/${
