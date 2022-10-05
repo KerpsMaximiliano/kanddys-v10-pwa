@@ -142,13 +142,12 @@ export class ActionsMenuComponent implements OnInit {
     _id: '1',
     createdAt: 'string',
     updatedAt: 'string',
-    messageNotify: 'Esto es un mensaje',
     counter: 0,
     name: '#Tag',
-    notify: true,
     user: 'Pablito',
-    notifyUserOrder: true,
-    notifyMerchantOrder: true,
+    merchant: '',
+    notifications: [],
+    status: '',
   };
   options: OptionAnswerSelector[] = options;
 
