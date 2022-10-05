@@ -84,6 +84,7 @@ export class ReservationsCreatorComponent implements OnInit {
   hourRangesBlocked: number[] = [];
   clientPhone: string = null;
   clientEmail: string = null;
+  useDateRangeToLimitAvailableWeekDays: boolean = false;
 
   allMonths: {
     id: number;
@@ -142,6 +143,13 @@ export class ReservationsCreatorComponent implements OnInit {
         this.clientPhone = clientPhone;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
+
+        this.useDateRangeToLimitAvailableWeekDays =
+          (!('inDays' in this.calendarData.limits) ||
+            ('inDays' in this.calendarData.limits &&
+              this.calendarData.limits.inDays.length === 0)) &&
+          'fromDay' in this.calendarData.limits &&
+          'toDay' in this.calendarData.limits;
 
         if (this.calendarData) {
           this.calendarMerchant = await this.merchantsService.merchant(
@@ -324,7 +332,9 @@ export class ReservationsCreatorComponent implements OnInit {
 
       const toHourToShow =
         hourFractionAccumulator === 0
-          ? hourIn12HourFormat - 1
+          ? hourIn12HourFormat === 1 && loopCurrentHour === 13
+            ? 12
+            : hourIn12HourFormat - 1
           : hourIn12HourFormat;
 
       const minutesToShow =
@@ -367,6 +377,15 @@ export class ReservationsCreatorComponent implements OnInit {
         );
 
         for (const reservation of this.calendarData.reservations) {
+          if (
+            selectedDayNumber === new Date(reservation.date.from).getDate() &&
+            selectedDayNumber === new Date(reservation.date.until).getDate()
+          ) {
+            console.log(reservation.date.fromHour, fromHourString);
+            console.log(reservation.date.toHour, toHourString);
+            console.log('________________________________');
+          }
+
           if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
@@ -483,6 +502,8 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.fromHour.minutesNumber
     );
 
+    console.log(this.selectedDate.toHour);
+
     let toDateObject = new Date(
       currentYear,
       this.selectedDate.monthNumber - 1,
@@ -490,9 +511,6 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
     );
-
-    console.log(fromDateObject);
-    console.log(toDateObject);
 
     let fromHourNumber =
       this.selectedDate.fromHour.timeOfDay === 'PM' &&
@@ -511,11 +529,19 @@ export class ReservationsCreatorComponent implements OnInit {
         : String(fromHourNumber);
 
     let realToHour = Number(this.selectedDate.toHour.hourString);
+
+    console.log(
+      this.selectedDate.toHour.hourNumber,
+      this.selectedDate.toHour.timeOfDay,
+      realToHour
+    );
+
     realToHour =
-      this.selectedDate.toHour.timeOfDay === 'PM' &&
-      this.selectedDate.toHour.hourNumber !== 12
+      this.selectedDate.toHour.timeOfDay === 'PM' && realToHour !== 12
         ? realToHour + 12
         : realToHour;
+
+    console.log(realToHour);
 
     realToHour =
       realToHour + utcOffset < 24

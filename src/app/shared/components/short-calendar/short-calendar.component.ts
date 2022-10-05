@@ -40,6 +40,7 @@ export class ShortCalendarComponent implements OnInit {
   @Input() showMonthsSwiper: boolean;
   @Input() dateNumber: string;
   @Input() allowSundays: boolean = false;
+  @Input() daysRange: {fromDay: string; toDay: string} = null;
   @Input() multipleSelection: boolean = false;
   @Input() allowedDays: string[] = null;
   currentMonthIndex: number = null;
@@ -57,6 +58,15 @@ export class ShortCalendarComponent implements OnInit {
     scrollLeft: 0,
     counter: 0,
   };
+  daysOfTheWeekInOrder = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+  ];
 
   ngOnInit(): void {
     this.calendarService.setInitalState();
@@ -115,6 +125,25 @@ export class ShortCalendarComponent implements OnInit {
     };
 
     return this.allowedDays.includes(daysOfTheWeekTranslation[day.dayName]);
+  }
+  
+  isThisDayInTheRange(day: Day): boolean {
+    const daysOfTheWeekTranslation = {
+      Sabado: 'SATURDAY',
+      Domingo: 'SUNDAY',
+      Lunes: 'MONDAY',
+      Martes: 'TUESDAY',
+      Miercoles: 'WEDNESDAY',
+      Jueves: 'THURSDAY',
+      Viernes: 'FRIDAY',
+    };
+
+    const startRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.fromDay);
+    const endRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.toDay);
+
+    const dayIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === daysOfTheWeekTranslation[day.dayName]);
+
+    return startRangeIndex <= dayIndex && dayIndex <= endRangeIndex;
   }
 
   onClick(day: Day) {

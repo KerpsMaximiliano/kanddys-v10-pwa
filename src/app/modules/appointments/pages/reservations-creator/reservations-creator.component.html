@@ -89,7 +89,19 @@
           <h3>DIA De {{ currentMonth?.name }}</h3>
           <app-short-calendar
             [allowUsersToChangeTheMonthShown]="true"
-            [allowedDays]="calendarData?.limits?.inDays"
+            [allowedDays]="
+              !useDateRangeToLimitAvailableWeekDays
+                ? calendarData?.limits?.inDays
+                : null
+            "
+            [daysRange]="
+              useDateRangeToLimitAvailableWeekDays
+                ? {
+                    fromDay: calendarData?.limits?.fromDay,
+                    toDay: calendarData?.limits?.toDay
+                  }
+                : null
+            "
             (selectedDate)="rerenderAvailableHours($event)"
             (changedMonth)="updateMonth($event)"
             (beforeAnimation)="setDateAsNull()"
@@ -136,8 +148,6 @@
         </div>
       </div>
 
-
-      
       <app-sticky-button
         *ngIf="selectedDate && selectedDate.filled"
         text="Continuar al resumen de la factura"
