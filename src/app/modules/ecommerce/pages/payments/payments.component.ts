@@ -13,6 +13,8 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { LocationStrategy } from '@angular/common';
+import { Post } from 'src/app/core/models/post';
+import { PostsService } from 'src/app/core/services/posts.service';
 
 @Component({
   selector: 'app-payments',
@@ -32,12 +34,14 @@ export class PaymentsComponent implements OnInit {
   whatsappLink: string;
   disableButton: boolean;
   depositAmount: number;
+  post: Post;
 
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
     private route: ActivatedRoute,
     private router: Router,
+    private postsService: PostsService,
     private merchantService: MerchantsService,
     private headerService: HeaderService,
     private dialogService: DialogService,
@@ -86,13 +90,10 @@ export class PaymentsComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         this.order.merchants?.[0]?._id
       );
-      if (!this.headerService.saleflow)
-        this.headerService.saleflow = this.headerService.getSaleflow();
-      if (
-        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
-        this.orderCompleted();
-        return;
+      if (this.order.items[0].post) {
+        this.post = (
+          await this.postsService.getPost(this.order.items[0].post._id)
+        ).post;
       }
     }
     this.banks = (
@@ -208,21 +209,34 @@ export class PaymentsComponent implements OnInit {
 
   singleAction() {
     const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-    const message = `COMPRADOR: ${
-      this.headerService.user
-        ? this.headerService.user.name || 'Sin nombre'
-        : 'Anónimo'
-    }\nARTICULO${
-      this.order.items.length > 1 ? 'S: \n' : ': '
-    }${this.order.items.map(
-      (itemSubOrder) =>
-        (this.order.items.length > 1 ? '- ' : '') +
-        (itemSubOrder.item.name ||
-          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
-        '\n'
-    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+    let address = '';
+    const location = this.order.items[0].deliveryLocation;
+    if (location.street) {
+      if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+      address += location.street + ', ';
+      if (location.referencePoint) address += location.referencePoint + ', ';
+      address += location.city + ', República Dominicana';
+      if (location.note) address += ` (nota: ${location.note})`;
+    } else {
+      address = location.nickName;
+    }
+    let giftMessage = '';
+    if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+    if (this.post?.targets?.[0]?.name)
+      giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+    if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
+    const message = `*FACTURA ${formatID(
       this.order.dateId
-    )}: ${fullLink}`.replace(/,/g, '');
+    )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.paymentAmount.toLocaleString(
+      'es-MX'
+    )}: ${fullLink}*\n\nComprador: ${
+      this.headerService.user?.name ||
+      this.headerService.user?.phone ||
+      this.headerService.user?.email ||
+      'Anónimo'
+    }\n\nDirección: ${address}\n\n${
+      giftMessage ? 'Mensaje en la tarjetita de regalo: ' + giftMessage : ''
+    }`;
     this.whatsappLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;

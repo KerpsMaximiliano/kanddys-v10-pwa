@@ -1,20 +1,12 @@
 <div class="container">
   <header class="header">
-    <h1 class="merchant-name">{{ order.items[0].saleflow.merchant.name }}</h1>
+    <h1 class="merchant-name">{{ order?.items[0].saleflow.merchant.name }}</h1>
 
     <div class="right-area">
-      <span class="header-text">{{
-        order?.user?.name
-          ? order.user.name
-          : order.user.phone
-          ? order.user.phone
-          : order.user.email
-      }}</span>
-      <img
-        [src]="env + '/person.svg'"
-        alt="Icono de una persona"
-        (click)="(redirectToUserContact)"
-      />
+      <span class="header-text" *ngIf="order">
+        {{ order.user?.name || order.user?.phone || order.user?.email }}
+      </span>
+      <img [src]="env + '/person.svg'" (click)="(redirectToUserContact)" />
     </div>
   </header>
 
@@ -74,8 +66,8 @@
 
   <main class="information">
     <section class="top">
-      <h2 class="top-h">
-        Factura {{ formatId(order?.dateId) }} en <br />
+      <h2 class="top-h" *ngIf="order">
+        Factura {{ formatId(order.dateId) }} en <br />
         <span class="top-name">{{ order?.items[0].saleflow.headline }}</span>
       </h2>
 

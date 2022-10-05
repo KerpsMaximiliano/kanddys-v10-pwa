@@ -26,6 +26,9 @@ import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items
 import { environment } from 'src/environments/environment';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { Post } from 'src/app/core/models/post';
+import { PostsService } from 'src/app/core/services/posts.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 
 type AuthTypes =
   | 'phone'
@@ -116,6 +119,8 @@ export class LoginComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private location: Location,
     private usersService: UsersService,
+    private postsService: PostsService,
+    private customizerValueService: CustomizerValueService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {
     this.image = this.router.getCurrentNavigation().extras.state?.image;
@@ -341,14 +346,14 @@ export class LoginComponent implements OnInit {
         if (this.auth === 'payment' || this.auth === 'anonymous') {
           this.authOrder(validUser._id);
           return;
-        } else {     
-             this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-             this.userID = validUser._id;
-             this.status = 'ready';
-             this.loggin = true;
-             this.toValidate = true;
-             await this.generateTOP();
-         }
+        } else {
+          this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+          this.userID = validUser._id;
+          this.status = 'ready';
+          this.loggin = true;
+          this.toValidate = true;
+          await this.generateTOP();
+        }
       } else if (
         this.orderId &&
         (this.auth === 'anonymous' || this.auth === 'payment')
@@ -356,7 +361,7 @@ export class LoginComponent implements OnInit {
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
-            password: this.phoneNumber.value.e164Number.slice(-4)
+            password: this.phoneNumber.value.e164Number.slice(-4),
           },
           'none',
           null,
@@ -421,13 +426,16 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
-        if (this.auth === 'order') /* && !this.toValidate*/ {
-          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
-            replaceUrl: true,
-            state: {
-              loggedIn: true,
-            },
-          });
+        if (this.auth === 'order') {
+          /* && !this.toValidate*/ this.router.navigate(
+            [`ecommerce/${this.saleflow._id}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
           this.status = 'ready';
           return;
         }
@@ -877,19 +885,97 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
-    const message = `COMPRADOR: ${
-      this.headerService.user
-        ? this.headerService.user.name || 'Sin nombre'
-        : 'Anónimo'
-    }\nARTICULO${order.items.length > 1 ? 'S: \n' : ': '}${order.items.map(
-      (itemSubOrder) =>
-        (order.items.length > 1 ? '- ' : '') +
-        (itemSubOrder.item.name ||
-          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
-        '\n'
-    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
+
+    let address = '';
+    const location = order.items[0].deliveryLocation;
+    if (location.street) {
+      if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+      address += location.street + ', ';
+      if (location.referencePoint) address += location.referencePoint + ', ';
+      address += location.city + ', República Dominicana';
+      if (location.note) address += ` (nota: ${location.note})`;
+    } else {
+      address = location.nickName;
+    }
+
+    let post: Post;
+    if (order.items[0].post) {
+      post = (await this.postsService.getPost(order.items[0].post._id)).post;
+    }
+    let giftMessage = '';
+    if (post?.from) giftMessage += 'De: ' + post.from + '\n';
+    if (post?.targets?.[0]?.name)
+      giftMessage += 'Para: ' + post.targets[0].name + '\n';
+    if (post?.message) giftMessage += 'Mensaje: ' + post.message;
+
+    let customizerMessage = '';
+    if (order.items[0].customizer) {
+      const customizer = await this.customizerValueService.getCustomizerValue(
+        order.items[0].customizer._id
+      );
+      const printType = order.items[0].item.params[0].values.find(
+        (value) => value._id === order.items[0].params[0].paramValue
+      )?.name;
+      if (printType)
+        customizerMessage += 'Tipo de impresión: ' + printType + '\n';
+
+      const selectedQuality = order.items[0].item.params[1].values.find(
+        (value) => value._id === order.items[0].params[1].paramValue
+      )?.name;
+      if (selectedQuality)
+        customizerMessage += 'Calidad de servilleta: ' + selectedQuality + '\n';
+
+      const backgroundColor = customizer.backgroundColor.color.name;
+      if (backgroundColor)
+        customizerMessage += 'Color de fondo: ' + backgroundColor + '\n';
+
+      if (customizer.texts.length) {
+        customizerMessage +=
+          'Texto: ' +
+          customizer.texts.reduce((prev, curr) => prev + curr.text, '') +
+          '\n';
+
+        let selectedTypography = customizer.texts[0].font;
+        switch (selectedTypography) {
+          case 'Dorsa':
+            selectedTypography = 'Empire';
+            break;
+          case 'Commercial-Script':
+            selectedTypography = 'Classic';
+            break;
+        }
+        customizerMessage +=
+          'Nombre de tipografía: ' + selectedTypography + '\n';
+
+        const typographyColorCode = customizer.texts[0].color.name;
+        const typographyColorName = customizer.texts[0].color.nickname;
+        customizerMessage +=
+          'Color de tipografía: ' + typographyColorName + '\n';
+        customizerMessage +=
+          'Código de color de tipografía: ' + typographyColorCode + '\n';
+      }
+
+      if (customizer.stickers.length) {
+        const stickerColorCode = customizer.stickers[0].svgOptions.color.name;
+        const stickerColorName =
+          customizer.stickers[0].svgOptions.color.nickname;
+        customizerMessage += 'Color de sticker: ' + stickerColorName + '\n';
+        customizerMessage += 'Código de color de sticker: ' + stickerColorCode;
+      }
+    }
+
+    const message = `*FACTURA ${formatID(
       order.dateId
-    )}: ${this.fullLink}`.replace(/,/g, '');
+    )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.paymentAmount.toLocaleString(
+      'es-MX'
+    )}: ${this.fullLink}*\n\nComprador: ${
+      this.headerService.user?.name ||
+      this.headerService.user?.phone ||
+      this.headerService.user?.email ||
+      'Anónimo'
+    }\n\nDirección: ${address}${
+      giftMessage ? '\n\nMensaje en la tarjetita de regalo: ' + giftMessage : ''
+    }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
     this.messageLink = `https://wa.me/${
       this.merchant.owner.phone
     }?text=${encodeURIComponent(message)}`;
@@ -935,15 +1021,15 @@ export class LoginComponent implements OnInit {
     if (number !== null) {
       this.merchantNumber = number.split('+')[1];
       try {
-      const phoneNumber = await this.authService.checkUser(number);
-      if (phoneNumber) {
+        const phoneNumber = await this.authService.checkUser(number);
+        if (phoneNumber) {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(number);
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
-        } else return
-      } catch(e){
-         console.log(e);
+        } else return;
+      } catch (e) {
+        console.log(e);
       }
     } else this.merchantNumber = '';
   }

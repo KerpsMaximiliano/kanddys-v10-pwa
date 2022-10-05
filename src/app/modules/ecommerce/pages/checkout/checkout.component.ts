@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
 import { Item } from 'src/app/core/models/item';
@@ -35,7 +36,6 @@ export class CheckoutComponent implements OnInit {
   post: PostInput;
   payment: number;
   hasPaymentModule: boolean;
-  messageLink: string;
   disableButton: boolean;
   date: {
     month: string;
@@ -343,20 +343,41 @@ export class CheckoutComponent implements OnInit {
           return;
         }
         const fullLink = `/ecommerce/order-info/${createdOrder}`;
-        this.messageLink = `https://wa.me/${
-          this.headerService.saleflow.merchant.owner.phone
-        }?text=Hola%20${this.headerService.saleflow.merchant.name
-          .replace('&', 'and')
-          .replace(
-            /[^\w\s]/gi,
-            ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
-          environment.uri
-        }${fullLink}`;
+        const order = (await this.orderService.order(createdOrder)).order;
+        let address = '';
+        const location = order.items[0].deliveryLocation;
+        if (location.street) {
+          if (location.houseNumber)
+            address += '#' + location.houseNumber + ', ';
+          address += location.street + ', ';
+          if (location.referencePoint)
+            address += location.referencePoint + ', ';
+          address += location.city + ', República Dominicana';
+          if (location.note) address += ` (nota: ${location.note})`;
+        } else {
+          address = location.nickName;
+        }
+        let giftMessage = '';
+        if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+        if (this.post?.targets?.[0]?.name)
+          giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+        if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
+        const message = `*FACTURA ${formatID(
+          order.dateId
+        )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
+          'es-MX'
+        )}: ${fullLink}*\n\nComprador: ${
+          this.headerService.user?.name ||
+          this.headerService.user?.phone ||
+          this.headerService.user?.email ||
+          'Anónimo'
+        }\n\nDirección: ${address}\n\n${
+          giftMessage ? 'Mensaje en la tarjetita de regalo: ' + giftMessage : ''
+        }`;
         this.router.navigate([fullLink], {
           replaceUrl: true,
         });
-        window.location.href = this.messageLink;
+        window.location.href = message;
         return;
       }
       unlockUI();
