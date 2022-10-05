@@ -18,79 +18,81 @@ a {
   width: 100%;
   min-height: 100vh;
 
-  .header{
-     width: 100%;
-     height: 36px;
-     background-color: #2874AD;
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     padding: 0 23px 0 33px;
+  .header {
+    width: 100%;
+    height: 36px;
+    background-color: #2874ad;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 23px 0 33px;
 
-     .merchant-name{
-        font-family: 'SfProBold';
-        font-size: 1.313rem;
-        color: #FFFFFF;
-     }
+    .merchant-name {
+      font-family: "SfProBold";
+      font-size: 1.313rem;
+      color: #ffffff;
+    }
 
-     .right-area{
-         display: flex;
+    .right-area {
+      display: flex;
+      align-items: center;
 
-        .header-text{
-           font-family: 'RobotoRegular';
-           font-size: 0.875rem;
-           color: #FFFFFF;
-           margin-right: 6px;
-        }
-  
-        img{
-           width: 14px;
-           filter: brightness(2);
-        }
-     }
+      .header-text {
+        font-family: "RobotoRegular";
+        font-size: 0.875rem;
+        color: #ffffff;
+        margin-right: 6px;
+      }
+
+      img {
+        width: 14px;
+        filter: brightness(2);
+      }
+    }
   }
 
-  .bill-area{
-   width: 100%;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   background-color: #FFFFFF;
-   padding: 29px 5% 23px;
+  .bill-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 29px 5% 23px;
 
-   .user-name{
-      font-family: 'RobotoRegular';
+    .user-name {
+      font-family: "RobotoRegular";
       font-size: 1.063rem;
-      color: #7B7B7B;
+      color: #7b7b7b;
       margin: 0 auto 10px;
-   }
+    }
 
-   .success{
-      font-family: 'RobotoRegular';
+    .success {
+      font-family: "RobotoRegular";
       font-size: 1.438rem;
-      color: #4F4F4F;
+      color: #4f4f4f;
       margin: 0 auto 35px;
-   }
+    }
 
-   .bill-button{
+    .bill-button {
       width: 85%;
-      background-color: #2874AD;
-      font-family: 'SfProRegular';
+      background-color: #2874ad;
+      font-family: "SfProRegular";
       font-size: 1.063rem;
-      color: #FFFFFF;
+      color: #ffffff;
       text-align: center;
       border-radius: 19px;
       margin: 0 auto 12px;
       padding: 10px 0;
-   }
+      text-decoration: none;
+    }
 
-   .bill-clarity{
-      font-family: 'RobotoRegular';
+    .bill-clarity {
+      font-family: "RobotoRegular";
       font-size: 1.063rem;
-      color: #7B7B7B;
+      color: #7b7b7b;
       text-align: center;
       margin: 0 auto;
-   }
+    }
   }
 
   .information {
@@ -98,41 +100,41 @@ a {
     margin-top: 40px;
     padding: 0 24px 32px;
 
-    .top{
+    .top {
       margin: 33px 0 59.5px;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
 
-      .top-h{
-        font-family: 'RobotoMedium'; 
+      .top-h {
+        font-family: "RobotoMedium";
         font-size: 0.875rem;
-        color: #7B7B7B;
+        color: #7b7b7b;
         font-weight: 500;
         text-align: center;
 
-        .top-name{
-         font-family: 'SfProBold'; 
-         font-size: 1.25rem;
-         color: #7B7B7B;
+        .top-name {
+          font-family: "SfProBold";
+          font-size: 1.25rem;
+          color: #7b7b7b;
         }
       }
 
-      .info-display{
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         margin-top: 10px;
-         width: 50%;
+      .info-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        width: 50%;
 
-         .info{
-            font-family: 'RobotoRegular';
-            font-size: 0.813rem;
-            color: #7B7B7B;
-         }
+        .info {
+          font-family: "RobotoRegular";
+          font-size: 0.813rem;
+          color: #7b7b7b;
+        }
       }
-   }
+    }
 
     .section {
       width: 100%;

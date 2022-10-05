@@ -1,17 +1,18 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
+import { Post } from 'src/app/core/models/post';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
-import { environment } from 'src/environments/environment';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-payments',
@@ -21,6 +22,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 export class PaymentsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   environment = environment;
+  env: string = environment.assetsUrl;
   selectedBank: Bank;
   selectedOption: number;
   image: File;
@@ -31,16 +33,24 @@ export class PaymentsComponent implements OnInit {
   whatsappLink: string;
   disableButton: boolean;
   depositAmount: number;
+  post: Post;
 
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
     private route: ActivatedRoute,
     private router: Router,
+    private postsService: PostsService,
     private merchantService: MerchantsService,
     private headerService: HeaderService,
-    private dialogService: DialogService
-  ) {}
+    private dialogService: DialogService,
+    private location: LocationStrategy
+  ) {
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
@@ -79,13 +89,10 @@ export class PaymentsComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         this.order.merchants?.[0]?._id
       );
-      if (!this.headerService.saleflow)
-        this.headerService.saleflow = this.headerService.getSaleflow();
-      if (
-        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
-        this.orderCompleted();
-        return;
+      if (this.order.items[0].post) {
+        this.post = (
+          await this.postsService.getPost(this.order.items[0].post._id)
+        ).post;
       }
     }
     this.banks = (
@@ -114,6 +121,7 @@ export class PaymentsComponent implements OnInit {
   orderCompleted(id?: string) {
     this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
       replaceUrl: true,
+      queryParams: { notify: 'true' },
     });
   }
 
@@ -144,7 +152,7 @@ export class PaymentsComponent implements OnInit {
         this.order._id
       );
       unlockUI();
-      this.singleAction();
+      this.orderCompleted();
       return;
     }
     const payment = await this.orderService.createPartialOCR(
@@ -153,41 +161,7 @@ export class PaymentsComponent implements OnInit {
       this.image,
       this.headerService.user?._id
     );
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-    const message = `COMPRADOR: ${
-      this.headerService.user
-        ? this.headerService.user.name || 'Sin nombre'
-        : 'Anónimo'
-    }\nARTICULO${
-      this.order.items.length > 1 ? 'S: \n' : ': '
-    }${this.order.items.map(
-      (itemSubOrder) =>
-        (this.order.items.length > 1 ? '- ' : '') +
-        (itemSubOrder.item.name ||
-          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
-        '\n'
-    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}FACTURA ${formatID(
-      this.order.dateId
-    )}: ${fullLink}, ${payment.image}`.replace(/,/g, '');
-    this.whatsappLink = `https://wa.me/${
-      this.headerService.saleflow.merchant.owner.phone
-    }?text=${encodeURIComponent(message)}`;
-    this.dialogService.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        topButton: false,
-        title: 'Factura creada exitosamente',
-        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
-        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
-        mainButton: () => {
-          this.orderCompleted();
-          window.open(this.whatsappLink, '_blank');
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
+    this.orderCompleted();
   }
 
   async authOrder() {
@@ -197,43 +171,5 @@ export class PaymentsComponent implements OnInit {
         this.headerService.user._id
       )
     ).authOrder;
-  }
-
-  singleAction() {
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-    const message = `COMPRADOR: ${
-      this.headerService.user
-        ? this.headerService.user.name || 'Sin nombre'
-        : 'Anónimo'
-    }\nARTICULO${
-      this.order.items.length > 1 ? 'S: \n' : ': '
-    }${this.order.items.map(
-      (itemSubOrder) =>
-        (this.order.items.length > 1 ? '- ' : '') +
-        (itemSubOrder.item.name ||
-          `${environment.uri}/ecommerce/item-detail/${this.headerService.saleflow._id}/${itemSubOrder.item._id}`) +
-        '\n'
-    )}PAGO: $${this.paymentAmount.toLocaleString('es-MX')}\nFACTURA ${formatID(
-      this.order.dateId
-    )}: ${fullLink}`.replace(/,/g, '');
-    this.whatsappLink = `https://wa.me/${
-      this.merchant.owner.phone
-    }?text=${encodeURIComponent(message)}`;
-    this.dialogService.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        topButton: false,
-        title: 'Factura creada exitosamente',
-        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
-        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
-        mainButton: () => {
-          this.orderCompleted();
-          window.open(this.whatsappLink, '_blank');
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
-    });
   }
 }
