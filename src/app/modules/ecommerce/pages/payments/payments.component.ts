@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-payments',
@@ -39,8 +40,14 @@ export class PaymentsComponent implements OnInit {
     private router: Router,
     private merchantService: MerchantsService,
     private headerService: HeaderService,
-    private dialogService: DialogService
-  ) {}
+    private dialogService: DialogService,
+    private location: LocationStrategy
+  ) {
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.status = 'loading';

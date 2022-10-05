@@ -88,6 +88,12 @@ export class EcommerceComponent implements OnInit {
             `/ecommerce/store/${this.headerService.saleflow._id}`,
           ]),
         footerCallback: async () => {
+          if (this.headerService.checkoutRoute) {
+            this.router.navigate([this.headerService.checkoutRoute], {
+              replaceUrl: true,
+            });
+            return;
+          }
           if (this.headerService.saleflow.module?.post)
             this.router.navigate([
               `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
@@ -96,7 +102,10 @@ export class EcommerceComponent implements OnInit {
             this.router.navigate([
               `/ecommerce/${this.headerService.saleflow._id}/new-address`,
             ]);
-          else this.router.navigate([`/ecommerce/checkout`]);
+          else
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/checkout`,
+            ]);
         },
       },
       customClass: 'app-dialog',

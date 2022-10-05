@@ -23,10 +23,7 @@
           ? headerService.user?.phone
           : headerService.user?.email
       }}</span>
-      <img
-        [src]="env + '/person.svg'"
-        alt="Icono de una persona"
-      />
+      <img [src]="env + '/person.svg'" alt="Icono de una persona" />
     </div>
   </header>
 
@@ -34,13 +31,17 @@
     <section class="top">
       <h2 class="top-h">
         Pre-Factura en <br />
-        <span class="top-name">{{ saleflow.merchant.name }}</span>
+        <span class="top-name">{{
+          headerService.saleflow?.merchant?.name
+        }}</span>
       </h2>
     </section>
     <section class="section">
       <div class="between">
         <h2 class="section-title">Articulos facturados:</h2>
-        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        <button (click)="editOrder('item')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
       </div>
 
       <div class="items-container">
@@ -74,51 +75,13 @@
           </button>
         </div>
       </div>
-    </section>
-
-    <section class="section" style="margin-top: 32px">
-      <div class="between">
-        <h2 class="section-title">Sobre el pago:</h2>
-        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
-      </div>
-
-      <div class="items-container">
-        <div class="items-container space-between" style="padding: 10px 32px">
-          <p class="total">Total:</p>
+      <div class="items-container" style="margin-top: 4px">
+        <div
+          class="items-container space-between"
+          style="padding: 0 32px; align-items: center"
+        >
+          <p class="total">Total</p>
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
-        </div>
-      </div>
-
-      <div class="items-container" style="margin-top: 5px">
-        <!-- Quizas esta bien que no este -->
-        <div
-          class="image-container"
-          #elemt
-          (mousedown)="startDragging($event, elemt)"
-          (mouseup)="stopDragging()"
-          (mouseleave)="stopDragging()"
-          (mousemove)="moveEvent($event, elemt)"
-        >
-          <button
-            *ngFor="let item of items"
-            (click)="
-              (item.image || item.images?.length) &&
-                openImageModal(item.image || item.images[0])
-            "
-          >
-            <div class="image">
-              <img
-                [src]="
-                  item.image || item.images?.length
-                    ? item.image || item.images[0]
-                    : '/assets/images/noimage.png'
-                "
-                (error)="item.image = '/assets/images/noimage.png'"
-                alt="item image"
-                class="item-image"
-              />
-            </div>
-          </button>
         </div>
       </div>
     </section>
@@ -130,7 +93,15 @@
           {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
         </h2>
 
-        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        <button
+          (click)="editOrder('address')"
+          *ngIf="
+            headerService.saleflow?.module?.delivery?.pickUpLocations?.length >
+              1 || headerService.saleflow?.module?.delivery?.deliveryLocation
+          "
+        >
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
       </div>
 
       <div class="items-container column">
@@ -167,7 +138,9 @@
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
 
-        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        <button (click)="editOrder('reservation')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
       </div>
 
       <div class="items-container" style="padding: 10px 32px">
@@ -180,16 +153,24 @@
 
     <section
       class="section"
-      *ngIf="post?.message || post?.from || post?.targets[0].name"
+      *ngIf="headerService.saleflow?.module?.post?.isActive"
       style="margin-top: 32px"
     >
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
 
-        <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        <button (click)="editOrder('message')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
       </div>
 
-      <div class="message-box">
+      <div
+        class="message-box"
+        *ngIf="
+          post?.message || post?.from || post?.targets[0].name;
+          else noMessage
+        "
+      >
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -207,9 +188,20 @@
           <p class="message-text inner">{{ post.from }}</p>
         </section>
       </div>
+      <ng-template #noMessage>
+        <div class="items-container">
+          <span class="address-name"> Sin mensaje de regalo </span>
+        </div>
+      </ng-template>
     </section>
     <section class="section" *ngIf="customizer" style="margin-top: 32px">
-      <h2 class="section-title">Personalización:</h2>
+      <div class="between">
+        <h2 class="section-title">Personalización:</h2>
+
+        <button (click)="editOrder('customizer')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
       <div class="items-container" style="flex-direction: column">
         <table>
           <tr *ngFor="let detail of customizerDetails">

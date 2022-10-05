@@ -384,9 +384,12 @@ export class LoginComponent implements OnInit {
           );
           const result = await this.usersService.addLocation(address);
           if (result) {
-            this.router.navigate(['ecommerce/checkout'], {
-              replaceUrl: true,
-            });
+            this.router.navigate(
+              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              {
+                replaceUrl: true,
+              }
+            );
           }
           this.status = 'ready';
           return;
@@ -451,7 +454,7 @@ export class LoginComponent implements OnInit {
           true
         );
         if (!session) {
-         //  console.log('Error logging in');
+          //  console.log('Error logging in');
           this.status = 'ready';
           return;
         }
@@ -461,9 +464,12 @@ export class LoginComponent implements OnInit {
           );
           const result = await this.usersService.addLocation(address);
           if (result) {
-            this.router.navigate(['ecommerce/checkout'], {
-              replaceUrl: true,
-            });
+            this.router.navigate(
+              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              {
+                replaceUrl: true,
+              }
+            );
           }
           this.status = 'ready';
           return;
@@ -506,7 +512,7 @@ export class LoginComponent implements OnInit {
         this.toastr.error('Contraseña inválida o usuario no verificado', null, {
           timeOut: 2500,
         });
-      //   console.log('error');
+        //   console.log('error');
         this.status = 'ready';
         return;
       }
@@ -516,9 +522,12 @@ export class LoginComponent implements OnInit {
         );
         const result = await this.usersService.addLocation(address);
         if (result) {
-          this.router.navigate(['ecommerce/checkout'], {
-            replaceUrl: true,
-          });
+          this.router.navigate(
+            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            {
+              replaceUrl: true,
+            }
+          );
         }
         this.status = 'ready';
         return;
@@ -659,9 +668,12 @@ export class LoginComponent implements OnInit {
             );
             const result = await this.usersService.addLocation(address);
             if (result) {
-              this.router.navigate(['ecommerce/checkout'], {
-                replaceUrl: true,
-              });
+              this.router.navigate(
+                [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+                {
+                  replaceUrl: true,
+                }
+              );
             }
             return;
           }

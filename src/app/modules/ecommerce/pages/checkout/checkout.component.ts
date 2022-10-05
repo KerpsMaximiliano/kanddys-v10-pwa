@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
@@ -30,7 +30,6 @@ export class CheckoutComponent implements OnInit {
     filename: string;
     type: string;
   };
-  saleflow: SaleFlow;
   order: ItemOrderInput;
   items: any[];
   post: PostInput;
@@ -54,13 +53,14 @@ export class CheckoutComponent implements OnInit {
     private merchantService: MerchantsService,
     private appService: AppService,
     private location: Location,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   async setCustomizerPreview() {
     this.customizer =
       this.headerService.customizer ||
-      this.headerService.getCustomizer(this.saleflow?._id);
+      this.headerService.getCustomizer(this.headerService.saleflow?._id);
     if (!this.customizer) return;
     this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
     this.items[0].images[0] = this.customizerPreview?.base64;
@@ -147,17 +147,18 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    this.saleflow =
-      this.headerService.saleflow || this.headerService.getSaleflow();
-    this.order = this.headerService.getOrder(this.saleflow?._id);
-    this.items = this.headerService.getItems(this.saleflow?._id);
+  async ngOnInit(): Promise<void> {
+    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+    await this.headerService.fetchSaleflow(saleflowId);
+    this.order = this.headerService.getOrder(this.headerService.saleflow?._id);
+    this.items = this.headerService.getItems(this.headerService.saleflow?._id);
     this.post =
       this.headerService.post ||
       this.headerService.getPost(
         this.headerService.saleflow?._id ||
           this.headerService.getSaleflow()?._id
       )?.data;
+    this.headerService.checkoutRoute = null;
     this.setCustomizerPreview();
     if (this.order?.products?.[0].reservation) {
       const fromDate = new Date(this.order.products[0].reservation.date.from);
@@ -182,6 +183,52 @@ export class CheckoutComponent implements OnInit {
         0
       );
     this.checkLogged();
+  }
+
+  editOrder(
+    mode: 'item' | 'message' | 'address' | 'reservation' | 'customizer'
+  ) {
+    this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+    switch (mode) {
+      case 'item': {
+        this.router.navigate(
+          [`ecommerce/store/${this.headerService.saleflow._id}`],
+          {
+            replaceUrl: true,
+          }
+        );
+        break;
+      }
+      case 'message': {
+        this.router.navigate(
+          [`ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
+          {
+            replaceUrl: true,
+          }
+        );
+        break;
+      }
+      case 'address': {
+        this.router.navigate(
+          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
+          {
+            replaceUrl: true,
+          }
+        );
+        break;
+      }
+      case 'customizer': {
+        this.router.navigate(
+          [
+            `ecommerce/provider-store/${this.headerService.saleflow._id}/${this.items[0]._id}/quantity-and-quality`,
+          ],
+          {
+            replaceUrl: true,
+          }
+        );
+        break;
+      }
+    }
   }
 
   back() {
@@ -241,7 +288,7 @@ export class CheckoutComponent implements OnInit {
     }
     // ++++++++++++++++++++++ Managing Customizer ++++++++++++++++++++++
     // ---------------------- Managing Post ----------------------------
-    if (this.saleflow.module?.post) {
+    if (this.headerService.saleflow.module?.post) {
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
 
@@ -251,7 +298,7 @@ export class CheckoutComponent implements OnInit {
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     // ---------------------- Managing Delivery ----------------------------
-    if (this.saleflow.module?.delivery) {
+    if (this.headerService.saleflow.module?.delivery) {
       this.order.products.forEach((product) => {
         product.deliveryLocation = this.order.products[0].deliveryLocation;
       });
@@ -259,7 +306,9 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Delivery ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
-      const anonymous = this.headerService.getOrderAnonymous(this.saleflow._id);
+      const anonymous = this.headerService.getOrderAnonymous(
+        this.headerService.saleflow._id
+      );
       if (this.headerService.user && !anonymous) {
         createdOrder = (await this.orderService.createOrder(this.order))
           .createOrder._id;
@@ -267,13 +316,15 @@ export class CheckoutComponent implements OnInit {
         createdOrder = (await this.orderService.createPreOrder(this.order))
           ?.createPreOrder._id;
       }
-      this.headerService.deleteSaleflowOrder(this.saleflow._id);
+      this.headerService.deleteSaleflowOrder(this.headerService.saleflow._id);
       this.headerService.resetIsComplete();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      if (this.saleflow?.module?.paymentMethod?.paymentModule?._id) {
+      if (
+        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      ) {
         this.router.navigate(
           [`/ecommerce/payments/${this.headerService.orderId}`],
           {
@@ -292,8 +343,8 @@ export class CheckoutComponent implements OnInit {
         }
         const fullLink = `/ecommerce/order-info/${createdOrder}`;
         this.messageLink = `https://wa.me/${
-          this.saleflow.merchant.owner.phone
-        }?text=Hola%20${this.saleflow.merchant.name
+          this.headerService.saleflow.merchant.owner.phone
+        }?text=Hola%20${this.headerService.saleflow.merchant.name
           .replace('&', 'and')
           .replace(
             /[^\w\s]/gi,
@@ -318,7 +369,7 @@ export class CheckoutComponent implements OnInit {
   async checkLogged() {
     try {
       const anonymous = await this.headerService.getOrderAnonymous(
-        this.saleflow._id
+        this.headerService.saleflow._id
       );
       if (this.headerService.user && !anonymous) {
         this.logged = true;
@@ -328,7 +379,7 @@ export class CheckoutComponent implements OnInit {
       return;
     }
   }
-  
+
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;

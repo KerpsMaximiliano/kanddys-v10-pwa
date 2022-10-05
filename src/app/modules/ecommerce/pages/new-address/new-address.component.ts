@@ -273,7 +273,12 @@ export class NewAddressComponent implements OnInit {
       this.authSelect('address');
       return;
     }
-    this.router.navigate(['ecommerce/checkout']);
+    this.router.navigate(
+      [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+      {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+      }
+    );
   }
 
   authSelect(auth: 'order' | 'address') {
@@ -288,7 +293,12 @@ export class NewAddressComponent implements OnInit {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+        }
+      );
       return;
     }
     if (
@@ -325,7 +335,12 @@ export class NewAddressComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate(['ecommerce/checkout']);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
