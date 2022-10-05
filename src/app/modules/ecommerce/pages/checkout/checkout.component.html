@@ -5,7 +5,7 @@
     (returnEvent)="back()"
     bgColor="#2874AD"
     [mainText]="{
-      text: 'Resumen de la factura',
+      text: '',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
@@ -46,14 +46,12 @@
           </button>
         </div>
       </div>
-    </section>
-
-    <section class="section" style="margin-top: 32px">
-      <h2 class="section-title">Sobre el pago:</h2>
-
-      <div class="items-container">
-        <div class="items-container space-between" style="padding: 10px 32px">
-          <p class="total">Total:</p>
+      <div class="items-container" style="margin-top: 4px">
+        <div
+          class="items-container space-between"
+          style="padding: 0 32px; align-items: center"
+        >
+          <p class="total">Total</p>
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
         </div>
       </div>
@@ -156,7 +154,7 @@
 
   <app-sticky-button
     [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="'CONFIRMA LA FACTURA'"
+    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
     [bgColor]="'#2874AD'"
     [customLeftButtonStyles]="{
       'font-size': '17px',

@@ -15,7 +15,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-data-list',
   templateUrl: './data-list.component.html',
-  styleUrls: ['./data-list.component.scss']
+  styleUrls: ['./data-list.component.scss'],
 })
 export class DataListComponent implements OnInit {
   keyword: string = '';
@@ -30,25 +30,25 @@ export class DataListComponent implements OnInit {
     {
       _id: 'gdfgdfgf',
       createdAt: 'hfghfghfg',
-      name: "gdfgdfgfd",
+      name: 'gdfgdfgfd',
       updatedAt: 'gdfgdf',
     },
     {
       _id: 'gdfgdfgf',
       createdAt: 'hfghfghfg',
-      name: "gdfgdfgfd",
+      name: 'gdfgdfgfd',
       updatedAt: 'gdfgdf',
     },
     {
       _id: 'gdfgdfgf',
       createdAt: 'hfghfghfg',
-      name: "gdfgdfgfd",
+      name: 'gdfgdfgfd',
       updatedAt: 'gdfgdf',
     },
     {
       _id: 'gdfgdfgf',
       createdAt: 'hfghfghfg',
-      name: "gdfgdfgfd",
+      name: 'gdfgdfgfd',
       updatedAt: 'gdfgdf',
     },
   ];
@@ -59,45 +59,45 @@ export class DataListComponent implements OnInit {
   dummyFilteredTagList: any[] = [];
   dummyTags: any[] = [
     {
-      _id: "123456789",
-      user: "123546789",
-      updatedAt: "2022-06-14T01:48:10.049Z",
+      _id: '123456789',
+      user: '123546789',
+      updatedAt: '2022-06-14T01:48:10.049Z',
       counter: 5,
       containers: [],
-      name: "Tag pro",
-      createdAt: "2022-06-14T01:48:10.049Z",
-      messageNotify: "Hola mami",
+      name: 'Tag pro',
+      createdAt: '2022-06-14T01:48:10.049Z',
+      messageNotify: 'Hola mami',
       notify: false,
       notifyMerchantOrder: false,
-      notifyUserOrder: false
+      notifyUserOrder: false,
     },
     {
-      _id: "123456789",
-      user: "123546789",
-      updatedAt: "2022-06-14T01:48:10.049Z",
+      _id: '123456789',
+      user: '123546789',
+      updatedAt: '2022-06-14T01:48:10.049Z',
       counter: 5,
       containers: [],
-      name: "Tag pro",
-      createdAt: "2022-06-14T01:48:10.049Z",
-      messageNotify: "Hola mami",
+      name: 'Tag pro',
+      createdAt: '2022-06-14T01:48:10.049Z',
+      messageNotify: 'Hola mami',
       notify: false,
       notifyMerchantOrder: false,
-      notifyUserOrder: false
+      notifyUserOrder: false,
     },
     {
-      _id: "123456789",
-      user: "123546789",
-      updatedAt: "2022-06-14T01:48:10.049Z",
+      _id: '123456789',
+      user: '123546789',
+      updatedAt: '2022-06-14T01:48:10.049Z',
       counter: 5,
       containers: [],
-      name: "Tag pro",
-      createdAt: "2022-06-14T01:48:10.049Z",
-      messageNotify: "Hola mami",
+      name: 'Tag pro',
+      createdAt: '2022-06-14T01:48:10.049Z',
+      messageNotify: 'Hola mami',
       notify: false,
       notifyMerchantOrder: false,
-      notifyUserOrder: false
-    }
-  ]
+      notifyUserOrder: false,
+    },
+  ];
 
   constructor(
     private tagsService: TagsService,
@@ -108,8 +108,8 @@ export class DataListComponent implements OnInit {
     private headerService: HeaderService,
     private router: Router,
     private location: Location,
-    private dialog: DialogService,
-  ) { }
+    private dialog: DialogService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queries) => {
@@ -119,7 +119,7 @@ export class DataListComponent implements OnInit {
       if (queries.mode === 'tag') this.mode = 'tag';
       else if (queries.mode === 'category') this.mode = 'category';
       else return this.redirect();
-    })
+    });
     if (this.viewtype === 'merchant') {
       this.merchantId = this.headerService.merchantInfo?._id;
       if (!this.merchantId) return this.redirect();
@@ -135,17 +135,17 @@ export class DataListComponent implements OnInit {
             try {
               const [data, user] = await Promise.all([
                 this.orderService.order(params.id),
-                this.auth.me()
+                this.auth.me(),
               ]);
               if (!data || !data.order || !user) return this.redirect();
               this.id = data.order._id;
               const tags = await this.tagsService.tagsByUser();
               tags.forEach((tag) => {
                 if (data.order.tags.includes(tag._id)) {
-                  if (this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
-                  if (this.viewtype === 'user') tag.notifyUserOrder = true;
+                  // if (this.viewtype === 'merchant') tag.notifyMerchantOrder = true;
+                  // if (this.viewtype === 'user') tag.notifyUserOrder = true;
                 }
-              })
+              });
               this.tagList = tags;
               this.filteredTagList = tags;
             } catch (error) {
@@ -164,14 +164,16 @@ export class DataListComponent implements OnInit {
                 options: {
                   limit: 100,
                 },
-              })
+              }),
             ]);
             if (!item || !data || !data) return this.redirect();
             this.item = item;
-            const itemCategories = item.category.map((category) => category._id);
+            const itemCategories = item.category.map(
+              (category) => category._id
+            );
             data.itemCategoriesList.forEach((category) => {
               category.isSelected = itemCategories.includes(category._id);
-            })
+            });
             this.categoriesList = data.itemCategoriesList;
             this.filteredCategories = data.itemCategoriesList;
           } else {
@@ -197,7 +199,7 @@ export class DataListComponent implements OnInit {
           await this.getCategories();
         }
       }
-    })
+    });
   }
 
   redirect() {
@@ -207,55 +209,55 @@ export class DataListComponent implements OnInit {
   onTagClick(tag: Tag) {
     if (this.mode !== 'tag') return;
     if (this.viewtype === 'merchant') {
-      if (tag.notifyMerchantOrder) {
-        tag.counter--;
-        this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.id)
-          .then((value) => {
-            console.log('removed successfully!')
-          })
-          .catch((error) => {
-            console.log(error);
-            tag.counter++;
-          });
-      }
-      else {
-        tag.counter++;
-        this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.id)
-          .then((value) => {
-            console.log('added successfully!')
-          })
-          .catch((error) => {
-            console.log(error);
-            tag.counter--;
-          });
-      }
-      tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
+      // if (tag.notifyMerchantOrder) {
+      //   tag.counter--;
+      //   this.tagsService.removeTagsInOrder(this.merchantId, tag._id, this.id)
+      //     .then((value) => {
+      //       console.log('removed successfully!')
+      //     })
+      //     .catch((error) => {
+      //       console.log(error);
+      //       tag.counter++;
+      //     });
+      // }
+      // else {
+      //   tag.counter++;
+      //   this.tagsService.addTagsInOrder(this.merchantId, tag._id, this.id)
+      //     .then((value) => {
+      //       console.log('added successfully!')
+      //     })
+      //     .catch((error) => {
+      //       console.log(error);
+      //       tag.counter--;
+      //     });
+      // }
+      // tag.notifyMerchantOrder = !tag.notifyMerchantOrder;
     }
     if (this.viewtype === 'user') {
-      if (tag.notifyUserOrder) {
-        tag.counter--;
-        this.tagsService.removeTagsInUserOrder(tag._id, this.id)
-          .then((value) => {
-            console.log(value);
-            console.log('removed successfully!')
-          })
-          .catch((error) => {
-            console.log(error);
-            tag.counter++;
-          });
-      } else {
-        tag.counter++;
-        this.tagsService.addTagsInUserOrder(tag._id, this.id)
-          .then((value) => {
-            console.log(value);
-            console.log('added successfully!')
-          })
-          .catch((error) => {
-            console.log(error);
-            tag.counter--;
-          });
-      }
-      tag.notifyUserOrder = !tag.notifyUserOrder;
+      //   if (tag.notifyUserOrder) {
+      //     tag.counter--;
+      //     this.tagsService.removeTagsInUserOrder(tag._id, this.id)
+      //       .then((value) => {
+      //         console.log(value);
+      //         console.log('removed successfully!')
+      //       })
+      //       .catch((error) => {
+      //         console.log(error);
+      //         tag.counter++;
+      //       });
+      //   } else {
+      //     tag.counter++;
+      //     this.tagsService.addTagsInUserOrder(tag._id, this.id)
+      //       .then((value) => {
+      //         console.log(value);
+      //         console.log('added successfully!')
+      //       })
+      //       .catch((error) => {
+      //         console.log(error);
+      //         tag.counter--;
+      //       });
+      //   }
+      //   tag.notifyUserOrder = !tag.notifyUserOrder;
     }
   }
 
@@ -266,22 +268,27 @@ export class DataListComponent implements OnInit {
       const index = categories.indexOf(category._id);
       categories.splice(index, 1);
       category.isSelected = false;
-      const catIndex = this.item.category.findIndex((itemCategory) => itemCategory._id === category._id);
+      const catIndex = this.item.category.findIndex(
+        (itemCategory) => itemCategory._id === category._id
+      );
       this.item.category.splice(catIndex, 1);
     } else {
       categories.push(category._id);
       this.item.category.push(category);
       category.isSelected = true;
     }
-    this.itemsService.updateItem({
-      category: categories
-    }, this.item._id);
+    this.itemsService.updateItem(
+      {
+        category: categories,
+      },
+      this.item._id
+    );
   }
 
   async addCategory() {
     const category = await this.itemsService.createItemCategory({
       merchant: this.merchantId,
-      name: this.keyword
+      name: this.keyword,
     });
     if (!category) throw new Error('Hubo un error al crear la categoría');
 
@@ -289,22 +296,25 @@ export class DataListComponent implements OnInit {
       this.dialog.open(GeneralFormSubmissionDialogComponent, {
         type: 'centralized-fullscreen',
         props: {
-          message: "Se ha creado la categoria"
+          message: 'Se ha creado la categoria',
         },
         customClass: 'app-dialog',
         flags: ['no-header'],
       });
 
-      this.keyword = "";
+      this.keyword = '';
       await this.getCategories();
     }
 
     if (!this.createMode) {
       const categories = this.item.category.map((category) => category._id);
       categories.push(category._id);
-      await this.itemsService.updateItem({
-        category: categories
-      }, this.item._id);
+      await this.itemsService.updateItem(
+        {
+          category: categories,
+        },
+        this.item._id
+      );
       category.isSelected = true;
       this.categoriesList.push(category);
       this.filteredCategories.push(category);
@@ -315,11 +325,19 @@ export class DataListComponent implements OnInit {
 
   searchKeyword() {
     if (this.mode === 'tag') {
-      if (!this.dummyView) this.filteredTagList = this.tagList.filter((tag) => tag.name.includes(this.keyword));
-      else this.dummyFilteredTagList = this.dummyTags.filter((tag) => tag.name.includes(this.keyword));
+      if (!this.dummyView)
+        this.filteredTagList = this.tagList.filter((tag) =>
+          tag.name.includes(this.keyword)
+        );
+      else
+        this.dummyFilteredTagList = this.dummyTags.filter((tag) =>
+          tag.name.includes(this.keyword)
+        );
     }
     if (this.mode === 'category')
-      this.filteredCategories = this.categoriesList.filter((category) => category.name.toLowerCase().includes(this.keyword.toLowerCase()))
+      this.filteredCategories = this.categoriesList.filter((category) =>
+        category.name.toLowerCase().includes(this.keyword.toLowerCase())
+      );
   }
 
   async getCategories() {
@@ -343,5 +361,4 @@ export class DataListComponent implements OnInit {
     // this.router.navigate([route]);
     this.location.back();
   }
-
 }
