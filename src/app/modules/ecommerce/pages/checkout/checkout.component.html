@@ -6,7 +6,7 @@
     (returnEvent)="back()"
     bgColor="#2874AD"
     [mainText]="{
-      text: 'Resumen de la factura',
+      text: '',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
@@ -222,7 +222,7 @@
 
   <app-sticky-button
     [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="'CONFIRMA LA FACTURA'"
+    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
     [bgColor]="'#2874AD'"
     [customLeftButtonStyles]="{
       'font-size': '17px',

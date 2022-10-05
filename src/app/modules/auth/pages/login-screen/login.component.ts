@@ -152,7 +152,7 @@ export class LoginComponent implements OnInit {
         }
       }
     }
-
+    this.getNumber();
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -233,6 +233,9 @@ export class LoginComponent implements OnInit {
 
         unlockUI();
       } else {
+        this.merchantNumber
+          ? this.phoneNumber.setValue(this.merchantNumber)
+          : null;
         this.loggin = false;
         unlockUI();
       }
@@ -265,7 +268,7 @@ export class LoginComponent implements OnInit {
     this.authCode = false;
     this.phoneNumber.reset();
     this.password.reset();
-    this.merchantNumber = '';
+    this.getNumber();
   }
 
   logToggle = () => {
@@ -300,11 +303,17 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone() {
+    this.status = 'draft';
     if (this.phoneNumber.value != undefined || null) {
       const validUser = await this.authService.checkUser(
         this.phoneNumber.value.e164Number.split('+')[1]
       );
-
+      validUser
+        ? localStorage.setItem(
+            'phone-number',
+            this.phoneNumber.value.e164Number
+          )
+        : null;
       if (validUser && validUser.validatedAt !== null) {
         try {
           const { countryIso, nationalNumber } =
@@ -313,26 +322,41 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
-          if (this.orderId && this.auth === 'anonymous') {
+          if (
+            this.orderId &&
+            (this.auth === 'anonymous' || this.auth === 'payment')
+          ) {
             this.authOrder(this.userID);
             return;
           }
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
+          this.status = 'ready';
           this.loggin = true;
         } catch (error) {
+          this.status = 'ready';
           console.log(error);
         }
       } else if (validUser && validUser.validatedAt === null) {
-        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-        this.userID = validUser._id;
-        this.loggin = true;
-        this.toValidate = true;
-        await this.generateTOP();
-      } else if (this.orderId && this.auth === 'anonymous') {
+        if (this.auth === 'payment' || this.auth === 'anonymous') {
+          this.authOrder(validUser._id);
+          return;
+        } else {     
+             this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+             this.userID = validUser._id;
+             this.status = 'ready';
+             this.loggin = true;
+             this.toValidate = true;
+             await this.generateTOP();
+         }
+      } else if (
+        this.orderId &&
+        (this.auth === 'anonymous' || this.auth === 'payment')
+      ) {
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4)
           },
           'none',
           null,
@@ -345,16 +369,19 @@ export class LoginComponent implements OnInit {
           this.toastr.error('Algo salio mal', null, {
             timeOut: 1500,
           });
+          this.status = 'ready';
         }
       } else {
         this.toastr.info('Al registro', null, { timeOut: 2000 });
         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
         this.password.setValue(this.merchantNumber.slice(-4));
+        this.status = 'ready';
         this.signUp = true;
         return;
       }
     } else {
       this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
+      this.status = 'ready';
       return;
     }
   }
@@ -394,7 +421,7 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           return;
         }
-        if (this.auth === 'order' && !this.toValidate) {
+        if (this.auth === 'order') /* && !this.toValidate*/ {
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
@@ -411,7 +438,6 @@ export class LoginComponent implements OnInit {
 
         if (this.itemId) {
           await this.createItem(checkOTP.user);
-
           return;
         }
 
@@ -903,25 +929,22 @@ export class LoginComponent implements OnInit {
     this.location.back();
   }
 
-  async signUpNew() {
-    const register = await this.authService.signup(
-      {
-        phone: this.merchantNumber,
-        password: this.password.value,
-      },
-      'none',
-      null,
-      false
-    );
-    if (register) {
-      this.sneaky = this.password.value;
-      await this.generateTOP(true);
-      this.toPassword();
-      this.toastr.success(
-        'Número Registrado con exito. Se ha enviado un código para verificar',
-        null,
-        { timeOut: 2000 }
-      );
-    } else this.toastr.error('Registro fallido', null, { timeOut: 2000 });
+  async getNumber() {
+    let number = localStorage.getItem('phone-number');
+    //  console.log(number);
+    if (number !== null) {
+      this.merchantNumber = number.split('+')[1];
+      try {
+      const phoneNumber = await this.authService.checkUser(number);
+      if (phoneNumber) {
+          const { countryIso, nationalNumber } =
+            this.authService.getPhoneInformation(number);
+          this.phoneNumber.setValue(nationalNumber);
+          this.CountryISO = countryIso;
+        } else return
+      } catch(e){
+         console.log(e);
+      }
+    } else this.merchantNumber = '';
   }
 }

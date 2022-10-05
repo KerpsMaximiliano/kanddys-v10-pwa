@@ -85,7 +85,7 @@ export class StoreComponent implements OnInit {
     private dialog: DialogService,
     private router: Router,
     private merchant: MerchantsService,
-    private header: HeaderService,
+    public header: HeaderService,
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private route: ActivatedRoute,
@@ -567,6 +567,21 @@ export class StoreComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  openLogoutDialog() {
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        alternate: true,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+          this.authService.signoutThree();
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 
   back() {
     this.location.back();

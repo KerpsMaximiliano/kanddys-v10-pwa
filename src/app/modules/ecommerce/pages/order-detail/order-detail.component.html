@@ -1,24 +1,42 @@
 <div class="container">
   <header class="header">
-    <span class="header-text">{{
-      order?.user?.name
-        ? order.user.name
-        : order.user.phone
-        ? order.user.phone
-        : order.user.email
-    }}</span>
-    <img
-      [src]="env + '/person.svg'"
-      alt="Icono de una persona"
-      (click)="(redirectToUserContact)"
-    />
+    <h1 class="merchant-name">{{ order.items[0].saleflow.merchant.name }}</h1>
+
+    <div class="right-area">
+      <span class="header-text">{{
+        order?.user?.name
+          ? order.user.name
+          : order.user.phone
+          ? order.user.phone
+          : order.user.email
+      }}</span>
+      <img
+        [src]="env + '/person.svg'"
+        alt="Icono de una persona"
+        (click)="(redirectToUserContact)"
+      />
+    </div>
   </header>
+
+  <div class="bill-area" *ngIf="notify">
+    <h2 class="user-name" *ngIf="order.user.name">{{ order.user.name }}</h2>
+    <h2 class="success">Tu factura se creó exitosamente.</h2>
+
+    <button class="bill-button">Confirmar por WhatsApp</button>
+
+    <p class="bill-clarity">
+      Al “confirmar” se abrirá tu WhatsApp con la factura para MerchantID.
+    </p>
+  </div>
   <!-- <app-helper-headerv2
     [mode]="'basic'"
     bgColor="#2874AD"
     [returnAble]="false"
     [mainText]="{
-      text: order?.items[0].saleflow.headline,
+      text:
+        order?.items[0].saleflow.headline.length < 38
+          ? order?.items[0].saleflow.headline
+          : order?.items[0].saleflow.headline.split(' ')['0'],
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"

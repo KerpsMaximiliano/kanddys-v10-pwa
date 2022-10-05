@@ -3,7 +3,9 @@
     [mode]="'basic'"
     [fixed]="true"
     [mainText]="{
-      text: merchantsService.merchantData?.name || 'Tienda',
+      text: (merchantsService.merchantData?.name.length < 38
+      ? merchantsService.merchantData?.name
+      : merchantsService.merchantData?.name.split(' ')['0']) || 'Merchant',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'

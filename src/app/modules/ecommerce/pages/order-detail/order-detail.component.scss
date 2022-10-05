@@ -23,21 +23,74 @@ a {
      height: 36px;
      background-color: #2874AD;
      display: flex;
-     justify-content: flex-end;
+     justify-content: space-between;
      align-items: center;
-     padding: 0 23px;
+     padding: 0 23px 0 33px;
 
-      .header-text{
-        font-family: 'RobotoRegular';
-        font-size: 0.875rem;
+     .merchant-name{
+        font-family: 'SfProBold';
+        font-size: 1.313rem;
         color: #FFFFFF;
-        margin-right: 6px;
-      }
+     }
 
-      img{
-         width: 14px;
-         filter: brightness(2);
-      }
+     .right-area{
+         display: flex;
+
+        .header-text{
+           font-family: 'RobotoRegular';
+           font-size: 0.875rem;
+           color: #FFFFFF;
+           margin-right: 6px;
+        }
+  
+        img{
+           width: 14px;
+           filter: brightness(2);
+        }
+     }
+  }
+
+  .bill-area{
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   background-color: #FFFFFF;
+   padding: 29px 5% 23px;
+
+   .user-name{
+      font-family: 'RobotoRegular';
+      font-size: 1.063rem;
+      color: #7B7B7B;
+      margin: 0 auto 10px;
+   }
+
+   .success{
+      font-family: 'RobotoRegular';
+      font-size: 1.438rem;
+      color: #4F4F4F;
+      margin: 0 auto 35px;
+   }
+
+   .bill-button{
+      width: 85%;
+      background-color: #2874AD;
+      font-family: 'SfProRegular';
+      font-size: 1.063rem;
+      color: #FFFFFF;
+      text-align: center;
+      border-radius: 19px;
+      margin: 0 auto 12px;
+      padding: 10px 0;
+   }
+
+   .bill-clarity{
+      font-family: 'RobotoRegular';
+      font-size: 1.063rem;
+      color: #7B7B7B;
+      text-align: center;
+      margin: 0 auto;
+   }
   }
 
   .information {

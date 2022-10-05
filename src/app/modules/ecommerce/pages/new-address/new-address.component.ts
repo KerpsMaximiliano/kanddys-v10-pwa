@@ -104,7 +104,7 @@ export class NewAddressComponent implements OnInit {
       this.addressesOptions.push({
         status: true,
         id: pickup._id,
-        value: 'Pick up. Lo pasaré a recoger',
+        value: 'Pick Up. Pasaré a recoger',
         valueStyles: {
           fontFamily: 'SfProBold',
           fontSize: '0.875rem',
@@ -125,7 +125,7 @@ export class NewAddressComponent implements OnInit {
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
-      value: 'Agregar nueva dirección',
+      value: 'Adiciona una nueva dirección',
       valueStyles: {
         fontFamily: 'SfProBold',
         fontSize: '0.875rem',

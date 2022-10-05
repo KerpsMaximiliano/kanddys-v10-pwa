@@ -2,7 +2,9 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-      text: merchant ? merchant.name : 'Merchant',
+      text: (merchant?.name.length < 38
+      ? merchant?.name
+      : merchant?.name.split(' ')['0']) || 'Merchant',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"

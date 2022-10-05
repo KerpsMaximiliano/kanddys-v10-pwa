@@ -180,11 +180,11 @@ export class WebformVisitorsComponent implements OnInit {
     description: 'Dos lineas de descripcion ID',
     image: '',
   };
-  tags: {
-    image: string;
-    tag: Tag
-  }[] = tagTest;
-  onlyTags: Tag[] = onlyTags;
+  // tags: {
+  //   image: string;
+  //   tag: Tag
+  // }[] = tagTest;
+  // onlyTags: Tag[] = onlyTags;
   questions = questionData;
 
   constructor() { }

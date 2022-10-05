@@ -34,6 +34,7 @@ export class CheckoutComponent implements OnInit {
   items: any[];
   post: PostInput;
   payment: number;
+  hasPaymentModule: boolean;
   messageLink: string;
   disableButton: boolean;
   date: {
@@ -182,6 +183,8 @@ export class CheckoutComponent implements OnInit {
         (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
         0
       );
+    if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
+      this.hasPaymentModule = true;
     this.checkLogged();
   }
 
@@ -322,9 +325,7 @@ export class CheckoutComponent implements OnInit {
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
-      if (
-        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
+      if (this.hasPaymentModule) {
         this.router.navigate(
           [`/ecommerce/payments/${this.headerService.orderId}`],
           {
