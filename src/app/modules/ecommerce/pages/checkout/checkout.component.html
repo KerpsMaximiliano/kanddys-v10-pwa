@@ -1,5 +1,6 @@
 <div class="container">
   <app-helper-headerv2
+    *ngIf="logged || !headerService.user"
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
@@ -11,14 +12,23 @@
     }"
   ></app-helper-headerv2>
 
-  <!-- <header class="header">
-   <a> <i class="fas fa-chevron-left"></i></a>
+  <header class="header" *ngIf="!logged && headerService.user">
+    <a> <i class="fas fa-chevron-left" (click)="back()"></i></a>
 
-   <div class="right-area">
-      <span class="header-text">{{order.user.name? order.user.name : (order.user.phone ? order.user.phone : order.user.email)}}</span>
-      <img [src]="env + '/person.svg'" alt="Icono de una persona" (click)="redirectToUserContact">
-   </div>
-  </header> -->
+    <div class="right-area">
+      <span class="header-text">{{
+        headerService.user?.name
+          ? headerService.user?.name
+          : headerService.user?.phone
+          ? headerService.user?.phone
+          : headerService.user?.email
+      }}</span>
+      <img
+        [src]="env + '/person.svg'"
+        alt="Icono de una persona"
+      />
+    </div>
+  </header>
 
   <main class="information">
     <section class="top">
@@ -79,8 +89,9 @@
         </div>
       </div>
 
-      <div class="items-container" style="margin-top: 5px;"> <!-- Quizas esta bien que no este -->
-         <div
+      <div class="items-container" style="margin-top: 5px">
+        <!-- Quizas esta bien que no este -->
+        <div
           class="image-container"
           #elemt
           (mousedown)="startDragging($event, elemt)"

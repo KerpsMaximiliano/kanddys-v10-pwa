@@ -43,10 +43,11 @@ export class CheckoutComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  logged: boolean;
   env: string = environment.assetsUrl;
   constructor(
     private dialogService: DialogService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private customizerValueService: CustomizerValueService,
     private postsService: PostsService,
     private orderService: OrderService,
@@ -180,6 +181,7 @@ export class CheckoutComponent implements OnInit {
         (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
         0
       );
+    this.checkLogged();
   }
 
   back() {
@@ -313,6 +315,20 @@ export class CheckoutComponent implements OnInit {
     }
   };
 
+  async checkLogged() {
+    try {
+      const anonymous = await this.headerService.getOrderAnonymous(
+        this.saleflow._id
+      );
+      if (this.headerService.user && !anonymous) {
+        this.logged = true;
+      } else this.logged = false;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
+  
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;

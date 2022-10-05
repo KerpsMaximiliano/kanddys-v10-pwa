@@ -13,6 +13,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
 
+
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.component.html',
@@ -59,7 +60,7 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
    }
-   console.log(this.order)
+   console.log(this.order);
    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
@@ -212,6 +213,11 @@ export class OrderDetailComponent implements OnInit {
       `/others/user-contact-landing/${this.order.user._id}`,
     ]);
   };
+
+  goToStore(){
+   let link = this.order.items[0].saleflow._id;
+   this.router.navigate([`ecommerce/store/${link}`]);
+  }
 
   mouseDown: boolean;
   startX: number;

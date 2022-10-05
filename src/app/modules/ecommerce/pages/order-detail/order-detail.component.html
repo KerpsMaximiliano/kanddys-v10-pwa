@@ -1,6 +1,14 @@
 <div class="container">
    <header class="header">
-      <span class="header-text">{{order.user.name? order.user.name : (order.user.phone ? order.user.phone : order.user.email)}}</span>
+      <span class="header-text">{{
+         order.user.name 
+         ? order.user.name 
+         : (
+            order.user.phone 
+            ? order.user.phone 
+            : order.user.email
+           )
+         }}</span>
       <img [src]="env + '/person.svg'" alt="Icono de una persona" (click)="redirectToUserContact">
    </header>
   <!-- <app-helper-headerv2
@@ -251,5 +259,6 @@
   [size]="'small'"
   [fontSize]="'1.25rem'"
   [text]="'IR A LA TIENDA'"
+  (click)="goToStore()"
   ></app-sticky-button>
 </div>
