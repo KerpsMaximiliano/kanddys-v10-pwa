@@ -163,6 +163,13 @@
   font-size: 16px;
 }
 
+.input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 260px;
+  white-space: nowrap;
+}
+
 .tag {
   font-family: 'SfProDisplay';
   color: #7b7b7b;

@@ -1,13 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { Merchant } from 'src/app/core/models/merchant';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SwiperOptions } from 'swiper';
 
 @Component({
   selector: 'app-facturas-prefacturas',
@@ -35,35 +42,56 @@ export class FacturasPrefacturasComponent implements OnInit {
   buttons: string[] = ['facturas', 'pre - facturas', 'archivo'];
   calendar: string = '';
   option: string;
+  facturasList:any[] = [];
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: false,
+    spaceBetween: 5,
+  };
   constructor(
     private _MerchantsService: MerchantsService,
-    private _ReservationService: ReservationService,
-    private _CalendarService: CalendarService,
-    private _ActivatedRoute: ActivatedRoute,
     private _Router: Router,
     private _DialogService: DialogService
   ) {}
 
   ngOnInit(): void {
     this.status = 'loading';
-    this.facturas = [
-      {
-        id:'ID',
-        input:'INPUT ID',
-        price:'$0.00'
-      },
-      {
-        id:'ID',
-        input:'INPUT ID',
-        price:'$0.00'
-      }
-    ];
-    [this.option] = this.buttons;
-    this.fillOptions();
-    this.controller.valueChanges.subscribe((value) =>
-      this.handleController(value)
-    );
-    this.status = this.facturas.length ? 'complete' : 'empty';
+    const ordersByMerchant = async () => {
+      const { _id }: Merchant = await this._MerchantsService.merchantDefault();
+      const pagination: PaginationInput = {
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 10,
+        },
+      };
+
+      const { ordersByMerchant } =
+        await this._MerchantsService.ordersByMerchant(_id, pagination);
+      this.facturas = ordersByMerchant.map(
+        ({ createdAt, subtotals, dateId, items }) => {
+          const result = {
+            createdAt: new Date(createdAt).toLocaleDateString('en-US'),
+            total: subtotals
+              .map(({ amount }) => amount)
+              .reduce((a, b) => a + b),
+            dateId: formatID(dateId),
+            products: items.map(({ item }) => {
+              const { name } = item;
+              return name;
+            }),
+          };
+          return result;
+        }
+      );
+      [this.option] = this.buttons;
+      this.fillOptions();
+      this.controller.valueChanges.subscribe((value) =>
+        this.handleController(value)
+      );
+      this.facturasList.push(this.facturas);
+      this.status = this.facturas.length ? 'complete' : 'empty';
+    };
+    ordersByMerchant();
   }
 
   handleController = (value: any): void => {
@@ -84,8 +112,7 @@ export class FacturasPrefacturasComponent implements OnInit {
     return result;
   };
 
-  fillOptions(value?) {
-  }
+  fillOptions(value?) {}
 
   navigate(): void {
     if (this.editable) {
@@ -175,8 +202,7 @@ export class FacturasPrefacturasComponent implements OnInit {
         mainButton: () => {
           this.status = 'loading';
           let results = [];
-          const deleteReservations = async () => {
-          };
+          const deleteReservations = async () => {};
           deleteReservations();
         },
         title: 'Borrar Reservaciones?',

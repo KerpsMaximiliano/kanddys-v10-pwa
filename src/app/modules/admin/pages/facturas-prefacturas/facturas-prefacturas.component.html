@@ -38,7 +38,7 @@
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div
-          *ngFor="let item of ['', '', '']; let i = index"
+          *ngFor="let item of facturasList; let i = index"
           class="item"
           (click)="handleValue('')"
         >
@@ -50,36 +50,35 @@
           <p *ngIf="i===0" class="tap">
             Tap dos veces encima para destacar <br />algunas facturas.
           </p>
-          <div class="card">
-            <div
-              *ngFor="let factura of facturas; let j = index"
-              class=""
-              (click)="handleValue('')"
-            >
-              <div class="factura">
-                <div class="w-100">
-                  <div class="factura-grid">
-                    <span class="id">
-                      {{ factura.id }}
-                    </span>
-                    <span class="reference">Referencia de Fecha ID</span>
-                  </div>
-                  <p class="input">
-                    {{ factura.input }}
-                  </p>
-                  <p class="input">
-                    {{ factura.input }}
-                  </p>
-                  <div class="factura-grid">
-                    <span class="price">
-                      {{ factura.price }}
-                    </span>
-                    <span class="tag"> Tag ID, Tag ID, Tag ID </span>
+          <!-- <div class="card"> -->
+            <swiper [config]="swiperConfig">
+              <div
+                *ngFor="let factura of facturas; let j = index"
+                class=""
+                (click)="handleValue('')"
+              >
+                <div class="factura">
+                  <div class="w-100">
+                    <div class="factura-grid">
+                      <span class="id">
+                        {{ factura.dateId }}
+                      </span>
+                      <span class="reference">{{factura.createdAt}}</span>
+                    </div>
+                    <p *ngFor="let product of factura.products" class="input">
+                      {{ product }}
+                    </p>
+                    <div class="factura-grid">
+                      <span class="price">
+                        {{ factura.total }}
+                      </span>
+                      <span class="tag"> Tag ID, Tag ID, Tag ID </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </swiper>
+          <!-- </div> -->
         </div>
       </div>
       <button class="submit">Crea UNA NUEVA FACTURA</button>
