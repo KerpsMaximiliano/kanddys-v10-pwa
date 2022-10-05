@@ -212,7 +212,7 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
 
     if (startPeriod === 'PM' && endPeriod === 'AM') return false;
 
-    if (startPeriod === endPeriod && start >= end) {
+    if (startPeriod === endPeriod && start >= end && start !== 12) {
       return false;
     }
 
