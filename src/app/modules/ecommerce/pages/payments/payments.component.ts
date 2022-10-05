@@ -22,6 +22,7 @@ import { LocationStrategy } from '@angular/common';
 export class PaymentsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   environment = environment;
+  env: string = environment.assetsUrl;
   selectedBank: Bank;
   selectedOption: number;
   image: File;

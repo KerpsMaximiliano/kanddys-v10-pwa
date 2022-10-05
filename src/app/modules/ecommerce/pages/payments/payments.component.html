@@ -1,13 +1,19 @@
 <div class="container">
-  <app-helper-headerv2
-    [mode]="'basic'"
-    [mainText]="{
-      text: 'Métodos de Pagos en DOP',
-      fontFamily: 'SfProBold',
-      fontSize: '21px'
-    }"
-    [returnAble]="false"
-  ></app-helper-headerv2>
+  <header class="header">
+   <h1 class="method">Métodos de Pagos en DOP</h1>
+
+    <div class="right-area">
+      <span class="header-text" *ngIf="order.user">{{
+        order.user?.name
+          ? order.user?.name
+          : order.user?.phone
+          ? order.user?.phone
+          : order.user?.email
+      }}</span>
+      <img [src]="env + '/person.svg'" alt="Icono de una persona" *ngIf="order.user"/>
+    </div>
+  </header>
+
   <div class="payment-method" *ngIf="status === 'complete'">
     <div class="total-paid" *ngIf="order">
       <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
