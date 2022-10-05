@@ -34,6 +34,7 @@ export class OrderDetailComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  messageLink: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,9 +62,6 @@ export class OrderDetailComponent implements OnInit {
       });
       return;
     }
-    if (notification == 'true') {
-      this.notify = true;
-    };
     this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
@@ -185,6 +183,110 @@ export class OrderDetailComponent implements OnInit {
         )}`,
       };
     }
+    if (notification == 'true') {
+      let address = '';
+      const location = this.order.items[0].deliveryLocation;
+      if (location.street) {
+        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+        address += location.street + ', ';
+        if (location.referencePoint) address += location.referencePoint + ', ';
+        address += location.city + ', República Dominicana';
+        if (location.note) address += ` (nota: ${location.note})`;
+      } else {
+        address = location.nickName;
+      }
+
+      let giftMessage = '';
+      if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+      if (this.post?.targets?.[0]?.name)
+        giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+      if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
+
+      let customizerMessage = '';
+      if (this.order.items[0].customizer) {
+        const customizer = await this.customizerValueService.getCustomizerValue(
+          this.order.items[0].customizer._id
+        );
+        const printType = this.order.items[0].item.params[0].values.find(
+          (value) => value._id === this.order.items[0].params[0].paramValue
+        )?.name;
+        if (printType)
+          customizerMessage += 'Tipo de impresión: ' + printType + '\n';
+
+        const selectedQuality = this.order.items[0].item.params[1].values.find(
+          (value) => value._id === this.order.items[0].params[1].paramValue
+        )?.name;
+        if (selectedQuality)
+          customizerMessage +=
+            'Calidad de servilleta: ' + selectedQuality + '\n';
+
+        const backgroundColor = customizer.backgroundColor.color.name;
+        if (backgroundColor)
+          customizerMessage += 'Color de fondo: ' + backgroundColor + '\n';
+
+        if (customizer.texts.length) {
+          customizerMessage +=
+            'Texto: ' +
+            customizer.texts.reduce((prev, curr) => prev + curr.text, '') +
+            '\n';
+
+          let selectedTypography = customizer.texts[0].font;
+          switch (selectedTypography) {
+            case 'Dorsa':
+              selectedTypography = 'Empire';
+              break;
+            case 'Commercial-Script':
+              selectedTypography = 'Classic';
+              break;
+          }
+          customizerMessage +=
+            'Nombre de tipografía: ' + selectedTypography + '\n';
+
+          const typographyColorCode = customizer.texts[0].color.name;
+          const typographyColorName = customizer.texts[0].color.nickname;
+          customizerMessage +=
+            'Color de tipografía: ' + typographyColorName + '\n';
+          customizerMessage +=
+            'Código de color de tipografía: ' + typographyColorCode + '\n';
+        }
+
+        if (customizer.stickers.length) {
+          const stickerColorCode = customizer.stickers[0].svgOptions.color.name;
+          const stickerColorName =
+            customizer.stickers[0].svgOptions.color.nickname;
+          customizerMessage += 'Color de sticker: ' + stickerColorName + '\n';
+          customizerMessage +=
+            'Código de color de sticker: ' + stickerColorCode;
+        }
+      }
+
+      const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+      const message = `*FACTURA ${formatID(
+        this.order.dateId
+      )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
+        'es-MX'
+      )}: ${fullLink}*\n\nComprador: ${
+        this.order.user?.name ||
+        this.order.user?.phone ||
+        this.order.user?.email ||
+        'Anónimo'
+      }\n\nDirección: ${address}${
+        giftMessage
+          ? '\n\nMensaje en la tarjetita de regalo: ' + giftMessage
+          : ''
+      }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
+      this.messageLink = `https://wa.me/${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }?text=${encodeURIComponent(message)}`;
+      this.notify = true;
+    }
+  }
+
+  notificationClicked() {
+    this.notify = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+    });
   }
 
   openImageModal(imageSourceURL: string) {

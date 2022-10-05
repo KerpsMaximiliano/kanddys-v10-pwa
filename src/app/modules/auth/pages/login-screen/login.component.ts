@@ -15,20 +15,17 @@ import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
-import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import { Post } from 'src/app/core/models/post';
-import { PostsService } from 'src/app/core/services/posts.service';
-import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 
 type AuthTypes =
   | 'phone'
@@ -885,117 +882,8 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
-
-    let address = '';
-    const location = order.items[0].deliveryLocation;
-    if (location.street) {
-      if (location.houseNumber) address += '#' + location.houseNumber + ', ';
-      address += location.street + ', ';
-      if (location.referencePoint) address += location.referencePoint + ', ';
-      address += location.city + ', República Dominicana';
-      if (location.note) address += ` (nota: ${location.note})`;
-    } else {
-      address = location.nickName;
-    }
-
-    let post: Post;
-    if (order.items[0].post) {
-      post = (await this.postsService.getPost(order.items[0].post._id)).post;
-    }
-    let giftMessage = '';
-    if (post?.from) giftMessage += 'De: ' + post.from + '\n';
-    if (post?.targets?.[0]?.name)
-      giftMessage += 'Para: ' + post.targets[0].name + '\n';
-    if (post?.message) giftMessage += 'Mensaje: ' + post.message;
-
-    let customizerMessage = '';
-    if (order.items[0].customizer) {
-      const customizer = await this.customizerValueService.getCustomizerValue(
-        order.items[0].customizer._id
-      );
-      const printType = order.items[0].item.params[0].values.find(
-        (value) => value._id === order.items[0].params[0].paramValue
-      )?.name;
-      if (printType)
-        customizerMessage += 'Tipo de impresión: ' + printType + '\n';
-
-      const selectedQuality = order.items[0].item.params[1].values.find(
-        (value) => value._id === order.items[0].params[1].paramValue
-      )?.name;
-      if (selectedQuality)
-        customizerMessage += 'Calidad de servilleta: ' + selectedQuality + '\n';
-
-      const backgroundColor = customizer.backgroundColor.color.name;
-      if (backgroundColor)
-        customizerMessage += 'Color de fondo: ' + backgroundColor + '\n';
-
-      if (customizer.texts.length) {
-        customizerMessage +=
-          'Texto: ' +
-          customizer.texts.reduce((prev, curr) => prev + curr.text, '') +
-          '\n';
-
-        let selectedTypography = customizer.texts[0].font;
-        switch (selectedTypography) {
-          case 'Dorsa':
-            selectedTypography = 'Empire';
-            break;
-          case 'Commercial-Script':
-            selectedTypography = 'Classic';
-            break;
-        }
-        customizerMessage +=
-          'Nombre de tipografía: ' + selectedTypography + '\n';
-
-        const typographyColorCode = customizer.texts[0].color.name;
-        const typographyColorName = customizer.texts[0].color.nickname;
-        customizerMessage +=
-          'Color de tipografía: ' + typographyColorName + '\n';
-        customizerMessage +=
-          'Código de color de tipografía: ' + typographyColorCode + '\n';
-      }
-
-      if (customizer.stickers.length) {
-        const stickerColorCode = customizer.stickers[0].svgOptions.color.name;
-        const stickerColorName =
-          customizer.stickers[0].svgOptions.color.nickname;
-        customizerMessage += 'Color de sticker: ' + stickerColorName + '\n';
-        customizerMessage += 'Código de color de sticker: ' + stickerColorCode;
-      }
-    }
-
-    const message = `*FACTURA ${formatID(
-      order.dateId
-    )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.paymentAmount.toLocaleString(
-      'es-MX'
-    )}: ${this.fullLink}*\n\nComprador: ${
-      this.headerService.user?.name ||
-      this.headerService.user?.phone ||
-      this.headerService.user?.email ||
-      'Anónimo'
-    }\n\nDirección: ${address}${
-      giftMessage ? '\n\nMensaje en la tarjetita de regalo: ' + giftMessage : ''
-    }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
-    this.messageLink = `https://wa.me/${
-      this.merchant.owner.phone
-    }?text=${encodeURIComponent(message)}`;
-    this.dialog.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        topButton: false,
-        title: 'Factura creada exitosamente',
-        buttonText: `Confirmar al WhatsApp de ${this.merchant.name}`,
-        mainText: `Al “confirmar” se abrirá tu WhatsApp con el resumen facturado a ${this.merchant.name}.`,
-        mainButton: () => {
-          this.router.navigate([`ecommerce/order-info/${order._id}`], {
-            replaceUrl: true,
-          });
-          window.open(this.messageLink, '_blank');
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-      notCancellable: true,
+    this.router.navigate([`ecommerce/order-info/${order._id}`], {
+      queryParams: { notify: 'true' },
     });
   }
 

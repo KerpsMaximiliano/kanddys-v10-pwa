@@ -14,7 +14,9 @@
     <h2 class="user-name" *ngIf="order.user.name">{{ order.user.name }}</h2>
     <h2 class="success">Tu factura se creó exitosamente.</h2>
 
-    <button class="bill-button">Confirmar por WhatsApp</button>
+    <a [href]="messageLink" target="_blank" class="bill-button" (click)="notificationClicked()">
+      Confirmar por WhatsApp
+    </a>
 
     <p class="bill-clarity">
       Al “confirmar” se abrirá tu WhatsApp con la factura para MerchantID.
@@ -142,9 +144,8 @@
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>
         </div>
       </div>
-      <div class="items-container" style="margin-top: 5px">
+      <div class="items-container" style="margin-top: 5px" *ngIf="order?.ocr">
         <div
-          *ngIf="order?.ocr"
           class="image-container"
           #elemt
           (mousedown)="startDragging($event, elemt)"
