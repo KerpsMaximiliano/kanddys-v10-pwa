@@ -16,6 +16,12 @@ import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/
 import * as moment from 'moment';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { Reservation } from 'src/app/core/models/reservation';
+import { AuthService } from 'src/app/core/services/auth.service';
+import {
+  createReservation,
+  createReservationAuthLess,
+} from 'src/app/core/graphql/reservations.gql';
 
 interface HourOption {
   hourNumber: number;
@@ -84,6 +90,7 @@ export class ReservationsCreatorComponent implements OnInit {
   hourRangesBlocked: number[] = [];
   clientPhone: string = null;
   clientEmail: string = null;
+  reservation: Reservation;
   useDateRangeToLimitAvailableWeekDays: boolean = false;
 
   allMonths: {
@@ -128,6 +135,7 @@ export class ReservationsCreatorComponent implements OnInit {
     private router: Router,
     private merchantsService: MerchantsService,
     private reservationsService: ReservationService,
+    private authService: AuthService,
     private dialog: DialogService
   ) {}
 
@@ -136,13 +144,18 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { calendarId } = routeParams;
+        const { calendarId, reservationId } = routeParams;
         const { clientEmail, clientPhone } = queryParams;
 
         this.clientEmail = clientEmail;
         this.clientPhone = clientPhone;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
+
+        console.log(reservationId);
+        if (reservationId) {
+          this.reservation = await this.reservationsService.getReservation(reservationId);
+        }
 
         this.useDateRangeToLimitAvailableWeekDays =
           (!('inDays' in this.calendarData.limits) ||
@@ -168,8 +181,7 @@ export class ReservationsCreatorComponent implements OnInit {
             number: monthNumber + 1,
           };
 
-          const { userInfo, reservationConvenience } =
-            this.reservationCreatorForm.controls;
+          const { userInfo } = this.reservationCreatorForm.controls;
           this.stickyButton = {
             text: 'SELECCIONA CUANDO TE CONVIENE',
             mode: 'disabled-fixed',
@@ -502,8 +514,6 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.fromHour.minutesNumber
     );
 
-    console.log(this.selectedDate.toHour);
-
     let toDateObject = new Date(
       currentYear,
       this.selectedDate.monthNumber - 1,
@@ -541,8 +551,6 @@ export class ReservationsCreatorComponent implements OnInit {
         ? realToHour + 12
         : realToHour;
 
-    console.log(realToHour);
-
     realToHour =
       realToHour + utcOffset < 24
         ? realToHour + utcOffset
@@ -553,21 +561,54 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(realToHour)
         : String(realToHour);
 
-    const { createReservationAuthLess: result } =
-      await this.reservationsService.createReservationAuthLess({
-        calendar: this.calendarData._id,
-        merchant: this.calendarMerchant._id,
-        type: 'ORDER',
-        breakTime: this.calendarData.breakTime,
-        date: {
-          dateType: 'RANGE',
-          from: fromDateObject,
-          until: toDateObject,
-          fromHour:
-            fromHourString + ':' + this.selectedDate.fromHour.minutesString,
-          toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
-        },
-      });
+    const user = await this.authService.me();
+
+    const reservationMutation =
+      !user && !this.reservation
+        ? this.reservationsService.createReservationAuthLess.bind(
+            this.reservationsService
+          )
+        : user && !this.reservation
+        ? this.reservationsService.createReservation.bind(
+            this.reservationsService
+          )
+        : user && this.reservation
+        ? this.reservationsService.updateReservation.bind(
+            this.reservationsService
+          )
+        : null;
+
+    const reservationInput: any = {
+      calendar: this.calendarData._id,
+      merchant: this.calendarMerchant._id,
+      type: 'ORDER',
+      breakTime: this.calendarData.breakTime,
+      date: {
+        dateType: 'RANGE',
+        from: fromDateObject,
+        until: toDateObject,
+        fromHour:
+          fromHourString + ':' + this.selectedDate.fromHour.minutesString,
+        toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
+      },
+    };
+
+    if (user && this.reservation) {
+      delete reservationInput.calendar;
+      delete reservationInput.breakTime;
+      delete reservationInput.merchant;
+      delete reservationInput.type;
+    }
+
+    const mutationParams: any = [reservationInput];
+
+    if (user && this.reservation) mutationParams.push(this.reservation._id);
+
+    let result = await reservationMutation(...mutationParams);
+    if (result)
+      result = !user
+        ? result.createReservationAuthLess
+        : result.createReservation;
 
     const message = `Saludos, se ha creado una reservación asociada a su ${
       this.clientPhone ? 'número de teléfono' : 'correo electrónico'

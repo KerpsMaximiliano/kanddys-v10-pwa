@@ -17,8 +17,8 @@ export const createReservationAuthLess = gql`
 `;
 
 export const updateReservation = gql`
-  mutation createReservation($input: ReservationInput!, $id: ObjectID!) {
-    createReservation(input: $input, id: $id) {
+  mutation updateReservation($input: ReservationInput!, $id: ObjectID!) {
+    updateReservation(input: $input, id: $id) {
       _id
     }
   }
