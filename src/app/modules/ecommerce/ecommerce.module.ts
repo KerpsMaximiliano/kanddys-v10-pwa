@@ -100,7 +100,7 @@ const routes: Routes = [
         component: OrderDetailComponent,
       },
       {
-        path: 'checkout',
+        path: ':saleflowId/checkout',
         component: CheckoutComponent,
       },
       {

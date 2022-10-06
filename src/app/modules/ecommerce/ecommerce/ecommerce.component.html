@@ -5,6 +5,10 @@
   [solo]="false"
   [cart]="true"
   [cartAmount]="itemCartAmount"
-  *ngIf="allowMultipleItems && itemCartAmount && activePath !== 'checkout'"
+  *ngIf="
+    allowMultipleItems &&
+    itemCartAmount &&
+    activePath !== ':saleflowId/checkout'
+  "
   (click)="showShoppingCartDialog()"
 ></app-bubble-button>

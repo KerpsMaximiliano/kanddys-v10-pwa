@@ -3,6 +3,8 @@
     <button class="top-button" (click)="return()">Volver atrás</button>
   </div>
   <div class="body">
+    <span class="info-title" *ngIf="extraTitle">{{extraTitle}}</span>
+
     <h1 class="title">{{ title }}</h1>
 
     <button class="center-button" (click)="buttonAction()">{{ buttonText }}</button>
