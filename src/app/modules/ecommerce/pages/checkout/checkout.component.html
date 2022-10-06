@@ -1,5 +1,6 @@
 <div class="container">
   <app-helper-headerv2
+    *ngIf="logged || !headerService.user"
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
@@ -11,9 +12,37 @@
     }"
   ></app-helper-headerv2>
 
+  <header class="header" *ngIf="!logged && headerService.user">
+    <a> <i class="fas fa-chevron-left" (click)="back()"></i></a>
+
+    <div class="right-area">
+      <span class="header-text">{{
+        headerService.user?.name
+          ? headerService.user?.name
+          : headerService.user?.phone
+          ? headerService.user?.phone
+          : headerService.user?.email
+      }}</span>
+      <img [src]="env + '/person.svg'" alt="Icono de una persona" />
+    </div>
+  </header>
+
   <main class="information">
+    <section class="top">
+      <h2 class="top-h">
+        PRE-FACTURA EN <br />
+        <span class="top-name">{{
+          headerService.saleflow?.merchant?.name
+        }}</span>
+      </h2>
+    </section>
     <section class="section">
-      <h2 class="section-title">Articulos facturados:</h2>
+      <div class="between">
+        <h2 class="section-title">Articulos facturados:</h2>
+        <button (click)="editOrder('item')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
 
       <div class="items-container">
         <div
@@ -58,10 +87,22 @@
     </section>
 
     <section class="section" *ngIf="order?.products[0].deliveryLocation">
-      <h2 class="section-title" style="margin-top: 32px">
-        Lugar de
-        {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
-      </h2>
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">
+          Lugar de
+          {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
+        </h2>
+
+        <button
+          (click)="editOrder('address')"
+          *ngIf="
+            headerService.saleflow?.module?.delivery?.pickUpLocations?.length >
+              1 || headerService.saleflow?.module?.delivery?.deliveryLocation
+          "
+        >
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
 
       <div class="items-container column">
         <p
@@ -94,9 +135,13 @@
     </section>
 
     <section class="section" *ngIf="order?.products[0].reservation && date">
-      <h2 class="section-title" style="margin-top: 32px">
-        Fecha de la sesión:
-      </h2>
+      <div class="between" style="margin-top: 32px">
+        <h2 class="section-title">Fecha de la sesión:</h2>
+
+        <button (click)="editOrder('reservation')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
 
       <div class="items-container" style="padding: 10px 32px">
         <p class="amount">
@@ -108,12 +153,24 @@
 
     <section
       class="section"
-      *ngIf="post?.message || post?.from || post?.targets[0].name"
+      *ngIf="headerService.saleflow?.module?.post?.isActive"
       style="margin-top: 32px"
     >
-      <h2 class="section-title">Mensaje de regalo:</h2>
+      <div class="between">
+        <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="message-box">
+        <button (click)="editOrder('message')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
+
+      <div
+        class="message-box"
+        *ngIf="
+          post?.message || post?.from || post?.targets[0].name;
+          else noMessage
+        "
+      >
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -131,9 +188,20 @@
           <p class="message-text inner">{{ post.from }}</p>
         </section>
       </div>
+      <ng-template #noMessage>
+        <div class="items-container">
+          <span class="address-name"> Sin mensaje de regalo </span>
+        </div>
+      </ng-template>
     </section>
     <section class="section" *ngIf="customizer" style="margin-top: 32px">
-      <h2 class="section-title">Personalización:</h2>
+      <div class="between">
+        <h2 class="section-title">Personalización:</h2>
+
+        <button (click)="editOrder('customizer')">
+          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+        </button>
+      </div>
       <div class="items-container" style="flex-direction: column">
         <table>
           <tr *ngFor="let detail of customizerDetails">
@@ -152,17 +220,33 @@
     </section>
   </main>
 
+
   <app-sticky-button
-    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
-    [bgColor]="'#2874AD'"
-    [customLeftButtonStyles]="{
-      'font-size': '17px',
-      'font-family': 'RobotoMedium',
-      color: '#FFF',
-      'letter-spacing': '1px'
+    [mode]="!disableButton ? 'double' : 'disabled-fixed'"
+    [extra]="{
+      bgColor: '#2874AD',
+      return: true,
+      returnCallback: back
     }"
-    [size]="'small'"
-    (click)="!disableButton && newCreatePreOrder()"
+    [color]="'#FFF'"
+    [fontSize]="'17px'"
+    [bgColor]="'#A1A1A1'"
+    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
+    [customLeftButtonStyles]="{
+      width: '84.65%',
+      'max-width': 'none',
+      'border-left': '1px solid #FFFFFF',
+      backgroundColor: '#2874ad',
+      color: '#FFFFFF',
+      cursor: 'unset'
+    }"
+    [customRightButtonStyles]="{
+      width: '1px',
+      heigth: '1px',
+      cursor: 'unset'
+    }"
+    [text2]="''"
+    size="small"
+    (left)="!disableButton && newCreatePreOrder()"
   ></app-sticky-button>
 </div>

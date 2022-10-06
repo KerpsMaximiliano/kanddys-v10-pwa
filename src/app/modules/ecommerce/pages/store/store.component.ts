@@ -129,8 +129,6 @@ export class StoreComponent implements OnInit {
       }
     }
 
-    console.log(this.categories);
-
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
       if (
@@ -181,8 +179,6 @@ export class StoreComponent implements OnInit {
             }
           }
         }
-
-        console.log(this.itemsByCategory, 'itemsporcategoria');
 
         unlockUI();
       }
@@ -460,9 +456,12 @@ export class StoreComponent implements OnInit {
         });
         this.header.storeItem(this.saleflowData._id, itemData);
       }
-      this.router.navigate([
-        `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      ]);
+      this.router.navigate(
+        [`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
@@ -483,12 +482,17 @@ export class StoreComponent implements OnInit {
 
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
-      this.router.navigate([
-        '/ecommerce/item-detail/' +
-          this.header.saleflow._id +
-          '/' +
-          this.items[index]._id,
-      ]);
+      this.router.navigate(
+        [
+          '/ecommerce/item-detail/' +
+            this.header.saleflow._id +
+            '/' +
+            this.items[index]._id,
+        ],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
@@ -499,9 +503,12 @@ export class StoreComponent implements OnInit {
   }
 
   goToItemDetail(id: string) {
-    this.router.navigate([
-      `/ecommerce/item-detail/${this.saleflowData._id}/${id}`,
-    ]);
+    this.router.navigate(
+      [`/ecommerce/item-detail/${this.saleflowData._id}/${id}`],
+      {
+        replaceUrl: this.header.checkoutRoute ? true : false,
+      }
+    );
   }
 
   async itemOfPackage(packages: ItemPackage[]) {

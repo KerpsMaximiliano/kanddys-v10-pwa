@@ -60,6 +60,12 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.isComplete.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
+    if (this.header.checkoutRoute) {
+      this.router.navigate([this.header.checkoutRoute], {
+        replaceUrl: true,
+      });
+      return { ok: true };
+    }
     this.router.navigate([`ecommerce/${this.header.saleflow._id}/new-address`]);
     return { ok: true };
   }
@@ -362,6 +368,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.isComplete.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
+            if (this.header.checkoutRoute) {
+              this.router.navigate([this.header.checkoutRoute], {
+                replaceUrl: true,
+              });
+              return of({
+                ok: true,
+              });
+            }
             this.router.navigate([
               `ecommerce/${this.header.saleflow._id}/new-address`,
             ]);
