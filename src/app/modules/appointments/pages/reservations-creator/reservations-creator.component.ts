@@ -154,7 +154,9 @@ export class ReservationsCreatorComponent implements OnInit {
 
         console.log(reservationId);
         if (reservationId) {
-          this.reservation = await this.reservationsService.getReservation(reservationId);
+          this.reservation = await this.reservationsService.getReservation(
+            reservationId
+          );
         }
 
         this.useDateRangeToLimitAvailableWeekDays =
@@ -440,8 +442,8 @@ export class ReservationsCreatorComponent implements OnInit {
               this.selectedDate.dayOfTheMonthNumber;
 
           if (
-            isFromHourInsideTheExceptionRange &&
-            isUntilHourInsideTheExceptionRange &&
+            (isFromHourInsideTheExceptionRange ||
+              isUntilHourInsideTheExceptionRange) &&
             isTheExceptionDayTheSelectedDay
           ) {
             this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);

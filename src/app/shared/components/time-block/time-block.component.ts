@@ -38,7 +38,7 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     start: new FormControl('', [
       Validators.required,
       Validators.pattern(this.numberPattern),
-      Validators.min(1),
+      Validators.min(0),
       Validators.max(12),
     ]),
     startPeriod: new FormControl('AM', [Validators.required]),

@@ -115,6 +115,7 @@
           <h3>Hora:</h3>
 
           <app-answer-selector
+            *ngIf="timeRangeOptions.length > 0"
             [options]="timeRangeOptions"
             [blockIndexes]="hourRangesBlocked"
             [indicator]="true"
@@ -124,6 +125,10 @@
             }"
             (onSelector)="setClickedDate($event)"
           ></app-answer-selector>
+
+          <h3 style="margin-top: 10px;" *ngIf="!timeRangeOptions || timeRangeOptions.length === 0">
+            No quedan horas disponibles para reservar este dia
+          </h3>
         </div>
 
         <div
