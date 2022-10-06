@@ -22,7 +22,9 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 // interface ExtraCalendar extends Calendar {
 //   subtitle?: string;
@@ -66,7 +68,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     private headerService: HeaderService,
     private calendarService: CalendarService,
     private location: Location,
-    private webformsService: WebformsService
+    private webformsService: WebformsService,
+    private clipboard: Clipboard
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -240,67 +243,44 @@ export class EntityDetailMetricsComponent implements OnInit {
   }
 
   onOptionsClick = () => {
-    const list: StoreShareList[] = [
+    const list = [
       {
-        title: 'Sobre ' + this.merchant.name,
-        options: [
-          {
-            text: 'Crea un nuevo artículo',
-            mode: 'func',
-            func: () => {
-              this.headerService.flowRoute = this.router.url;
-              this.router.navigate([`admin/create-item`]);
-            },
-          },
-          {
-            text: 'Vende online. Comparte el link',
-            mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          },
-          /* {
-            text: 'Cerrar sesión',
-            mode: 'func',
-            func: () => {
-              this.authService.signouttwo();
-            },
-          }, */
-        ],
+        text: 'Crea un nuevo artículo',
+        callback: () => {
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate([`admin/create-item`]);
+        },
+      },
+      {
+        text: 'Vende online. Comparte el link',
+        callback: () => {
+          this.clipboard.copy(window.location.href);
+        },
+      },
+      {
+        text: 'Cerrar Sesión',
+        styles:{
+         'color': '#ad2828'
+        },
+        asyncCallback: () => {
+          return new Promise((resolve) => {
+            this.authService.signoutThree();
+            this.headerService.flowRoute = this.router.url;
+            this.router.navigate([`auth/login`]);
+            resolve(true);
+          });
+        },
       },
     ];
 
-    this.dialogService.open(StoreShareComponent, {
+    this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        hideCancelButtton: true,
-        alternate: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: () => {
-          // TODO: replace the signout function
-          this.authService.signoutThree();
-          this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`auth/login`]);
+        title: 'Sobre ' + this.merchant.name,
+        optionsList: list,
+        //qrCode: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+        cancelButton: {
+          text: 'cerrar',
         },
       },
       customClass: 'app-dialog',
@@ -309,45 +289,23 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onShareOrdersClick = () => {
-    const list: StoreShareList[] = [
+    const list = [
       {
-        title: 'Sobre las facturas',
-        options: [
-          {
-            text: 'Vende online. Comparte el link',
-            mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          },
-        ],
+        text: 'Vende online. Comparte el link',
+        callback: () => {
+          const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
+          this.clipboard.copy(link);
+        },
       },
     ];
 
-    this.dialogService.open(StoreShareComponent, {
+    this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
+        optionsList: list,
+        title: 'Sobre las facturas',
+        cancelButton: {
+          text: 'Cerrar',
         },
       },
       customClass: 'app-dialog',
@@ -356,54 +314,31 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onShareItemsClick = () => {
-    const list: StoreShareList[] = [
+    const list = [        
       {
-        title: 'Sobre los articulos',
-        options: [
-          {
-            text: 'Crea un nuevo artículo',
-            mode: 'func',
-            func: () => {
-              this.headerService.flowRoute = this.router.url;
-              this.router.navigate([`admin/create-item`]);
-            },
-          },
-          {
-            text: 'Vende online. Comparte el link',
-            mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
-          },
-        ],
+        text: 'Crea un nuevo artículo',
+        callback: () => {
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate([`admin/create-item`]);
+        },
+      },
+      {
+        text: 'Vende online. Comparte el link',
+        callback: () => {
+         const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
+         this.clipboard.copy(link);
+        }
       },
     ];
 
-    this.dialogService.open(StoreShareComponent, {
+    this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        hideCancelButtton: true,
-        alternate: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
+        title: 'Sobre los articulos',
+        optionsList: list,
+        cancelButton: {
+         text: 'Cerrar'
+        }
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

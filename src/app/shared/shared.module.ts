@@ -92,6 +92,7 @@ import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
+import { SettingsComponent } from './dialogs/settings/settings.component';
 
 const imports = [
   CommonModule,
@@ -189,7 +190,8 @@ const declarations = [
   ItemComponent,
   ReloadComponent,
   CurrencyInputComponent,
-  SelectDropdownComponent
+  SelectDropdownComponent,
+  SettingsComponent
 ];
 
 @NgModule({
@@ -197,6 +199,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}
