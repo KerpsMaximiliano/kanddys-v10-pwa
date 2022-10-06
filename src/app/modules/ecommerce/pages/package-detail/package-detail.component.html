@@ -1,56 +1,59 @@
-<ng-container *ngIf="packageData">
+<ng-container >
   <div class="container">
-    <app-helper-header 
-      bgcolor="#FFFFFF"
-      [searchAble]="false"
-      middleTextFontSize="17px"
-      middleTextFontFamily="SfProRegular"
-      middleTextColor="#7B7B7B"
-      [middleText]="packageData?.name?.toUpperCase()"
-      [back]="true"
-      (onClose)="back()"
+    <app-helper-headerv2
+      [mode]="'basic'" 
+      bgcolor="#2874AD"
+      [mainText]="{
+         text: 'Selecciona 2 escenarios',
+         fontSize: '1.313rem',
+         fontFamily: 'SfProBold'
+      }"
+      [returnAble]="true"
       >
-    </app-helper-header>
-    <!-- <div class="fullScreenSwiper">
-      <div class="shadowWrapper">
-          <swiper [config]="swiperConfig">
-            <div
-                *ngFor="let item of packageData.images; let i = index"
-                (click)="openImageModal(item)"
-                class="item"
-                [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
-            ></div>
-        </swiper>
+    </app-helper-headerv2>
+    
+    <div class="tag-area">
+      <div class="top-tags">
+         <span *ngFor="let tag of tags" class="tag">{{tag}}</span>
+      </div>
+
+      <div class="searchbar-area">
+         <input type="text" class="searchbar" placeholder="Buscar por #tag, tipo, etc"/>
       </div>
     </div>
-    <div class="desc-area">
-      <p class="price" *ngIf="packageData?.price">${{packageData.price | number: "1.0-2" }}</p>
-      <p class="desc" *ngIf="packageData?.description">{{packageData.description}}</p>
-  </div> -->
-    <div class="filter-container" style="background-color: white; margin-bottom: 0px;">
+   
+    <div class="title-dots">
+      <h2 class="title">Selección de escenarios:</h2>
+
+      <div class="dot-trio">
+         <div class="dot"> </div>
+         <div class="dot"> </div>
+         <div class="dot"> </div>
+      </div>
+    </div>
+    <!-- <div class="filter-container" style="background-color: white; margin-bottom: 0px;">
       <ng-container *ngIf="filters">
         <app-see-filters [type]="3" title="Selecciona los Escenarios" [BigText]="true" [noMarginBottom]="true"
           [tags]="filters" [filters]="false" [showOptions]="false"></app-see-filters>
       </ng-container>
-    </div>
+    </div> -->
     <div class="scenarios">
-      <ng-container *ngFor="let itemExtra of scenarios">
+      <ng-container *ngFor="let itemExtra of dummyscenarios">
         <app-saleflow-item 
+          [type]="4"
           [itemExtra]="itemExtra"
           [imgURL]="itemExtra.images ? itemExtra.images[0] : ''"
-          [isSelected]="itemExtra.isActive"
+          [isSelected]="itemExtra.active"
           [limitScenarios]="limitScenarios"
           [selectable]="true"
           [description]="itemExtra.name"
-          [type]="2"
-          (changeSelection)="handleSelection($event)"
           style="margin-bottom: 24px;">
         </app-saleflow-item>
       </ng-container>
     </div>
   </div>
 
-  <ng-container>
+  <!-- <ng-container>
     <ng-container *ngIf="selectedsQty == limitScenarios; else noCTA">
       <app-sticky-button [mode]="'fixed'" [text]="'ADICIONA LA FECHA QUE TE CONVIENE'" (click)="submit()">
       </app-sticky-button>
@@ -59,5 +62,5 @@
       <app-sticky-button [mode]="'disabled-fixed'" [text]="'SELECCIONA ' + (limitScenarios-selectedsQty) + ' ESCENARIOS'">
       </app-sticky-button>
     </ng-template>
-  </ng-container>
+  </ng-container> -->
 </ng-container>

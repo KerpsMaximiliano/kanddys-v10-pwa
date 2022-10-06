@@ -9,14 +9,6 @@
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
-    [icons]="[
-      {
-        src: '/person.svg',
-        color:
-          'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(73deg) brightness(109%) contrast(95%)',
-        callback: placeholder
-      }
-    ]"
   ></app-helper-headerv2>
 
   <main class="information">
@@ -42,7 +34,7 @@
             <div class="image">
               <img
                 [src]="
-                  item.image || item.images.length
+                  item.image || item.images?.length
                     ? item.image || item.images[0]
                     : '/assets/images/noimage.png'
                 "
@@ -86,8 +78,10 @@
           }"
           *ngIf="order?.products[0].deliveryLocation.street"
         >
-          {{ order?.products[0].deliveryLocation.street }},
-          {{ order?.products[0].deliveryLocation.city }}, República Dominicana
+          {{ order.products[0].deliveryLocation.houseNumber ? '#' + order.products[0].deliveryLocation.houseNumber + ', ' : '' }}
+          {{ order.products[0].deliveryLocation.street }},
+          {{ order.products[0].deliveryLocation.referencePoint ? order.products[0].deliveryLocation.referencePoint + ', ' : '' }}
+           {{ order.products[0].deliveryLocation.city }}, República Dominicana
         </p>
       </div>
     </section>

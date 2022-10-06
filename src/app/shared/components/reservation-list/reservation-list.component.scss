@@ -1,0 +1,100 @@
+.title {
+  font-size: 16px;
+  color: #000;
+  font-family: "RobotoMedium";
+  text-align: left;
+}
+
+.subtitle {
+  text-align: right;
+  font-size: 13px;
+  font-family: SfProSemiBold;
+  color: #8d8d8d;
+}
+
+.search {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: 100%;
+  height: 53px;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #a1a1a1;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 20px auto;
+  display: block;
+  &::placeholder {
+    opacity: 0.6043000221252441;
+    text-align: center;
+  }
+}
+
+.message-container {
+  width: 100%;
+  padding: 40px 0px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.content {
+  width: 100%;
+  margin-bottom: 70px;
+}
+
+.container {
+  padding: 0px 25px;
+  height: 100vh;
+}
+
+.grid {
+  background: #A1A1A1;
+  border: 1px solid #707070;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 13px;
+  padding: 5px 4px;
+  border-radius: 4px;
+}
+
+.col {
+  padding: 9px 0px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-family: "SfProBold";
+}
+
+.title-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  margin: 0px 33px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.reservation {
+  background: #2874AD;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 0px;
+  width: 100%;
+  margin-top: 12px;
+  font-family: "SfProDisplayBold";
+  cursor: pointer;
+}
+
+.reservations {
+  padding: 20px 20px;
+  margin: 11px 0px;
+  border-radius: 10px;
+  box-shadow: 0px 3px 10px -5px #979797;
+  font-family: 'SfProRegular';
+  color: #7b7b7b;
+}

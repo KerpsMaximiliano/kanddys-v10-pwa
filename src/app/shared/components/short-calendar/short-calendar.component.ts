@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  HostListener,
+} from '@angular/core';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 
 interface Day {
@@ -25,19 +32,25 @@ export interface ChangedMonthEventData extends Month {
 export class ShortCalendarComponent implements OnInit {
   constructor(public calendarService: CalendarService) {}
   @Output() selectedDate = new EventEmitter<Date>();
+  @Output() selectedDates = new EventEmitter<Array<Date>>();
   @Output() changedMonth = new EventEmitter<ChangedMonthEventData>();
+  @Output() beforeAnimation = new EventEmitter<boolean>();
   @Input() monthNameSelected: string;
   @Input() allowUsersToChangeTheMonthShown: boolean;
   @Input() showMonthsSwiper: boolean;
   @Input() dateNumber: string;
   @Input() allowSundays: boolean = false;
+  @Input() daysRange: {fromDay: string; toDay: string} = null;
+  @Input() multipleSelection: boolean = false;
   @Input() allowedDays: string[] = null;
   currentMonthIndex: number = null;
   monthDays: Day[] = [];
   allMonths: Array<Month> = [];
   selectedDay: Date;
+  selectedDays: Array<Date> = [];
   executeSwipeToNextMonthAnimation: boolean;
   executeSwipeToPrevAnimation: boolean;
+  alreadyExecutedAnimation: boolean;
   prevScrollLeftData: {
     scrollLeft: number;
     counter: number;
@@ -45,6 +58,15 @@ export class ShortCalendarComponent implements OnInit {
     scrollLeft: 0,
     counter: 0,
   };
+  daysOfTheWeekInOrder = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+  ];
 
   ngOnInit(): void {
     this.calendarService.setInitalState();
@@ -68,6 +90,7 @@ export class ShortCalendarComponent implements OnInit {
 
   getMonthId(id: number) {
     this.calendarService.monthIndex = id;
+
     this.monthDays =
       this.calendarService.months[this.calendarService.monthIndex].dates;
   }
@@ -80,6 +103,9 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     this.allMonths[index].selected = true;
+    
+    if (this.multipleSelection) this.selectedDays = [];
+    else this.selectedDate = null;
 
     this.changedMonth.emit({
       ...this.allMonths[index],
@@ -100,20 +126,57 @@ export class ShortCalendarComponent implements OnInit {
 
     return this.allowedDays.includes(daysOfTheWeekTranslation[day.dayName]);
   }
+  
+  isThisDayInTheRange(day: Day): boolean {
+    const daysOfTheWeekTranslation = {
+      Sabado: 'SATURDAY',
+      Domingo: 'SUNDAY',
+      Lunes: 'MONDAY',
+      Martes: 'TUESDAY',
+      Miercoles: 'WEDNESDAY',
+      Jueves: 'THURSDAY',
+      Viernes: 'FRIDAY',
+    };
+
+    const startRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.fromDay);
+    const endRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.toDay);
+
+    const dayIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === daysOfTheWeekTranslation[day.dayName]);
+
+    return startRangeIndex <= dayIndex && dayIndex <= endRangeIndex;
+  }
 
   onClick(day: Day) {
     if (
       !this.executeSwipeToNextMonthAnimation ||
       !this.executeSwipeToPrevAnimation
     ) {
-      if (!day.weekDayNumber && !this.allowedDays) return;
+      if (!day.weekDayNumber && !this.allowedDays && !this.allowSundays) return;
 
-      this.selectedDay = new Date(
-        this.calendarService.year,
-        this.calendarService.months[this.calendarService.monthIndex].id,
-        day.dayNumber
-      );
-      this.selectedDate.emit(this.selectedDay);
+      if (!this.multipleSelection) {
+        this.selectedDay = new Date(
+          this.calendarService.year,
+          this.calendarService.months[this.calendarService.monthIndex].id,
+          day.dayNumber
+        );
+        this.selectedDate.emit(this.selectedDay);
+      } else {
+        if (this.checkIfDayIsSelected(day)) {
+          this.selectedDays = this.selectedDays.filter((dateObject) => {
+            return dateObject.getDate() !== day.dayNumber;
+          });
+        } else {
+          this.selectedDays.push(
+            new Date(
+              this.calendarService.year,
+              this.calendarService.months[this.calendarService.monthIndex].id,
+              day.dayNumber
+            )
+          );
+        }
+
+        this.selectedDates.emit(this.selectedDays);
+      }
     }
   }
 
@@ -122,6 +185,64 @@ export class ShortCalendarComponent implements OnInit {
   scrollLeft: number;
   scroll: boolean;
   sameDataCounter: number = 0;
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(event) {
+    const scrollerElement = document.querySelector('.scroller');
+
+    console.log(this.prevScrollLeftData);
+
+    if (this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft) {
+      this.prevScrollLeftData.counter++;
+    } else {
+      this.prevScrollLeftData.counter = 0;
+    }
+
+    if (
+      this.prevScrollLeftData.counter > 10 &&
+      this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
+      this.prevScrollLeftData.scrollLeft !== 0 &&
+      this.currentMonthIndex !== this.allMonths.length - 1 &&
+      !this.alreadyExecutedAnimation
+    ) {
+      this.alreadyExecutedAnimation = true;
+      this.executeSwipeToNextMonthAnimation = true;
+
+      setTimeout(() => {
+        this.currentMonthIndex++;
+        this.changeMonth(this.currentMonthIndex);
+        this.prevScrollLeftData.counter = 0;
+        this.prevScrollLeftData.scrollLeft = 0;
+        this.executeSwipeToNextMonthAnimation = false;
+        this.alreadyExecutedAnimation = false;
+      }, 1000);
+    } else if (
+      this.prevScrollLeftData.counter > 10 &&
+      this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft &&
+      this.prevScrollLeftData.scrollLeft === 0 &&
+      this.currentMonthIndex !== 0 &&
+      !this.alreadyExecutedAnimation
+    ) {
+      this.alreadyExecutedAnimation = true;
+      this.executeSwipeToPrevAnimation = true;
+
+      setTimeout(() => {
+        this.currentMonthIndex--;
+        this.changeMonth(this.currentMonthIndex);
+        this.prevScrollLeftData.counter = 0;
+
+        this.executeSwipeToPrevAnimation = false;
+        this.alreadyExecutedAnimation = false;
+      }, 1000);
+    }
+
+    this.prevScrollLeftData.scrollLeft = scrollerElement.scrollLeft;
+  }
+
+  @HostListener('touchend', ['$event'])
+  onTouchEnd(event) {
+    this.prevScrollLeftData.counter = 0;
+  }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
@@ -144,19 +265,24 @@ export class ShortCalendarComponent implements OnInit {
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
 
-    console.log(el.scrollLeft, this.prevScrollLeftData.scrollLeft);
-
     if (this.prevScrollLeftData.scrollLeft === el.scrollLeft) {
       this.prevScrollLeftData.counter++;
     }
 
     if (
-      this.prevScrollLeftData.counter > 5 &&
-      this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
-      this.prevScrollLeftData.scrollLeft !== 0 &&
-      this.currentMonthIndex !== this.allMonths.length - 1
+      (this.prevScrollLeftData.counter > 5 &&
+        this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
+        this.prevScrollLeftData.scrollLeft !== 0 &&
+        this.currentMonthIndex !== this.allMonths.length - 1 &&
+        !this.alreadyExecutedAnimation) ||
+      (this.prevScrollLeftData.counter > 5 &&
+        this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
+        this.currentMonthIndex !== this.allMonths.length - 1 &&
+        this.monthDays.length < 7)
     ) {
       this.executeSwipeToNextMonthAnimation = true;
+      this.alreadyExecutedAnimation = true;
+      this.beforeAnimation.emit(true);
 
       setTimeout(() => {
         this.currentMonthIndex++;
@@ -164,21 +290,28 @@ export class ShortCalendarComponent implements OnInit {
         this.prevScrollLeftData.counter = 0;
         this.prevScrollLeftData.scrollLeft = 0;
         this.executeSwipeToNextMonthAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
     } else if (
       this.prevScrollLeftData.counter > 5 &&
       this.prevScrollLeftData.scrollLeft === el.scrollLeft &&
       this.prevScrollLeftData.scrollLeft === 0 &&
-      this.currentMonthIndex !== 0
+      this.currentMonthIndex !== 0 &&
+      !this.alreadyExecutedAnimation
     ) {
       this.executeSwipeToPrevAnimation = true;
+      this.alreadyExecutedAnimation = true;
+      this.beforeAnimation.emit(true);
 
       setTimeout(() => {
+        console.log(this.currentMonthIndex);
+
         this.currentMonthIndex--;
+
         this.changeMonth(this.currentMonthIndex);
         this.prevScrollLeftData.counter = 0;
-
         this.executeSwipeToPrevAnimation = false;
+        this.alreadyExecutedAnimation = false;
       }, 1000);
 
       /*this.currentMonthIndex--;
@@ -197,5 +330,19 @@ export class ShortCalendarComponent implements OnInit {
     */
 
     //this.prevScrollLeftData.scrollLeft = el.scrollLeft;
+  }
+
+  checkIfDayIsSelected(day: Day) {
+    if (!this.multipleSelection)
+      return this.selectedDay?.getDate() === day.dayNumber;
+    else {
+      let isDaySelected = false;
+
+      this.selectedDays?.forEach((dateObject) => {
+        if (dateObject.getDate() === day.dayNumber) isDaySelected = true;
+      });
+
+      return isDaySelected;
+    }
   }
 }

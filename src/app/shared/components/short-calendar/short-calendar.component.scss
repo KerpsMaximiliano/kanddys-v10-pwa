@@ -40,12 +40,12 @@
 @keyframes fading {
   15% {
     top: 0px;
-    left: -1000px;
+    left: -2000px;
   }
 
   30% {
     top: -200px;
-    left: -1000px;
+    left: -2000px;
   }
 
   50% {
@@ -55,12 +55,12 @@
 
   70% {
     top: -200px;
-    left: 1000px;
+    left: 2000px;
   }
 
   90% {
     top: 0px;
-    left: 1000px;    
+    left: 2000px;    
   }
 
   100% {
@@ -72,12 +72,12 @@
 @keyframes fadingPrev {
   15% {
     top: 0px;
-    left: 1000px;
+    left: 2000px;
   }
 
   30% {
     top: -200px;
-    left: 1000px;
+    left: 2000px;
   }
 
   50% {
@@ -87,12 +87,12 @@
 
   70% {
     top: -200px;
-    left: -1000px;
+    left: -2000px;
   }
 
   90% {
     top: 0px;
-    left: -1000px;    
+    left: -2000px;    
   }
 
   100% {

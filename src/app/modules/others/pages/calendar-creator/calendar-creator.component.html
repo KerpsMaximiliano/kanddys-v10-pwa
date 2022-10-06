@@ -1,0 +1,422 @@
+<div class="container">
+  <app-helper-headerv2
+    [mode]="'options'"
+    [bgColor]="headerConfiguration.bgcolor"
+    [color]="headerConfiguration.color"
+    [justifyContent]="headerConfiguration.justifyContent"
+    [alignItems]="headerConfiguration.alignItems"
+    [leftTextStyles]="headerConfiguration.leftTextStyles"
+    [leftText]="{
+      text:
+        headerConfiguration.headerTextSide === 'LEFT'
+          ? headerConfiguration.headerText
+          : ''
+    }"
+    [rightText]="{
+      text:
+        headerConfiguration.headerTextSide === 'RIGHT'
+          ? headerConfiguration.headerText
+          : ''
+    }"
+    [returnAble]="true"
+    (agnosticAction)="
+      headerConfiguration.headerTextSide === 'RIGHT'
+        ? headerConfiguration.headerTextCallback()
+        : null
+    "
+    [returnAble]="true"
+    (returnEvent)="goBackwards()"
+  >
+  </app-helper-headerv2>
+
+  <form [formGroup]="calendarCreatorForm">
+    <ng-container *ngIf="currentStep === 'MAIN'">
+      <div class="body">
+        <app-answer-selector
+          [complexOptions]="reservationParamsStepOptions"
+          [hasComplexOptionsLayout]="true"
+          [indicator]="true"
+          [showSelectedFeedback]="true"
+          [showDescription]="false"
+          [containerStyles]="{
+            margin: '0px',
+            paddingBottom: '16px'
+          }"
+        ></app-answer-selector>
+      </div>
+
+      <app-sticky-button
+        *ngIf="calendarCreatorForm.status === 'VALID'"
+        [mode]="'double'"
+        [text]="''"
+        [text2]="'SALVAR'"
+        [customRightButtonStyles]="{
+          marginLeft: 'auto',
+          height: '30px',
+          color: '#fff',
+          textAlign: 'right',
+          paddingRight: '22px'
+        }"
+        [height]="'30px'"
+        [bgColor]="'#2874AD'"
+        [extra]="{ return: true, height: '30px', bgColor: '#2874AD' }"
+        [addBottomSeparator]="true"
+        (right)="save()"
+      >
+      </app-sticky-button>
+    </ng-container>
+
+    <ng-container *ngIf="currentStep === 'RESERVATION_DAYS_HOURS_AVAILABILITY'">
+      <div
+        class="body"
+        formGroupName="reservationAvailability"
+        [ngStyle]="{ paddingTop: '46px' }"
+      >
+        <label class="input-label" [ngStyle]="{ marginTop: '0px' }">
+          ¿Cuáles días de la semana estarán disponibles?
+        </label>
+        <div class="daysOfTheWeek">
+          <div
+            *ngFor="let day of daysOfTheWeek; let i = index"
+            (click)="selectDayOfTheWeek(i)"
+            [ngClass]="{ day: true, selected: day.selected }"
+          >
+            {{ day.name }}
+          </div>
+        </div>
+
+        <div class="input-label">¿Desde que hora?</div>
+        <div class="from-to-flex-wrapper">
+          <div class="hour-wrapper">
+            <label
+              class="input-label"
+              [ngStyle]="{
+                margin: '0px',
+                textAlign: 'center',
+                marginBottom: '20px',
+                fontSize: '17px'
+              }"
+            >
+              H
+            </label>
+
+            <div class="hour-swiper-wrapper">
+              <swiper [config]="verticalSwiperConfig" #fromHourSwiper>
+                <div
+                  *ngFor="let hour of hours; let i = index"
+                  [ngClass]="{
+                    'swiper-item': 'true',
+                    'swiper-slide': 'true',
+                    selected: selectedFromHour?.index === i
+                  }"
+                  [id]="'from-hour' + i"
+                  (click)="selectHour('from', i, hour)"
+                >
+                  {{ hour }}
+                </div>
+              </swiper>
+            </div>
+          </div>
+
+          <div class="minute-wrapper">
+            <label
+              class="input-label"
+              [ngStyle]="{
+                margin: '0px',
+                textAlign: 'center',
+                marginBottom: '20px',
+                fontSize: '17px'
+              }"
+            >
+              M
+            </label>
+
+            <div class="minutes-swiper-wrapper">
+              <swiper [config]="verticalSwiperConfig" #fromMinutesSwiper>
+                <div
+                  [ngClass]="{
+                    'swiper-item': 'true',
+                    'swiper-slide': 'true',
+                    selected: selectedFromMinutes?.index === i,
+                    blocked: blockMinutes && minute !== '00'
+                  }"
+                  *ngFor="let minute of minutes; let i = index"
+                  (click)="selectMinutes('from', i, minute)"
+                  [id]="'from-minute' + i"
+                >
+                  {{ minute }}
+                </div>
+              </swiper>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="toHours.length > 0 && selectedFromHour && selectedFromHour.hour && selectedFromMinutes && selectedFromMinutes.minute">
+          <div class="input-label">¿Hasta que hora?</div>
+          <div class="from-to-flex-wrapper">
+            <div class="hour-wrapper">
+              <label
+                class="input-label"
+                [ngStyle]="{
+                  margin: '0px',
+                  textAlign: 'center',
+                  marginBottom: '20px',
+                  fontSize: '17px'
+                }"
+              >
+                H
+              </label>
+
+              <div class="hour-swiper-wrapper">
+                <swiper [config]="verticalSwiperConfig" #untilHourSwiper>
+                  <ng-container *ngFor="let hour of toHours; let i = index">
+                    <div
+                      *ngIf="selectedFromHour && hour !== selectedFromHour.hour"
+                      [ngClass]="{
+                        'swiper-item': 'true',
+                        'swiper-slide': 'true',
+                        selected: selectedToHour?.index === i
+                      }"
+                      (click)="selectHour('to', i, hour)"
+                      [id]="'to-hour' + i"
+                    >
+                      {{ hour }}
+                    </div>
+                  </ng-container>
+                </swiper>
+              </div>
+            </div>
+
+            <div class="minute-wrapper">
+              <label
+                class="input-label"
+                [ngStyle]="{
+                  margin: '0px',
+                  textAlign: 'center',
+                  marginBottom: '20px',
+                  fontSize: '17px'
+                }"
+              >
+                M
+              </label>
+
+              <div class="minutes-swiper-wrapper">
+                <swiper [config]="verticalSwiperConfig" #untilMinutesSwiper>
+                  <ng-container *ngFor="let minute of minutes; let i = index">
+                    <div
+                      class="swiper-item"
+                      [ngClass]="{
+                        'swiper-item': 'true',
+                        'swiper-slide': 'true',
+                        selected: selectedToMinutes?.index === i
+                      }"
+                      (click)="selectMinutes('to', i, minute)"
+                      [id]="'to-minute' + i"
+                    >
+                      {{ minute }}
+                    </div>
+                  </ng-container>
+                </swiper>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="input-label" [ngStyle]="{ marginBottom: '32px' }">
+          Contenido opcional
+        </div>
+
+        <ul class="links">
+          <li>Limita los meses</li>
+          <li>Limita los años</li>
+        </ul>
+      </div>
+
+      <app-sticky-button
+        [mode]="'double'"
+        [text]="''"
+        [text2]="
+          calendarCreatorForm.controls.reservationAvailability.status ===
+          'VALID'
+            ? 'SALVAR'
+            : null
+        "
+        [customRightButtonStyles]="{
+          marginLeft: 'auto',
+          height: '30px',
+          color: '#fff',
+          textAlign: 'right',
+          paddingRight: '22px'
+        }"
+        [height]="'30px'"
+        [bgColor]="'#2874AD'"
+        [extra]="{
+          return: true,
+          height: '30px',
+          bgColor: '#2874AD',
+          returnCallback: returnToMenu
+        }"
+        [addBottomSeparator]="true"
+        (right)="
+          calendarCreatorForm.controls.reservationAvailability.status ===
+          'VALID'
+            ? save()
+            : null
+        "
+      >
+      </app-sticky-button>
+    </ng-container>
+
+    <ng-container *ngIf="currentStep === 'RESERVATION_DURATION_AND_BREAKTIME'">
+      <div
+        formGroupName="reservationParams"
+        class="body"
+        [ngStyle]="{ paddingTop: '42px', paddingLeft: '39px' }"
+      >
+        <label class="input-label" [ngStyle]="{ marginTop: '0px' }">
+          Minutos que dura cada reserva:
+        </label>
+
+        <div class="minutes-swiper-wrapper">
+          <swiper [config]="verticalSwiperConfig" #chunkSizeSwiper>
+            <div
+              *ngFor="let chunkSize of chunkSizeList; let i = index"
+              [ngClass]="{
+                'swiper-item': 'true',
+                'swiper-slide': 'true',
+                selected: selectedChunkSize?.index === i
+              }"
+              [id]="'chunk-size' + i"
+              (click)="selectChunkSize(i, chunkSize)"
+            >
+              {{ chunkSize }}
+            </div>
+          </swiper>
+        </div>
+
+        <label
+          class="input-label"
+          [ngStyle]="{
+            marginTop: '51px'
+          }"
+        >
+          Minutos entre reservas:
+        </label>
+
+        <div class="minutes-swiper-wrapper">
+          <swiper [config]="verticalSwiperConfig" #breakTimeSwiper>
+            <ng-container
+              *ngFor="let breakTime of breakTimeList; let i = index"
+            >
+              <div
+                *ngIf="
+                  !selectedChunkSize ||
+                  (selectChunkSize && breakTime < selectedChunkSize.chunkSize)
+                "
+                [ngClass]="{
+                  'swiper-item': 'true',
+                  'swiper-slide': 'true',
+                  selected: selectedBreakTime?.index === i
+                }"
+                [id]="'chunk-size' + i"
+                (click)="selectBreakTime(i, breakTime)"
+              >
+                {{ breakTime }}
+              </div>
+            </ng-container>
+          </swiper>
+        </div>
+      </div>
+
+      <app-sticky-button
+        [mode]="'double'"
+        [text]="''"
+        [text2]="
+          calendarCreatorForm.controls.reservationParams.status === 'VALID'
+            ? 'SALVAR'
+            : ''
+        "
+        [customRightButtonStyles]="{
+          marginLeft: 'auto',
+          height: '30px',
+          color: '#fff',
+          textAlign: 'right',
+          paddingRight: '22px'
+        }"
+        [height]="'30px'"
+        [bgColor]="'#2874AD'"
+        [extra]="{
+          return: true,
+          height: '30px',
+          bgColor: '#2874AD',
+          returnCallback: returnToMenu
+        }"
+        [addBottomSeparator]="true"
+        (right)="
+          calendarCreatorForm.controls.reservationParams.status === 'VALID'
+            ? save()
+            : null
+        "
+      >
+      </app-sticky-button>
+    </ng-container>
+
+    <ng-container *ngIf="currentStep === 'RESERVATION_SLOT_CAPACITY'">
+      <div
+        formGroupName="reservationSlotCapacity"
+        class="body"
+        [ngStyle]="{ paddingTop: '42px', paddingLeft: '39px' }"
+      >
+        <label
+          for="amount"
+          class="input-label"
+          [ngStyle]="{ marginTop: '0px' }"
+        >
+          Cuántas reservas al mismo tiempo?
+        </label>
+        <input
+          id="amount"
+          class="input customWidth"
+          type="number"
+          min="1"
+          formControlName="amount"
+          placeholder="Escribe..."
+        />
+      </div>
+
+      <app-sticky-button
+        [mode]="'double'"
+        [text]="''"
+        [text2]="
+          calendarCreatorForm.controls.reservationSlotCapacity.status ===
+          'VALID'
+            ? 'SALVAR'
+            : ''
+        "
+        [customRightButtonStyles]="{
+          marginLeft: 'auto',
+          height: '30px',
+          color: '#fff',
+          textAlign: 'right',
+          paddingRight: '22px'
+        }"
+        [height]="'30px'"
+        [bgColor]="'#2874AD'"
+        [extra]="{
+          return: true,
+          height: '30px',
+          bgColor: '#2874AD',
+          returnCallback: returnToMenu
+        }"
+        [addBottomSeparator]="true"
+        (right)="
+          calendarCreatorForm.controls.reservationSlotCapacity.status ===
+          'VALID'
+            ? save()
+            : null
+        "
+      >
+      </app-sticky-button>
+    </ng-container>
+  </form>
+</div>

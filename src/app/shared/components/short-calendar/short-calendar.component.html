@@ -33,17 +33,24 @@
     <div
       *ngFor="let day of monthDays"
       class="day"
-      ng
       [ngClass]="{
-        selected: selectedDay?.getDate() === day.dayNumber,
+        selected: checkIfDayIsSelected(day),
         disabled:
-          !allowSundays && day.weekDayNumber === 0 && !allowedDays
+          !allowSundays && day.weekDayNumber === 0 && !allowedDays && !daysRange
             ? true
-            : allowedDays
+            : allowedDays && !daysRange
             ? !isThisDayAValidOne(day)
+            : !allowedDays && daysRange
+            ? !isThisDayInTheRange(day)
             : false
       }"
-      (click)="!allowedDays || isThisDayAValidOne(day) ? onClick(day) : null"
+      (click)="
+        (!allowedDays && !daysRange) ||
+        (allowedDays && isThisDayAValidOne(day)) ||
+        (daysRange && isThisDayInTheRange(day))
+          ? onClick(day)
+          : null
+      "
     >
       <span>{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span>
       <span>{{ day.dayNumber }}</span>

@@ -4,11 +4,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from './../../shared/shared.module';
 import { CategoryItemsComponent } from './pages/category-items/category-items.component';
 import { CreateGiftcardComponent } from './pages/create-giftcard/create-giftcard.component';
-import { FlowCompletionAuthLessComponent } from './pages/flow-completion-auth-less/flow-completion-auth-less.component';
 import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-balloons.component';
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
-import { StoreComponent } from './pages/store/store.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
 import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
@@ -17,13 +15,25 @@ import { ProviderStoreComponent } from './pages/provider-store/provider-store.co
 import { UserInfoComponent } from './pages/provider-store/user-info/user-info.component';
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
-import { ShipmentDataFormComponent } from './pages/shipment-data-form/shipment-data-form.component';
 import { NewAddressComponent } from './pages/new-address/new-address.component';
 import { EcommerceComponent } from './ecommerce/ecommerce.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
+import { StoreComponent } from './pages/store/store.component';
 
 const routes: Routes = [
+  {
+    path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
+    component: HeavenlyBalloonsComponent,
+  },
+  {
+    path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
+    component: LlStudioOrderFormComponent,
+  },
+  {
+    path: 'redirections',
+    component: RedirectionsComponent,
+  },
   {
     path: '',
     component: EcommerceComponent,
@@ -60,10 +70,6 @@ const routes: Routes = [
         component: OrderDetailComponent,
       },
       {
-        path: 'shipment-data-form',
-        component: ShipmentDataFormComponent,
-      },
-      {
         path: 'new-address',
         component: NewAddressComponent,
       },
@@ -75,15 +81,6 @@ const routes: Routes = [
         path: 'item-detail/:saleflow/:id',
         component: ItemDetailComponent,
       },
-      {
-        path: 'flow-completion-auth-less',
-        component: FlowCompletionAuthLessComponent,
-      },
-      {
-        path: 'flow-completion-auth-less/:orderId',
-        component: FlowCompletionAuthLessComponent,
-      },
-
       {
         path: 'create-giftcard',
         component: CreateGiftcardComponent,
@@ -103,18 +100,6 @@ const routes: Routes = [
         component: OrderDetailComponent,
       },
       {
-        path: 'redirections',
-        component: RedirectionsComponent,
-      },
-      {
-        path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
-        component: HeavenlyBalloonsComponent,
-      },
-      {
-        path: 'll-studio-order-form/:merchantId/:calendarId/:automationName',
-        component: LlStudioOrderFormComponent,
-      },
-      {
         path: 'checkout',
         component: CheckoutComponent,
       },
@@ -123,6 +108,10 @@ const routes: Routes = [
         component: PaymentsComponent,
       },
     ],
+  },
+  {
+    path: ':saleflowId/payments',
+    component: PaymentsComponent,
   },
 ];
 
@@ -134,9 +123,7 @@ const routes: Routes = [
     CustomizerRedirectComponent,
     ProviderStoreComponent,
     StoreComponent,
-    ShipmentDataFormComponent,
     ItemDetailComponent,
-    FlowCompletionAuthLessComponent,
     CustomizerRedirectComponent,
     UserInfoComponent,
     CreateGiftcardComponent,

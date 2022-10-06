@@ -89,9 +89,22 @@
           <h3>DIA De {{ currentMonth?.name }}</h3>
           <app-short-calendar
             [allowUsersToChangeTheMonthShown]="true"
-            [allowedDays]="calendarData?.limits?.inDays"
+            [allowedDays]="
+              !useDateRangeToLimitAvailableWeekDays
+                ? calendarData?.limits?.inDays
+                : null
+            "
+            [daysRange]="
+              useDateRangeToLimitAvailableWeekDays
+                ? {
+                    fromDay: calendarData?.limits?.fromDay,
+                    toDay: calendarData?.limits?.toDay
+                  }
+                : null
+            "
             (selectedDate)="rerenderAvailableHours($event)"
             (changedMonth)="updateMonth($event)"
+            (beforeAnimation)="setDateAsNull()"
           ></app-short-calendar>
         </div>
 
@@ -102,6 +115,7 @@
           <h3>Hora:</h3>
 
           <app-answer-selector
+            *ngIf="timeRangeOptions.length > 0"
             [options]="timeRangeOptions"
             [blockIndexes]="hourRangesBlocked"
             [indicator]="true"
@@ -111,6 +125,10 @@
             }"
             (onSelector)="setClickedDate($event)"
           ></app-answer-selector>
+
+          <h3 style="margin-top: 10px;" *ngIf="!timeRangeOptions || timeRangeOptions.length === 0">
+            No quedan horas disponibles para reservar este dia
+          </h3>
         </div>
 
         <div

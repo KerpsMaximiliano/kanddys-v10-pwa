@@ -9,6 +9,10 @@ const routes: Routes = [
     path: 'reservations-creator/:calendarId',
     component: ReservationsCreatorComponent,
   },
+  {
+    path: 'reservations-creator/:calendarId/:reservationId',
+    component: ReservationsCreatorComponent,
+  },
 ];
 
 @NgModule({

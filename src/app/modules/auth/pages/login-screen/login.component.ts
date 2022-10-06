@@ -13,15 +13,25 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
 type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
+
+interface ValidateData {
+  name: string;
+  lastName: string;
+  password: string;
+  email?: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -36,6 +46,9 @@ export class LoginComponent implements OnInit {
   loggin: boolean;
   signUp: boolean;
   orderId: string;
+  itemId: string;
+  doesItemHasParams: boolean;
+  action: string;
   orderStatus: string;
   hasPayment: boolean;
   OTP: boolean = false;
@@ -43,9 +56,11 @@ export class LoginComponent implements OnInit {
   toValidate: boolean = false;
   sneaky: string;
   userID: string;
+  fullLink: string;
   messageLink: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
+  validateData: ValidateData;
   phoneNumber = new FormControl('', [
     Validators.required,
     Validators.minLength(10),
@@ -53,16 +68,19 @@ export class LoginComponent implements OnInit {
   password = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
+    Validators.pattern(/[\S]/),
   ]);
   firstName = new FormControl('', [
     Validators.required,
     Validators.minLength(3),
     Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    Validators.pattern(/[\S]/),
   ]);
   lastName = new FormControl('', [
     Validators.required,
     Validators.minLength(2),
     Validators.pattern(/^[a-z\s\u00E0-\u00FC\u00f1\u00d1]*$/i),
+    Validators.pattern(/[\S]/),
   ]);
   email = new FormControl('', [Validators.minLength(12)]);
   SearchCountryField = SearchCountryField;
@@ -81,12 +99,44 @@ export class LoginComponent implements OnInit {
     private headerService: HeaderService,
     private orderService: OrderService,
     private merchantService: MerchantsService,
+    private itemsService: ItemsService,
+    private saleflowsService: SaleFlowService,
     private location: Location,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
+    this.itemId = this.route.snapshot.queryParamMap.get('itemId');
+    this.action = this.route.snapshot.queryParamMap.get('action');
+    this.doesItemHasParams = Boolean(
+      this.route.snapshot.queryParamMap.get('hasParams')
+    );
+
+    if (this.action === 'precreateitem' && this.doesItemHasParams) {
+      const itemParams = this.itemsService.temporalItemParams;
+
+      if (typeof itemParams === 'undefined' || !itemParams) {
+        const flowRoute = localStorage.getItem('flowRoute');
+        if (flowRoute && flowRoute.length > 1) {
+          const [baseRoute, paramsString] = flowRoute.split('?');
+          const paramsArray = paramsString.split('&');
+          const queryParams = {};
+
+          paramsArray.forEach((param) => {
+            const [key, value] = param.split('=');
+
+            queryParams[key] = value;
+          });
+
+          localStorage.removeItem('flowRoute');
+          this.router.navigate([baseRoute], {
+            queryParams,
+          });
+        }
+      }
+    }
+
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -110,7 +160,7 @@ export class LoginComponent implements OnInit {
       )
         this.hasPayment = true;
       else {
-        const fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+        this.fullLink = `/ecommerce/order-info/${order._id}`;
         this.messageLink = `https://wa.me/${
           this.merchant.owner.phone
         }?text=Hola%20${this.merchant.name
@@ -118,7 +168,9 @@ export class LoginComponent implements OnInit {
           .replace(
             /[^\w\s]/gi,
             ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Mas%20info%20aquí%20${fullLink}`;
+          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
+          environment.uri
+        }${this.fullLink}`;
       }
     }
 
@@ -249,20 +301,20 @@ export class LoginComponent implements OnInit {
         } catch (error) {
           console.log(error);
         }
-      } else if (validUser && validUser.validatedAt === null){
-         this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-         this.userID = validUser._id;
-         this.loggin = true;
-         await this.generateTOP();
-         this.toValidate = true;
-
-      }else if(this.orderId && this.auth === 'anonymous'){
-        const anonymous = await this.authService.signup({
-         phone: this.phoneNumber.value.e164Number.split('+')[1]
-        },
-        'none',
-        null,
-        false
+      } else if (validUser && validUser.validatedAt === null) {
+        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+        this.userID = validUser._id;
+        this.loggin = true;
+        await this.generateTOP();
+        this.toValidate = true;
+      } else if (this.orderId && this.auth === 'anonymous') {
+        const anonymous = await this.authService.signup(
+          {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+          },
+          'none',
+          null,
+          false
         );
         if (anonymous) {
           this.authOrder(anonymous._id);
@@ -312,12 +364,26 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if(this.toValidate){
-         this.loggin = false;
-         this.signUp = true;
-         this.password.reset();
-         return;
-       }
+        if (this.itemId) {
+          await this.createItem(checkOTP.user);
+
+          return;
+        }
+
+        if (this.toValidate) {
+          this.loggin = false;
+          this.signUp = true;
+          this.phoneNumber.disable();
+          if (this.validateData) {
+            this.firstName.setValue(this.validateData.name);
+            this.lastName.setValue(this.validateData.lastName);
+            this.validateData?.email
+              ? this.email.setValue(this.validateData.email)
+              : '';
+          }
+          this.password.reset();
+          return;
+        }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
@@ -353,6 +419,13 @@ export class LoginComponent implements OnInit {
           this.authOrder(session.user._id);
           return;
         }
+
+        if (this.itemId) {
+          await this.createItem(session.user);
+
+          return;
+        }
+
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
@@ -384,16 +457,24 @@ export class LoginComponent implements OnInit {
         this.authOrder(signin.user._id);
         return;
       }
+
+      if (this.itemId) {
+        await this.createItem(signin.user);
+        return;
+      }
+
       this.router.navigate([`admin/entity-detail-metrics`], {
         replaceUrl: true,
       });
     }
   }
 
-  async generateTOP() {
+  async generateTOP(notoast?: boolean) {
     const OTP = await this.authService.generateOTP(this.merchantNumber);
     if (OTP) {
-      this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
+      notoast
+        ? null
+        : this.toastr.info('Código enviado al número', null, { timeOut: 2000 });
       this.OTP = true;
     }
   }
@@ -429,10 +510,10 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
-        console.log("Creando nuevo user");
+        console.log('Creando nuevo user');
         this.sneaky = this.password.value;
-        
-        await this.generateTOP();
+
+        await this.generateTOP(true);
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
@@ -442,43 +523,202 @@ export class LoginComponent implements OnInit {
         //   null
         // );
         this.toPassword();
-        this.toastr.info('¡Usuario registrado con exito!', null, {
-          timeOut: 2000,
-        });
+        this.toastr.info(
+          '¡Usuario registrado con exito! Se ha enviado un código para verificar',
+          null,
+          {
+            timeOut: 5000,
+            disableTimeOut: 'extendedTimeOut',
+          }
+        );
       }
+    } else if (valid && valid.validatedAt === null) {
+      await this.generateTOP(true);
+      this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+      this.userID = valid._id;
+      this.validateData = {
+        name: this.firstName.value,
+        lastName: this.lastName.value,
+        password: this.password.value,
+        email:
+          this.email.value && this.email.valid ? this.email.value : undefined,
+      };
+
+      this.signUp = false;
+      this.loggin = true;
+      this.toValidate = true;
+      this.password.reset();
+
+      this.toastr.info('Ingrese el código para completar su registro', null, {
+        timeOut: 5500,
+      });
     } else {
-      if(this.toValidate){
-         const validateUser = await this.authService.updateMe({
+      if (this.toValidate) {
+        const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
           lastname: this.lastName.value,
           email:
             this.email.value && this.email.valid ? this.email.value : undefined,
-         });
+        });
 
-         if(validateUser){
-            this.password.reset();
-            this.OTP = false;
-            this.toValidate = false;
-            this.signUp = false;
-            this.loggin = true;
-            
-            this.toastr.info('¡Usuario actualizado exitosamente!', null, {
-               timeOut: 2000
+        if (validateUser) {
+          await this.authService.signin(
+            this.merchantNumber,
+            this.password.value,
+            true
+          );
+
+          this.toastr.info('¡Usuario actualizado exitosamente!', null, {
+            timeOut: 2000,
+          });
+          if (this.auth === 'order') {
+            this.router.navigate([`ecommerce/new-address`], {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
             });
-            return;
-         } 
-         else{
-            this.toastr.error('Algo no funciona', null, {
-               timeOut: 2200
+          } else {
+            this.router.navigate([`admin/entity-detail-metrics`], {
+              replaceUrl: true,
             });
-            return;
-         };
+          }
+          return;
+        } else {
+          this.toastr.error('Algo no funciona', null, {
+            timeOut: 2200,
+          });
+          return;
+        }
       }
       this.toastr.info('Ese Usuario ya esta registrado', null, {
         timeOut: 2200,
       });
       return;
+    }
+  }
+
+  async getDefaultMerchantAndSaleflows(user: User): Promise<{
+    merchantDefault: Merchant;
+    saleflowDefault: SaleFlow;
+  }> {
+    if (!user?._id) return null;
+
+    let userMerchantDefault = await this.merchantService.merchantDefault(
+      user._id
+    );
+
+    if (!userMerchantDefault) {
+      const merchants = await this.merchantService.myMerchants();
+
+      if (merchants.length === 0) {
+        const { createMerchant: createdMerchant } =
+          await this.merchantService.createMerchant({
+            owner: user._id,
+            name: user.name + ' mechant #' + Math.floor(Math.random() * 100000),
+          });
+
+        const { merchantSetDefault: defaultMerchant } =
+          await this.merchantService.setDefaultMerchant(createdMerchant._id);
+
+        if (defaultMerchant) userMerchantDefault = defaultMerchant;
+      }
+    }
+
+    let userSaleflowDefault = await this.saleflowsService.saleflowDefault(
+      userMerchantDefault._id
+    );
+
+    if (!userSaleflowDefault) {
+      const { createSaleflow: createdSaleflow } =
+        await this.saleflowsService.createSaleflow({
+          merchant: userMerchantDefault._id,
+          name:
+            userMerchantDefault._id +
+            ' saleflow #' +
+            Math.floor(Math.random() * 100000),
+          items: [],
+        });
+
+      const { saleflowSetDefault: defaultSaleflow } =
+        await this.saleflowsService.setDefaultSaleflow(
+          userMerchantDefault._id,
+          createdSaleflow._id
+        );
+
+      this.saleflowsService.createSaleFlowModule({
+        saleflow: createdSaleflow._id,
+      });
+
+      userSaleflowDefault = defaultSaleflow;
+    }
+
+    return {
+      merchantDefault: userMerchantDefault,
+      saleflowDefault: userSaleflowDefault,
+    };
+  }
+
+  async createItem(user: User) {
+    switch (this.action) {
+      case 'precreateitem':
+        const {
+          merchantDefault: userMerchantDefault,
+          saleflowDefault: userSaleflowDefault,
+        } = await this.getDefaultMerchantAndSaleflows(user);
+
+        await this.itemsService.authItem(userMerchantDefault._id, this.itemId);
+
+        await this.saleflowsService.addItemToSaleFlow(
+          {
+            item: this.itemId,
+          },
+          userSaleflowDefault._id
+        );
+
+        if (this.doesItemHasParams) {
+          const itemParams = this.itemsService.temporalItemParams;
+
+          if (!itemParams) this.router.navigate([this.headerService.flowRoute]);
+
+          /*
+          const itemParams = JSON.parse(localStorage.getItem("temporalItemParams"));
+          localStorage.removeItem("temporalItemParams");
+          */
+
+          if (itemParams.length > 0 && itemParams[0].values.length > 0) {
+            const { createItemParam } = await this.itemsService.createItemParam(
+              userMerchantDefault._id,
+              this.itemId,
+              {
+                name: itemParams[0].name,
+                formType: 'color',
+                values: [],
+              }
+            );
+            const paramValues = itemParams[0].values.map((value) => {
+              return {
+                name: value.name,
+                image: value.image,
+                price: value.price,
+                description: value.description,
+              };
+            });
+
+            await this.itemsService.addItemParamValue(
+              paramValues,
+              createItemParam._id,
+              userMerchantDefault._id,
+              this.itemId
+            );
+          }
+        }
+
+        this.router.navigate(['admin/options/' + this.itemId]);
+        return;
+
+        break;
     }
   }
 
@@ -500,7 +740,12 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
         replaceUrl: true,
       });
-    else window.location.href = this.messageLink;
+    else {
+      this.router.navigate([this.fullLink], {
+        replaceUrl: true,
+      });
+      window.location.href = this.messageLink;
+    }
   }
 
   showShoppingCartDialog = () => {

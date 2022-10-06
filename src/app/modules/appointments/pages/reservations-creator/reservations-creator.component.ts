@@ -14,6 +14,14 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
 import * as moment from 'moment';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
+import { Reservation } from 'src/app/core/models/reservation';
+import { AuthService } from 'src/app/core/services/auth.service';
+import {
+  createReservation,
+  createReservationAuthLess,
+} from 'src/app/core/graphql/reservations.gql';
 
 interface HourOption {
   hourNumber: number;
@@ -80,6 +88,10 @@ export class ReservationsCreatorComponent implements OnInit {
     toLabel?: string;
   }> = [];
   hourRangesBlocked: number[] = [];
+  clientPhone: string = null;
+  clientEmail: string = null;
+  reservation: Reservation;
+  useDateRangeToLimitAvailableWeekDays: boolean = false;
 
   allMonths: {
     id: number;
@@ -89,68 +101,7 @@ export class ReservationsCreatorComponent implements OnInit {
       dayName: string;
       weekDayNumber: number;
     }[];
-  }[] = [
-    {
-      id: 0,
-      name: 'Enero',
-      dates: [],
-    },
-    {
-      id: 1,
-      name: 'Febrero',
-      dates: [],
-    },
-    {
-      id: 2,
-      name: 'Marzo',
-      dates: [],
-    },
-    {
-      id: 3,
-      name: 'Abril',
-      dates: [],
-    },
-    {
-      id: 4,
-      name: 'Mayo',
-      dates: [],
-    },
-    {
-      id: 5,
-      name: 'Junio',
-      dates: [],
-    },
-    {
-      id: 6,
-      name: 'Julio',
-      dates: [],
-    },
-    {
-      id: 7,
-      name: 'Agosto',
-      dates: [],
-    },
-    {
-      id: 8,
-      name: 'Septiembre',
-      dates: [],
-    },
-    {
-      id: 9,
-      name: 'Octubre',
-      dates: [],
-    },
-    {
-      id: 10,
-      name: 'Noviembre',
-      dates: [],
-    },
-    {
-      id: 11,
-      name: 'Diciembre',
-      dates: [],
-    },
-  ];
+  }[] = [];
 
   allDaysOfTheWeekArrayInSpanishAndEnglish = [
     { spanishName: 'Lunes', name: 'MONDAY' },
@@ -183,54 +134,77 @@ export class ReservationsCreatorComponent implements OnInit {
     private calendarsService: CalendarsService,
     private router: Router,
     private merchantsService: MerchantsService,
-    private reservationsService: ReservationService
+    private reservationsService: ReservationService,
+    private authService: AuthService,
+    private dialog: DialogService
   ) {}
 
   ngOnInit(): void {
+    this.allMonths = this.calendarsService.allMonths;
+
     this.route.params.subscribe(async (routeParams) => {
-      const { calendarId } = routeParams;
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { calendarId, reservationId } = routeParams;
+        const { clientEmail, clientPhone } = queryParams;
 
-      this.calendarData = await this.calendarsService.getCalendar(calendarId);
+        this.clientEmail = clientEmail;
+        this.clientPhone = clientPhone;
 
-      if (this.calendarData) {
-        this.calendarMerchant = await this.merchantsService.merchant(
-          this.calendarData.merchant
-        );
-        this.headerConfiguration.headerText =
-          'Reserva la fecha con ' + this.calendarMerchant.name;
+        this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
-        this.generateHourList();
+        console.log(reservationId);
+        if (reservationId) {
+          this.reservation = await this.reservationsService.getReservation(
+            reservationId
+          );
+        }
 
-        const currentDateObject = new Date();
-        const monthNumber = currentDateObject.getMonth();
+        this.useDateRangeToLimitAvailableWeekDays =
+          (!('inDays' in this.calendarData.limits) ||
+            ('inDays' in this.calendarData.limits &&
+              this.calendarData.limits.inDays.length === 0)) &&
+          'fromDay' in this.calendarData.limits &&
+          'toDay' in this.calendarData.limits;
 
-        this.currentMonth = {
-          name: this.allMonths[monthNumber].name,
-          number: monthNumber + 1,
-        };
+        if (this.calendarData) {
+          this.calendarMerchant = await this.merchantsService.merchant(
+            this.calendarData.merchant
+          );
+          this.headerConfiguration.headerText =
+            'Reserva la fecha con ' + this.calendarMerchant.name;
 
-        const { userInfo, reservationConvenience } =
-          this.reservationCreatorForm.controls;
-        this.stickyButton = {
-          text: 'SELECCIONA CUANDO TE CONVIENE',
-          mode: 'disabled-fixed',
-          callback: (params) => {
-            this.currentStep = 'RESERVATION_CONVENIENCE';
-          },
-        };
+          this.generateHourList();
 
-        userInfo.statusChanges.subscribe((newStatus) => {
-          if (newStatus === 'VALID') {
-            this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
-            this.stickyButton.mode = 'fixed';
-          } else {
-            this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
-            this.stickyButton.mode = 'disabled-fixed';
-          }
-        });
-      } else {
-        this.router.navigate(['others/error-screen']);
-      }
+          const currentDateObject = new Date();
+          const monthNumber = currentDateObject.getMonth();
+
+          this.currentMonth = {
+            name: this.allMonths[monthNumber].name,
+            number: monthNumber + 1,
+          };
+
+          const { userInfo } = this.reservationCreatorForm.controls;
+          this.stickyButton = {
+            text: 'SELECCIONA CUANDO TE CONVIENE',
+            mode: 'disabled-fixed',
+            callback: (params) => {
+              this.currentStep = 'RESERVATION_CONVENIENCE';
+            },
+          };
+
+          userInfo.statusChanges.subscribe((newStatus) => {
+            if (newStatus === 'VALID') {
+              this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
+              this.stickyButton.mode = 'fixed';
+            } else {
+              this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
+              this.stickyButton.mode = 'disabled-fixed';
+            }
+          });
+        } else {
+          this.router.navigate(['others/error-screen']);
+        }
+      });
     });
   }
 
@@ -372,7 +346,9 @@ export class ReservationsCreatorComponent implements OnInit {
 
       const toHourToShow =
         hourFractionAccumulator === 0
-          ? hourIn12HourFormat - 1
+          ? hourIn12HourFormat === 1 && loopCurrentHour === 13
+            ? 12
+            : hourIn12HourFormat - 1
           : hourIn12HourFormat;
 
       const minutesToShow =
@@ -416,12 +392,59 @@ export class ReservationsCreatorComponent implements OnInit {
 
         for (const reservation of this.calendarData.reservations) {
           if (
+            selectedDayNumber === new Date(reservation.date.from).getDate() &&
+            selectedDayNumber === new Date(reservation.date.until).getDate()
+          ) {
+            console.log(reservation.date.fromHour, fromHourString);
+            console.log(reservation.date.toHour, toHourString);
+            console.log('________________________________');
+          }
+
+          if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
             reservation.reservation.length ===
               this.calendarData.reservationLimits &&
             selectedDayNumber === new Date(reservation.date.from).getDate() &&
             selectedDayNumber === new Date(reservation.date.until).getDate()
+          ) {
+            this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+          }
+        }
+
+        for (const exception of this.calendarData.exceptions) {
+          const fromDateInLocalTime = moment(exception.from).toDate();
+          const untilDateInLocalTime = moment(exception.until).toDate();
+
+          const exceptionFromHour = fromDateInLocalTime.getHours();
+          const exceptionUntilHour = untilDateInLocalTime.getHours();
+
+          const currentRangeFromHour24HourFormat =
+            fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
+              ? fromHour.hourNumber + 12
+              : fromHour.hourNumber;
+          const currentRangeUntilHour24HourFormat = toHour.hourNumber;
+
+          const isFromHourInsideTheExceptionRange =
+            exceptionFromHour <= currentRangeFromHour24HourFormat &&
+            currentRangeFromHour24HourFormat < exceptionUntilHour;
+          const isUntilHourInsideTheExceptionRange =
+            (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+              currentRangeUntilHour24HourFormat < exceptionUntilHour) ||
+            (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+              currentRangeUntilHour24HourFormat === exceptionUntilHour &&
+              hourFractionAccumulator === 0);
+
+          const isTheExceptionDayTheSelectedDay =
+            fromDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber &&
+            untilDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber;
+
+          if (
+            (isFromHourInsideTheExceptionRange ||
+              isUntilHourInsideTheExceptionRange) &&
+            isTheExceptionDayTheSelectedDay
           ) {
             this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
           }
@@ -478,6 +501,9 @@ export class ReservationsCreatorComponent implements OnInit {
   async makeReservation() {
     const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
     const currentYear = new Date().getFullYear();
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailSubject = `Reservación realizada a ${this.calendarMerchant.name}`;
 
     let fromDateObject = new Date(
       currentYear,
@@ -489,10 +515,6 @@ export class ReservationsCreatorComponent implements OnInit {
         : this.selectedDate.fromHour.hourNumber,
       this.selectedDate.fromHour.minutesNumber
     );
-    /*fromDateObject = moment(fromDateObject)
-      .subtract(utcOffset, 'hours')
-      .toDate();
-    */
 
     let toDateObject = new Date(
       currentYear,
@@ -501,10 +523,6 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.toHour.hourNumber,
       this.selectedDate.toHour.minutesNumber
     );
-    //toDateObject = moment(toDateObject).subtract(utcOffset, 'hours').toDate();
-
-    console.log(fromDateObject);
-    console.log(toDateObject);
 
     let fromHourNumber =
       this.selectedDate.fromHour.timeOfDay === 'PM' &&
@@ -523,9 +541,15 @@ export class ReservationsCreatorComponent implements OnInit {
         : String(fromHourNumber);
 
     let realToHour = Number(this.selectedDate.toHour.hourString);
+
+    console.log(
+      this.selectedDate.toHour.hourNumber,
+      this.selectedDate.toHour.timeOfDay,
+      realToHour
+    );
+
     realToHour =
-      this.selectedDate.toHour.timeOfDay === 'PM' &&
-      this.selectedDate.toHour.hourNumber !== 12
+      this.selectedDate.toHour.timeOfDay === 'PM' && realToHour !== 12
         ? realToHour + 12
         : realToHour;
 
@@ -539,7 +563,24 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(realToHour)
         : String(realToHour);
 
-    await this.reservationsService.createReservationAuthLess({
+    const user = await this.authService.me();
+
+    const reservationMutation =
+      !user && !this.reservation
+        ? this.reservationsService.createReservationAuthLess.bind(
+            this.reservationsService
+          )
+        : user && !this.reservation
+        ? this.reservationsService.createReservation.bind(
+            this.reservationsService
+          )
+        : user && this.reservation
+        ? this.reservationsService.updateReservation.bind(
+            this.reservationsService
+          )
+        : null;
+
+    const reservationInput: any = {
       calendar: this.calendarData._id,
       merchant: this.calendarMerchant._id,
       type: 'ORDER',
@@ -552,7 +593,67 @@ export class ReservationsCreatorComponent implements OnInit {
           fromHourString + ':' + this.selectedDate.fromHour.minutesString,
         toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
-    });
+    };
+
+    if (user && this.reservation) {
+      delete reservationInput.calendar;
+      delete reservationInput.breakTime;
+      delete reservationInput.merchant;
+      delete reservationInput.type;
+    }
+
+    const mutationParams: any = [reservationInput];
+
+    if (user && this.reservation) mutationParams.push(this.reservation._id);
+
+    let result = await reservationMutation(...mutationParams);
+    if (result)
+      result = !user
+        ? result.createReservationAuthLess
+        : result.createReservation;
+
+    const message = `Saludos, se ha creado una reservación asociada a su ${
+      this.clientPhone ? 'número de teléfono' : 'correo electrónico'
+    }, con el negocio ${this.calendarMerchant.name}, para el dia ${
+      this.selectedDate.dayName
+    }, ${this.selectedDate.dayOfTheMonthNumber} de ${
+      this.selectedDate.monthName
+    }, en el rango de tiempo ${this.selectedDate.fromLabel} a ${
+      this.selectedDate.toLabel
+    }`;
+
+    if (this.clientPhone) {
+      window.location.href = `https://wa.me/${this.clientPhone}?text=${message}`;
+    } else if (this.clientEmail && emailRegex.test(this.clientEmail)) {
+      window.location.href = `mailto:${
+        this.clientEmail
+      }?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(
+        message
+      )}`;
+    } else {
+      let whatsappMessageToSendToTheMerchant = `**SLOT OF TIME RESERVADO**\n\n`;
+      whatsappMessageToSendToTheMerchant += `PARA: ${this.selectedDate.dayName}, ${this.selectedDate.dayOfTheMonthNumber} de ${this.selectedDate.monthName}\n\n`;
+      whatsappMessageToSendToTheMerchant += `DESDE ${this.selectedDate.fromLabel}\n\n`;
+      whatsappMessageToSendToTheMerchant += `HASTA ${this.selectedDate.toLabel}\n\n`;
+      whatsappMessageToSendToTheMerchant += `RESERVACIÓN ${result._id}\n\n`;
+
+      this.dialog.open(SingleActionDialogComponent, {
+        type: 'fullscreen-translucent',
+        props: {
+          title: 'Slot of Time reservado exitosamente',
+          buttonText: `Confirmar al whatsapp de ${this.calendarMerchant.name}`,
+          mainText: `Al "confirmar" se abrirá tu WhatsApp con el resumen de la reserva para ${this.calendarMerchant.name}`,
+          mainButton: () => {
+            window.location.href = `https://wa.me/${
+              this.calendarMerchant.owner.phone
+            }?text=${encodeURIComponent(whatsappMessageToSendToTheMerchant)}`;
+          },
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+        notCancellable: true,
+      });
+    }
   }
 
   getHourIn24HourFormat(
@@ -593,6 +694,10 @@ export class ReservationsCreatorComponent implements OnInit {
         : String(realToHour) + ':' + toHour.minutesString;
 
     return [fromHourString, toHourString];
+  }
+
+  setDateAsNull() {
+    this.selectedDate = null;
   }
 
   updateMonth(monthData: ChangedMonthEventData) {

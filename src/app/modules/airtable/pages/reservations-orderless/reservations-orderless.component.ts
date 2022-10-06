@@ -117,6 +117,7 @@ export class ReservationOrderlessComponent implements OnInit {
   weekDay: string;
   orderData: any;
   dialogProps: any;
+  @Input() reservationTextLabel: string = 'FECHA CONVENIENTE PARA LA ENTREGA';
   @Input() allowSundays: boolean = false;
 
   //calendar: 6149f790eb8b911a707523ce
@@ -658,10 +659,10 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
+
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
-        this.datePreview &&
         this.calendar.months[this.calendar.monthIndex].dates[
           this.calendar.dayIndex
         ].dayNumber === currentDayNumber) ||
@@ -936,16 +937,6 @@ export class ReservationOrderlessComponent implements OnInit {
   toggleOptions() {
     this.options = !this.options;
   }
-  share() {
-    /*let local;
-    if (this.header.locationData.googleMapsURL) {
-      local = this.header.locationData.googleMapsURL;
-    } else if (this.header.locationData.note) {
-      local = this.header.locationData.note;
-    }
-    this.whatsappLink = `https://wa.me/18095636780?text=Orden%20de%20${this.header.getDataFromOrder()[0].item[0].name}%20en%20${local}`;
-    window.location.href = this.whatsappLink;*/
-  }
 
   async save() {
     this.orderData.products[0].deliveryLocation = {
@@ -970,8 +961,6 @@ export class ReservationOrderlessComponent implements OnInit {
     if (!this.header.orderId)
       preOrderID = await this.header.newCreatePreOrder();
     else preOrderID = this.header.orderId;
-
-    this.router.navigate([`ecommerce/flow-completion-auth-less/${preOrderID}`]);
   }
 
   deleteSelection() {

@@ -3,16 +3,13 @@
     [mode]="'basic'"
     [fixed]="true"
     [mainText]="{
-      text: merchant?.name || 'Tienda',
+      text: merchantsService.merchantData?.name || 'Tienda',
       fontFamily: 'SfProBold',
       fontSize: '21px',
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="
-      !selectionConfiguration.active ||
-      (selectionConfiguration.active && selectedItemsCounter > 0)
-    "
+    [returnAble]="true"
     (returnEvent)="goToEntityDetailMetrics()"
   ></app-helper-headerv2>
 

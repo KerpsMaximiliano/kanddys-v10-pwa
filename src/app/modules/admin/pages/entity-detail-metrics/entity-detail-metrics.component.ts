@@ -18,10 +18,6 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -58,7 +54,6 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   constructor(
     private merchantsService: MerchantsService,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private ordersService: OrderService,
@@ -74,21 +69,12 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.merchant = await this.merchantsService.merchantDefault();
-    if (!this.merchant) {
-      this.headerService.flowRoute = this.router.url;
-      this.router.navigate([`auth/login/`]);
-      unlockUI();
-      return;
-    }
-
     await Promise.all([
       this.getItemsByMerchant(),
       this.getOrderTotal(),
       this.getMerchantBuyers(),
       // this.getTags(),
       // this.getCategories(),
-      this.getSaleflow(),
       this.getWebformsData(),
       // this.getCalendars(),
     ]);
@@ -98,7 +84,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getItemsByMerchant() {
     try {
       this.items = (
-        await this.merchantsService.itemsByMerchant(this.merchant._id)
+        await this.merchantsService.itemsByMerchant(this.headerService.merchantInfo._id)
       )?.itemsByMerchant;
       this.activeItems = this.items.filter(
         (item) => item.status === 'active' || item.status === 'featured'
@@ -117,7 +103,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getCalendars() {
   //   try {
   //     this.calendars = await this.calendarService.getCalendarsByMerchant(
-  //       this.merchant._id
+  //       this.merchantsService.merchantData._id
   //     );
   //     this.calendars = this.calendars.map((calendar) => {
   //       calendar.subtitle =
@@ -156,7 +142,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     try {
       this.ordersTotal = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
-        this.merchant._id
+        this.headerService.merchantInfo._id
       );
     } catch (error) {
       console.log(error);
@@ -166,7 +152,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getMerchantBuyers() {
     try {
       this.users = await this.merchantsService.usersOrderMerchant(
-        this.merchant._id
+         this.headerService.merchantInfo._id
       );
     } catch (error) {
       console.log(error);
@@ -176,7 +162,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getWebformsData() {
     try {
       this.webforms = await this.webformsService.webformsByMerchant(
-        this.merchant._id
+         this.headerService.merchantInfo._id
       );
       console.log(this.webforms);
 
@@ -203,7 +189,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getTags() {
   //   try {
   //     const tags = (
-  //       await this.merchantsService.tagsByMerchant(this.merchant._id)
+  //       await this.merchantsService.tagsByMerchant(this.merchantsService.merchantData._id)
   //     )?.tagsByMerchant;
   //     if (!tags) return;
   //     this.tags = tags
@@ -217,7 +203,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // async getCategories() {
   //   try {
   //     const categories = (
-  //       await this.itemsService.itemCategories(this.merchant._id, {
+  //       await this.itemsService.itemCategories(this.merchantsService.merchantData._id, {
   //         options: {
   //           limit: 1000,
   //         },
@@ -231,16 +217,6 @@ export class EntityDetailMetricsComponent implements OnInit {
   //     console.log(error);
   //   }
   // }
-
-  async getSaleflow() {
-    try {
-      this.saleflow = await this.saleflowService.saleflowDefault(
-        this.merchant._id
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   onOptionsClick = () => {
     const list = [

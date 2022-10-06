@@ -18,6 +18,30 @@ import { UserOrdersComponent } from './pages/user-dashboard/user-orders/user-ord
 import { MallDashboardComponent } from './pages/mall-dashboard/mall-dashboard.component';
 import { MallGiftsComponent } from './pages/mall-dashboard/mall-gifts/mall-gifts.component';
 import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-stores.component';
+import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
+import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
+import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
+import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
+import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
+import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
+import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
+import { TagCategoryCreatorComponent } from './pages/item-category-creator/item-category-creator.component';
+import { ItemCategoryExpositionComponent } from './pages/item-category-exposition/item-category-exposition.component';
+import { ItemSalesDetailComponent } from './pages/item-sales-detail/item-sales-detail.component';
+import { MerchantBuyersComponent } from './pages/merchant-buyers/merchant-buyers.component';
+import { MerchantOrdersComponent } from './pages/merchant-orders/merchant-orders.component';
+import { MerchantSharedComponent } from './pages/merchant-shared/merchant-shared.component';
+import { MetricsInfoComponent } from './pages/metrics-info/metrics-info.component';
+import { NotificationCreatorComponent } from './pages/notification-creator/notification-creator.component';
+import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
+import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
+import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
+import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
+import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
+import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
+import { TimeBlockComponent } from 'src/app/shared/components/time-block/time-block.component';
 
 const routes: Routes = [
   {
@@ -96,6 +120,132 @@ const routes: Routes = [
       },
     ],
   },
+  // FROM ADMIN 21/9/2022
+  {
+    path: 'admin-login',
+    component: AdminLoginComponent,
+  },
+  {
+    path: 'bank-registration/:saleflowId',
+    component: BankRegistrationComponent,
+  },
+  {
+    path: 'calendar-creator',
+    component: CalendarCreatorComponent,
+  },
+  {
+    path: 'calendar-creator/:calendarId',
+    component: CalendarCreatorComponent,
+  },
+  {
+    path: 'calendar-detail',
+    component: CalendarDetailComponent,
+  },
+  {
+    path: 'category-item-detail/:itemId',
+    component: CategoryItemDetailComponent,
+  },
+  {
+    path: 'category-items-admin/:categoryId',
+    component: CategoryItemsAdminComponent,
+  },
+  {
+    path: 'category-creator/:id',
+    component: TagCategoryCreatorComponent,
+  },
+  {
+    path: 'category-creator',
+    component: TagCategoryCreatorComponent,
+  },
+  {
+    path: 'tag-creator/:id',
+    component: TagCategoryCreatorComponent,
+  },
+  {
+    path: 'tag-creator',
+    component: TagCategoryCreatorComponent,
+  },
+  {
+    path: 'item-category-exposition',
+    component: ItemCategoryExpositionComponent,
+  },
+  {
+    path: 'item-sales-detail/:itemId',
+    component: ItemSalesDetailComponent,
+  },
+  {
+    path: 'merchant-buyers',
+    component: MerchantBuyersComponent,
+  },
+  {
+    path: 'merchant-orders',
+    component: MerchantOrdersComponent,
+  },
+  {
+    path: 'notification-creator/:id/:notificationId',
+    component: NotificationCreatorComponent,
+  },
+  {
+    path: 'notification-creator/:id',
+    component: NotificationCreatorComponent,
+  },
+  {
+    path: 'notifications-log/:id',
+    component: NotificationsLogComponent,
+  },
+  {
+    path: 'notifications-log',
+    component: NotificationsLogComponent,
+  },
+  {
+    path: 'reservation/:reservationId',
+    component: ReservationDetailComponent,
+  },
+  {
+    path: 'item-reservations/:id',
+    component: ReservationsComponent,
+  },
+  {
+    path: 'item-reservations',
+    component: ReservationsComponent,
+  },
+  {
+    path: 'reservations-creator/:calendarId',
+    component: ReservationsCreatorComponent,
+  },
+  {
+    path: 'sale-detail/:orderId',
+    component: SaleDetailComponent,
+  },
+  {
+    path: 'tag-detail',
+    component: TagDetailComponent,
+  },
+  {
+    path: 'tags-edit',
+    component: TagsEditComponent,
+  },
+  {
+    path: 'order-reservation',
+    component: OrderReservationComponent,
+  },
+  {
+    path: 'admin-order',
+    component: AdminOrderComponent,
+  },
+  {
+    path: 'metrics-info',
+    component: MetricsInfoComponent,
+  },
+  {
+    path: 'merchant-shared/:merchantId',
+    component: MerchantSharedComponent,
+  },
+  {
+    path: 'time-block/:calendarId',
+    component: TimeBlockComponent,
+  },
+  // FROM ADMIN 21/9/2022
 ];
 
 @NgModule({
@@ -115,7 +265,32 @@ const routes: Routes = [
     UserOrdersComponent,
     MallDashboardComponent,
     MallGiftsComponent,
-    MallStoresComponent
+    MallStoresComponent,
+    // FROM ADMIN 21/9/2022
+    AdminLoginComponent,
+    BankRegistrationComponent,
+    CalendarCreatorComponent,
+    CalendarDetailComponent,
+    CategoryItemDetailComponent,
+    CategoryItemsAdminComponent,
+    TagCategoryCreatorComponent,
+    ItemCategoryExpositionComponent,
+    ItemSalesDetailComponent,
+    MerchantBuyersComponent,
+    MerchantOrdersComponent,
+    NotificationCreatorComponent,
+    NotificationsLogComponent,
+    ReservationsComponent,
+    ReservationsCreatorComponent,
+    ReservationDetailComponent,
+    SaleDetailComponent,
+    TagDetailComponent,
+    TagsEditComponent,
+    OrderReservationComponent,
+    AdminOrderComponent,
+    MetricsInfoComponent,
+    MerchantSharedComponent,
+    // FROM ADMIN 21/9/2022
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })

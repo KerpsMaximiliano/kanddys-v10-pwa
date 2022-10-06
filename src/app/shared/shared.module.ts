@@ -87,12 +87,21 @@ import { StatusListComponent } from './dialogs/status-list/status-list.component
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
+import { SingleActionDialogComponent } from './dialogs/single-action-dialog/single-action-dialog.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
 import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
+import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
 import { SettingsComponent } from './dialogs/settings/settings.component';
+import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
+import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
+import { TimeBlockComponent } from './components/time-block/time-block.component';
+import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
+import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
+import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
+import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 
 const imports = [
   CommonModule,
@@ -169,6 +178,7 @@ const declarations = [
   UserActionsComponent,
   NotificationToggleComponent,
   GeneralFormSubmissionDialogComponent,
+  SingleActionDialogComponent,
   SwitchButtonComponent,
   ItemSmallCardComponent,
   EntityItemListComponent,
@@ -189,9 +199,18 @@ const declarations = [
   LoadingScreenComponent,
   ItemComponent,
   ReloadComponent,
+  WhatsappMessageComponent,
   CurrencyInputComponent,
   SelectDropdownComponent,
-  SettingsComponent
+  SettingsComponent,
+  MetricsReservationComponent,
+  ReservationListComponent,
+  SingleActionDialogComponent,
+  TimeBlockComponent,
+  TagManagementComponent,
+  TagsSelectorComponent,
+  TagsCarousellComponent,
+  HelperHeaderv3Component
 ];
 
 @NgModule({

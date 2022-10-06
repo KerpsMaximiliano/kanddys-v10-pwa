@@ -29,25 +29,45 @@ export class PackageDetailComponent implements OnInit {
   packageData: ItemPackage;
   scenarios: ItemExtra[] = [];
   showScenarios: any[] = [];
-  limitScenarios: number = 0;
+  limitScenarios: number = 3;
   selectedsQty: number = 0;
   filters: any[] = [
-    {
-      title: 'Filters',
-      subtitle: 'Package Filters',
-      options: [],
-    },
-  ];
-  saleflowData: SaleFlow;
-  orderProducts: ItemSubOrderInput[] = [];
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 'auto',
-    freeMode: true,
-    spaceBetween: 5,
-  };
+     {
+        title: 'Filters',
+        subtitle: 'Package Filters',
+        options: [],
+      },
+   ];
+   saleflowData: SaleFlow;
+   orderProducts: ItemSubOrderInput[] = [];
+   tags: string[] = ['#tag ID','#tag ID','#tag ID','#tag ID','#tag ID','#tag ID','#tag ID'];
+   dummyscenarios: any[] = [{
+    name: 'test1',
+    active: false
+   },
+   {
+    name: 'test1',
+    active: false
+   },
+   {
+    name: 'test1',
+    active: false
+   },
+   {
+    name: 'test1',
+    active: false
+   },
+   {
+    name: 'test1',
+    active: false
+   },
+   {
+    name: 'test1',
+    active: false
+   },];
 
   ngOnInit(): void {
-    this.route.params.subscribe(async (params) => {
+    /* this.route.params.subscribe(async (params) => {
       this.saleflowData = await this.header.fetchSaleflow(params.saleflowId);
       if(!this.saleflowData) return new Error(`Saleflow doesn't exist`);
       this.packageData = (await this.items.itemPacakge(params.packageId)).itemPackage;
@@ -73,7 +93,7 @@ export class PackageDetailComponent implements OnInit {
         });
       this.header.flowRoute = `package-detail/${this.saleflowData._id}/${params.id}`;
       localStorage.setItem('flowRoute', `package-detail/${this.saleflowData._id}/${params.id}`);
-    });
+    }); */
   }
 
   async listItems() {
@@ -99,7 +119,7 @@ export class PackageDetailComponent implements OnInit {
         this.limitScenarios = this.packageData.packageRules[i].maxQuantity;
         this.scenarios = listItems[i].itemExtra;
         for (let j = 0; j < this.scenarios.length; j++) {
-          this.scenarios[j].isActive = false;
+          this.scenarios[j].active = false;
         }
       }
       this.orderProducts.push({
@@ -116,7 +136,7 @@ export class PackageDetailComponent implements OnInit {
       let index: number;
       for (let i = 0; i < orderData.products[0].itemExtra.length;i++) {
         index = this.scenarios.findIndex((object) => object._id === orderData.products[0].itemExtra[i]);
-        this.scenarios[index].isActive = true;
+        this.scenarios[index].active = true;
       }
     } else {
       this.header.emptyOrderProducts(this.saleflowData._id);
@@ -128,27 +148,27 @@ export class PackageDetailComponent implements OnInit {
     console.log(event);
     this.scenarios.map((data) => {
       if (data._id === event.item._id) {
-        if (this.selectedsQty < this.limitScenarios && !data.isActive) {
-          data.isActive = event.isSelected;
+        if (this.selectedsQty < this.limitScenarios && !data.active) {
+          data.active = event.isSelected;
           this.selectedsQty++;
           this.orderProducts[0].itemExtra.push(data._id);
-        } else if (this.selectedsQty == this.limitScenarios && data.isActive) {
-          data.isActive = event.isSelected;
+        } else if (this.selectedsQty == this.limitScenarios && data.active) {
+          data.active = event.isSelected;
           this.selectedsQty--;
           this.orderProducts[0].itemExtra.splice(
             this.orderProducts[0].itemExtra.indexOf(data._id),
             1
           );
-        } else if (this.selectedsQty == this.limitScenarios && !data.isActive) {
+        } else if (this.selectedsQty == this.limitScenarios && !data.active) {
           let index = this.scenarios.findIndex((object) => {
             return object._id === this.orderProducts[0].itemExtra[0];
           });
-          this.scenarios[index].isActive = false;
+          this.scenarios[index].active = false;
           this.orderProducts[0].itemExtra.splice(0, 1);
-          data.isActive = event.isSelected;
+          data.active = event.isSelected;
           this.orderProducts[0].itemExtra.push(data._id);
-        } else if (this.selectedsQty < this.limitScenarios && data.isActive) {
-          data.isActive = event.isSelected;
+        } else if (this.selectedsQty < this.limitScenarios && data.active) {
+          data.active = event.isSelected;
           this.selectedsQty--;
           this.orderProducts[0].itemExtra.splice(
             this.orderProducts[0].itemExtra.indexOf(data._id),

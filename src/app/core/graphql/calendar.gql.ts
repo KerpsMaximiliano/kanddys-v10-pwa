@@ -30,6 +30,10 @@ export const getCalendar = gql`
           toHour
         }
       }
+      exceptions {
+        from
+        until
+      }
     }
   }
 `;
@@ -87,6 +91,7 @@ export const getCalendarsByMerchant = gql`
         dateType
         fromDay
         toDay
+        inDays
         fromHour
         toHour
       }
@@ -117,6 +122,30 @@ export const createCalendar = gql`
   mutation createCalendar($input: CalendarInput!) {
     createCalendar: createCalendar(input: $input) {
       _id
+    }
+  }
+`;
+
+export const updateCalendar = gql`
+  mutation updateCalendar($input: CalendarInput!, $id: ObjectID!) {
+    updateCalendar(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
+export const calendarAddExceptions = gql`
+  mutation calendarAddExceptions(
+    $exception: DateExceptionInput!
+    $id: ObjectID!
+  ) {
+    calendarAddExceptions(exception: $exception, id: $id) {
+      _id
+      exceptions {
+        _id
+        from
+        until
+      }
     }
   }
 `;

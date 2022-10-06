@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -9,12 +8,9 @@ import {
 } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
-import { User } from 'src/app/core/models/user';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -39,7 +35,6 @@ export class CreateItemComponent implements OnInit {
   imageField: (string | ArrayBuffer)[] = [];
   item: Item;
   disableFooter = true;
-  user: User;
   merchant: Merchant;
   saleflow: SaleFlow;
   changedImages = false;
@@ -65,11 +60,11 @@ export class CreateItemComponent implements OnInit {
     spaceBetween: 5,
   };
   hasParams: boolean;
+  justDynamicMode: boolean = false;
   parseFloat = parseFloat;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
-    private authService: AuthService,
     private merchantService: MerchantsService,
     private saleflowService: SaleFlowService,
     private route: ActivatedRoute,
@@ -80,20 +75,47 @@ export class CreateItemComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
-    const promises: Promise<User | Merchant | Item>[] = [
-      this.authService.me(),
+    const justdynamicmode =
+      this.route.snapshot.queryParamMap.get('justdynamicmode');
+
+    const promises: Promise<Merchant | Item>[] = [
       this.merchantService.merchantDefault(),
     ];
     if (itemId && !this.itemService.temporalItem)
       promises.push(this.itemService.item(itemId));
     this.status = 'loading';
-    const [user, userMerchant, item] = await Promise.all(promises);
-    if (!user || !userMerchant) {
+    const [userMerchant, item] = await Promise.all(promises);
+
+    if (justdynamicmode) {
+      this.hasParams = true;
+
+      this.generateFields();
+      this.generateFields();
+      this.generateFields();
+
+      this.justDynamicMode = true;
+
+      const paramsFormArray = this.itemParamsForm.get('params') as FormArray;
+      const valuesArray = paramsFormArray.at(0).get('values') as FormArray;
+
+      valuesArray.at(0).patchValue({
+        name: 'Alegria sin Chinoski',
+        price: 1275.0,
+      });
+      this.formattedPricing.values[0] = '$127500';
+      valuesArray.at(1).patchValue({
+        name: 'Alegria con Chinoski',
+        price: 1675.0,
+      });
+      this.formattedPricing.values[1] = '$167500';
+    }
+
+    if (!userMerchant) {
       this.status = 'complete';
       return;
     }
-    this.user = user as User;
     this.merchant = userMerchant as Merchant;
     this.saleflow = await this.saleflowService.saleflowDefault(
       this.merchant._id
@@ -105,9 +127,10 @@ export class CreateItemComponent implements OnInit {
     this.item = item as Item;
     const { images, name, description, merchant, params, pricing } =
       this.item || this.itemService.temporalItem;
-    if (merchant && this.user._id !== merchant.owner._id) {
+    if (merchant && this.merchant.owner._id !== merchant.owner._id) {
       this.status = 'error';
-      throw new Error('No eres el merchant dueño de este item');
+      this.router.navigate(['/admin/merchant-items']);
+      return;
     }
     this.imageField = images;
     if (this.itemService.temporalImages?.new?.length) {
@@ -125,12 +148,13 @@ export class CreateItemComponent implements OnInit {
         type: 'bullets',
         clickable: true,
       };
+
     this.itemForm.get('name').setValue(name);
     this.itemForm.get('description').setValue(description);
     this.handleCurrencyInput(this.itemForm, 'pricing', pricing);
     if (params?.[0]?.values?.length) {
       params[0].values.forEach(() => {
-        this.generateFields();
+        if (!this.item) this.generateFields();
       });
 
       this.itemParamsForm.get('params').patchValue(params);
@@ -139,15 +163,18 @@ export class CreateItemComponent implements OnInit {
           .at(0)
           .get('values') as FormArray
       ).controls.forEach((control, index) => {
-        this.handleCurrencyInput(
-          control,
-          'price',
-          params[0].values[index].price,
-          index
-        );
+        if (params[0].values[index]) {
+          this.handleCurrencyInput(
+            control,
+            'price',
+            params[0].values[index].price,
+            index
+          );
+        }
       });
       this.hasParams = true;
     }
+
     this.status = 'complete';
   }
 
@@ -203,23 +230,13 @@ export class CreateItemComponent implements OnInit {
               this.merchant._id,
               this.item._id
             );
-
-            const paramValues = params[0].values.map((value) => {
-              return {
-                name: value.name,
-                image: value.image,
-                price: value.price,
-                description: value.description,
-              };
-            });
-
-            await this.itemService.addItemParamValue(
-              paramValues,
-              this.item.params[0]._id,
-              this.merchant._id,
-              this.item._id
-            );
           }
+          await this.itemService.addItemParamValue(
+            params[0].values,
+            this.item.params[0]._id,
+            this.merchant._id,
+            this.item._id
+          );
         } else if (
           this.item.params.length === 0 &&
           params.length > 0 &&
@@ -290,7 +307,8 @@ export class CreateItemComponent implements OnInit {
             images.length > 0 ||
             this.itemService.temporalImages?.new?.length > 0,
         };
-        if (this.user) {
+
+        if (this.merchant) {
           const { createItem } = await this.itemService.createItem(itemInput);
           await this.saleflowService.addItemToSaleFlow(
             {
@@ -330,7 +348,7 @@ export class CreateItemComponent implements OnInit {
 
             this.headerService.flowRoute = this.router.url;
             this.itemService.removeTemporalItem();
-            this.router.navigate([`/admin/merchant-items`]);
+            this.router.navigate([`/admin/options/${createItem._id}`]);
             this.submitEventFinished = true;
           }
         } else {
@@ -340,16 +358,26 @@ export class CreateItemComponent implements OnInit {
 
           if ('_id' in createPreItem) {
             this.submitEventFinished = true;
-            this.headerService.flowRoute = this.router.url;
+            localStorage.setItem('flowRoute', this.router.url);
             this.itemService.removeTemporalItem();
-            this.router.navigate(
-              [`/auth/authentication/${createPreItem?._id}`],
-              {
-                queryParams: {
-                  type: 'create-item',
-                },
-              }
-            );
+
+            if (this.hasParams) {
+              this.itemService.temporalItemParams = params;
+              /*
+              localStorage.setItem(
+                'temporalItemParams',
+                JSON.stringify(params)
+              );
+              */
+            }
+
+            this.router.navigate([`/auth/login`], {
+              queryParams: {
+                itemId: createPreItem?._id,
+                hasParams: this.hasParams,
+                action: 'precreateitem',
+              },
+            });
           }
         }
       }

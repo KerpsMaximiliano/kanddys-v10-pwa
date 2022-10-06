@@ -1,0 +1,137 @@
+.container {
+  padding: 0px 30px;
+  min-height: 100vh;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
+}
+
+.day {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.message-container {
+  width: 100%;
+  padding: 40px 0px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.base-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: auto;
+  height: 72px;
+  font-family: RobotoMedium;
+  font-size: 20px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  display: inline;
+  margin: 0;
+  margin-right: 13px;
+  margin-bottom: 9px;
+  width: 140px;
+
+  &.period {
+    padding: 0px;
+    text-align: center;
+    font-family: SfProRegular;
+    font-size: 17px;
+    color: #7b7b7b;
+    box-shadow: 0px 7px 25px -14px inset;
+  }
+
+  &::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #a1a1a1;
+    opacity: 1; /* Firefox */
+  }
+
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #a1a1a1;
+  }
+
+  &::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #a1a1a1;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  &[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  &:focus {
+    border: 1px solid dodgerblue;
+  }
+}
+
+.base-label {
+  font-size: 19px;
+  font-family: "RobotoMedium";
+  color: gray;
+  text-align: left;
+  margin: 0px;
+}
+
+.limit {
+  text-align: left;
+  font-size: 16px;
+  color: dodgerblue;
+  margin: 10px 0px;
+  cursor: pointer;
+}
+
+.limit-container {
+  padding-left: 20px;
+}
+
+.mr {
+  padding-right: 12px;
+  display: inline;
+}
+
+.without_ampm::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+input[type="time"]::-webkit-clear-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  margin: -10px;
+}
+
+.my {
+  margin: 0px;
+  margin-top: 46px;
+
+  h3 {
+    font-family: RobotoMedium;
+    font-weight: normal;
+    color: #7b7b7b;
+    font-size: 17px;
+    margin: 0px;
+    margin-bottom: 11px;
+  }
+}

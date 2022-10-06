@@ -106,8 +106,24 @@ export class SaleflowItemComponent implements OnInit {
       let lowest = 0;
       this.itemParams.forEach((params) => {
         params.values.forEach((values) => {
-          if (lowest === 0) lowest = values.price;
-          if (values.price < lowest) lowest = values.price;
+          if (lowest === 0) {
+            lowest = values.price;
+            if (
+              values.image &&
+              values.image !== '' &&
+              (this.imgURL === '' || !this.imgURL)
+            )
+              this.imgURL = values.image;
+          }
+          if (values.price < lowest) {
+            lowest = values.price;
+            if (
+              values.image &&
+              values.image !== '' &&
+              (this.imgURL === '' || !this.imgURL)
+            )
+              this.imgURL = values.image;
+          }
         });
       });
       this.price = this.price + lowest;
