@@ -452,6 +452,32 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
           this.minutes.push(minutesFractionAccumulator);
       }
 
+      if (
+        noExistingCalendarChunkSize !== null &&
+        this.selectedFromHour &&
+        this.selectedFromHour.hour !== null
+      ) {
+        const initialHourIndex = this.hours.findIndex(
+          (hour) => this.selectedFromHour.hour === hour
+        );
+
+        if (initialHourIndex >= 0)
+          this.selectedFromHour.index = initialHourIndex;
+      }
+
+      if (
+        noExistingCalendarChunkSize !== null &&
+        this.selectedFromMinutes &&
+        this.selectedFromMinutes.minute !== null
+      ) {
+        const initialMinuteIndex = this.hours.findIndex(
+          (hour) => this.selectedFromMinutes.minute === hour
+        );
+
+        if (initialMinuteIndex >= 0)
+          this.selectedFromMinutes.index = initialMinuteIndex;
+      }
+
       if (calendar) this.setExistingCalendarFinalHours(calendar);
     }
 
@@ -526,6 +552,11 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
     const { getCalendar: calendar } =
       await this.calendarService.getCalendarSimple(this.calendarId);
     if (!calendar) this.router.navigate(['others/error-screen']);
+
+    if (calendar.merchant !== this.merchantDefault._id) {
+      this.router.navigate(['others/error-screen']);
+    }
+    //if(!this.merchantDefault && calendar.)
 
     this.setHoursAndMinutesArray(calendar);
 
@@ -636,9 +667,18 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
       .reservationAvailability as FormGroup;
 
     if (this.daysOfTheWeek[dayIndex].selected) {
-      reservationAvailabilityFormGroup.controls.daysAvailability.value.push(
-        this.daysOfTheWeek[dayIndex]
-      );
+      let dayIsNotOnDaysAvailabilityArray = true;
+
+      dayIsNotOnDaysAvailabilityArray =
+        !reservationAvailabilityFormGroup.controls.daysAvailability.value.some(
+          (dayObject: DayOfTheWeek) =>
+            dayObject.fullname === this.daysOfTheWeek[dayIndex].fullname
+        );
+
+      if (dayIsNotOnDaysAvailabilityArray)
+        reservationAvailabilityFormGroup.controls.daysAvailability.value.push(
+          this.daysOfTheWeek[dayIndex]
+        );
 
       const clone =
         reservationAvailabilityFormGroup.controls.daysAvailability.value;
@@ -650,10 +690,19 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
         clone
       );
     } else {
-      reservationAvailabilityFormGroup.controls.daysAvailability.value.filter(
-        (day) => {
-          return this.daysOfTheWeek[dayIndex].fullname !== day.fullname;
-        }
+      console.log(
+        'quitando',
+        reservationAvailabilityFormGroup.controls.daysAvailability.value
+      );
+      const replacement =
+        reservationAvailabilityFormGroup.controls.daysAvailability.value.filter(
+          (day) => {
+            return this.daysOfTheWeek[dayIndex].fullname !== day.fullname;
+          }
+        );
+
+      reservationAvailabilityFormGroup.controls.daysAvailability.setValue(
+        replacement
       );
     }
   }
@@ -836,17 +885,38 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
   }
 
   goBackwards() {
+    const { reservationDurationInMinutes, minutesBetweenReservations } =
+      this.calendarCreatorForm.value.reservationParams;
+    const { daysAvailability, fromHour, toHour } =
+      this.calendarCreatorForm.value.reservationAvailability;
+    const { amount: amountOfReservationsAtTheSameTime } =
+      this.calendarCreatorForm.value.reservationSlotCapacity;
+
     switch (this.currentStep) {
       case 'MAIN':
         break;
       case 'RESERVATION_DURATION_AND_BREAKTIME':
         this.currentStep = 'MAIN';
+
+        this.setReservationDurationsLabel(
+          reservationDurationInMinutes,
+          minutesBetweenReservations
+        );
+
         break;
       case 'RESERVATION_DAYS_HOURS_AVAILABILITY':
         this.currentStep = 'MAIN';
+
+        this.setReservationAvailabilityLabel(
+          daysAvailability,
+          fromHour,
+          toHour
+        );
+
         break;
       case 'RESERVATION_SLOT_CAPACITY':
         this.currentStep = 'MAIN';
+        this.setReservationSlotCapacityLabel(amountOfReservationsAtTheSameTime);
         break;
     }
   }
@@ -883,19 +953,23 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
           },
         };
 
+        let result = null;
+
         if (!this.calendarId) {
           calendarInput.name =
             'Calendario genérico ' + Math.floor(Math.random() * (100 - 1)) + 1;
-          const result = await this.calendarService.createCalendar(
-            calendarInput
-          );
+          result = await this.calendarService.createCalendar(calendarInput);
+
+          if (result) this.router.navigate([`admin/entity-detail-metrics`]);
         } else {
           delete calendarInput.merchant;
 
-          const result = await this.calendarService.updateCalendar(
+          result = await this.calendarService.updateCalendar(
             calendarInput,
             this.calendarId
           );
+
+          if (result) this.router.navigate([`admin/entity-detail-metrics`]);
         }
 
         break;
@@ -990,6 +1064,24 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
           }
         }
       }
+    }
+
+    //NUEVO
+    if (this.selectedToHour && this.selectedToHour.hour !== null) {
+      const initialHourIndex = this.toHours.findIndex(
+        (hour) => this.selectedToHour.hour === hour
+      );
+
+      if (initialHourIndex >= 0) this.selectedToHour.index = initialHourIndex;
+    }
+
+    if (this.selectedToMinutes && this.selectedToMinutes.minute !== null) {
+      const initialMinuteIndex = this.toMinutes.findIndex(
+        (minute) => this.selectedToMinutes.minute === minute
+      );
+
+      if (initialMinuteIndex >= 0)
+        this.selectedToMinutes.index = initialMinuteIndex;
     }
   }
 
