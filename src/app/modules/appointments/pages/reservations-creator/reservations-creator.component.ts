@@ -392,34 +392,6 @@ export class ReservationsCreatorComponent implements OnInit {
 
         for (const reservation of this.calendarData.reservations) {
           if (
-            selectedDayNumber === new Date(reservation.date.from).getDate() &&
-            selectedDayNumber === new Date(reservation.date.until).getDate()
-          ) {
-            /*
-            console.log(
-              reservation.date.fromHour,
-              fromHourString,
-              this.calendarData.reservationLimits
-            );
-            console.log(
-              reservation.date.toHour,
-              toHourString,
-              reservation.reservation.length
-            );
-            console.log(
-              fromHourString === reservation.date.fromHour &&
-                toHourString === reservation.date.toHour &&
-                reservation.reservation.length ===
-                  this.calendarData.reservationLimits &&
-                selectedDayNumber ===
-                  new Date(reservation.date.from).getDate() &&
-                selectedDayNumber === new Date(reservation.date.until).getDate()
-            );
-            console.log('________________________________');
-            */
-          }
-
-          if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
             reservation.reservation.length ===
@@ -561,33 +533,20 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let realToHour = Number(this.selectedDate.toHour.hourString);
 
-    console.log(
-      'REAL TO HOUR 1',
-      realToHour,
-      this.selectedDate.toHour,
-      this.selectedDate.toHour.hourNumber
-    );
-
     realToHour =
       this.selectedDate.toHour.timeOfDay === 'PM' && realToHour < 12
         ? realToHour + 12
         : realToHour;
 
-    console.log('REAL TO HOUR 2', realToHour);
-    console.log(utcOffset, realToHour + utcOffset);
     realToHour =
       realToHour + utcOffset < 24
         ? realToHour + utcOffset
         : 0 + Math.abs(24 - (realToHour + 24));
 
-    console.log('REAL TO HOUR 3', realToHour);
-
     const toHourString =
       String(realToHour).length < 2
         ? '0' + String(realToHour)
         : String(realToHour);
-
-    console.log("toHourString", toHourString);
 
     const user = await this.authService.me();
 
@@ -665,7 +624,6 @@ export class ReservationsCreatorComponent implements OnInit {
       whatsappMessageToSendToTheMerchant += `HASTA ${this.selectedDate.toLabel}\n\n`;
       whatsappMessageToSendToTheMerchant += `RESERVACIÓN ${result._id}\n\n`;
 
-      /*
       this.dialog.open(SingleActionDialogComponent, {
         type: 'fullscreen-translucent',
         props: {
@@ -682,7 +640,6 @@ export class ReservationsCreatorComponent implements OnInit {
         flags: ['no-header'],
         notCancellable: true,
       });
-      */
     }
   }
 
