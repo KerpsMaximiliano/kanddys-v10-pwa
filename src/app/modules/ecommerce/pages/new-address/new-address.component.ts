@@ -7,7 +7,10 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { HeaderService } from 'src/app/core/services/header.service';
+import {
+  HeaderService,
+  SaleflowData,
+} from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -91,12 +94,22 @@ export class NewAddressComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+    const magicLinkData = this.route.snapshot.queryParamMap.get('data');
+    if (magicLinkData) {
+      const orderData = JSON.parse(
+        decodeURIComponent(magicLinkData)
+      ) as SaleflowData;
+      if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
+        localStorage.setItem(saleflowId, JSON.stringify(orderData));
+      }
+    }
     this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
-    if (!this.headerService.order)
+    if (!this.headerService.order) {
       this.router.navigate([
         `/ecommerce/store/${this.headerService.saleflow._id}`,
       ]);
+    }
     if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);

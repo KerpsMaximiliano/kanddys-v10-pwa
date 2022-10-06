@@ -324,6 +324,17 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
+          if (this.auth === 'order' || this.auth === 'address') {
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `ecommerce/${this.saleflow._id}/new-address`,
+              null,
+              'NonExistingOrder',
+              {
+                data: localStorage.getItem(this.saleflow._id),
+              }
+            );
+          }
           if (
             this.orderId &&
             (this.auth === 'anonymous' || this.auth === 'payment')
@@ -355,6 +366,7 @@ export class LoginComponent implements OnInit {
         this.orderId &&
         (this.auth === 'anonymous' || this.auth === 'payment')
       ) {
+        // Caso actual para un usuario que se registra al pagar una orden
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
@@ -396,6 +408,7 @@ export class LoginComponent implements OnInit {
       });
       this.status = 'ready';
     } else if (this.OTP) {
+      // Creo que este caso no se está usando
       const checkOTP = await this.authService.verify(
         this.password.value,
         this.userID
@@ -478,7 +491,8 @@ export class LoginComponent implements OnInit {
         this.status = 'ready';
         return;
       } else {
-        this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth !== 'address' && this.auth !== 'order')
+          this.toastr.info('Código válido', null, { timeOut: 2000 });
         const session = await this.authService.signin(
           this.merchantNumber,
           this.sneaky,
@@ -490,11 +504,19 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'address') {
+          // Caso en el que el usuario se registra y guarda una direccion
           const address = this.headerService.getLocation(
             this.route.snapshot.queryParamMap.get('saleflow')
           );
           const result = await this.usersService.addLocation(address);
           if (result) {
+            this.toastr.info(
+              'Código válido. La dirección ha sido guardada',
+              null,
+              {
+                timeOut: 3000,
+              }
+            );
             this.router.navigate(
               [`ecommerce/${this.headerService.saleflow._id}/checkout`],
               {
@@ -506,6 +528,14 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'order') {
+          // Caso en el que el usuario se registra y quiere ver sus direcciones
+          this.toastr.info(
+            'Código válido. Ahora puedes guardar tus direcciones',
+            null,
+            {
+              timeOut: 3000,
+            }
+          );
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
@@ -533,6 +563,7 @@ export class LoginComponent implements OnInit {
         this.status = 'ready';
       }
     } else {
+      // Creo que este caso no se está usando
       const signin = await this.authService.signin(
         this.merchantNumber,
         this.password.value,
@@ -649,7 +680,6 @@ export class LoginComponent implements OnInit {
           null,
           {
             timeOut: 5000,
-            disableTimeOut: 'extendedTimeOut',
           }
         );
       }
@@ -675,6 +705,7 @@ export class LoginComponent implements OnInit {
       });
     } else {
       if (this.toValidate) {
+        // Creo que este caso no se está usando
         const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
