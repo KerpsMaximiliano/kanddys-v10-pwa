@@ -392,15 +392,6 @@ export class ReservationsCreatorComponent implements OnInit {
 
         for (const reservation of this.calendarData.reservations) {
           if (
-            selectedDayNumber === new Date(reservation.date.from).getDate() &&
-            selectedDayNumber === new Date(reservation.date.until).getDate()
-          ) {
-            console.log(reservation.date.fromHour, fromHourString);
-            console.log(reservation.date.toHour, toHourString);
-            console.log('________________________________');
-          }
-
-          if (
             fromHourString === reservation.date.fromHour &&
             toHourString === reservation.date.toHour &&
             reservation.reservation.length ===
@@ -542,14 +533,8 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let realToHour = Number(this.selectedDate.toHour.hourString);
 
-    console.log(
-      this.selectedDate.toHour.hourNumber,
-      this.selectedDate.toHour.timeOfDay,
-      realToHour
-    );
-
     realToHour =
-      this.selectedDate.toHour.timeOfDay === 'PM' && realToHour !== 12
+      this.selectedDate.toHour.timeOfDay === 'PM' && realToHour < 12
         ? realToHour + 12
         : realToHour;
 
@@ -594,6 +579,8 @@ export class ReservationsCreatorComponent implements OnInit {
         toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
     };
+
+    console.log("asd", toHourString + ':' + this.selectedDate.toHour.minutesString)
 
     if (user && this.reservation) {
       delete reservationInput.calendar;
@@ -679,7 +666,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let realToHour = Number(toHour.hourString);
     realToHour =
-      toHour.timeOfDay === 'PM' && toHour.hourNumber !== 12
+      toHour.timeOfDay === 'PM' && realToHour < 12
         ? realToHour + 12
         : realToHour;
 
