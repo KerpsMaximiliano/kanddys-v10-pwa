@@ -234,7 +234,7 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  back() {
+  back = () => {
     this.location.back();
   }
 
