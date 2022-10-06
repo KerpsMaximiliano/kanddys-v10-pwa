@@ -31,6 +31,9 @@ a {
       font-family: "SfProBold";
       font-size: 1.313rem;
       color: #ffffff;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     .right-area {
@@ -71,6 +74,7 @@ a {
       font-size: 1.438rem;
       color: #4f4f4f;
       margin: 0 auto 35px;
+      text-align: center;
     }
 
     .bill-button {
