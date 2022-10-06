@@ -1,0 +1,9 @@
+<div class="tags-grid">
+  <button *ngFor="let tg of tags"
+  [style]="{
+    background:tag.includes(tg)?'#2874ad':'#fff',
+    border:'1px solid '+(tag.includes(tg)?'#fff':'#2874ad'),
+    color:tag.includes(tg)?'#fff':'#2874ad'
+  }"
+  class="tag" (click)="setTag(tg)">{{tg}}</button>
+</div>

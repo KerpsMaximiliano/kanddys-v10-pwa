@@ -1,0 +1,20 @@
+<div class="header-grid">
+  <div class="arrows" (click)="handleClick()">
+    <i
+      class="fas fa-chevron-up"
+      aria-hidden="true"
+      style="color: rgb(255, 255, 255); display: block"
+    ></i>
+    <i
+      class="fas fa-chevron-up"
+      aria-hidden="true"
+      style="color: rgb(255, 255, 255); display: block"
+    ></i>
+  </div>
+  <div class="header-text">{{text}}</div>
+  <div class="dots">
+    <div class="dot-trio">
+      <div class="dot" *ngFor="let dot of ['', '', '']"></div>
+    </div>
+  </div>
+</div>

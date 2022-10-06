@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 
 @Component({
   selector: 'app-tag-management',
@@ -8,16 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./tag-management.component.scss'],
 })
 export class TagManagementComponent implements OnInit {
-  tags: string[] = [
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-    '#tacomid',
-  ];
+  tags: string[] = [];
   images: any = [['']];
   tag: string[] = [];
   controllers: FormArray = new FormArray([]);
@@ -49,11 +42,32 @@ export class TagManagementComponent implements OnInit {
       type: 'file',
     },
   ];
-  constructor(protected _DomSanitizer: DomSanitizer) {}
+  status: string = 'loading';
+  _id: string = '';
+  constructor(
+    protected _DomSanitizer: DomSanitizer,
+    private _TagsService: TagsService,
+    private _MerchantsService: MerchantsService
+  ) {}
 
   ngOnInit(): void {
-    this.tags = this.tags.map((tag, index) => tag + index);
-    this.initControllers();
+    const getMerchant = async () => {
+      const { _id } = await this._MerchantsService.merchantDefault();
+      this._id = _id;
+      this.initControllers();
+      const params = {
+        paginate: {
+          options: {
+            limit: 10,
+          },
+        },
+      };
+      let tags: any = await this._TagsService.tagsByUser() || [];
+      tags = tags.map(({ name }) => name);
+      this.tags = tags;
+      this.status = 'controller';
+    };
+    getMerchant();
   }
 
   initControllers(): void {
@@ -68,6 +82,12 @@ export class TagManagementComponent implements OnInit {
       );
       this.controllers.push(controller);
     });
+  }
+
+  resetControllers():void {
+    this.controllers = new FormArray([]);
+    this.images = [['']];
+    this.initControllers();
   }
 
   public get demoFormArrayControls() {
@@ -117,20 +137,28 @@ export class TagManagementComponent implements OnInit {
 
   submit(): void {
     if (this.controllers.invalid) return;
+    this.status = 'loading';
     const results = this.controllers.value.map(({ name, images }) => {
       let imagen;
       if (this.multipleImages) imagen = images;
       else [imagen] = images;
       const result = {
         name,
-        ['image' + (this.multipleImages ? 's' : '')]: imagen,
+        // ['image' + (this.multipleImages ? 's' : '')]: imagen,
+        merchant: this._id,
       };
       return result;
     });
-    let value;
-    if (this.multiple) value = results;
-    else [value] = results;
-    console.log('value: ', value);
+    const submit = async () => {
+      for(const value of results){
+        const {createTag} = await this._TagsService.createTag(value);
+        const { name } = createTag;
+        this.tags.push(name || value.name);
+      }
+      this.resetControllers();
+      this.status = 'controller';
+    };
+    submit();
   }
 
   addImage(i: number, j: number, el: HTMLElement): void {
