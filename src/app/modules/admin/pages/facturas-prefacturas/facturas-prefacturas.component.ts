@@ -7,6 +7,7 @@ import { PaginationInput } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
@@ -49,11 +50,13 @@ export class FacturasPrefacturasComponent implements OnInit {
     spaceBetween: 5,
   };
   tags:any[] = [];
+  tagsCarousell:any[] = [];
   multipleTags:boolean = true;
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
-    private _DialogService: DialogService
+    private _DialogService: DialogService,
+    private _TagsService: TagsService
   ) {}
 
   ngOnInit(): void {
@@ -91,6 +94,9 @@ export class FacturasPrefacturasComponent implements OnInit {
         this.handleController(value)
       );
       this.facturasList.push(this.facturas);
+      let tags: any = await this._TagsService.tagsByUser() || [];
+      tags = tags.map(({ name }) => name);
+      this.tagsCarousell = tags;
       this.status = this.facturas.length ? 'complete' : 'empty';
     };
     ordersByMerchant();

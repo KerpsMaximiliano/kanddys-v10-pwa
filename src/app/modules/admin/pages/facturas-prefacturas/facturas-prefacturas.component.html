@@ -6,26 +6,10 @@
   (returnEvent)="navigate()"
   (dotEvent)="handleDotsEvent()"
 ></app-helper-headerv2>
-<div *ngIf="tags.length" class="header-grid">
-  <div class="arrows" (click)="tags=[]">
-    <i
-      class="fas fa-chevron-up"
-      aria-hidden="true"
-      style="color: rgb(255, 255, 255); display: block"
-    ></i>
-    <i
-      class="fas fa-chevron-up"
-      aria-hidden="true"
-      style="color: rgb(255, 255, 255); display: block"
-    ></i>
-  </div>
-  <div class="header-text">Ingreso: $IngresoID</div>
-  <div class="dots">
-    <div class="dot-trio">
-      <div class="dot" *ngFor="let dot of ['', '', '']"></div>
-    </div>
-  </div>
-</div>
+<app-helper-headerv3
+*ngIf="tags.length"
+(arrowsClick)="tags=[]"
+></app-helper-headerv3>
 <div class="container">
   <div *ngIf="!tags.length" class="pr-25px">
     <input
@@ -51,7 +35,7 @@
       </button>
     </div>
     <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
-    <app-tags-carousell (tag)="handleTag($event)"></app-tags-carousell>
+    <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div

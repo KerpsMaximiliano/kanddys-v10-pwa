@@ -96,6 +96,7 @@ import { SelectDropdownComponent } from './components/select-dropdown/select-dro
 import { SingleActionDialogComponent } from './dialogs/single-action-dialog/single-action-dialog.component';
 import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
 import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
+import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 
 const imports = [
   CommonModule,
@@ -197,7 +198,8 @@ const declarations = [
   SelectDropdownComponent,
   SingleActionDialogComponent,
   TagsSelectorComponent,
-  TagsCarousellComponent
+  TagsCarousellComponent,
+  HelperHeaderv3Component
 ];
 
 @NgModule({

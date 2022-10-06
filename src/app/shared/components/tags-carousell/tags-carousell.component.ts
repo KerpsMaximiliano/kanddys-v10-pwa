@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { SwiperOptions } from 'swiper';
 
 @Component({
@@ -13,13 +13,10 @@ export class TagsCarousellComponent implements OnInit {
     spaceBetween: 5,
   };
   @Output('tag') tag:EventEmitter<any> = new EventEmitter();
-  tags: string[] = [];
+  @Input('tags') tags:any = [];
   constructor() { }
 
   ngOnInit(): void {
-    this.tags = this.fillList(10).map(
-      (i: string, index: number) => `#tacomid${index}`
-    );
   }
 
   fillList(n: number): any[] {
