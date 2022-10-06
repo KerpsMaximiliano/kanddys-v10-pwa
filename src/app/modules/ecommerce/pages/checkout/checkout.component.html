@@ -220,17 +220,32 @@
     </section>
   </main>
 
+
   <app-sticky-button
-    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
-    [bgColor]="'#2874AD'"
-    [customLeftButtonStyles]="{
-      'font-size': '17px',
-      'font-family': 'RobotoMedium',
-      color: '#FFF',
-      'letter-spacing': '1px'
+    [mode]="!disableButton ? 'double' : 'disabled-fixed'"
+    [extra]="{
+      bgColor: '#2874AD',
+      return: true
     }"
-    [size]="'small'"
-    (click)="!disableButton && newCreatePreOrder()"
+    [color]="'#FFF'"
+    [fontSize]="'17px'"
+    [bgColor]="'#A1A1A1'"
+    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
+    [customLeftButtonStyles]="{
+      width: '84.65%',
+      'max-width': 'none',
+      'border-left': '1px solid #FFFFFF',
+      backgroundColor: '#2874ad',
+      color: '#FFFFFF',
+      cursor: 'unset'
+    }"
+    [customRightButtonStyles]="{
+      width: '1px',
+      heigth: '1px',
+      cursor: 'unset'
+    }"
+    [text2]="''"
+    size="small"
+    (left)="!disableButton && newCreatePreOrder()"
   ></app-sticky-button>
 </div>
