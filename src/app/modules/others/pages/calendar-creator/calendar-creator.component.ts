@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormStep } from 'src/app/core/types/multistep-form';
 import { FormControl, FormGroup, Validator, Validators } from '@angular/forms';
 import {
@@ -11,10 +11,13 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/user';
 import { Merchant } from 'src/app/core/models/merchant';
-import { CalendarService } from 'src/app/core/services/calendar.service';
-import { SwiperOptions } from 'swiper';
 import { Calendar } from 'src/app/core/models/calendar';
 import { CalendarsService } from 'src/app/core/services/calendars.service';
+import { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
 
 interface DayOfTheWeek {
   name: string;
@@ -28,7 +31,7 @@ interface DayOfTheWeek {
   templateUrl: './calendar-creator.component.html',
   styleUrls: ['./calendar-creator.component.scss'],
 })
-export class CalendarCreatorComponent implements OnInit {
+export class CalendarCreatorComponent implements OnInit, AfterViewInit {
   currentStep:
     | 'MAIN'
     | 'RESERVATION_DURATION_AND_BREAKTIME'
@@ -96,6 +99,64 @@ export class CalendarCreatorComponent implements OnInit {
           styles: this.listStyles['BOTTOM_LEFT'],
           callback: () => {
             this.changeStepTo('RESERVATION_DAYS_HOURS_AVAILABILITY');
+
+            const fromHourAndMinuteAlreadySelected =
+              this.selectedFromHour &&
+              this.selectedFromHour.hour !== null &&
+              this.selectedFromMinutes &&
+              this.selectedFromMinutes.minute !== null;
+
+            const untilHourAndMinuteAlreadySelected =
+              this.selectedToHour &&
+              this.selectedToHour.hour !== null &&
+              this.selectedToMinutes &&
+              this.selectedToMinutes.minute !== null;
+
+            setTimeout(() => {
+              if (fromHourAndMinuteAlreadySelected) {
+                const isSelectedFromHourNotTheFirstOrLastOne =
+                  this.selectedFromHour.index > 0 &&
+                  this.selectedFromHour.index !== this.hours.length - 1;
+
+                this.fromHourSwiper.directiveRef.setIndex(
+                  isSelectedFromHourNotTheFirstOrLastOne
+                    ? this.selectedFromHour.index - 1
+                    : this.selectedFromHour.index
+                );
+
+                const isSelectedFromMinuteNotTheFirstOrLastOne =
+                  this.selectedFromMinutes.index > 0 &&
+                  this.selectedFromMinutes.index !== this.minutes.length - 1;
+
+                this.fromMinutesSwiper.directiveRef.setIndex(
+                  isSelectedFromMinuteNotTheFirstOrLastOne
+                    ? this.selectedFromMinutes.index - 1
+                    : this.selectedFromMinutes.index
+                );
+              }
+
+              if (untilHourAndMinuteAlreadySelected) {
+                const isSelectedUntilHourNotTheFirstOrLastOne =
+                  this.selectedToHour.index > 0 &&
+                  this.selectedToHour.index !== this.toHours.length - 1;
+
+                this.untilHourSwiper.directiveRef.setIndex(
+                  isSelectedUntilHourNotTheFirstOrLastOne
+                    ? this.selectedToHour.index - 1
+                    : this.selectedToHour.index
+                );
+
+                const isSelectedUntilMinuteNotTheFirstOrLastOne =
+                  this.selectedToMinutes.index > 0 &&
+                  this.selectedToMinutes.index !== this.toMinutes.length - 1;
+
+                this.untilMinutesSwiper.directiveRef.setIndex(
+                  isSelectedUntilMinuteNotTheFirstOrLastOne
+                    ? this.selectedToMinutes.index - 1
+                    : this.selectedToMinutes.index
+                );
+              }
+            }, 300);
           },
         },
       },
@@ -124,6 +185,42 @@ export class CalendarCreatorComponent implements OnInit {
           styles: this.listStyles['BOTTOM_LEFT'],
           callback: () => {
             this.changeStepTo('RESERVATION_DURATION_AND_BREAKTIME');
+
+            const breakTimeAlreadySelected =
+              this.selectedBreakTime &&
+              this.selectedBreakTime.breakTime !== null;
+
+            const chunkSizeAlreadySelected =
+              this.selectedChunkSize &&
+              this.selectedChunkSize.chunkSize !== null;
+
+            setTimeout(() => {
+              if (breakTimeAlreadySelected) {
+                const indexIsNotTheFirstOrTheLasOne =
+                  this.selectedBreakTime.index > 0 &&
+                  this.selectedBreakTime.index !==
+                    this.breakTimeList.length - 1;
+
+                this.breakTimeSwiper.directiveRef.setIndex(
+                  indexIsNotTheFirstOrTheLasOne
+                    ? this.selectedBreakTime.index - 1
+                    : this.selectedBreakTime.index
+                );
+              }
+
+              if (chunkSizeAlreadySelected) {
+                const indexIsNotTheFirstOrTheLasOne =
+                  this.selectedChunkSize.index > 0 &&
+                  this.selectedChunkSize.index !==
+                    this.chunkSizeList.length - 1;
+
+                this.chunkSizeSwiper.directiveRef.setIndex(
+                  indexIsNotTheFirstOrTheLasOne
+                    ? this.selectedChunkSize.index - 1
+                    : this.selectedChunkSize.index
+                );
+              }
+            }, 300);
           },
         },
       },
@@ -235,7 +332,7 @@ export class CalendarCreatorComponent implements OnInit {
   } = null;
   activeCalendar: boolean = true;
   verticalSwiperConfig: SwiperOptions = {
-    slidesPerView: 3,
+    slidesPerView: 'auto',
     freeMode: true,
     direction: 'vertical',
     mousewheel: true,
@@ -259,6 +356,13 @@ export class CalendarCreatorComponent implements OnInit {
       toHour: new FormControl(null, Validators.required),
     }),
   });
+
+  @ViewChild('fromHourSwiper') fromHourSwiper: SwiperComponent;
+  @ViewChild('fromMinutesSwiper') fromMinutesSwiper: SwiperComponent;
+  @ViewChild('untilHourSwiper') untilHourSwiper: SwiperComponent;
+  @ViewChild('untilMinutesSwiper') untilMinutesSwiper: SwiperComponent;
+  @ViewChild('chunkSizeSwiper') chunkSizeSwiper: SwiperComponent;
+  @ViewChild('breakTimeSwiper') breakTimeSwiper: SwiperComponent;
 
   constructor(
     private authService: AuthService,
@@ -294,6 +398,8 @@ export class CalendarCreatorComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {}
+
   setHoursAndMinutesArray(
     calendar?: Calendar,
     noExistingCalendarChunkSize?: number
@@ -325,6 +431,7 @@ export class CalendarCreatorComponent implements OnInit {
     ) {
       hoursToAdvanceInEachSlot = reservationDurationInMinutes / 60;
       const chunkSizePercentage = hoursToAdvanceInEachSlot * 60;
+
       let minutesFractionAccumulator = 0;
 
       for (let number = 0; number <= 23; number += hoursToAdvanceInEachSlot) {
@@ -338,7 +445,7 @@ export class CalendarCreatorComponent implements OnInit {
 
       this.blockMinutes = true;
 
-      while (minutesFractionAccumulator !== 60) {
+      while (minutesFractionAccumulator <= 60 && chunkSizePercentage < 60) {
         minutesFractionAccumulator += chunkSizePercentage;
 
         if (minutesFractionAccumulator !== 60)
@@ -473,6 +580,28 @@ export class CalendarCreatorComponent implements OnInit {
       calendar.breakTime
     );
 
+    const existingChunkSizeIndex = this.chunkSizeList.findIndex(
+      (chunkSizeListItem) => {
+        return calendar.timeChunkSize === chunkSizeListItem;
+      }
+    );
+
+    this.selectedChunkSize = {
+      chunkSize: calendar.timeChunkSize,
+      index: existingChunkSizeIndex,
+    };
+
+    const existingBreakTimeIndex = this.breakTimeList.findIndex(
+      (breakTimeListItem) => {
+        return calendar.breakTime === breakTimeListItem;
+      }
+    );
+
+    this.selectedBreakTime = {
+      breakTime: calendar.breakTime,
+      index: existingBreakTimeIndex,
+    };
+
     this.setReservationDurationsLabel(
       calendar.timeChunkSize,
       calendar.breakTime
@@ -532,6 +661,12 @@ export class CalendarCreatorComponent implements OnInit {
   selectHour(type: string, index: number, hour: number) {
     const reservationAvailabilityFormGroup = this.calendarCreatorForm.controls
       .reservationAvailability as FormGroup;
+    let { reservationDurationInMinutes } =
+      this.calendarCreatorForm.value.reservationParams;
+    const { daysAvailability } =
+      this.calendarCreatorForm.value.reservationAvailability;
+
+    reservationDurationInMinutes = Number(reservationDurationInMinutes);
 
     if (type === 'from') {
       this.selectedFromHour = { index: null, hour: null };
@@ -541,8 +676,69 @@ export class CalendarCreatorComponent implements OnInit {
       this.toHours = [];
       this.selectedToHour = { index: null, hour: null };
 
-      for (let number = hour; number <= 23; number++) {
-        this.toHours.push(number.toString().length < 2 ? '0' + number : number);
+      console.log(reservationDurationInMinutes);
+
+      if (!reservationDurationInMinutes || reservationDurationInMinutes <= 60) {
+        for (let number = hour; number <= 23; number++) {
+          this.toHours.push(
+            number.toString().length < 2 ? '0' + number : number
+          );
+
+          if (this.untilHourSwiper) {
+            setTimeout(() => {
+              this.untilHourSwiper.directiveRef.setIndex(0);
+            }, 100);
+
+            if (this.selectedToHour.hour < this.toHours[0]) {
+              reservationAvailabilityFormGroup.patchValue({
+                toHour: null,
+              });
+              this.setReservationAvailabilityLabel(
+                daysAvailability,
+                null,
+                null
+              );
+            }
+          }
+        }
+      } else if (reservationDurationInMinutes > 60) {
+        const hoursToAdvanceInEachSlot = reservationDurationInMinutes / 60;
+        for (
+          let number = Number(hour);
+          number <= 23;
+          number += hoursToAdvanceInEachSlot
+        ) {
+          if (number !== hour)
+            this.toHours.push(
+              number.toString().length < 2 ? '0' + number : number
+            );
+
+          if (this.untilHourSwiper) {
+            setTimeout(() => {
+              this.untilHourSwiper.directiveRef.setIndex(0);
+            }, 100);
+
+            if (this.selectedToHour.hour < this.toHours[0]) {
+              reservationAvailabilityFormGroup.patchValue({
+                toHour: null,
+              });
+              this.setReservationAvailabilityLabel(
+                daysAvailability,
+                null,
+                null
+              );
+            }
+          }
+        }
+      }
+
+      const fromHourAndMinuteAlreadySelected =
+        this.selectedFromHour &&
+        this.selectedFromHour.hour !== null &&
+        this.selectedFromMinutes &&
+        this.selectedFromMinutes.minute !== null;
+
+      if (fromHourAndMinuteAlreadySelected) {
       }
     } else {
       this.selectedToHour = { index: null, hour: null };
@@ -711,6 +907,14 @@ export class CalendarCreatorComponent implements OnInit {
 
         this.setHoursAndMinutesArray(null, reservationDurationInMinutes);
 
+        const fromHourNumber =
+          fromHour === null ? 0 : Number(fromHour.split(':')[0]);
+
+        this.generateUntilHourListBasedOnChunkSize(
+          fromHourNumber,
+          reservationDurationInMinutes
+        );
+
         this.setReservationAvailabilityLabel(
           daysAvailability,
           fromHour,
@@ -732,6 +936,60 @@ export class CalendarCreatorComponent implements OnInit {
         this.setReservationSlotCapacityLabel(amountOfReservationsAtTheSameTime);
         this.currentStep = 'MAIN';
         break;
+    }
+  }
+
+  generateUntilHourListBasedOnChunkSize(fromHour: number, chunkSize: number) {
+    const reservationAvailabilityFormGroup = this.calendarCreatorForm.controls
+      .reservationAvailability as FormGroup;
+
+    const { daysAvailability } =
+      this.calendarCreatorForm.controls.reservationAvailability.value;
+
+    this.toHours = [];
+
+    if (!chunkSize || chunkSize <= 60) {
+      for (let number = fromHour; number <= 23; number++) {
+        this.toHours.push(number.toString().length < 2 ? '0' + number : number);
+
+        if (this.untilHourSwiper) {
+          setTimeout(() => {
+            this.untilHourSwiper.directiveRef.setIndex(0);
+          }, 100);
+
+          if (this.selectedToHour.hour < this.toHours[0]) {
+            reservationAvailabilityFormGroup.patchValue({
+              toHour: null,
+            });
+            this.setReservationAvailabilityLabel(daysAvailability, null, null);
+          }
+        }
+      }
+    } else if (chunkSize > 60) {
+      const hoursToAdvanceInEachSlot = chunkSize / 60;
+      for (
+        let number = fromHour;
+        number <= 23;
+        number += hoursToAdvanceInEachSlot
+      ) {
+        if (number !== fromHour)
+          this.toHours.push(
+            number.toString().length < 2 ? '0' + number : number
+          );
+
+        if (this.untilHourSwiper) {
+          setTimeout(() => {
+            this.untilHourSwiper.directiveRef.setIndex(0);
+          }, 100);
+
+          if (this.selectedToHour.hour < this.toHours[0]) {
+            reservationAvailabilityFormGroup.patchValue({
+              toHour: null,
+            });
+            this.setReservationAvailabilityLabel(daysAvailability, null, null);
+          }
+        }
+      }
     }
   }
 

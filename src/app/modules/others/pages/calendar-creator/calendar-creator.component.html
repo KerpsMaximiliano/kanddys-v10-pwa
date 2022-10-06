@@ -101,7 +101,7 @@
             </label>
 
             <div class="hour-swiper-wrapper">
-              <swiper [config]="verticalSwiperConfig">
+              <swiper [config]="verticalSwiperConfig" #fromHourSwiper>
                 <div
                   *ngFor="let hour of hours; let i = index"
                   [ngClass]="{
@@ -132,7 +132,7 @@
             </label>
 
             <div class="minutes-swiper-wrapper">
-              <swiper [config]="verticalSwiperConfig">
+              <swiper [config]="verticalSwiperConfig" #fromMinutesSwiper>
                 <div
                   [ngClass]="{
                     'swiper-item': 'true',
@@ -151,7 +151,7 @@
           </div>
         </div>
 
-        <ng-container *ngIf="toHours.length > 0">
+        <ng-container *ngIf="toHours.length > 0 && selectedFromHour && selectedFromHour.hour && selectedFromMinutes && selectedFromMinutes.minute">
           <div class="input-label">¿Hasta que hora?</div>
           <div class="from-to-flex-wrapper">
             <div class="hour-wrapper">
@@ -168,19 +168,21 @@
               </label>
 
               <div class="hour-swiper-wrapper">
-                <swiper [config]="verticalSwiperConfig">
-                  <div
-                    *ngFor="let hour of toHours; let i = index"
-                    [ngClass]="{
-                      'swiper-item': 'true',
-                      'swiper-slide': 'true',
-                      selected: selectedToHour?.index === i
-                    }"
-                    (click)="selectHour('to', i, hour)"
-                    [id]="'to-hour' + i"
-                  >
-                    {{ hour }}
-                  </div>
+                <swiper [config]="verticalSwiperConfig" #untilHourSwiper>
+                  <ng-container *ngFor="let hour of toHours; let i = index">
+                    <div
+                      *ngIf="selectedFromHour && hour !== selectedFromHour.hour"
+                      [ngClass]="{
+                        'swiper-item': 'true',
+                        'swiper-slide': 'true',
+                        selected: selectedToHour?.index === i
+                      }"
+                      (click)="selectHour('to', i, hour)"
+                      [id]="'to-hour' + i"
+                    >
+                      {{ hour }}
+                    </div>
+                  </ng-container>
                 </swiper>
               </div>
             </div>
@@ -199,20 +201,21 @@
               </label>
 
               <div class="minutes-swiper-wrapper">
-                <swiper [config]="verticalSwiperConfig">
-                  <div
-                    class="swiper-item"
-                    [ngClass]="{
-                      'swiper-item': 'true',
-                      'swiper-slide': 'true',
-                      selected: selectedToMinutes?.index === i
-                    }"
-                    *ngFor="let minute of minutes; let i = index"
-                    (click)="selectMinutes('to', i, minute)"
-                    [id]="'to-minute' + i"
-                  >
-                    {{ minute }}
-                  </div>
+                <swiper [config]="verticalSwiperConfig" #untilMinutesSwiper>
+                  <ng-container *ngFor="let minute of minutes; let i = index">
+                    <div
+                      class="swiper-item"
+                      [ngClass]="{
+                        'swiper-item': 'true',
+                        'swiper-slide': 'true',
+                        selected: selectedToMinutes?.index === i
+                      }"
+                      (click)="selectMinutes('to', i, minute)"
+                      [id]="'to-minute' + i"
+                    >
+                      {{ minute }}
+                    </div>
+                  </ng-container>
                 </swiper>
               </div>
             </div>
@@ -275,7 +278,7 @@
         </label>
 
         <div class="minutes-swiper-wrapper">
-          <swiper [config]="verticalSwiperConfig">
+          <swiper [config]="verticalSwiperConfig" #chunkSizeSwiper>
             <div
               *ngFor="let chunkSize of chunkSizeList; let i = index"
               [ngClass]="{
@@ -301,19 +304,26 @@
         </label>
 
         <div class="minutes-swiper-wrapper">
-          <swiper [config]="verticalSwiperConfig">
-            <div
+          <swiper [config]="verticalSwiperConfig" #breakTimeSwiper>
+            <ng-container
               *ngFor="let breakTime of breakTimeList; let i = index"
-              [ngClass]="{
-                'swiper-item': 'true',
-                'swiper-slide': 'true',
-                selected: selectedBreakTime?.index === i
-              }"
-              [id]="'chunk-size' + i"
-              (click)="selectBreakTime(i, breakTime)"
             >
-              {{ breakTime }}
-            </div>
+              <div
+                *ngIf="
+                  !selectedChunkSize ||
+                  (selectChunkSize && breakTime < selectedChunkSize.chunkSize)
+                "
+                [ngClass]="{
+                  'swiper-item': 'true',
+                  'swiper-slide': 'true',
+                  selected: selectedBreakTime?.index === i
+                }"
+                [id]="'chunk-size' + i"
+                (click)="selectBreakTime(i, breakTime)"
+              >
+                {{ breakTime }}
+              </div>
+            </ng-container>
           </swiper>
         </div>
       </div>
