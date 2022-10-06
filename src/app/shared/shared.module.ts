@@ -98,6 +98,9 @@ import { MetricsReservationComponent } from './components/metrics-reservation/me
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 import { TimeBlockComponent } from './components/time-block/time-block.component';
 import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
+import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
+import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
+import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 
 const imports = [
   CommonModule,
@@ -202,7 +205,10 @@ const declarations = [
   ReservationListComponent,
   SingleActionDialogComponent,
   TimeBlockComponent,
-  TagManagementComponent
+  TagManagementComponent,
+  TagsSelectorComponent,
+  TagsCarousellComponent,
+  HelperHeaderv3Component
 ];
 
 @NgModule({

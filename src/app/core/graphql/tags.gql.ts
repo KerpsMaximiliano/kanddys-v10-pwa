@@ -24,17 +24,7 @@ export const tagsByUser = gql`
   query {
 		tagsByUser {
             _id
-			messageNotify
-			counter
 			name
-			notify
-			containers {
-				phone
-				notify
-				name
-			}
-			notifyUserOrder
-			notifyMerchantOrder
     }
   }
 `;
