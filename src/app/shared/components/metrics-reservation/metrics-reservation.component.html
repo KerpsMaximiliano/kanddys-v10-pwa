@@ -53,7 +53,7 @@
     <div class="info-card pointer">
       <h2 class="amount quantity">
         {{
-          reservation.slots
+          !reservation.noLimitsMode ? reservation.slots : '∞'
         }}
       </h2>
 

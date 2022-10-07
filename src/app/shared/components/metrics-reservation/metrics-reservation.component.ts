@@ -100,20 +100,26 @@ export class MetricsReservationComponent implements OnInit {
             calendar._id
           );
 
+        const reservationObject: any = {
+          calendar: calendar._id,
+          past,
+          future,
+          calendarObj: {
+            ...calendar,
+            daysSeparatedByComma,
+          },
+          noLimitsMode: false
+        };
+
         if (reservationSpacesAvailableQueryResult) {
           const { reservationSpacesAvailable } =
             reservationSpacesAvailableQueryResult;
-          this.reservations.push({
-            calendar: calendar._id,
-            past,
-            future,
-            slots: reservationSpacesAvailable,
-            calendarObj: {
-              ...calendar,
-              daysSeparatedByComma,
-            },
-          });
+          reservationObject.slots = reservationSpacesAvailable;
+        } else {
+          reservationObject.noLimitsMode = true;
         }
+
+        this.reservations.push(reservationObject);
       }
       this.status = 'complete';
     };
