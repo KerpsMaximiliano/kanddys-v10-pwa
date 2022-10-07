@@ -579,7 +579,10 @@ export class LoginComponent implements OnInit {
       if (!signin) {
         this.OTP = true;
         this.view = 'password';
-        this.signIn();
+        this.status = 'ready';
+        this.toastr.error('Clave incorrecta', null, {
+          timeOut: 1500,
+        });
         // this.toastr.error('Contraseña inválida o usuario no verificado', null, {
         //   timeOut: 2500,
         // });
