@@ -1120,13 +1120,15 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
       let fromHourNumber = Number(fromHour.split(':')[0]);
       let toHourNumber = Number(toHour.split(':')[0]);
 
+      console.log("FROM HOUR NUMBER", fromHour, "TO HOUR NUMBER", toHourNumber);
+
       if (fromHourNumber > 12)
         fromHourFinal = `${fromHourNumber - 12}:${fromHour.split(':')[1]} PM`;
-      else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} AM`;
+      else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} ${fromHourNumber === 12 ? 'PM' : 'AM'}`;
 
       if (toHourNumber > 12)
         toHourFinal = `${toHourNumber - 12}:${toHour.split(':')[1]} PM`;
-      else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} AM`;
+      else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} ${toHourNumber === 12 ? 'PM' : 'AM'}`;
 
       console.log('days available', daysAvailability);
 
