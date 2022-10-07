@@ -147,17 +147,26 @@ export class ReservationsCreatorComponent implements OnInit {
         const { calendarId, reservationId } = routeParams;
         const { clientEmail, clientPhone } = queryParams;
 
+        //this queryParams are here for the merchant to use
+        //when any of these two is present, then a notification
+        //is sent to the client's email or phone number
+        //with the purpose of notifying him/her that a reservation
+        //has been made on their behalf
         this.clientEmail = clientEmail;
         this.clientPhone = clientPhone;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
+        //you can update a specific calendar reservation if an id is passed
         if (reservationId) {
           this.reservation = await this.reservationsService.getReservation(
             reservationId
           );
         }
 
+        //if the calendar is set as a range(for example: monday to friday) without
+        //blocked days in the middle, this variable configures the short-calendar component
+        //to allow said days to work
         this.useDateRangeToLimitAvailableWeekDays =
           (!('inDays' in this.calendarData.limits) ||
             ('inDays' in this.calendarData.limits &&
@@ -172,6 +181,7 @@ export class ReservationsCreatorComponent implements OnInit {
           this.headerConfiguration.headerText =
             'Reserva la fecha con ' + this.calendarMerchant.name;
 
+          //Sets the current month label that its shown in top of the month's swiper
           const currentDateObject = new Date();
           const monthNumber = currentDateObject.getMonth();
 
@@ -179,25 +189,6 @@ export class ReservationsCreatorComponent implements OnInit {
             name: this.allMonths[monthNumber].name,
             number: monthNumber + 1,
           };
-
-          const { userInfo } = this.reservationCreatorForm.controls;
-          this.stickyButton = {
-            text: 'SELECCIONA CUANDO TE CONVIENE',
-            mode: 'disabled-fixed',
-            callback: (params) => {
-              this.currentStep = 'RESERVATION_CONVENIENCE';
-            },
-          };
-
-          userInfo.statusChanges.subscribe((newStatus) => {
-            if (newStatus === 'VALID') {
-              this.stickyButton.text = 'CONTINUAR A LA RESERVACION';
-              this.stickyButton.mode = 'fixed';
-            } else {
-              this.stickyButton.text = 'SELECCIONA CUANDO TE CONVIENE';
-              this.stickyButton.mode = 'disabled-fixed';
-            }
-          });
         } else {
           this.router.navigate(['others/error-screen']);
         }
@@ -205,6 +196,12 @@ export class ReservationsCreatorComponent implements OnInit {
     });
   }
 
+  /**
+   * Generates the hour list when a day is selected on the month swiper
+   * @method
+   * @param {Number} index - the day of the month, is Optional
+   *
+   */
   async generateHourList(selectedDayNumber: number = null) {
     this.timeRangeOptions = [];
     this.listOfHourRangesForSelectedDay = [];
@@ -222,11 +219,6 @@ export class ReservationsCreatorComponent implements OnInit {
     const calendarHourRangeLimit: number = Number(
       this.calendarData.limits.toHour.split(':')[0]
     );
-
-    console.log('CurrentHour', currentHour);
-    console.log('CurrentMinuteNumber', currentMinuteNumber);
-    console.log('calendarHourRangeStart', calendarHourRangeStart);
-    console.log('calendarHourRangeLimit', calendarHourRangeLimit);
 
     let isCurrentHourDivisibleByTheChunkSize = false;
     let hoursToAdvanceInEachSlot =
@@ -247,6 +239,13 @@ export class ReservationsCreatorComponent implements OnInit {
 
     let loopFirstHour = null;
 
+    //Decides wether or not to render first the calendar's 1st hour
+    //let's say the calendar goes from 8:30AM to 3:00PM and each slot fills 30min
+    //if the selectedDay is not today, loopFirstHour is the calendars first hour(8 in this case)
+    //but if the selectedDay is today, it depends on the calendarChunkSize and the currentHour
+    //If the currentHour is 9:23, the 1st hour to render should be 9
+    //If the currentHour is 9:32 the 1st hour to render should be 10
+    //(because you cant reserve a slot when its time is already passing)
     if (
       currentHour > calendarHourRangeStart &&
       selectedDayNumber === currentDayOfTheMonth
@@ -264,16 +263,14 @@ export class ReservationsCreatorComponent implements OnInit {
       loopFirstHour = calendarHourRangeStart;
     }
 
-    console.log('loopFirstHour', loopFirstHour);
+    //the current hour of the loop might not be a valid one, if each slot differs from each other
+    //in 2 hours, then an odd number will not be valid
 
     let loopCurrentHour = loopFirstHour;
-
-    console.log('loopCurrentHour', loopCurrentHour);
-
     let loopValidHour = calendarHourRangeStart;
-    let hourFractionAccumulator = 0;
 
-    console.log('loopValidHour', loopValidHour);
+    //its stores the fraction of an hour thats appended to the hour(15min, 30min, 45min)
+    let hourFractionAccumulator = 0;
 
     if (loopCurrentHour !== loopValidHour) {
       //this loop will generate the valid range of hours
@@ -285,13 +282,13 @@ export class ReservationsCreatorComponent implements OnInit {
           this.calendarData.timeChunkSize <= 60
         ) {
           hourFractionAccumulator = 0;
-          loopValidHour++;
+          loopValidHour++;//when chunkSizes are less than 60, the next hour is always the current one plus 1
         } else if (this.calendarData.timeChunkSize < 60) {
           hourFractionAccumulator += this.calendarData.timeChunkSize;
         } else {
           hourFractionAccumulator = 0;
           const hoursInsideChunkSize = Math.floor(
-            this.calendarData.timeChunkSize / 60
+            this.calendarData.timeChunkSize / 60//when chunkSizes are more than 60, the next hour is always that number divided by 60min(an integer number of hours, obviously)
           );
           const remainingMinutes =
             this.calendarData.timeChunkSize - hoursInsideChunkSize * 60;
@@ -300,6 +297,7 @@ export class ReservationsCreatorComponent implements OnInit {
           hourFractionAccumulator = remainingMinutes;
         }
 
+        //stops the loop
         if (loopValidHour > loopCurrentHour) {
           loopCurrentHour = loopValidHour;
         }
@@ -334,9 +332,12 @@ export class ReservationsCreatorComponent implements OnInit {
         loopCurrentHour === calendarHourRangeStart) ||
       !(selectedDayNumber === currentDayOfTheMonth)
     ) {
+      //fetches the the minutes part of the hour returned by the backend
+      //this is useful to know when to start rendering the list
       hourFractionAccumulator = Number(
         this.calendarData.limits.fromHour.split(':')[1]
       );
+
       if (
         currentMinuteNumber >= hourFractionAccumulator &&
         hourFractionAccumulator + this.calendarData.timeChunkSize >= 60 &&
@@ -344,6 +345,10 @@ export class ReservationsCreatorComponent implements OnInit {
       ) {
         hourFractionAccumulator = 0;
 
+        //this exist for the case when theres not enough time to fill a chunkSize for the 1st
+        //available hour of the day, and that day is today
+        //if the chunkSize is 15min, the calendar starts at 8:45AM, and the currentHour
+        //is 8:47AM, the next valid hour will be 9:00PM  
         if (currentHour === calendarHourRangeStart) {
           loopCurrentHour++;
           skippedFirstHourSetOfSlots = true;
@@ -351,10 +356,11 @@ export class ReservationsCreatorComponent implements OnInit {
       }
     }
 
+    //Gets the first available chunkSize to render(hourFractionAccumulator)
     if (
       selectedDayNumber === currentDayOfTheMonth &&
-      loopCurrentHour > calendarHourRangeStart
-      && !skippedFirstHourSetOfSlots
+      loopCurrentHour > calendarHourRangeStart &&
+      !skippedFirstHourSetOfSlots
     ) {
       for (
         let minutesSum = 0;
@@ -477,6 +483,9 @@ export class ReservationsCreatorComponent implements OnInit {
           toHour
         );
 
+        //////////////////// BLOCKING HOURS(timeRangeOptions) INDEXES /////////////////////////////////////
+
+        /////////// BLOCKING HOURS BASED ON THE AMOUNT OF RESERVATIONS CONFIGURED BY THE MERCHANT /////////////
         for (const reservation of this.calendarData.reservations) {
           if (
             fromHourString === reservation.date.fromHour &&
@@ -489,7 +498,9 @@ export class ReservationsCreatorComponent implements OnInit {
             this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
           }
         }
+        ////////////////////////////////////////////// END /////////////////////////////////////////////
 
+        /////////// BLOCKING HOURS BASED ON THE HOURS BLOCKED BY THE MERCHANT IN THE TIME-BLOCK PAGE /////////////
         for (const exception of this.calendarData.exceptions) {
           const fromDateInLocalTime = moment(exception.from).toDate();
           const untilDateInLocalTime = moment(exception.until).toDate();
@@ -503,16 +514,16 @@ export class ReservationsCreatorComponent implements OnInit {
               : fromHour.hourNumber;
           const currentRangeUntilHour24HourFormat = toHour.hourNumber;
 
-
           const isFromHourInsideTheExceptionRange =
             exceptionFromHour <= currentRangeFromHour24HourFormat &&
             currentRangeFromHour24HourFormat < exceptionUntilHour;
           const isUntilHourInsideTheExceptionRange =
             ((exceptionFromHour <= currentRangeUntilHour24HourFormat &&
               currentRangeUntilHour24HourFormat < exceptionUntilHour) ||
-            (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
-              currentRangeUntilHour24HourFormat === exceptionUntilHour &&
-              hourFractionAccumulator === 0)) && exceptionFromHour !== currentRangeUntilHour24HourFormat;
+              (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+                currentRangeUntilHour24HourFormat === exceptionUntilHour &&
+                hourFractionAccumulator === 0)) &&
+            exceptionFromHour !== currentRangeUntilHour24HourFormat;
 
           const isTheExceptionDayTheSelectedDay =
             fromDateInLocalTime.getDate() ===
@@ -528,7 +539,9 @@ export class ReservationsCreatorComponent implements OnInit {
             this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
           }
         }
+        ///////////////////////////////////////////// END ////////////////////////////////////////
 
+        
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
           fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
@@ -539,6 +552,13 @@ export class ReservationsCreatorComponent implements OnInit {
     }
   }
 
+  /**
+   * Sets the global selectedDate Object, sets the FromHour and toHour as
+   * null in order to not highlight a list item(because you've changed day, there's nothing selected)
+   * @method
+   * @param {Date} selectedDateObject - the day of the month
+   *
+   */
   rerenderAvailableHours(selectedDateObject: Date) {
     const dayOfTheMonthNumber = selectedDateObject.getDate();
     const monthNumber = selectedDateObject.getMonth();
@@ -559,6 +579,14 @@ export class ReservationsCreatorComponent implements OnInit {
     this.generateHourList(dayOfTheMonthNumber);
   }
 
+  /**
+   * Sets the global selectedDate Object fromHour and toHour properties, 
+   * and passes the selected day number to the generateHourList Function 
+   * to render on the page the hours for the new day
+   * @method
+   * @param {Number} dateOptionIndex - the index of the answer-selection array that the user clicked on
+   *
+   */
   setClickedDate(dateOptionIndex: number) {
     this.selectedDate.fromHour =
       this.listOfHourRangesForSelectedDay[dateOptionIndex].from;
@@ -573,13 +601,20 @@ export class ReservationsCreatorComponent implements OnInit {
     this.selectedDate.filled = true;
   }
 
+  /**
+   * @method
+   * The name speaks for itself, it executes the createReservationFunction, or updates an existing one
+   *
+   */
   async makeReservation() {
+    //Uses the offset to add or substract the global timezone (UTC) offset to the user local-selected hours
     const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
     const currentYear = new Date().getFullYear();
     const emailRegex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const emailSubject = `Reservación realizada a ${this.calendarMerchant.name}`;
 
+    //Creates javascript standar date objects for the from-until selected hour range
     let fromDateObject = new Date(
       currentYear,
       this.selectedDate.monthNumber - 1,
@@ -599,6 +634,8 @@ export class ReservationsCreatorComponent implements OnInit {
       this.selectedDate.toHour.minutesNumber
     );
 
+    //from Hour number might contain numbers greater than 12, fromHourString doesn't
+    //the same applies for toHours
     let fromHourNumber =
       this.selectedDate.fromHour.timeOfDay === 'PM' &&
       this.selectedDate.fromHour.hourNumber !== 12
@@ -615,8 +652,14 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(fromHourNumber)
         : String(fromHourNumber);
 
+    //realToHour means, that maybe you have selected the range 12-1, and the calendar's breaktime is 
+    //15 minutes, that means
+    //the real toHour(end) is 12, because you are reading 12:00 - 12:50, YOU ARE READING 12:50PM <-----, not 1PM,
+    //the real to hour is the one that the client can read, not the one thats picked up by the backend
     let realToHour = Number(this.selectedDate.toHour.hourString);
 
+    //You need to add 12 to every hour after noon, because the real hour is in a 12 hour format,
+    //and the backend accepts 24 hour format
     realToHour =
       this.selectedDate.toHour.timeOfDay === 'PM' && realToHour < 12
         ? realToHour + 12
@@ -632,6 +675,8 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(realToHour)
         : String(realToHour);
 
+    //if theres a valid user session, a reservation is made on their behalf
+    //else, a standalone reservation(authless) is made
     const user = await this.authService.me();
 
     const reservationMutation =
@@ -649,6 +694,7 @@ export class ReservationsCreatorComponent implements OnInit {
           )
         : null;
 
+    //whats passed to the mutation
     const reservationInput: any = {
       calendar: this.calendarData._id,
       merchant: this.calendarMerchant._id,
@@ -664,11 +710,7 @@ export class ReservationsCreatorComponent implements OnInit {
       },
     };
 
-    console.log(
-      'asd',
-      toHourString + ':' + this.selectedDate.toHour.minutesString
-    );
-
+    //removes unrelevant data for updateReservation mutation
     if (user && this.reservation) {
       delete reservationInput.calendar;
       delete reservationInput.breakTime;
@@ -676,6 +718,7 @@ export class ReservationsCreatorComponent implements OnInit {
       delete reservationInput.type;
     }
 
+    //dynamically spreads 1 or 2 parameterss to createReservation or updateReservation
     const mutationParams: any = [reservationInput];
 
     if (user && this.reservation) mutationParams.push(this.reservation._id);
@@ -730,6 +773,9 @@ export class ReservationsCreatorComponent implements OnInit {
     }
   }
 
+  //The name says it all, it returns an array of 2 strings in 24 hour format, for example
+  //10AM => 10:00
+  //11PM => 23:00
   getHourIn24HourFormat(
     fromHour: HourOption,
     toHour: HourOption
@@ -774,8 +820,12 @@ export class ReservationsCreatorComponent implements OnInit {
     this.selectedDate = null;
   }
 
+  /**
+   * @method
+   * this is executed when the user swipes right or left in the months swiper
+   *
+   */
   updateMonth(monthData: ChangedMonthEventData) {
-    console.log(monthData);
     this.currentMonth = {
       name: monthData.name,
       number: monthData.id,
