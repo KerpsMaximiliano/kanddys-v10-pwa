@@ -152,7 +152,6 @@ export class ReservationsCreatorComponent implements OnInit {
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
 
-        console.log(reservationId);
         if (reservationId) {
           this.reservation = await this.reservationsService.getReservation(
             reservationId
@@ -172,8 +171,6 @@ export class ReservationsCreatorComponent implements OnInit {
           );
           this.headerConfiguration.headerText =
             'Reserva la fecha con ' + this.calendarMerchant.name;
-
-          this.generateHourList();
 
           const currentDateObject = new Date();
           const monthNumber = currentDateObject.getMonth();
@@ -226,20 +223,57 @@ export class ReservationsCreatorComponent implements OnInit {
       this.calendarData.limits.toHour.split(':')[0]
     );
 
+    console.log('CurrentHour', currentHour);
+    console.log('CurrentMinuteNumber', currentMinuteNumber);
+    console.log('calendarHourRangeStart', calendarHourRangeStart);
+    console.log('calendarHourRangeLimit', calendarHourRangeLimit);
+
+    let isCurrentHourDivisibleByTheChunkSize = false;
+    let hoursToAdvanceInEachSlot =
+      this.calendarData.timeChunkSize <= 60
+        ? 1
+        : this.calendarData.timeChunkSize / 60;
+    let offsetBetweenCurrentHourAndNextValidHour = 0;
+
+    isCurrentHourDivisibleByTheChunkSize =
+      currentHour % hoursToAdvanceInEachSlot === 0;
+
+    if (!isCurrentHourDivisibleByTheChunkSize) {
+      offsetBetweenCurrentHourAndNextValidHour =
+        currentHour % hoursToAdvanceInEachSlot;
+    }
+
     //first "Available hour" after current hour
-    let loopFirstHour = !selectedDayNumber
-      ? currentHour > calendarHourRangeStart
-        ? currentHour + 1
-        : calendarHourRangeStart
-      : currentHour > calendarHourRangeStart &&
-        selectedDayNumber === currentDayOfTheMonth
-      ? currentHour + 1
-      : calendarHourRangeStart;
+
+    let loopFirstHour = null;
+
+    if (
+      currentHour > calendarHourRangeStart &&
+      selectedDayNumber === currentDayOfTheMonth
+    ) {
+      if (this.calendarData.timeChunkSize >= 60) {
+        loopFirstHour = isCurrentHourDivisibleByTheChunkSize
+          ? currentHour + hoursToAdvanceInEachSlot
+          : currentHour + offsetBetweenCurrentHourAndNextValidHour;
+      } else
+        loopFirstHour =
+          currentMinuteNumber + this.calendarData.timeChunkSize >= 60
+            ? currentHour + 1
+            : currentHour;
+    } else {
+      loopFirstHour = calendarHourRangeStart;
+    }
+
+    console.log('loopFirstHour', loopFirstHour);
 
     let loopCurrentHour = loopFirstHour;
 
+    console.log('loopCurrentHour', loopCurrentHour);
+
     let loopValidHour = calendarHourRangeStart;
     let hourFractionAccumulator = 0;
+
+    console.log('loopValidHour', loopValidHour);
 
     if (loopCurrentHour !== loopValidHour) {
       //this loop will generate the valid range of hours
@@ -289,14 +323,67 @@ export class ReservationsCreatorComponent implements OnInit {
     //0,15,30,45,50 if chunkSize were 15
     //0,30,60 if chunkSize were 30
     //just 0 if chunkSize were 60
+
+    //Finds the hour fraction(minutes part) to show when
+    //is the first hour available of the day
+
+    let skippedFirstHourSetOfSlots = false;
+
+    if (
+      (selectedDayNumber === currentDayOfTheMonth &&
+        loopCurrentHour === calendarHourRangeStart) ||
+      !(selectedDayNumber === currentDayOfTheMonth)
+    ) {
+      hourFractionAccumulator = Number(
+        this.calendarData.limits.fromHour.split(':')[1]
+      );
+      if (
+        currentMinuteNumber >= hourFractionAccumulator &&
+        hourFractionAccumulator + this.calendarData.timeChunkSize >= 60 &&
+        selectedDayNumber === currentDayOfTheMonth
+      ) {
+        hourFractionAccumulator = 0;
+
+        if (currentHour === calendarHourRangeStart) {
+          loopCurrentHour++;
+          skippedFirstHourSetOfSlots = true;
+        }
+      }
+    }
+
+    if (
+      selectedDayNumber === currentDayOfTheMonth &&
+      loopCurrentHour > calendarHourRangeStart
+      && !skippedFirstHourSetOfSlots
+    ) {
+      for (
+        let minutesSum = 0;
+        minutesSum < 60;
+        minutesSum += this.calendarData.timeChunkSize
+      ) {
+        if (currentMinuteNumber < minutesSum) {
+          hourFractionAccumulator = minutesSum;
+          break;
+        }
+
+        if (minutesSum + this.calendarData.timeChunkSize === 60) {
+          hourFractionAccumulator = 0;
+        }
+      }
+    }
+
+    //this loop is in charge of finding the hourFraction to show
+    //even if its not the same day
     for (
-      let hourFraction = 0;
+      let hourFraction = hourFractionAccumulator;
       hourFraction < 60;
       hourFraction += this.calendarData.timeChunkSize
     ) {
       if (
         currentMinuteNumber > hourFraction &&
-        60 - currentMinuteNumber >= this.calendarData.timeChunkSize
+        60 - currentMinuteNumber >= this.calendarData.timeChunkSize &&
+        currentDayOfTheMonth === selectedDayNumber &&
+        !skippedFirstHourSetOfSlots
       )
         hourFractionAccumulator = hourFraction;
     }
@@ -449,10 +536,6 @@ export class ReservationsCreatorComponent implements OnInit {
         });
       }
     }
-
-    /*for await (const hourRange of this.listOfHourRangesForSelectedDay) {
-      console.log('hourRange', hourRange);
-    }*/
   }
 
   rerenderAvailableHours(selectedDateObject: Date) {
@@ -580,7 +663,10 @@ export class ReservationsCreatorComponent implements OnInit {
       },
     };
 
-    console.log("asd", toHourString + ':' + this.selectedDate.toHour.minutesString)
+    console.log(
+      'asd',
+      toHourString + ':' + this.selectedDate.toHour.minutesString
+    );
 
     if (user && this.reservation) {
       delete reservationInput.calendar;
