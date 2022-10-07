@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit {
   userID: string;
   fullLink: string;
   messageLink: string;
+  view: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
   validateData: ValidateData;
@@ -408,7 +409,6 @@ export class LoginComponent implements OnInit {
       });
       this.status = 'ready';
     } else if (this.OTP) {
-      // Creo que este caso no se está usando
       const checkOTP = await this.authService.verify(
         this.password.value,
         this.userID
@@ -563,7 +563,6 @@ export class LoginComponent implements OnInit {
         this.status = 'ready';
       }
     } else {
-      // Creo que este caso no se está usando
       const signin = await this.authService.signin(
         this.merchantNumber,
         this.password.value,
@@ -571,11 +570,14 @@ export class LoginComponent implements OnInit {
       );
 
       if (!signin) {
-        this.toastr.error('Contraseña inválida o usuario no verificado', null, {
-          timeOut: 2500,
-        });
+        this.OTP = true;
+        this.view = 'password';
+        this.signIn();
+        // this.toastr.error('Contraseña inválida o usuario no verificado', null, {
+        //   timeOut: 2500,
+        // });
         //   console.log('error');
-        this.status = 'ready';
+        // this.status = 'ready';
         return;
       }
       if (this.auth === 'address') {
