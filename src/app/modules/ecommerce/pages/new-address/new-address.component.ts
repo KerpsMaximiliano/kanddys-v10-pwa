@@ -430,7 +430,10 @@ export class NewAddressComponent implements OnInit {
   }
 
   goBack() {
-    if (this.mode === 'normal') return this.location.back();
+    if (this.mode === 'normal')
+      return this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
+      ]);
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset();
