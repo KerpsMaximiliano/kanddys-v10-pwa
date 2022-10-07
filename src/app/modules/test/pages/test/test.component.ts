@@ -188,6 +188,7 @@ export class TestComponent implements OnInit {
           },
         },
         mainText: this.textSample,
+        indexValue: 2,
         qrCode: 'https://www.google.com',
         optionsList: [
           {

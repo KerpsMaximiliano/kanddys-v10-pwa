@@ -8,10 +8,8 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from '../../dialogs/store-share/store-share.component';
+import { StoreShareList } from '../../dialogs/store-share/store-share.component';
+import { SettingsComponent } from '../../dialogs/settings/settings.component';
 
 @Component({
   selector: 'app-reservation-list',
@@ -52,7 +50,9 @@ export class ReservationListComponent implements OnInit {
   ngOnInit(): void {
     this._ActivatedRoute.params.subscribe(async (queryParams) => {
       const { calendar, type } = queryParams;
-      this.option = !this.buttons.includes(type)?this.buttons[this.buttons.length-1]:type;
+      this.option = !this.buttons.includes(type)
+        ? this.buttons[this.buttons.length - 1]
+        : type;
       this.calendar = calendar;
       const params = {
         findBy: { calendar },
@@ -138,55 +138,24 @@ export class ReservationListComponent implements OnInit {
   }
 
   handleDotsEvent() {
-    this.list = [
+    const list = [
       {
-        title: 'RESERVACIONES',
-        options: [
-          {
-            text: 'BORRAR',
-            mode: 'func',
-            func: () => {
-              this.editable = true;
-              this.dots = {
-                active: !this.editable,
-              };
-            },
-          },
-        ],
+        text: 'BORRAR',
+        callback: () => {
+          this.editable = true;
+          this.dots = {
+            active: !this.editable,
+          };
+        },
       },
     ];
-    this._DialogService.open(StoreShareComponent, {
+    this._DialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        mainButton: () => {},
-        title: 'Borrar Reservaciones?',
-        buttonText: 'Borrar reservaciones',
-        mainText:
-          'Al borrar las reservaciones las fechas involucradas volveran a estar disponibles.',
-        topButton: '',
-        list: this.list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
+        title: 'RESERVACIONES',
+        optionsList: list,
+        cancelButton:{
+         text: 'Cerrar'
         },
       },
       customClass: 'app-dialog',
@@ -195,7 +164,7 @@ export class ReservationListComponent implements OnInit {
   }
 
   handleValue(id: string): void {
-    if(!this.editable) return;
+    if (!this.editable) return;
     if (this.optionIndexArray.includes(id))
       this.optionIndexArray = this.optionIndexArray.filter((_id) => _id !== id);
     else this.optionIndexArray.push(id);
@@ -277,7 +246,7 @@ export class ReservationListComponent implements OnInit {
     ]);
   }
 
-  returnScreen():void {
+  returnScreen(): void {
     this.resetEdition();
   }
 }

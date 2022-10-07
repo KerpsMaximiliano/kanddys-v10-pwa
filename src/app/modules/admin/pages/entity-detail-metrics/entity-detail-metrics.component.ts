@@ -69,6 +69,7 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
+    this.merchant = this.headerService.myMerchants[0];
     await Promise.all([
       this.getItemsByMerchant(),
       this.getOrderTotal(),
@@ -84,7 +85,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getItemsByMerchant() {
     try {
       this.items = (
-        await this.merchantsService.itemsByMerchant(this.headerService.merchantInfo._id)
+        await this.merchantsService.itemsByMerchant(this.merchant._id)
       )?.itemsByMerchant;
       this.activeItems = this.items.filter(
         (item) => item.status === 'active' || item.status === 'featured'
@@ -142,7 +143,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     try {
       this.ordersTotal = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
-        this.headerService.merchantInfo._id
+        this.merchant._id
       );
     } catch (error) {
       console.log(error);
@@ -152,7 +153,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getMerchantBuyers() {
     try {
       this.users = await this.merchantsService.usersOrderMerchant(
-         this.headerService.merchantInfo._id
+         this.merchant._id
       );
     } catch (error) {
       console.log(error);
@@ -162,7 +163,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getWebformsData() {
     try {
       this.webforms = await this.webformsService.webformsByMerchant(
-         this.headerService.merchantInfo._id
+         this.merchant._id
       );
       console.log(this.webforms);
 
@@ -252,7 +253,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: 'Sobre ' + this.merchant.name,
+        title: this.merchant ? 'Sobre ' + this.merchant.name : 'Sobre Tienda anonima',
         optionsList: list,
         //qrCode: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         cancelButton: {

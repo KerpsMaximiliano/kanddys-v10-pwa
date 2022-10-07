@@ -20,6 +20,7 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -463,29 +464,23 @@ export class CreateItemComponent implements OnInit {
   }
 
   onOpenDialog = () => {
-    const list: StoreShareList[] = [
-      {
-        title: 'Articulo',
-        options: [
+    const list: Array<any> = [
           {
             text: 'Simple',
-            mode: 'func',
-            func: () => {
+            callback: () => {
               //this.router.navigate(['/ecommerce/item-detail']);
             },
           },
           {
             text: 'WhatsApp Form',
-            mode: 'func',
-            func: () => {
+            callback: () => {
               this.headerService.flowRoute = this.router.url;
               this.router.navigate(['/webforms/webform-questions']);
             },
           },
           {
             text: !this.hasParams ? 'Dinámico' : 'Estático',
-            mode: 'func',
-            func: () => {
+            callback: () => {
               if (!this.hasParams) {
                 this.itemForm.get('pricing').reset(0);
                 this.itemForm.get('name').reset();
@@ -506,18 +501,15 @@ export class CreateItemComponent implements OnInit {
               this.hasParams = !this.hasParams;
             },
           },
-        ],
-      },
     ];
 
     if (
       (!this.hasParams && this.itemForm.valid) ||
       (this.hasParams && this.itemParamsForm.valid)
     ) {
-      list[0].options.push({
+      list.push({
         text: 'Vista del comprador',
-        mode: 'func',
-        func: () => {
+        calllback: () => {
           const { images, name, description, pricing } = this.itemForm
             .value as ItemInput;
           const { params } = this.itemParamsForm.value as ItemInput;
@@ -544,10 +536,11 @@ export class CreateItemComponent implements OnInit {
       });
     }
 
-    this.dialogService.open(StoreShareComponent, {
+    this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
+        title: 'Articulo',
+        optionsList: list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

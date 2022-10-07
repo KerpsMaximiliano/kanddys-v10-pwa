@@ -7,7 +7,7 @@ import { CalendarService } from 'src/app/core/services/calendar.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { StoreShareComponent } from '../../dialogs/store-share/store-share.component';
+import { SettingsComponent } from '../../dialogs/settings/settings.component';
 
 @Component({
   selector: 'app-metrics-reservation',
@@ -129,54 +129,23 @@ export class MetricsReservationComponent implements OnInit {
   onShareItemsClick(calendarId): void {
     const list = [
       {
-        title: 'RESERVACIONES',
-        options: [
-          {
-            text: 'BLOQUEA SLOTS',
-            mode: 'func',
-            func: () => {
-              this._Router.navigate([`/others/time-block/${calendarId}`]);
-            },
-          },
-          {
-            text: 'COMPARTE EL LINK DE SLOTS',
-            mode: 'func',
-            func: () => {
-              this._Router.navigate([
-                `/others/reservations-creator/${calendarId}`,
-              ]);
-            },
-          },
-        ],
+        text: 'BLOQUEA SLOTS',
+        callback: () => {
+          this._Router.navigate([`/others/time-block/${calendarId}`]);
+        },
+      },
+      {
+        text: 'COMPARTE EL LINK DE SLOTS',
+         callback: () => {
+          this._Router.navigate([`/others/reservations-creator/${calendarId}`]);
+        },
       },
     ];
-    this._DialogService.open(StoreShareComponent, {
+    this._DialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
+        title: 'RESERVACIONES',
+        optionsList: list,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

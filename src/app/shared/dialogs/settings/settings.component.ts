@@ -33,6 +33,7 @@ export class SettingsComponent implements OnInit {
     asyncCallback(...params): Promise<any>;
     callbackParams?: Array<any>;
   }> = [];
+  @Input() indexValue: number;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;
 
@@ -45,7 +46,11 @@ export class SettingsComponent implements OnInit {
     private clipboard: Clipboard
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(this.indexValue <= this.statuses.length -1){
+      this.currentStatusIndex = this.indexValue;
+    }
+  }
 
   redirect(route: string, queryParams: Record<string, number | string> = null) {
     this.ref.close();
@@ -55,6 +60,11 @@ export class SettingsComponent implements OnInit {
         queryParams,
       });
     }
+  }
+
+  async buttonCallback(callback?: () => void){
+   callback? callback() : null;
+   this.close();
   }
 
   async executeStatusButtonCallback() {
