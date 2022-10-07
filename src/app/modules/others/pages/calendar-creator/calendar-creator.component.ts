@@ -1120,8 +1120,6 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
       let fromHourNumber = Number(fromHour.split(':')[0]);
       let toHourNumber = Number(toHour.split(':')[0]);
 
-      console.log("FROM HOUR NUMBER", fromHour, "TO HOUR NUMBER", toHourNumber);
-
       if (fromHourNumber > 12)
         fromHourFinal = `${fromHourNumber - 12}:${fromHour.split(':')[1]} PM`;
       else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} ${fromHourNumber === 12 ? 'PM' : 'AM'}`;
