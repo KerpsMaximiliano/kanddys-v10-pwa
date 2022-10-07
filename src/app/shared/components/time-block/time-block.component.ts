@@ -14,7 +14,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
   templateUrl: './time-block.component.html',
   styleUrls: ['./time-block.component.scss'],
 })
-export class TimeBlockComponent implements OnInit, OnDestroy {
+export class TimeBlockComponent implements OnInit {
   allMonths = [];
   month: {
     name: string;
@@ -40,6 +40,7 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       Validators.pattern(this.numberPattern),
       Validators.min(0),
       Validators.max(12),
+      Validators.maxLength(2),
     ]),
     startPeriod: new FormControl('AM', [Validators.required]),
     end: new FormControl('', [
@@ -47,10 +48,12 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
       Validators.pattern(this.numberPattern),
       Validators.min(1),
       Validators.max(12),
+      Validators.maxLength(2),
     ]),
     endPeriod: new FormControl('PM', [Validators.required]),
   });
-  sub: Subscription;
+  prevStart: number = null;
+  prevEnd: number = null;
   formattedStart: string = '';
   formattedEnd: string = '';
   selectedDays: Array<number> = [];
@@ -83,15 +86,31 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-  }
-
   initController(): void {
-    this.sub = this.controller.valueChanges.subscribe((controller) => {
+    this.controller.valueChanges.subscribe((controller) => {
       this.formattedStart = this.formatInt(controller.start);
       this.formattedEnd = this.formatInt(controller.end);
       this.renderSelectedDatesTextMessage();
+    });
+
+    this.controller.controls.start.valueChanges.subscribe((change) => {
+      if ((change && change.length > 2 || Number(change) > 12) && this.prevStart) {
+        this.controller.controls.start.patchValue(this.prevStart, {
+          emitEvent: false,
+        });
+      } else {
+        this.prevStart = Number(change);
+      }
+    });
+
+    this.controller.controls.end.valueChanges.subscribe((change) => {
+      if ((change && change.length > 2 || Number(change) > 12) && this.prevEnd) {
+        this.controller.controls.end.patchValue(this.prevEnd, {
+          emitEvent: false,
+        });
+      } else {
+        this.prevEnd = Number(change);
+      }
     });
   }
 
@@ -217,5 +236,13 @@ export class TimeBlockComponent implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  blockNonNumericStuff(e: any) {
+    //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
+    //ocasiona el el numero formateado se desconfigure
+    if (['+', '-', 'e', '.'].includes(e.key)) {
+      e.preventDefault();
+    }
   }
 }

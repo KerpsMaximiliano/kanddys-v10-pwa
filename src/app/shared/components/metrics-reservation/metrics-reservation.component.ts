@@ -78,33 +78,42 @@ export class MetricsReservationComponent implements OnInit {
         });
 
         let daysSeparatedByComma = null;
-        if ('inDays' in calendar.limits) {
+        if (calendar.limits && 'inDays' in calendar.limits) {
           daysSeparatedByComma = calendar.limits.inDays
             .map((dayInEnglish) =>
               this.daysOfTheWeekInSpanish[dayInEnglish].slice(0, 3)
             )
             .join(', ');
+        } else if (!calendar.limits) {
+          //calendarios no-limits
+          daysSeparatedByComma = 'Todos los dias';
         }
+
         const numWeeks = 1;
         const from = new Date();
         const until = new Date();
         until.setDate(from.getDate() + numWeeks * 7);
-        const { reservationSpacesAvailable } =
+        const reservationSpacesAvailableQueryResult =
           await this._ReservationService.reservationSpacesAvailable(
             until,
             from,
             calendar._id
           );
-        this.reservations.push({
-          calendar: calendar._id,
-          past,
-          future,
-          slots: reservationSpacesAvailable,
-          calendarObj: {
-            ...calendar,
-            daysSeparatedByComma,
-          },
-        });
+
+        if (reservationSpacesAvailableQueryResult) {
+          const { reservationSpacesAvailable } =
+            reservationSpacesAvailableQueryResult;
+          this.reservations.push({
+            calendar: calendar._id,
+            past,
+            future,
+            slots: reservationSpacesAvailable,
+            calendarObj: {
+              ...calendar,
+              daysSeparatedByComma,
+            },
+          });
+        }
       }
       this.status = 'complete';
     };

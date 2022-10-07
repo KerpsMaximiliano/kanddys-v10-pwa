@@ -503,15 +503,16 @@ export class ReservationsCreatorComponent implements OnInit {
               : fromHour.hourNumber;
           const currentRangeUntilHour24HourFormat = toHour.hourNumber;
 
+
           const isFromHourInsideTheExceptionRange =
             exceptionFromHour <= currentRangeFromHour24HourFormat &&
             currentRangeFromHour24HourFormat < exceptionUntilHour;
           const isUntilHourInsideTheExceptionRange =
-            (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+            ((exceptionFromHour <= currentRangeUntilHour24HourFormat &&
               currentRangeUntilHour24HourFormat < exceptionUntilHour) ||
             (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
               currentRangeUntilHour24HourFormat === exceptionUntilHour &&
-              hourFractionAccumulator === 0);
+              hourFractionAccumulator === 0)) && exceptionFromHour !== currentRangeUntilHour24HourFormat;
 
           const isTheExceptionDayTheSelectedDay =
             fromDateInLocalTime.getDate() ===
