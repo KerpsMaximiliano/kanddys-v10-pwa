@@ -25,7 +25,7 @@ export class RedirectionsComponent implements OnInit {
     private authService: AuthService,
     private header: HeaderService,
     private appService: AppService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     let storedRoute = JSON.parse(localStorage.getItem('currentRoute'));
@@ -55,7 +55,8 @@ export class RedirectionsComponent implements OnInit {
 
     this.route.queryParams.subscribe(async (params) => {
       const { authCode } = params;
-      const redirectURL: { url: string, queryParams: Record<string, string> } = { url: null, queryParams: {} };
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
 
       try {
         const { analizeMagicLink: result } =
@@ -64,32 +65,34 @@ export class RedirectionsComponent implements OnInit {
 
         localStorage.removeItem('session-token');
         this.session = new Session(session, true);
+        this.header.user = session.user;
 
-        if(redirectionRoute.includes('?')) {
+        if (redirectionRoute.includes('?')) {
           const routeParts = redirectionRoute.split('?');
           const redirectionURL = routeParts[0];
-          const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
-            const queryStringElements = queryString.split('=');
-  
-            return ({ [queryStringElements[0]]: queryStringElements[1] })
-          })
-  
+          const routeQueryStrings = routeParts[1]
+            .split('&')
+            .map((queryString) => {
+              const queryStringElements = queryString.split('=');
+
+              return { [queryStringElements[0]]: queryStringElements[1] };
+            });
+
           redirectURL.url = redirectionURL;
           redirectURL.queryParams = {};
-  
-          routeQueryStrings.forEach(queryString => {
+
+          routeQueryStrings.forEach((queryString) => {
             const key = Object.keys(queryString)[0];
             redirectURL.queryParams[key] = queryString[key];
           });
-  
+
           unlockUI();
-  
+
           this.router.navigate([redirectURL.url], {
             queryParams: redirectURL.queryParams,
           });
         } else {
           this.router.navigate([redirectionRoute]);
-          
 
           unlockUI();
         }

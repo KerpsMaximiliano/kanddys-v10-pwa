@@ -13,6 +13,7 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { Session } from 'src/app/core/models/session';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -410,10 +411,19 @@ export class LoginComponent implements OnInit {
       });
       this.status = 'ready';
     } else if (this.OTP) {
-      const checkOTP = await this.authService.verify(
-        this.password.value,
-        this.userID
-      );
+      let checkOTP: Session;
+      if (this.view === 'password') {
+        checkOTP = (
+          await this.authService.analizeMagicLink(this.password.value)
+        ).analizeMagicLink.session;
+        localStorage.removeItem('session-token');
+        new Session(checkOTP, true);
+      } else {
+        checkOTP = await this.authService.verify(
+          this.password.value,
+          this.userID
+        );
+      }
 
       if (!checkOTP) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });

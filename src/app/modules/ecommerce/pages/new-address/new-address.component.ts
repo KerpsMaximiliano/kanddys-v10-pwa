@@ -4,7 +4,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
+import {
+  DeliveryLocation,
+  DeliveryLocationInput,
+  SaleFlow,
+} from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import {
@@ -91,6 +95,7 @@ export class NewAddressComponent implements OnInit {
   saleflow: SaleFlow;
   selectedDeliveryIndex: number;
   // selectedAuthIndex: number;
+  magicLinkLocation: DeliveryLocationInput;
 
   async ngOnInit(): Promise<void> {
     const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
@@ -101,6 +106,7 @@ export class NewAddressComponent implements OnInit {
       ) as SaleflowData;
       if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
         localStorage.setItem(saleflowId, JSON.stringify(orderData));
+        this.magicLinkLocation = orderData.deliveryLocation;
       }
     }
     this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
@@ -171,6 +177,11 @@ export class NewAddressComponent implements OnInit {
           ],
         });
       });
+    }
+    if (this.magicLinkLocation) {
+      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
+      this.mode = 'add';
+      this.formSubmit();
     }
   }
 
