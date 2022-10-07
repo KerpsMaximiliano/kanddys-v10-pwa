@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -22,8 +23,7 @@ import { SwiperOptions } from 'swiper';
   templateUrl: './facturas-prefacturas.component.html',
   styleUrls: ['./facturas-prefacturas.component.scss'],
 })
-export class FacturasPrefacturasComponent implements OnInit {
-  facturas: any = [];
+export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
   status = 'complete';
   controller: FormControl = new FormControl();
   mainText: any = {
@@ -43,69 +43,90 @@ export class FacturasPrefacturasComponent implements OnInit {
   buttons: string[] = ['facturas', 'pre - facturas', 'archivo'];
   calendar: string = '';
   option: string;
-  facturasList:any[] = [];
+  facturasList: any[] = [];
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
     spaceBetween: 5,
   };
-  tags:any[] = [];
-  tagsCarousell:any[] = [];
-  multipleTags:boolean = true;
+  tags: any[] = [];
+  tagsCarousell: any[] = [];
+  multipleTags: boolean = true;
+  subscription: Subscription;
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
     private _DialogService: DialogService,
-    private _TagsService: TagsService
+    private _TagsService: TagsService,
+    private _ActivatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.status = 'loading';
-    const ordersByMerchant = async () => {
-      const { _id }: Merchant = await this._MerchantsService.merchantDefault();
-      const pagination: PaginationInput = {
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: 10,
-        },
-      };
-
-      const { ordersByMerchant } =
-        await this._MerchantsService.ordersByMerchant(_id, pagination);
-      this.facturas = ordersByMerchant.map(
-        ({ createdAt, subtotals, dateId, items }) => {
-          const result = {
-            createdAt: new Date(createdAt).toLocaleDateString('en-US'),
-            total: subtotals
-              .map(({ amount }) => amount)
-              .reduce((a, b) => a + b),
-            dateId: formatID(dateId),
-            products: items.map(({ item }) => {
-              const { name } = item;
-              return name;
-            }),
+    this.subscription = this._ActivatedRoute.queryParams.subscribe(
+      async (params) => {
+        const { by = 10, limit = 50, sort = 'desc', at = 'createdAt' } = params;
+        const ordersByMerchant = async () => {
+          const { _id }: Merchant =
+            await this._MerchantsService.merchantDefault();
+          const pagination: PaginationInput = {
+            options: {
+              sortBy: `${at}:${sort}`,
+              limit,
+            },
           };
-          return result;
-        }
-      );
-      [this.option] = this.buttons;
-      this.fillOptions();
-      this.controller.valueChanges.subscribe((value) =>
-        this.handleController(value)
-      );
-      this.facturasList.push(this.facturas);
-      let tags: any = await this._TagsService.tagsByUser() || [];
-      tags = tags.map(({ name }) => name);
-      this.tagsCarousell = tags;
-      this.status = this.facturas.length ? 'complete' : 'empty';
-    };
-    ordersByMerchant();
+
+          const { ordersByMerchant } =
+            await this._MerchantsService.ordersByMerchant(_id, pagination);
+          let temp = ordersByMerchant.map(
+            ({ createdAt, subtotals, dateId, items }) => {
+              const result = {
+                createdAt: new Date(createdAt).toLocaleDateString('en-US'),
+                total: subtotals
+                  .map(({ amount }) => amount)
+                  .reduce((a, b) => a + b),
+                dateId: formatID(dateId),
+                products: items.map(({ item }) => {
+                  const { name } = item;
+                  return name;
+                }),
+              };
+              return result;
+            }
+          );
+          while (temp.length) {
+            const facturas = [...temp.filter((item, index) => index < by)];
+            temp = temp.filter((item, index) => index >= by);
+            this.facturasList.push(facturas);
+          }
+          [this.option] = this.buttons;
+          this.fillOptions();
+          this.controller.valueChanges.subscribe((value) =>
+            this.handleController(value)
+          );
+          let tags: any = (await this._TagsService.tagsByUser()) || [];
+          tags = tags.map(({ name }) => name);
+          this.tagsCarousell = tags;
+          this.facturasList.some((facturas) => facturas.length);
+          this.status = this.facturasList.some((facturas) => facturas.length)
+            ? 'complete'
+            : 'empty';
+        };
+        ordersByMerchant();
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   handleController = (value: any): void => {
     const loadData = async (value) => {
       this.fillOptions(value);
-      this.status = this.facturas.length ? 'complete' : 'empty';
+      this.status = this.facturasList.some((facturas) => facturas.length)
+        ? 'complete'
+        : 'empty';
     };
     loadData(value);
   };
@@ -256,14 +277,17 @@ export class FacturasPrefacturasComponent implements OnInit {
     this.resetEdition();
   }
 
-  handleTag(tag):void {
-    if (this.tags.includes(tag)) this.tags = this.tags.filter((tg) => tg !== tag);
+  handleTag(tag): void {
+    if (this.tags.includes(tag))
+      this.tags = this.tags.filter((tg) => tg !== tag);
     else {
       const value = this.multipleTags ? [...this.tags, tag] : [tag];
       this.tags = value;
     }
     this.mainText = {
-      text: this.tags.length?'Ingreso: $IngresoID':'Facturas y Pre-facturas',
+      text: this.tags.length
+        ? 'Ingreso: $IngresoID'
+        : 'Facturas y Pre-facturas',
       fontSize: '21px',
       fontFamily: 'SfPro',
     };

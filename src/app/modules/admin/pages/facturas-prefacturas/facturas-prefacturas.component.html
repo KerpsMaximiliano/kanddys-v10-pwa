@@ -39,7 +39,7 @@
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div
-          *ngFor="let item of facturasList; let i = index"
+          *ngFor="let facturas of facturasList; let i = index"
           class="item"
           (click)="handleValue('')"
         >
