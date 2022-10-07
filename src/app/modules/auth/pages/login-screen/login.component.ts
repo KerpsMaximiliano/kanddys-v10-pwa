@@ -206,7 +206,7 @@ export class LoginComponent implements OnInit {
         this.loggin = false;
         unlockUI();
       }
-    } else if (this.auth === 'order') {
+    } else if (this.auth === 'order' || this.auth === 'address') {
       lockUI();
 
       this.headerService.flowId = SaleFlow;
@@ -215,6 +215,15 @@ export class LoginComponent implements OnInit {
       let productData: Item[] = this.headerService.getItems(this.saleflow._id);
       this.itemCartAmount = productData?.length;
       this.items = productData;
+
+      if (this.auth === 'address') {
+        const address = this.headerService.getLocation(SaleFlow);
+        if (!address) {
+          this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
+            replaceUrl: true,
+          });
+        }
+      }
 
       if (phone) {
         const exists = await this.authService.checkUser(phone);
@@ -242,14 +251,6 @@ export class LoginComponent implements OnInit {
         this.loggin = false;
         unlockUI();
       }
-    } else if (this.auth === 'address') {
-      const address = this.headerService.getLocation(SaleFlow);
-      if (!address) {
-        this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
-          replaceUrl: true,
-        });
-      }
-      unlockUI();
     } else if (this.auth === 'anonymous') {
       unlockUI();
     } else if (this.auth === 'payment') {
