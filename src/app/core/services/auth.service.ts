@@ -329,7 +329,10 @@ export class AuthService {
 
       this.ready = from(promise);
 
-      const response = await promise;
+      const response = (await promise)?.analizeMagicLink;
+      localStorage.removeItem('session-token');
+      this.session = new Session(response?.session, true);
+      this.app.events.emit({ type: 'auth', data: this.session });
       return response;
     } catch (e) {}
   }

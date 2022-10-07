@@ -118,8 +118,6 @@ export class LoginComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private location: Location,
     private usersService: UsersService,
-    private postsService: PostsService,
-    private customizerValueService: CustomizerValueService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
   ) {
     this.image = this.router.getCurrentNavigation().extras.state?.image;
@@ -415,9 +413,7 @@ export class LoginComponent implements OnInit {
       if (this.view === 'password') {
         checkOTP = (
           await this.authService.analizeMagicLink(this.password.value)
-        ).analizeMagicLink.session;
-        localStorage.removeItem('session-token');
-        new Session(checkOTP, true);
+        ).session;
       } else {
         checkOTP = await this.authService.verify(
           this.password.value,

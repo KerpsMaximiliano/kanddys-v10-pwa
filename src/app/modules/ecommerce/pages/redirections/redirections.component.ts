@@ -59,13 +59,9 @@ export class RedirectionsComponent implements OnInit {
         { url: null, queryParams: {} };
 
       try {
-        const { analizeMagicLink: result } =
-          await this.authService.analizeMagicLink(authCode);
-        const { session, redirectionRoute } = result;
-
-        localStorage.removeItem('session-token');
-        this.session = new Session(session, true);
-        this.header.user = session.user;
+        const { redirectionRoute } = await this.authService.analizeMagicLink(
+          authCode
+        );
 
         if (redirectionRoute.includes('?')) {
           const routeParts = redirectionRoute.split('?');
