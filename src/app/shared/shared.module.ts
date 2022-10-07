@@ -102,6 +102,7 @@ import { TagManagementComponent } from './dialogs/tag-management/tag-management.
 import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
 import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
+import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
 
 const imports = [
   CommonModule,
@@ -210,7 +211,8 @@ const declarations = [
   TagManagementComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,
-  HelperHeaderv3Component
+  HelperHeaderv3Component,
+  FunctionalityParametersComponent
 ];
 
 @NgModule({
