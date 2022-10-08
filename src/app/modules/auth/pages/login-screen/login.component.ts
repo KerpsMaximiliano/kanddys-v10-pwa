@@ -401,8 +401,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async signIn() {
-    this.status = 'draft';
+  async signIn(avoidDraftStatus = false) {
+    if(!avoidDraftStatus)
+      this.status = 'draft';
+
     if (this.password.invalid) {
       this.toastr.error('Error en campo de contraseña', null, {
         timeOut: 1500,
@@ -413,7 +415,7 @@ export class LoginComponent implements OnInit {
       if (this.view === 'password') {
         checkOTP = (
           await this.authService.analizeMagicLink(this.password.value)
-        ).session;
+        )?.session;
       } else {
         checkOTP = await this.authService.verify(
           this.password.value,
@@ -580,9 +582,7 @@ export class LoginComponent implements OnInit {
         this.OTP = true;
         this.view = 'password';
         this.status = 'ready';
-        this.toastr.error('Clave incorrecta', null, {
-          timeOut: 1500,
-        });
+        this.signIn(true);
         // this.toastr.error('Contraseña inválida o usuario no verificado', null, {
         //   timeOut: 2500,
         // });
