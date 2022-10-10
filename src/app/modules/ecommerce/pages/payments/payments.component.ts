@@ -5,13 +5,13 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
+import { User } from 'src/app/core/models/user';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -43,7 +43,6 @@ export class PaymentsComponent implements OnInit {
     private postsService: PostsService,
     private merchantService: MerchantsService,
     private headerService: HeaderService,
-    private dialogService: DialogService,
     private location: LocationStrategy
   ) {
     history.pushState(null, null, window.location.href);
@@ -130,16 +129,26 @@ export class PaymentsComponent implements OnInit {
     lockUI();
     if (this.order) {
       if (this.order.orderStatus === 'draft') {
-        this.router.navigate([`/auth/login`], {
-          queryParams: {
-            orderId: this.order._id,
-            auth: 'payment',
-          },
-          state: {
-            image: this.image,
-          },
-        });
-        return;
+        const user = JSON.parse(
+          localStorage.getItem('registered-user')
+        ) as User;
+        if (user) {
+          this.order = (
+            await this.orderService.authOrder(this.order._id, user._id)
+          ).authOrder;
+          localStorage.removeItem('registered-user');
+        } else {
+          this.router.navigate([`/auth/login`], {
+            queryParams: {
+              orderId: this.order._id,
+              auth: 'payment',
+            },
+            state: {
+              image: this.image,
+            },
+          });
+          return;
+        }
       }
       await this.orderService.payOrder(
         {

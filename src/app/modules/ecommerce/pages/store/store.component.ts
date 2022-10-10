@@ -201,8 +201,6 @@ export class StoreComponent implements OnInit {
       this.header.orderId = null;
       this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
-      if (!orderData || !orderData.products || orderData.products.length === 0)
-        this.header.emptyItems(this.saleflowData._id);
 
       const [itemCategories, headlines, merchant, user] = await Promise.all([
         this.item.itemCategories(this.saleflowData.merchant._id, {

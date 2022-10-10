@@ -61,12 +61,14 @@ export class NewAddressComponent implements OnInit {
       save: fb.control(false),
     });
     this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
-    this.registered = localStorage.getItem('registered') as 'true';
+    this.registered = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as User;
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
   editingId: string;
   loggedIn: boolean;
-  registered: 'true';
+  registered: User;
   disableButton: boolean;
   user: User;
   env = environment.assetsUrl;

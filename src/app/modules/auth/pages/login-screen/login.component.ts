@@ -390,7 +390,7 @@ export class LoginComponent implements OnInit {
           const address = this.headerService.getLocation(
             this.route.snapshot.queryParamMap.get('saleflow')
           );
-          await this.authService.signup(
+          const user = await this.authService.signup(
             {
               phone: this.phoneNumber.value.e164Number.split('+')[1],
               password: this.phoneNumber.value.e164Number.slice(-4),
@@ -400,6 +400,7 @@ export class LoginComponent implements OnInit {
             null,
             false
           );
+          localStorage.setItem('registered-user', JSON.stringify(user));
           this.router.navigate(
             [`ecommerce/${this.headerService.saleflow._id}/checkout`],
             {
@@ -410,7 +411,7 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'order') {
-          await this.authService.signup(
+          const user = await this.authService.signup(
             {
               phone: this.phoneNumber.value.e164Number.split('+')[1],
               password: this.phoneNumber.value.e164Number.slice(-4),
@@ -419,7 +420,7 @@ export class LoginComponent implements OnInit {
             null,
             false
           );
-          localStorage.setItem('registered', 'true');
+          localStorage.setItem('registered-user', JSON.stringify(user));
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
@@ -954,7 +955,7 @@ export class LoginComponent implements OnInit {
     if (this.orderStatus !== 'draft') return;
     const order = (await this.orderService.authOrder(this.orderId, id))
       .authOrder;
-    localStorage.removeItem('registered');
+    localStorage.removeItem('registered-user');
     if (this.auth === 'payment') {
       await this.orderService.payOrder(
         {
