@@ -245,11 +245,7 @@ export class LoginComponent implements OnInit {
         unlockUI();
       } else {
         this.merchantNumber
-          ? this.phoneNumber.setValue(
-              this.merchantNumber !== '(000) 000-0000'
-                ? this.merchantNumber
-                : null
-            )
+          ? this.phoneNumber.setValue(this.merchantNumber)
           : null;
         this.loggin = false;
         unlockUI();
@@ -993,19 +989,26 @@ export class LoginComponent implements OnInit {
 
   async getNumber() {
     let phoneNumberInfo: any = JSON.parse(localStorage.getItem('phone-number'));
-    let number = phoneNumberInfo.e164Number.split('+')[1];
 
-    for (const countryAlias of Object.keys(CountryISO)) {
-      if (
-        CountryISO[countryAlias].toLowerCase() ===
-        phoneNumberInfo.countryCode.toLowerCase()
-      ) {
-        this.CountryISO = CountryISO[countryAlias];
-        this.preferredCountries = [
-          CountryISO.DominicanRepublic,
-          CountryISO.UnitedStates,
-        ];
-        this.preferredCountries.unshift(CountryISO[countryAlias]);
+    let number = null;
+
+    if (phoneNumberInfo && 'e164Number' in phoneNumberInfo) {
+      phoneNumberInfo.e164Number.split('+')[1];
+
+      number = phoneNumberInfo.e164Number.split('+')[1];
+
+      for (const countryAlias of Object.keys(CountryISO)) {
+        if (
+          CountryISO[countryAlias].toLowerCase() ===
+          phoneNumberInfo.countryCode.toLowerCase()
+        ) {
+          this.CountryISO = CountryISO[countryAlias];
+          this.preferredCountries = [
+            CountryISO.DominicanRepublic,
+            CountryISO.UnitedStates,
+          ];
+          this.preferredCountries.unshift(CountryISO[countryAlias]);
+        }
       }
     }
     //  console.log(number);
