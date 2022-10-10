@@ -111,6 +111,9 @@ export class NewAddressComponent implements OnInit {
       if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
         localStorage.setItem(saleflowId, JSON.stringify(orderData));
         this.magicLinkLocation = orderData.deliveryLocation;
+        this.router.navigate([], {
+          relativeTo: this.route,
+        });
       }
     }
     this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
