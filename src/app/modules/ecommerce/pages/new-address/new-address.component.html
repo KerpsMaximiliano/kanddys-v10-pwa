@@ -49,7 +49,7 @@
           }"
         ></app-answer-selector>
       </div>
-      <div *ngIf="!user">
+      <div *ngIf="!user && !registered">
         <app-answer-selector
           [options]="authOptions"
           [indicator]="true"
