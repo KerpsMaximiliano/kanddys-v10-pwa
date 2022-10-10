@@ -569,8 +569,39 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
     const reservationSlotCapacityFormGroup = this.calendarCreatorForm.controls
       .reservationSlotCapacity as FormGroup;
 
-    const fromHour = calendar.limits.fromHour;
-    const toHour = calendar.limits.toHour;
+    let fromHour = calendar.limits.fromHour;
+    let toHour = calendar.limits.toHour;
+
+    //CONVIRTIENDO LAS HORAS A UTC
+    const utcOffset = new Date().getTimezoneOffset() / 60;
+    let [fromHourWithoutMinutes, fromHourMinutes] = fromHour.split(
+      ':'
+    ) as Array<any>;
+    let [toHourWithoutMinutes, toHourMinutes] = toHour.split(':') as Array<any>;
+    fromHourWithoutMinutes = Number(fromHourWithoutMinutes);
+    toHourWithoutMinutes = Number(toHourWithoutMinutes);
+
+    fromHourWithoutMinutes = fromHourWithoutMinutes - utcOffset;
+
+    fromHourWithoutMinutes =
+      String(fromHourWithoutMinutes).length < 2
+        ? '0' + fromHourWithoutMinutes
+        : fromHourWithoutMinutes;
+
+    toHourWithoutMinutes = toHourWithoutMinutes - utcOffset;
+
+    toHourWithoutMinutes =
+      String(toHourWithoutMinutes).length < 2
+        ? '0' + toHourWithoutMinutes
+        : toHourWithoutMinutes;
+
+    fromHour = fromHourWithoutMinutes + ':' + fromHourMinutes;
+    toHour = toHourWithoutMinutes + ':' + toHourMinutes;
+
+    if (fromHour === '24:00') fromHour = '00:00';
+    if (toHour === '24:00') toHour = '00:00';
+
+    //FIN - CONVIRTIENDO LAS HORAS A UTC
 
     const daysAllowedForThisCalendar = [];
 
@@ -925,8 +956,51 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
     const { reservationDurationInMinutes, minutesBetweenReservations } =
       this.calendarCreatorForm.value.reservationParams;
 
-    const { daysAvailability, fromHour, toHour } =
+    let { daysAvailability, fromHour, toHour } =
       this.calendarCreatorForm.value.reservationAvailability;
+
+    //CONVIRTIENDO LAS HORAS A UTC
+    const utcOffset = new Date().getTimezoneOffset() / 60;
+    let [fromHourWithoutMinutes, fromHourMinutes] = fromHour.split(':');
+    let [toHourWithoutMinutes, toHourMinutes] = toHour.split(':');
+    fromHourWithoutMinutes = Number(fromHourWithoutMinutes);
+    toHourWithoutMinutes = Number(toHourWithoutMinutes);
+
+    if (fromHourWithoutMinutes + utcOffset > 24) {
+      fromHourWithoutMinutes = fromHourWithoutMinutes + utcOffset - 24;
+    } else if (fromHourWithoutMinutes + utcOffset < 0) {
+      fromHourWithoutMinutes = 24 + (fromHourWithoutMinutes + utcOffset);
+    } else {
+      fromHourWithoutMinutes = fromHourWithoutMinutes + utcOffset;
+    }
+
+    fromHourWithoutMinutes =
+      String(fromHourWithoutMinutes).length < 2
+        ? '0' + fromHourWithoutMinutes
+        : fromHourWithoutMinutes;
+
+    if (toHourWithoutMinutes + utcOffset > 24) {
+      toHourWithoutMinutes = toHourWithoutMinutes + utcOffset - 24;
+    } else if (toHourWithoutMinutes + utcOffset < 0) {
+      toHourWithoutMinutes = 24 + (toHourWithoutMinutes + utcOffset);
+    } else {
+      toHourWithoutMinutes = toHourWithoutMinutes + utcOffset;
+    }
+
+    toHourWithoutMinutes =
+      String(toHourWithoutMinutes).length < 2
+        ? '0' + toHourWithoutMinutes
+        : toHourWithoutMinutes;
+
+    let fromHourInUTC = fromHourWithoutMinutes + ':' + fromHourMinutes;
+    let toHourInUTC = toHourWithoutMinutes + ':' + toHourMinutes;
+
+    if (fromHourInUTC === '24:00') fromHourInUTC = '00:00';
+    if (toHourInUTC === '24:00') toHourInUTC = '00:00';
+
+    //FIN - CONVIRTIENDO LAS HORAS A UTC
+
+    //if(fromHourWithoutMinutes + utcOffset)
 
     const { amount: amountOfReservationsAtTheSameTime } =
       this.calendarCreatorForm.value.reservationSlotCapacity;
@@ -937,8 +1011,6 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
           (dayObject) => dayObject.fullname
         );
 
-        const fromDate = new Date();
-        const toDate = new Date(new Date().getFullYear(), 11, 31);
         const calendarInput: any = {
           breakTime: minutesBetweenReservations,
           timeChunkSize: reservationDurationInMinutes,
@@ -948,8 +1020,8 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
           limits: {
             dateType: 'DAYS',
             inDays: daysInOrder,
-            fromHour,
-            toHour,
+            fromHour: fromHourInUTC,
+            toHour: toHourInUTC,
           },
         };
 
@@ -1122,11 +1194,17 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
       if (fromHourNumber > 12)
         fromHourFinal = `${fromHourNumber - 12}:${fromHour.split(':')[1]} PM`;
-      else fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} ${fromHourNumber === 12 ? 'PM' : 'AM'}`;
+      else
+        fromHourFinal = `${fromHourNumber}:${fromHour.split(':')[1]} ${
+          fromHourNumber === 12 ? 'PM' : 'AM'
+        }`;
 
       if (toHourNumber > 12)
         toHourFinal = `${toHourNumber - 12}:${toHour.split(':')[1]} PM`;
-      else toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} ${toHourNumber === 12 ? 'PM' : 'AM'}`;
+      else
+        toHourFinal = `${toHourNumber}:${toHour.split(':')[1]} ${
+          toHourNumber === 12 ? 'PM' : 'AM'
+        }`;
 
       console.log('days available', daysAvailability);
 

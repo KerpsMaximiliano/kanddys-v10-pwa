@@ -208,17 +208,26 @@ export class ReservationsCreatorComponent implements OnInit {
     this.hourRangesBlocked = [];
 
     const currentDateObject = new Date();
-    const currentHour = currentDateObject.getHours();
+    const utcOffset = new Date().getTimezoneOffset() / 60;//Quitar este offset luego
+    const currentHour = currentDateObject.getHours() + utcOffset;//aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
 
-    const calendarHourRangeStart: number = Number(
+    let calendarHourRangeStart: number = Number(
       this.calendarData.limits.fromHour.split(':')[0]
     );
 
-    const calendarHourRangeLimit: number = Number(
+    let calendarHourRangeLimit: number = Number(
       this.calendarData.limits.toHour.split(':')[0]
     );
+
+    //CONVIRTIENDO LAS HORAS A UTC
+
+    calendarHourRangeStart = calendarHourRangeStart - utcOffset;
+    calendarHourRangeLimit = calendarHourRangeLimit - utcOffset;
+
+    console.log(calendarHourRangeLimit, calendarHourRangeStart);
+    //FIN - CONVIRTIENDO LAS HORAS A UTC
 
     let isCurrentHourDivisibleByTheChunkSize = false;
     let hoursToAdvanceInEachSlot =
@@ -282,13 +291,13 @@ export class ReservationsCreatorComponent implements OnInit {
           this.calendarData.timeChunkSize <= 60
         ) {
           hourFractionAccumulator = 0;
-          loopValidHour++;//when chunkSizes are less than 60, the next hour is always the current one plus 1
+          loopValidHour++; //when chunkSizes are less than 60, the next hour is always the current one plus 1
         } else if (this.calendarData.timeChunkSize < 60) {
           hourFractionAccumulator += this.calendarData.timeChunkSize;
         } else {
           hourFractionAccumulator = 0;
           const hoursInsideChunkSize = Math.floor(
-            this.calendarData.timeChunkSize / 60//when chunkSizes are more than 60, the next hour is always that number divided by 60min(an integer number of hours, obviously)
+            this.calendarData.timeChunkSize / 60 //when chunkSizes are more than 60, the next hour is always that number divided by 60min(an integer number of hours, obviously)
           );
           const remainingMinutes =
             this.calendarData.timeChunkSize - hoursInsideChunkSize * 60;
@@ -348,7 +357,7 @@ export class ReservationsCreatorComponent implements OnInit {
         //this exist for the case when theres not enough time to fill a chunkSize for the 1st
         //available hour of the day, and that day is today
         //if the chunkSize is 15min, the calendar starts at 8:45AM, and the currentHour
-        //is 8:47AM, the next valid hour will be 9:00PM  
+        //is 8:47AM, the next valid hour will be 9:00PM
         if (currentHour === calendarHourRangeStart) {
           loopCurrentHour++;
           skippedFirstHourSetOfSlots = true;
@@ -541,7 +550,6 @@ export class ReservationsCreatorComponent implements OnInit {
         }
         ///////////////////////////////////////////// END ////////////////////////////////////////
 
-        
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
           fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
@@ -580,8 +588,8 @@ export class ReservationsCreatorComponent implements OnInit {
   }
 
   /**
-   * Sets the global selectedDate Object fromHour and toHour properties, 
-   * and passes the selected day number to the generateHourList Function 
+   * Sets the global selectedDate Object fromHour and toHour properties,
+   * and passes the selected day number to the generateHourList Function
    * to render on the page the hours for the new day
    * @method
    * @param {Number} dateOptionIndex - the index of the answer-selection array that the user clicked on
@@ -652,7 +660,7 @@ export class ReservationsCreatorComponent implements OnInit {
         ? '0' + String(fromHourNumber)
         : String(fromHourNumber);
 
-    //realToHour means, that maybe you have selected the range 12-1, and the calendar's breaktime is 
+    //realToHour means, that maybe you have selected the range 12-1, and the calendar's breaktime is
     //15 minutes, that means
     //the real toHour(end) is 12, because you are reading 12:00 - 12:50, YOU ARE READING 12:50PM <-----, not 1PM,
     //the real to hour is the one that the client can read, not the one thats picked up by the backend
