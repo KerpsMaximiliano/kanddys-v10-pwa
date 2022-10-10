@@ -311,13 +311,14 @@ export class LoginComponent implements OnInit {
       const validUser = await this.authService.checkUser(
         this.phoneNumber.value.e164Number.split('+')[1]
       );
+
       validUser
         ? localStorage.setItem(
             'phone-number',
             JSON.stringify(this.phoneNumber.value)
           )
         : null;
-      if (validUser && validUser.validatedAt !== null) {
+      if (validUser) {
         try {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(
