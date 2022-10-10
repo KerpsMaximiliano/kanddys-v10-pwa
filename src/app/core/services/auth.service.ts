@@ -24,7 +24,7 @@ import {
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
-import { User } from '../models/user';
+import { User, UserInput } from '../models/user';
 import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
 // import { Logs } from 'selenium-webdriver';
 
@@ -134,7 +134,7 @@ export class AuthService {
   }
 
   public async signup(
-    input: any,
+    input: UserInput,
     notificationMethod?: string,
     code?: string,
     assignPassword?: boolean,
