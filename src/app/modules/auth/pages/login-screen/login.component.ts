@@ -314,7 +314,7 @@ export class LoginComponent implements OnInit {
       validUser
         ? localStorage.setItem(
             'phone-number',
-            this.phoneNumber.value.e164Number
+            JSON.stringify(this.phoneNumber.value)
           )
         : null;
       if (validUser && validUser.validatedAt !== null) {
@@ -402,8 +402,7 @@ export class LoginComponent implements OnInit {
   }
 
   async signIn(avoidDraftStatus = false) {
-    if(!avoidDraftStatus)
-      this.status = 'draft';
+    if (!avoidDraftStatus) this.status = 'draft';
 
     if (this.password.invalid) {
       this.toastr.error('Error en campo de contraseña', null, {
@@ -947,7 +946,22 @@ export class LoginComponent implements OnInit {
   }
 
   async getNumber() {
-    let number = localStorage.getItem('phone-number');
+    let phoneNumberInfo: any = JSON.parse(localStorage.getItem('phone-number'));
+    let number = phoneNumberInfo.e164Number.split('+')[1];
+
+    for (const countryAlias of Object.keys(CountryISO)) {
+      if (
+        CountryISO[countryAlias].toLowerCase() ===
+        phoneNumberInfo.countryCode.toLowerCase()
+      ) {
+        this.CountryISO = CountryISO[countryAlias];
+        this.preferredCountries = [
+          CountryISO.DominicanRepublic,
+          CountryISO.UnitedStates,
+        ];
+        this.preferredCountries.unshift(CountryISO[countryAlias]);
+      }
+    }
     //  console.log(number);
     if (number !== null) {
       this.merchantNumber = number.split('+')[1];
