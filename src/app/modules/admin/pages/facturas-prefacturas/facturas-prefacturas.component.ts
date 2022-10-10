@@ -24,7 +24,7 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./facturas-prefacturas.component.scss'],
 })
 export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
-  status = 'complete';
+  status = 'loading';
   controller: FormControl = new FormControl();
   mainText: any = {
     text: 'Facturas y Pre-facturas',
@@ -40,7 +40,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
   editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
-  buttons: string[] = ['facturas', 'pre - facturas', 'archivo'];
+  buttons: string[] = ['facturas', 'pre - facturas'];
   calendar: string = '';
   option: string;
   facturasList: any[] = [];
@@ -53,6 +53,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
   subscription: Subscription;
+  phone: string = '';
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
@@ -62,10 +63,32 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.facturasList = [];
     this.status = 'loading';
     this.subscription = this._ActivatedRoute.queryParams.subscribe(
       async (params) => {
-        const { by = 10, limit = 50, sort = 'desc', at = 'createdAt' } = params;
+        let {
+          by = 10,
+          limit = 50,
+          sort = 'desc',
+          at = 'createdAt',
+          type = 'facturas',
+          phone = '',
+        } = params;
+        phone = phone.replace('+', '');
+        this.phone = phone;
+        if (isNaN(+by)) {
+          by = 10;
+        }
+        if (isNaN(+limit)) {
+          limit = 50;
+        }
+        this.option = type.replace('%20');
+        this.facturasList = [];
+        const atList = ['createdAt', 'updatedAt'];
+        if (!atList.includes(at)) {
+          at = 'createdAt';
+        }
         const ordersByMerchant = async () => {
           const { _id }: Merchant =
             await this._MerchantsService.merchantDefault();
@@ -78,8 +101,19 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
 
           const { ordersByMerchant } =
             await this._MerchantsService.ordersByMerchant(_id, pagination);
-          let temp = ordersByMerchant.map(
-            ({ createdAt, subtotals, dateId, items }) => {
+          const _ordersByMerchant = ordersByMerchant
+            .filter((order) => {
+              const result =
+                type === 'facturas'
+                  ? order.orderStatus !== 'draft'
+                  : order.orderStatus === 'draft';
+              return result;
+            })
+            .filter((order) =>
+              phone ? order.user.phone.includes(phone) : true
+            );
+          let temp = _ordersByMerchant.map(
+            ({ createdAt, subtotals, dateId, items, user }) => {
               const result = {
                 createdAt: new Date(createdAt).toLocaleDateString('en-US'),
                 total: subtotals
@@ -90,6 +124,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
                   const { name } = item;
                   return name;
                 }),
+                phone: user.phone,
               };
               return result;
             }
@@ -99,7 +134,6 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             temp = temp.filter((item, index) => index >= by);
             this.facturasList.push(facturas);
           }
-          [this.option] = this.buttons;
           this.fillOptions();
           this.controller.valueChanges.subscribe((value) =>
             this.handleController(value)
@@ -113,8 +147,17 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             : 'empty';
         };
         ordersByMerchant();
+        this.controller.valueChanges.subscribe((value) =>
+          this.handleInputValue(value, this._Router, this.option)
+        );
       }
     );
+  }
+
+  handleInputValue(value, _Router, option): void {
+    _Router.navigate([`/admin/facturas`], {
+      queryParams: { phone: value, type: option },
+    });
   }
 
   ngOnDestroy(): void {
@@ -271,6 +314,9 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
 
   handleOption(option: string): void {
     this.option = option;
+    this._Router.navigate([`/admin/facturas`], {
+      queryParams: { type: option, phone: this.phone },
+    });
   }
 
   returnScreen(): void {

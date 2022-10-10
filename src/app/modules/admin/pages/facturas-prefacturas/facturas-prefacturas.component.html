@@ -7,15 +7,15 @@
   (dotEvent)="handleDotsEvent()"
 ></app-helper-headerv2>
 <app-helper-headerv3
-*ngIf="tags.length"
-(arrowsClick)="tags=[]"
+  *ngIf="tags.length"
+  (arrowsClick)="tags = []"
 ></app-helper-headerv3>
 <div class="container">
   <div *ngIf="!tags.length" class="pr-25px">
     <input
       [formControl]="controller"
       class="search"
-      type="text"
+      type="tel"
       placeholder="Busca por tag, articulo, referencia.."
     />
   </div>
@@ -34,8 +34,8 @@
         {{ button | titlecase }}
       </button>
     </div>
-    <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
-    <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell>
+    <!-- <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
+    <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell> -->
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div
