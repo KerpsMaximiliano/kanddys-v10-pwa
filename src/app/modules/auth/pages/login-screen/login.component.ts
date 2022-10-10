@@ -333,7 +333,7 @@ export class LoginComponent implements OnInit {
               'NonExistingOrder',
               {
                 data: localStorage.getItem(this.saleflow._id),
-              }
+              },
             );
           }
           if (
@@ -405,6 +405,12 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             }
           );
+
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          )
+
           this.status = 'ready';
           return;
         }
@@ -418,6 +424,12 @@ export class LoginComponent implements OnInit {
             null,
             false
           );
+
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          )
+
           localStorage.setItem('registered', 'true');
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
@@ -734,6 +746,12 @@ export class LoginComponent implements OnInit {
             timeOut: 5000,
           }
         );
+
+        localStorage.setItem(
+          'phone-number',
+          JSON.stringify(this.phoneNumber.value)
+        )
+
       }
     } else if (valid && valid.validatedAt === null) {
       await this.generateTOP(true);
