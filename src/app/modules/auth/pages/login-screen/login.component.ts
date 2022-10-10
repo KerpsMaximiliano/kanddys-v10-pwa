@@ -245,7 +245,11 @@ export class LoginComponent implements OnInit {
         unlockUI();
       } else {
         this.merchantNumber
-          ? this.phoneNumber.setValue(this.merchantNumber)
+          ? this.phoneNumber.setValue(
+              this.merchantNumber !== '(000) 000-0000'
+                ? this.merchantNumber
+                : null
+            )
           : null;
         this.loggin = false;
         unlockUI();
@@ -352,11 +356,10 @@ export class LoginComponent implements OnInit {
           console.log(error);
         }
       } else if (validUser && validUser.validatedAt === null) {
-        if (this.auth === 'payment' || this.auth === 'anonymous'){
+        if (this.auth === 'payment' || this.auth === 'anonymous') {
           this.authOrder(validUser._id);
           return;
-        }
-        else {
+        } else {
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
           this.status = 'ready';
@@ -1011,8 +1014,8 @@ export class LoginComponent implements OnInit {
       try {
         const phoneNumber = await this.authService.checkUser(number);
         if (phoneNumber) {
-          const { countryIso, nationalNumber } = 
-          await this.authService.getPhoneInformation(number);
+          const { countryIso, nationalNumber } =
+            await this.authService.getPhoneInformation(number);
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
         } else return;
