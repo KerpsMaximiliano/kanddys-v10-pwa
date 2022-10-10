@@ -66,7 +66,23 @@ export class OrderDetailComponent implements OnInit {
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
-    this.orderDate = new Date(this.order.createdAt).toLocaleString();
+    const temporalDate = new Date(this.order.createdAt);
+    const day = temporalDate.getDate();
+    const dayString = String(day).length < 2 ? '0' + day : day;
+    const month = temporalDate.getMonth() + 1;
+    const monthString = String(month).length < 2 ? '0' + month : month;
+    const year = temporalDate.getFullYear();
+    const yearString = String(year).length < 2 ? '0' + year : year;
+    const hour = temporalDate.getHours();
+    const hourString = String(hour).length < 2 ? '0' + hour : hour;
+    const timeOfDay = hour < 12 ? 'AM' : 'PM';
+    const minutes = temporalDate.getMinutes();
+    const minutesString = String(minutes).length < 2 ? '0' + minutes : minutes;
+    const seconds = temporalDate.getSeconds();
+    const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
+
+    this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
+
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
