@@ -95,7 +95,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
           const pagination: PaginationInput = {
             options: {
               sortBy: `${at}:${sort}`,
-              limit,
+              limit: +limit,
             },
           };
 
@@ -119,7 +119,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
                 total: subtotals
                   .map(({ amount }) => amount)
                   .reduce((a, b) => a + b),
-                dateId: formatID(dateId),
+                dateId: formatID(`${dateId}`),
                 products: items.map(({ item }) => {
                   const { name } = item;
                   return name;
