@@ -309,6 +309,7 @@ export class AuthService {
           entity,
           redirectionRouteQueryParams,
           attachments,
+          clientURL: window.location.href.split('/').splice(0, 3).join('/'),
         },
         context: { useMultipart: true },
       });
