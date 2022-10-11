@@ -17,11 +17,7 @@
 
     <div class="right-area">
       <span class="header-text">{{
-        currentUser?.name
-          ? currentUser?.name
-          : currentUser?.phone
-          ? currentUser?.phone
-          : currentUser?.email
+        currentUser?.name || currentUser?.phone || currentUser?.email
       }}</span>
       <img [src]="env + '/person.svg'" alt="Icono de una persona" />
     </div>

@@ -34,6 +34,7 @@ export class PaymentsComponent implements OnInit {
   disableButton: boolean;
   depositAmount: number;
   post: Post;
+  currentUser: User;
 
   constructor(
     private walletService: WalletService,
@@ -99,6 +100,11 @@ export class PaymentsComponent implements OnInit {
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
     )?.ExchangeData?.bank;
+    const registeredUser = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as User;
+    this.currentUser =
+      this.order?.user || this.headerService.user || registeredUser;
     this.status = 'complete';
   }
 

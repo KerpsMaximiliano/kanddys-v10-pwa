@@ -319,6 +319,7 @@ export class LoginComponent implements OnInit {
           )
         : null;
       if (validUser) {
+        // El user existe
         try {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(
@@ -327,6 +328,7 @@ export class LoginComponent implements OnInit {
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
           if (this.auth === 'order' || this.auth === 'address') {
+            // Se le envia el magic link para autenticar
             await this.authService.generateMagicLink(
               this.merchantNumber,
               `ecommerce/${this.saleflow._id}/new-address`,
@@ -352,21 +354,11 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
           console.log(error);
         }
-      } else if (validUser && validUser.validatedAt === null) {
-        if (this.auth === 'payment' || this.auth === 'anonymous') {
-          this.authOrder(validUser._id);
-          return;
-        } else {
-          this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-          this.userID = validUser._id;
-          this.status = 'ready';
-          this.loggin = true;
-        }
       } else if (
         this.orderId &&
         (this.auth === 'anonymous' || this.auth === 'payment')
       ) {
-        // Caso actual para un usuario que se registra al pagar una orden
+        // El user no existe y va a pagar o hacer una orden de forma anonima
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
@@ -386,21 +378,14 @@ export class LoginComponent implements OnInit {
           this.status = 'ready';
         }
       } else {
+        // El user no esta registrado
         if (this.auth === 'address') {
-          const address = this.headerService.getLocation(
-            this.route.snapshot.queryParamMap.get('saleflow')
-          );
-          const user = await this.authService.signup(
-            {
-              phone: this.phoneNumber.value.e164Number.split('+')[1],
-              password: this.phoneNumber.value.e164Number.slice(-4),
-              deliveryLocations: [address],
-            },
-            'none',
-            null,
-            false
-          );
-          localStorage.setItem('registered-user', JSON.stringify(user));
+          // Guardar una dirección
+          const userInput = {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4),
+          };
+          localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate(
             [`ecommerce/${this.headerService.saleflow._id}/checkout`],
             {
@@ -411,16 +396,12 @@ export class LoginComponent implements OnInit {
           return;
         }
         if (this.auth === 'order') {
-          const user = await this.authService.signup(
-            {
-              phone: this.phoneNumber.value.e164Number.split('+')[1],
-              password: this.phoneNumber.value.e164Number.slice(-4),
-            },
-            'none',
-            null,
-            false
-          );
-          localStorage.setItem('registered-user', JSON.stringify(user));
+          // Ver direcciones guardadas
+          const userInput = {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4),
+          };
+          localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
