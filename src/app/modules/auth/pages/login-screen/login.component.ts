@@ -392,6 +392,12 @@ export class LoginComponent implements OnInit {
               replaceUrl: true,
             }
           );
+
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          );
+
           this.status = 'ready';
           return;
         }
@@ -401,7 +407,12 @@ export class LoginComponent implements OnInit {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
             password: this.phoneNumber.value.e164Number.slice(-4),
           };
-          localStorage.setItem('registered-user', JSON.stringify(userInput));
+
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          );
+          localStorage.setItem('registered', JSON.stringify(userInput));
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
@@ -716,6 +727,11 @@ export class LoginComponent implements OnInit {
           {
             timeOut: 5000,
           }
+        );
+
+        localStorage.setItem(
+          'phone-number',
+          JSON.stringify(this.phoneNumber.value)
         );
       }
     } else if (valid && valid.validatedAt === null) {

@@ -26,6 +26,7 @@ import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
 import { User, UserInput } from '../models/user';
 import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
+import { environment } from 'src/environments/environment';
 // import { Logs } from 'selenium-webdriver';
 
 @Injectable({
@@ -309,6 +310,7 @@ export class AuthService {
           entity,
           redirectionRouteQueryParams,
           attachments,
+          clientURL: environment.uri,
         },
         context: { useMultipart: true },
       });
