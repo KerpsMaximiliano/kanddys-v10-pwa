@@ -277,7 +277,7 @@ export class OrderDetailComponent implements OnInit {
       }
 
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      const message = `*FACTURA ${formatID(
+      const message = `🐝\n\n*FACTURA ${formatID(
         this.order.dateId
       )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
         'es-MX'
@@ -291,9 +291,9 @@ export class OrderDetailComponent implements OnInit {
           ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
-      this.messageLink = `https://wa.me/${
+      this.messageLink = `https://api.whatsapp.com/send?phone=${
         this.order.items[0].saleflow.merchant.owner.phone
-      }?text=${encodeURIComponent(message)}`;
+      }&text=${encodeURIComponent(message)}`;
       this.notify = true;
     }
   }
