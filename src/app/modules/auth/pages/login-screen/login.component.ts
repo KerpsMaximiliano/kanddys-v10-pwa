@@ -412,7 +412,7 @@ export class LoginComponent implements OnInit {
             'phone-number',
             JSON.stringify(this.phoneNumber.value)
           );
-          localStorage.setItem('registered', JSON.stringify(userInput));
+          localStorage.setItem('registered-user', JSON.stringify(userInput));
           this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
