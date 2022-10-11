@@ -208,8 +208,8 @@ export class ReservationsCreatorComponent implements OnInit {
     this.hourRangesBlocked = [];
 
     const currentDateObject = new Date();
-    const utcOffset = new Date().getTimezoneOffset() / 60;//Quitar este offset luego
-    const currentHour = currentDateObject.getHours() + utcOffset;//aqui tambien
+    const utcOffset = new Date().getTimezoneOffset() / 60; //Quitar este offset luego
+    const currentHour = currentDateObject.getHours() - utcOffset; //aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
 
@@ -225,6 +225,8 @@ export class ReservationsCreatorComponent implements OnInit {
 
     calendarHourRangeStart = calendarHourRangeStart - utcOffset;
     calendarHourRangeLimit = calendarHourRangeLimit - utcOffset;
+
+    console.log('rangestart', calendarHourRangeStart, currentHour);
 
     console.log(calendarHourRangeLimit, calendarHourRangeStart);
     //FIN - CONVIRTIENDO LAS HORAS A UTC
@@ -458,6 +460,8 @@ export class ReservationsCreatorComponent implements OnInit {
           ? 60 - this.calendarData.breakTime
           : hourFractionAccumulator - this.calendarData.breakTime;
 
+      console.log('lch', loopCurrentHour, toHourToShow);
+
       const toHour: HourOption = {
         hourNumber: loopCurrentHour,
         minutesNumber: hourFractionAccumulator,
@@ -469,7 +473,11 @@ export class ReservationsCreatorComponent implements OnInit {
           String(toHourToShow).length < 2
             ? '0' + toHourToShow
             : String(toHourToShow),
-        timeOfDay: loopCurrentHour < 12 ? 'AM' : 'PM',
+        timeOfDay:
+          loopCurrentHour < 12 ||
+          (loopCurrentHour === 12 && toHourToShow === 11)
+            ? 'AM'
+            : 'PM',
       };
 
       //this block of code ensures the options shown won't include
