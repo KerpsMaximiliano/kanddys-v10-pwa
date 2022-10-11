@@ -9,6 +9,7 @@ import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -37,6 +38,7 @@ export class CheckoutComponent implements OnInit {
   payment: number;
   hasPaymentModule: boolean;
   disableButton: boolean;
+  currentUser: User;
   date: {
     month: string;
     day: number;
@@ -393,7 +395,13 @@ export class CheckoutComponent implements OnInit {
       const anonymous = await this.headerService.getOrderAnonymous(
         this.headerService.saleflow._id
       );
-      if (this.headerService.user && !anonymous) {
+      const registeredUser = JSON.parse(
+        localStorage.getItem('registered-user')
+      ) as User;
+      console.log(this.headerService.user, anonymous);
+      if ((this.headerService.user || registeredUser) && !anonymous) {
+        this.currentUser = this.headerService.user || registeredUser;
+        console.log("logged");
         this.logged = true;
       } else this.logged = false;
     } catch (e) {
