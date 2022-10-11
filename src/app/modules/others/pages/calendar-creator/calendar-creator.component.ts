@@ -508,9 +508,28 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
   setExistingCalendarFinalHours(calendar: Calendar) {
     if (calendar) {
-      const [initialHour, initialMinute] = calendar.limits.fromHour.split(':');
-      const [initialToHour, initialToMinute] =
-        calendar.limits.toHour.split(':');
+      const utcOffset = new Date().getTimezoneOffset() / 60;
+      let [initialHour, initialMinute] = calendar.limits.fromHour.split(
+        ':'
+      ) as Array<any>;
+      let [initialToHour, initialToMinute] = calendar.limits.toHour.split(
+        ':'
+      ) as Array<any>;
+      initialHour = Number(initialHour);
+      initialToHour = Number(initialToHour);
+
+      initialHour = initialHour - utcOffset;
+
+      initialHour =
+        String(initialHour).length < 2 ? '0' + initialHour : initialHour;
+
+      initialToHour = initialToHour - utcOffset;
+
+      initialToHour =
+        String(initialToHour).length < 2 ? '0' + initialToHour : initialToHour;
+
+      //FIN - CONVIRTIENDO LAS HORAS A UTC
+
       const initialHourIndex = this.hours.findIndex((hour) =>
         String(Number(initialHour)).length < 2
           ? hour === initialHour

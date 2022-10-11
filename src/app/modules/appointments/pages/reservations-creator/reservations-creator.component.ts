@@ -104,13 +104,13 @@ export class ReservationsCreatorComponent implements OnInit {
   }[] = [];
 
   allDaysOfTheWeekArrayInSpanishAndEnglish = [
+    { spanishName: 'Domingo', name: 'SUNDAY' },
     { spanishName: 'Lunes', name: 'MONDAY' },
     { spanishName: 'Martes', name: 'TUESDAY' },
     { spanishName: 'Miercoles', name: 'WEDNESDAY' },
     { spanishName: 'Jueves', name: 'THURSDAY' },
     { spanishName: 'Viernes', name: 'FRIDAY' },
     { spanishName: 'Sabado', name: 'SATURDAY' },
-    { spanishName: 'Domingo', name: 'SUNDAY' },
   ];
 
   currentMonth: {
