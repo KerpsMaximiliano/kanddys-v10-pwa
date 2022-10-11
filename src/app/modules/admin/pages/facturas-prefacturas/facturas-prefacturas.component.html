@@ -39,18 +39,18 @@
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <div
-          *ngFor="let facturas of facturasList; let i = index"
+          *ngFor="let facturas of facturasTemp; let i = index"
           class="item"
           (click)="handleValue('')"
         >
-          <div *ngIf="!tags.length" class="text-grid">
+          <!-- <div *ngIf="!tags.length" class="text-grid">
             <div class="destacada">{{ i === 0 ? "Destacadas" : "Tag ID" }}</div>
             <div class="mb-3 middle">Ingreso: $IngresoID</div>
             <div class="mb-3 text-right">VER</div>
           </div>
           <p *ngIf="i === 0 && !tags.length" class="tap">
             Tap dos veces encima para destacar <br />algunas facturas.
-          </p>
+          </p> -->
           <!-- <div class="card"> -->
           <swiper [config]="swiperConfig">
             <div
