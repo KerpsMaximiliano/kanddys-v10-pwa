@@ -49,7 +49,7 @@
           }"
         ></app-answer-selector>
       </div>
-      <div *ngIf="!user">
+      <div *ngIf="!user && !registered">
         <app-answer-selector
           [options]="authOptions"
           [indicator]="true"
@@ -125,7 +125,10 @@
             formControlName="note"
           />
         </div>
-        <div class="form-group check-input" *ngIf="mode !== 'edit'">
+        <div
+          class="form-group check-input"
+          *ngIf="mode !== 'edit' && !registered"
+        >
           <input
             type="checkbox"
             class="checkbox"
