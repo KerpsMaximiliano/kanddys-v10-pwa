@@ -1,19 +1,96 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { getCalendar } from '../graphql/calendar.gql';
-import { Calendar } from '../models/calendar';
+import {
+  getCalendar,
+  calendarAddExceptions,
+  createCalendar,
+  updateCalendar,
+} from '../graphql/calendar.gql';
+import { Calendar, CalendarInput } from '../models/calendar';
 
 export interface ExtendedCalendar extends Calendar {
   limitFromDay?: number;
   limitToDay?: number;
 }
 
+export interface Month {
+  id: number;
+  name: string;
+  dates: {
+    dayNumber: number;
+    dayName: string;
+    weekDayNumber: number;
+  }[];
+}
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CalendarsService {
   calendarsCount = 0;
-  calendarsObtained: Record<string, ExtendedCalendar>;
+  calendarsObtained: Record<string, ExtendedCalendar> = {};
+  allMonths: Array<Month> = [
+    {
+      id: 0,
+      name: 'Enero',
+      dates: [],
+    },
+    {
+      id: 1,
+      name: 'Febrero',
+      dates: [],
+    },
+    {
+      id: 2,
+      name: 'Marzo',
+      dates: [],
+    },
+    {
+      id: 3,
+      name: 'Abril',
+      dates: [],
+    },
+    {
+      id: 4,
+      name: 'Mayo',
+      dates: [],
+    },
+    {
+      id: 5,
+      name: 'Junio',
+      dates: [],
+    },
+    {
+      id: 6,
+      name: 'Julio',
+      dates: [],
+    },
+    {
+      id: 7,
+      name: 'Agosto',
+      dates: [],
+    },
+    {
+      id: 8,
+      name: 'Septiembre',
+      dates: [],
+    },
+    {
+      id: 9,
+      name: 'Octubre',
+      dates: [],
+    },
+    {
+      id: 10,
+      name: 'Noviembre',
+      dates: [],
+    },
+    {
+      id: 11,
+      name: 'Diciembre',
+      dates: [],
+    },
+  ];
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -30,36 +107,62 @@ export class CalendarsService {
       });
       const result = response.getCalendar;
 
-      if(result) {
+      if (result) {
         this.calendarsObtained[result._id] = result;
       }
 
-      this.calendarsObtained[result._id].limitFromDay = this.getLimit(result.limits?.fromDay);
-      this.calendarsObtained[result._id].limitToDay = this.getLimit(result.limits?.toDay);
+      this.calendarsObtained[result._id].limitFromDay = this.getLimit(
+        result.limits?.fromDay
+      );
+      this.calendarsObtained[result._id].limitToDay = this.getLimit(
+        result.limits?.toDay
+      );
 
       return this.calendarsObtained[result._id];
-
-      /*
-      if (!queryParamFromLimit || !queryParamToLimit) {
-        this.handleActiveDays(
-          result.limits?.fromHour,
-          result.limits?.toHour,
-          result.timeChunkSize,
-          result.mode
-        );
-      }
-
-      if (queryParamFromLimit || queryParamToLimit) {
-        this.handleActiveDays(
-          queryParamFromLimit ? queryParamFromLimit + ':00' : null,
-          queryParamToLimit ? queryParamToLimit + ':00' : null,
-          response.getCalendar.timeChunkSize,
-          response.getCalendar.mode
-        );
-      }*/
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async getCalendarSimple(id: string) {
+    try {
+      const response: { getCalendar: Calendar } = await this.graphql.query({
+        query: getCalendar,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async createCalendar(input: CalendarInput) {
+    const result = await this.graphql.mutate({
+      mutation: createCalendar,
+      variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async updateCalendar(input: CalendarInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateCalendar,
+      variables: { input, id },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async calendarAddExceptions(exception: any, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: calendarAddExceptions,
+      variables: { exception, id },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
   }
 
   getLimit(dayLimit: string) {
@@ -79,6 +182,4 @@ export class CalendarsService {
       return 6;
     }
   }
-
-
 }

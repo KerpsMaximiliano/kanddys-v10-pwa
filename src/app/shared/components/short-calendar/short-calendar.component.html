@@ -1,21 +1,59 @@
-<div
-  class="scroller"
-  #elemt
-  (mousedown)="startDragging($event, elemt)"
-  (mouseup)="stopDragging()"
-  (mouseleave)="stopDragging()"
-  (mousemove)="moveEvent($event, elemt)"
->
+<div class="wrapper">
   <div
-    *ngFor="let day of monthDays"
-    class="day"
-    [ngClass]="{
-      'selected': selectedDay?.getDate() === day.dayNumber,
-      'disabled': day.weekDayNumber === 0
-    }"
-    (click)="onClick(day)"
+    *ngIf="showMonthsSwiper"
+    class="scroller2"
+    #elemt2
+    (mousedown)="startDragging($event, elemt2)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt2)"
   >
-    <span>{{day.dayName[0]}}{{day.dayName[1]}}{{day.dayName[2]}}</span>
-    <span>{{day.dayNumber}}</span>
+    <div
+      class="month"
+      [ngClass]="{ selected: month.selected }"
+      *ngFor="let month of allMonths; index as i"
+      (click)="changeMonth(i)"
+    >
+      {{ month.name }}
+    </div>
+  </div>
+
+  <div
+    class="scroller"
+    #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+    [ngClass]="{
+      fadingNext: executeSwipeToNextMonthAnimation,
+      fadingPrev: executeSwipeToPrevAnimation
+    }"
+  >
+    <div
+      *ngFor="let day of monthDays"
+      class="day"
+      [ngClass]="{
+        selected: checkIfDayIsSelected(day),
+        disabled:
+          !allowSundays && day.weekDayNumber === 0 && !allowedDays && !daysRange
+            ? true
+            : allowedDays && !daysRange
+            ? !isThisDayAValidOne(day)
+            : !allowedDays && daysRange
+            ? !isThisDayInTheRange(day)
+            : false
+      }"
+      (click)="
+        (!allowedDays && !daysRange) ||
+        (allowedDays && isThisDayAValidOne(day)) ||
+        (daysRange && isThisDayInTheRange(day))
+          ? onClick(day)
+          : null
+      "
+    >
+      <span>{{ day.dayName[0] }}{{ day.dayName[1] }}{{ day.dayName[2] }}</span>
+      <span>{{ day.dayNumber }}</span>
+    </div>
   </div>
 </div>

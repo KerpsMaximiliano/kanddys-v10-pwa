@@ -95,6 +95,7 @@
       </div> -->
     </div>
   </div>
+  <app-functionality-parameters></app-functionality-parameters>
 
   <div class="about-products" style="margin-top: 68px">
     <div class="wrapper">
@@ -138,7 +139,7 @@
     <div class="wrapper">
       <h2 class="about-name">Sobre los forms</h2>
 
-      <div class="dot-trio">
+      <div class="dot-trio" (click)="onShareOrdersClick()"> <!--PLACEHOLDER FUNCTION-->
         <div class="dot"> </div>
         <div class="dot"> </div>
         <div class="dot"> </div>
@@ -155,6 +156,8 @@
       </div>
     </div>
   </div>
+
+  <app-metrics-reservation></app-metrics-reservation>
 
   <!-- 
     <div class="about-forms" style="margin-top: 32px">

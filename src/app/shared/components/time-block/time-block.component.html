@@ -1,0 +1,88 @@
+<app-helper-headerv2
+  [mainText]="mainText"
+  mode="basic"
+  (returnEvent)="navigate()"
+></app-helper-headerv2>
+<div class="container" [ngSwitch]="status">
+  <div class="my" *ngFor="let item of [0]; let i = index">
+    <h3>{{ month.name !== "" ? "DIA De " + month?.name : "CARGANDO..." }}</h3>
+    <app-short-calendar
+      [allowUsersToChangeTheMonthShown]="true"
+      [allowedDays]="null"
+      (selectedDates)="saveSelectedDays($event)"
+      (changedMonth)="updateMonth($event, i)"
+      (beforeAnimation)="setDateAsNull()"
+      [allowSundays]="true"
+      [multipleSelection]="true"
+    ></app-short-calendar>
+  </div>
+  <form [formGroup]="controller">
+    <p class="base-label" style="margin-top: 53px; margin-bottom: 22px">Hora</p>
+    <div class="mr">
+      <input
+        formControlName="start"
+        class="base-input"
+        type="number"
+        min="0"
+        max="12"
+        (keydown)="blockNonNumericStuff($event)"
+        placeholder="Desde las.."
+      />
+    </div>
+    <div class="mr">
+      <select formControlName="startPeriod" class="base-input period">
+        <option value="PM">PM</option>
+        <option value="AM">AM</option>
+      </select>
+    </div>
+    <br />
+    <div class="mr">
+      <input
+        formControlName="end"
+        class="base-input"
+        type="number"
+        min="1"
+        max="12"
+        placeholder="Hasta las.."
+        (keydown)="blockNonNumericStuff($event)"
+      />
+    </div>
+    <div class="mr">
+      <select formControlName="endPeriod" class="base-input period">
+        <option value="PM">PM</option>
+        <option value="AM">AM</option>
+      </select>
+    </div>
+    <p
+      *ngIf="controller.valid && selectedDays.length > 0"
+      class="base-label"
+      style="margin-top: 21px"
+    >
+      {{ selectedDaysLabel }}
+    </p>
+  </form>
+</div>
+<app-sticky-button
+  [mode]="'double'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      backgroundColor: 'rgb(40, 116, 173)',
+      justifyContent: 'flex-start'
+    }
+  }"
+  [text]="''"
+  [text2]="
+    controller.status === 'VALID' && checkIfHoursAreValid() ? 'SALVAR' : ''
+  "
+  [customRightButtonStyles]="{
+    width: 'auto',
+    color: '#fff'
+  }"
+  [size]="'small'"
+  bgColor="rgb(40, 116, 173)"
+  fontSize="12px"
+  (right)="
+    controller.status === 'VALID' && checkIfHoursAreValid() ? save() : null
+  "
+></app-sticky-button>

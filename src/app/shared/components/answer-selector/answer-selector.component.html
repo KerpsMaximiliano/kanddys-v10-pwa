@@ -25,8 +25,17 @@
                   ? 'selector-option active'
                   : 'selector-option'
               "
+              [ngClass]="{
+                disabledOption: blockIndexes && blockIndexes.includes(i)
+              }"
               [ngStyle]="itemStyles ? itemStyles : null"
-              (click)="editable && option.status && clickSelector(i)"
+              (click)="
+                editable &&
+                option.status &&
+                (!blockIndexes || (blockIndexes && !blockIndexes.includes(i)))
+                  ? clickSelector(i)
+                  : null
+              "
             >
               <div class="background"></div>
 
@@ -107,7 +116,7 @@
                   ? i === activeMultipleOption[i] && showSelectedFeedback
                     ? 'option selected'
                     : 'option'
-                  : i === activeMultipleOption[i] && showSelectedFeedback
+                  : activeMultipleOption.includes(i) && showSelectedFeedback
                   ? 'selector-option active'
                   : 'selector-option'
               "

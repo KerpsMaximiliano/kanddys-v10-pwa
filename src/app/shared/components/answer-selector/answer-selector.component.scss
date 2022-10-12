@@ -55,6 +55,12 @@ ul {
     margin-right: 1rem;
     padding: 0.5rem;
   }
+
+  &.disabledOption {
+    .background {
+      color: #7b7b7b;
+    }
+  }
 }
 
 .description-container {

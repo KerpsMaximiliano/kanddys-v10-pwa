@@ -1,0 +1,98 @@
+<div
+  *ngFor="let reservation of reservations"
+  class="about-items"
+  style="margin-top: 54px"
+>
+  <div class="wrapper">
+    <h2 class="about-name">Sobre las reservaciones</h2>
+
+    <div class="dot-trio" (click)="onShareItemsClick(reservation.calendar)">
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+      <div class="dot"> </div>
+    </div>
+    <!-- <div class="container">
+      <p>3 reservas cada 45 min + 15 min de receso</p>
+      <p>Laboral: 9:00 AM a 7:00 PM</p>
+      <p>Dias: Dom, Mar, Mie, Jue</p>
+      <p>Mes: Cualquier mes por venir</p>
+      <p>Año: Cualquier año por venir</p>
+    </div> -->
+  </div>
+
+  <div class="grid-details">
+    <div
+      class="info-card pointer"
+      [routerLink]="
+        '/admin/entity-detail-metrics/reservations/' +
+        reservation.calendar +
+        '/pasadas'
+      "
+    >
+      <h2 class="amount quantity">
+        {{ reservation.past ? reservation.past.length : "0" }}
+      </h2>
+      <h2 class="amount">PASADAS</h2>
+    </div>
+
+    <div
+      class="info-card pointer"
+      [routerLink]="
+        '/admin/entity-detail-metrics/reservations/' +
+        reservation.calendar +
+        '/futuras'
+      "
+    >
+      <h2 class="amount quantity">
+        {{ reservation.future ? reservation.future.length : "0" }}
+      </h2>
+
+      <h2 class="amount">FUTURAS</h2>
+    </div>
+
+    <div class="info-card pointer">
+      <h2 class="amount quantity">
+        {{
+          !reservation.noLimitsMode ? reservation.slots : '∞'
+        }}
+      </h2>
+
+      <h2 class="amount">SLOTS <br>DISPONIBLES</h2>
+    </div>
+
+    <div class="info-card reservation-params" *ngIf="reservation.calendarObj">
+      <h3>parametros</h3>
+
+      <div>
+        <h4>
+          {{ reservation.calendarObj?.reservationLimits }} reservas cada
+          {{
+            reservation.calendarObj?.timeChunkSize -
+              reservation.calendarObj?.breakTime
+          }}
+          min
+        </h4>
+        <h4
+          *ngIf="
+            reservation.calendarObj?.daysSeparatedByComma &&
+            reservation.calendarObj?.daysSeparatedByComma.length > 0
+          "
+        >
+          Dias: {{ reservation.calendarObj?.daysSeparatedByComma }}
+        </h4>
+
+        <h4
+          *ngIf="
+            !reservation.calendarObj?.daysSeparatedByComma ||
+            (reservation.calendarObj?.daysSeparatedByComma &&
+              reservation.calendarObj?.daysSeparatedByComma.length === 0)
+          "
+        >
+          Dias: No definido
+        </h4>
+
+        <h4>Notif.. al WhatsApp {{ merchant?.owner?.phone }}</h4>
+      </div>
+    </div>
+  </div>
+</div>

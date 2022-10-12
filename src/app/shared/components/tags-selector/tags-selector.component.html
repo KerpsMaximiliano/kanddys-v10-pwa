@@ -1,0 +1,14 @@
+<div class="tags-grid" [style.background]="containerBackground">
+  <button
+    *ngFor="let tg of tags"
+    [style.background]="tag.includes(tg) ? background : selectedBackground"
+    [style.border]="
+      '1px solid ' + (tag.includes(tg) ? selectedBackground : background)
+    "
+    [style.color]="tag.includes(tg) ? selectedColor : color"
+    class="tag"
+    (click)="setTag(tg)"
+  >
+    {{ tg }}
+  </button>
+</div>
