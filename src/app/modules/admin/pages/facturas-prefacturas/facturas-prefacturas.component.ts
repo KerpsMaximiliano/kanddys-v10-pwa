@@ -119,7 +119,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             return result;
           });
           let temp = _ordersByMerchant.map(
-            ({ createdAt, subtotals, dateId, items, user }) => {
+            ({ createdAt, subtotals, dateId, items, user, tags }) => {
               const result = {
                 createdAt: new Date(createdAt).toLocaleDateString('en-US'),
                 total: subtotals
@@ -131,6 +131,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
                   return name;
                 }),
                 phone: user.phone,
+                tags,
               };
               return result;
             }
@@ -141,12 +142,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             temp = temp.filter((item, index) => index >= by);
             this.facturasList.push(facturas);
           }
-          this.fillOptions();
-          this.controller.valueChanges.subscribe((value) =>
-            this.handleController(value)
-          );
           let tags: any = (await this._TagsService.tagsByUser()) || [];
-          tags = tags.map(({ name }) => name);
           this.tagsCarousell = tags;
           this.facturasList.some((facturas) => facturas.length);
           this.status = this.facturasList.some((facturas) => facturas.length)
@@ -155,18 +151,16 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
           this.facturasTemp = this.facturasList;
           this.controller.valueChanges.subscribe((value) => {
             this.facturasTemp = this.facturasList.map((facturas) =>
-              facturas.filter(({ phone }) =>
-                value ? `${phone}`.includes(value) : true
+              facturas.filter(({ phone, tags }) =>
+                this.tags.length
+                  ? tags.some((tag) =>
+                      this.tags.map(({ _id }) => _id).includes(tag)
+                    )
+                  : value
+                  ? `${phone}`.includes(value)
+                  : true
               )
             );
-            // this._Router.navigate([`/admin/facturas`], {
-            //   queryParams: {
-            //     type: this.option,
-            //     phone: value,
-            //     limit: this.limit,
-            //     sort: this.sort,
-            //   },
-            // })
             this.status = this.facturasTemp.some((facturas) => facturas.length)
               ? 'complete'
               : 'empty';
@@ -361,5 +355,6 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
       fontSize: '21px',
       fontFamily: 'SfPro',
     };
+    this.controller.setValue(this.controller.value);
   }
 }
