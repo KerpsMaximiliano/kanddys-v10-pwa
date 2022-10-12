@@ -12,7 +12,10 @@ import {
   ItemPackage,
 } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import {
+  ItemSubOrderInput,
+  ItemSubOrderParamsInput,
+} from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -495,8 +498,23 @@ export class StoreComponent implements OnInit {
   }
 
   goToPackageDetail(index: number) {
+    const packageProducts: ItemSubOrderInput[] = this.packageData[
+      index
+    ].items.map((product, i) => ({
+      item: product._id,
+      itemExtra: [],
+      amount: this.sliderPackage[index].packageRules[i].fixedQuantity,
+    }));
+    packageProducts[0].saleflow = this.header.saleflow._id;
+    this.header.emptyItems(this.saleflowData._id);
+    this.header.storeItem(this.saleflowData._id, this.sliderPackage[index]);
+    this.header.storeOrderPackage(
+      this.saleflowData._id,
+      this.sliderPackage[index]._id,
+      packageProducts
+    );
     this.router.navigate([
-      `/ecommerce/package-detail/${this.saleflowData._id}/${this.sliderPackage[index]._id}`,
+      `/ecommerce/${this.saleflowData._id}/reservations/${this.saleflowData.module.appointment.calendar._id}`,
     ]);
   }
 

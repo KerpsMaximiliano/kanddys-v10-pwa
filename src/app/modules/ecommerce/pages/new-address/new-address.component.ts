@@ -123,7 +123,7 @@ export class NewAddressComponent implements OnInit {
         `/ecommerce/store/${this.headerService.saleflow._id}`,
       ]);
     }
-    if (this.loggedIn) this.checkAddresses();
+    this.checkAddresses();
     this.user = await this.authService.me();
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
@@ -444,7 +444,7 @@ export class NewAddressComponent implements OnInit {
     this.mode = 'normal';
     this.editingId = null;
     this.addressForm.reset({
-      nickName: this.addressForm.get('nickName').value
+      nickName: this.addressForm.get('nickName').value,
     });
     this.addressesOptions.forEach((option) => {
       option.icons = null;

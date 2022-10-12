@@ -220,6 +220,12 @@ export class CheckoutComponent implements OnInit {
         );
         break;
       }
+      case 'reservation': {
+        this.router.navigate([
+          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+        ]);
+        break;
+      }
       case 'customizer': {
         this.router.navigate(
           [

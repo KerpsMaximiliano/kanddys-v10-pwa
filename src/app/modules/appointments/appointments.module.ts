@@ -17,6 +17,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ReservationsCreatorComponent],
+  exports: [ReservationsCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AppointmentsModule {}

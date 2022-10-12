@@ -20,6 +20,8 @@ import { EcommerceComponent } from './ecommerce/ecommerce.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { AppointmentsModule } from '../appointments/appointments.module';
 
 const routes: Routes = [
   {
@@ -91,10 +93,13 @@ const routes: Routes = [
         component: PackageDetailComponent,
       },
       {
-        path: 'reservations',
+        path: 'reservation',
         component: ReservationComponent,
       },
-
+      {
+        path: ':saleflowId/reservations/:calendarId',
+        component: ReservationsComponent,
+      },
       {
         path: 'order-detail/:id',
         component: OrderDetailComponent,
@@ -136,7 +141,13 @@ const routes: Routes = [
     NewAddressComponent,
     CheckoutComponent,
     PaymentsComponent,
+    ReservationsComponent,
   ],
-  imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    SharedModule,
+    AppointmentsModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class EcommerceModule {}

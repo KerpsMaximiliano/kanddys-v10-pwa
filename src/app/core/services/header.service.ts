@@ -300,14 +300,11 @@ export class HeaderService {
     let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order) order = {};
-    if (!this.order) {
-      this.order = {
-        itemPackage,
-        products,
-      };
-    }
+    if (!this.order) this.order = {};
     order.itemPackage = itemPackage;
     order.products = products;
+    this.order.itemPackage = itemPackage;
+    this.order.products = products;
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
@@ -328,6 +325,7 @@ export class HeaderService {
     if (!order) order = {};
     if (!order.products || order.products.length === 0) return;
     order.products[0].reservation = reservation;
+    this.order.products[0].reservation = reservation;
     localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 

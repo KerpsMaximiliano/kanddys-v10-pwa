@@ -18,13 +18,13 @@
           ? headerConfiguration.headerText
           : ''
     }"
-    [returnAble]="true"
     (agnosticAction)="
       headerConfiguration.headerTextSide === 'RIGHT'
         ? headerConfiguration.headerTextCallback()
         : null
     "
     [returnAble]="true"
+    (returnEvent)="location.back()"
   >
   </app-helper-headerv2>
 
