@@ -443,7 +443,9 @@ export class NewAddressComponent implements OnInit {
       ]);
     this.mode = 'normal';
     this.editingId = null;
-    this.addressForm.reset();
+    this.addressForm.reset({
+      nickName: this.addressForm.get('nickName').value
+    });
     this.addressesOptions.forEach((option) => {
       option.icons = null;
       option.hidden = false;
