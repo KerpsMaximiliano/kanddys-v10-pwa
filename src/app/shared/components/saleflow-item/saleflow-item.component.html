@@ -15,7 +15,12 @@
     <div
       class="itemImg opacity-hover"
       [ngStyle]="{
-        'background-image': imgURL ? 'url(' + imgURL + ')' : 'url(/assets/images/noimage.png)',
+        'background-image': imgURL
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
+          : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
       (click)="onClick()"
@@ -65,7 +70,12 @@
     <div
       class="itemImg opacity-hover cursor"
       [ngStyle]="{
-        'background-image': imgURL ? 'url(' + imgURL + ')' : 'url(/assets/images/noimage.png)',
+        'background-image': imgURL
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
+          : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
       [ngClass]="{
@@ -146,7 +156,10 @@
       class="itemImg opacity-hover"
       [ngStyle]="{
         'background-image': imgURL
-          ? 'url(' + imgURL + ')'
+          ? 'url(' +
+            imgURL +
+            ')' +
+            (shouldHaveFallbackImage ? ', url(/assets/images/noimage.png)' : '')
           : 'url(/assets/images/noimage.png)',
         'background-size': backgroundSize
       }"
@@ -210,11 +223,25 @@
       [ngStyle]="
         dynamicStyles?.itemImg
           ? spreadOperator(dynamicStyles?.itemImg, {
-              'background-image': imgURL ? 'url(' + imgURL + ')' : 'url(/assets/images/noimage.png)',
+              'background-image': imgURL
+                ? 'url(' +
+                  imgURL +
+                  ')' +
+                  (shouldHaveFallbackImage
+                    ? ', url(/assets/images/noimage.png)'
+                    : '')
+                : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             })
           : {
-              'background-image': imgURL ? 'url(' + imgURL + ')' : 'url(/assets/images/noimage.png)',
+              'background-image': imgURL
+                ? 'url(' +
+                  imgURL +
+                  ')' +
+                  (shouldHaveFallbackImage
+                    ? ', url(/assets/images/noimage.png)'
+                    : '')
+                : 'url(/assets/images/noimage.png)',
               'background-size': backgroundSize
             }
       "

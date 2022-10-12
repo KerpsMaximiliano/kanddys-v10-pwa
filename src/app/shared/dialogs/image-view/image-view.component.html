@@ -3,13 +3,18 @@
     class="inner-wrapper"
     (click)="(null)"
     [ngStyle]="{
-      'background-image': 'url(' + imageSourceURL + ')',
+      'background-image':
+        'url(' + imageSourceURL + '), url(/assets/images/noimage.png)',
       'background-position': 'center',
       'background-size': 'contain',
       'background-repeat': 'no-repeat'
     }"
   ></div>
-  <button class="preview-btn" *ngIf="buttonText" (click)="buttonFunc && buttonFunc()">
-    {{buttonText}}
+  <button
+    class="preview-btn"
+    *ngIf="buttonText"
+    (click)="buttonFunc && buttonFunc()"
+  >
+    {{ buttonText }}
   </button>
 </div>

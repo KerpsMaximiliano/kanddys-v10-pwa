@@ -8,6 +8,7 @@ import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 })
 export class SingleActionDialogComponent implements OnInit {
 
+   @Input() extraTitle: string;
    @Input() title: string;
    @Input() buttonText: string;
    @Input() mainText: string;

@@ -66,6 +66,7 @@ export class SaleflowItemComponent implements OnInit {
     itemImg?: Record<string, string | number>;
     infoArea?: Record<string, string | number>;
   } = null;
+  @Input() shouldHaveFallbackImage: boolean = false;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();

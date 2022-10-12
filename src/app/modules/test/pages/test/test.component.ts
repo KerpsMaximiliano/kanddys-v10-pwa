@@ -18,6 +18,7 @@ import { ItemSettingsComponent } from 'src/app/shared/dialogs/item-settings/item
 import { ReloadComponent } from 'src/app/shared/dialogs/reload/reload.component';
 import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 
 @Component({
@@ -26,8 +27,8 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
   styleUrls: ['./test.component.scss'],
 })
 export class TestComponent implements OnInit {
-  textSample: string =
-    'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
+
+  textSample: string = 'Al borrar las reservaciones las fechas involucradas volverán a estar disponible.';
   hourRangeInDays = {
     MONDAY: [
       { from: 9, to: 11 },
@@ -151,6 +152,7 @@ export class TestComponent implements OnInit {
         customClass: 'app-dialog',
         flags: ['no-header'],
     });*/
+    
 
     /* this.dialog.open(GeneralFormSubmissionDialogComponent, {
       type: 'centralized-fullscreen',
@@ -161,9 +163,8 @@ export class TestComponent implements OnInit {
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    }); */
-
-    /*
+    });
+    
     this.dialog.open(SingleActionDialogComponent, {
       type: 'centralized-fullscreen',
       props:{
@@ -175,6 +176,7 @@ export class TestComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header']
     })
+    
     */
 
     this.dialog.open(SettingsComponent, {

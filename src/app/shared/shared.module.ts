@@ -94,6 +94,7 @@ import { ReloadComponent } from './dialogs/reload/reload.component';
 import { WhatsappMessageComponent } from './dialogs/whatsapp-message/whatsapp-message.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
 import { SelectDropdownComponent } from './components/select-dropdown/select-dropdown.component';
+import { SingleActionDialogComponent } from './dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from './dialogs/settings/settings.component';
 import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
@@ -203,6 +204,7 @@ const declarations = [
   WhatsappMessageComponent,
   CurrencyInputComponent,
   SelectDropdownComponent,
+  SingleActionDialogComponent
   SettingsComponent,
   MetricsReservationComponent,
   ReservationListComponent,

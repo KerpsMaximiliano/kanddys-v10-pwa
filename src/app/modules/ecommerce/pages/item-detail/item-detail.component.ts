@@ -136,7 +136,7 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     const products = this.header.getItems(
       this.header.saleflow?._id ?? this.header.getSaleflow()?._id
     );
-    products.forEach((product) => {
+    products?.forEach((product) => {
       if (!product.params) {
         this.item.params[0].values.forEach((value) => {
           if (id != product._id && value._id == product._id) {
@@ -156,13 +156,28 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       props: {
         headerButton: 'Ver más productos',
         headerCallback: () =>
-          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]),
+          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
+            replaceUrl: this.header.checkoutRoute ? true : false,
+          }),
         footerCallback: () => {
+          if (this.header.checkoutRoute) {
+            this.router.navigate([this.header.checkoutRoute], {
+              replaceUrl: true,
+            });
+            return;
+          }
           if (this.saleflowData.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
+            this.router.navigate([
+              `/ecommerce/${this.saleflowData._id}/create-giftcard`,
+            ]);
           else if (this.saleflowData.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
-          else this.router.navigate([`/ecommerce/checkout`]);
+            this.router.navigate([
+              `/ecommerce/${this.saleflowData._id}/new-address`,
+            ]);
+          else
+            this.router.navigate([
+              `/ecommerce/${this.header.saleflow._id}/checkout`,
+            ]);
         },
       },
       customClass: 'app-dialog',
@@ -298,7 +313,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.itemsService.removeTemporalItem();
-    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]);
+    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+    });
   }
 
   selectParamValue(param: number, value: number) {

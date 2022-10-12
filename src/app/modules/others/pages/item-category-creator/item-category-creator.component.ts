@@ -61,7 +61,7 @@ export class TagCategoryCreatorComponent implements OnInit {
       this.tag = (await this.tagsService.tag(id)).tag;
       if (!this.tag) return;
       this.name = this.tag.name;
-      this.description = this.tag.messageNotify;
+      // this.description = this.tag.messageNotify;
     }
   }
 
@@ -100,20 +100,20 @@ export class TagCategoryCreatorComponent implements OnInit {
       }
     }
     if (this.mode === 'tag') {
-      if (this.tag) {
-        this.tagsService.updateTag(
-          {
-            name: this.name,
-            messageNotify: this.description,
-          },
-          this.tag._id
-        );
-      } else {
-        this.tagsService.createTag({
-          name: this.name,
-          messageNotify: this.description,
-        });
-      }
+      // if (this.tag) {
+      //   this.tagsService.updateTag(
+      //     {
+      //       name: this.name,
+      //       messageNotify: this.description,
+      //     },
+      //     this.tag._id
+      //   );
+      // } else {
+      //   this.tagsService.createTag({
+      //     name: this.name,
+      //     messageNotify: this.description,
+      //   });
+      // }
     }
   }
 }

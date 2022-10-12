@@ -699,7 +699,7 @@ export class ReservationComponent implements OnInit {
       this.header.isComplete.reservation = true;
       this.header.isComplete.delivery = true;
       this.header.storeOrderProgress(this.header.saleflow._id);
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
       return;
     } else {
       const year = new Date().getFullYear();

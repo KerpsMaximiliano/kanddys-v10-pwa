@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { of } from 'rxjs';
@@ -10,7 +10,7 @@ import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-bu
 import { FormStep } from 'src/app/core/types/multistep-form';
 
 const lightLabelStyles = {
-  fontFamily: 'Roboto',
+  fontFamily: 'RobotoRegular',
   fontSize: '19px',
   fontWeight: 300,
   marginBottom: '18px',
@@ -25,6 +25,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: DialogService,
     private post: PostsService
   ) {}
@@ -59,7 +60,13 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.isComplete.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
-    this.router.navigate([`ecommerce/new-address`]);
+    if (this.header.checkoutRoute) {
+      this.router.navigate([this.header.checkoutRoute], {
+        replaceUrl: true,
+      });
+      return { ok: true };
+    }
+    this.router.navigate([`ecommerce/${this.header.saleflow._id}/new-address`]);
     return { ok: true };
   }
 
@@ -96,7 +103,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   };
 
   public continueOrder = () => {
-    this.router.navigate(['/ecommerce/create-giftcard']);
+    this.router.navigate([
+      `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
+    ]);
   };
 
   showShoppingCartDialog() {
@@ -106,7 +115,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         headerButton: 'Ver mas productos',
         orderFinished: true,
         footerCallback: () =>
-          this.router.navigate(['/ecommerce/create-giftcard']),
+          this.router.navigate([
+            `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
+          ]),
         headerCallback: () =>
           this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]),
       },
@@ -163,6 +174,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             containerStyles: {
               marginTop: '32px',
             },
+            labelStyles: {
+              fontFamily: 'RobotoBold',
+            },
             fieldStyles: {
               marginTop: '14px',
             },
@@ -215,6 +229,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
       stepButtonValidText: 'CONTINUAR',
+      headerMode: 'v2',
+      headerTextSide: 'LEFT',
+      headerTextStyles: {
+        marginLeft: '0px',
+        fontFamily: 'RobotoMedium',
+        fontWeight: 'normal',
+        fontSize: '17px',
+      },
     },
     {
       fieldsList: [
@@ -346,7 +368,17 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.isComplete.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
-            this.router.navigate([`ecommerce/new-address`]);
+            if (this.header.checkoutRoute) {
+              this.router.navigate([this.header.checkoutRoute], {
+                replaceUrl: true,
+              });
+              return of({
+                ok: true,
+              });
+            }
+            this.router.navigate([
+              `ecommerce/${this.header.saleflow._id}/new-address`,
+            ]);
             return of({
               ok: true,
             });
@@ -370,36 +402,57 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       headerTextSide: 'LEFT',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
       stepButtonValidText: 'CONTINUAR',
+      headerMode: 'v2',
+      headerTextStyles: {
+        marginLeft: '0px',
+        fontFamily: 'RobotoMedium',
+        fontWeight: 'normal',
+        fontSize: '17px',
+      },
     },
   ];
 
-  ngOnInit(): void {
-    this.header.flowRoute = 'create-giftcard';
-    localStorage.setItem('flowRoute', 'create-giftcard');
-
+  async ngOnInit(): Promise<void> {
     if (!this.header.saleflow) {
-      const saleflow = this.header.getSaleflow();
+      const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+      const saleflow = await this.header.fetchSaleflow(saleflowId);
       if (saleflow) {
-        this.header.saleflow = saleflow;
+        this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
+        localStorage.setItem(
+          'flowRoute',
+          `${this.header.saleflow._id}/create-giftcard`
+        );
         this.header.order = this.header.getOrder(saleflow._id);
         if (!this.header.order) {
-          this.router.navigate([`/ecommerce/trivias`]);
+          this.router.navigate([
+            `/ecommerce/store/${this.header.saleflow._id}`,
+          ]);
           return;
         }
         this.header.getOrderProgress(saleflow._id);
         const items = this.header.getItems(saleflow._id);
         if (items && items.length > 0) this.header.items = items;
-        else this.router.navigate([`/ecommerce/trivias`]);
-      } else this.router.navigate([`/ecommerce/trivias`]);
+        else
+          this.router.navigate([
+            `/ecommerce/store/${this.header.saleflow._id}`,
+          ]);
+      } else
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
     } else {
+      this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
+      localStorage.setItem(
+        'flowRoute',
+        `${this.header.saleflow._id}/create-giftcard`
+      );
       this.header.order = this.header.getOrder(this.header.saleflow._id);
       if (!this.header.order) {
-        this.router.navigate([`/ecommerce/trivias`]);
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
         return;
       }
       const items = this.header.getItems(this.header.saleflow._id);
       if (items && items.length > 0) this.header.items = items;
-      else this.router.navigate([`/ecommerce/trivias`]);
+      else
+        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
     }
   }
 

@@ -52,8 +52,8 @@ export class CategoryItemsComponent implements OnInit {
     total: number;
   }[] = [];
   ordersTotal: {
-    total: number,
-    length: number
+    total: number;
+    length: number;
   };
   // public swiperConfig: SwiperOptions = {
   //   slidesPerView: 'auto',
@@ -72,7 +72,7 @@ export class CategoryItemsComponent implements OnInit {
     private appService: AppService,
     private authService: AuthService,
     private merchantService: MerchantsService,
-    private orderService: OrderService,
+    private orderService: OrderService
   ) {}
 
   async getCategories(
@@ -230,7 +230,7 @@ export class CategoryItemsComponent implements OnInit {
         merchantId
       );
       await this.getCategories(itemCategoriesList, headlines);
-      if(this.isMerchant) {
+      if (this.isMerchant) {
         const totalByItems = await this.item.totalByItem(
           this.saleflow.merchant._id,
           items.map((item) => item._id)
@@ -241,7 +241,12 @@ export class CategoryItemsComponent implements OnInit {
           );
           this.totalByItems.push(sale);
         }
-        this.ordersTotal = await this.orderService.ordersTotal(['completed', 'to confirm', 'verifying'], merchantId, [], this.categoryId);
+        this.ordersTotal = await this.orderService.ordersTotal(
+          ['completed', 'to confirm', 'verifying'],
+          merchantId,
+          [],
+          this.categoryId
+        );
       }
       unlockUI();
     });
@@ -303,17 +308,21 @@ export class CategoryItemsComponent implements OnInit {
             mode: 'share',
             link: `${this.URI}/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
           },
-          {
-            text: 'Ir a la vista del visitante',
-            mode: 'func',
-            func: () =>
-              this.router.navigate([
-                `/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
-              ]),
-          },
         ],
       },
     ];
+
+    if (!this.hasCustomizer) {
+      list[0].options.push({
+        text: 'Ir a la vista del visitante',
+        mode: 'func',
+        func: () =>
+          this.router.navigate([
+            `/ecommerce/category-items/${this.saleflow._id}/${this.categoryId}`,
+          ]),
+      });
+    }
+
     this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
       props: {

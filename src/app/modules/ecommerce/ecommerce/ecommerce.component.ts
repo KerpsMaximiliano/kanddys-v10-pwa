@@ -46,7 +46,14 @@ export class EcommerceComponent implements OnInit {
         this.activePath = this.route.firstChild.routeConfig.path;
       });
     this.itemEvent = this.appService.events
-      .pipe(filter((e) => e.type === 'deleted-item' || e.type === 'added-item'))
+      .pipe(
+        filter(
+          (e) =>
+            e.type === 'deleted-item' ||
+            e.type === 'added-item' ||
+            e.type === 'order-done'
+        )
+      )
       .subscribe((e) => {
         this.getItemsAmount();
       });
@@ -81,11 +88,24 @@ export class EcommerceComponent implements OnInit {
             `/ecommerce/store/${this.headerService.saleflow._id}`,
           ]),
         footerCallback: async () => {
+          if (this.headerService.checkoutRoute) {
+            this.router.navigate([this.headerService.checkoutRoute], {
+              replaceUrl: true,
+            });
+            return;
+          }
           if (this.headerService.saleflow.module?.post)
-            this.router.navigate(['/ecommerce/create-giftcard']);
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
+            ]);
           else if (this.headerService.saleflow.module?.delivery)
-            this.router.navigate(['/ecommerce/new-address']);
-          else this.router.navigate([`/ecommerce/checkout`]);
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+            ]);
+          else
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/checkout`,
+            ]);
         },
       },
       customClass: 'app-dialog',

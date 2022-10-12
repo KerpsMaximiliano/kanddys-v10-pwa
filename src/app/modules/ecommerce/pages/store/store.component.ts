@@ -85,7 +85,7 @@ export class StoreComponent implements OnInit {
     private dialog: DialogService,
     private router: Router,
     private merchant: MerchantsService,
-    private header: HeaderService,
+    public header: HeaderService,
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private route: ActivatedRoute,
@@ -128,8 +128,6 @@ export class StoreComponent implements OnInit {
         highlightedItemsObject[item._id] = true;
       }
     }
-
-    console.log(this.categories);
 
     if (!this.categories || !this.categories.length) return;
     this.categories.forEach(async (saleflowCategory) => {
@@ -182,8 +180,6 @@ export class StoreComponent implements OnInit {
           }
         }
 
-        console.log(this.itemsByCategory, 'itemsporcategoria');
-
         unlockUI();
       }
     });
@@ -205,8 +201,6 @@ export class StoreComponent implements OnInit {
       this.header.orderId = null;
       this.saleflowData = await this.header.fetchSaleflow(params.id);
       const orderData = this.header.getOrder(this.saleflowData._id);
-      if (!orderData || !orderData.products || orderData.products.length === 0)
-        this.header.emptyItems(this.saleflowData._id);
 
       const [itemCategories, headlines, merchant, user] = await Promise.all([
         this.item.itemCategories(this.saleflowData.merchant._id, {
@@ -460,9 +454,12 @@ export class StoreComponent implements OnInit {
         });
         this.header.storeItem(this.saleflowData._id, itemData);
       }
-      this.router.navigate([
-        `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      ]);
+      this.router.navigate(
+        [`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
@@ -483,12 +480,17 @@ export class StoreComponent implements OnInit {
 
       this.header.order = order;
       this.header.order.products[0].saleflow = this.header.saleflow._id;
-      this.router.navigate([
-        '/ecommerce/item-detail/' +
-          this.header.saleflow._id +
-          '/' +
-          this.items[index]._id,
-      ]);
+      this.router.navigate(
+        [
+          '/ecommerce/item-detail/' +
+            this.header.saleflow._id +
+            '/' +
+            this.items[index]._id,
+        ],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
@@ -499,9 +501,12 @@ export class StoreComponent implements OnInit {
   }
 
   goToItemDetail(id: string) {
-    this.router.navigate([
-      `/ecommerce/item-detail/${this.saleflowData._id}/${id}`,
-    ]);
+    this.router.navigate(
+      [`/ecommerce/item-detail/${this.saleflowData._id}/${id}`],
+      {
+        replaceUrl: this.header.checkoutRoute ? true : false,
+      }
+    );
   }
 
   async itemOfPackage(packages: ItemPackage[]) {
@@ -560,6 +565,21 @@ export class StoreComponent implements OnInit {
       flags: ['no-header'],
     });
   };
+
+  openLogoutDialog() {
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        alternate: true,
+        buttonText: 'Cerrar Sesión',
+        buttonCallback: () => {
+          this.authService.signoutThree();
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 
   back() {
     this.location.back();

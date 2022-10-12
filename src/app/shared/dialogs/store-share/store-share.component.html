@@ -1,6 +1,10 @@
 <div class="external-container">
   <div class="container" [ngStyle]="dynamicStyles?.container">
-    <div class="dialog-card" [ngStyle]="dynamicStyles?.dialogCard">
+    <div
+      class="dialog-card"
+      [ngStyle]="dynamicStyles?.dialogCard"
+      *ngIf="list.length"
+    >
       <div class="icon-wrapper" [ngStyle]="headerIcon?.styles?.wrapper">
         <img
           [src]="env + headerIcon.src"

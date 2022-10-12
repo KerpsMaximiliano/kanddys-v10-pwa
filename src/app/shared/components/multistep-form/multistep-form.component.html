@@ -139,6 +139,12 @@
         ? steps[currentStep].customScrollToStepBackwards(stepFunctionParams)
         : null
     "
+    [leftTextStyles]="
+      steps[currentStep].headerTextSide === 'LEFT' &&
+      steps[currentStep].headerTextStyles
+        ? steps[currentStep].headerTextStyles
+        : null
+    "
     [bgColor]="'#2874ad'"
   >
   </app-helper-headerv2>

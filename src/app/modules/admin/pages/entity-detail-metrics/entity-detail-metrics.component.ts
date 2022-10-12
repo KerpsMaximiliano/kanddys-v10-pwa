@@ -77,15 +77,23 @@ export class EntityDetailMetricsComponent implements OnInit {
       // this.getTags(),
       // this.getCategories(),
       this.getWebformsData(),
+      this.setMerchant()
       // this.getCalendars(),
     ]);
     unlockUI();
   }
 
+  async setMerchant() {
+    this.merchant = this.merchantsService.merchantData;
+    return true;
+  }
+
   async getItemsByMerchant() {
     try {
       this.items = (
-        await this.merchantsService.itemsByMerchant(this.merchant._id)
+        await this.merchantsService.itemsByMerchant(
+          this.merchantsService.merchantData._id
+        )
       )?.itemsByMerchant;
       this.activeItems = this.items.filter(
         (item) => item.status === 'active' || item.status === 'featured'

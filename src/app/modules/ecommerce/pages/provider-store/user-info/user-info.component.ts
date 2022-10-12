@@ -34,13 +34,13 @@ export class UserInfoComponent implements OnInit {
     else {
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
-        'Este Saleflow no contiene delivery',
+        'Esta tienda no contiene delivery',
         {
           timeOut: 5000,
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
       this.header.storeOrderAnonymous(this.header.saleflow._id);
       return;
     }

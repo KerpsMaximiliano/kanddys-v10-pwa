@@ -1,14 +1,19 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
+import { Post } from 'src/app/core/models/post';
+import { User } from 'src/app/core/models/user';
 import { Bank } from 'src/app/core/models/wallet';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
 import { environment } from 'src/environments/environment';
+
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
@@ -17,6 +22,7 @@ import { environment } from 'src/environments/environment';
 export class PaymentsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   environment = environment;
+  env: string = environment.assetsUrl;
   selectedBank: Bank;
   selectedOption: number;
   image: File;
@@ -27,15 +33,24 @@ export class PaymentsComponent implements OnInit {
   whatsappLink: string;
   disableButton: boolean;
   depositAmount: number;
+  post: Post;
+  currentUser: User;
 
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
     private route: ActivatedRoute,
     private router: Router,
+    private postsService: PostsService,
     private merchantService: MerchantsService,
-    private headerService: HeaderService
-  ) {}
+    private headerService: HeaderService,
+    private location: LocationStrategy
+  ) {
+    history.pushState(null, null, window.location.href);
+    this.location.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
@@ -48,7 +63,23 @@ export class PaymentsComponent implements OnInit {
       }
       await this.headerService.fetchSaleflow(saleflowId);
     } else {
-      this.order = (await this.orderService.order(orderId)).order;
+      const { orderStatus } = await this.orderService.getOrderStatus(orderId);
+      if (orderStatus === 'draft')
+        this.order = (await this.orderService.preOrder(orderId)).order;
+      else if (orderStatus === 'in progress')
+        this.order = (await this.orderService.order(orderId)).order;
+      else {
+        this.orderCompleted(orderId);
+        return;
+      }
+      if (!this.headerService.saleflow)
+        this.headerService.saleflow = this.headerService.getSaleflow();
+      if (
+        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+      ) {
+        this.orderCompleted();
+        return;
+      }
       this.paymentAmount = this.order.subtotals.reduce(
         (a, b) => a + b.amount,
         0
@@ -58,33 +89,22 @@ export class PaymentsComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         this.order.merchants?.[0]?._id
       );
-      if (!this.headerService.saleflow)
-        this.headerService.saleflow = this.headerService.getSaleflow();
-      if (
-        !this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      ) {
-        this.orderCompleted();
-        return;
+      if (this.order.items[0].post) {
+        this.post = (
+          await this.postsService.getPost(this.order.items[0].post._id)
+        ).post;
       }
-      if (this.order.orderStatus !== 'in progress') {
-        this.orderCompleted();
-        return;
-      }
-      const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      this.whatsappLink = `https://wa.me/${this.merchant.owner.phone}?text=${(
-        this.order.user.name || this.merchant.name
-      )
-        .replace('&', 'and')
-        .replace(
-          /[^\w\s]/gi,
-          ''
-        )}: TAP en el link para que visualices mi pago.%0a${fullLink}`;
     }
     this.banks = (
       await this.walletService.exchangeData(
         this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
       )
     )?.ExchangeData?.bank;
+    const registeredUser = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as User;
+    this.currentUser =
+      this.order?.user || this.headerService.user || registeredUser;
     this.status = 'complete';
   }
 
@@ -103,9 +123,10 @@ export class PaymentsComponent implements OnInit {
     this.image = null;
   }
 
-  orderCompleted() {
-    this.router.navigate([`ecommerce/order-info/${this.order._id}`], {
+  orderCompleted(id?: string) {
+    this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
       replaceUrl: true,
+      queryParams: { notify: 'true' },
     });
   }
 
@@ -113,6 +134,28 @@ export class PaymentsComponent implements OnInit {
     this.disableButton = true;
     lockUI();
     if (this.order) {
+      if (this.order.orderStatus === 'draft') {
+        const user = JSON.parse(
+          localStorage.getItem('registered-user')
+        ) as User;
+        if (user) {
+          this.order = (
+            await this.orderService.authOrder(this.order._id, user._id)
+          ).authOrder;
+          localStorage.removeItem('registered-user');
+        } else {
+          this.router.navigate([`/auth/login`], {
+            queryParams: {
+              orderId: this.order._id,
+              auth: 'payment',
+            },
+            state: {
+              image: this.image,
+            },
+          });
+          return;
+        }
+      }
       await this.orderService.payOrder(
         {
           image: this.image,
@@ -133,17 +176,15 @@ export class PaymentsComponent implements OnInit {
       this.image,
       this.headerService.user?._id
     );
-    const message = `${this.headerService.saleflow.merchant.name
-      .replace('&', 'and')
-      .replace(
-        /[^\w\s]/gi,
-        ''
-      )}: Acabo de hacer un pago de *$${this.depositAmount.toLocaleString(
-      'es-MX'
-    )}*.\n\nEl link de la referencia es: ${payment.image}`;
-    this.whatsappLink = `https://wa.me/${
-      this.headerService.saleflow.merchant.owner.phone
-    }?text=${encodeURIComponent(message)}`;
-    window.location.href = this.whatsappLink;
+    this.orderCompleted();
+  }
+
+  async authOrder() {
+    return (
+      await this.orderService.authOrder(
+        this.headerService.orderId,
+        this.headerService.user._id
+      )
+    ).authOrder;
   }
 }

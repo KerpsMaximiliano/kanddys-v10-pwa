@@ -13,18 +13,28 @@ import { Item, ItemPackage } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { Session } from 'src/app/core/models/session';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { UsersService } from 'src/app/core/services/users.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import { environment } from 'src/environments/environment';
 
-type AuthTypes = 'phone' | 'password' | 'order' | 'anonymous';
+type AuthTypes =
+  | 'phone'
+  | 'password'
+  | 'order'
+  | 'address'
+  | 'anonymous'
+  | 'payment';
 
 interface ValidateData {
   name: string;
@@ -39,25 +49,30 @@ interface ValidateData {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  status: 'draft' | 'ready' = 'ready';
+  mode: 'login' | 'signUp';
   saleflow: SaleFlow;
   auth: AuthTypes;
   merchantNumber: string = '(000) 000-0000';
   merchant: Merchant;
   loggin: boolean;
   signUp: boolean;
+  nope: boolean;
   orderId: string;
   itemId: string;
   doesItemHasParams: boolean;
   action: string;
+  paymentAmount: number;
   orderStatus: string;
-  hasPayment: boolean;
   OTP: boolean = false;
+  image: File;
   authCode: boolean = false;
   toValidate: boolean = false;
   sneaky: string;
   userID: string;
   fullLink: string;
   messageLink: string;
+  view: string;
   items: Item[] | ItemPackage[] = [];
   itemCartAmount: number;
   validateData: ValidateData;
@@ -102,8 +117,11 @@ export class LoginComponent implements OnInit {
     private itemsService: ItemsService,
     private saleflowsService: SaleFlowService,
     private location: Location,
+    private usersService: UsersService,
     private dialog: DialogService // private saleflowService: SaleFlowService, // private item: ItemsService
-  ) {}
+  ) {
+    this.image = this.router.getCurrentNavigation().extras.state?.image;
+  }
 
   async ngOnInit(): Promise<void> {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
@@ -136,7 +154,7 @@ export class LoginComponent implements OnInit {
         }
       }
     }
-
+    this.getNumber();
     const phone = this.route.snapshot.queryParamMap.get('phone');
     const SaleFlow = this.route.snapshot.queryParamMap.get('saleflow');
     this.auth = this.route.snapshot.queryParamMap.get('auth') as AuthTypes;
@@ -155,23 +173,11 @@ export class LoginComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         order.merchants?.[0]?._id
       );
-      if (
-        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      )
-        this.hasPayment = true;
-      else {
-        this.fullLink = `/ecommerce/order-info/${order._id}`;
-        this.messageLink = `https://wa.me/${
-          this.merchant.owner.phone
-        }?text=Hola%20${this.merchant.name
-          .replace('&', 'and')
-          .replace(
-            /[^\w\s]/gi,
-            ''
-          )},%20%20acabo%20de%20hacer%20una%20orden.%20Más%20info%20aquí%20${
-          environment.uri
-        }${this.fullLink}`;
-      }
+      this.fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+      this.paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
+      order.items[0].customizer
+        ? (this.paymentAmount = this.paymentAmount * 1.18)
+        : null;
     }
 
     if (this.auth === 'password') {
@@ -189,7 +195,7 @@ export class LoginComponent implements OnInit {
           this.merchantNumber = phone;
         } else {
           unlockUI();
-          this.toastr.info('Número no registrado o inválido 2', null, {
+          this.toastr.info('Número no registrado o inválido', null, {
             timeOut: 1500,
           });
         }
@@ -199,7 +205,7 @@ export class LoginComponent implements OnInit {
         this.loggin = false;
         unlockUI();
       }
-    } else if (this.auth === 'order') {
+    } else if (this.auth === 'order' || this.auth === 'address') {
       lockUI();
 
       this.headerService.flowId = SaleFlow;
@@ -208,6 +214,15 @@ export class LoginComponent implements OnInit {
       let productData: Item[] = this.headerService.getItems(this.saleflow._id);
       this.itemCartAmount = productData?.length;
       this.items = productData;
+
+      if (this.auth === 'address') {
+        const address = this.headerService.getLocation(SaleFlow);
+        if (!address) {
+          this.router.navigate([`ecommerce/${SaleFlow}/new-address`], {
+            replaceUrl: true,
+          });
+        }
+      }
 
       if (phone) {
         const exists = await this.authService.checkUser(phone);
@@ -229,11 +244,20 @@ export class LoginComponent implements OnInit {
 
         unlockUI();
       } else {
+        this.merchantNumber
+          ? this.phoneNumber.setValue(this.merchantNumber)
+          : null;
         this.loggin = false;
         unlockUI();
       }
     } else if (this.auth === 'anonymous') {
       unlockUI();
+    } else if (this.auth === 'payment') {
+      if (!this.image) {
+        this.router.navigate([`ecommerce/payments/${this.orderId}`], {
+          replaceUrl: true,
+        });
+      }
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -247,8 +271,12 @@ export class LoginComponent implements OnInit {
     this.authCode = false;
     this.phoneNumber.reset();
     this.password.reset();
-    this.merchantNumber = '';
+    this.getNumber();
   }
+
+  logToggle = () => {
+    this.toSignUp();
+  };
 
   toSignUp() {
     this.signUp = !this.signUp;
@@ -278,12 +306,20 @@ export class LoginComponent implements OnInit {
   }
 
   async submitPhone() {
+    this.status = 'draft';
     if (this.phoneNumber.value != undefined || null) {
       const validUser = await this.authService.checkUser(
         this.phoneNumber.value.e164Number.split('+')[1]
       );
 
-      if (validUser && validUser.validatedAt !== null) {
+      validUser
+        ? localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          )
+        : null;
+      if (validUser) {
+        // El user existe
         try {
           const { countryIso, nationalNumber } =
             this.authService.getPhoneInformation(
@@ -291,26 +327,42 @@ export class LoginComponent implements OnInit {
             );
           this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
           this.userID = validUser._id;
-          if (this.orderId && this.auth === 'anonymous') {
+          if (this.auth === 'order' || this.auth === 'address') {
+            // Se le envia el magic link para autenticar
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `ecommerce/${this.saleflow._id}/new-address`,
+              null,
+              'NonExistingOrder',
+              {
+                data: localStorage.getItem(this.saleflow._id),
+              }
+            );
+          }
+          if (
+            this.orderId &&
+            (this.auth === 'anonymous' || this.auth === 'payment')
+          ) {
             this.authOrder(this.userID);
             return;
           }
           this.phoneNumber.setValue(nationalNumber);
           this.CountryISO = countryIso;
+          this.status = 'ready';
           this.loggin = true;
         } catch (error) {
+          this.status = 'ready';
           console.log(error);
         }
-      } else if (validUser && validUser.validatedAt === null) {
-        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
-        this.userID = validUser._id;
-        this.loggin = true;
-        await this.generateTOP();
-        this.toValidate = true;
-      } else if (this.orderId && this.auth === 'anonymous') {
+      } else if (
+        this.orderId &&
+        (this.auth === 'anonymous' || this.auth === 'payment')
+      ) {
+        // El user no existe y va a pagar o hacer una orden de forma anonima
         const anonymous = await this.authService.signup(
           {
             phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4),
           },
           'none',
           null,
@@ -323,40 +375,121 @@ export class LoginComponent implements OnInit {
           this.toastr.error('Algo salio mal', null, {
             timeOut: 1500,
           });
+          this.status = 'ready';
         }
       } else {
-        this.toastr.error('Número no registrado', null, { timeOut: 2000 });
-        return;
-      }
-    } else {
-      this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
-      return;
-    }
-  }
+        // El user no esta registrado
+        if (this.auth === 'address') {
+          // Guardar una dirección
+          const userInput = {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4),
+          };
+          localStorage.setItem('registered-user', JSON.stringify(userInput));
+          this.router.navigate(
+            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            {
+              replaceUrl: true,
+            }
+          );
 
-  async signIn() {
-    if (this.password.invalid) {
-      this.toastr.error('Error en campo de contraseña', null, {
-        timeOut: 1500,
-      });
-    } else if (this.OTP) {
-      const checkOTP = await this.authService.verify(
-        this.password.value,
-        this.userID
-      );
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          );
 
-      if (!checkOTP) {
-        this.toastr.error('Código inválido', null, { timeOut: 2000 });
-        return;
-      } else {
-        this.toastr.info('Código válido', null, { timeOut: 2000 });
-        if (this.auth === 'order' && !this.toValidate) {
-          this.router.navigate([`ecommerce/new-address`], {
+          this.status = 'ready';
+          return;
+        }
+        if (this.auth === 'order') {
+          // Ver direcciones guardadas
+          const userInput = {
+            phone: this.phoneNumber.value.e164Number.split('+')[1],
+            password: this.phoneNumber.value.e164Number.slice(-4),
+          };
+
+          localStorage.setItem(
+            'phone-number',
+            JSON.stringify(this.phoneNumber.value)
+          );
+          localStorage.setItem('registered-user', JSON.stringify(userInput));
+          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
               loggedIn: true,
             },
           });
+          this.status = 'ready';
+          return;
+        }
+        this.toastr.info('Al registro', null, { timeOut: 2000 });
+        this.merchantNumber = this.phoneNumber.value.e164Number.split('+')[1];
+        this.password.setValue(this.merchantNumber.slice(-4));
+        this.status = 'ready';
+        this.signUp = true;
+        return;
+      }
+    } else {
+      this.toastr.error('Introduzca un número válido', null, { timeOut: 2000 });
+      this.status = 'ready';
+      return;
+    }
+  }
+
+  async signIn(avoidDraftStatus = false) {
+    if (!avoidDraftStatus) this.status = 'draft';
+
+    if (this.password.invalid) {
+      this.toastr.error('Error en campo de contraseña', null, {
+        timeOut: 1500,
+      });
+      this.status = 'ready';
+    } else if (this.OTP) {
+      let checkOTP: Session;
+      if (this.view === 'password') {
+        checkOTP = (
+          await this.authService.analizeMagicLink(this.password.value)
+        )?.session;
+      } else {
+        checkOTP = await this.authService.verify(
+          this.password.value,
+          this.userID
+        );
+      }
+
+      if (!checkOTP) {
+        this.toastr.error('Código inválido', null, { timeOut: 2000 });
+        this.status = 'ready';
+        return;
+      } else {
+        this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth === 'address') {
+          const address = this.headerService.getLocation(
+            this.route.snapshot.queryParamMap.get('saleflow')
+          );
+          const result = await this.usersService.addLocation(address);
+          if (result) {
+            this.router.navigate(
+              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              {
+                replaceUrl: true,
+              }
+            );
+          }
+          this.status = 'ready';
+          return;
+        }
+        if (this.auth === 'order') {
+          /* && !this.toValidate*/ this.router.navigate(
+            [`ecommerce/${this.saleflow._id}/new-address`],
+            {
+              replaceUrl: true,
+              state: {
+                loggedIn: true,
+              },
+            }
+          );
+          this.status = 'ready';
           return;
         }
         if (this.orderId && !this.toValidate) {
@@ -366,11 +499,10 @@ export class LoginComponent implements OnInit {
 
         if (this.itemId) {
           await this.createItem(checkOTP.user);
-
           return;
         }
 
-        if (this.toValidate) {
+        /* if (this.toValidate) {
           this.loggin = false;
           this.signUp = true;
           this.phoneNumber.disable();
@@ -382,12 +514,14 @@ export class LoginComponent implements OnInit {
               : '';
           }
           this.password.reset();
+          unlockUI();
           return;
-        }
+        } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
+        this.status = 'ready';
       }
     } else if (this.authCode) {
       const authCoded = await this.authService.verify(
@@ -397,38 +531,79 @@ export class LoginComponent implements OnInit {
 
       if (!authCoded) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
+        this.status = 'ready';
         return;
       } else {
-        this.toastr.info('Código válido', null, { timeOut: 2000 });
+        if (this.auth !== 'address' && this.auth !== 'order')
+          this.toastr.info('Código válido', null, { timeOut: 2000 });
         const session = await this.authService.signin(
           this.merchantNumber,
           this.sneaky,
           true
         );
-        if (!session) return console.log('Error logging in');
+        if (!session) {
+          //  console.log('Error logging in');
+          this.status = 'ready';
+          return;
+        }
+        if (this.auth === 'address') {
+          // Caso en el que el usuario se registra y guarda una direccion
+          const address = this.headerService.getLocation(
+            this.route.snapshot.queryParamMap.get('saleflow')
+          );
+          const result = await this.usersService.addLocation(address);
+          if (result) {
+            this.toastr.info(
+              'Código válido. La dirección ha sido guardada',
+              null,
+              {
+                timeOut: 3000,
+              }
+            );
+            this.router.navigate(
+              [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+              {
+                replaceUrl: true,
+              }
+            );
+          }
+          this.status = 'ready';
+          return;
+        }
         if (this.auth === 'order') {
-          this.router.navigate([`ecommerce/new-address`], {
+          // Caso en el que el usuario se registra y quiere ver sus direcciones
+          this.toastr.info(
+            'Código válido. Ahora puedes guardar tus direcciones',
+            null,
+            {
+              timeOut: 3000,
+            }
+          );
+          this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
             replaceUrl: true,
             state: {
               loggedIn: true,
             },
           });
+          this.status = 'ready';
           return;
         }
         if (this.orderId) {
           this.authOrder(session.user._id);
+          this.status = 'ready';
           return;
         }
 
         if (this.itemId) {
           await this.createItem(session.user);
-
+          this.status = 'ready';
           return;
         }
 
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
+        this.status = 'ready';
       }
     } else {
       const signin = await this.authService.signin(
@@ -438,19 +613,41 @@ export class LoginComponent implements OnInit {
       );
 
       if (!signin) {
-        this.toastr.error('Contraseña inválida o usuario no verificado', null, {
-          timeOut: 2500,
-        });
-        console.log('error');
+        this.OTP = true;
+        this.view = 'password';
+        this.status = 'ready';
+        this.signIn(true);
+        // this.toastr.error('Contraseña inválida o usuario no verificado', null, {
+        //   timeOut: 2500,
+        // });
+        //   console.log('error');
+        // this.status = 'ready';
+        return;
+      }
+      if (this.auth === 'address') {
+        const address = this.headerService.getLocation(
+          this.route.snapshot.queryParamMap.get('saleflow')
+        );
+        const result = await this.usersService.addLocation(address);
+        if (result) {
+          this.router.navigate(
+            [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+            {
+              replaceUrl: true,
+            }
+          );
+        }
+        this.status = 'ready';
         return;
       }
       if (this.auth === 'order') {
-        this.router.navigate([`ecommerce/new-address`], {
+        this.router.navigate([`ecommerce/${this.saleflow._id}/new-address`], {
           replaceUrl: true,
           state: {
             loggedIn: true,
           },
         });
+        this.status = 'ready';
         return;
       }
       if (this.orderId) {
@@ -466,6 +663,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate([`admin/entity-detail-metrics`], {
         replaceUrl: true,
       });
+      this.status = 'ready';
     }
   }
 
@@ -510,10 +708,10 @@ export class LoginComponent implements OnInit {
         console.log('Algo salio mal');
         return;
       } else {
+        this.nope = true;
+        await this.generateTOP(true);
         console.log('Creando nuevo user');
         this.sneaky = this.password.value;
-
-        await this.generateTOP(true);
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
@@ -528,8 +726,12 @@ export class LoginComponent implements OnInit {
           null,
           {
             timeOut: 5000,
-            disableTimeOut: 'extendedTimeOut',
           }
+        );
+
+        localStorage.setItem(
+          'phone-number',
+          JSON.stringify(this.phoneNumber.value)
         );
       }
     } else if (valid && valid.validatedAt === null) {
@@ -554,6 +756,7 @@ export class LoginComponent implements OnInit {
       });
     } else {
       if (this.toValidate) {
+        // Creo que este caso no se está usando
         const validateUser = await this.authService.updateMe({
           password: this.password.value,
           name: this.firstName.value,
@@ -572,13 +775,31 @@ export class LoginComponent implements OnInit {
           this.toastr.info('¡Usuario actualizado exitosamente!', null, {
             timeOut: 2000,
           });
+          if (this.auth === 'address') {
+            const address = this.headerService.getLocation(
+              this.route.snapshot.queryParamMap.get('saleflow')
+            );
+            const result = await this.usersService.addLocation(address);
+            if (result) {
+              this.router.navigate(
+                [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+                {
+                  replaceUrl: true,
+                }
+              );
+            }
+            return;
+          }
           if (this.auth === 'order') {
-            this.router.navigate([`ecommerce/new-address`], {
-              replaceUrl: true,
-              state: {
-                loggedIn: true,
-              },
-            });
+            this.router.navigate(
+              [`ecommerce/${this.saleflow._id}/new-address`],
+              {
+                replaceUrl: true,
+                state: {
+                  loggedIn: true,
+                },
+              }
+            );
           } else {
             this.router.navigate([`admin/entity-detail-metrics`], {
               replaceUrl: true,
@@ -728,24 +949,25 @@ export class LoginComponent implements OnInit {
   }
 
   async authOrder(id: string) {
-    const { orderStatus } = await this.orderService.getOrderStatus(
-      this.orderId
-    );
-    if (orderStatus === 'draft') {
-      await this.orderService.authOrder(this.orderId, id);
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow?._id);
-      this.headerService.resetIsComplete();
+    if (this.orderStatus !== 'draft') return;
+    const order = (await this.orderService.authOrder(this.orderId, id))
+      .authOrder;
+    localStorage.removeItem('registered-user');
+    if (this.auth === 'payment') {
+      await this.orderService.payOrder(
+        {
+          image: this.image,
+          platform: 'bank-transfer',
+          transactionCode: '',
+        },
+        order.user._id,
+        'bank-transfer',
+        order._id
+      );
     }
-    if (this.hasPayment)
-      this.router.navigate([`/ecommerce/payments/${this.orderId}`], {
-        replaceUrl: true,
-      });
-    else {
-      this.router.navigate([this.fullLink], {
-        replaceUrl: true,
-      });
-      window.location.href = this.messageLink;
-    }
+    this.router.navigate([`ecommerce/order-info/${order._id}`], {
+      queryParams: { notify: 'true' },
+    });
   }
 
   showShoppingCartDialog = () => {
@@ -762,5 +984,46 @@ export class LoginComponent implements OnInit {
 
   back() {
     this.location.back();
+  }
+
+  async getNumber() {
+    let phoneNumberInfo: any = JSON.parse(localStorage.getItem('phone-number'));
+
+    let number = null;
+
+    if (phoneNumberInfo && 'e164Number' in phoneNumberInfo) {
+      phoneNumberInfo.e164Number.split('+')[1];
+
+      number = phoneNumberInfo.e164Number.split('+')[1];
+
+      for (const countryAlias of Object.keys(CountryISO)) {
+        if (
+          CountryISO[countryAlias].toLowerCase() ===
+          phoneNumberInfo.countryCode.toLowerCase()
+        ) {
+          this.CountryISO = CountryISO[countryAlias];
+          this.preferredCountries = [
+            CountryISO.DominicanRepublic,
+            CountryISO.UnitedStates,
+          ];
+          this.preferredCountries.unshift(CountryISO[countryAlias]);
+        }
+      }
+    }
+    //  console.log(number);
+    if (number !== null) {
+      this.merchantNumber = number.split('+')[1];
+      try {
+        const phoneNumber = await this.authService.checkUser(number);
+        if (phoneNumber) {
+          const { countryIso, nationalNumber } =
+            await this.authService.getPhoneInformation(number);
+          this.phoneNumber.setValue(nationalNumber);
+          this.CountryISO = countryIso;
+        } else return;
+      } catch (e) {
+        console.log(e);
+      }
+    } else this.merchantNumber = '';
   }
 }

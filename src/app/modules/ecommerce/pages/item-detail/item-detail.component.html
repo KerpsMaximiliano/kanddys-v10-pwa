@@ -49,7 +49,7 @@
             <div
               (click)="openImageModal(item)"
               class="item"
-              [ngStyle]="{ 'background-image': 'url(' + item + ')' }"
+              [ngStyle]="{ 'background-image': 'url(' + item + '), url(/assets/images/noimage.png)' }"
             ></div>
             <div class="blank-space"></div>
           </div>
@@ -71,7 +71,7 @@
                   item.params[selectedParam?.param]?.values[
                     selectedParam?.value
                   ]?.image +
-                  ')'
+                  '), url(/assets/images/noimage.png)'
               }"
             ></div>
             <div class="blank-space"></div>
@@ -133,6 +133,7 @@
             [showPrice]="true"
             [responsiveWidthVersion]="true"
             (itemClicked)="selectParamValue(i, j)"
+            [shouldHaveFallbackImage]="true"
           ></app-saleflow-item>
         </ng-container>
       </div>

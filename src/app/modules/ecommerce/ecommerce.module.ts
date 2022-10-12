@@ -70,7 +70,7 @@ const routes: Routes = [
         component: OrderDetailComponent,
       },
       {
-        path: 'new-address',
+        path: ':saleflowId/new-address',
         component: NewAddressComponent,
       },
       {
@@ -82,7 +82,7 @@ const routes: Routes = [
         component: ItemDetailComponent,
       },
       {
-        path: 'create-giftcard',
+        path: ':saleflowId/create-giftcard',
         component: CreateGiftcardComponent,
       },
 
@@ -100,7 +100,7 @@ const routes: Routes = [
         component: OrderDetailComponent,
       },
       {
-        path: 'checkout',
+        path: ':saleflowId/checkout',
         component: CheckoutComponent,
       },
       {

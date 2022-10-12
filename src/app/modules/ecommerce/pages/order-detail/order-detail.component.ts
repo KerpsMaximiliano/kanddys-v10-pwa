@@ -20,6 +20,7 @@ import { environment } from 'src/environments/environment';
 })
 export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
+  notify: boolean;
   customizerDetails: { name: string; value: string }[] = [];
   customizer: CustomizerValue;
   order: ItemOrder;
@@ -33,6 +34,7 @@ export class OrderDetailComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  messageLink: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +53,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const notification = this.route.snapshot.queryParamMap.get('notify');
     const id = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(id))?.order;
     if (!this.order) {
@@ -63,7 +66,23 @@ export class OrderDetailComponent implements OnInit {
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
-    this.orderDate = new Date(this.order.createdAt).toLocaleString();
+    const temporalDate = new Date(this.order.createdAt);
+    const day = temporalDate.getDate();
+    const dayString = String(day).length < 2 ? '0' + day : day;
+    const month = temporalDate.getMonth() + 1;
+    const monthString = String(month).length < 2 ? '0' + month : month;
+    const year = temporalDate.getFullYear();
+    const yearString = String(year).length < 2 ? '0' + year : year;
+    const hour = temporalDate.getHours();
+    const hourString = String(hour).length < 2 ? '0' + hour : hour;
+    const timeOfDay = hour < 12 ? 'AM' : 'PM';
+    const minutes = temporalDate.getMinutes();
+    const minutesString = String(minutes).length < 2 ? '0' + minutes : minutes;
+    const seconds = temporalDate.getSeconds();
+    const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
+
+    this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
+
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
@@ -180,6 +199,110 @@ export class OrderDetailComponent implements OnInit {
         )}`,
       };
     }
+    if (notification == 'true') {
+      let address = '';
+      const location = this.order.items[0].deliveryLocation;
+      if (location.street) {
+        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
+        address += location.street + ', ';
+        if (location.referencePoint) address += location.referencePoint + ', ';
+        address += location.city + ', República Dominicana';
+        if (location.note) address += ` (${location.note})`;
+      } else {
+        address = location.nickName;
+      }
+
+      let giftMessage = '';
+      if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
+      if (this.post?.targets?.[0]?.name)
+        giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
+      if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
+
+      let customizerMessage = '';
+      if (this.order.items[0].customizer) {
+        const customizer = await this.customizerValueService.getCustomizerValue(
+          this.order.items[0].customizer._id
+        );
+        const printType = this.order.items[0].item.params[0].values.find(
+          (value) => value._id === this.order.items[0].params[0].paramValue
+        )?.name;
+        if (printType)
+          customizerMessage += 'Tipo de impresión: ' + printType + '\n';
+
+        const selectedQuality = this.order.items[0].item.params[1].values.find(
+          (value) => value._id === this.order.items[0].params[1].paramValue
+        )?.name;
+        if (selectedQuality)
+          customizerMessage +=
+            'Calidad de servilleta: ' + selectedQuality + '\n';
+
+        const backgroundColor = customizer.backgroundColor.color.name;
+        if (backgroundColor)
+          customizerMessage += 'Color de fondo: ' + backgroundColor + '\n';
+
+        if (customizer.texts.length) {
+          customizerMessage +=
+            'Texto: ' +
+            customizer.texts.reduce((prev, curr) => prev + curr.text, '') +
+            '\n';
+
+          let selectedTypography = customizer.texts[0].font;
+          switch (selectedTypography) {
+            case 'Dorsa':
+              selectedTypography = 'Empire';
+              break;
+            case 'Commercial-Script':
+              selectedTypography = 'Classic';
+              break;
+          }
+          customizerMessage +=
+            'Nombre de tipografía: ' + selectedTypography + '\n';
+
+          const typographyColorCode = customizer.texts[0].color.name;
+          const typographyColorName = customizer.texts[0].color.nickname;
+          customizerMessage +=
+            'Color de tipografía: ' + typographyColorName + '\n';
+          customizerMessage +=
+            'Código de color de tipografía: ' + typographyColorCode + '\n';
+        }
+
+        if (customizer.stickers.length) {
+          const stickerColorCode = customizer.stickers[0].svgOptions.color.name;
+          const stickerColorName =
+            customizer.stickers[0].svgOptions.color.nickname;
+          customizerMessage += 'Color de sticker: ' + stickerColorName + '\n';
+          customizerMessage +=
+            'Código de color de sticker: ' + stickerColorCode;
+        }
+      }
+
+      const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+      const message = `🐝\n\n*FACTURA ${formatID(
+        this.order.dateId
+      )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
+        'es-MX'
+      )}: ${fullLink}*\n\nComprador: ${
+        this.order.user?.name ||
+        this.order.user?.phone ||
+        this.order.user?.email ||
+        'Anónimo'
+      }\n\nDirección: ${address}${
+        giftMessage
+          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
+          : ''
+      }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
+      this.messageLink = `https://api.whatsapp.com/send?phone=${
+        this.order.items[0].saleflow.merchant.owner.phone
+      }&text=${encodeURIComponent(message)}`;
+      this.notify = true;
+    }
+  }
+
+  notificationClicked() {
+    this.notify = false;
+    this.router.navigate([], {
+      relativeTo: this.route,
+    });
   }
 
   openImageModal(imageSourceURL: string) {
@@ -211,6 +334,11 @@ export class OrderDetailComponent implements OnInit {
       `/others/user-contact-landing/${this.order.user._id}`,
     ]);
   };
+
+  goToStore() {
+    let link = this.order.items[0].saleflow._id;
+    this.router.navigate([`ecommerce/store/${link}`]);
+  }
 
   mouseDown: boolean;
   startX: number;

@@ -100,10 +100,7 @@ export class StoreShareComponent implements OnInit {
     // this.onResize(); /* actualiza dinamicamente el tamaño del qr */
   }
 
-  ngOnInit(): void {
-    if (!this.list || !this.list.length)
-      throw new Error('Ingresa opciones para mostrar');
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
     console.log(changes);

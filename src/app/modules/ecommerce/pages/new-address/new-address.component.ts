@@ -1,13 +1,20 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
+import {
+  DeliveryLocation,
+  DeliveryLocationInput,
+  SaleFlow,
+} from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { HeaderService } from 'src/app/core/services/header.service';
+import {
+  HeaderService,
+  SaleflowData,
+} from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -27,6 +34,7 @@ export class NewAddressComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private dialogService: DialogService,
     private headerService: HeaderService,
     private authService: AuthService,
@@ -44,16 +52,25 @@ export class NewAddressComponent implements OnInit {
         Validators.required,
         Validators.pattern(/[\S]/),
       ]),
-      houseNumber: fb.control(null, Validators.pattern(/[\S]/)),
+      houseNumber: fb.control(null, [
+        Validators.pattern(/[\S]/),
+        Validators.min(1),
+      ]),
       referencePoint: fb.control(null, Validators.pattern(/[\S]/)),
       note: fb.control(null, Validators.pattern(/[\S]/)),
+      save: fb.control(false),
     });
     this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
+    this.registered = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as User;
   }
-  mode: 'normal' | 'add' | 'delete' | 'edit' | 'auth' = 'auth';
+  mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
   editingId: string;
   loggedIn: boolean;
+  registered: User;
   disableButton: boolean;
+  user: User;
   env = environment.assetsUrl;
   addresses: DeliveryLocation[] = [];
   addressesOptions: OptionAnswerSelector[] = [];
@@ -61,8 +78,8 @@ export class NewAddressComponent implements OnInit {
   authOptions: OptionAnswerSelector[] = [
     {
       status: true,
-      id: 'continue',
-      value: 'Continuar de forma anónima',
+      id: 'withUser',
+      value: 'Selecciona entre mis direcciones guardadas',
       valueStyles: {
         fontFamily: 'SfProBold',
         fontSize: '0.875rem',
@@ -70,26 +87,7 @@ export class NewAddressComponent implements OnInit {
       },
       subtexts: [
         {
-          text: 'Escribes y re-escribes datos como las direcciones, formas de pagos etc.. ',
-          styles: {
-            fontFamily: 'SfProRegular',
-            fontSize: '1rem',
-          },
-        },
-      ],
-    },
-    {
-      status: true,
-      id: 'toLogin',
-      value: 'Login o crea tu nueva cuenta',
-      valueStyles: {
-        fontFamily: 'SfProBold',
-        fontSize: '0.875rem',
-        color: '#000000',
-      },
-      subtexts: [
-        {
-          text: 'Ganas puntos. No re-escribes direcciones. Es simple (muy simple).',
+          text: 'Ver direcciones que he guardado y seleccionar entre ellas',
           styles: {
             fontFamily: 'SfProRegular',
             fontSize: '1rem',
@@ -100,43 +98,39 @@ export class NewAddressComponent implements OnInit {
   ];
   saleflow: SaleFlow;
   selectedDeliveryIndex: number;
-  selectedAuthIndex: number;
-  user: User;
+  // selectedAuthIndex: number;
+  magicLinkLocation: DeliveryLocationInput;
 
   async ngOnInit(): Promise<void> {
-    this.saleflow = this.headerService.getSaleflow();
+    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+    const magicLinkData = this.route.snapshot.queryParamMap.get('data');
+    if (magicLinkData) {
+      const orderData = JSON.parse(
+        decodeURIComponent(magicLinkData)
+      ) as SaleflowData;
+      if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
+        localStorage.setItem(saleflowId, JSON.stringify(orderData));
+        this.magicLinkLocation = orderData.deliveryLocation;
+        this.router.navigate([], {
+          relativeTo: this.route,
+        });
+      }
+    }
+    this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
+    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
+    if (!this.headerService.order) {
+      this.router.navigate([
+        `/ecommerce/store/${this.headerService.saleflow._id}`,
+      ]);
+    }
     if (this.loggedIn) this.checkAddresses();
     this.user = await this.authService.me();
-    if (this.user) {
-      this.authOptions.push({
-        status: true,
-        id: 'withUser',
-        value: this.user.name
-          ? `Continuar como ${this.user.name}`
-          : 'Continuar con la sesión actual',
-        valueStyles: {
-          fontFamily: 'SfProBold',
-          fontSize: '0.875rem',
-          color: '#000000',
-        },
-        subtexts: [
-          {
-            text: 'Sigues ganando Kanddys. Seleccionas entre tus direcciones sin re-escribirlas',
-            styles: {
-              fontFamily: 'SfProRegular',
-              fontSize: '1rem',
-            },
-          },
-        ],
-      });
-    }
-    this.headerService.order = this.headerService.getOrder(this.saleflow._id);
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
       this.addressesOptions.push({
         status: true,
         id: pickup._id,
-        value: 'Pick up. Lo pasaré a recoger',
+        value: 'Pick Up. Pasaré a recoger',
         valueStyles: {
           fontFamily: 'SfProBold',
           fontSize: '0.875rem',
@@ -157,7 +151,7 @@ export class NewAddressComponent implements OnInit {
     if (!this.saleflow.module?.delivery?.deliveryLocation) return;
     this.newAddressOption.push({
       status: true,
-      value: 'Agregar nueva dirección',
+      value: 'Adiciona una nueva dirección',
       valueStyles: {
         fontFamily: 'SfProBold',
         fontSize: '0.875rem',
@@ -190,6 +184,11 @@ export class NewAddressComponent implements OnInit {
           ],
         });
       });
+    }
+    if (this.magicLinkLocation) {
+      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
+      this.mode = 'add';
+      this.formSubmit();
     }
   }
 
@@ -231,6 +230,8 @@ export class NewAddressComponent implements OnInit {
                     },
                   },
                 ];
+              } else {
+                option.hidden = true;
               }
             });
           },
@@ -254,6 +255,8 @@ export class NewAddressComponent implements OnInit {
                     },
                   },
                 ];
+              } else {
+                option.hidden = true;
               }
             });
           },
@@ -281,9 +284,10 @@ export class NewAddressComponent implements OnInit {
     )
       this.selectedDeliveryIndex = null;
     this.addresses = this.addresses.filter((address) => address._id !== id);
+    if (this.addressesOptions.length === 1) this.goBack();
   }
 
-  selectAddress() {
+  selectAddress(save?: boolean) {
     const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
     this.headerService.order.products.forEach((product) => {
       product.deliveryLocation = addressInput;
@@ -296,43 +300,36 @@ export class NewAddressComponent implements OnInit {
     this.headerService.storeOrderProgress(
       this.headerService.saleflow?._id || this.headerService.getSaleflow()?._id
     );
-    this.router.navigate(['ecommerce/checkout']);
-  }
-
-  authSelect(index: Number) {
-    switch (index) {
-      case 0:
-        if (this.user || this.headerService.user) {
-          this.authService.signoutThree();
-          this.addressesOptions.length = 1;
-          // this.newAddressOption = null;
-          this.user = null;
-        }
-        this.headerService.storeOrderAnonymous(this.saleflow._id);
-        this.checkAddresses(true);
-        break;
-
-      case 1:
-        this.headerService.deleteOrderAnonymous(this.saleflow._id);
-        this.router.navigate([`auth/login`], {
-          queryParams: { auth: 'order', saleflow: this.saleflow._id },
-        });
-        break;
-
-      case 2:
-        this.headerService.deleteOrderAnonymous(this.saleflow._id);
-        this.checkAddresses();
-        break;
+    if (save && !this.headerService.user) {
+      this.authSelect('address');
+      return;
     }
+    this.router.navigate(
+      [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+      {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+      }
+    );
   }
 
-  checkAddresses(isAnon?: boolean) {
+  authSelect(auth: 'order' | 'address') {
+    this.router.navigate([`auth/login`], {
+      queryParams: { auth, saleflow: this.saleflow._id },
+    });
+  }
+
+  checkAddresses() {
     if (!this.headerService.saleflow.module?.delivery?.isActive) {
-      this.toastr.info('Este Saleflow no contiene delivery o pick-up.', null, {
+      this.toastr.info('Esta tienda no contiene delivery o pick-up.', null, {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+        }
+      );
       return;
     }
     if (
@@ -345,7 +342,7 @@ export class NewAddressComponent implements OnInit {
     if (
       this.headerService.saleflow.module.delivery.pickUpLocations.length ===
         1 &&
-      (!this.headerService.saleflow.module.delivery.deliveryLocation || isAnon)
+      !this.headerService.saleflow.module.delivery.deliveryLocation
     ) {
       const { _id, ...addressInput } =
         this.headerService.saleflow.module.delivery.pickUpLocations[0];
@@ -363,15 +360,18 @@ export class NewAddressComponent implements OnInit {
       );
       this.toastr.info(
         'Se ha seleccionado la única opción para pick-up',
-        !this.headerService.saleflow.module.delivery.deliveryLocation
-          ? 'Este Saleflow no contiene delivery'
-          : 'Has decidido hacer la orden de forma anónima',
+        'Esta tienda no contiene delivery',
         {
           timeOut: 5000,
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate(['ecommerce/checkout']);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+        }
+      );
     }
   }
 
@@ -390,11 +390,13 @@ export class NewAddressComponent implements OnInit {
       note: this.addressForm.value.note?.trim(),
       city: 'Santo Domingo',
     };
-    if (this.user) {
+    if (
+      this.headerService.user &&
+      (this.addressForm.value.save || this.mode === 'edit')
+    ) {
       result = await this.usersService.addLocation(newAddress);
     } else result = newAddress;
-    if (!result) return;
-    const newAddressOption = {
+    const addedAddressOption = {
       status: true,
       id: result._id,
       click: true,
@@ -422,12 +424,12 @@ export class NewAddressComponent implements OnInit {
         (option) => option.id === this.editingId
       );
       this.addresses[addressIndex] = result;
-      this.addressesOptions[optionIndex] = newAddressOption;
+      this.addressesOptions[optionIndex] = addedAddressOption;
     } else {
       this.addresses.push(result);
-      this.addressesOptions.push(newAddressOption);
+      this.addressesOptions.push(addedAddressOption);
       this.selectedDeliveryIndex = this.addresses.length - 1;
-      this.selectAddress();
+      this.selectAddress(this.addressForm.value.save);
     }
     this.disableButton = false;
     unlockUI();
@@ -435,12 +437,19 @@ export class NewAddressComponent implements OnInit {
   }
 
   goBack() {
-    if (this.mode === 'auth') return this.location.back();
-    if (this.mode === 'normal') return (this.mode = 'auth');
+    if (this.mode === 'normal')
+      return this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
+      ]);
     this.mode = 'normal';
     this.editingId = null;
-    this.addressForm.reset();
-    this.addressesOptions.forEach((option) => (option.icons = null));
+    this.addressForm.reset({
+      nickName: this.addressForm.get('nickName').value
+    });
+    this.addressesOptions.forEach((option) => {
+      option.icons = null;
+      option.hidden = false;
+    });
   }
 
   openDeleteDialog(id: string) {
