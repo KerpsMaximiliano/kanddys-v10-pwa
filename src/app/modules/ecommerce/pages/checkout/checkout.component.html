@@ -1,6 +1,6 @@
 <div class="container">
   <app-helper-headerv2
-    *ngIf="logged || !headerService.user"
+    *ngIf="!logged && !headerService.user"
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
@@ -12,16 +12,12 @@
     }"
   ></app-helper-headerv2>
 
-  <header class="header" *ngIf="!logged && headerService.user">
+  <header class="header" *ngIf="logged || headerService.user">
     <a> <i class="fas fa-chevron-left" (click)="back()"></i></a>
 
     <div class="right-area">
       <span class="header-text">{{
-        headerService.user?.name
-          ? headerService.user?.name
-          : headerService.user?.phone
-          ? headerService.user?.phone
-          : headerService.user?.email
+        currentUser?.name || currentUser?.phone || currentUser?.email
       }}</span>
       <img [src]="env + '/person.svg'" alt="Icono de una persona" />
     </div>
@@ -220,7 +216,6 @@
     </section>
   </main>
 
-
   <app-sticky-button
     [mode]="!disableButton ? 'double' : 'disabled-fixed'"
     [extra]="{
@@ -238,7 +233,7 @@
       'border-left': '1px solid #FFFFFF',
       backgroundColor: '#2874ad',
       color: '#FFFFFF',
-      cursor: 'unset'
+      cursor: 'pointer'
     }"
     [customRightButtonStyles]="{
       width: '1px',

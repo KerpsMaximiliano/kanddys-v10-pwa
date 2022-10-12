@@ -69,6 +69,7 @@
             [customPlaceholder]="'(000) 000-0000'"
             [numberFormat]="PhoneNumberFormat.International"
             [formControl]="phoneNumber"
+            
             tabindex="1"
           ></ngx-intl-tel-input>
 
@@ -107,7 +108,7 @@
           style="margin: 0 8% 11px"
         >
           {{
-            OTP || authCode
+            (OTP || authCode) && view !== "password"
               ? "Se ha enviado un codigo de verificación a su número, introduzcalo"
               : "Este WhatsApp fue previamente registrado, por favor adiciona la clave"
           }}
@@ -150,13 +151,25 @@
           <i class="fas fa-chevron-right"></i>
         </button>
 
-        <p class="subtext" style="margin: 16px 8%">
-          {{
+        <div
+          class="subtext-options"
+          style="margin: 48px 8%"
+          *ngIf="auth === 'order' || auth === 'address'"
+        >
+          <!-- {{
             OTP || authCode
             ? "Se le ha enviado un código"
             : "Si no lo has cambiado por default son los últimos 4 dígitos de tu celular o los últimos 4 antes del @ de tu email"
-         }}
-        </p>
+         }} -->
+          <p style="margin: 0; margin-bottom: 8px">Opciones:</p>
+          <ul>
+            <li>
+              - Presiona el “link de nuevas ordenes” o escribe la clave
+              provisional que acabas de recibir por WhatsApp de parte de 
+              Kanddys +1 (929) 526-3397.
+            </li>
+          </ul>
+        </div>
 
         <!--  <div class="checkbox">
           <input type="checkbox" class="check-box" (click)="generateTOP()" />

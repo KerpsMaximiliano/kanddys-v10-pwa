@@ -24,8 +24,9 @@ import {
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
-import { User } from '../models/user';
+import { User, UserInput } from '../models/user';
 import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
+import { environment } from 'src/environments/environment';
 // import { Logs } from 'selenium-webdriver';
 
 @Injectable({
@@ -134,7 +135,7 @@ export class AuthService {
   }
 
   public async signup(
-    input: any,
+    input: UserInput,
     notificationMethod?: string,
     code?: string,
     assignPassword?: boolean,
@@ -309,6 +310,7 @@ export class AuthService {
           entity,
           redirectionRouteQueryParams,
           attachments,
+          clientURL: environment.uri,
         },
         context: { useMultipart: true },
       });
@@ -329,7 +331,10 @@ export class AuthService {
 
       this.ready = from(promise);
 
-      const response = await promise;
+      const response = (await promise)?.analizeMagicLink;
+      localStorage.removeItem('session-token');
+      this.session = new Session(response?.session, true);
+      this.app.events.emit({ type: 'auth', data: this.session });
       return response;
     } catch (e) {}
   }

@@ -1,16 +1,16 @@
 <div class="container">
   <header class="header">
-   <h1 class="method">Métodos de Pagos</h1>
+    <h1 class="method">Métodos de Pagos</h1>
 
     <div class="right-area">
-      <span class="header-text" *ngIf="order.user">{{
-        order.user?.name
-          ? order.user?.name
-          : order.user?.phone
-          ? order.user?.phone
-          : order.user?.email
+      <span class="header-text" *ngIf="order">{{
+        currentUser?.name || currentUser?.phone || currentUser?.email
       }}</span>
-      <img [src]="env + '/person.svg'" alt="Icono de una persona" *ngIf="order.user"/>
+      <img
+        [src]="env + '/person.svg'"
+        alt="Icono de una persona"
+        *ngIf="order?.user"
+      />
     </div>
   </header>
 
@@ -27,9 +27,7 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection">
-      Selecciona el que te convenga:
-    </span>
+    <span class="payment-selection"> Selecciona el que te convenga: </span>
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{

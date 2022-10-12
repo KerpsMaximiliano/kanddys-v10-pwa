@@ -33,7 +33,7 @@ class OrderProgress {
   delivery: boolean;
 }
 
-class SaleflowData {
+export class SaleflowData {
   order: ItemOrderInput;
   itemData: any[];
   post: {

@@ -5,13 +5,12 @@ import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
-import { Item } from 'src/app/core/models/item';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
-import { SaleFlow } from 'src/app/core/models/saleflow';
+import { User, UserInput } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -37,6 +36,7 @@ export class CheckoutComponent implements OnInit {
   payment: number;
   hasPaymentModule: boolean;
   disableButton: boolean;
+  currentUser: User;
   date: {
     month: string;
     day: number;
@@ -51,11 +51,11 @@ export class CheckoutComponent implements OnInit {
     private customizerValueService: CustomizerValueService,
     private postsService: PostsService,
     private orderService: OrderService,
-    private merchantService: MerchantsService,
     private appService: AppService,
     private location: Location,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   async setCustomizerPreview() {
@@ -236,7 +236,7 @@ export class CheckoutComponent implements OnInit {
 
   back = () => {
     this.location.back();
-  }
+  };
 
   openImageModal(imageSourceURL: string) {
     this.dialogService.open(ImageViewComponent, {
@@ -261,6 +261,21 @@ export class CheckoutComponent implements OnInit {
   newCreatePreOrder = async () => {
     this.disableButton = true;
     lockUI();
+    const userInput = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as UserInput;
+    if (!this.headerService.user && userInput) {
+      const user = await this.authService.signup(
+        {
+          ...userInput,
+          deliveryLocations: [this.order.products[0].deliveryLocation],
+        },
+        'none',
+        null,
+        false
+      );
+      localStorage.setItem('registered-user', JSON.stringify(user));
+    }
     this.order.products.forEach((product) => {
       delete product.isScenario;
       delete product.limitScenario;
@@ -393,7 +408,11 @@ export class CheckoutComponent implements OnInit {
       const anonymous = await this.headerService.getOrderAnonymous(
         this.headerService.saleflow._id
       );
-      if (this.headerService.user && !anonymous) {
+      const registeredUser = JSON.parse(
+        localStorage.getItem('registered-user')
+      ) as User;
+      if ((this.headerService.user || registeredUser) && !anonymous) {
+        this.currentUser = this.headerService.user || registeredUser;
         this.logged = true;
       } else this.logged = false;
     } catch (e) {

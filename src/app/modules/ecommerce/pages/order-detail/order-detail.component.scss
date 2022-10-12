@@ -126,17 +126,17 @@ a {
       }
 
       .info-display {
+        width: 80%;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: center;
         margin-top: 10px;
-        width: 50%;
 
-        .info {
+        .info{
           font-family: "RobotoRegular";
           font-size: 0.813rem;
           color: #7b7b7b;
-          text-transform: uppercase;
+          margin-left: 5%;
         }
       }
     }
