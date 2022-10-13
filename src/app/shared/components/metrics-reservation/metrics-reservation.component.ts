@@ -134,12 +134,6 @@ export class MetricsReservationComponent implements OnInit {
           reservationObject.noLimitsMode = true;
         }
 
-        console.log(
-          reservationObject,
-          'obj',
-          reservationSpacesAvailableQueryResult
-        );
-
         this.reservations.push(reservationObject);
       }
       this.status = 'complete';

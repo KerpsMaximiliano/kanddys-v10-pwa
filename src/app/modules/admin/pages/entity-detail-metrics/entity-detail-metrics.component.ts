@@ -69,18 +69,23 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     lockUI();
-    this.merchant = this.headerService.myMerchants[0];
-    await Promise.all([
-      this.getItemsByMerchant(),
-      this.getOrderTotal(),
-      this.getMerchantBuyers(),
-      // this.getTags(),
-      // this.getCategories(),
-      this.getWebformsData(),
-      this.setMerchant()
-      // this.getCalendars(),
-    ]);
-    unlockUI();
+    this.headerService.loadedMerchants.subscribe(async (loaded) => {
+      if (loaded) {
+        this.merchant = this.headerService.myMerchants[0];
+        await Promise.all([
+          this.getItemsByMerchant(),
+          this.getOrderTotal(),
+          this.getMerchantBuyers(),
+          // this.getTags(),
+          // this.getCategories(),
+          this.getWebformsData(),
+          this.setMerchant(),
+          // this.getCalendars(),
+        ]);
+      }
+
+      unlockUI();
+    });
   }
 
   async setMerchant() {
@@ -161,7 +166,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getMerchantBuyers() {
     try {
       this.users = await this.merchantsService.usersOrderMerchant(
-         this.merchant._id
+        this.merchant._id
       );
     } catch (error) {
       console.log(error);
@@ -171,7 +176,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getWebformsData() {
     try {
       this.webforms = await this.webformsService.webformsByMerchant(
-         this.merchant._id
+        this.merchant._id
       );
       console.log(this.webforms);
 
@@ -244,8 +249,8 @@ export class EntityDetailMetricsComponent implements OnInit {
       },
       {
         text: 'Cerrar Sesión',
-        styles:{
-         'color': '#ad2828'
+        styles: {
+          color: '#ad2828',
         },
         asyncCallback: () => {
           return new Promise((resolve) => {
@@ -261,7 +266,9 @@ export class EntityDetailMetricsComponent implements OnInit {
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: this.merchant ? 'Sobre ' + this.merchant.name : 'Sobre Tienda anonima',
+        title: this.merchant
+          ? 'Sobre ' + this.merchant.name
+          : 'Sobre Tienda anonima',
         optionsList: list,
         //qrCode: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
         cancelButton: {
@@ -299,7 +306,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   };
 
   onShareItemsClick = () => {
-    const list = [        
+    const list = [
       {
         text: 'Crea un nuevo artículo',
         callback: () => {
@@ -310,9 +317,9 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: () => {
-         const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
-         this.clipboard.copy(link);
-        }
+          const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
+          this.clipboard.copy(link);
+        },
       },
     ];
 
@@ -322,8 +329,8 @@ export class EntityDetailMetricsComponent implements OnInit {
         title: 'Sobre los articulos',
         optionsList: list,
         cancelButton: {
-         text: 'Cerrar'
-        }
+          text: 'Cerrar',
+        },
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
