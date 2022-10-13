@@ -1252,10 +1252,6 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
         Number(minutesBetweenReservations);
       this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `${realDuration} min + ${minutesBetweenReservations} min de receso`;
     } else {
-      this.reservationParamsStepOptions[0].texts.middleTexts[0].text = `
-        Especifica los dias y el rango de tiempo en el cuál se podrá hacer reservaciones
-      `;
-
       this.reservationParamsStepOptions[1].texts.middleTexts[0].text = `
         Especifica los minutos que durará cada reserva y el tiempo entre cada una de ellas
       `;

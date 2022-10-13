@@ -5,12 +5,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import {
   CountryISO,
-  PhoneNumberFormat, SearchCountryField
+  PhoneNumberFormat,
+  SearchCountryField,
 } from 'ngx-intl-tel-input';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CalendarsService, ExtendedCalendar } from 'src/app/core/services/calendars.service';
+import {
+  CalendarsService,
+  ExtendedCalendar,
+} from 'src/app/core/services/calendars.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
@@ -89,6 +93,7 @@ export class ReservationsCreatorComponent implements OnInit {
   clientEmail: string = null;
   reservation: Reservation;
   useDateRangeToLimitAvailableWeekDays: boolean = false;
+  activeReservationIndex: number = null;
 
   allMonths: {
     id: number;
@@ -214,7 +219,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     const currentDateObject = new Date();
     const utcOffset = new Date().getTimezoneOffset() / 60; //Quitar este offset luego
-    const currentHour = currentDateObject.getHours() - utcOffset; //aqui tambien
+    const currentHour = currentDateObject.getHours(); //aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
 
@@ -597,6 +602,8 @@ export class ReservationsCreatorComponent implements OnInit {
       monthNumber: selectedDateObject.getMonth() + 1,
     };
 
+    this.timeRangeOptions = [];
+    this.activeReservationIndex = null;
     this.generateHourList(dayOfTheMonthNumber);
   }
 
@@ -620,6 +627,7 @@ export class ReservationsCreatorComponent implements OnInit {
       this.listOfHourRangesForSelectedDay[dateOptionIndex].toLabel;
 
     this.selectedDate.filled = true;
+    this.activeReservationIndex = dateOptionIndex;
   }
 
   /**

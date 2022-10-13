@@ -94,7 +94,10 @@ export class TimeBlockComponent implements OnInit {
     });
 
     this.controller.controls.start.valueChanges.subscribe((change) => {
-      if ((change && change.length > 2 || Number(change) > 12) && this.prevStart) {
+      if (
+        ((change && change.length > 2) || Number(change) > 12) &&
+        this.prevStart
+      ) {
         this.controller.controls.start.patchValue(this.prevStart, {
           emitEvent: false,
         });
@@ -104,7 +107,10 @@ export class TimeBlockComponent implements OnInit {
     });
 
     this.controller.controls.end.valueChanges.subscribe((change) => {
-      if ((change && change.length > 2 || Number(change) > 12) && this.prevEnd) {
+      if (
+        ((change && change.length > 2) || Number(change) > 12) &&
+        this.prevEnd
+      ) {
         this.controller.controls.end.patchValue(this.prevEnd, {
           emitEvent: false,
         });
@@ -198,13 +204,13 @@ export class TimeBlockComponent implements OnInit {
         currentDateObject.getFullYear(),
         this.month.number - 1,
         dayNumber,
-        start.value
+        startPeriod.value === 'PM' ? start.value + 12 : start.value
       );
       const untilDateObject = new Date(
         currentDateObject.getFullYear(),
         this.month.number - 1,
         dayNumber,
-        end.value + 12
+        endPeriod.value === 'PM' ? end.value + 12 : end.value
       );
 
       exceptions.push({
