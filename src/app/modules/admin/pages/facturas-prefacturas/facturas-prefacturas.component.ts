@@ -32,7 +32,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
     fontFamily: 'SfPro',
   };
   dots = {
-    active: true,
+    active: false,
   };
   activeIndex: number;
   options: OptionAnswerSelector[];
@@ -140,28 +140,31 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
           while (temp.length) {
             const facturas = [...temp.filter((item, index) => index < by)];
             temp = temp.filter((item, index) => index >= by);
-            this.facturasList.push(facturas);
+            this.facturasList.push({ facturas, tag: { _id: '' } });
           }
           let tags: any = (await this._TagsService.tagsByUser()) || [];
           this.tagsCarousell = tags;
-          this.facturasList.some((facturas) => facturas.length);
-          this.status = this.facturasList.some((facturas) => facturas.length)
+          this.status = this.facturasList.some(
+            ({ facturas }) => facturas.length
+          )
             ? 'complete'
             : 'empty';
           this.facturasTemp = this.facturasList;
           this.controller.valueChanges.subscribe((value) => {
-            this.facturasTemp = this.facturasList.map((facturas) =>
-              facturas.filter(({ phone, tags }) =>
-                this.tags.length
-                  ? tags.some((tag) =>
-                      this.tags.map(({ _id }) => _id).includes(tag)
-                    )
-                  : value
-                  ? `${phone}`.includes(value)
-                  : true
-              )
-            );
-            this.status = this.facturasTemp.some((facturas) => facturas.length)
+            this.facturasTemp = this.facturasList.map(({ facturas }) => ({
+              facturas: facturas.filter(({ phone, tags }) =>
+                // this.tags.length
+                //   ? tags.some((tag) =>
+                //       this.tags.map(({ _id }) => _id).includes(tag)
+                //     )
+                //   :
+                value ? `${phone}`.includes(value) : true
+              ),
+              tag: { _id: '' },
+            }));
+            this.status = this.facturasTemp.some(
+              ({ facturas }) => facturas.length
+            )
               ? 'complete'
               : 'empty';
           });
@@ -355,6 +358,30 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
       fontSize: '21px',
       fontFamily: 'SfPro',
     };
-    this.controller.setValue(this.controller.value);
+    let temp = this.facturasList;
+    // while (temp.length) {
+    this.facturasTemp = [];
+    if (!this.tags.length) this.facturasTemp = this.facturasList;
+    for (const _tag of this.tags) {
+      // const facturas = [
+      //   ...
+      let _facturas = [];
+      this.facturasList.forEach(({ facturas }, index) => {
+        _facturas = [
+          ..._facturas,
+          ...facturas.filter((factura) => factura.tags.includes(_tag._id)),
+        ];
+      });
+      if (_facturas.length)
+        this.facturasTemp.push({ facturas: _facturas, tag: _tag });
+    }
+    this.status = this.facturasTemp.some(({ facturas }) => facturas.length)
+      ? 'complete'
+      : 'empty';
+  }
+
+  resetTags(): void {
+    this.tags = [];
+    this.facturasTemp = this.facturasList;
   }
 }

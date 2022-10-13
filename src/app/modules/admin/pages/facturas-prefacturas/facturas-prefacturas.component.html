@@ -8,7 +8,7 @@
 ></app-helper-headerv2>
 <app-helper-headerv3
   *ngIf="tags.length"
-  (arrowsClick)="tags = []"
+  (arrowsClick)="resetTags()"
 ></app-helper-headerv3>
 <div class="container">
   <div *ngIf="!tags.length" class="pr-25px">
@@ -43,10 +43,10 @@
           class="item"
           (click)="handleValue('')"
         >
-          <!-- <div *ngIf="!tags.length" class="text-grid">
-            <div class="destacada">{{ i === 0 ? "Destacadas" : "Tag ID" }}</div>
-            <div class="mb-3 middle">Ingreso: $IngresoID</div>
-            <div class="mb-3 text-right">VER</div>
+          <!-- <div class="text-grid" *ngIf="facturas.tag._id">
+            <div *ngIf="facturas.facturas.length" class="destacada">{{ i === 0&&!tags.length ? "Destacadas" : facturas.tag.name }}</div>
+            <div *ngIf="!tags.length" class="mb-3 middle">Ingreso: $IngresoID</div>
+            <div *ngIf="!tags.length" class="mb-3 text-right">VER</div>
           </div>
           <p *ngIf="i === 0 && !tags.length" class="tap">
             Tap dos veces encima para destacar <br />algunas facturas.
@@ -54,7 +54,7 @@
           <!-- <div class="card"> -->
           <swiper [config]="swiperConfig">
             <div
-              *ngFor="let factura of facturas; let j = index"
+              *ngFor="let factura of facturas.facturas; let j = index"
               class=""
               (click)="handleValue('')"
             >
@@ -73,7 +73,6 @@
                     <span class="price">
                       {{ factura.total }}
                     </span>
-                    <span class="tag"> Tag ID, Tag ID, Tag ID </span>
                   </div>
                 </div>
               </div>
