@@ -264,7 +264,7 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  newCreatePreOrder = async () => {
+  createOrder = async () => {
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -282,11 +282,7 @@ export class CheckoutComponent implements OnInit {
       );
       localStorage.setItem('registered-user', JSON.stringify(user));
     }
-    this.order.products.forEach((product) => {
-      delete product.isScenario;
-      delete product.limitScenario;
-      delete product.name;
-    });
+    this.order.products[0].saleflow = this.headerService.saleflow._id;
     // ---------------------- Managing Customizer ----------------------
     if (this.customizer) {
       localStorage.removeItem('customizerFile');
@@ -315,19 +311,9 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow.module?.post) {
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
-
-      this.order.products.forEach((product) => {
-        product.post = postResult;
-      });
+      this.order.products[0].post = postResult;
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
-    // ---------------------- Managing Delivery ----------------------------
-    if (this.headerService.saleflow.module?.delivery) {
-      this.order.products.forEach((product) => {
-        product.deliveryLocation = this.order.products[0].deliveryLocation;
-      });
-    }
-    // ++++++++++++++++++++++ Managing Delivery ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous(

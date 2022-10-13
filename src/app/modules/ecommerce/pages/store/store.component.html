@@ -41,19 +41,6 @@
     </div>
   </header>
   <main>
-    <div
-      style="margin-bottom: 60px; margin-top: 30px"
-      *ngIf="saleflowData && packageData.length && items.length === 0"
-    >
-      <div class="package-list" *ngFor="let data of packageData; let i = index">
-        <app-package-item
-          [package]="data.package"
-          [packageItems]="data.items"
-          (action)="goToPackageDetail(i)"
-        ></app-package-item>
-      </div>
-    </div>
-
     <!--REGULAR MERCHANT-->
     <div
       class="content"
@@ -97,7 +84,7 @@
               [price]="item.pricing"
               [itemParams]="item.params"
               [showPrice]="true"
-              (itemClicked)="onItemClick(item._id, true)"
+              (itemClicked)="onItemClick(item._id)"
               [dynamicStyles]="{
                 itemContainer: {
                   minWidth: '242px',
@@ -133,7 +120,7 @@
         <ng-container *ngFor="let item of categorylessItems; index as i">
           <app-item
             [item]="item"
-            (imageEvent)="onItemClick(item._id, true)"
+            (imageEvent)="onItemClick(item._id)"
           ></app-item>
         </ng-container>
       </div>
@@ -173,7 +160,7 @@
             >
               <app-item
                 [item]="item"
-                (imageEvent)="onItemClick(item._id, true)"
+                (imageEvent)="onItemClick(item._id)"
               ></app-item>
             </ng-container>
           </div>
@@ -240,11 +227,7 @@
     <!-- Only for saleflows with customizers -->
     <section
       style="margin-bottom: 73px"
-      *ngIf="
-        itemsByCategory.length === 0 &&
-        items.length === 0 &&
-        sliderPackage.length === 0
-      "
+      *ngIf="itemsByCategory.length === 0 && items.length === 0"
     >
       <ng-container *ngIf="status === 'loading'">
         <h3 class="no-results">Cargando productos...</h3>
@@ -258,20 +241,3 @@
     </section>
   </main>
 </div>
-
-<app-bubble-button
-  position="left"
-  [icon]="env + '/arrow-left.svg'"
-  [color]="'blue'"
-  [solo]="false"
-  *ngIf="viewtype == 'preview'"
-  (click)="back()"
-></app-bubble-button>
-<app-bubble-button
-  position="right"
-  [icon]="env + '/upload.svg'"
-  [color]="'blue'"
-  [solo]="false"
-  *ngIf="viewtype == 'preview'"
-  (click)="onShareClick()"
-></app-bubble-button>

@@ -1,21 +1,15 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
   ItemCategoryHeadline,
-  ItemPackage,
 } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
-import {
-  ItemSubOrderInput,
-  ItemSubOrderParamsInput,
-} from 'src/app/core/models/order';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -24,7 +18,6 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -57,12 +50,6 @@ export class StoreComponent implements OnInit {
     callback: () => void;
   }[] = [];
   categorylessItems: Item[] = [];
-  packageData: {
-    package?: ItemPackage;
-    items?: Item[];
-  }[] = [];
-  inputPackage: ItemPackage[] = [];
-  sliderPackage: ItemPackage[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
   highlightedItems: Item[] = [];
@@ -70,7 +57,6 @@ export class StoreComponent implements OnInit {
   itemCartAmount: number;
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
-  viewtype: 'preview' | 'merchant';
   admin: boolean;
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -93,7 +79,6 @@ export class StoreComponent implements OnInit {
     private item: ItemsService,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private appService: AppService,
     private orderService: OrderService,
     private location: Location
   ) {}
@@ -200,11 +185,12 @@ export class StoreComponent implements OnInit {
       this.status = 'loading';
       lockUI();
 
-      this.header.flowId = params.id;
+      // Resetear status de la ultima orden creada
       this.header.orderId = null;
+      // Fetch data del saleflow obtenido de la ruta
       this.saleflowData = await this.header.fetchSaleflow(params.id);
-      const orderData = this.header.getOrder(this.saleflowData._id);
 
+      // Obteniendo las categorias, el merchant de la tienda y el usuario actual
       const [itemCategories, headlines, merchant, user] = await Promise.all([
         this.item.itemCategories(this.saleflowData.merchant._id, {
           options: {
@@ -217,6 +203,7 @@ export class StoreComponent implements OnInit {
         this.merchant.merchant(this.saleflowData.merchant._id),
         this.authService.me(),
       ]);
+      // Determina si el usuario actual es el dueño de la tienda
       if (user?._id === merchant?.owner?._id) {
         this.admin = true;
       }
@@ -226,173 +213,76 @@ export class StoreComponent implements OnInit {
       );
       this.setMerchant(merchant);
       this.contactLandingRoute = `user-contact-landing/${merchant.owner._id}`;
-      // Package fetching
-      if (this.saleflowData.packages.length) {
-        const listItemPackage = (
-          await this.saleflow.listItemPackage({
-            findBy: {
-              _id: {
-                __in: ([] = this.saleflowData.packages.map(
-                  (itemPackage) => itemPackage._id
-                )),
-              },
-            },
-          })
-        ).listItemPackage;
-        listItemPackage.forEach((itemPackage) => {
-          itemPackage.isSelected = orderData?.itemPackage === itemPackage._id;
-        });
-        this.inputPackage = listItemPackage;
-        this.sliderPackage = listItemPackage;
-        await this.itemOfPackage(listItemPackage);
-        this.inputPackage = this.packageData.map((e) => e.package);
-        if (
-          orderData &&
-          !this.saleflowData.packages.some(
-            (itemPackage) => itemPackage._id === orderData.itemPackage
-          )
-        )
-          this.header.deleteSaleflowOrder(this.saleflowData._id);
-      }
-      // No packages. Item fetching
-      if (
-        !this.saleflowData.packages.length &&
-        this.saleflowData.items.length
-      ) {
-        const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
-          item: saleflowItem.item._id,
-          customizer: saleflowItem.customizer?._id,
-          index: saleflowItem.index,
-        }));
-        if (saleflowItems.some((item) => item.customizer))
-          this.hasCustomizer = true;
-        const items = await this.saleflow.listItems({
-          findBy: {
-            _id: {
-              __in: ([] = saleflowItems.map((items) => items.item)),
-            },
+      // Obteniendo el ID de los productos, los customizers y el orden
+      const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
+        item: saleflowItem.item._id,
+        customizer: saleflowItem.customizer?._id,
+        index: saleflowItem.index,
+      }));
+      // Determina si la tienda maneja customizers
+      if (saleflowItems.some((item) => item.customizer))
+        this.hasCustomizer = true;
+      // Fetching la data de los productos
+      const items = await this.saleflow.listItems({
+        findBy: {
+          _id: {
+            __in: ([] = saleflowItems.map((items) => items.item)),
           },
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: 60,
-          },
-        });
-        const selectedItems = orderData?.products?.length
-          ? orderData.products.map((subOrder) => subOrder.item)
-          : [];
-        this.items = items.listItems.filter((item) => {
-          return item.status === 'active' || item.status === 'featured';
-        });
-
-        for (let i = 0; i < this.items.length; i++) {
-          const saleflowItem = saleflowItems.find(
-            (item) => item.item === this.items[i]._id
-          );
-          this.items[i].customizerId = saleflowItem.customizer;
-          this.items[i].index = saleflowItem.index;
-          if (!this.items[i].customizerId)
-            this.items[i].isSelected = selectedItems.includes(
-              this.items[i]._id
-            );
-          if (this.items[i].hasExtraPrice)
-            this.items[i].totalPrice =
-              this.items[i].fixedQuantity *
-                this.items[i].params[0].values[0].price +
-              this.items[i].pricing;
-        }
-        if (this.items.every((item) => item.index)) {
-          this.items = this.items.sort((a, b) =>
-            a.index > b.index ? 1 : b.index > a.index ? -1 : 0
-          );
-        }
-        if (orderData?.products?.length) {
-          let itemIDs: string[] = [];
-          orderData.products.forEach((item) => {
-            if (!this.items.some((product) => product._id === item.item)) {
-              itemIDs.push(item.item);
-              this.header.removeOrderProduct(this.saleflowData._id, item.item);
-              this.header.removeItem(this.saleflowData._id, item.item);
-            }
-          });
-          orderData.products = orderData.products.filter(
-            (product) => !itemIDs.includes(product.item)
-          );
-        }
-        await this.organizeItems(merchant);
-        this.status = 'complete';
-        unlockUI();
-      }
-      if (
-        !this.saleflowData.packages.length &&
-        !this.saleflowData.items.length
-      ) {
-        this.status = 'complete';
-        unlockUI();
-      }
-    });
-    this.route.queryParams.subscribe((queries) => {
-      if (queries.viewtype === 'preview') this.viewtype = 'preview';
-    });
-    if (this.header.customizerData) this.header.customizerData = null;
-  }
-
-  // Logic for selecting items
-  toggleSelected(type: string, index: number, $event?: number) {
-    if (type === 'item') {
-      if (index != undefined) {
-        if ($event != undefined && this.itemsByCategory[index].items[$event]) {
-          const itemData = this.itemsByCategory[index].items[$event];
-          itemData.isSelected = !itemData.isSelected;
-          let itemParams: ItemSubOrderParamsInput[];
-          if (itemData.params.length > 0) {
-            itemParams = [
-              {
-                param: itemData.params[0]._id,
-                paramValue: itemData.params[0].values[0]._id,
-              },
-            ];
-          }
-          this.header.storeOrderProduct(this.saleflowData._id, {
-            item: itemData._id,
-            customizer: itemData.customizerId,
-            params: itemParams,
-            amount: itemData.customizerId ? undefined : 1,
-            saleflow: this.saleflowData._id,
-          });
-          this.header.storeItem(this.saleflowData._id, itemData);
-        } else {
-          this.items[index].isSelected = !this.items[index].isSelected;
-          this.header.storeOrderProduct(this.saleflowData._id, {
-            item: this.items[index]._id,
-            amount: 1,
-            saleflow: this.saleflowData._id,
-          });
-          this.header.storeItem(this.saleflowData._id, this.items[index]);
-        }
-      }
-    } else if (type === 'package') {
-      this.sliderPackage.forEach((packageItem, packageIndex) => {
-        if (packageIndex === index)
-          packageItem.isSelected = !packageItem.isSelected;
-        else packageItem.isSelected = false;
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 60,
+        },
       });
-      let products = [];
-      for (let i = 0; i < this.packageData[index].items.length; i++) {
-        products.push({
-          item: this.packageData[index].items[i]._id,
-          amount: this.packageData[index].package.packageRules[i].fixedQuantity,
-          isScenario: this.packageData[index].items[i].itemExtra.length > 0,
-          limitScenario:
-            this.packageData[index].package.packageRules[i].maxQuantity,
-        });
+      // Obteniendo la lista de los items seleccionados
+      const selectedItems =
+        this.header.order?.products?.map((subOrder) => subOrder.item) || [];
+      // Filtrando los productos activos y destacados
+      this.items = items.listItems.filter((item) => {
+        return item.status === 'active' || item.status === 'featured';
+      });
+      this.items.forEach((item) => {
+        const saleflowItem = saleflowItems.find(
+          (saleflowItem) => saleflowItem.item === item._id
+        );
+        // Asignando customizer e index a los productos correspondientes
+        item.customizerId = saleflowItem.customizer;
+        item.index = saleflowItem.index;
+        // Si la tienda permite compra múltiple, marcar items seleccionados
+        if (this.saleflowData.canBuyMultipleItems)
+          item.isSelected = selectedItems.includes(item._id);
+        // Si el producto tiene precio extra, aplicar fórmula
+        if (item.hasExtraPrice)
+          item.totalPrice =
+            item.fixedQuantity * item.params[0].values[0].price + item.pricing;
+      });
+      // Si todos los productos tienen un index, ordenar por index
+      if (this.items.every((item) => item.index)) {
+        this.items = this.items.sort((a, b) =>
+          a.index > b.index ? 1 : b.index > a.index ? -1 : 0
+        );
       }
-      this.header.storeOrderPackage(
-        this.saleflowData._id,
-        this.packageData[index].package._id,
-        products
-      );
-      this.header.storeItem(this.saleflowData._id, this.sliderPackage[index]);
-    }
+      // Sacando productos del carrito que fueron eliminados de la tienda
+      if (this.header.order?.products?.length) {
+        let itemIDs: string[] = [];
+        this.header.order.products.forEach((item) => {
+          if (!this.items.some((product) => product._id === item.item)) {
+            itemIDs.push(item.item);
+            this.header.removeOrderProduct(this.saleflowData._id, item.item);
+            this.header.removeItem(this.saleflowData._id, item.item);
+          }
+        });
+        this.header.order.products = this.header.order.products.filter(
+          (product) => !itemIDs.includes(product.item)
+        );
+      }
+      // Organizando productos según su estado y categoría
+      await this.organizeItems(merchant);
+      if (this.header.customizerData) this.header.customizerData = null;
+      // Marcar carga de la tienda como completada
+      this.status = 'complete';
+      unlockUI();
+    });
   }
 
   seeCategories(index: number | string) {
@@ -410,15 +300,16 @@ export class StoreComponent implements OnInit {
       ]);
   }
 
-  onItemClick(id: string, justRedirect: boolean = false) {
+  onItemClick(id: string) {
     const itemData = this.items.find((item) => item._id === id);
     if (!itemData) return;
     if (itemData.category.length)
       this.header.categoryId = itemData.category[0]?._id;
-    this.header.items = [itemData];
-    if (itemData.customizerId) {
+    if (!this.header.saleflow.canBuyMultipleItems) {
       this.header.emptyOrderProducts(this.saleflowData._id);
       this.header.emptyItems(this.saleflowData._id);
+    }
+    if (itemData.customizerId) {
       let itemParams: ItemSubOrderParamsInput[];
       if (itemData.params.length > 0) {
         itemParams = [
@@ -434,8 +325,8 @@ export class StoreComponent implements OnInit {
         params: itemParams,
         amount: undefined,
         saleflow: this.saleflowData._id,
-        name: itemData.name,
       };
+      this.header.items = [itemData];
       this.header.order = {
         products: [product],
       };
@@ -445,18 +336,6 @@ export class StoreComponent implements OnInit {
         `/ecommerce/provider-store/${this.saleflowData._id}/${itemData._id}`,
       ]);
     } else {
-      if (!justRedirect) {
-        if (!this.saleflowData.canBuyMultipleItems) {
-          this.header.emptyOrderProducts(this.saleflowData._id);
-          this.header.emptyItems(this.saleflowData._id);
-        }
-        this.header.storeOrderProduct(this.saleflowData._id, {
-          item: itemData._id,
-          amount: 1,
-          saleflow: this.saleflowData._id,
-        });
-        this.header.storeItem(this.saleflowData._id, itemData);
-      }
       this.router.navigate(
         [`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`],
         {
@@ -465,96 +344,6 @@ export class StoreComponent implements OnInit {
       );
     }
   }
-
-  save(index?: number) {
-    this.header.items = [];
-    let products = [];
-    let order;
-    if (this.inputPackage.length === 0) {
-      products.push({
-        item: this.items[index]._id,
-        name: this.items[index].name,
-        amount: 1,
-      });
-
-      order = {
-        products: products,
-      };
-
-      this.header.order = order;
-      this.header.order.products[0].saleflow = this.header.saleflow._id;
-      this.router.navigate(
-        [
-          '/ecommerce/item-detail/' +
-            this.header.saleflow._id +
-            '/' +
-            this.items[index]._id,
-        ],
-        {
-          replaceUrl: this.header.checkoutRoute ? true : false,
-        }
-      );
-    }
-  }
-
-  goToPackageDetail(index: number) {
-    const packageProducts: ItemSubOrderInput[] = this.packageData[
-      index
-    ].items.map((product, i) => ({
-      item: product._id,
-      itemExtra: [],
-      amount: this.sliderPackage[index].packageRules[i].fixedQuantity,
-    }));
-    packageProducts[0].saleflow = this.header.saleflow._id;
-    this.header.emptyItems(this.saleflowData._id);
-    this.header.storeItem(this.saleflowData._id, this.sliderPackage[index]);
-    this.header.storeOrderPackage(
-      this.saleflowData._id,
-      this.sliderPackage[index]._id,
-      packageProducts
-    );
-    this.router.navigate([
-      `/ecommerce/${this.saleflowData._id}/reservations/${this.saleflowData.module.appointment.calendar._id}`,
-    ]);
-  }
-
-  goToItemDetail(id: string) {
-    this.router.navigate(
-      [`/ecommerce/item-detail/${this.saleflowData._id}/${id}`],
-      {
-        replaceUrl: this.header.checkoutRoute ? true : false,
-      }
-    );
-  }
-
-  async itemOfPackage(packages: ItemPackage[]) {
-    let index = 0;
-
-    for (let itemPackage of packages) {
-      this.packageData.push({
-        package: itemPackage,
-      });
-
-      const listItems = (
-        await this.saleflow.listItems({
-          findBy: {
-            _id: {
-              __in: ([] = itemPackage.packageRules.map((e) => e.item._id)),
-            },
-          },
-        })
-      ).listItems;
-
-      this.packageData[index].items = listItems;
-      this.status = 'complete';
-      index++;
-      unlockUI();
-    }
-  }
-
-  onShareClick = () => {
-    this.onShareCallback(`/ecommerce/store/${this.saleflowData._id}`);
-  };
 
   onShareCallback = (url: string) => {
     const list: StoreShareList[] = [

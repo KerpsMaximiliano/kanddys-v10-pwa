@@ -659,7 +659,6 @@ export class ReservationOrderlessComponent implements OnInit {
       Domingo: 'SUNDAY',
     };
 
-
     if (
       (this.hourRangeInDays &&
         !(hourWithoutOffset < currentHour) &&
@@ -938,53 +937,9 @@ export class ReservationOrderlessComponent implements OnInit {
     this.options = !this.options;
   }
 
-  async save() {
-    this.orderData.products[0].deliveryLocation = {
-      city: null,
-      houseNumber: null,
-      nickName:
-        'Calle Federico Geraldino 94,plaza alberto forastieri primer nivel, Sector Paraiso, Santo Domingo',
-      note: null,
-      referencePoint: null,
-      street: null,
-    };
-    this.header.storeOrderPackage(
-      this.saleflowData._id,
-      this.orderData.itemPackage,
-      this.orderData.products
-    );
-    this.header.isComplete.reservation = true;
-    this.header.isComplete.delivery = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
-
-    let preOrderID;
-    if (!this.header.orderId)
-      preOrderID = await this.header.newCreatePreOrder();
-    else preOrderID = this.header.orderId;
-  }
-
   deleteSelection() {
     this.datePreview = null;
     this.reservationMessage = null;
     this.onReservation.emit(this.reservationMessage);
-  }
-
-  saveNoPost() {
-    this.header.post = {
-      message: '',
-      targets: [
-        {
-          name: '',
-          emailOrPhone: '',
-        },
-      ],
-      from: '',
-    };
-  }
-
-  back() {
-    this.router.navigate([
-      `/ecommerce/package-detail/${this.saleflowData._id}/${this.orderData.itemPackage}`,
-    ]);
   }
 }

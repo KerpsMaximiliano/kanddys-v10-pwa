@@ -369,7 +369,7 @@ export class NewAddressComponent implements OnInit {
       this.router.navigate(
         [`ecommerce/${this.headerService.saleflow._id}/checkout`],
         {
-          replaceUrl: this.headerService.checkoutRoute ? true : false,
+          replaceUrl: true,
         }
       );
     }

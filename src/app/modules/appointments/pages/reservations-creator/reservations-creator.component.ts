@@ -737,11 +737,6 @@ export class ReservationsCreatorComponent implements OnInit {
         this.headerService.saleflow._id,
         reservationInput
       );
-      this.headerService.storeOrderPackage(
-        this.headerService.saleflow._id,
-        this.headerService.order.itemPackage,
-        this.headerService.order.products
-      );
       this.headerService.isComplete.reservation = true;
       this.headerService.storeOrderProgress(this.headerService.saleflow._id);
       this.router.navigate([

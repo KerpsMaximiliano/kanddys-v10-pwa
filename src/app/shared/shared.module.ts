@@ -50,7 +50,6 @@ import { MagicLinkDialogComponent } from './components/magic-link-dialog/magic-l
 import { MultistepFormComponent } from './components/multistep-form/multistep-form.component';
 import { NotificationToggleComponent } from './components/notification-toggle/notification-toggle.component';
 import { OneLineItemComponent } from './components/one-line-item/one-line-item.component';
-import { PackageItemComponent } from './components/package-item/package-item.component';
 import { PageComponentTabsComponent } from './components/page-component-tabs/page-component-tabs.component';
 import { PostEditButtonsComponent } from './components/post-edit-buttons/post-edit-buttons.component';
 import { PreVisualizerComponent } from './components/pre-visualizer/pre-visualizer.component';
@@ -167,7 +166,6 @@ const declarations = [
   CartButtonComponent,
   CollaborationsComponent,
   InfoButtonComponent,
-  PackageItemComponent,
   StatusListComponent,
   ItemStatusComponent,
   AudioRecorderComponent,
