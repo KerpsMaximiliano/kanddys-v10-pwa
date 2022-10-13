@@ -237,7 +237,12 @@ export class TimeBlockComponent implements OnInit {
 
     if (startPeriod === 'PM' && endPeriod === 'AM') return false;
 
-    if (startPeriod === endPeriod && start >= end && start !== 12) {
+    if (
+      (startPeriod === endPeriod &&
+        start >= end &&
+        ((startPeriod === 'PM' && start !== 12) || startPeriod === 'AM')) ||
+      (startPeriod === endPeriod && start === end)
+    ) {
       return false;
     }
 
