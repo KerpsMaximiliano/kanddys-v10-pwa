@@ -78,6 +78,7 @@ export class MetricsReservationComponent implements OnInit {
         });
 
         let daysSeparatedByComma = null;
+
         if (calendar.limits && 'inDays' in calendar.limits) {
           daysSeparatedByComma = calendar.limits.inDays
             .map((dayInEnglish) =>
@@ -87,6 +88,20 @@ export class MetricsReservationComponent implements OnInit {
         } else if (!calendar.limits) {
           //calendarios no-limits
           daysSeparatedByComma = 'Todos los dias';
+        }
+        
+        if (
+          calendar.limits &&
+          'fromDay' in calendar.limits &&
+          'toDay' in calendar.limits &&
+          Boolean(calendar.limits.fromDay) &&
+          Boolean(calendar.limits.toDay)
+        ) {
+          daysSeparatedByComma =
+            'De ' +
+            this.daysOfTheWeekInSpanish[calendar.limits.fromDay] +
+            ' a ' +
+            this.daysOfTheWeekInSpanish[calendar.limits.toDay];
         }
 
         const numWeeks = 1;
@@ -108,7 +123,7 @@ export class MetricsReservationComponent implements OnInit {
             ...calendar,
             daysSeparatedByComma,
           },
-          noLimitsMode: false
+          noLimitsMode: false,
         };
 
         if (reservationSpacesAvailableQueryResult) {
@@ -118,6 +133,12 @@ export class MetricsReservationComponent implements OnInit {
         } else {
           reservationObject.noLimitsMode = true;
         }
+
+        console.log(
+          reservationObject,
+          'obj',
+          reservationSpacesAvailableQueryResult
+        );
 
         this.reservations.push(reservationObject);
       }
@@ -136,7 +157,7 @@ export class MetricsReservationComponent implements OnInit {
       },
       {
         text: 'COMPARTE EL LINK DE SLOTS',
-         callback: () => {
+        callback: () => {
           this._Router.navigate([`/others/reservations-creator/${calendarId}`]);
         },
       },
