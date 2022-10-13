@@ -73,7 +73,11 @@
   }"
   [text]="''"
   [text2]="
-    controller.status === 'VALID' && checkIfHoursAreValid() ? 'SALVAR' : ''
+    controller.status === 'VALID' &&
+    checkIfHoursAreValid() &&
+    selectedDays.length > 0
+      ? 'SALVAR'
+      : ''
   "
   [customRightButtonStyles]="{
     width: 'auto',
@@ -83,6 +87,10 @@
   bgColor="rgb(40, 116, 173)"
   fontSize="12px"
   (right)="
-    controller.status === 'VALID' && checkIfHoursAreValid() ? save() : null
+    controller.status === 'VALID' &&
+    checkIfHoursAreValid() &&
+    selectedDays.length > 0
+      ? save()
+      : null
   "
 ></app-sticky-button>
