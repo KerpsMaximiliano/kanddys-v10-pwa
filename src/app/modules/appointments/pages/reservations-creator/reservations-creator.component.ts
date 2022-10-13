@@ -1,27 +1,27 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as moment from 'moment';
 import {
-  SearchCountryField,
   CountryISO,
   PhoneNumberFormat,
+  SearchCountryField,
 } from 'ngx-intl-tel-input';
 import { Merchant } from 'src/app/core/models/merchant';
-import { CalendarsService } from 'src/app/core/services/calendars.service';
-import { ExtendedCalendar } from 'src/app/core/services/calendars.service';
+import { Reservation, ReservationInput } from 'src/app/core/models/reservation';
+import { AuthService } from 'src/app/core/services/auth.service';
+import {
+  CalendarsService,
+  ExtendedCalendar,
+} from 'src/app/core/services/calendars.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
-import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
-import * as moment from 'moment';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ChangedMonthEventData } from 'src/app/shared/components/short-calendar/short-calendar.component';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import { Reservation } from 'src/app/core/models/reservation';
-import { AuthService } from 'src/app/core/services/auth.service';
-import {
-  createReservation,
-  createReservationAuthLess,
-} from 'src/app/core/graphql/reservations.gql';
 
 interface HourOption {
   hourNumber: number;
@@ -58,6 +58,7 @@ export class ReservationsCreatorComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
   PhoneNumberFormat = PhoneNumberFormat;
+  isOrder: boolean;
 
   currentStep: 'USER_INFO' | 'RESERVATION_CONVENIENCE' =
     'RESERVATION_CONVENIENCE';
@@ -92,6 +93,7 @@ export class ReservationsCreatorComponent implements OnInit {
   clientEmail: string = null;
   reservation: Reservation;
   useDateRangeToLimitAvailableWeekDays: boolean = false;
+  activeReservationIndex: number = null;
 
   allMonths: {
     id: number;
@@ -136,7 +138,9 @@ export class ReservationsCreatorComponent implements OnInit {
     private merchantsService: MerchantsService,
     private reservationsService: ReservationService,
     private authService: AuthService,
-    private dialog: DialogService
+    private dialog: DialogService,
+    private headerService: HeaderService,
+    public location: Location
   ) {}
 
   ngOnInit(): void {
@@ -144,7 +148,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        const { calendarId, reservationId } = routeParams;
+        const { saleflowId, calendarId, reservationId } = routeParams;
         const { clientEmail, clientPhone } = queryParams;
 
         //this queryParams are here for the merchant to use
@@ -156,6 +160,12 @@ export class ReservationsCreatorComponent implements OnInit {
         this.clientPhone = clientPhone;
 
         this.calendarData = await this.calendarsService.getCalendar(calendarId);
+
+        // If true, this reservation is for an order
+        if (saleflowId) {
+          this.isOrder = true;
+          await this.headerService.fetchSaleflow(saleflowId);
+        }
 
         //you can update a specific calendar reservation if an id is passed
         if (reservationId) {
@@ -209,7 +219,7 @@ export class ReservationsCreatorComponent implements OnInit {
 
     const currentDateObject = new Date();
     const utcOffset = new Date().getTimezoneOffset() / 60; //Quitar este offset luego
-    const currentHour = currentDateObject.getHours() - utcOffset; //aqui tambien
+    const currentHour = currentDateObject.getHours(); //aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
 
@@ -592,6 +602,8 @@ export class ReservationsCreatorComponent implements OnInit {
       monthNumber: selectedDateObject.getMonth() + 1,
     };
 
+    this.timeRangeOptions = [];
+    this.activeReservationIndex = null;
     this.generateHourList(dayOfTheMonthNumber);
   }
 
@@ -615,6 +627,7 @@ export class ReservationsCreatorComponent implements OnInit {
       this.listOfHourRangesForSelectedDay[dateOptionIndex].toLabel;
 
     this.selectedDate.filled = true;
+    this.activeReservationIndex = dateOptionIndex;
   }
 
   /**
@@ -711,7 +724,7 @@ export class ReservationsCreatorComponent implements OnInit {
         : null;
 
     //whats passed to the mutation
-    const reservationInput: any = {
+    const reservationInput: ReservationInput = {
       calendar: this.calendarData._id,
       merchant: this.calendarMerchant._id,
       type: 'ORDER',
@@ -725,6 +738,20 @@ export class ReservationsCreatorComponent implements OnInit {
         toHour: toHourString + ':' + this.selectedDate.toHour.minutesString,
       },
     };
+
+    // If this reservation is for an order it wont execute any mutation
+    if (this.isOrder) {
+      this.headerService.storeReservation(
+        this.headerService.saleflow._id,
+        reservationInput
+      );
+      this.headerService.isComplete.reservation = true;
+      this.headerService.storeOrderProgress(this.headerService.saleflow._id);
+      this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow._id}/new-address`,
+      ]);
+      return;
+    }
 
     //removes unrelevant data for updateReservation mutation
     if (user && this.reservation) {

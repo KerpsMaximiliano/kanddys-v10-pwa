@@ -18,13 +18,13 @@
           ? headerConfiguration.headerText
           : ''
     }"
-    [returnAble]="true"
     (agnosticAction)="
       headerConfiguration.headerTextSide === 'RIGHT'
         ? headerConfiguration.headerTextCallback()
         : null
     "
     [returnAble]="true"
+    (returnEvent)="location.back()"
   >
   </app-helper-headerv2>
 
@@ -66,6 +66,7 @@
           <app-answer-selector
             *ngIf="timeRangeOptions.length > 0"
             [options]="timeRangeOptions"
+            [activeOption]="activeReservationIndex"
             [blockIndexes]="hourRangesBlocked"
             [indicator]="true"
             [showDescription]="false"

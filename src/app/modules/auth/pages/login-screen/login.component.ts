@@ -9,7 +9,7 @@ import {
 } from 'ngx-intl-tel-input';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemPackage } from 'src/app/core/models/item';
+import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ItemOrder } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
   fullLink: string;
   messageLink: string;
   view: string;
-  items: Item[] | ItemPackage[] = [];
+  items: Item[] = [];
   itemCartAmount: number;
   validateData: ValidateData;
   phoneNumber = new FormControl('', [
@@ -208,7 +208,6 @@ export class LoginComponent implements OnInit {
     } else if (this.auth === 'order' || this.auth === 'address') {
       lockUI();
 
-      this.headerService.flowId = SaleFlow;
       this.headerService.orderId = null;
       this.saleflow = await this.headerService.fetchSaleflow(SaleFlow);
       let productData: Item[] = this.headerService.getItems(this.saleflow._id);
