@@ -105,7 +105,6 @@ export class ShortCalendarComponent implements OnInit {
     this.allMonths[index].selected = true;
     
     if (this.multipleSelection) this.selectedDays = [];
-    else this.selectedDate = null;
 
     this.changedMonth.emit({
       ...this.allMonths[index],
