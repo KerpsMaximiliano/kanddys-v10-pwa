@@ -43,6 +43,7 @@ export class SaleflowData {
   customizer: CustomizerValueInput;
   customizerPreviewBase64: string;
   anonymous: boolean;
+  date: any;
 }
 
 @Injectable({
@@ -291,9 +292,12 @@ export class HeaderService {
   }
 
   // Stores reservation to first order product in localStorage
-  storeReservation(saleflow: string, reservation: ReservationInput) {
+  storeReservation(saleflow: string, reservation: ReservationInput, date: any) {
     let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
-    localStorage.setItem(saleflow, JSON.stringify({ ...rest, reservation }));
+    localStorage.setItem(
+      saleflow,
+      JSON.stringify({ ...rest, reservation, date })
+    );
   }
 
   // Stores post data in localStorage
@@ -376,10 +380,16 @@ export class HeaderService {
   }
 
   // Return order reservation
-  getReservation(saleflow: string): ReservationInput {
-    let { reservation }: SaleflowData =
+  getReservation(saleflow: string): {
+    reservation: ReservationInput;
+    date: any;
+  } {
+    let { reservation, date }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    return reservation;
+    return {
+      reservation,
+      date,
+    };
   }
 
   // Returns post data and option from provider-store

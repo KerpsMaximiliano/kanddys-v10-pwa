@@ -165,6 +165,8 @@ export class ReservationsCreatorComponent implements OnInit {
         if (saleflowId) {
           this.isOrder = true;
           await this.headerService.fetchSaleflow(saleflowId);
+          this.selectedDate =
+            this.headerService.getReservation(saleflowId).date;
         }
 
         //you can update a specific calendar reservation if an id is passed
@@ -745,7 +747,8 @@ export class ReservationsCreatorComponent implements OnInit {
     if (this.isOrder) {
       this.headerService.storeReservation(
         this.headerService.saleflow._id,
-        reservationInput
+        reservationInput,
+        this.selectedDate
       );
       this.headerService.isComplete.reservation = true;
       this.headerService.storeOrderProgress(this.headerService.saleflow._id);

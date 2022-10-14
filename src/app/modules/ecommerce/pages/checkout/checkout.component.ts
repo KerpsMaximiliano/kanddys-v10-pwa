@@ -163,7 +163,7 @@ export class CheckoutComponent implements OnInit {
     );
     this.reservation = this.headerService.getReservation(
       this.headerService.saleflow._id
-    );
+    ).reservation;
     this.headerService.checkoutRoute = null;
     this.setCustomizerPreview();
     if (this.reservation) {
