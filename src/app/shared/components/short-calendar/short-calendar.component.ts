@@ -40,7 +40,7 @@ export class ShortCalendarComponent implements OnInit {
   @Input() showMonthsSwiper: boolean;
   @Input() dateNumber: string;
   @Input() allowSundays: boolean = false;
-  @Input() daysRange: {fromDay: string; toDay: string} = null;
+  @Input() daysRange: { fromDay: string; toDay: string } = null;
   @Input() multipleSelection: boolean = false;
   @Input() allowedDays: string[] = null;
   currentMonthIndex: number = null;
@@ -70,14 +70,19 @@ export class ShortCalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.calendarService.setInitalState();
-    this.calendarService.getToday();
     if (this.monthNameSelected) {
+      const month = this.selectedDay.getMonth();
+      const monthDay = this.selectedDay.getDate();
+      const year = this.selectedDay.getFullYear();
+      this.calendarService.setDate(month, monthDay, year);
       const index = this.calendarService.months.findIndex(
         (month) => month.name === this.monthNameSelected
       );
+
       this.getMonthId(index);
       this.currentMonthIndex = index;
     } else {
+      this.calendarService.getToday();
       this.getMonthId(0);
       this.currentMonthIndex = 0;
     }
@@ -103,7 +108,7 @@ export class ShortCalendarComponent implements OnInit {
     }
 
     this.allMonths[index].selected = true;
-    
+
     if (this.multipleSelection) this.selectedDays = [];
 
     this.changedMonth.emit({
@@ -125,7 +130,7 @@ export class ShortCalendarComponent implements OnInit {
 
     return this.allowedDays.includes(daysOfTheWeekTranslation[day.dayName]);
   }
-  
+
   isThisDayInTheRange(day: Day): boolean {
     const daysOfTheWeekTranslation = {
       Sabado: 'SATURDAY',
@@ -137,10 +142,17 @@ export class ShortCalendarComponent implements OnInit {
       Viernes: 'FRIDAY',
     };
 
-    const startRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.fromDay);
-    const endRangeIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === this.daysRange.toDay);
+    const startRangeIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) => dayOfTheWeekName === this.daysRange.fromDay
+    );
+    const endRangeIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) => dayOfTheWeekName === this.daysRange.toDay
+    );
 
-    const dayIndex = this.daysOfTheWeekInOrder.findIndex(dayOfTheWeekName => dayOfTheWeekName === daysOfTheWeekTranslation[day.dayName]);
+    const dayIndex = this.daysOfTheWeekInOrder.findIndex(
+      (dayOfTheWeekName) =>
+        dayOfTheWeekName === daysOfTheWeekTranslation[day.dayName]
+    );
 
     return startRangeIndex <= dayIndex && dayIndex <= endRangeIndex;
   }

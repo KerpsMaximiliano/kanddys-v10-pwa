@@ -221,6 +221,14 @@ export class CalendarService {
     this.getDaysArray(this.year, this.month, this.monthDay);
   }
 
+  setDate(month: number, day: number, year: number) {
+    this.getToday();
+
+    this.month = month;
+    this.monthDay = day;
+    this.year = year;
+  }
+
   getDaysArray(year: number, month: number, monthDay: number) {
     let names = Object.freeze([
       'Domingo',
@@ -267,7 +275,6 @@ export class CalendarService {
   handleActiveDays(from: string, to: string, chunkSize: number, mode: string) {
     let brakes = false;
 
-    
     if (mode === 'standar' || !mode) {
       let hour;
       this.hours.push(from);

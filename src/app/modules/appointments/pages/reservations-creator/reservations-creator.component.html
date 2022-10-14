@@ -34,10 +34,11 @@
         class="body reservationConvenience"
         formGroupName="reservationConvenience"
       >
-        <div class="calendar">
+        <div class="calendar" *ngIf="currentMonth?.name">
           <h3>DIA De {{ currentMonth?.name }}</h3>
           <app-short-calendar
             [selectedDay]="selectedDate?.date"
+            [monthNameSelected]="currentMonth?.name"
             [allowUsersToChangeTheMonthShown]="true"
             [allowedDays]="
               !useDateRangeToLimitAvailableWeekDays
@@ -56,6 +57,10 @@
             (changedMonth)="updateMonth($event)"
             (beforeAnimation)="setDateAsNull()"
           ></app-short-calendar>
+        </div>
+
+        <div class="calendar" *ngIf="!currentMonth?.name">
+          <h3>Cargando calendario...</h3>
         </div>
 
         <div

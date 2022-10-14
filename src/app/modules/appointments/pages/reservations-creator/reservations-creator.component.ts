@@ -98,6 +98,7 @@ export class ReservationsCreatorComponent implements OnInit {
   reservation: Reservation;
   useDateRangeToLimitAvailableWeekDays: boolean = false;
   activeReservationIndex: number = null;
+  initialMonthName: string = null;
 
   allMonths: {
     id: number;
@@ -208,13 +209,29 @@ export class ReservationsCreatorComponent implements OnInit {
             !saleflowId ||
             !this.headerService.getReservation(saleflowId)?.date
           ) {
+            const currentMonth =
+              this.calendarsService.allMonths[currentDateObject.getMonth()];
+
+            this.currentMonth = {
+              name: currentMonth.name,
+              number: currentMonth.id,
+            };
             this.rerenderAvailableHours(currentDateObject);
           } else if (this.headerService.getReservation(saleflowId).date) {
+            const dateInput = new Date(
+              this.headerService.getReservation(saleflowId).date.date as string
+            );
+
+            const currentMonth =
+              this.calendarsService.allMonths[dateInput.getMonth()];
+
+            this.currentMonth = {
+              name: currentMonth.name,
+              number: currentMonth.id,
+            };
+
             this.rerenderAvailableHours(
-              new Date(
-                this.headerService.getReservation(saleflowId).date
-                  .date as string
-              ),
+              dateInput,
               this.headerService.getReservation(saleflowId).date.dateOptionIndex
             );
           }
