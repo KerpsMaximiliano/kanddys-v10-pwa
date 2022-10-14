@@ -1,16 +1,14 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { webform } from 'src/app/core/graphql/webforms.gql';
+import { Router } from '@angular/router';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Calendar } from 'src/app/core/models/calendar';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { Answer, Webform } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -19,9 +17,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import { NgNavigatorShareService } from 'ng-navigator-share';
 import { environment } from 'src/environments/environment';
-import { ToastrService } from 'ngx-toastr';
 
 // interface ExtraCalendar extends Calendar {
 //   subtitle?: string;
@@ -34,7 +30,6 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class EntityDetailMetricsComponent implements OnInit {
   URI: string = environment.uri;
-  merchant: Merchant;
   items: Item[];
   activeItems: Item[];
   inactiveItems: Item[];
@@ -54,7 +49,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   // calendars: ExtraCalendar[];
 
   constructor(
-    private merchantsService: MerchantsService,
+    public merchantsService: MerchantsService,
     private router: Router,
     private authService: AuthService,
     private ordersService: OrderService,
@@ -62,36 +57,21 @@ export class EntityDetailMetricsComponent implements OnInit {
     private saleflowService: SaleFlowService,
     private dialogService: DialogService,
     private headerService: HeaderService,
-    private calendarService: CalendarService,
+    // private calendarService: CalendarService,
     private location: Location,
     private webformsService: WebformsService,
-    private toastr: ToastrService,
     private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.headerService.loadedMerchants.subscribe(async (loaded) => {
-      lockUI();
-      if (loaded) {
-        this.merchant = this.headerService.myMerchants[0];
-        await Promise.all([
-          this.getItemsByMerchant(),
-          this.getOrderTotal(),
-          this.getMerchantBuyers(),
-          // this.getTags(),
-          // this.getCategories(),
-          this.getWebformsData(),
-          this.setMerchant(),
-          // this.getCalendars(),
-        ]);
-      }
-      unlockUI();
-    });
-  }
-
-  async setMerchant() {
-    this.merchant = this.merchantsService.merchantData;
-    return true;
+    lockUI();
+    await Promise.all([
+      this.getItemsByMerchant(),
+      this.getOrderTotal(),
+      this.getMerchantBuyers(),
+      this.getWebformsData(),
+    ]);
+    unlockUI();
   }
 
   async getItemsByMerchant() {
@@ -157,7 +137,7 @@ export class EntityDetailMetricsComponent implements OnInit {
     try {
       this.ordersTotal = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
     } catch (error) {
       console.log(error);
@@ -167,7 +147,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getMerchantBuyers() {
     try {
       this.users = await this.merchantsService.usersOrderMerchant(
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
     } catch (error) {
       console.log(error);
@@ -177,7 +157,7 @@ export class EntityDetailMetricsComponent implements OnInit {
   async getWebformsData() {
     try {
       this.webforms = await this.webformsService.webformsByMerchant(
-        this.merchant._id
+        this.merchantsService.merchantData._id
       );
       console.log(this.webforms);
 
@@ -280,8 +260,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: this.merchant
-          ? 'Sobre ' + this.merchant.name
+        title: this.merchantsService.merchantData
+          ? 'Sobre ' + this.merchantsService.merchantData.name
           : 'Sobre Tienda anonima',
         optionsList: list,
         //qrCode: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
