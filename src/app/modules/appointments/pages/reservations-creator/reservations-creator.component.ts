@@ -46,6 +46,9 @@ export class ReservationsCreatorComponent implements OnInit {
       fontSize: '21px',
       fontFamily: 'SfProBold',
       fontWeight: 'normal',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'auto',
     },
     headerText: 'Reserva la fecha con Merchant ID',
     headerTextSide: 'LEFT',
@@ -81,6 +84,7 @@ export class ReservationsCreatorComponent implements OnInit {
     toLabel?: string;
     filled: boolean;
     dayOfTheMonthNumber: number;
+    dateOptionIndex?: number;
   } = null;
   listOfHourRangesForSelectedDay: Array<{
     from: HourOption;
@@ -200,13 +204,18 @@ export class ReservationsCreatorComponent implements OnInit {
             number: monthNumber + 1,
           };
 
-          if (!saleflowId) this.rerenderAvailableHours(currentDateObject);
-          else {
+          if (
+            !saleflowId ||
+            !this.headerService.getReservation(saleflowId)?.date
+          ) {
+            this.rerenderAvailableHours(currentDateObject);
+          } else if (this.headerService.getReservation(saleflowId).date) {
             this.rerenderAvailableHours(
               new Date(
-                this.headerService.getReservation(saleflowId)?.date
-                  ?.date as string
-              )
+                this.headerService.getReservation(saleflowId).date
+                  .date as string
+              ),
+              this.headerService.getReservation(saleflowId).date.dateOptionIndex
             );
           }
         } else {
@@ -595,7 +604,7 @@ export class ReservationsCreatorComponent implements OnInit {
    * @param {Date} selectedDateObject - the day of the month
    *
    */
-  rerenderAvailableHours(selectedDateObject: Date) {
+  rerenderAvailableHours(selectedDateObject: Date, hour?: number) {
     const dayOfTheMonthNumber = selectedDateObject.getDate();
     const monthNumber = selectedDateObject.getMonth();
     const dayOfTheWeekNumber = selectedDateObject.getDay();
@@ -613,7 +622,7 @@ export class ReservationsCreatorComponent implements OnInit {
     };
 
     this.timeRangeOptions = [];
-    this.activeReservationIndex = null;
+    this.activeReservationIndex = hour;
     this.generateHourList(dayOfTheMonthNumber);
   }
 
@@ -626,6 +635,7 @@ export class ReservationsCreatorComponent implements OnInit {
    *
    */
   setClickedDate(dateOptionIndex: number) {
+    this.selectedDate.dateOptionIndex = dateOptionIndex;
     this.selectedDate.fromHour =
       this.listOfHourRangesForSelectedDay[dateOptionIndex].from;
     this.selectedDate.fromLabel =
