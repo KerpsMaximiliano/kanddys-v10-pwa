@@ -262,11 +262,18 @@ export class CheckoutComponent implements OnInit {
 
   formatHour(date: Date, breakTime?: number) {
     if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
-    return date.toLocaleTimeString([], {
+
+    let result = date.toLocaleTimeString([], {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
     });
+
+    if (result.includes('0:')) {
+      result = result.replace('0:', '12:');
+    }
+
+    return result;
   }
 
   createOrder = async () => {
