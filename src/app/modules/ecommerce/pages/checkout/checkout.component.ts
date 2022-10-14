@@ -7,6 +7,8 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CustomizerValueInput } from 'src/app/core/models/customizer-value';
 import { ItemOrderInput } from 'src/app/core/models/order';
 import { PostInput } from 'src/app/core/models/post';
+import { ReservationInput } from 'src/app/core/models/reservation';
+import { DeliveryLocationInput } from 'src/app/core/models/saleflow';
 import { User, UserInput } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
@@ -33,6 +35,8 @@ export class CheckoutComponent implements OnInit {
   order: ItemOrderInput;
   items: any[];
   post: PostInput;
+  deliveryLocation: DeliveryLocationInput;
+  reservation: ReservationInput;
   payment: number;
   hasPaymentModule: boolean;
   disableButton: boolean;
@@ -159,11 +163,17 @@ export class CheckoutComponent implements OnInit {
         this.headerService.saleflow?._id ||
           this.headerService.getSaleflow()?._id
       )?.data;
+    this.deliveryLocation = this.headerService.getLocation(
+      this.headerService.saleflow._id
+    );
+    this.reservation = this.headerService.getReservation(
+      this.headerService.saleflow._id
+    );
     this.headerService.checkoutRoute = null;
     this.setCustomizerPreview();
-    if (this.order?.products?.[0].reservation) {
-      const fromDate = new Date(this.order.products[0].reservation.date.from);
-      const untilDate = new Date(this.order.products[0].reservation.date.until);
+    if (this.reservation) {
+      const fromDate = new Date(this.reservation.date.from);
+      const untilDate = new Date(this.reservation.date.until);
       this.date = {
         day: fromDate.getDate(),
         weekday: fromDate.toLocaleString('es-MX', {
@@ -174,7 +184,7 @@ export class CheckoutComponent implements OnInit {
         }),
         time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
           untilDate,
-          this.order.products[0].reservation.breakTime
+          this.reservation.breakTime
         )}`,
       };
     }
@@ -274,7 +284,7 @@ export class CheckoutComponent implements OnInit {
       const user = await this.authService.signup(
         {
           ...userInput,
-          deliveryLocations: [this.order.products[0].deliveryLocation],
+          deliveryLocations: [this.deliveryLocation],
         },
         'none',
         null,
@@ -283,6 +293,8 @@ export class CheckoutComponent implements OnInit {
       localStorage.setItem('registered-user', JSON.stringify(user));
     }
     this.order.products[0].saleflow = this.headerService.saleflow._id;
+    this.order.products[0].deliveryLocation = this.deliveryLocation;
+    if (this.reservation) this.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Customizer ----------------------
     if (this.customizer) {
       localStorage.removeItem('customizerFile');

@@ -237,7 +237,7 @@ export class HeaderService {
 
   // Stores order product data in localStorage
   storeOrderProduct(saleflow: string, product: ItemSubOrderInput) {
-    let { order, deliveryLocation, reservation, ...rest }: SaleflowData =
+    let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order) order = {};
     if (!order.products) order.products = [];
@@ -259,18 +259,7 @@ export class HeaderService {
       order.products.push(product);
       this.order?.products?.push(product);
     }
-    if (deliveryLocation) {
-      order.products[0].deliveryLocation = deliveryLocation;
-      this.order.products[0].deliveryLocation = deliveryLocation;
-    }
-    if (reservation) {
-      order.products[0].reservation = reservation;
-      this.order.products[0].reservation = reservation;
-    }
-    localStorage.setItem(
-      saleflow,
-      JSON.stringify({ order, deliveryLocation, reservation, ...rest })
-    );
+    localStorage.setItem(saleflow, JSON.stringify({ order, ...rest }));
   }
 
   // Stores item data in localStorage
@@ -309,8 +298,6 @@ export class HeaderService {
     let { order, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (!order?.products?.length) return;
-    order.products[0].reservation = reservation;
-    this.order.products[0].reservation = reservation;
     localStorage.setItem(
       saleflow,
       JSON.stringify({ order, reservation, ...rest })
@@ -364,7 +351,6 @@ export class HeaderService {
     let saleflowData: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     saleflowData.customizer = customizer;
-
     localStorage.setItem(saleflow, JSON.stringify(saleflowData));
   }
 
@@ -405,6 +391,13 @@ export class HeaderService {
     return itemData;
   }
 
+  // Return order reservation
+  getReservation(saleflow: string): ReservationInput {
+    let { reservation }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    return reservation;
+  }
+
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
     let { post }: SaleflowData =
@@ -413,9 +406,9 @@ export class HeaderService {
   }
 
   getLocation(saleflow: string) {
-    let { order, deliveryLocation }: SaleflowData =
+    let { deliveryLocation }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    return order?.products?.[0]?.deliveryLocation || deliveryLocation;
+    return deliveryLocation;
   }
 
   // Returns order creation progress

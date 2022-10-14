@@ -82,11 +82,11 @@
       </div>
     </section>
 
-    <section class="section" *ngIf="order?.products[0].deliveryLocation">
+    <section class="section" *ngIf="deliveryLocation">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
-          {{ order?.products[0].reservation ? "la sesión" : " Entrega:" }}
+          {{ reservation ? "la sesión" : " Entrega:" }}
         </h2>
 
         <button
@@ -103,34 +103,34 @@
       <div class="items-container column">
         <p
           class="address-name"
-          *ngIf="order?.products[0].deliveryLocation.nickName"
+          *ngIf="deliveryLocation.nickName"
         >
-          {{ order?.products[0].deliveryLocation.nickName }}
+          {{ deliveryLocation.nickName }}
         </p>
         <p
           [ngClass]="{
-            added: order?.products[0].deliveryLocation.nickName,
-            'address-name': !order?.products[0].deliveryLocation.nickName
+            added: deliveryLocation.nickName,
+            'address-name': !deliveryLocation.nickName
           }"
-          *ngIf="order?.products[0].deliveryLocation.street"
+          *ngIf="deliveryLocation.street"
         >
           {{
-            order.products[0].deliveryLocation.houseNumber
-              ? "#" + order.products[0].deliveryLocation.houseNumber + ", "
+            deliveryLocation.houseNumber
+              ? "#" + deliveryLocation.houseNumber + ", "
               : ""
           }}
-          {{ order.products[0].deliveryLocation.street }},
+          {{ deliveryLocation.street }},
           {{
-            order.products[0].deliveryLocation.referencePoint
-              ? order.products[0].deliveryLocation.referencePoint + ", "
+            deliveryLocation.referencePoint
+              ? deliveryLocation.referencePoint + ", "
               : ""
           }}
-          {{ order.products[0].deliveryLocation.city }}, República Dominicana
+          {{ deliveryLocation.city }}, República Dominicana
         </p>
       </div>
     </section>
 
-    <section class="section" *ngIf="order?.products[0].reservation && date">
+    <section class="section" *ngIf="reservation && date">
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
 
