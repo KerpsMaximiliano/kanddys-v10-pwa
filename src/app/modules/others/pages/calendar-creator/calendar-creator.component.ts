@@ -1265,4 +1265,12 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
       this.reservationParamsStepOptions[2].texts.middleTexts[0].text = `Por especificar`;
     }
   }
+
+  blockNonNumericStuff(e: any) {
+    //Previene las situaciones en las que el user pulsa la tecla izq. o derecha, y el input type number
+    //ocasiona el el numero formateado se desconfigure
+    if (['+', '-', 'e', '.'].includes(e.key)) {
+      e.preventDefault();
+    }
+  }
 }

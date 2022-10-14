@@ -199,6 +199,8 @@ export class ReservationsCreatorComponent implements OnInit {
             name: this.allMonths[monthNumber].name,
             number: monthNumber + 1,
           };
+
+          this.rerenderAvailableHours(currentDateObject);
         } else {
           this.router.navigate(['others/error-screen']);
         }

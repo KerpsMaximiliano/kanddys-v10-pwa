@@ -37,6 +37,7 @@
         <div class="calendar">
           <h3>DIA De {{ currentMonth?.name }}</h3>
           <app-short-calendar
+            [selectedDay]="selectedDate?.date"
             [allowUsersToChangeTheMonthShown]="true"
             [allowedDays]="
               !useDateRangeToLimitAvailableWeekDays

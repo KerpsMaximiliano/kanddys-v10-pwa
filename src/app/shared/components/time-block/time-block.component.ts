@@ -7,7 +7,11 @@ import {
   CalendarsService,
   ExtendedCalendar,
 } from 'src/app/core/services/calendars.service';
+import { FrontendLogsService } from 'src/app/core/services/frontend-logs.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { version } from 'package.json';
 
 @Component({
   selector: 'app-time-block',
@@ -59,11 +63,15 @@ export class TimeBlockComponent implements OnInit {
   selectedDays: Array<number> = [];
   selectedDaysDateObjects: Array<Date> = [];
   selectedDaysLabel: string = null;
+  submitting: boolean = false;
+
   constructor(
     private _CalendarsService: CalendarsService,
     private _ActivatedRoute: ActivatedRoute,
     private _AuthService: AuthService,
     private _MerchantsService: MerchantsService,
+    private dialog: DialogService,
+    private frontendLogsService: FrontendLogsService,
     private _Router: Router
   ) {}
 
@@ -190,46 +198,76 @@ export class TimeBlockComponent implements OnInit {
   }
 
   async save() {
+    this.submitting = true;
     if (this.controller.invalid) return;
 
-    const { start, startPeriod, end, endPeriod } = this.controller.controls;
     const exceptions: Array<{
       from: Date;
       until: Date;
     }> = [];
 
-    this.selectedDays.forEach((dayNumber) => {
-      const currentDateObject = new Date();
-      const fromDateObject = new Date(
-        currentDateObject.getFullYear(),
-        this.month.number - 1,
-        dayNumber,
-        startPeriod.value === 'PM' ? start.value + 12 : start.value
-      );
-      const untilDateObject = new Date(
-        currentDateObject.getFullYear(),
-        this.month.number - 1,
-        dayNumber,
-        endPeriod.value === 'PM' ? end.value + 12 : end.value
-      );
+    try {
+      const { start, startPeriod, end, endPeriod } = this.controller.controls;
 
-      exceptions.push({
-        from: fromDateObject,
-        until: untilDateObject,
+      this.selectedDays.forEach((dayNumber) => {
+        const currentDateObject = new Date();
+        const fromDateObject = new Date(
+          currentDateObject.getFullYear(),
+          this.month.number - 1,
+          dayNumber,
+          startPeriod.value === 'PM' ? start.value + 12 : start.value
+        );
+        const untilDateObject = new Date(
+          currentDateObject.getFullYear(),
+          this.month.number - 1,
+          dayNumber,
+          endPeriod.value === 'PM' ? end.value + 12 : end.value
+        );
+
+        exceptions.push({
+          from: fromDateObject,
+          until: untilDateObject,
+        });
       });
-    });
 
-    for await (const exception of exceptions) {
-      await this._CalendarsService.calendarAddExceptions(
-        {
-          from: exception.from,
-          until: exception.until,
+      for await (const exception of exceptions) {
+        await this._CalendarsService.calendarAddExceptions(
+          {
+            from: exception.from,
+            until: exception.until,
+          },
+          this.calendarData._id
+        );
+      }
+
+      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          icon: 'check-circle.svg',
+          message: 'Se han creado los bloqueos de tiempo',
+          showCloseButton: false,
         },
-        this.calendarData._id
-      );
-    }
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+      this.submitting = false;
+      this._Router.navigate([`/admin/entity-detail-metrics`]);
+    } catch (error) {
+      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          icon: 'sadFace.svg',
+          showCloseButton: true,
+          message: window.navigator.onLine
+            ? 'Ocurrió un problema, intente mas tarde'
+            : 'Se perdió la conexion a internet',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
 
-    console.log('Excepciones subidas');
+      this.submitting = false;
+    }
   }
 
   checkIfHoursAreValid() {

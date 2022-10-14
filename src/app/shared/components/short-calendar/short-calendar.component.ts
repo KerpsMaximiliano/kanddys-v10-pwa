@@ -46,7 +46,7 @@ export class ShortCalendarComponent implements OnInit {
   currentMonthIndex: number = null;
   monthDays: Day[] = [];
   allMonths: Array<Month> = [];
-  selectedDay: Date;
+  @Input() selectedDay: Date;
   selectedDays: Array<Date> = [];
   executeSwipeToNextMonthAnimation: boolean;
   executeSwipeToPrevAnimation: boolean;
