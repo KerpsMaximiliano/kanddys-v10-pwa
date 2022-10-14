@@ -68,7 +68,7 @@
           <span class="text">Inicio</span>
         </li>
 
-        <li>
+        <li class="disabled">
           <div class="icon">
             <img [src]="env + '/account.svg'" alt="bills" />
           </div>
@@ -76,20 +76,20 @@
         </li>
 
         <li>
-          <div class="icon">
+          <div class="icon" (click)="redirect('/admin/merchant-items')">
             <img [src]="env + '/sprout.svg'" alt="articles" />
           </div>
           <span class="text">Artículos</span>
         </li>
 
-        <li>
+        <li class="disabled">
           <div class="icon">
             <img [src]="env + '/search-white.svg'" alt="search" />
           </div>
           <span class="text">Buscar</span>
         </li>
 
-        <li>
+        <li class="disabled">
           <div class="icon">
             <img [src]="env + '/user-white.svg'" alt="account" />
           </div>

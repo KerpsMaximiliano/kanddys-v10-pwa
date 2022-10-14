@@ -116,6 +116,8 @@
             background-color: darken($color: #fff, $amount: 3);
           }
 
+        
+
           &:active {
             cursor: pointer;
             background-color: darken($color: #fff, $amount: 5);
@@ -150,6 +152,15 @@
         justify-content: space-between;
         align-items: center;
         transition: 0.3s background-color ease-in-out;
+        &.disabled {
+          filter: brightness(0.7);
+          color: lightgray;
+          
+          &:hover {
+            cursor: not-allowed;
+            background-color: darken($color: #2874ad, $amount: 10);
+          }
+        }
 
         &:hover {
           cursor: pointer;
