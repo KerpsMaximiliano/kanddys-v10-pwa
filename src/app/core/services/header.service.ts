@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { CustomizerValueInput } from '../models/customizer-value';
@@ -96,6 +96,7 @@ export class HeaderService {
   newTempItem: Item;
   newTempItemRoute: string = null;
   checkoutRoute: string;
+  loadedMerchants = new EventEmitter();
 
   public session: Session;
   constructor(
@@ -138,12 +139,14 @@ export class HeaderService {
           });
           this.merchantService.myMerchants().then((data) => {
             this.myMerchants = data;
+            this.loadedMerchants.emit(true);
           });
         } else {
           this.user = null;
           this.walletData = null;
           this.savedBookmarks = null;
           this.myMerchants = null;
+          this.loadedMerchants.emit(false);
         }
       });
     // const sub1 = this.app.events

@@ -50,14 +50,19 @@
       <h2 class="amount">FUTURAS</h2>
     </div>
 
-    <div class="info-card pointer">
+    <div
+      class="info-card pointer"
+      [routerLink]="
+        '/admin/entity-detail-metrics/reservations/' +
+        reservation.calendar +
+        '/disponibles'
+      "
+    >
       <h2 class="amount quantity">
-        {{
-          !reservation.noLimitsMode ? reservation.slots : '∞'
-        }}
+        {{ !reservation.noLimitsMode ? reservation.slots : "∞" }}
       </h2>
 
-      <h2 class="amount">SLOTS <br>DISPONIBLES</h2>
+      <h2 class="amount">SLOTS <br />DISPONIBLES</h2>
     </div>
 
     <div class="info-card reservation-params" *ngIf="reservation.calendarObj">
