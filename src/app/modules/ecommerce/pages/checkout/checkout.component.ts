@@ -155,14 +155,9 @@ export class CheckoutComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
     await this.headerService.fetchSaleflow(saleflowId);
-    this.order = this.headerService.getOrder(this.headerService.saleflow?._id);
-    this.items = this.headerService.getItems(this.headerService.saleflow?._id);
-    this.post =
-      this.headerService.post ||
-      this.headerService.getPost(
-        this.headerService.saleflow?._id ||
-          this.headerService.getSaleflow()?._id
-      )?.data;
+    this.order = this.headerService.getOrder(this.headerService.saleflow._id);
+    this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    this.post = this.headerService.getPost(this.headerService.saleflow._id);
     this.deliveryLocation = this.headerService.getLocation(
       this.headerService.saleflow._id
     );

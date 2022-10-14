@@ -36,10 +36,7 @@ class OrderProgress {
 export class SaleflowData {
   order: ItemOrderInput;
   itemData: any[];
-  post: {
-    option: number;
-    data: PostInput;
-  };
+  post: PostInput;
   deliveryLocation: DeliveryLocationInput;
   reservation: ReservationInput;
   orderProgress: OrderProgress;
@@ -295,55 +292,42 @@ export class HeaderService {
 
   // Stores reservation to first order product in localStorage
   storeReservation(saleflow: string, reservation: ReservationInput) {
-    let { order, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    if (!order?.products?.length) return;
-    localStorage.setItem(
-      saleflow,
-      JSON.stringify({ order, reservation, ...rest })
-    );
+    let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(saleflow, JSON.stringify({ ...rest, reservation }));
   }
 
   // Stores post data in localStorage
-  storePost(saleflow: string, data: PostInput, option?: number) {
-    let { post, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    post = {
-      data,
-      option,
-    };
-    localStorage.setItem(saleflow, JSON.stringify({ post, ...rest }));
+  storePost(saleflow: string, post: PostInput) {
+    let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(saleflow, JSON.stringify({ ...rest, post }));
   }
 
   // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput) {
-    let { order, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    if (!order?.products?.length) return;
-    order.products[0].deliveryLocation = deliveryLocation;
-    this.order.products[0].deliveryLocation = deliveryLocation;
+    let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(
       saleflow,
       JSON.stringify({
-        order,
-        deliveryLocation,
         ...rest,
+        deliveryLocation,
       })
     );
   }
 
   storeOrderProgress(saleflow: string) {
-    let { orderProgress, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    orderProgress = this.isComplete;
-    localStorage.setItem(saleflow, JSON.stringify({ orderProgress, ...rest }));
+    let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(
+      saleflow,
+      JSON.stringify({ ...rest, orderProgress: this.isComplete })
+    );
   }
 
   storeOrderAnonymous(saleflow: string) {
-    let { anonymous, ...rest }: SaleflowData =
-      JSON.parse(localStorage.getItem(saleflow)) || {};
-    anonymous = true;
-    localStorage.setItem(saleflow, JSON.stringify({ anonymous, ...rest }));
+    let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(
+      saleflow,
+      JSON.stringify({ ...rest, anonymous: true })
+    );
   }
 
   storeCustomizer(saleflow: string, customizer: CustomizerValueInput) {
