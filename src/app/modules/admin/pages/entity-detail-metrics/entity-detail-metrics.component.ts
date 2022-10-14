@@ -21,6 +21,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 
 // interface ExtraCalendar extends Calendar {
 //   subtitle?: string;
@@ -64,12 +65,13 @@ export class EntityDetailMetricsComponent implements OnInit {
     private calendarService: CalendarService,
     private location: Location,
     private webformsService: WebformsService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private toastr: ToastrService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    lockUI();
     this.headerService.loadedMerchants.subscribe(async (loaded) => {
+      lockUI();
       if (loaded) {
         this.merchant = this.headerService.myMerchants[0];
         await Promise.all([
@@ -83,7 +85,6 @@ export class EntityDetailMetricsComponent implements OnInit {
           // this.getCalendars(),
         ]);
       }
-
       unlockUI();
     });
   }
@@ -244,7 +245,12 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: () => {
-          this.clipboard.copy(window.location.href);
+          this.clipboard.copy(
+            environment.uri +
+              '/ecommerce/store/' +
+              this.saleflowService.saleflowData._id
+          );
+          this.toastr.info('Enlace copiado en el clipboard');
         },
       },
       {
@@ -317,8 +323,9 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
+          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
           this.clipboard.copy(link);
+          this.toastr.info('Enlace copiado en el clipboard');
         },
       },
     ];

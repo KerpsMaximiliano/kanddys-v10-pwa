@@ -8,6 +8,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from '../../dialogs/settings/settings.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-metrics-reservation',
@@ -15,6 +17,7 @@ import { SettingsComponent } from '../../dialogs/settings/settings.component';
   styleUrls: ['./metrics-reservation.component.scss'],
 })
 export class MetricsReservationComponent implements OnInit {
+  URI: string = environment.uri;
   highlightedItems: Item[];
   merchant: Merchant;
   activeItems = [];
@@ -39,7 +42,8 @@ export class MetricsReservationComponent implements OnInit {
     private _ReservationService: ReservationService,
     private _CalendarService: CalendarService,
     private _DialogService: DialogService,
-    private _Router: Router
+    private _Router: Router,
+    private ngNavigatorShareService: NgNavigatorShareService,
   ) {}
 
   ngOnInit(): void {
@@ -144,15 +148,25 @@ export class MetricsReservationComponent implements OnInit {
   onShareItemsClick(calendarId): void {
     const list = [
       {
-        text: 'BLOQUEA SLOTS',
+        text: 'Bloquea slots',
         callback: () => {
           this._Router.navigate([`/others/time-block/${calendarId}`]);
         },
       },
       {
-        text: 'COMPARTE EL LINK DE SLOTS',
-        callback: () => {
-          this._Router.navigate([`/others/reservations-creator/${calendarId}`]);
+        text: 'Comparte el link para reservar slots',
+        callback: async () => {
+          await this.ngNavigatorShareService
+            .share({
+              title: '',
+              url: `${this.URI}/appointments/reservations-creator/${calendarId}`,
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         },
       },
     ];
