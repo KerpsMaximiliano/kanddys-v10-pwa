@@ -379,6 +379,7 @@
           class="input customWidth"
           type="number"
           min="1"
+          (keydown)="blockNonNumericStuff($event)"
           formControlName="amount"
           placeholder="Escribe..."
         />

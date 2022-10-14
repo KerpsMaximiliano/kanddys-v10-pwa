@@ -75,9 +75,12 @@
   [text2]="
     controller.status === 'VALID' &&
     checkIfHoursAreValid() &&
-    selectedDays.length > 0
+    selectedDays.length > 0 &&
+    !submitting
       ? 'SALVAR'
-      : ''
+      : submitting
+      ? 'ESPERE...'
+      : null
   "
   [customRightButtonStyles]="{
     width: 'auto',
@@ -89,7 +92,8 @@
   (right)="
     controller.status === 'VALID' &&
     checkIfHoursAreValid() &&
-    selectedDays.length > 0
+    selectedDays.length > 0 &&
+    !submitting
       ? save()
       : null
   "
