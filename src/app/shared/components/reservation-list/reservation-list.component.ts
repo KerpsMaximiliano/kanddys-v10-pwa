@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -10,13 +10,14 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
 import { StoreShareList } from '../../dialogs/store-share/store-share.component';
 import { SettingsComponent } from '../../dialogs/settings/settings.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reservation-list',
   templateUrl: './reservation-list.component.html',
   styleUrls: ['./reservation-list.component.scss'],
 })
-export class ReservationListComponent implements OnInit {
+export class ReservationListComponent implements OnInit, OnDestroy {
   reservations: any = [];
   reservationsList: any = [];
   status = 'complete';
@@ -38,6 +39,9 @@ export class ReservationListComponent implements OnInit {
   buttons: string[] = ['futuras', 'pasadas', 'disponibles'];
   calendar: string = '';
   option: string;
+  queryParams: Subscription;
+  params: Subscription;
+  limit: number;
   constructor(
     private _MerchantsService: MerchantsService,
     private _ReservationService: ReservationService,
@@ -48,42 +52,55 @@ export class ReservationListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._ActivatedRoute.params.subscribe(async (queryParams) => {
-      const { calendar, type } = queryParams;
-      this.option = !this.buttons.includes(type)
-        ? this.buttons[this.buttons.length - 1]
-        : type;
-      this.calendar = calendar;
-      const params = {
-        findBy: { calendar },
-      };
-      this.status = 'loading';
-      if (type) {
-        const today = new Date();
-        const reservations =
-          await this._ReservationService.getReservationByCalendar(params);
+    this.queryParams = this._ActivatedRoute.queryParams.subscribe(
+      async (queryParams) => {
+        let { limit = 50 } = queryParams;
+        if (isNaN(+limit)) limit = 50;
+        if (queryParams.limit) this.limit = +limit;
+        this.params = this._ActivatedRoute.params.subscribe(async (_params) => {
+          const { calendar, type } = _params;
+          this.option = !this.buttons.includes(type)
+            ? this.buttons[this.buttons.length - 1]
+            : type;
+          this.calendar = calendar;
+          const params = {
+            findBy: { calendar },
+            options: { limit: +limit },
+          };
+          this.status = 'loading';
+          if (type) {
+            const today = new Date();
+            const reservations =
+              await this._ReservationService.getReservationByCalendar(params);
 
-        this.reservations = reservations.filter((reservation) => {
-          const date = new Date(reservation.date.from);
-          const future = date > today;
-          const past = date <= today;
-          const result =
-            `${type}`.toLowerCase() === 'futuras'
-              ? future
-              : `${type}`.toLowerCase() === 'pasadas'
-              ? past
-              : true;
-          return result;
+            this.reservations = reservations.filter((reservation) => {
+              const date = new Date(reservation.date.from);
+              const future = date > today;
+              const past = date <= today;
+              const result =
+                `${type}`.toLowerCase() === 'futuras'
+                  ? future
+                  : `${type}`.toLowerCase() === 'pasadas'
+                  ? past
+                  : true;
+              return result;
+            });
+
+            this.reservationsList = this.reservations;
+            this.fillOptions();
+          }
+          this.controller.valueChanges.subscribe((value) =>
+            this.handleController(value)
+          );
+          this.status = this.reservationsList.length ? 'complete' : 'empty';
         });
-
-        this.reservationsList = this.reservations;
-        this.fillOptions();
       }
-      this.controller.valueChanges.subscribe((value) =>
-        this.handleController(value)
-      );
-      this.status = this.reservationsList.length ? 'complete' : 'empty';
-    });
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.queryParams.unsubscribe();
+    this.params.unsubscribe();
   }
 
   handleController = (value: any): void => {
@@ -115,12 +132,36 @@ export class ReservationListComponent implements OnInit {
       const { until } = reservation.date;
       const starts = new Date(from);
       const ends = new Date(until);
+      const locales: string = 'es-MX';
+      const weekday: any = {
+        weekday: 'short',
+      };
+      const month: any = {
+        month: 'short',
+      };
+      const day = starts.getDate();
+      const dayEnds = starts.getDate();
+      const _weekday = starts.toLocaleString(locales, weekday);
+      const _weekdayEnds = starts.toLocaleString(locales, weekday);
+      const _month = starts.toLocaleString(locales, month);
+      const _monthEnds = ends.toLocaleString(locales, month);
+      const timeStarts = `${this.formatHour(starts)}`;
+      const timeEnds = `${this.formatHour(ends)}`;
       const result = {
         _id,
-        value: `Desde ${starts.toLocaleDateString()}, ${starts.getHours()} horas, hasta ${ends.toLocaleDateString()}, ${ends.getHours()} horas`,
+        value: `Desde ${_weekday}, ${day} de ${_month} ${timeStarts}, Hasta ${_weekdayEnds}, ${dayEnds} de ${_monthEnds} ${timeEnds}`,
         status: true,
       };
       return result;
+    });
+  }
+
+  formatHour(date: Date, breakTime?: number) {
+    if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
+    return date.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
     });
   }
 
@@ -154,8 +195,8 @@ export class ReservationListComponent implements OnInit {
       props: {
         title: 'RESERVACIONES',
         optionsList: list,
-        cancelButton:{
-         text: 'Cerrar'
+        cancelButton: {
+          text: 'Cerrar',
         },
       },
       customClass: 'app-dialog',
@@ -241,9 +282,12 @@ export class ReservationListComponent implements OnInit {
 
   handleOption(option: string): void {
     this.option = option;
-    this._Router.navigate([
-      `/admin/entity-detail-metrics/reservations/${this.calendar}/${option}`,
-    ]);
+    let params = {};
+    if (this.limit) params['limit'] = this.limit;
+    this._Router.navigate(
+      [`/admin/entity-detail-metrics/reservations/${this.calendar}/${option}`],
+      { queryParams: params }
+    );
   }
 
   returnScreen(): void {
