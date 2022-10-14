@@ -117,7 +117,7 @@
                 backgroundPosition: icon?.backgroundPosition,
                 borderRadius: icon?.borderRadius,
                 filter:
-                   icon.color && !icon.highlight.highlighted
+                  icon.color && !icon.highlight.highlighted
                     ? icon.color
                     : 'none',
                 margin: icon.margin && icon?.margin,
@@ -327,7 +327,8 @@
           [ngStyle]="{
             'flex-direction': flexDirection ? flexDirection : '',
             'align-items': alignItems ? alignItems : '',
-            'justify-content': justifyContent
+            'justify-content': justifyContent,
+            overflow: 'auto'
           }"
         >
           <span
