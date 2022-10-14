@@ -135,6 +135,14 @@
         }
       }
 
+      &.unset {
+        cursor: unset !important;
+        box-shadow: none !important;
+        border: 0.5px solid #c9c9c9;
+        border-radius: 15px;
+        background-color: #f6f6f6;
+      }
+
       .amount {
         font-family: "RobotoMedium";
         font-size: 15px;

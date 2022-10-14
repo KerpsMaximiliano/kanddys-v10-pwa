@@ -50,14 +50,7 @@
       <h2 class="amount">FUTURAS</h2>
     </div>
 
-    <div
-      class="info-card pointer"
-      [routerLink]="
-        '/admin/entity-detail-metrics/reservations/' +
-        reservation.calendar +
-        '/disponibles'
-      "
-    >
+    <div class="info-card unset">
       <h2 class="amount quantity">
         {{ !reservation.noLimitsMode ? reservation.slots : "∞" }}
       </h2>

@@ -36,7 +36,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
   editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
-  buttons: string[] = ['futuras', 'pasadas', 'disponibles'];
+  buttons: string[] = ['futuras', 'pasadas'];
   calendar: string = '';
   option: string;
   saleflowData: SaleFlow;
@@ -63,7 +63,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
             }
           },
         });
-  
+
         this._MerchantService.loadedMerchantData.subscribe({
           next: async (value) => {
             if (value) {
@@ -167,6 +167,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
       const _monthEnds = ends.toLocaleString(locales, month);
       const timeStarts = `${this.formatHour(starts)}`;
       const timeEnds = `${this.formatHour(ends)}`;
+
       const result = {
         _id,
         value: `Desde ${_weekday}, ${day} de ${_month} ${timeStarts}, Hasta ${_weekdayEnds}, ${dayEnds} de ${_monthEnds} ${timeEnds}`,
@@ -178,11 +179,18 @@ export class ReservationListComponent implements OnInit, OnDestroy {
 
   formatHour(date: Date, breakTime?: number) {
     if (breakTime) date = new Date(date.getTime() - breakTime * 60000);
-    return date.toLocaleTimeString([], {
+
+    let result = date.toLocaleTimeString([], {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
     });
+
+    if (result.includes('0:')) {
+      result = result.replace('0:', '12:');
+    }
+
+    return result;
   }
 
   navigate(): void {
@@ -230,7 +238,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
       this.optionIndexArray = this.optionIndexArray.filter((_id) => _id !== id);
     else this.optionIndexArray.push(id);
     this.text2 = this.optionIndexArray.length
-      ? 'BORRAR ESTAS RESREVACIONES'
+      ? 'BORRAR ESTAS RESERVACIONES'
       : '';
   }
 

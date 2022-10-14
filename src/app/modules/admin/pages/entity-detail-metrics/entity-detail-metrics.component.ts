@@ -279,7 +279,7 @@ export class EntityDetailMetricsComponent implements OnInit {
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
-          const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
+          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
 
           await this.ngNavigatorShareService
             .share({
