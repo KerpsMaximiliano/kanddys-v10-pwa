@@ -68,12 +68,14 @@
           <span class="text">Inicio</span>
         </li>
 
-        <li class="disabled">
-          <div class="icon">
-            <img [src]="env + '/account.svg'" alt="bills" />
-          </div>
-          <span class="text">Facturas</span>
-        </li>
+        <!--
+          <li class="disabled">
+            <div class="icon">
+              <img [src]="env + '/account.svg'" alt="bills" />
+            </div>
+            <span class="text">Facturas</span>
+          </li>
+        -->
 
         <li>
           <div class="icon" (click)="redirect('/admin/merchant-items')">
@@ -82,19 +84,21 @@
           <span class="text">Artículos</span>
         </li>
 
-        <li class="disabled">
-          <div class="icon">
-            <img [src]="env + '/search-white.svg'" alt="search" />
-          </div>
-          <span class="text">Buscar</span>
-        </li>
-
-        <li class="disabled">
-          <div class="icon">
-            <img [src]="env + '/user-white.svg'" alt="account" />
-          </div>
-          <span class="text">Cuentas</span>
-        </li>
+        <!--
+          <li class="disabled">
+            <div class="icon">
+              <img [src]="env + '/search-white.svg'" alt="search" />
+            </div>
+            <span class="text">Buscar</span>
+          </li>
+  
+          <li class="disabled">
+            <div class="icon">
+              <img [src]="env + '/user-white.svg'" alt="account" />
+            </div>
+            <span class="text">Cuentas</span>
+          </li>
+        -->
       </ul>
     </nav>
   </div>

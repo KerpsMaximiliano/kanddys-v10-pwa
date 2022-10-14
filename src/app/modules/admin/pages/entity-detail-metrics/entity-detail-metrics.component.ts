@@ -19,8 +19,8 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WebformsService } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import { environment } from 'src/environments/environment';
-import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 
 // interface ExtraCalendar extends Calendar {
@@ -65,8 +65,8 @@ export class EntityDetailMetricsComponent implements OnInit {
     private calendarService: CalendarService,
     private location: Location,
     private webformsService: WebformsService,
-    private clipboard: Clipboard,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -244,13 +244,21 @@ export class EntityDetailMetricsComponent implements OnInit {
       },
       {
         text: 'Vende online. Comparte el link',
-        callback: () => {
-          this.clipboard.copy(
-            environment.uri +
-              '/ecommerce/store/' +
-              this.saleflowService.saleflowData._id
-          );
-          this.toastr.info('Enlace copiado en el clipboard');
+        callback: async () => {
+          await this.ngNavigatorShareService
+            .share({
+              title: '',
+              url:
+                environment.uri +
+                '/ecommerce/store/' +
+                this.saleflowService.saleflowData._id,
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         },
       },
       {
@@ -290,9 +298,20 @@ export class EntityDetailMetricsComponent implements OnInit {
     const list = [
       {
         text: 'Vende online. Comparte el link',
-        callback: () => {
+        callback: async () => {
           const link = `${this.URI}/ecommerce/store/${this.saleflow._id}`;
-          this.clipboard.copy(link);
+
+          await this.ngNavigatorShareService
+            .share({
+              title: '',
+              url: link,
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         },
       },
     ];
@@ -322,10 +341,19 @@ export class EntityDetailMetricsComponent implements OnInit {
       },
       {
         text: 'Vende online. Comparte el link',
-        callback: () => {
+        callback: async () => {
           const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
-          this.clipboard.copy(link);
-          this.toastr.info('Enlace copiado en el clipboard');
+          await this.ngNavigatorShareService
+            .share({
+              title: '',
+              url: link,
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         },
       },
     ];
