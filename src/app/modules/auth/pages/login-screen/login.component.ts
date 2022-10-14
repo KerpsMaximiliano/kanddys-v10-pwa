@@ -459,6 +459,7 @@ export class LoginComponent implements OnInit {
       if (!checkOTP) {
         this.toastr.error('Código inválido', null, { timeOut: 2000 });
         this.status = 'ready';
+        if (this.view === 'password') this.OTP = false;
         return;
       } else {
         this.toastr.info('Código válido', null, { timeOut: 2000 });

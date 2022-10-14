@@ -304,11 +304,12 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openDialog() {
-    let number: number =  this.item.status === 'disabled'
-    ?  2
-    : this.item.status === 'active'
-    ?  0
-    :  1;
+    let number: number =
+      this.item.status === 'disabled'
+        ? 2
+        : this.item.status === 'active'
+        ? 0
+        : 1;
     const statuses = [
       {
         text: 'VISIBLE (NO DESTACADO)',
@@ -316,14 +317,14 @@ export class ItemDisplayComponent implements OnInit {
         color: '#174B72',
         asyncCallback: () => {
           return new Promise((resolve, reject) => {
-            this.toggleActivateItem;
+            this.toggleActivateItem();
             this.item.status === 'disabled'
-              ? number = 2
+              ? (number = 2)
               : this.item.status === 'active'
-              ? number = 0
-              : number = 1;
+              ? (number = 0)
+              : (number = 1);
             resolve(true);
-            });
+          });
         },
       },
       {
@@ -332,13 +333,13 @@ export class ItemDisplayComponent implements OnInit {
         color: '#174B72',
         asyncCallback: () => {
           return new Promise((resolve, reject) => {
-            this.toggleActivateItem;
+            this.toggleActivateItem();
             console.log(this.item.status);
             this.item.status === 'disabled'
-              ? number = 2
+              ? (number = 2)
               : this.item.status === 'active'
-              ? number = 0
-              : number = 1;
+              ? (number = 0)
+              : (number = 1);
             resolve(true);
           });
         },
@@ -349,42 +350,42 @@ export class ItemDisplayComponent implements OnInit {
         color: '#FFFFFF',
         asyncCallback: () => {
           return new Promise((resolve, reject) => {
-            this.toggleActivateItem;
+            this.toggleActivateItem();
             this.item.status === 'disabled'
-              ? number = 2
+              ? (number = 2)
               : this.item.status === 'active'
-              ? number = 0
-              : number = 1;
+              ? (number = 0)
+              : (number = 1);
             resolve(true);
           });
         },
       },
     ];
-    
+
     const list = [
-          {
-            text: 'Editar producto',
-            callback: () => {
-              if (this.item.params.length === 0) {
-                this.router.navigate([`admin/create-item/${this.item._id}`]);
-              } else if (
-                this.item.params.length > 0 &&
-                this.item.params[0].values.length > 0
-              ) {
-                this.router.navigate([`admin/create-item/${this.item._id}`], {
-                  queryParams: {
-                    justdynamicmode: true,
-                  },
-                });
-              }
-            },
-          },
-          {
-            text: 'Adicionar nuevo Item',
-            callback: () => {
-              this.router.navigate([`/admin/create-item`]);
-            },
-          },
+      {
+        text: 'Editar producto',
+        callback: () => {
+          if (this.item.params.length === 0) {
+            this.router.navigate([`admin/create-item/${this.item._id}`]);
+          } else if (
+            this.item.params.length > 0 &&
+            this.item.params[0].values.length > 0
+          ) {
+            this.router.navigate([`admin/create-item/${this.item._id}`], {
+              queryParams: {
+                justdynamicmode: true,
+              },
+            });
+          }
+        },
+      },
+      {
+        text: 'Adicionar nuevo Item',
+        callback: () => {
+          this.router.navigate([`/admin/create-item`]);
+        },
+      },
     ];
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
