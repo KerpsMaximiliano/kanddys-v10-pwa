@@ -20,7 +20,7 @@
         [style]="{
           background: option === button ? '#fff' : 'transparent',
           color: option === button ? '#000' : '#fff',
-          boxShadow: option === button ?'0px 0px 4px 0px rgb(171 171 171)':''
+          boxShadow: option === button ? '0px 0px 4px 0px rgb(171 171 171)' : ''
         }"
         (click)="handleOption(button)"
       >
@@ -30,7 +30,13 @@
     <ng-container *ngSwitchCase="'complete'">
       <div class="title-grid">
         <span class="title">Siguientes</span>
-        <span class="subtitle">Ingreso: </span>
+        <span
+          class="subtitle"
+          *ngIf="
+            saleflowData?.module?.appointment?.calendar._id === calendar
+          "
+          >Ingreso: ${{ income | number: "1.0-2" }}
+        </span>
       </div>
       <div class="content">
         <div
@@ -65,7 +71,9 @@
           (activeMultipleOptionValue)="handleValue($event)"
           [showSelectedFeedback]="true"
         ></app-answer-selector> -->
-        <button *ngIf="!editable" class="reservation">CREA UNA NUEVA RESERVACION</button>
+        <button *ngIf="!editable" class="reservation">
+          CREA UNA NUEVA RESERVACION
+        </button>
       </div>
     </ng-container>
     <div class="message-container" *ngSwitchCase="'empty'">

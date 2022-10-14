@@ -34,12 +34,20 @@ export class AdminComponent implements OnInit {
         this.headerService.flowRoute = this.router.url;
         this.router.navigate([`auth/login/`]);
         return;
+      } else {
+        setTimeout(() => {
+          this.merchantsService.loadedMerchantData.next(true);
+        }, 100)
       }
 
       this.saleflowService.saleflowData =
         await this.saleflowService.saleflowDefault(
           this.merchantsService.merchantData._id
         );
+
+      if (this.saleflowService.saleflowData) {
+        this.saleflowService.saleflowLoaded.next(true);
+      }
     });
   }
 }

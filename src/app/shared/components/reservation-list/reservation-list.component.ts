@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { CalendarService } from 'src/app/core/services/calendar.service';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { SingleActionDialogComponent } from '../../dialogs/single-action-dialog/single-action-dialog.component';
 import { StoreShareList } from '../../dialogs/store-share/store-share.component';
 import { SettingsComponent } from '../../dialogs/settings/settings.component';
+import { SaleflowData } from 'src/app/core/services/header.service';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 @Component({
   selector: 'app-reservation-list',
@@ -38,17 +39,38 @@ export class ReservationListComponent implements OnInit {
   buttons: string[] = ['futuras', 'pasadas', 'disponibles'];
   calendar: string = '';
   option: string;
+  saleflowData: SaleFlow;
+  income: number = null;
+
   constructor(
-    private _MerchantsService: MerchantsService,
     private _ReservationService: ReservationService,
-    private _CalendarService: CalendarService,
     private _ActivatedRoute: ActivatedRoute,
     private _Router: Router,
-    private _DialogService: DialogService
+    private _DialogService: DialogService,
+    private _SaleflowService: SaleFlowService,
+    private _MerchantService: MerchantsService
   ) {}
 
   ngOnInit(): void {
     this._ActivatedRoute.params.subscribe(async (queryParams) => {
+      this._SaleflowService.saleflowLoaded.subscribe({
+        next: (value) => {
+          if (value) {
+            this.saleflowData = this._SaleflowService.saleflowData;
+          }
+        },
+      });
+
+      this._MerchantService.loadedMerchantData.subscribe({
+        next: async (value) => {
+          if (value) {
+            this.income = await this._MerchantService.incomeMerchant(
+              this._MerchantService.merchantData._id
+            );
+          }
+        },
+      });
+
       const { calendar, type } = queryParams;
       this.option = !this.buttons.includes(type)
         ? this.buttons[this.buttons.length - 1]
@@ -154,8 +176,8 @@ export class ReservationListComponent implements OnInit {
       props: {
         title: 'RESERVACIONES',
         optionsList: list,
-        cancelButton:{
-         text: 'Cerrar'
+        cancelButton: {
+          text: 'Cerrar',
         },
       },
       customClass: 'app-dialog',
