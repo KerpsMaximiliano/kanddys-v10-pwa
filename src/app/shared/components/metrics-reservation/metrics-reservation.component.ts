@@ -150,7 +150,7 @@ export class MetricsReservationComponent implements OnInit {
       {
         text: 'Bloquea slots',
         callback: () => {
-          this._Router.navigate([`/others/time-block/${calendarId}`]);
+          this._Router.navigate([`/admin/time-block/${calendarId}`]);
         },
       },
       {

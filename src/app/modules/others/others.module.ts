@@ -21,7 +21,6 @@ import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-sto
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
-import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
@@ -40,7 +39,6 @@ import { ReservationsComponent } from './pages/reservations/reservations.compone
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
 import { TagsEditComponent } from './pages/tags-edit/tags-edit.component';
-import { TimeBlockComponent } from 'src/app/shared/components/time-block/time-block.component';
 
 const routes: Routes = [
   {
@@ -127,14 +125,6 @@ const routes: Routes = [
   {
     path: 'bank-registration/:saleflowId',
     component: BankRegistrationComponent,
-  },
-  {
-    path: 'calendar-creator',
-    component: CalendarCreatorComponent,
-  },
-  {
-    path: 'calendar-creator/:calendarId',
-    component: CalendarCreatorComponent,
   },
   {
     path: 'calendar-detail',
@@ -236,10 +226,6 @@ const routes: Routes = [
     path: 'merchant-shared/:merchantId',
     component: MerchantSharedComponent,
   },
-  {
-    path: 'time-block/:calendarId',
-    component: TimeBlockComponent,
-  },
   // FROM ADMIN 21/9/2022
 ];
 
@@ -264,7 +250,6 @@ const routes: Routes = [
     // FROM ADMIN 21/9/2022
     AdminLoginComponent,
     BankRegistrationComponent,
-    CalendarCreatorComponent,
     CalendarDetailComponent,
     CategoryItemDetailComponent,
     CategoryItemsAdminComponent,

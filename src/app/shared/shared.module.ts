@@ -96,7 +96,6 @@ import { SelectDropdownComponent } from './components/select-dropdown/select-dro
 import { SettingsComponent } from './dialogs/settings/settings.component';
 import { MetricsReservationComponent } from './components/metrics-reservation/metrics-reservation.component';
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
-import { TimeBlockComponent } from './components/time-block/time-block.component';
 import { TagManagementComponent } from './dialogs/tag-management/tag-management.component';
 import { TagsSelectorComponent } from './components/tags-selector/tags-selector.component';
 import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
@@ -206,7 +205,6 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   SingleActionDialogComponent,
-  TimeBlockComponent,
   TagManagementComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,

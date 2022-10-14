@@ -10,6 +10,8 @@ import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.componen
 import { AdminComponent } from './admin/admin.component';
 import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
+import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
+import { TimeBlockComponent } from './pages/time-block/time-block.component';
 
 const routes: Routes = [
   {
@@ -56,6 +58,18 @@ const routes: Routes = [
         component: TagManagementComponent,
         data: { animation: 'EntityDetailMetrics' },
       },
+      {
+        path: 'calendar-creator',
+        component: CalendarCreatorComponent,
+      },
+      {
+        path: 'calendar-creator/:calendarId',
+        component: CalendarCreatorComponent,
+      },
+      {
+        path: 'time-block/:calendarId',
+        component: TimeBlockComponent,
+      },
     ],
   },
 ];
@@ -68,6 +82,8 @@ const routes: Routes = [
     ItemDisplayComponent,
     ActionsMenuComponent,
     AdminComponent,
+    CalendarCreatorComponent,
+    TimeBlockComponent
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
