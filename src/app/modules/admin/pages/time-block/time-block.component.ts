@@ -215,13 +215,17 @@ export class TimeBlockComponent implements OnInit {
           currentDateObject.getFullYear(),
           this.month.number - 1,
           dayNumber,
-          startPeriod.value === 'PM' ? start.value + 12 : start.value
+          startPeriod.value === 'PM' && start.value !== 12
+            ? start.value + 12
+            : start.value
         );
         const untilDateObject = new Date(
           currentDateObject.getFullYear(),
           this.month.number - 1,
           dayNumber,
-          endPeriod.value === 'PM' ? end.value + 12 : end.value
+          endPeriod.value === 'PM' && end.value !== 12
+            ? end.value + 12
+            : end.value
         );
 
         exceptions.push({
