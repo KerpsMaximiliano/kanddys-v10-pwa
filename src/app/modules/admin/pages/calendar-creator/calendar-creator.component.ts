@@ -785,6 +785,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
           if (this.untilHourSwiper) {
             setTimeout(() => {
+              this.untilHourSwiper.directiveRef.update();
               this.untilHourSwiper.directiveRef.setIndex(0);
             }, 100);
 
