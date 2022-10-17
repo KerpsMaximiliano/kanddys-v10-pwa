@@ -23,7 +23,7 @@
         ? headerConfiguration.headerTextCallback()
         : null
     "
-    [returnAble]="true"
+    [returnAble]="!isOrder ? false : true"
     (returnEvent)="location.back()"
   >
   </app-helper-headerv2>
@@ -111,7 +111,7 @@
 
       <app-sticky-button
         *ngIf="selectedDate && selectedDate.filled"
-        text="Continuar al resumen de la factura"
+        [text]="stickyButtonText"
         [mode]="'fixed'"
         [bgColor]="'#2874AD'"
         [height]="'max-content'"

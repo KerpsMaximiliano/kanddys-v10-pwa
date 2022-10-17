@@ -99,6 +99,7 @@ export class ReservationsCreatorComponent implements OnInit {
   useDateRangeToLimitAvailableWeekDays: boolean = false;
   activeReservationIndex: number = null;
   initialMonthName: string = null;
+  stickyButtonText: string = "SALVAR RESERVACIÓN";
 
   allMonths: {
     id: number;
@@ -169,6 +170,7 @@ export class ReservationsCreatorComponent implements OnInit {
         // If true, this reservation is for an order
         if (saleflowId) {
           this.isOrder = true;
+          this.stickyButtonText = "Continuar al resumen de la factura";
           await this.headerService.fetchSaleflow(saleflowId);
         }
 
