@@ -172,8 +172,25 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         _id,
         value: `Desde ${_weekday}, ${day} de ${_month} ${timeStarts}, Hasta ${_weekdayEnds}, ${dayEnds} de ${_monthEnds} ${timeEnds}`,
         status: true,
+        startsAtMilliseconds: starts.getTime(),
       };
       return result;
+    });
+
+    this.reservationsList = (
+      this.reservationsList as Array<{
+        _id: string;
+        value: string;
+        status: boolean;
+        startsAtMilliseconds: number;
+      }>
+    ).sort((firstDate, secondDate) => {
+      const millisencondsDate1 = firstDate.startsAtMilliseconds;
+      const millisencondsDate2 = secondDate.startsAtMilliseconds;
+
+      if (millisencondsDate1 > millisencondsDate2) return 1;
+      if (millisencondsDate1 < millisencondsDate2) return -1;
+      return 0;
     });
   }
 
