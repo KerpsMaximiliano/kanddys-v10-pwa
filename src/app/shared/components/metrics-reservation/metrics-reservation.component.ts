@@ -10,6 +10,7 @@ import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from '../../dialogs/settings/settings.component';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { environment } from 'src/environments/environment';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 
 @Component({
   selector: 'app-metrics-reservation',
@@ -43,7 +44,7 @@ export class MetricsReservationComponent implements OnInit {
     private _CalendarService: CalendarService,
     private _DialogService: DialogService,
     private _Router: Router,
-    private ngNavigatorShareService: NgNavigatorShareService,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) {}
 
   ngOnInit(): void {
@@ -60,8 +61,11 @@ export class MetricsReservationComponent implements OnInit {
       const currentDate = new Date();
       const today = currentDate;
       for (const calendar of calendars) {
-        const params = {
+        const params: PaginationInput = {
           findBy: { calendar: calendar._id },
+          options: {
+            limit: 100
+          }
         };
         const result: any =
           await this._ReservationService.getReservationByCalendar(params);
@@ -73,10 +77,15 @@ export class MetricsReservationComponent implements OnInit {
           const result = flag;
           return result;
         });
+
+        console.log('hoy', today);
+
         const future = result.filter(({ date }) => {
           const { from } = date;
           const _date = new Date(from);
           const flag = _date > today;
+          console.log(flag);
+          console.log(_date);
           const result = flag;
           return result;
         });
@@ -93,7 +102,7 @@ export class MetricsReservationComponent implements OnInit {
           //calendarios no-limits
           daysSeparatedByComma = 'Todos los dias';
         }
-        
+
         if (
           calendar.limits &&
           'fromDay' in calendar.limits &&
