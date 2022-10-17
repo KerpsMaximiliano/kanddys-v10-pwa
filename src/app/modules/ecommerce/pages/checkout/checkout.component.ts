@@ -165,14 +165,12 @@ export class CheckoutComponent implements OnInit {
     this.reservation = this.headerService.getReservation(
       this.headerService.saleflow._id
     ).reservation;
-    if (this.reservation?.date.from < new Date()) {
-      this.headerService.emptyReservation(this.headerService.saleflow._id);
-      this.editOrder('reservation');
-    }
-    this.headerService.checkoutRoute = null;
-    this.setCustomizerPreview();
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
+      if (fromDate < new Date()) {
+        this.headerService.emptyReservation(this.headerService.saleflow._id);
+        this.editOrder('reservation');
+      }
       const untilDate = new Date(this.reservation.date.until);
       this.date = {
         day: fromDate.getDate(),
@@ -188,6 +186,8 @@ export class CheckoutComponent implements OnInit {
         )}`,
       };
     }
+    this.headerService.checkoutRoute = null;
+    this.setCustomizerPreview();
     if (!this.customizer)
       this.payment = this.items?.reduce(
         (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),
