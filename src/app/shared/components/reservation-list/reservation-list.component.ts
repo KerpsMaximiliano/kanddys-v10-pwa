@@ -85,7 +85,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
           this.calendar = calendar;
           const params = {
             findBy: { calendar },
-            options: { limit: 200 },
+            options: { limit: 1000 },
           };
           this.status = 'loading';
           if (type) {
