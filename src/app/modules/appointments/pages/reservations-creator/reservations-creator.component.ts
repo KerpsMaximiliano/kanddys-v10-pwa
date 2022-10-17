@@ -656,8 +656,19 @@ export class ReservationsCreatorComponent implements OnInit {
     };
 
     this.timeRangeOptions = [];
-    this.activeReservationIndex = hour;
+    this.activeReservationIndex = hour; //Is used when you have a previous reservation stored
     this.generateHourList(dayOfTheMonthNumber);
+
+    //clicks the previous selected reservation when opening the component
+    if (this.activeReservationIndex) {
+      setTimeout(() => {
+        const listItem = document.querySelectorAll('.selector-option')[
+          this.activeReservationIndex
+        ] as HTMLElement;
+
+        listItem.click();
+      }, 100);
+    }
   }
 
   /**
