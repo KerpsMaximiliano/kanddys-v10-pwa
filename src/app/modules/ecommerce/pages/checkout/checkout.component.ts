@@ -157,6 +157,7 @@ export class CheckoutComponent implements OnInit {
     await this.headerService.fetchSaleflow(saleflowId);
     this.order = this.headerService.getOrder(this.headerService.saleflow._id);
     this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost(this.headerService.saleflow._id);
     this.deliveryLocation = this.headerService.getLocation(
       this.headerService.saleflow._id
@@ -164,10 +165,12 @@ export class CheckoutComponent implements OnInit {
     this.reservation = this.headerService.getReservation(
       this.headerService.saleflow._id
     ).reservation;
-    this.headerService.checkoutRoute = null;
-    this.setCustomizerPreview();
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
+      if (fromDate < new Date()) {
+        this.headerService.emptyReservation(this.headerService.saleflow._id);
+        this.editOrder('reservation');
+      }
       const untilDate = new Date(this.reservation.date.until);
       this.date = {
         day: fromDate.getDate(),
@@ -183,6 +186,8 @@ export class CheckoutComponent implements OnInit {
         )}`,
       };
     }
+    this.headerService.checkoutRoute = null;
+    this.setCustomizerPreview();
     if (!this.customizer)
       this.payment = this.items?.reduce(
         (prev, curr) => prev + ('pricing' in curr ? curr.pricing : curr.price),

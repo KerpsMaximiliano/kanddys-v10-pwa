@@ -457,6 +457,12 @@ export class HeaderService {
     localStorage.setItem(saleflow, JSON.stringify({ itemData, ...rest }));
   }
 
+  emptyReservation(saleflow: string) {
+    let { reservation, date, ...rest }: SaleflowData =
+      JSON.parse(localStorage.getItem(saleflow)) || {};
+    localStorage.setItem(saleflow, JSON.stringify(rest));
+  }
+
   // Empties post data and option from localStorage
   emptyPost(saleflow: string) {
     let { post, ...rest }: SaleflowData =

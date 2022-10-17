@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Item } from 'src/app/core/models/item';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-item',
@@ -10,6 +11,7 @@ export class ItemComponent implements OnInit {
   @Input() item: Item;
   price: number;
   @Output() imageEvent = new EventEmitter();
+  env: string = environment.assetsUrl;
 
   constructor() {}
 
@@ -20,11 +22,13 @@ export class ItemComponent implements OnInit {
         params.values.forEach((values) => {
           if (lowest === 0) {
             lowest = values.price;
-            if (this.item.images.length === 0) this.item.images.push(values.image);
-          } 
+            if (this.item.images.length === 0)
+              this.item.images.push(values.image);
+          }
           if (values.price < lowest) {
             lowest = values.price;
-            if (this.item.images.length === 0) this.item.images.push(values.image);
+            if (this.item.images.length === 0)
+              this.item.images.push(values.image);
           }
         });
       });
