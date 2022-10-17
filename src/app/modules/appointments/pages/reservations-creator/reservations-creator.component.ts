@@ -292,10 +292,6 @@ export class ReservationsCreatorComponent implements OnInit {
 
     calendarHourRangeStart = calendarHourRangeStart - utcOffset;
     calendarHourRangeLimit = calendarHourRangeLimit - utcOffset;
-
-    console.log('rangestart', calendarHourRangeStart, currentHour);
-
-    console.log(calendarHourRangeLimit, calendarHourRangeStart);
     //FIN - CONVIRTIENDO LAS HORAS A UTC
 
     let isCurrentHourDivisibleByTheChunkSize = false;
@@ -527,8 +523,6 @@ export class ReservationsCreatorComponent implements OnInit {
           ? 60 - this.calendarData.breakTime
           : hourFractionAccumulator - this.calendarData.breakTime;
 
-      console.log('lch', loopCurrentHour, toHourToShow);
-
       const toHour: HourOption = {
         hourNumber: loopCurrentHour,
         minutesNumber: hourFractionAccumulator,
@@ -589,38 +583,61 @@ export class ReservationsCreatorComponent implements OnInit {
           const fromDateInLocalTime = moment(exception.from).toDate();
           const untilDateInLocalTime = moment(exception.until).toDate();
 
-          const exceptionFromHour = fromDateInLocalTime.getHours();
-          const exceptionUntilHour = untilDateInLocalTime.getHours();
-
-          const currentRangeFromHour24HourFormat =
-            fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
-              ? fromHour.hourNumber + 12
-              : fromHour.hourNumber;
-          const currentRangeUntilHour24HourFormat = toHour.hourNumber;
-
-          const isFromHourInsideTheExceptionRange =
-            exceptionFromHour <= currentRangeFromHour24HourFormat &&
-            currentRangeFromHour24HourFormat < exceptionUntilHour;
-          const isUntilHourInsideTheExceptionRange =
-            ((exceptionFromHour <= currentRangeUntilHour24HourFormat &&
-              currentRangeUntilHour24HourFormat < exceptionUntilHour) ||
-              (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
-                currentRangeUntilHour24HourFormat === exceptionUntilHour &&
-                hourFractionAccumulator === 0)) &&
-            exceptionFromHour !== currentRangeUntilHour24HourFormat;
-
           const isTheExceptionDayTheSelectedDay =
             fromDateInLocalTime.getDate() ===
               this.selectedDate.dayOfTheMonthNumber &&
             untilDateInLocalTime.getDate() ===
               this.selectedDate.dayOfTheMonthNumber;
 
-          if (
-            (isFromHourInsideTheExceptionRange ||
-              isUntilHourInsideTheExceptionRange) &&
-            isTheExceptionDayTheSelectedDay
-          ) {
-            this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+          //For cases when the calendar Timezone is less than 0(like utc -4)
+          const doesTheExceptionRangeExceedThe24HoursOfTheCurrentDay =
+            fromDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber &&
+            untilDateInLocalTime.getDate() ===
+              this.selectedDate.dayOfTheMonthNumber + 1;
+
+          if (isTheExceptionDayTheSelectedDay) {
+            const exceptionFromHour = fromDateInLocalTime.getHours();
+            const exceptionUntilHour = untilDateInLocalTime.getHours();
+
+            const currentRangeFromHour24HourFormat =
+              fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
+                ? fromHour.hourNumber + 12
+                : fromHour.hourNumber;
+            const currentRangeUntilHour24HourFormat = toHour.hourNumber;
+
+            const isFromHourInsideTheExceptionRange =
+              exceptionFromHour <= currentRangeFromHour24HourFormat &&
+              currentRangeFromHour24HourFormat < exceptionUntilHour;
+            const isUntilHourInsideTheExceptionRange =
+              ((exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+                currentRangeUntilHour24HourFormat < exceptionUntilHour) ||
+                (exceptionFromHour <= currentRangeUntilHour24HourFormat &&
+                  currentRangeUntilHour24HourFormat === exceptionUntilHour &&
+                  hourFractionAccumulator === 0)) &&
+              exceptionFromHour !== currentRangeUntilHour24HourFormat;
+
+            if (
+              (isFromHourInsideTheExceptionRange ||
+                isUntilHourInsideTheExceptionRange) &&
+              isTheExceptionDayTheSelectedDay
+            ) {
+              this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+            }
+          } else if (doesTheExceptionRangeExceedThe24HoursOfTheCurrentDay) {
+            const exceptionFromHour = fromDateInLocalTime.getHours();
+
+            const currentRangeFromHour24HourFormat =
+              fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12
+                ? fromHour.hourNumber + 12
+                : fromHour.hourNumber;
+
+            const isFromHourInsideTheExceptionRange =
+              exceptionFromHour <= currentRangeFromHour24HourFormat;
+
+            if (isFromHourInsideTheExceptionRange) {
+              this.hourRangesBlocked.push(this.timeRangeOptions.length - 1);
+            }
           }
         }
         ///////////////////////////////////////////// END ////////////////////////////////////////
