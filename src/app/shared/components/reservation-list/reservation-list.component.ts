@@ -145,6 +145,9 @@ export class ReservationListComponent implements OnInit, OnDestroy {
     this.reservationsList = this.reservations.filter((reservation, index) =>
       this.handleReservation(reservation, value, index)
     );
+
+    const currentDateSnapshot = new Date().getTime();
+
     // this.options
     this.reservationsList = this.reservationsList.map((reservation) => {
       const { _id } = reservation;
@@ -172,7 +175,10 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         _id,
         value: `Desde ${_weekday}, ${day} de ${_month} ${timeStarts}, Hasta ${_weekdayEnds}, ${dayEnds} de ${_monthEnds} ${timeEnds}`,
         status: true,
-        startsAtMilliseconds: starts.getTime(),
+        proximityInMillisenconds:
+          this.option === 'futuras'
+            ? currentDateSnapshot - starts.getTime()
+            : starts.getTime() - currentDateSnapshot,
       };
       return result;
     });
@@ -182,14 +188,14 @@ export class ReservationListComponent implements OnInit, OnDestroy {
         _id: string;
         value: string;
         status: boolean;
-        startsAtMilliseconds: number;
+        proximityInMillisenconds: number;
       }>
     ).sort((firstDate, secondDate) => {
-      const millisencondsDate1 = firstDate.startsAtMilliseconds;
-      const millisencondsDate2 = secondDate.startsAtMilliseconds;
+      const millisencondsDate1 = firstDate.proximityInMillisenconds;
+      const millisencondsDate2 = secondDate.proximityInMillisenconds;
 
-      if (millisencondsDate1 > millisencondsDate2) return 1;
-      if (millisencondsDate1 < millisencondsDate2) return -1;
+      if (millisencondsDate1 > millisencondsDate2) return -1;
+      if (millisencondsDate1 < millisencondsDate2) return 1;
       return 0;
     });
   }
