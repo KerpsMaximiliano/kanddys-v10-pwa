@@ -221,11 +221,8 @@ export class ReservationsCreatorComponent implements OnInit {
 
             return;
           }
-
-          if (
-            !saleflowId ||
-            !this.headerService.getReservation(saleflowId)?.date
-          ) {
+          const date = this.headerService.getReservation(saleflowId)?.date;
+          if (!saleflowId || !date) {
             const currentMonth =
               this.calendarsService.allMonths[currentDateObject.getMonth()];
 
@@ -234,10 +231,20 @@ export class ReservationsCreatorComponent implements OnInit {
               number: currentMonth.id,
             };
             this.rerenderAvailableHours(currentDateObject);
-          } else if (this.headerService.getReservation(saleflowId).date) {
-            const dateInput = new Date(
-              this.headerService.getReservation(saleflowId).date.date as string
-            );
+          } else if (date) {
+            const dateInput = new Date(date.date as string);
+            if (dateInput < new Date()) {
+              this.headerService.emptyReservation(saleflowId);
+              const currentMonth =
+                this.calendarsService.allMonths[currentDateObject.getMonth()];
+
+              this.currentMonth = {
+                name: currentMonth.name,
+                number: currentMonth.id,
+              };
+              this.rerenderAvailableHours(currentDateObject);
+              return;
+            }
 
             const currentMonth =
               this.calendarsService.allMonths[dateInput.getMonth()];
@@ -247,10 +254,7 @@ export class ReservationsCreatorComponent implements OnInit {
               number: currentMonth.id,
             };
 
-            this.rerenderAvailableHours(
-              dateInput,
-              this.headerService.getReservation(saleflowId).date.dateOptionIndex
-            );
+            this.rerenderAvailableHours(dateInput, date.dateOptionIndex);
           }
         } else {
           this.router.navigate(['others/error-screen']);

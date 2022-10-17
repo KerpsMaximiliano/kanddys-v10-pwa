@@ -458,7 +458,7 @@ export class HeaderService {
   }
 
   emptyReservation(saleflow: string) {
-    let { reservation, ...rest }: SaleflowData =
+    let { reservation, date, ...rest }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify(rest));
   }
