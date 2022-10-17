@@ -99,7 +99,7 @@ export class ReservationsCreatorComponent implements OnInit {
   useDateRangeToLimitAvailableWeekDays: boolean = false;
   activeReservationIndex: number = null;
   initialMonthName: string = null;
-  stickyButtonText: string = "SALVAR RESERVACIÓN";
+  stickyButtonText: string = 'SALVAR RESERVACIÓN';
 
   allMonths: {
     id: number;
@@ -170,7 +170,7 @@ export class ReservationsCreatorComponent implements OnInit {
         // If true, this reservation is for an order
         if (saleflowId) {
           this.isOrder = true;
-          this.stickyButtonText = "Continuar al resumen de la factura";
+          this.stickyButtonText = 'Continuar al resumen de la factura';
           await this.headerService.fetchSaleflow(saleflowId);
         }
 
@@ -206,6 +206,21 @@ export class ReservationsCreatorComponent implements OnInit {
             name: this.allMonths[monthNumber].name,
             number: monthNumber + 1,
           };
+
+          if (this.reservation) {
+            const dateInput = new Date(this.reservation.date.from);
+            const currentMonth =
+              this.calendarsService.allMonths[dateInput.getMonth()];
+
+            this.currentMonth = {
+              name: currentMonth.name,
+              number: currentMonth.id,
+            };
+
+            this.rerenderAvailableHours(dateInput);
+
+            return;
+          }
 
           if (
             !saleflowId ||
@@ -807,10 +822,15 @@ export class ReservationsCreatorComponent implements OnInit {
     if (user && this.reservation) mutationParams.push(this.reservation._id);
 
     let result = await reservationMutation(...mutationParams);
+
+    console.log(result);
     if (result)
-      result = !user
-        ? result.createReservationAuthLess
-        : result.createReservation;
+      result =
+        !user && !this.reservation
+          ? result.createReservationAuthLess
+          : !this.reservation
+          ? result.createReservation
+          : result.updateReservation;
 
     const message = `Saludos, se ha creado una reservación asociada a su ${
       this.clientPhone ? 'número de teléfono' : 'correo electrónico'
