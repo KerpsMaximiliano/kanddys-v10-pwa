@@ -157,6 +157,7 @@ export class CheckoutComponent implements OnInit {
     await this.headerService.fetchSaleflow(saleflowId);
     this.order = this.headerService.getOrder(this.headerService.saleflow._id);
     this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost(this.headerService.saleflow._id);
     this.deliveryLocation = this.headerService.getLocation(
       this.headerService.saleflow._id
