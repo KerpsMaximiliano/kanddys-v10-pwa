@@ -32,9 +32,7 @@
         <span class="title">Siguientes</span>
         <span
           class="subtitle"
-          *ngIf="
-            saleflowData?.module?.appointment?.calendar._id === calendar
-          "
+          *ngIf="saleflowData?.module?.appointment?.calendar._id === calendar"
           >Ingreso: ${{ income | number: "1.0-2" }}
         </span>
       </div>
@@ -71,9 +69,15 @@
           (activeMultipleOptionValue)="handleValue($event)"
           [showSelectedFeedback]="true"
         ></app-answer-selector> -->
-        <button *ngIf="!editable" class="reservation">
-          CREA UNA NUEVA RESERVACION
-        </button>
+        <!--
+          <button
+            *ngIf="!editable"
+            class="reservation"
+            [routerLink]="['appointments/reservations-creator/']"
+          >
+            CREA UNA NUEVA RESERVACION
+          </button>
+        -->
       </div>
     </ng-container>
     <div class="message-container" *ngSwitchCase="'empty'">
