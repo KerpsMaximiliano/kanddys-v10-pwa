@@ -78,14 +78,10 @@ export class MetricsReservationComponent implements OnInit {
           return result;
         });
 
-        console.log('hoy', today);
-
         const future = result.filter(({ date }) => {
           const { from } = date;
           const _date = new Date(from);
           const flag = _date > today;
-          console.log(flag);
-          console.log(_date);
           const result = flag;
           return result;
         });
