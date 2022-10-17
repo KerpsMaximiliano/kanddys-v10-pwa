@@ -186,7 +186,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
       hour12: true,
     });
 
-    if (result.includes('0:')) {
+    if (result.startsWith('0:')) {
       result = result.replace('0:', '12:');
     }
 
