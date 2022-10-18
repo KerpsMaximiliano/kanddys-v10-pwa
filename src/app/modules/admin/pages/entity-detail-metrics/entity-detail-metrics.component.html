@@ -2,9 +2,10 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [mainText]="{
-      text: (merchantsService.merchantData?.name.length < 38
-      ? merchantsService.merchantData?.name
-      : merchantsService.merchantData?.name.split(' ')['0']) || 'Merchant',
+      text:
+        (merchantsService.merchantData?.name.length < 38
+          ? merchantsService.merchantData?.name
+          : merchantsService.merchantData?.name.split(' ')['0']) || 'Merchant',
       fontSize: '21px',
       fontFamily: 'SfProBold'
     }"
@@ -96,9 +97,7 @@
     </div>
   </div>
 
-  <!--
-    <app-functionality-parameters></app-functionality-parameters>
-  -->
+  <app-functionality-parameters></app-functionality-parameters>
 
   <div class="about-products" style="margin-top: 68px">
     <div class="wrapper">

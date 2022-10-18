@@ -4,16 +4,33 @@
 
     <div class="container">
       <p class="title">Notificaciones:</p>
-      <p class="subtitle">Whatsapp {{whatsapp}}</p>
+      <p class="subtitle">Whatsapp {{ whatsapp }}</p>
     </div>
-    <div>
+
+    <div *ngIf="scenaries">
       <p class="title">Escenarios</p>
-      <p class="subtitle">{{scenaries}} Escenarios disponibles</p>
+      <p class="subtitle">{{ scenaries }} Escenarios disponibles</p>
     </div>
-    <div>
+    <div *ngIf="calendarData">
       <p class="title">Calendario de citas y reservaciones</p>
-      <p class="subtitle">{{datesAndReservations}}</p>
-      <p class="subtitle">Los Dom, Mar, Mie, Jue</p>
+      <p class="subtitle">{{ appointmentsRatePerTimeRange }}</p>
+
+      <p
+        class="subtitle"
+        *ngIf="daysAvailability && daysAvailability.length > 0"
+      >
+        Dias: {{ daysAvailability }}
+      </p>
+
+      <p
+        class="subtitle"
+        *ngIf="
+          !daysAvailability ||
+          (daysAvailability && daysAvailability.length === 0)
+        "
+      >
+        Dias: No definido
+      </p>
     </div>
   </div>
 </div>
