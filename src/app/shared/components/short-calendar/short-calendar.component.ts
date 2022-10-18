@@ -201,7 +201,7 @@ export class ShortCalendarComponent implements OnInit {
   onTouchMove(event) {
     const scrollerElement = document.querySelector('.scroller');
 
-    console.log(this.prevScrollLeftData);
+    //console.log(this.prevScrollLeftData);
 
     if (this.prevScrollLeftData.scrollLeft === scrollerElement.scrollLeft) {
       this.prevScrollLeftData.counter++;
@@ -315,7 +315,7 @@ export class ShortCalendarComponent implements OnInit {
       this.beforeAnimation.emit(true);
 
       setTimeout(() => {
-        console.log(this.currentMonthIndex);
+        //console.log(this.currentMonthIndex);
 
         this.currentMonthIndex--;
 

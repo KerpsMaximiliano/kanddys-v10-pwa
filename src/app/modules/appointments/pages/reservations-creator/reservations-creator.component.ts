@@ -642,6 +642,12 @@ export class ReservationsCreatorComponent implements OnInit {
         }
         ///////////////////////////////////////////// END ////////////////////////////////////////
 
+        //If activeReservationIndex is included in the blockedHours, it is set to null
+        //to prevent blocked hours to be highlighted like valid hours when cliked on
+        if (this.hourRangesBlocked.includes(this.activeReservationIndex)) {
+          this.activeReservationIndex = null;
+        }
+
         this.listOfHourRangesForSelectedDay.push({
           from: fromHour,
           fromLabel: `${fromHour.hourString}:${fromHour.minutesString} ${fromHour.timeOfDay}`,
@@ -677,7 +683,9 @@ export class ReservationsCreatorComponent implements OnInit {
     };
 
     this.timeRangeOptions = [];
+
     this.activeReservationIndex = hour; //Is used when you have a previous reservation stored
+
     this.generateHourList(dayOfTheMonthNumber);
 
     //clicks the previous selected reservation when opening the component
@@ -687,7 +695,7 @@ export class ReservationsCreatorComponent implements OnInit {
           this.activeReservationIndex
         ] as HTMLElement;
 
-        listItem.click();
+        if (listItem) listItem.click();
       }, 500);
     }
   }

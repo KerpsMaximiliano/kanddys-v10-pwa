@@ -52,7 +52,7 @@ export class MetricsReservationComponent implements OnInit {
       const merchantDefault = await this._MerchantsService.merchantDefault();
       this.merchant = merchantDefault;
 
-      console.log(this.merchant);
+      //console.log(this.merchant);
 
       const calendars = await this._CalendarService.getCalendarsByMerchant(
         merchantDefault._id
