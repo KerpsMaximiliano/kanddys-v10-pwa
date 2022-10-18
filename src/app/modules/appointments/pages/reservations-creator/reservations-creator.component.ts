@@ -275,7 +275,7 @@ export class ReservationsCreatorComponent implements OnInit {
     this.hourRangesBlocked = [];
 
     const currentDateObject = new Date();
-    const utcOffset = new Date().getTimezoneOffset() / 60; //Quitar este offset luego
+    const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60); //Quitar este offset luego
     const currentHour = currentDateObject.getHours(); //aqui tambien
     const currentMinuteNumber = currentDateObject.getMinutes();
     const currentDayOfTheMonth = currentDateObject.getDate();
@@ -723,7 +723,7 @@ export class ReservationsCreatorComponent implements OnInit {
    */
   async makeReservation() {
     //Uses the offset to add or substract the global timezone (UTC) offset to the user local-selected hours
-    const utcOffset = this.selectedDate.date.getTimezoneOffset() / 60;
+    const utcOffset = Math.abs(this.selectedDate.date.getTimezoneOffset() / 60);
     const currentYear = new Date().getFullYear();
     const emailRegex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -915,7 +915,7 @@ export class ReservationsCreatorComponent implements OnInit {
     fromHour: HourOption,
     toHour: HourOption
   ): Array<string> {
-    const utcOffset: number = new Date().getTimezoneOffset() / 60;
+    const utcOffset: number = Math.abs(new Date().getTimezoneOffset() / 60);
 
     let fromHourNumber =
       fromHour.timeOfDay === 'PM' && fromHour.hourNumber !== 12

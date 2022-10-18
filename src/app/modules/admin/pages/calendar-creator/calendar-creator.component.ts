@@ -508,7 +508,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
   setExistingCalendarFinalHours(calendar: Calendar) {
     if (calendar) {
-      const utcOffset = new Date().getTimezoneOffset() / 60;
+      const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60);
       let [initialHour, initialMinute] = calendar.limits.fromHour.split(
         ':'
       ) as Array<any>;
@@ -592,7 +592,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
     let toHour = calendar.limits.toHour;
 
     //CONVIRTIENDO LAS HORAS A UTC
-    const utcOffset = new Date().getTimezoneOffset() / 60;
+    const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60);
     let [fromHourWithoutMinutes, fromHourMinutes] = fromHour.split(
       ':'
     ) as Array<any>;
@@ -980,7 +980,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
       this.calendarCreatorForm.value.reservationAvailability;
 
     //CONVIRTIENDO LAS HORAS A UTC
-    const utcOffset = new Date().getTimezoneOffset() / 60;
+    const utcOffset = Math.abs(new Date().getTimezoneOffset() / 60);
     let [fromHourWithoutMinutes, fromHourMinutes] = fromHour.split(':');
     let [toHourWithoutMinutes, toHourMinutes] = toHour.split(':');
     fromHourWithoutMinutes = Number(fromHourWithoutMinutes);
