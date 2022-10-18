@@ -153,13 +153,19 @@ export class MetricsReservationComponent implements OnInit {
   onShareItemsClick(calendarId): void {
     const list = [
       {
-        text: 'Bloquea slots',
+        text: 'Edita los parámetros de tu disponibilidad',
+        callback: () => {
+          this._Router.navigate([`/admin/calendar-creator/${calendarId}`]);
+        },
+      },
+      {
+        text: 'Bloquea tiempo de no estar disponible',
         callback: () => {
           this._Router.navigate([`/admin/time-block/${calendarId}`]);
         },
       },
       {
-        text: 'Comparte el link para reservar slots',
+        text: 'Comparte el link de tu disponibilidad',
         callback: async () => {
           await this.ngNavigatorShareService
             .share({
