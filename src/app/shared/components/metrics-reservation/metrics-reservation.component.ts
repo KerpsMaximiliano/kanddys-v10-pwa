@@ -64,7 +64,7 @@ export class MetricsReservationComponent implements OnInit {
         const params: PaginationInput = {
           findBy: { calendar: calendar._id },
           options: {
-            limit: 1000
+            limit: 7000
           }
         };
         const result: any =
