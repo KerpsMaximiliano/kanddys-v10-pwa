@@ -681,14 +681,14 @@ export class ReservationsCreatorComponent implements OnInit {
     this.generateHourList(dayOfTheMonthNumber);
 
     //clicks the previous selected reservation when opening the component
-    if (this.activeReservationIndex) {
+    if (this.activeReservationIndex !== null) {
       setTimeout(() => {
         const listItem = document.querySelectorAll('.selector-option')[
           this.activeReservationIndex
         ] as HTMLElement;
 
         listItem.click();
-      }, 100);
+      }, 500);
     }
   }
 
