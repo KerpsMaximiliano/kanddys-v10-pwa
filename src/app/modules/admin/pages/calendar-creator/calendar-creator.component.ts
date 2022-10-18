@@ -945,6 +945,7 @@ export class CalendarCreatorComponent implements OnInit, AfterViewInit {
 
     switch (this.currentStep) {
       case 'MAIN':
+        this.router.navigate([`admin/entity-detail-metrics`]);
         break;
       case 'RESERVATION_DURATION_AND_BREAKTIME':
         this.currentStep = 'MAIN';
