@@ -1,0 +1,109 @@
+.grid-details {
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0 5%;
+  row-gap: 10px;
+  column-gap: 12px;
+
+  .info-card {
+    width: 100%;
+    max-width: 221px;
+    min-height: 125px;
+    background-color: #ffffff;
+    border: solid 2px #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 27px 10%;
+    border-radius: 13px;
+    box-shadow: 0 3px 6px 3px rgba(0, 0, 0, 10%);
+    transition: 0.5s background-color ease-in-out;
+
+    &.pointer {
+      cursor: pointer;
+
+      &:hover,
+      &:active {
+        background-color: #f5f5f5;
+      }
+    }
+
+    .amount {
+      font-family: "RobotoMedium";
+      font-size: 15px;
+      color: #7b7b7b;
+      text-align: center;
+      word-break: break-word;
+      line-break: loose;
+      font-weight: normal;
+    }
+
+    .quantity {
+      margin-bottom: 15px;
+      font-size: 23px !important;
+    }
+
+    &.unset {
+      cursor: unset !important;
+      box-shadow: none !important;
+      border: 0.5px solid #c9c9c9;
+      border-radius: 15px;
+      background-color: #f6f6f6;
+    }
+
+    &.reservation-params {
+      grid-column: span 2;
+      max-width: none;
+      min-height: 173px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 31px 27px 29px 27px;
+
+      h3 {
+        padding: 0px;
+        margin: 0px;
+        font-family: RobotoMedium;
+        font-weight: normal;
+        color: #7b7b7b;
+        font-size: 15px;
+        text-transform: uppercase;
+      }
+
+      h4 {
+        padding: 0px;
+        margin: 0px;
+        color: #7b7b7b;
+        font-size: 17px;
+        font-family: SfProRegular;
+        font-weight: normal;
+        margin-top: 4px;
+      }
+    }
+  }
+}
+
+.info-card.reservation-params {
+  margin-top: 20px;
+}
+
+.title {
+  font-family: "SfProDisplayBold";
+  margin-top: 10px;
+  margin-bottom: 9px;
+}
+
+.subtitle {
+  font-family: "SfProRegular";
+  color: #7d7d7d;
+  font-size: 17px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.container {
+  margin-bottom: 20px;
+  margin-top: 30px;
+}

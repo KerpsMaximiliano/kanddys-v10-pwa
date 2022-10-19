@@ -40,7 +40,7 @@ export class UserInfoComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
       this.header.storeOrderAnonymous(this.header.saleflow._id);
       return;
     }

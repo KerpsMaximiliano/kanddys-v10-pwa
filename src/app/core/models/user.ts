@@ -1,7 +1,7 @@
 import { Form, Control } from '@mukuve/ngx-forms';
 import { Community } from 'src/app/core/models/community';
 import { Model } from './../objects/model';
-import { DeliveryLocation, SocialMediaModel } from './saleflow';
+import { DeliveryLocation, SocialMediaModel, DeliveryLocationInput} from './saleflow';
 import { Tag } from './tags';
 
 export class IpUser extends Model<IpUser> {
@@ -44,6 +44,27 @@ export class User extends Model<User> {
     return (this.roles || []).some((r) => roles.includes(r.code));
   }
 }
+
+export class UserInput {
+   phone?: string
+   name?: string
+   lastname?: string
+   title?: string
+   email?: string
+   password?: string
+   birthdate?: Date
+   image?: File
+   roles?: string[]
+   defaultCommunity?: string
+   facebook?: string
+   instagram?: string
+   web?: string
+   bio?: string
+   deliveryLocations?: DeliveryLocationInput[]
+   social?: SocialMediaModel[]
+   tags?: string[]
+   clientOfMerchants?: string[]
+   }
 
 export class UserForm extends Form {
   constructor(

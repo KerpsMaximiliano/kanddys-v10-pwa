@@ -1,0 +1,86 @@
+@import "forms";
+
+.body {
+  background-color: #f6f6f6;
+  min-height: calc(100vh - 36px);
+  padding-top: 43px;
+  padding-left: 34px;
+  padding-right: 20px;
+
+  h2 {
+    font-family: RobotoBold;
+    font-size: 24px;
+    margin: 0px;
+    margin-bottom: 56px;
+  }
+
+  .input {
+    &.customWidth {
+      width: 86.89%;
+    }
+  }
+
+  &.userInfo {
+    .input-label {
+      font-family: RobotoMedium;
+      color: #7b7b7b;
+      font-size: 17px;
+      font-weight: normal;
+      margin-bottom: 19px;
+      margin-top: 0px;
+
+      &:last-of-type {
+        margin-top: 45.5px;
+      }
+    }
+  }
+
+  .calendar {
+    h3 {
+      font-size: 17px;
+      font-family: RobotoMedium;
+      font-weight: normal;
+      color: #7b7b7b;
+      margin: 0px;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .time-range-options-list {
+    margin-top: 52px;
+
+    h3 {
+      font-size: 17px;
+      font-family: RobotoMedium;
+      font-weight: normal;
+      color: #7b7b7b;
+      margin: 0px;
+    }
+  }
+
+  .selectedReservation {
+    margin-top: 50px;
+    padding-bottom: 60px;
+
+    h3 {
+      font-size: 17px;
+      font-family: RobotoMedium;
+      font-weight: normal;
+      color: #7b7b7b;
+      margin: 0px;
+    }
+
+    .reservation-wrapper {
+      margin-top: 12px;
+      border-radius: 5px;
+      background-color: #82f18d;
+      color: #174b72;
+      padding-top: 11px;
+      padding-bottom: 8px;
+      text-align: center;
+      font-family: "SfProBold";
+      font-weight: normal;
+      font-size: 17px;
+    }
+  }
+}

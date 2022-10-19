@@ -4,10 +4,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { DeliveryLocation, SaleFlow } from 'src/app/core/models/saleflow';
+import {
+  DeliveryLocation,
+  DeliveryLocationInput,
+  SaleFlow,
+} from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { HeaderService } from 'src/app/core/services/header.service';
+import {
+  HeaderService,
+  SaleflowData,
+} from 'src/app/core/services/header.service';
 import { UsersService } from 'src/app/core/services/users.service';
 import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -54,10 +61,14 @@ export class NewAddressComponent implements OnInit {
       save: fb.control(false),
     });
     this.loggedIn = this.router.getCurrentNavigation().extras.state?.loggedIn;
+    this.registered = JSON.parse(
+      localStorage.getItem('registered-user')
+    ) as User;
   }
   mode: 'normal' | 'add' | 'delete' | 'edit' = 'normal';
   editingId: string;
   loggedIn: boolean;
+  registered: User;
   disableButton: boolean;
   user: User;
   env = environment.assetsUrl;
@@ -88,16 +99,31 @@ export class NewAddressComponent implements OnInit {
   saleflow: SaleFlow;
   selectedDeliveryIndex: number;
   // selectedAuthIndex: number;
+  magicLinkLocation: DeliveryLocationInput;
 
   async ngOnInit(): Promise<void> {
     const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
+    const magicLinkData = this.route.snapshot.queryParamMap.get('data');
+    if (magicLinkData) {
+      const orderData = JSON.parse(
+        decodeURIComponent(magicLinkData)
+      ) as SaleflowData;
+      if (orderData?.order?.products?.[0]?.saleflow === saleflowId) {
+        localStorage.setItem(saleflowId, JSON.stringify(orderData));
+        this.magicLinkLocation = orderData.deliveryLocation;
+        this.router.navigate([], {
+          relativeTo: this.route,
+        });
+      }
+    }
     this.saleflow = await this.headerService.fetchSaleflow(saleflowId);
     this.headerService.order = this.headerService.getOrder(this.saleflow._id);
-    if (!this.headerService.order)
+    if (!this.headerService.order) {
       this.router.navigate([
         `/ecommerce/store/${this.headerService.saleflow._id}`,
       ]);
-    if (this.loggedIn) this.checkAddresses();
+    }
+    this.checkAddresses();
     this.user = await this.authService.me();
     this.addresses.push(...this.saleflow.module.delivery.pickUpLocations);
     this.saleflow.module.delivery.pickUpLocations?.forEach((pickup) => {
@@ -158,6 +184,11 @@ export class NewAddressComponent implements OnInit {
           ],
         });
       });
+    }
+    if (this.magicLinkLocation) {
+      this.addressForm.patchValue({ ...this.magicLinkLocation, save: true });
+      this.mode = 'add';
+      this.formSubmit();
     }
   }
 
@@ -273,7 +304,12 @@ export class NewAddressComponent implements OnInit {
       this.authSelect('address');
       return;
     }
-    this.router.navigate(['ecommerce/checkout']);
+    this.router.navigate(
+      [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+      {
+        replaceUrl: this.headerService.checkoutRoute ? true : false,
+      }
+    );
   }
 
   authSelect(auth: 'order' | 'address') {
@@ -288,7 +324,12 @@ export class NewAddressComponent implements OnInit {
         timeOut: 3000,
         positionClass: 'toast-top-center',
       });
-      this.router.navigate([`ecommerce/checkout`]);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: this.headerService.checkoutRoute ? true : false,
+        }
+      );
       return;
     }
     if (
@@ -325,7 +366,12 @@ export class NewAddressComponent implements OnInit {
           positionClass: 'toast-top-center',
         }
       );
-      this.router.navigate(['ecommerce/checkout']);
+      this.router.navigate(
+        [`ecommerce/${this.headerService.saleflow._id}/checkout`],
+        {
+          replaceUrl: true,
+        }
+      );
     }
   }
 
@@ -391,10 +437,15 @@ export class NewAddressComponent implements OnInit {
   }
 
   goBack() {
-    if (this.mode === 'normal') return this.location.back();
+    if (this.mode === 'normal')
+      return this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
+      ]);
     this.mode = 'normal';
     this.editingId = null;
-    this.addressForm.reset();
+    this.addressForm.reset({
+      nickName: this.addressForm.get('nickName').value,
+    });
     this.addressesOptions.forEach((option) => {
       option.icons = null;
       option.hidden = false;

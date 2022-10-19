@@ -145,6 +145,14 @@
     transition: width 0.4s ease-out;
   }
 
+  &.disabledOption {
+    cursor: not-allowed;
+    .background {
+      background-color: #7b7b7b;
+      color: lightgray;
+    }
+  }
+
   span,
   .selector-option-content {
     position: relative;

@@ -1,17 +1,23 @@
 <div class="container">
-  <app-helper-headerv2
-    [mode]="'basic'"
-    [mainText]="{
-      text: 'Métodos de Pagos en DOP',
-      fontFamily: 'SfProBold',
-      fontSize: '21px'
-    }"
-    [returnAble]="false"
-  ></app-helper-headerv2>
+  <header class="header">
+    <h1 class="method">Métodos de Pagos</h1>
+
+    <div class="right-area">
+      <span class="header-text" *ngIf="order">{{
+        currentUser?.name || currentUser?.phone || currentUser?.email
+      }}</span>
+      <img
+        [src]="env + '/person.svg'"
+        alt="Icono de una persona"
+        *ngIf="order?.user"
+      />
+    </div>
+  </header>
+
   <div class="payment-method" *ngIf="status === 'complete'">
     <div class="total-paid" *ngIf="order">
       <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
-      <p class="total">Total Facturado</p>
+      <p class="total">Total Facturado en DOP</p>
     </div>
     <div class="amount-input" *ngIf="!order">
       <span class="payment-selection"> Monto del depósito </span>
@@ -21,9 +27,7 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection">
-      Selecciona el metodo que te convenga:
-    </span>
+    <span class="payment-selection"> Selecciona el que te convenga: </span>
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{
@@ -50,9 +54,7 @@
           </li>
         </ul>
         <p class="option-footer">{{ selectedBank.bankName }}</p>
-        <button class="option-remove" (click)="removeBank()">
-          <i class="fas fa-times-circle"></i>
-        </button>
+        <button class="option-remove" (click)="removeBank()">X</button>
       </div>
     </ng-container>
   </div>

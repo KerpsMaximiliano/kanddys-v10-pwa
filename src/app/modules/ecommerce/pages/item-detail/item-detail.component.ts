@@ -156,17 +156,37 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       props: {
         headerButton: 'Ver más productos',
         headerCallback: () =>
-          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]),
+          this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
+            replaceUrl: this.header.checkoutRoute ? true : false,
+          }),
         footerCallback: () => {
-          if (this.saleflowData.module?.post)
+          if (this.header.checkoutRoute) {
+            this.router.navigate([this.header.checkoutRoute], {
+              replaceUrl: true,
+            });
+            return;
+          }
+          if (this.header.saleflow.module?.post) {
             this.router.navigate([
-              `/ecommerce/${this.saleflowData._id}/create-giftcard`,
+              `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
             ]);
-          else if (this.saleflowData.module?.delivery)
+            return;
+          }
+          if (this.header.saleflow.module?.appointment?.calendar?._id) {
             this.router.navigate([
-              `/ecommerce/${this.saleflowData._id}/new-address`,
+              `/ecommerce/${this.header.saleflow._id}/reservations/${this.header.saleflow.module.appointment.calendar._id}`,
             ]);
-          else this.router.navigate([`/ecommerce/checkout`]);
+            return;
+          }
+          if (this.header.saleflow.module?.delivery) {
+            this.router.navigate([
+              `/ecommerce/${this.header.saleflow._id}/new-address`,
+            ]);
+            return;
+          }
+          this.router.navigate([
+            `/ecommerce/${this.header.saleflow._id}/checkout`,
+          ]);
         },
       },
       customClass: 'app-dialog',
@@ -189,7 +209,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     const product: ItemSubOrderInput = {
       item: this.item._id,
       amount: 1,
-      saleflow: this.saleflowData._id,
     };
     if (this.selectedParam) {
       product.params = [
@@ -291,8 +310,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
   back() {
     if (this.previewMode) {
-      // this.header.flowRoute = this.router.url;
-
       if (this.item._id)
         return this.router.navigate([`/admin/create-item/${this.item._id}`]);
       else return this.router.navigate([`/admin/create-item`]);
@@ -302,7 +319,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
       return;
     }
     this.itemsService.removeTemporalItem();
-    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`]);
+    this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
+      replaceUrl: this.header.checkoutRoute ? true : false,
+    });
   }
 
   selectParamValue(param: number, value: number) {

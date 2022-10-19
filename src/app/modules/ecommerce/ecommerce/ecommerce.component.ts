@@ -60,9 +60,7 @@ export class EcommerceComponent implements OnInit {
   }
 
   getOrder() {
-    this.headerService.order = this.headerService.getOrder(
-      this.headerService.saleflow?._id
-    );
+    this.headerService.getOrder(this.headerService.saleflow?._id);
     this.getItemsAmount();
   }
 
@@ -88,15 +86,33 @@ export class EcommerceComponent implements OnInit {
             `/ecommerce/store/${this.headerService.saleflow._id}`,
           ]),
         footerCallback: async () => {
-          if (this.headerService.saleflow.module?.post)
+          if (this.headerService.checkoutRoute) {
+            this.router.navigate([this.headerService.checkoutRoute], {
+              replaceUrl: true,
+            });
+            return;
+          }
+          if (this.headerService.saleflow.module?.post) {
             this.router.navigate([
               `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
             ]);
-          else if (this.headerService.saleflow.module?.delivery)
+            return;
+          }
+          if (this.headerService.saleflow.module?.appointment?.calendar?._id) {
+            this.router.navigate([
+              `/ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+            ]);
+            return;
+          }
+          if (this.headerService.saleflow.module?.delivery) {
             this.router.navigate([
               `/ecommerce/${this.headerService.saleflow._id}/new-address`,
             ]);
-          else this.router.navigate([`/ecommerce/checkout`]);
+            return;
+          }
+          this.router.navigate([
+            `/ecommerce/${this.headerService.saleflow._id}/checkout`,
+          ]);
         },
       },
       customClass: 'app-dialog',

@@ -1,4 +1,4 @@
-import { Model } from "../objects/model"
+import { Model } from '../objects/model';
 
 export class TagContainers extends Model<TagContainers> {
   phone: string;
@@ -13,18 +13,18 @@ export class TagContainersInput {
 }
 
 export class Tag extends Model<Tag> {
-  messageNotify: string;
   counter: number;
   name: string;
-  notify: boolean;
-  user: string;
-  containers?: TagContainers[];
-  notifyUserOrder: boolean;
-  notifyMerchantOrder: boolean;
+  user?: string;
+  status: string;
+  notifications: string[];
+  merchant: string;
 }
 
 export class TagInput {
-  messageNotify?: string;
   name?: string;
-  notify?: boolean;
+  notifyUserOrder?: boolean;
+  notifyMerchantOrder?: boolean;
+  status?: string;
+  merchant?: string;
 }

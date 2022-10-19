@@ -66,7 +66,8 @@ export const generateMagicLink = gql`
     $redirectionRouteId: String
     $entity: String!
     $redirectionRouteQueryParams: JSON
-    $attachments: [Upload!]
+    $attachments: [Upload!],
+    $clientURL: String
   ) {
     generateMagicLink(
       phoneNumber: $phoneNumber
@@ -74,7 +75,8 @@ export const generateMagicLink = gql`
       redirectionRouteId: $redirectionRouteId
       entity: $entity
       redirectionRouteQueryParams: $redirectionRouteQueryParams
-      attachments: $attachments
+      attachments: $attachments,
+      clientURL: $clientURL
     )
   }
 `;

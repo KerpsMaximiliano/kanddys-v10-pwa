@@ -1,0 +1,123 @@
+<div class="wrapper">
+  <app-helper-headerv2
+    [mode]="'options'"
+    [bgColor]="headerConfiguration.bgcolor"
+    [color]="headerConfiguration.color"
+    [justifyContent]="headerConfiguration.justifyContent"
+    [alignItems]="headerConfiguration.alignItems"
+    [leftTextStyles]="headerConfiguration.leftTextStyles"
+    [leftText]="{
+      text:
+        headerConfiguration.headerTextSide === 'LEFT'
+          ? headerConfiguration.headerText
+          : ''
+    }"
+    [rightText]="{
+      text:
+        headerConfiguration.headerTextSide === 'RIGHT'
+          ? headerConfiguration.headerText
+          : ''
+    }"
+    (agnosticAction)="
+      headerConfiguration.headerTextSide === 'RIGHT'
+        ? headerConfiguration.headerTextCallback()
+        : null
+    "
+    [returnAble]="!isOrder ? false : true"
+    (returnEvent)="location.back()"
+  >
+  </app-helper-headerv2>
+
+  <form [formGroup]="reservationCreatorForm">
+    <ng-container *ngIf="currentStep === 'RESERVATION_CONVENIENCE'">
+      <div
+        class="body reservationConvenience"
+        formGroupName="reservationConvenience"
+      >
+        <div class="calendar" *ngIf="currentMonth?.name">
+          <h3>Dia De {{ currentMonth?.name }}</h3>
+          <app-short-calendar
+            [selectedDay]="selectedDate?.date"
+            [monthNameSelected]="currentMonth?.name"
+            [allowUsersToChangeTheMonthShown]="true"
+            [allowedDays]="
+              !useDateRangeToLimitAvailableWeekDays
+                ? calendarData?.limits?.inDays
+                : null
+            "
+            [daysRange]="
+              useDateRangeToLimitAvailableWeekDays
+                ? {
+                    fromDay: calendarData?.limits?.fromDay,
+                    toDay: calendarData?.limits?.toDay
+                  }
+                : null
+            "
+            (selectedDate)="rerenderAvailableHours($event)"
+            (changedMonth)="updateMonth($event)"
+            (beforeAnimation)="setDateAsNull()"
+          ></app-short-calendar>
+        </div>
+
+        <div class="calendar" *ngIf="!currentMonth?.name">
+          <h3>Cargando calendario...</h3>
+        </div>
+
+        <div
+          class="time-range-options-list"
+          *ngIf="selectedDate && selectedDate.date"
+        >
+          <h3>Hora:</h3>
+
+          <app-answer-selector
+            *ngIf="timeRangeOptions.length > 0"
+            [options]="timeRangeOptions"
+            [activeOption]="activeReservationIndex"
+            [blockIndexes]="hourRangesBlocked"
+            [indicator]="true"
+            [showDescription]="false"
+            [containerStyles]="{
+              margin: '0px'
+            }"
+            (onSelector)="setClickedDate($event)"
+          ></app-answer-selector>
+
+          <h3 style="margin-top: 10px;" *ngIf="!timeRangeOptions || timeRangeOptions.length === 0">
+            No quedan horas disponibles para reservar este dia
+          </h3>
+        </div>
+
+        <div
+          class="selectedReservation"
+          *ngIf="selectedDate && selectedDate.filled"
+        >
+          <h3>Fecha reservada:</h3>
+
+          <div class="reservation-wrapper">
+            {{
+              selectedDate.dayName.slice(0, 3) +
+                ". " +
+                selectedDate.dayOfTheMonthNumber +
+                " de " +
+                selectedDate.monthName.slice(0, 3) +
+                ". de " +
+                selectedDate.fromLabel +
+                " a " +
+                selectedDate.toLabel
+            }}
+          </div>
+        </div>
+      </div>
+
+      <app-sticky-button
+        *ngIf="selectedDate && selectedDate.filled"
+        [text]="stickyButtonText"
+        [mode]="'fixed'"
+        [bgColor]="'#2874AD'"
+        [height]="'max-content'"
+        [padding]="'8px 0px'"
+        (click)="makeReservation()"
+      ></app-sticky-button>
+    </ng-container>
+  </form>
+</div>

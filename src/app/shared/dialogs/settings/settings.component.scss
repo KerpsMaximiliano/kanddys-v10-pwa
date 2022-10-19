@@ -1,0 +1,191 @@
+.exterior-wrapper {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .close-btn {
+      align-self: flex-end;
+      color: white;
+      margin: 0px;
+      margin-bottom: 12px;
+      margin-right: 25px;
+      padding: 0px;
+      font-family: SfProBold;
+      font-weight: normal;
+      font-size: 23px;
+      background-color: transparent;
+      border: none;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .dialog-component-wrapper {
+      padding: 0px;
+      padding-top: 32px;
+      padding-left: 31px;
+      padding-right: 25px;
+      background-color: white;
+
+      .title-and-icon-actions-flex {
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+
+        .title {
+          font-family: SfProBold;
+          font-weight: normal;
+          font-size: 23px;
+          color: #4f4f4f;
+        }
+
+        .icon-list {
+          display: flex;
+
+          .share {
+            height: 40px;
+            width: 40px;
+            padding: 5px;
+          }
+
+          div {
+            &:hover {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+
+      .toggle-button {
+        background-color: #82f18d;
+        padding: 5px 0px;
+        display: flex;
+        align-items: center;
+        min-width: 271px;
+        width: 63.31px;
+        border-radius: 15px;
+        transition: 0.3s background-color ease-in-out, 0.3s color ease-in-out;
+
+        .icon {
+          width: 21px;
+          height: 17px;
+          margin-left: 16px;
+        }
+
+        span {
+          color: #174b72;
+          font-size: 17px;
+          font-family: SfProMedium;
+          margin-left: 10px;
+        }
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        &:active {
+          cursor: pointer;
+        }
+      }
+
+      .option-list {
+        padding: 0px;
+        padding-bottom: 55px;
+        max-height: 228px;
+        overflow-y: scroll;
+
+        li {
+          list-style: none;
+          height: 57px;
+          display: flex;
+          align-items: flex-end;
+          padding-bottom: 13px;
+          transition: 0.3s background-color ease-in-out;
+          color: #2874ad;
+          font-size: 19px;
+          font-family: SfProRegular;
+
+          &:hover {
+            cursor: pointer;
+            background-color: darken($color: #fff, $amount: 3);
+          }
+
+        
+
+          &:active {
+            cursor: pointer;
+            background-color: darken($color: #fff, $amount: 5);
+          }
+
+          &:not(:last-of-type) {
+            border-bottom: solid 1px  lightgray;
+          }
+        }
+      }
+    }
+
+    .navigation {
+      ul {
+        margin: 0px;
+        width: 100%;
+        padding: 0px;
+        display: flex;
+        justify-content: flex-start;
+        /*
+        justify-content: space-around;
+        */
+        background-color: #2874ad;
+        height: 82px;
+      }
+
+      li {
+        flex-basis: 82px;
+        /*
+        flex: 1;
+        */
+        padding: 18px 0px;
+        list-style: none;
+        color: #ffffff;
+        font-size: 13px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s background-color ease-in-out;
+        &.disabled {
+          filter: brightness(0.7);
+          color: lightgray;
+          
+          &:hover {
+            cursor: not-allowed;
+            background-color: darken($color: #2874ad, $amount: 10);
+          }
+        }
+
+        &:hover {
+          cursor: pointer;
+          background-color: darken($color: #2874ad, $amount: 10);
+        }
+
+        &:active {
+          cursor: pointer;
+          background-color: darken($color: #2874ad, $amount: 20);
+        }
+
+        .icon {
+          display: flex;
+          justify-content: center;
+          width: 29px;
+          height: 29px;
+          margin-bottom: 6px;
+        }
+      }
+    }
+  }
+}

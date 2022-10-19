@@ -6,7 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./tags-selector.component.scss'],
 })
 export class TagsSelectorComponent implements OnInit {
-  @Input('tags') tags: any[] = [];
+  @Input('tags') tags: string[] = [];
   tag: string[] = [];
   @Input('multipleTags') multipleTags: boolean = false;
   @Input('containerBackground') containerBackground:string = '#2874ad';

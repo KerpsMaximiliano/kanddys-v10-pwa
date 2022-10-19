@@ -8,10 +8,9 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-tags-edit',
   templateUrl: './tags-edit.component.html',
-  styleUrls: ['./tags-edit.component.scss']
+  styleUrls: ['./tags-edit.component.scss'],
 })
 export class TagsEditComponent implements OnInit {
-
   tagID: string = null;
   messageValue: string = '';
   tagValue: string = '';
@@ -21,22 +20,22 @@ export class TagsEditComponent implements OnInit {
     private tagsService: TagsService,
     private route: ActivatedRoute,
     private location: Location
-    //   private headerService: HeaderService,
-    //   private order: OrderService,
-  ) { }
+  ) //   private headerService: HeaderService,
+  //   private order: OrderService,
+  {}
 
   ngOnInit(): void {
     if (this.tagID && this.tagID.length > 0) {
       this.tagsService.tag(this.tagID).then(async (data) => {
-        this.messageValue = data.tag.messageNotify;
+        // this.messageValue = data.tag.messageNotify;
         this.tagValue = data.tag.name;
       });
     } else {
-      this.route.queryParams.subscribe(queryParams => {
+      this.route.queryParams.subscribe((queryParams) => {
         const { tagName } = queryParams;
 
         this.tagValue = tagName;
-      })
+      });
     }
   }
 
@@ -54,8 +53,8 @@ export class TagsEditComponent implements OnInit {
     const data = {
       name: this.tagValue,
       messageNotify: this.messageValue,
-      notify: this.notifyable
-    }
+      notify: this.notifyable,
+    };
 
     if (!this.tagID || this.tagID.length < 1) {
       this.tagsService.createTag(data);
@@ -71,7 +70,7 @@ export class TagsEditComponent implements OnInit {
     } else {
       this.notifyable = false;
     }
-    console.log(this.notifyable)
+    console.log(this.notifyable);
   }
 
   /*Primeros resultados de prueba:
@@ -102,7 +101,6 @@ export class TagsEditComponent implements OnInit {
        notify: false 
     }
    */
-
 }
 
 /* tag-detail --> tags-edit{
