@@ -22,5 +22,13 @@
     >
       {{ (item.params[0].values.length || 0) + " " }} opciones
     </div>
+
+    <div *ngIf="item.isSelected">
+      <img
+        class="item-cart"
+        [src]="env + '/carrito_blanco.svg'"
+        alt="item-in-cart"
+      />
+    </div>
   </div>
 </div>

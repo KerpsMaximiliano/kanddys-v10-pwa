@@ -21,7 +21,6 @@ import { MallStoresComponent } from './pages/mall-dashboard/mall-stores/mall-sto
 import { AdminLoginComponent } from './pages/admin-login/admin-login.component';
 import { AdminOrderComponent } from './pages/admin-order/admin-order.component';
 import { BankRegistrationComponent } from './pages/bank-registration/bank-registration.component';
-import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { CalendarDetailComponent } from './pages/calendar-detail/calendar-detail.component';
 import { CategoryItemDetailComponent } from './pages/category-item-detail/category-item-detail.component';
 import { CategoryItemsAdminComponent } from './pages/category-items-admin/category-items-admin.component';
@@ -36,7 +35,6 @@ import { NotificationCreatorComponent } from './pages/notification-creator/notif
 import { NotificationsLogComponent } from './pages/notifications-log/notifications-log.component';
 import { OrderReservationComponent } from './pages/order-reservation/order-reservation.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
-import { ReservationsCreatorComponent } from './pages/reservations-creator/reservations-creator.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { SaleDetailComponent } from './pages/sale-detail/sale-detail.component';
 import { TagDetailComponent } from './pages/tag-detail/tag-detail.component';
@@ -129,10 +127,6 @@ const routes: Routes = [
     component: BankRegistrationComponent,
   },
   {
-    path: 'calendar-creator',
-    component: CalendarCreatorComponent,
-  },
-  {
     path: 'calendar-detail',
     component: CalendarDetailComponent,
   },
@@ -205,10 +199,6 @@ const routes: Routes = [
     component: ReservationsComponent,
   },
   {
-    path: 'reservations-creator/:calendarId',
-    component: ReservationsCreatorComponent,
-  },
-  {
     path: 'sale-detail/:orderId',
     component: SaleDetailComponent,
   },
@@ -260,7 +250,6 @@ const routes: Routes = [
     // FROM ADMIN 21/9/2022
     AdminLoginComponent,
     BankRegistrationComponent,
-    CalendarCreatorComponent,
     CalendarDetailComponent,
     CategoryItemDetailComponent,
     CategoryItemsAdminComponent,
@@ -272,7 +261,6 @@ const routes: Routes = [
     NotificationCreatorComponent,
     NotificationsLogComponent,
     ReservationsComponent,
-    ReservationsCreatorComponent,
     ReservationDetailComponent,
     SaleDetailComponent,
     TagDetailComponent,

@@ -2,16 +2,18 @@ import gql from 'graphql-tag';
 
 export const getCalendar = gql`
   query getCalendar($id: ObjectID!) {
-    getCalendar(id: $id) {       
+    getCalendar(id: $id) {
       _id
       name
       reservationLimits
       expirationTime
       breakTime
+      merchant
       limits {
         dateType
         fromDay
         toDay
+        inDays
         fromHour
         toHour
       }
@@ -28,13 +30,17 @@ export const getCalendar = gql`
           toHour
         }
       }
+      exceptions {
+        from
+        until
+      }
     }
   }
 `;
 
 export const getCalendarWithMerchantInfo = gql`
   query getCalendar($id: ObjectID!) {
-    getCalendar(id: $id) {       
+    getCalendar(id: $id) {
       _id
       name
       reservationLimits
@@ -75,7 +81,7 @@ export const getCalendarWithMerchantInfo = gql`
 
 export const getCalendarsByMerchant = gql`
   query getCalendarsByMerchant($merchant: ObjectID!) {
-    getCalendarsByMerchant(merchant: $merchant) {       
+    getCalendarsByMerchant(merchant: $merchant) {
       _id
       name
       reservationLimits
@@ -85,6 +91,7 @@ export const getCalendarsByMerchant = gql`
         dateType
         fromDay
         toDay
+        inDays
         fromHour
         toHour
       }
@@ -105,17 +112,40 @@ export const getCalendarsByMerchant = gql`
   }
 `;
 
-
 export const identifyCalendarAdmin = gql`
-mutation identifyCalendarAdmin($id: ObjectID!) {
+  mutation identifyCalendarAdmin($id: ObjectID!) {
     Boolean: identifyCalendarAdmin(id: $id)
   }
 `;
 
 export const createCalendar = gql`
   mutation createCalendar($input: CalendarInput!) {
-    createCalendar: createCalendar(input: $input){      
-      _id    
-    }  
+    createCalendar: createCalendar(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const updateCalendar = gql`
+  mutation updateCalendar($input: CalendarInput!, $id: ObjectID!) {
+    updateCalendar(input: $input, id: $id) {
+      _id
+    }
+  }
+`;
+
+export const calendarAddExceptions = gql`
+  mutation calendarAddExceptions(
+    $exception: DateExceptionInput!
+    $id: ObjectID!
+  ) {
+    calendarAddExceptions(exception: $exception, id: $id) {
+      _id
+      exceptions {
+        _id
+        from
+        until
+      }
+    }
   }
 `;

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item } from '../models/item';
@@ -30,6 +31,7 @@ import {
   uploadDataToClientsAirtable,
   uploadAirtableAttachments,
   usersOrderMerchant,
+  incomeMerchant,
   merchantDefault2,
 } from './../graphql/merchants.gql';
 import {
@@ -40,6 +42,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
+  loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
 
@@ -322,5 +325,15 @@ export class MerchantsService {
     });
     if (!response || response?.errors) return undefined;
     return response;
+  }
+
+  async incomeMerchant(merchantId: string) {
+    const response = await this.graphql.query({
+      query: incomeMerchant,
+      variables: { merchantId },
+      fetchPolicy: 'no-cache',
+    });
+    if (!response || response?.errors) return undefined;
+    return response?.incomeMerchant;
   }
 }

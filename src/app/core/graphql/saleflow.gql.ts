@@ -83,6 +83,13 @@ export const saleflowDefault = gql`
           _id
         }
       }
+      module{
+        appointment{
+          calendar{
+            _id            
+          }
+        }
+      }
     }
   }
 `;

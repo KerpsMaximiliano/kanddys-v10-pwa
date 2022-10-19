@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item, ItemPackage } from '../models/item';
@@ -29,6 +29,8 @@ import {
 export class SaleFlowService {
   saleflowSubject = new Subject();
   saleflowData: SaleFlow;
+  saleflowLoaded = new Subject();
+
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {

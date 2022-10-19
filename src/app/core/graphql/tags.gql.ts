@@ -18,8 +18,9 @@ export const createTag = gql`
 
 export const tagsByUser = gql`
   query {
-    tagsByUser {
+		tagsByUser {
       _id
+			name
     }
   }
 `;

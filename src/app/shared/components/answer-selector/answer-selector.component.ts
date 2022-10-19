@@ -13,6 +13,7 @@ import {
 export class AnswerSelectorComponent {
   @Input() activeOption: number;
   @Input() activeMultipleOption: number[] = [];
+  @Output() activeMultipleOptionValue = new EventEmitter();
   @Input() editable: boolean = true;
   @Input() indicator: boolean;
   @Input() showSelectedFeedback: boolean = true;
@@ -29,6 +30,7 @@ export class AnswerSelectorComponent {
     { value: '¿Dónde es?', status: true, click: false, description: [] },
     { value: '¿Qué es?', status: false, click: false, description: [] },
   ];
+  @Input() blockIndexes: number[];
   @Input() complexOptions: ComplexOptionAnswerSelector[];
   @Input() values: BankAnswers;
 
@@ -49,9 +51,10 @@ export class AnswerSelectorComponent {
       this.activeMultipleOption.push(option);
       this.activeMultipleOption.sort();
     } else {
-      this.activeMultipleOption.splice(option, 1);
+      this.activeMultipleOption = this.activeMultipleOption.filter((item) =>item!==option);
       this.activeMultipleOption.sort();
     }
+    this.activeMultipleOptionValue.emit(this.activeMultipleOption);
   }
 
   clickSelector(index: number) {

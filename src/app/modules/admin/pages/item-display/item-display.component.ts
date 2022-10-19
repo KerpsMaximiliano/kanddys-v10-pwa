@@ -20,6 +20,7 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
@@ -303,119 +304,96 @@ export class ItemDisplayComponent implements OnInit {
   };
 
   openDialog() {
-    const styles = [
+    let number: number =
+      this.item.status === 'disabled'
+        ? 2
+        : this.item.status === 'active'
+        ? 0
+        : 1;
+    const statuses = [
       {
-        'background-color': '#82F18D',
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
         color: '#174B72',
-        'margin-top': this.item.name ? 0 : '40px',
-      },
-      {
-        'background-color': '#82F18D',
-        color: '#174B72',
-        'margin-top': this.item.name ? 0 : '40px',
-      },
-      {
-        'background-color': '#B17608',
-        color: '#FFFFFF',
-        'margin-top': this.item.name ? 0 : '40px',
-      },
-    ];
-    const list: StoreShareList[] = [
-      {
-        title: this.item.name,
-        label: {
-          text:
-            this.item.status === 'active'
-              ? 'VISIBLE (NO DESTACADO)'
-              : this.item.status === 'featured'
-              ? 'VISIBLE (Y DESTACADO)'
-              : 'INVISIBLE',
-          textArray: [
-            'VISIBLE (NO DESTACADO)',
-            'VISIBLE (Y DESTACADO)',
-            'INVISIBLE',
-          ],
-          func: this.toggleActivateItem,
-          valueUpdate: () => {
-            return this.item.status === 'disabled'
-              ? 0
+        asyncCallback: () => {
+          return new Promise((resolve, reject) => {
+            this.toggleActivateItem();
+            this.item.status === 'disabled'
+              ? (number = 2)
               : this.item.status === 'active'
-              ? 1
-              : 2;
-          },
-          stylesArray: styles,
-          labelStyles: this.item.status === 'disabled' ? styles[2] : styles[0],
+              ? (number = 0)
+              : (number = 1);
+            resolve(true);
+          });
         },
-        options: [
-          {
-            text: 'Editar producto',
-            mode: 'func',
-            func: () => {
-              if (this.item.params.length === 0) {
-                this.router.navigate([`admin/create-item/${this.item._id}`]);
-              } else if (
-                this.item.params.length > 0 &&
-                this.item.params[0].values.length > 0
-              ) {
-                this.router.navigate([`admin/create-item/${this.item._id}`], {
-                  queryParams: {
-                    justdynamicmode: true,
-                  },
-                });
-              }
-            },
-          },
-          {
-            text: 'Adicionar nuevo Item',
-            mode: 'func',
-            func: () => {
-              this.router.navigate([`/admin/create-item`]);
-            },
-          },
-          // {
-          //   text: 'Adiciona una venta',
-          //   mode: 'func',
-          //   func: () =>{
-          //       this.router.navigate([`/admin/entity-detail-metrics`]);
-          //   }
-          // },
-          // {
-          //   text: 'Adiciona un Nuevo tag',
-          //   mode: 'func',
-          //   func: () =>{
-          //       this.router.navigate([`admin/tag-creator`])
-          //   }
-          // }
-          /* {
-            text:'Ocultar item',
-            mode: 'func',
-            func: async () =>{
-                await this.itemsService.updateItem({status: 'disabled'}, this.item._id);
-                this.item.status = this.item.status === 'disabled' ? 'active' : 'disabled';
-                this.toastr.info('Producto oculto', null, {timeOut: 2500});
-            }
-          } */
-        ],
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: () => {
+          return new Promise((resolve, reject) => {
+            this.toggleActivateItem();
+            console.log(this.item.status);
+            this.item.status === 'disabled'
+              ? (number = 2)
+              : this.item.status === 'active'
+              ? (number = 0)
+              : (number = 1);
+            resolve(true);
+          });
+        },
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: '#FFFFFF',
+        asyncCallback: () => {
+          return new Promise((resolve, reject) => {
+            this.toggleActivateItem();
+            this.item.status === 'disabled'
+              ? (number = 2)
+              : this.item.status === 'active'
+              ? (number = 0)
+              : (number = 1);
+            resolve(true);
+          });
+        },
       },
     ];
-    this.dialogService.open(StoreShareComponent, {
+
+    const list = [
+      {
+        text: 'Editar producto',
+        callback: () => {
+          if (this.item.params.length === 0) {
+            this.router.navigate([`admin/create-item/${this.item._id}`]);
+          } else if (
+            this.item.params.length > 0 &&
+            this.item.params[0].values.length > 0
+          ) {
+            this.router.navigate([`admin/create-item/${this.item._id}`], {
+              queryParams: {
+                justdynamicmode: true,
+              },
+            });
+          }
+        },
+      },
+      {
+        text: 'Adicionar nuevo Item',
+        callback: () => {
+          this.router.navigate([`/admin/create-item`]);
+        },
+      },
+    ];
+    this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          titleWrapper: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            paddingBottom: '42px',
-            paddingTop: '25px',
-          },
-          dialogCard: {
-            paddingTop: '0px',
-          },
-        },
+        title: this.item.name,
+        optionsList: list,
+        statuses: statuses,
+        indexValue: number,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

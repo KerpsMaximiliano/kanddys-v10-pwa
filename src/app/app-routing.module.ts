@@ -89,6 +89,16 @@ const routes: Routes = [
         (m) => m.WebformsModule
       ),
   },
+  {
+    path: 'appointments',
+    /*canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],*/
+    loadChildren: () =>
+      import('./modules/appointments/appointments.module').then(
+        (m) => m.AppointmentsModule
+      ),
+  },
   { path: '**', redirectTo, pathMatch: 'full' },
 ];
 

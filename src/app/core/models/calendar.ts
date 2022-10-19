@@ -1,6 +1,6 @@
-import { Model } from "../objects/model";
-import { Merchant } from "./merchant";
-import { ReservationList } from "./reservation";
+import { Model } from '../objects/model';
+import { Merchant } from './merchant';
+import { ReservationList } from './reservation';
 
 export class CalendarRules {
   date: DateModel;
@@ -19,17 +19,23 @@ export class DateModel {
   toHour: string;
 }
 
+export class CalendarException {
+  from: Date;
+  until: Date;
+}
+
 export class Calendar extends Model<Calendar> {
   name: string;
   reservationLimits: number;
   timeChunkSize: number;
   merchant: string;
   active: boolean;
-  limits: DateModel
+  limits: DateModel;
   breakTime: number;
   expirationTime: number;
   reservations: ReservationList[];
   rules: CalendarRules[];
+  exceptions?: Array<CalendarException>;
   mode: string;
 }
 
@@ -50,8 +56,8 @@ export class CalendarInput {
   reservationLimits: number;
   timeChunkSize: number;
   breakTime: number;
-  expirationTime: number;
+  expirationTime?: number;
   merchant: string;
-  limits: DateModelInput
+  limits: DateModelInput;
   mode: string;
 }
