@@ -1,0 +1,281 @@
+.title {
+  font-size: 16px;
+  color: #000;
+  font-family: "RobotoMedium";
+  text-align: left;
+}
+
+.subtitle {
+  text-align: right;
+  font-size: 13px;
+  font-family: SfProSemiBold;
+  color: #8d8d8d;
+}
+
+.search {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: 100%;
+  height: 53px;
+  font-family: RobotoMedium;
+  font-size: 17px;
+  border: none;
+  color: #a1a1a1;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 20px auto;
+  display: block;
+  width: 91%;
+
+  &::placeholder {
+    opacity: 0.6043000221252441;
+    text-align: center;
+  }
+}
+
+.message-container {
+  width: 100%;
+  padding: 40px 0px;
+  text-align: center;
+  font-size: 19px;
+}
+
+.content {
+  width: 90%;
+  margin: auto;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+
+.factura {
+  background: white;
+  min-width: 300px;
+  min-height: 115px;
+  margin-right: 6px;
+  border-radius: 6px;
+  box-shadow: 0px 3px 10px -5px #979797;
+  cursor: pointer;
+  color: #000;
+  display: flex;
+  align-items: center;
+  padding: 0px 20px;
+  padding-top: 9px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  margin-left: 10px;
+
+  p {
+    margin: 0px;
+    padding: 1px 0px;
+  }
+}
+
+.container {
+  height: 100vh;
+  padding-right: 0px;
+}
+
+.grid {
+  background: #a1a1a1;
+  border: 1px solid #707070;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+  padding: 5px 4px;
+  border-radius: 4px;
+  margin: 20px 36px;
+}
+
+.col {
+  padding: 9px 0px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-family: "SfProBold";
+}
+
+.text-grid {
+  display: grid;
+  grid-template-columns: 3fr 3fr 1fr;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  align-items: end;
+  margin-right: 25px;
+}
+
+.text-right {
+  text-align: right;
+  color: #2874ad;
+  font-family: "SfProDisplay";
+  font-size: 14px;
+}
+
+.destacada {
+  font-family: "RobotoMedium";
+  font-size: 19px;
+}
+
+.middle {
+  font-family: "SfProDisplay";
+  color: #7b7b7b;
+  font-size: 14px;
+}
+
+.submit {
+  background: #2874ad;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 0px;
+  width: 90%;
+  margin: auto;
+  display: block;
+  margin-top: 12px;
+  font-family: "SfProDisplayBold";
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.reservations {
+  padding: 20px 20px;
+  margin: 11px 0px;
+  border-radius: 10px;
+  box-shadow: 0px 3px 10px -5px #979797;
+  font-family: "SfProRegular";
+  color: #7b7b7b;
+}
+
+.tap {
+  color: #7b7b7b;
+  font-family: "SfProDisplay";
+  font-size: 17px;
+}
+
+.card {
+  display: flex;
+  overflow-x: scroll;
+}
+
+.mb-3 {
+  margin-bottom: 3px;
+}
+
+.price,
+.input {
+  font-family: "SfProDisplay";
+  color: #7b7b7b;
+  font-size: 16px;
+}
+
+.input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 260px;
+  white-space: nowrap;
+}
+
+.tag {
+  font-family: "SfProDisplay";
+  color: #7b7b7b;
+  font-size: 13px;
+  text-align: right;
+}
+
+.id {
+  font-family: "SfProDisplayBold";
+  font-size: 13px;
+}
+
+.factura-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1px;
+  padding-top: 10px;
+  padding-bottom: 6px;
+  align-items: end;
+}
+
+.reference {
+  font-family: SfProDisplay;
+  color: #7b7b7b;
+  text-align: right;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.tags {
+  display: flex;
+  overflow-x: scroll;
+}
+
+.tag-container {
+  min-width: 81px;
+  min-height: 81px;
+  margin: 0px 20px;
+  margin-top: 20px;
+}
+
+.circle {
+  min-width: 81px;
+  min-height: 81px;
+  border: 1px solid #e9e371;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.tag-title {
+  font-family: SfProDisplay;
+  font-size: 15px;
+  color: #7b7b7b;
+  text-align: center;
+}
+
+.dot-trio {
+  // width: 23px;
+  // height: 5px;
+  padding: 5px;
+  display: flex;
+  justify-content: space-evenly;
+  cursor: pointer;
+  border-radius: 10px;
+
+  &:hover,
+  &:active {
+    background-color: #2c89d1;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    margin-bottom: 3px;
+  }
+}
+
+.header-grid {
+  background: #2874ad;
+  display: grid;
+  grid-template-columns: 1fr 9fr 1fr;
+  padding: 20px 20px;
+}
+
+.header-text {
+  font-size: 21px;
+  font-family: SfPro;
+  color: rgb(255, 255, 255);
+  cursor: unset;
+}
+
+.dots {
+  margin-top: 2px;
+}
+
+.arrows{
+  cursor: pointer;
+}

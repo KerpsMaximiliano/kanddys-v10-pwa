@@ -12,6 +12,7 @@ export class TagsCarousellComponent implements OnInit {
     freeMode: false,
     spaceBetween: 5,
   };
+
   @Output('tag') tag:EventEmitter<any> = new EventEmitter();
   @Input('tags') tags:any = [];
   constructor() { }
@@ -23,6 +24,7 @@ export class TagsCarousellComponent implements OnInit {
     const result = [...Array(n).keys()].map(() => '');
     return result;
   }
+
   handleTag(tag:string):void {
     this.tag.emit(tag);
   }
