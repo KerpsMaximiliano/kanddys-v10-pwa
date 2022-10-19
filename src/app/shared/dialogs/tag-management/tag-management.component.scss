@@ -1,0 +1,165 @@
+.base-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  visibility: visible;
+  border-radius: 10px;
+  padding: 0px 20px;
+  width: auto;
+  height: 53px;
+  font-family: RobotoMedium;
+  font-size: 16px;
+  border: none;
+  color: #0b1f38;
+  box-shadow: 0px 7px 25px -18px inset;
+  margin: 4px auto;
+  display: inline;
+  margin-left: 0;
+  width: 140px;
+  margin: auto 0;
+  margin-top: 3px;
+  &:focus {
+    border: 1px solid dodgerblue;
+  }
+}
+
+.d-none {
+  display: none;
+}
+
+.container {
+  padding: 40px 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.label-title {
+  margin-bottom: 10px;
+  display: block;
+  margin-left: 8px;
+  font-size: 15px;
+  font-family: "SfProBold";
+  color: #7d7d7d;
+  font-weight: bold;
+}
+
+.images-container {
+  display: flex;
+  width: 210px;
+  overflow-x: scroll;
+  display: grid;
+  grid-auto-columns: 60px;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+  padding-left: 30px;
+}
+
+.image-placeholder {
+  min-width: 60px;
+  max-width: 60px;
+  min-height: 60px;
+  max-height: 60px;
+  display: inline-block;
+  margin-right: 20px;
+  position: relative;
+}
+
+.image-label {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0px 2px 7px -3px inset #000;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.submit {
+  background: #2874ad;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 0px;
+  width: 80%;
+  font-family: "SfProDisplayBold";
+  cursor: pointer;
+  display: block;
+  margin: auto;
+  margin-top: 31px;
+}
+
+.absolute {
+  position: absolute;
+  top: -29px;
+  right: -13px;
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.image-plus {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 60px;
+  max-width: 60px;
+  min-height: 60px;
+  max-height: 60px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0px 2px 7px -3px inset #000;
+  font-size: 43px;
+  cursor: pointer;
+}
+
+.add-item {
+  display: block;
+  width: 100%;
+  margin: 20px 0px;
+  border: 0;
+  padding: 2px 0px;
+  font-size: 28px;
+  background: #2874ad;
+  color: #fff;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.remove-item {
+  display: block;
+  margin: auto;
+  width: 100%;
+  border: 0px;
+  text-align: right;
+  background: no-repeat;
+  font-size: 52px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 9px 4px;
+  padding: 20px 16px;
+  background: #2874ad;
+}
+
+.tag {
+  border-radius: 30px;
+  padding: 4px;
+  border: none;
+  font-family: 'SfProDisplay';
+  cursor: pointer;
+}
+
+.message-container {
+  width: 100%;
+  padding: 40px 0px;
+  text-align: center;
+  font-size: 19px;
+}

@@ -182,7 +182,7 @@ export const merchantAuthorize = gql`
   mutation merchantAuthorize($merchantId: ObjectID!) {
     merchantAuthorize(
       merchantId: $merchantId
-    ) { ${ bodyWithoutShowItems} }
+    ) { ${bodyWithoutShowItems} }
   } 
 `;
 
@@ -291,26 +291,22 @@ export const tagsByMerchant = gql`
 `;
 
 export const uploadAirtableAttachments = gql`
-  mutation uploadAirtableAttachments(
-    $files: [Upload!]!
-  ) {
-    uploadAirtableAttachments(
-      files: $files
-    )
+  mutation uploadAirtableAttachments($files: [Upload!]!) {
+    uploadAirtableAttachments(files: $files)
   }
 `;
 
 export const uploadDataToClientsAirtable = gql`
   mutation uploadDataToClientsAirtable(
-    $merchantId: ObjectID!,
-    $automation: String!,
-    $data: JSON!,
+    $merchantId: ObjectID!
+    $automation: String!
+    $data: JSON!
     $route: String
   ) {
     uploadDataToClientsAirtable(
-      merchantId: $merchantId,
-      automation: $automation,
-      data: $data,
+      merchantId: $merchantId
+      automation: $automation
+      data: $data
       route: $route
     )
   }
@@ -325,5 +321,11 @@ export const usersOrderMerchant = gql`
       email
       tags
     }
+  }
+`;
+
+export const incomeMerchant = gql`
+  query incomeMerchant($merchantId: ObjectID!) {
+    incomeMerchant(merchantId: $merchantId)
   }
 `;

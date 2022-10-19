@@ -1,0 +1,116 @@
+<app-helper-headerv2
+  [mainText]="mainText"
+  mode="basic"
+  [dots]="dots"
+  (returnEvent)="navigate()"
+  (dotEvent)="handleDotsEvent()"
+></app-helper-headerv2>
+<div class="container">
+  <!-- <input
+    [formControl]="controller"
+    class="search"
+    type="text"
+    placeholder="Busca por tag, articulo, referencia.."
+  /> -->
+  <ng-container [ngSwitch]="status">
+    <div class="grid">
+      <button
+        *ngFor="let button of buttons"
+        class="col"
+        [style]="{
+          background: option === button ? '#fff' : 'transparent',
+          color: option === button ? '#000' : '#fff',
+          boxShadow: option === button ? '0px 0px 4px 0px rgb(171 171 171)' : ''
+        }"
+        (click)="handleOption(button)"
+      >
+        {{ button | titlecase }}
+      </button>
+    </div>
+    <ng-container *ngSwitchCase="'complete'">
+      <div class="title-grid">
+        <span class="title">Siguientes</span>
+        <span
+          class="subtitle"
+          *ngIf="saleflowData?.module?.appointment?.calendar._id === calendar"
+          >Ingreso: ${{ income | number: "1.0-2" }}
+        </span>
+      </div>
+      <div class="content">
+        <div
+          *ngFor="let reservation of reservationsList"
+          class="reservations"
+          (click)="handleValue(reservation._id)"
+          [style]="{
+            background: optionIndexArray.includes(reservation._id)
+              ? '#b9ffb9'
+              : '#fff',
+            cursor: editable ? 'pointer' : 'initial'
+          }"
+        >
+          <p>
+            {{ reservation.value }}
+          </p>
+        </div>
+        <!-- <app-answer-selector
+          [options]="options"
+          [activeOption]="activeIndex"
+          [indicator]="true"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+          [optionContainerStyles]="{
+            marginBottom: '10px'
+          }"
+          [isMultipleOption]="true"
+          [isMultipleOption2]="true"
+          [editable]="editable"
+          [activeMultipleOption]="optionIndexArray"
+          (activeMultipleOptionValue)="handleValue($event)"
+          [showSelectedFeedback]="true"
+        ></app-answer-selector> -->
+        <!--
+          <button
+            *ngIf="!editable"
+            class="reservation"
+            [routerLink]="['appointments/reservations-creator/']"
+          >
+            CREA UNA NUEVA RESERVACION
+          </button>
+        -->
+      </div>
+    </ng-container>
+    <div class="message-container" *ngSwitchCase="'empty'">
+      <p class="message">No hay resultados</p>
+    </div>
+    <div class="message-container" *ngSwitchDefault>
+      <p class="message">Cargando...</p>
+    </div>
+  </ng-container>
+</div>
+<app-sticky-button
+  *ngIf="editable"
+  [mode]="'double'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      'border-right': '1.5px solid #fff',
+      backgroundColor: '#2874ad'
+    }
+  }"
+  (added)="returnScreen()"
+  [customRightButtonStyles]="{
+    color: '#fff',
+    width: '100%',
+    maxWidth: 'none'
+  }"
+  [customLeftButtonStyles]="{
+    display: 'none'
+  }"
+  [text]="''"
+  [text2]="text2"
+  [size]="'small'"
+  [bgColor]="text2 ? '#2874ad' : '#ababab'"
+  (right)="handleSubmit()"
+  fontSize="12px"
+></app-sticky-button>

@@ -1,0 +1,201 @@
+@import "forms";
+
+.body {
+  background-color: #f6f6f6;
+  min-height: calc(100vh - 36px);
+  padding: 0px 19px;
+  padding-top: 38px;
+
+  h2 {
+    font-family: RobotoBold;
+    font-size: 24px;
+    margin: 0px;
+    margin-bottom: 56px;
+  }
+
+  .action-preview {
+    margin-top: 56px;
+
+    &.second {
+      margin-top: 24px;
+    }
+
+    h3 {
+      margin: 0px;
+      margin-bottom: 20px;
+      font-family: RobotoMedium;
+      font-weight: normal;
+      font-size: 17px;
+      color: #7b7b7b;
+    }
+  }
+
+  .input-label {
+    color: #7b7b7b;
+    font-family: RobotoMedium;
+    font-weight: normal;
+    font-size: 17px;
+    margin-top: 52px;
+    margin-bottom: 20px;
+    margin-left: 8px;
+  }
+
+  .input {
+    &.customWidth {
+      width: 157px;
+    }
+  }
+
+  .daysOfTheWeek {
+    display: flex;
+    gap: 12px;
+
+    .day {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      height: 50px;
+      font-size: 17px;
+      font-family: SfProRegular;
+      color: black;
+      cursor: pointer;
+      transition: 0.3s background-color ease-in-out;
+
+      &:hover {
+        background-color: lightgray;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      &.selected {
+        background-color: #82f18d;
+        border-radius: 5px;
+      }
+    }
+  }
+
+  .from-to-flex-wrapper {
+    display: flex;
+    gap: 1rem;
+    width: fit-content;
+    justify-content: center;
+    margin: auto;
+
+    justify-content: space-between;
+
+    .hour-swiper-wrapper,
+    .minutes-swiper-wrapper {
+      height: 100px;
+      width: 100%;
+    }
+
+    .swiper-item {
+      &.swiper-slide {
+        margin: 0px;
+        padding: 0px;
+      }
+
+      margin-bottom: 10px;
+      width: 100px;
+
+      padding: 4px;
+      font-size: 16px;
+      border-radius: 5px;
+      color: black;
+      font-family: SfProRegular;
+      color: black;
+      cursor: pointer;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 26.39px;
+      margin-bottom: 10px !important;
+      transition: 0.3s background-color ease-in-out;
+
+      &:hover {
+        background-color: darken($color: #fff, $amount: 10);
+      }
+
+      &:active {
+        background-color: darken($color: #fff, $amount: 20);
+      }
+
+      &.selected {
+        background-color: #82f18d;
+      }
+    }
+  }
+
+  .custom-swiper {
+    height: 100px;
+    overflow-y: scroll;
+    flex: 1;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .swiper-item {
+    margin-bottom: 0px;
+    width: 100px;
+
+    padding: 4px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: black;
+    font-family: SfProRegular;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 26.39px !important;
+    margin-bottom: 10px !important;
+    transition: 0.3s background-color ease-in-out;
+
+    &:hover {
+      background-color: darken($color: #fff, $amount: 10);
+    }
+
+    &:active {
+      background-color: darken($color: #fff, $amount: 20);
+    }
+
+    &.selected {
+      background-color: #82f18d;
+    }
+  }
+
+  .links {
+    list-style: none;
+    padding-bottom: 224px;
+
+    li {
+      font-family: SfProRegular;
+      color: #2874ad;
+      font-size: 17px;
+      margin-bottom: 24px;
+
+      &:hover {
+        cursor: pointer;
+        color: darken($color: #2874ad, $amount: 10);
+      }
+    }
+  }
+}
+
+.minutes-swiper-wrapper {
+  height: 100px;
+  width: 100px;
+}
+
+:host ::ng-deep .swiper-button-next,
+:host ::ng-deep .swiper-button-prev {
+  display: none;
+}

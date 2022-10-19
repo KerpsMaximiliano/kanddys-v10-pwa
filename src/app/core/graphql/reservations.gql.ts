@@ -17,8 +17,8 @@ export const createReservationAuthLess = gql`
 `;
 
 export const updateReservation = gql`
-  mutation createReservation($input: ReservationInput!, $id: ObjectID!) {
-    createReservation(input: $input, id: $id) {
+  mutation updateReservation($input: ReservationInput!, $id: ObjectID!) {
+    updateReservation(input: $input, id: $id) {
       _id
     }
   }
@@ -122,4 +122,16 @@ export const listReservations = gql`
     }
   }
 }
+`;
+
+export const deleteReservation = gql`
+  mutation deleteReservation($id: ObjectID!) {
+    deleteReservation(id: $id)
+  }
+`;
+
+export const reservationSpacesAvailable = gql`
+  query reservationSpacesAvailable($until: Date!,$from: Date,$calendarId: ObjectID!) {
+    reservationSpacesAvailable(until: $until,from: $from,calendarId: $calendarId)
+  }
 `;

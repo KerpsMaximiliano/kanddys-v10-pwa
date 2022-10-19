@@ -8,18 +8,18 @@ import { HeavenlyBalloonsComponent } from './pages/heavenly-balloons/heavenly-ba
 import { ItemDetailComponent } from './pages/item-detail/item-detail.component';
 import { LlStudioOrderFormComponent } from './pages/ll-studio-order-form/ll-studio-order-form.component';
 import { OrderDetailComponent } from './pages/order-detail/order-detail.component';
-import { PackageDetailComponent } from './pages/package-detail/package-detail.component';
 import { CustomItemDetailComponent } from './pages/provider-store/custom-item-detail/custom-item-detail.component';
 import { CustomizerRedirectComponent } from './pages/provider-store/customizer-redirect/customizer-redirect.component';
 import { ProviderStoreComponent } from './pages/provider-store/provider-store.component';
 import { UserInfoComponent } from './pages/provider-store/user-info/user-info.component';
 import { RedirectionsComponent } from './pages/redirections/redirections.component';
-import { ReservationComponent } from './pages/reservation/reservation.component';
 import { NewAddressComponent } from './pages/new-address/new-address.component';
 import { EcommerceComponent } from './ecommerce/ecommerce.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { AppointmentsModule } from '../appointments/appointments.module';
 
 const routes: Routes = [
   {
@@ -85,16 +85,10 @@ const routes: Routes = [
         path: ':saleflowId/create-giftcard',
         component: CreateGiftcardComponent,
       },
-
       {
-        path: 'package-detail/:saleflowId/:packageId',
-        component: PackageDetailComponent,
+        path: ':saleflowId/reservations/:calendarId',
+        component: ReservationsComponent,
       },
-      {
-        path: 'reservations',
-        component: ReservationComponent,
-      },
-
       {
         path: 'order-detail/:id',
         component: OrderDetailComponent,
@@ -127,8 +121,6 @@ const routes: Routes = [
     CustomizerRedirectComponent,
     UserInfoComponent,
     CreateGiftcardComponent,
-    PackageDetailComponent,
-    ReservationComponent,
     OrderDetailComponent,
     RedirectionsComponent,
     HeavenlyBalloonsComponent,
@@ -136,7 +128,13 @@ const routes: Routes = [
     NewAddressComponent,
     CheckoutComponent,
     PaymentsComponent,
+    ReservationsComponent,
   ],
-  imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    SharedModule,
+    AppointmentsModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class EcommerceModule {}

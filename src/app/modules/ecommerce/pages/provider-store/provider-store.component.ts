@@ -1,18 +1,17 @@
+import { LocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { Item, ItemPackage } from 'src/app/core/models/item';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { lockUI } from 'src/app/core/helpers/ui.helpers';
+import { Item } from 'src/app/core/models/item';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { WarningStepsComponent } from 'src/app/shared/dialogs/warning-steps/warning-steps.component';
-import { lockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { LocationStrategy } from '@angular/common';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { WarningStepsComponent } from 'src/app/shared/dialogs/warning-steps/warning-steps.component';
 
 @Component({
   selector: 'app-provider-store',
@@ -115,7 +114,7 @@ export class ProviderStoreComponent implements OnInit {
 
   options: any[] = [];
 
-  products: (Item | ItemPackage)[] = [];
+  products: Item[] = [];
 
   mouseDown = false;
   startX: any;
@@ -140,13 +139,6 @@ export class ProviderStoreComponent implements OnInit {
       //   link: 'redirect-to-customizer',
       //   active: false,
       // });
-    }
-    if (this.header.order.itemPackage) {
-      this.options.push({
-        option: 'Escenarios',
-        link: 'select-pack',
-        active: false,
-      });
     }
     if (this.header.saleflow?.module.appointment) {
       if (this.header.saleflow.module.appointment.isActive) {
@@ -230,26 +222,10 @@ export class ProviderStoreComponent implements OnInit {
       this.status = 'done';
     } else {
       let products: string[] = [];
-      let packages: string[] = [];
-      if (this.header.order.itemPackage) {
-        packages.push(this.header.order.itemPackage);
-        const listItemPackage = (
-          await this.saleflow.listItemPackage({
-            findBy: {
-              _id: {
-                __in: ([] = packages),
-              },
-            },
-          })
-        ).listItemPackage;
-        this.products = listItemPackage;
-        this.status = 'done';
-      } else {
-        for (let i = 0; i < this.header.order.products.length; i++) {
-          products.push(this.header.order.products[i].item);
-        }
-        this.findItemData(products);
+      for (let i = 0; i < this.header.order.products.length; i++) {
+        products.push(this.header.order.products[i].item);
       }
+      this.findItemData(products);
     }
   }
 
@@ -295,7 +271,6 @@ export class ProviderStoreComponent implements OnInit {
         params: itemParams,
         amount: item.customizerId ? undefined : 1,
         saleflow: saleflowId,
-        name: item.name,
       };
       this.header.order = {
         products: [product],
@@ -324,10 +299,10 @@ export class ProviderStoreComponent implements OnInit {
     });
     if (!this.header.saleflow) {
       const saleflow = this.header.getSaleflow();
-      if(!saleflow) return this.getData(saleflowId, itemId);
+      if (!saleflow) return this.getData(saleflowId, itemId);
       this.header.saleflow = saleflow;
       this.header.order = this.header.getOrder(saleflow._id);
-      if(!this.header.order) return this.getData(saleflowId, itemId);
+      if (!this.header.order) return this.getData(saleflowId, itemId);
       this.header.getOrderProgress(saleflow._id);
       const items: Item[] = this.header.getItems(saleflow._id);
       if (
@@ -339,12 +314,12 @@ export class ProviderStoreComponent implements OnInit {
       ) {
         this.header.items = items;
         return lockUI(this.fillData());
-      }
-      else return this.getData(saleflowId, itemId);
+      } else return this.getData(saleflowId, itemId);
     }
-    if(this.header.saleflow._id !== saleflowId) return this.getData(saleflowId, itemId);
+    if (this.header.saleflow._id !== saleflowId)
+      return this.getData(saleflowId, itemId);
     this.header.order = this.header.getOrder(this.header.saleflow._id);
-    if(!this.header.order) return this.getData(saleflowId, itemId);
+    if (!this.header.order) return this.getData(saleflowId, itemId);
     const items: Item[] = this.header.getItems(this.header.saleflow._id);
     if (
       items &&
@@ -355,8 +330,7 @@ export class ProviderStoreComponent implements OnInit {
     ) {
       this.header.items = items;
       return lockUI(this.fillData());
-    }
-    else return this.getData(saleflowId, itemId);
+    } else return this.getData(saleflowId, itemId);
   }
 
   changeOption(index: any) {
@@ -413,11 +387,13 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   deleteRoutes() {
-    this.options = [{
-      option: 'Info',
-      link: 'user-info',
-      active: true,
-    }];
+    this.options = [
+      {
+        option: 'Info',
+        link: 'user-info',
+        active: true,
+      },
+    ];
     this.finalizacion = true;
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -434,9 +410,7 @@ export class ProviderStoreComponent implements OnInit {
       ]);
     }*/
     //this.location.back();
-    this.router.navigate([
-      '/ecommerce/store/' + this.header.saleflow._id,
-    ]);
+    this.router.navigate(['/ecommerce/store/' + this.header.saleflow._id]);
   }
 
   openImageDetail() {
@@ -447,6 +421,6 @@ export class ProviderStoreComponent implements OnInit {
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
-    })
+    });
   }
 }

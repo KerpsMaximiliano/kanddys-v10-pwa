@@ -7,6 +7,7 @@ import {
   getCalendarWithMerchantInfo,
   identifyCalendarAdmin,
   getCalendarsByMerchant,
+  updateCalendar,
 } from '../graphql/calendar.gql';
 import * as moment from 'moment';
 import { ReservationList } from '../models/reservation';
@@ -220,6 +221,14 @@ export class CalendarService {
     this.getDaysArray(this.year, this.month, this.monthDay);
   }
 
+  setDate(month: number, day: number, year: number) {
+    this.getToday();
+
+    this.month = month;
+    this.monthDay = day;
+    this.year = year;
+  }
+
   getDaysArray(year: number, month: number, monthDay: number) {
     let names = Object.freeze([
       'Domingo',
@@ -271,6 +280,7 @@ export class CalendarService {
       this.hours.push(from);
       this.allHours.push(from);
       let fromHour = from.split(':')[0];
+      console.log(fromHour);
 
       let index = 0;
       this.showDays = false;
@@ -516,6 +526,15 @@ export class CalendarService {
     const result = await this.graphql.mutate({
       mutation: createCalendar,
       variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result;
+  }
+
+  async updateCalendar(input: CalendarInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateCalendar,
+      variables: { input, id },
     });
     if (!result || result?.errors) return undefined;
     return result;

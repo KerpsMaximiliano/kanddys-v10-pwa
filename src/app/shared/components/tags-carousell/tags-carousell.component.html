@@ -1,0 +1,8 @@
+<div class="tags">
+<swiper [config]="swiperConfig">
+  <div *ngFor="let tag of tags" class="tag-container">
+    <div (click)="handleTag(tag)" class="circle"></div>
+    <p class="tag-title">{{tag}}</p>
+  </div>
+</swiper>
+</div>

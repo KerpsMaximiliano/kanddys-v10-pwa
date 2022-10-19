@@ -1,30 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
   ItemCategory,
-  ItemCategoryHeadline,
+  ItemCategoryHeadline
 } from 'src/app/core/models/item';
+import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
 import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
-import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
-import { Subscription } from 'rxjs';
-import { AppService } from 'src/app/app.service';
-import { filter } from 'rxjs/operators';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { environment } from 'src/environments/environment';
-import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { environment } from 'src/environments/environment';
 // import { SwiperOptions } from 'swiper';
+import { OrderService } from 'src/app/core/services/order.service';
 import {
   StoreShareComponent,
-  StoreShareList,
+  StoreShareList
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-category-items',
