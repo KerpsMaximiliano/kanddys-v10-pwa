@@ -132,7 +132,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                 }),
                 phone: user.phone,
                 tags,
-                _id
+                _id,
               };
               return result;
             }
@@ -153,14 +153,27 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           this.facturasTemp = this.facturasList;
           this.controller.valueChanges.subscribe((value) => {
             this.facturasTemp = this.facturasList.map(({ facturas }) => ({
-              facturas: facturas.filter(({ phone, tags }) =>
-                // this.tags.length
-                //   ? tags.some((tag) =>
-                //       this.tags.map(({ _id }) => _id).includes(tag)
-                //     )
-                //   :
-                value ? `${phone}`.includes(value) : true
-              ),
+              facturas: facturas.filter(({ phone, tags, dateId, products }) => {
+                const productNameMatches = products.map((product) => {
+
+                  return value && product
+                    ? product.toLowerCase().includes(value.toLowerCase())
+                    : (value && product === '') || !product
+                    ? false
+                    : true;
+                });
+
+                return value
+                  ? `${phone}`.includes(value) ||
+                      dateId.includes(value) ||
+                      productNameMatches.includes(true)
+                  : true;
+              }),
+              // this.tags.length
+              //   ? tags.some((tag) =>
+              //       this.tags.map(({ _id }) => _id).includes(tag)
+              //     )
+              //   :
               tag: { _id: '' },
             }));
             this.status = this.facturasTemp.some(

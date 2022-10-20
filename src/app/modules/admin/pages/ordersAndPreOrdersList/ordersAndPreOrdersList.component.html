@@ -14,7 +14,7 @@
   <div *ngIf="!tags.length" class="pr-25px">
     <input
       [formControl]="controller"
-      class="search"
+      class="search input"
       type="tel"
       placeholder="Busca por tag, articulo, referencia.."
     />
@@ -65,7 +65,7 @@
                     </span>
                     <span class="reference">{{ factura.createdAt }}</span>
                   </div>
-                  <p *ngFor="let product of factura.products" class="input">
+                  <p *ngFor="let product of factura.products" class="name">
                     {{ product }}
                   </p>
                   <div class="factura-grid">
