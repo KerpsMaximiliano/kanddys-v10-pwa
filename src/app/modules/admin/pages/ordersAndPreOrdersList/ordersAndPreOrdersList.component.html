@@ -56,9 +56,8 @@
             <div
               *ngFor="let factura of facturas.facturas; let j = index"
               class=""
-              (click)="handleValue('')"
             >
-              <div class="factura">
+              <div class="factura" [routerLink]="['/ecommerce/order-info', factura._id]">
                 <div class="w-100">
                   <div class="factura-grid">
                     <span class="id">
@@ -71,7 +70,7 @@
                   </p>
                   <div class="factura-grid">
                     <span class="price">
-                      {{ factura.total }}
+                      ${{ factura.total.toLocaleString("es-MX") }}
                     </span>
                   </div>
                 </div>

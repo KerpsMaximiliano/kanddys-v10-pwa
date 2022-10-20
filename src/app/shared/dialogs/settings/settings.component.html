@@ -68,20 +68,19 @@
           <span class="text">Inicio</span>
         </li>
 
-        <!--
-          <li class="disabled">
-            <div class="icon">
-              <img [src]="env + '/account.svg'" alt="bills" />
-            </div>
-            <span class="text">Facturas</span>
-          </li>
-        -->
-
         <li>
           <div class="icon" (click)="redirect('/admin/merchant-items')">
             <img [src]="env + '/sprout.svg'" alt="articles" />
           </div>
           <span class="text">Artículos</span>
+        </li>
+
+        
+        <li>
+          <div class="icon" (click)="redirect('/admin/orders')">
+            <img [src]="env + '/account.svg'" alt="bills" />
+          </div>
+          <span class="text">Facturas</span>
         </li>
 
         <!--

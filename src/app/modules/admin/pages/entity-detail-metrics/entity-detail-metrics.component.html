@@ -119,7 +119,10 @@
         <h2 class="amount">INGRESOS TOTALES</h2>
       </div>
 
-      <div class="info-card unset">
+      <div
+        class="info-card pointer"
+        routerLink="/admin/orders"
+      >
         <h2 class="amount quantity">
           {{ ordersTotal ? ordersTotal.length : "0" }}
         </h2>

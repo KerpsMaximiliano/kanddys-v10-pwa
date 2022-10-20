@@ -19,17 +19,17 @@ import {
 import { SwiperOptions } from 'swiper';
 
 @Component({
-  selector: 'app-facturas-prefacturas',
-  templateUrl: './facturas-prefacturas.component.html',
-  styleUrls: ['./facturas-prefacturas.component.scss'],
+  selector: 'app-ordersAndPreOrdersList',
+  templateUrl: './ordersAndPreOrdersList.component.html',
+  styleUrls: ['./ordersAndPreOrdersList.component.scss'],
 })
-export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
+export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   status = 'loading';
   controller: FormControl = new FormControl();
   mainText: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
-    fontFamily: 'SfPro',
+    fontFamily: 'SfProBold',
   };
   dots = {
     active: false,
@@ -119,7 +119,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             return result;
           });
           let temp = _ordersByMerchant.map(
-            ({ createdAt, subtotals, dateId, items, user, tags }) => {
+            ({ createdAt, subtotals, dateId, items, user, tags, _id }) => {
               const result = {
                 createdAt: new Date(createdAt).toLocaleDateString('en-US'),
                 total: subtotals
@@ -132,6 +132,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
                 }),
                 phone: user.phone,
                 tags,
+                _id
               };
               return result;
             }
@@ -330,7 +331,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
 
   handleOption(option: string): void {
     this.option = option;
-    this._Router.navigate([`/admin/facturas`], {
+    this._Router.navigate([`/admin/orders`], {
       queryParams: {
         type: option,
         // phone: this.phone,

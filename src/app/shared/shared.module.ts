@@ -86,7 +86,6 @@ import { StatusListComponent } from './dialogs/status-list/status-list.component
 import { StoreShareComponent } from './dialogs/store-share/store-share.component';
 import { TriggerDialog } from './dialogs/trigger/trigger.dialog';
 import { WarningStepsComponent } from './dialogs/warning-steps/warning-steps.component';
-import { SingleActionDialogComponent } from './dialogs/single-action-dialog/single-action-dialog.component';
 import { LoadingScreenComponent } from './components/loading-screen/loading-screen.component';
 import { ItemComponent } from './components/item/item.component';
 import { ReloadComponent } from './dialogs/reload/reload.component';
