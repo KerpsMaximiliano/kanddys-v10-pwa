@@ -105,7 +105,13 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           const pagination: PaginationInput = {
             options: {
               sortBy: `${at}:${sort}`,
-              limit: +limit,
+              limit: 6000,
+            },
+            findBy: {
+              orderStatus:
+                this.option === 'facturas'
+                  ? ['in progress', 'to confirm', 'completed']
+                  : ['draft'],
             },
           };
 
@@ -119,8 +125,17 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
             return result;
           });
           let temp = _ordersByMerchant.map(
-            ({ createdAt, subtotals, dateId, items, user, tags, _id }) => {
-              const result = {
+            ({
+              createdAt,
+              subtotals,
+              dateId,
+              items,
+              user,
+              tags,
+              _id,
+              orderStatus,
+            }) => {
+              const result: any = {
                 createdAt: new Date(createdAt).toLocaleDateString('en-US'),
                 total: subtotals
                   .map(({ amount }) => amount)
@@ -130,10 +145,12 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                   const { name } = item;
                   return name;
                 }),
-                phone: user.phone,
                 tags,
                 _id,
               };
+
+              if (orderStatus !== 'draft' && user) result.phone = user.phone;
+
               return result;
             }
           );
@@ -155,7 +172,6 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
             this.facturasTemp = this.facturasList.map(({ facturas }) => ({
               facturas: facturas.filter(({ phone, tags, dateId, products }) => {
                 const productNameMatches = products.map((product) => {
-
                   return value && product
                     ? product.toLowerCase().includes(value.toLowerCase())
                     : (value && product === '') || !product

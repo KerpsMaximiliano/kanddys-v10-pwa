@@ -2,15 +2,18 @@
   *ngIf="!tags.length"
   [mainText]="mainText"
   mode="basic"
+  [fixed]="true"
   [dots]="dots"
   (returnEvent)="navigate()"
   (dotEvent)="handleDotsEvent()"
 ></app-helper-headerv2>
-<app-helper-headerv3
-  *ngIf="tags.length"
-  (arrowsClick)="resetTags()"
-></app-helper-headerv3>
-<div class="container">
+<!--
+  <app-helper-headerv3
+    *ngIf="tags.length"
+    (arrowsClick)="resetTags()"
+  ></app-helper-headerv3>
+-->
+<div class="container" style="padding-top: 36px">
   <div *ngIf="!tags.length" class="pr-25px">
     <input
       [formControl]="controller"
@@ -57,7 +60,10 @@
               *ngFor="let factura of facturas.facturas; let j = index"
               class=""
             >
-              <div class="factura" [routerLink]="['/ecommerce/order-info', factura._id]">
+              <div
+                class="factura"
+                [routerLink]="['/ecommerce/order-info', factura._id]"
+              >
                 <div class="w-100">
                   <div class="factura-grid">
                     <span class="id">
@@ -80,7 +86,9 @@
           <!-- </div> -->
         </div>
       </div>
-      <button class="submit">Crea UNA NUEVA FACTURA</button>
+      <!--
+        <button class="submit">Crea UNA NUEVA FACTURA</button>
+      -->
     </ng-container>
     <div class="message-container" *ngSwitchCase="'empty'">
       <p class="message">No hay resultados</p>
