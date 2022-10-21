@@ -1,0 +1,125 @@
+<app-helper-headerv2
+  *ngIf="!tags.length"
+  [mainText]="mainText"
+  mode="basic"
+  [fixed]="true"
+  [dots]="dots"
+  (returnEvent)="navigate()"
+  (dotEvent)="handleDotsEvent()"
+></app-helper-headerv2>
+<!--
+  <app-helper-headerv3
+    *ngIf="tags.length"
+    (arrowsClick)="resetTags()"
+  ></app-helper-headerv3>
+-->
+<div class="container" style="padding-top: 36px">
+  <div *ngIf="!tags.length" class="pr-25px">
+    <input
+      [formControl]="controller"
+      class="search input"
+      type="tel"
+      placeholder="Busca por tag, articulo, referencia.."
+    />
+  </div>
+  <ng-container [ngSwitch]="status">
+    <div *ngIf="!tags.length" class="grid">
+      <button
+        *ngFor="let button of buttons"
+        class="col"
+        [style]="{
+          background: option === button ? '#fff' : 'transparent',
+          color: option === button ? '#000' : '#fff',
+          boxShadow: option === button ? '0px 0px 4px 0px rgb(171 171 171)' : ''
+        }"
+        (click)="handleOption(button)"
+      >
+        {{ button | titlecase }}
+      </button>
+    </div>
+    <!-- <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
+    <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell> -->
+    <ng-container *ngSwitchCase="'complete'">
+      <div class="content">
+        <div
+          *ngFor="let facturas of facturasTemp; let i = index"
+          class="item"
+          (click)="handleValue('')"
+        >
+          <!-- <div class="text-grid" *ngIf="facturas.tag._id">
+            <div *ngIf="facturas.facturas.length" class="destacada">{{ i === 0&&!tags.length ? "Destacadas" : facturas.tag.name }}</div>
+            <div *ngIf="!tags.length" class="mb-3 middle">Ingreso: $IngresoID</div>
+            <div *ngIf="!tags.length" class="mb-3 text-right">VER</div>
+          </div>
+          <p *ngIf="i === 0 && !tags.length" class="tap">
+            Tap dos veces encima para destacar <br />algunas facturas.
+          </p> -->
+          <!-- <div class="card"> -->
+          <swiper [config]="swiperConfig">
+            <div
+              *ngFor="let factura of facturas.facturas; let j = index"
+              class=""
+            >
+              <div class="factura" (click)="goToOrderInfo(factura._id)">
+                <div class="w-100">
+                  <div class="factura-grid">
+                    <span class="id">
+                      {{ factura.dateId }}
+                    </span>
+                    <span class="reference">{{
+                      getCreationDateDifferenceAsItsSaid(factura.createdAt)
+                    }}</span>
+                  </div>
+                  <p *ngFor="let product of factura.products" class="name">
+                    {{ product }}
+                  </p>
+                  <div class="factura-grid">
+                    <span class="price">
+                      ${{ factura.total.toLocaleString("es-MX") }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </swiper>
+          <!-- </div> -->
+        </div>
+      </div>
+      <!--
+        <button class="submit">Crea UNA NUEVA FACTURA</button>
+      -->
+    </ng-container>
+    <div class="message-container" *ngSwitchCase="'empty'">
+      <p class="message">No hay resultados</p>
+    </div>
+    <div class="message-container" *ngSwitchDefault>
+      <p class="message">Cargando...</p>
+    </div>
+  </ng-container>
+</div>
+<app-sticky-button
+  *ngIf="editable"
+  [mode]="'double'"
+  [extra]="{
+    return: true,
+    returnStyles: {
+      'border-right': '1.5px solid #fff',
+      backgroundColor: '#2874ad'
+    }
+  }"
+  (added)="returnScreen()"
+  [customRightButtonStyles]="{
+    color: '#fff',
+    width: '100%',
+    maxWidth: 'none'
+  }"
+  [customLeftButtonStyles]="{
+    display: 'none'
+  }"
+  [text]="''"
+  [text2]="text2"
+  [size]="'small'"
+  [bgColor]="text2 ? '#2874ad' : '#ababab'"
+  (right)="handleSubmit()"
+  fontSize="12px"
+></app-sticky-button>

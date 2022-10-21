@@ -8,6 +8,7 @@ import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.co
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
 import { AdminComponent } from './admin/admin.component';
+import { OrdersAndPreOrdersList } from './pages/ordersAndPreOrdersList/ordersAndPreOrdersList';
 import { ReservationListComponent } from 'src/app/shared/components/reservation-list/reservation-list.component';
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
@@ -49,6 +50,10 @@ const routes: Routes = [
         component: ActionsMenuComponent,
       },
       {
+        path: 'orders',
+        component: OrdersAndPreOrdersList,
+      },
+      {
         path: 'entity-detail-metrics/reservations/:calendar/:type',
         component: ReservationListComponent,
         data: { animation: 'EntityDetailMetrics' },
@@ -82,6 +87,7 @@ const routes: Routes = [
     ItemDisplayComponent,
     ActionsMenuComponent,
     AdminComponent,
+    OrdersAndPreOrdersList,
     CalendarCreatorComponent,
     TimeBlockComponent
   ],

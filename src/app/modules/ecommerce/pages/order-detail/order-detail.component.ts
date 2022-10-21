@@ -34,6 +34,7 @@ export class OrderDetailComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  flowRoute: string = null;
   messageLink: string;
 
   constructor(
@@ -56,6 +57,7 @@ export class OrderDetailComponent implements OnInit {
     const notification = this.route.snapshot.queryParamMap.get('notify');
     const id = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(id))?.order;
+    this.flowRoute = localStorage.getItem('flowRoute');
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
@@ -277,20 +279,22 @@ export class OrderDetailComponent implements OnInit {
       }
 
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      const message = `🐝\n\n*FACTURA ${formatID(
+      const message = `*🐝 FACTURA ${formatID(
         this.order.dateId
-      )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
+      )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
         'es-MX'
-      )}: ${fullLink}*\n\nComprador: ${
+      )}: ${fullLink}\n\n*Comprador*: ${
         this.order.user?.name ||
         this.order.user?.phone ||
         this.order.user?.email ||
         'Anónimo'
-      }\n\nDirección: ${address}${
+      }\n\n*Dirección*: ${address}\n\n${
         giftMessage
-          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
+          ? '\n\n*Mensaje en la tarjetita de regalo*: \n' + giftMessage
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
+
+
       this.messageLink = `https://api.whatsapp.com/send?phone=${
         this.order.items[0].saleflow.merchant.owner.phone
       }&text=${encodeURIComponent(message)}`;
@@ -369,5 +373,9 @@ export class OrderDetailComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  goBackToFlowRoute() {
+    this.router.navigate([this.flowRoute]);
   }
 }
