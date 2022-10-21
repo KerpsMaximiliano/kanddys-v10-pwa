@@ -34,6 +34,7 @@ export class OrderDetailComponent implements OnInit {
     weekday: string;
     time: string;
   };
+  flowRoute: string = null;
   messageLink: string;
 
   constructor(
@@ -56,6 +57,7 @@ export class OrderDetailComponent implements OnInit {
     const notification = this.route.snapshot.queryParamMap.get('notify');
     const id = this.route.snapshot.paramMap.get('id');
     this.order = (await this.orderService.order(id))?.order;
+    this.flowRoute = localStorage.getItem('flowRoute');
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
@@ -369,5 +371,9 @@ export class OrderDetailComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  goBackToFlowRoute() {
+    this.router.navigate([this.flowRoute]);
   }
 }

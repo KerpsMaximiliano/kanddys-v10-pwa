@@ -26,6 +26,7 @@ a {
     justify-content: space-between;
     align-items: center;
     padding: 0 23px 0 33px;
+    padding-left: 17px;
 
     .merchant-name {
       font-family: "SfProBold";
@@ -34,6 +35,8 @@ a {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+      margin-right: auto;
+      margin-left: 17px;
     }
 
     .right-area {
@@ -308,4 +311,8 @@ table {
 }
 .customizer-preview {
   width: 100%;
+}
+
+.return-holder{
+  cursor: pointer;
 }

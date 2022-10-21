@@ -1,5 +1,11 @@
 <div class="container">
   <header class="header">
+    <a class="return-holder"
+      (click)="goBackToFlowRoute()"
+      *ngIf="flowRoute"
+      ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
+    </a>
+
     <h1 class="merchant-name">{{ order?.items[0].saleflow.merchant.name }}</h1>
 
     <div class="right-area">
@@ -11,7 +17,9 @@
   </header>
 
   <div class="bill-area" *ngIf="notify">
-    <h2 class="user-name">{{ order.user?.name || order.user?.phone || order.user?.email }}</h2>
+    <h2 class="user-name">
+      {{ order.user?.name || order.user?.phone || order.user?.email }}
+    </h2>
     <h2 class="success">Tu factura se creó exitosamente.</h2>
 
     <a
@@ -24,7 +32,8 @@
     </a>
 
     <p class="bill-clarity">
-      Al “confirmar” se abrirá tu WhatsApp con la factura para {{ order?.items[0].saleflow.merchant.name }}.
+      Al “confirmar” se abrirá tu WhatsApp con la factura para
+      {{ order?.items[0].saleflow.merchant.name }}.
     </p>
   </div>
   <!-- <app-helper-headerv2
@@ -79,7 +88,7 @@
       </h2>
 
       <div class="info-display">
-        <span class="info" style="margin-left: 0;">{{ orderDate }}</span>
+        <span class="info" style="margin-left: 0">{{ orderDate }}</span>
         <span class="info">{{ orderStatus | titlecase }}</span>
       </div>
     </section>
@@ -138,7 +147,7 @@
           </button>
         </div>
       </div>
-      <div class="items-container" style="margin-top: 5px;">
+      <div class="items-container" style="margin-top: 5px">
         <div class="items-container space-between" style="padding: 10px 32px">
           <p class="total">Total:</p>
           <p class="amount">RD $ {{ payment | number: "1.2-2" }}</p>

@@ -6,6 +6,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
@@ -62,7 +63,8 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
     private _Router: Router,
     private _DialogService: DialogService,
     private _TagsService: TagsService,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
@@ -413,5 +415,11 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   resetTags(): void {
     this.tags = [];
     this.facturasTemp = this.facturasList;
+  }
+
+  goToOrderInfo(orderId: string) {
+    this.headerService.flowRoute = this._Router.url;
+    localStorage.setItem('flowRoute', this._Router.url);
+    this._Router.navigate([`ecommerce/order-info/${orderId}`]);
   }
 }

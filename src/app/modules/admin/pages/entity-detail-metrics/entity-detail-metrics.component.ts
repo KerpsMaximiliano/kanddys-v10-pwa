@@ -144,7 +144,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         this.merchantsService.merchantData._id
       );
 
-      if (ordersTotalResponse && incomeMerchantResponse) {
+      if (ordersTotalResponse !== null && incomeMerchantResponse !== null) {
         this.ordersTotal = { length: null, total: null };
         this.ordersTotal.length = ordersTotalResponse.length;
         this.ordersTotal.total = incomeMerchantResponse;
