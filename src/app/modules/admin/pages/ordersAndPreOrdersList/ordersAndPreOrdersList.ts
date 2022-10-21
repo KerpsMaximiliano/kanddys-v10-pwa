@@ -18,6 +18,7 @@ import {
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SwiperOptions } from 'swiper';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
@@ -138,7 +139,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
               orderStatus,
             }) => {
               const result: any = {
-                createdAt: new Date(createdAt).toLocaleDateString('en-US'),
+                createdAt: createdAt,
                 total: subtotals
                   .map(({ amount }) => amount)
                   .reduce((a, b) => a + b),
@@ -236,7 +237,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
   navigate(): void {
     if (this.editable) {
-      this.resetEdition();
+      this.resetEdition();  
     } else this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
@@ -421,5 +422,16 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
     this.headerService.flowRoute = this._Router.url;
     localStorage.setItem('flowRoute', this._Router.url);
     this._Router.navigate([`ecommerce/order-info/${orderId}`]);
+  }
+
+  getCreationDateDifferenceAsItsSaid(dateISOString) {
+    const dateObj = new Date(dateISOString);
+    const year = dateObj.getFullYear();
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth();
+    const hour = dateObj.getHours();
+
+    moment.locale('es');
+    return moment([year, month, day, hour]).fromNow();
   }
 }
