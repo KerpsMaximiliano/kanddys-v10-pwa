@@ -135,10 +135,20 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   async getOrderTotal() {
     try {
-      this.ordersTotal = await this.ordersService.ordersTotal(
+      const ordersTotalResponse = await this.ordersService.ordersTotal(
         ['in progress', 'to confirm', 'completed'],
         this.merchantsService.merchantData._id
       );
+
+      const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
+        this.merchantsService.merchantData._id
+      );
+
+      if (ordersTotalResponse !== null && incomeMerchantResponse !== null) {
+        this.ordersTotal = { length: null, total: null };
+        this.ordersTotal.length = ordersTotalResponse.length;
+        this.ordersTotal.total = incomeMerchantResponse;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -250,7 +260,11 @@ export class EntityDetailMetricsComponent implements OnInit {
           return new Promise((resolve) => {
             this.authService.signoutThree();
             this.headerService.flowRoute = this.router.url;
-            this.router.navigate([`auth/login`]);
+            this.router.navigate([`auth/login`], {
+              queryParams: {
+                redirect: '/admin/entity-detail-metrics'
+              }
+            });
             resolve(true);
           });
         },
