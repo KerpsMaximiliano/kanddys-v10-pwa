@@ -281,18 +281,20 @@ export class OrderDetailComponent implements OnInit {
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
       const message = `🐝\n\n*FACTURA ${formatID(
         this.order.dateId
-      )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
+      )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
         'es-MX'
-      )}: ${fullLink}*\n\nComprador: ${
+      )}: ${fullLink}\n\n*Comprador*: ${
         this.order.user?.name ||
         this.order.user?.phone ||
         this.order.user?.email ||
         'Anónimo'
-      }\n\nDirección: ${address}${
+      }\n\n*Dirección*: ${address}\n\n${
         giftMessage
-          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
+          ? '\n\n*Mensaje en la tarjetita de regalo*: \n' + giftMessage
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
+
+
       this.messageLink = `https://api.whatsapp.com/send?phone=${
         this.order.items[0].saleflow.merchant.owner.phone
       }&text=${encodeURIComponent(message)}`;
