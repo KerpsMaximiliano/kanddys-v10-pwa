@@ -279,7 +279,7 @@ export class OrderDetailComponent implements OnInit {
       }
 
       const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
-      const message = `🐝\n\n*FACTURA ${formatID(
+      const message = `*🐝 FACTURA ${formatID(
         this.order.dateId
       )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
         'es-MX'
