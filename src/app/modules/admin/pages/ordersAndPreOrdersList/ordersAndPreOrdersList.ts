@@ -109,7 +109,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           at = 'createdAt';
         }
         const sortList = ['asc', 'desc'];
-        if (!sortList.includes(at)) {
+        if (!sortList.includes(sort)) {
           sort = 'desc';
         }
         this.limit = limit;
