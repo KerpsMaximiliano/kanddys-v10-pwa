@@ -73,7 +73,12 @@
                   <p *ngFor="let product of factura.products" class="name">
                     {{ product }}
                   </p>
-                  <div class="factura-grid">
+                  <div class="factura-grid" style="padding: 0px; margin: 0px;">
+                    <span class="user-id">
+                      milov
+                    </span>
+                  </div>
+                  <div class="factura-grid" style="padding: 0px; margin: 0px;">
                     <span class="price">
                       ${{ factura.total.toLocaleString("es-MX") }}
                     </span>
