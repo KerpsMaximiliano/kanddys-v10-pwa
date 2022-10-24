@@ -282,3 +282,21 @@
 .arrows {
   cursor: pointer;
 }
+
+.orders-and-invoices-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+  height: 42px;
+  background-color: #2874ad;
+  color: white;
+  font-family: SfProRegular;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 17px;
+}

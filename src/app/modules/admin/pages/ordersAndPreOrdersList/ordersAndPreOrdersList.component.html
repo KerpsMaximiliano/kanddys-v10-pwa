@@ -97,6 +97,16 @@
     </div>
   </ng-container>
 </div>
+
+<div class="orders-and-invoices-info">
+  <img [src]="env + '/double-arrow-up.png'" alt="open info" />
+  <span>EN {{ ordersAmount }} FACTURAS</span> <span>/</span>
+  <span
+    >$
+    {{ merchantIncome | number: "1.2-2" }}
+  </span>
+</div>
+
 <app-sticky-button
   *ngIf="editable"
   [mode]="'double'"

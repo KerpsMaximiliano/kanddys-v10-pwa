@@ -17,8 +17,10 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from '../../../../../environments/environment';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
+import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
@@ -51,6 +53,8 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
     freeMode: false,
     spaceBetween: 5,
   };
+  ordersAmount: number = 0;
+  merchantIncome: number = 0;
   tags: any[] = [];
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
@@ -59,12 +63,15 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   limit: number;
   sort: string;
   facturasTemp: any = [];
+  env = environment.assetsUrl;
+
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
     private _DialogService: DialogService,
     private _TagsService: TagsService,
     private _ActivatedRoute: ActivatedRoute,
+    private ordersService: OrderService,
     private headerService: HeaderService
   ) {}
 
@@ -203,6 +210,26 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           });
         };
         ordersByMerchant();
+
+        const ordersTotalResponse = await this.ordersService.ordersTotal(
+          ['in progress', 'to confirm', 'completed'],
+          this._MerchantsService.merchantData._id
+        );
+
+        const incomeMerchantResponse =
+          await this._MerchantsService.incomeMerchant(
+            this._MerchantsService.merchantData._id
+          );
+
+        if (
+          ordersTotalResponse &&
+          ordersTotalResponse !== null &&
+          incomeMerchantResponse &&
+          incomeMerchantResponse !== null
+        ) {
+          this.ordersAmount = ordersTotalResponse.length;
+          this.merchantIncome = incomeMerchantResponse;
+        }
       }
     );
   }
@@ -237,7 +264,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
   navigate(): void {
     if (this.editable) {
-      this.resetEdition();  
+      this.resetEdition();
     } else this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
