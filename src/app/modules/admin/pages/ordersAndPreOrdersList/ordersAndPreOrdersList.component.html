@@ -1,6 +1,6 @@
 <app-helper-headerv2
   *ngIf="!tags.length"
-  [mainText]="mainText"
+  [mainText]="helperHeaderTextConfig"
   mode="basic"
   [fixed]="true"
   [dots]="dots"
@@ -13,6 +13,19 @@
     (arrowsClick)="resetTags()"
   ></app-helper-headerv3>
 -->
+
+<nav>
+  <button
+    *ngFor="let button of buttons"
+    [ngClass]="{
+      active: button === option
+    }"
+    (click)="handleOption(button)"
+  >
+    {{ button | titlecase }}
+  </button>
+</nav>
+
 <div class="container" style="padding-top: 36px">
   <div *ngIf="!tags.length" class="pr-25px">
     <input
@@ -23,20 +36,6 @@
     />
   </div>
   <ng-container [ngSwitch]="status">
-    <div *ngIf="!tags.length" class="grid">
-      <button
-        *ngFor="let button of buttons"
-        class="col"
-        [style]="{
-          background: option === button ? '#fff' : 'transparent',
-          color: option === button ? '#000' : '#fff',
-          boxShadow: option === button ? '0px 0px 4px 0px rgb(171 171 171)' : ''
-        }"
-        (click)="handleOption(button)"
-      >
-        {{ button | titlecase }}
-      </button>
-    </div>
     <!-- <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
     <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell> -->
     <ng-container *ngSwitchCase="'complete'">
@@ -93,6 +92,8 @@
           </swiper>
           <!-- </div> -->
         </div>
+
+        <div class="blank-space" style="height: 42px; width: 100%"></div>
       </div>
       <!--
         <button class="submit">Crea UNA NUEVA FACTURA</button>
@@ -107,7 +108,7 @@
   </ng-container>
 </div>
 
-<div class="orders-and-invoices-info">
+<div class="orders-and-invoices-info" *ngIf="!editable">
   <img [src]="env + '/double-arrow-up.png'" alt="open info" />
   <span>EN {{ ordersAmount }} FACTURAS</span> <span>/</span>
   <span

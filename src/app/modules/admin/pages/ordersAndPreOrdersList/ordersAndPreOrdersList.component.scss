@@ -310,3 +310,29 @@
   padding: 0px 17px;
   z-index: 999;
 }
+
+nav {
+  margin-top: 36px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  padding: 0px 17px;
+  font-size: 17px;
+
+  button {
+    color: #7b7b7b;
+    font-family: SfProLight;
+    border: none;
+    background-color: transparent;
+    margin-right: 30px;
+
+    &.active {
+      color: #2874ad;
+      font-family: SfProBold;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

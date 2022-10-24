@@ -30,7 +30,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   status = 'loading';
   controller: FormControl = new FormControl();
-  mainText: any = {
+  helperHeaderTextConfig: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
     fontFamily: 'SfProBold',
@@ -98,6 +98,9 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           limit = 50;
         }
         this.option = type.replace('%20');
+        this.helperHeaderTextConfig.text =
+          this.option[0].toUpperCase() + this.option.slice(1);
+
         this.facturasList = [];
         const atList = ['createdAt', 'updatedAt'];
         if (!atList.includes(at)) {
@@ -167,7 +170,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                 if (user && user.name) userIdLabel = 'Usuario: ' + user.name;
                 if (user && user.phone) userIdLabel = 'Usuario: ' + user.phone;
                 if (user && user.email) userIdLabel = 'Usuario: ' + user.email;
-                
+
                 result.userIdLabel = userIdLabel;
               }
 
@@ -421,7 +424,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
       const value = this.multipleTags ? [...this.tags, tag] : [tag];
       this.tags = value;
     }
-    this.mainText = {
+    this.helperHeaderTextConfig = {
       text: this.tags.length
         ? 'Ingreso: $IngresoID'
         : 'Facturas y Pre-facturas',
