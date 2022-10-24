@@ -77,6 +77,7 @@ export class LoginComponent implements OnInit {
   items: Item[] = [];
   itemCartAmount: number;
   validateData: ValidateData;
+  redirectionRoute: string = null;
   phoneNumber = new FormControl('', [
     Validators.required,
     Validators.minLength(10),
@@ -128,6 +129,7 @@ export class LoginComponent implements OnInit {
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
     this.itemId = this.route.snapshot.queryParamMap.get('itemId');
     this.action = this.route.snapshot.queryParamMap.get('action');
+    this.redirectionRoute = this.route.snapshot.queryParamMap.get('redirect');
     this.doesItemHasParams = Boolean(
       this.route.snapshot.queryParamMap.get('hasParams')
     );
@@ -533,6 +535,13 @@ export class LoginComponent implements OnInit {
           return;
         } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
+        if(this.redirectionRoute) {
+          this.router.navigate([this.redirectionRoute], {
+            replaceUrl: true,
+          });            
+          return;
+        }
+
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
@@ -615,6 +624,13 @@ export class LoginComponent implements OnInit {
           return;
         }
 
+        if(this.redirectionRoute) {
+          this.router.navigate([this.redirectionRoute], {
+            replaceUrl: true,
+          });            
+          return;
+        }
+
         this.router.navigate([`admin/entity-detail-metrics`], {
           replaceUrl: true,
         });
@@ -672,6 +688,13 @@ export class LoginComponent implements OnInit {
 
       if (this.itemId) {
         await this.createItem(signin.user);
+        return;
+      }
+
+      if(this.redirectionRoute) {
+        this.router.navigate([this.redirectionRoute], {
+          replaceUrl: true,
+        });            
         return;
       }
 
@@ -816,6 +839,14 @@ export class LoginComponent implements OnInit {
               }
             );
           } else {
+
+            if(this.redirectionRoute) {
+              this.router.navigate([this.redirectionRoute], {
+                replaceUrl: true,
+              });            
+              return;
+            }    
+
             this.router.navigate([`admin/entity-detail-metrics`], {
               replaceUrl: true,
             });

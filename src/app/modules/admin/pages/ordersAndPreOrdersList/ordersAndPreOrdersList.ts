@@ -6,6 +6,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
@@ -17,19 +18,20 @@ import {
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SwiperOptions } from 'swiper';
+import * as moment from 'moment';
 
 @Component({
-  selector: 'app-facturas-prefacturas',
-  templateUrl: './facturas-prefacturas.component.html',
-  styleUrls: ['./facturas-prefacturas.component.scss'],
+  selector: 'app-ordersAndPreOrdersList',
+  templateUrl: './ordersAndPreOrdersList.component.html',
+  styleUrls: ['./ordersAndPreOrdersList.component.scss'],
 })
-export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
+export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   status = 'loading';
   controller: FormControl = new FormControl();
   mainText: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
-    fontFamily: 'SfPro',
+    fontFamily: 'SfProBold',
   };
   dots = {
     active: false,
@@ -62,7 +64,8 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
     private _Router: Router,
     private _DialogService: DialogService,
     private _TagsService: TagsService,
-    private _ActivatedRoute: ActivatedRoute
+    private _ActivatedRoute: ActivatedRoute,
+    private headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
@@ -105,7 +108,13 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
           const pagination: PaginationInput = {
             options: {
               sortBy: `${at}:${sort}`,
-              limit: +limit,
+              limit: 6000,
+            },
+            findBy: {
+              orderStatus:
+                this.option === 'facturas'
+                  ? ['in progress', 'to confirm', 'completed']
+                  : ['draft'],
             },
           };
 
@@ -119,9 +128,18 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
             return result;
           });
           let temp = _ordersByMerchant.map(
-            ({ createdAt, subtotals, dateId, items, user, tags }) => {
-              const result = {
-                createdAt: new Date(createdAt).toLocaleDateString('en-US'),
+            ({
+              createdAt,
+              subtotals,
+              dateId,
+              items,
+              user,
+              tags,
+              _id,
+              orderStatus,
+            }) => {
+              const result: any = {
+                createdAt: createdAt,
                 total: subtotals
                   .map(({ amount }) => amount)
                   .reduce((a, b) => a + b),
@@ -130,9 +148,12 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
                   const { name } = item;
                   return name;
                 }),
-                phone: user.phone,
                 tags,
+                _id,
               };
+
+              if (orderStatus !== 'draft' && user) result.phone = user.phone;
+
               return result;
             }
           );
@@ -152,14 +173,26 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
           this.facturasTemp = this.facturasList;
           this.controller.valueChanges.subscribe((value) => {
             this.facturasTemp = this.facturasList.map(({ facturas }) => ({
-              facturas: facturas.filter(({ phone, tags }) =>
-                // this.tags.length
-                //   ? tags.some((tag) =>
-                //       this.tags.map(({ _id }) => _id).includes(tag)
-                //     )
-                //   :
-                value ? `${phone}`.includes(value) : true
-              ),
+              facturas: facturas.filter(({ phone, tags, dateId, products }) => {
+                const productNameMatches = products.map((product) => {
+                  return value && product
+                    ? product.toLowerCase().includes(value.toLowerCase())
+                    : (value && product === '') || !product
+                    ? false
+                    : true;
+                });
+
+                return value
+                  ? `${phone}`.includes(value) ||
+                      dateId.includes(value) ||
+                      productNameMatches.includes(true)
+                  : true;
+              }),
+              // this.tags.length
+              //   ? tags.some((tag) =>
+              //       this.tags.map(({ _id }) => _id).includes(tag)
+              //     )
+              //   :
               tag: { _id: '' },
             }));
             this.status = this.facturasTemp.some(
@@ -204,7 +237,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
 
   navigate(): void {
     if (this.editable) {
-      this.resetEdition();
+      this.resetEdition();  
     } else this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
@@ -330,7 +363,7 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
 
   handleOption(option: string): void {
     this.option = option;
-    this._Router.navigate([`/admin/facturas`], {
+    this._Router.navigate([`/admin/orders`], {
       queryParams: {
         type: option,
         // phone: this.phone,
@@ -383,5 +416,22 @@ export class FacturasPrefacturasComponent implements OnInit, OnDestroy {
   resetTags(): void {
     this.tags = [];
     this.facturasTemp = this.facturasList;
+  }
+
+  goToOrderInfo(orderId: string) {
+    this.headerService.flowRoute = this._Router.url;
+    localStorage.setItem('flowRoute', this._Router.url);
+    this._Router.navigate([`ecommerce/order-info/${orderId}`]);
+  }
+
+  getCreationDateDifferenceAsItsSaid(dateISOString) {
+    const dateObj = new Date(dateISOString);
+    const year = dateObj.getFullYear();
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth();
+    const hour = dateObj.getHours();
+
+    moment.locale('es');
+    return moment([year, month, day, hour]).fromNow();
   }
 }

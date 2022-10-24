@@ -163,7 +163,15 @@ export class MerchantItemsComponent implements OnInit {
     unlockUI();
     this.status = 'error';
     // this.router.navigate([`others/error-screen/`]);
-    this.router.navigate([`auth/login`]);
+    this.router.navigate([
+      `auth/login`,
+      ,
+      {
+        queryParams: {
+          redirect: '/admin/entity-detail-metrics',
+        },
+      },
+    ]);
   }
 
   goToMetrics = () => {
