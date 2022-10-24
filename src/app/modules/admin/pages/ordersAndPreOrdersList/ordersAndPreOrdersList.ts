@@ -17,8 +17,10 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from '../../../../../environments/environment';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
+import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
@@ -28,7 +30,7 @@ import * as moment from 'moment';
 export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   status = 'loading';
   controller: FormControl = new FormControl();
-  mainText: any = {
+  helperHeaderTextConfig: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
     fontFamily: 'SfProBold',
@@ -51,6 +53,8 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
     freeMode: false,
     spaceBetween: 5,
   };
+  ordersAmount: number = 0;
+  merchantIncome: number = 0;
   tags: any[] = [];
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
@@ -59,12 +63,15 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   limit: number;
   sort: string;
   facturasTemp: any = [];
+  env = environment.assetsUrl;
+
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
     private _DialogService: DialogService,
     private _TagsService: TagsService,
     private _ActivatedRoute: ActivatedRoute,
+    private ordersService: OrderService,
     private headerService: HeaderService
   ) {}
 
@@ -91,6 +98,9 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           limit = 50;
         }
         this.option = type.replace('%20');
+        this.helperHeaderTextConfig.text =
+          this.option[0].toUpperCase() + this.option.slice(1);
+
         this.facturasList = [];
         const atList = ['createdAt', 'updatedAt'];
         if (!atList.includes(at)) {
@@ -138,6 +148,8 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
               _id,
               orderStatus,
             }) => {
+              let userIdLabel: string = null;
+
               const result: any = {
                 createdAt: createdAt,
                 total: subtotals
@@ -152,7 +164,15 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                 _id,
               };
 
-              if (orderStatus !== 'draft' && user) result.phone = user.phone;
+              if (orderStatus !== 'draft' && user) {
+                result.phone = user.phone;
+
+                if (user && user.name) userIdLabel = 'Usuario: ' + user.name;
+                if (user && user.phone) userIdLabel = 'Usuario: ' + user.phone;
+                if (user && user.email) userIdLabel = 'Usuario: ' + user.email;
+
+                result.userIdLabel = userIdLabel;
+              }
 
               return result;
             }
@@ -203,6 +223,26 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           });
         };
         ordersByMerchant();
+
+        const ordersTotalResponse = await this.ordersService.ordersTotal(
+          ['in progress', 'to confirm', 'completed'],
+          this._MerchantsService.merchantData._id
+        );
+
+        const incomeMerchantResponse =
+          await this._MerchantsService.incomeMerchant(
+            this._MerchantsService.merchantData._id
+          );
+
+        if (
+          ordersTotalResponse &&
+          ordersTotalResponse !== null &&
+          incomeMerchantResponse &&
+          incomeMerchantResponse !== null
+        ) {
+          this.ordersAmount = ordersTotalResponse.length;
+          this.merchantIncome = incomeMerchantResponse;
+        }
       }
     );
   }
@@ -237,7 +277,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
   navigate(): void {
     if (this.editable) {
-      this.resetEdition();  
+      this.resetEdition();
     } else this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
@@ -384,7 +424,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
       const value = this.multipleTags ? [...this.tags, tag] : [tag];
       this.tags = value;
     }
-    this.mainText = {
+    this.helperHeaderTextConfig = {
       text: this.tags.length
         ? 'Ingreso: $IngresoID'
         : 'Facturas y Pre-facturas',

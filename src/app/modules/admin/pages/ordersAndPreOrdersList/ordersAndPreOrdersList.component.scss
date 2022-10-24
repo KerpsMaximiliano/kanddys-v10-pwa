@@ -66,7 +66,7 @@
   padding: 0px 20px;
   padding-top: 9px;
   padding-bottom: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-left: 10px;
 
   p {
@@ -166,10 +166,19 @@
 }
 
 .price,
-.name {
+.name,
+.user-id {
   color: #7b7b7b;
   font-family: SfProRegular;
-  font-size: 14px;
+  font-size: 17px;
+  margin: 0px;
+}
+
+.price {
+  margin: 0px;
+  font-family: SfProBold;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .name {
@@ -195,8 +204,8 @@
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 1px;
-  padding-top: 10px;
-  padding-bottom: 6px;
+  padding-top: 18px;
+  padding-bottom: 11px;
   align-items: end;
 }
 
@@ -281,4 +290,49 @@
 
 .arrows {
   cursor: pointer;
+}
+
+.orders-and-invoices-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+  height: 42px;
+  background-color: #2874ad;
+  color: white;
+  font-family: SfProRegular;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 17px;
+  z-index: 999;
+}
+
+nav {
+  margin-top: 36px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  padding: 0px 17px;
+  font-size: 17px;
+
+  button {
+    color: #7b7b7b;
+    font-family: SfProLight;
+    border: none;
+    background-color: transparent;
+    margin-right: 30px;
+
+    &.active {
+      color: #2874ad;
+      font-family: SfProBold;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
