@@ -259,13 +259,11 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
             this._MerchantsService.merchantData._id
           );
 
-        if (
-          ordersTotalResponse &&
-          ordersTotalResponse !== null &&
-          incomeMerchantResponse &&
-          incomeMerchantResponse !== null
-        ) {
+        if (ordersTotalResponse && ordersTotalResponse !== null) {
           this.ordersAmount = ordersTotalResponse.length;
+        }
+
+        if (incomeMerchantResponse && incomeMerchantResponse !== null) {
           this.merchantIncome = incomeMerchantResponse;
         }
       }
