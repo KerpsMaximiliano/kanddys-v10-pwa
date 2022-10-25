@@ -1,6 +1,6 @@
 <app-helper-headerv2
   *ngIf="!tags.length"
-  [mainText]="mainText"
+  [mainText]="helperHeaderTextConfig"
   mode="basic"
   [fixed]="true"
   [dots]="dots"
@@ -13,6 +13,7 @@
     (arrowsClick)="resetTags()"
   ></app-helper-headerv3>
 -->
+
 <div class="container" style="padding-top: 36px">
   <div *ngIf="!tags.length" class="pr-25px">
     <input
@@ -37,6 +38,7 @@
         {{ button | titlecase }}
       </button>
     </div>
+
     <!-- <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
     <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell> -->
     <ng-container *ngSwitchCase="'complete'">
@@ -73,7 +75,16 @@
                   <p *ngFor="let product of factura.products" class="name">
                     {{ product }}
                   </p>
-                  <div class="factura-grid">
+                  <div
+                    class="factura-grid"
+                    *ngIf="factura.userIdLabel"
+                    style="padding: 0px; margin: 0px; grid-column: span 2"
+                  >
+                    <span class="user-id" style="grid-column: span 2">
+                      {{ factura.userIdLabel }}
+                    </span>
+                  </div>
+                  <div class="factura-grid" style="padding: 0px; margin: 0px">
                     <span class="price">
                       ${{ factura.total.toLocaleString("es-MX") }}
                     </span>
@@ -84,6 +95,8 @@
           </swiper>
           <!-- </div> -->
         </div>
+
+        <div class="blank-space" style="height: 42px; width: 100%"></div>
       </div>
       <!--
         <button class="submit">Crea UNA NUEVA FACTURA</button>
@@ -97,6 +110,16 @@
     </div>
   </ng-container>
 </div>
+
+<div class="orders-and-invoices-info" *ngIf="!editable">
+  <img [src]="env + '/double-arrow-up.png'" alt="open info" />
+  <span>EN {{ ordersAmount }} FACTURAS</span> <span>/</span>
+  <span
+    >$
+    {{ merchantIncome | number: "1.2-2" }}
+  </span>
+</div>
+
 <app-sticky-button
   *ngIf="editable"
   [mode]="'double'"
