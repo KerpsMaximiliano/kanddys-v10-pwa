@@ -188,9 +188,12 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
               if (orderStatus !== 'draft' && user) {
                 result.phone = user.phone;
 
-                if (user && user.name) userIdLabel = 'Usuario: ' + user.name;
-                if (user && user.phone) userIdLabel = 'Usuario: ' + user.phone;
-                if (user && user.email) userIdLabel = 'Usuario: ' + user.email;
+                if (user && user.name && user.name !== '')
+                  userIdLabel = 'Usuario: ' + user.name;
+                else if (user && user.phone && user.phone !== '')
+                  userIdLabel = 'Usuario: ' + user.phone;
+                else if (user && user.email && user.email !== '')
+                  userIdLabel = 'Usuario: ' + user.email;
 
                 result.userIdLabel = userIdLabel;
               }
@@ -259,13 +262,11 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
             this._MerchantsService.merchantData._id
           );
 
-        if (
-          ordersTotalResponse &&
-          ordersTotalResponse !== null &&
-          incomeMerchantResponse &&
-          incomeMerchantResponse !== null
-        ) {
+        if (ordersTotalResponse && ordersTotalResponse !== null) {
           this.ordersAmount = ordersTotalResponse.length;
+        }
+
+        if (incomeMerchantResponse && incomeMerchantResponse !== null) {
           this.merchantIncome = incomeMerchantResponse;
         }
       }
