@@ -69,7 +69,6 @@
             [customPlaceholder]="'(000) 000-0000'"
             [numberFormat]="PhoneNumberFormat.International"
             [formControl]="phoneNumber"
-            
             tabindex="1"
           ></ngx-intl-tel-input>
 
@@ -154,7 +153,7 @@
         <div
           class="subtext-options"
           style="margin: 48px 8%"
-          *ngIf="auth === 'order' || auth === 'address'"
+          *ngIf="auth === 'order' || auth === 'address' || auth === 'merchant'"
         >
           <!-- {{
             OTP || authCode
@@ -164,9 +163,14 @@
           <p style="margin: 0; margin-bottom: 8px">Opciones:</p>
           <ul>
             <li>
-              - Presiona el “link de nuevas ordenes” o escribe la clave
-              provisional que acabas de recibir por WhatsApp de parte de 
-              Kanddys +1 (929) 526-3397.
+              - Presiona el
+              {{
+                auth !== "merchant"
+                  ? "“link de nuevas ordenes”"
+                  : "link de acceso a tu dashboard de administrador"
+              }}
+              o escribe la clave provisional que acabas de recibir por WhatsApp
+              de parte de Kanddys +1 (929) 526-3397.
             </li>
           </ul>
         </div>

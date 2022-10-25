@@ -17,8 +17,10 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { environment } from '../../../../../environments/environment';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
+import { OrderService } from 'src/app/core/services/order.service';
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
@@ -28,7 +30,7 @@ import * as moment from 'moment';
 export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   status = 'loading';
   controller: FormControl = new FormControl();
-  mainText: any = {
+  helperHeaderTextConfig: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
     fontFamily: 'SfProBold',
@@ -45,12 +47,14 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   buttons: string[] = ['facturas', 'pre - facturas'];
   calendar: string = '';
   option: string;
-  facturasList: any[] = [];
+  invoiceListForOrders: any[] = [];
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
     spaceBetween: 5,
   };
+  ordersAmount: number = 0;
+  merchantIncome: number = 0;
   tags: any[] = [];
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
@@ -59,28 +63,33 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   limit: number;
   sort: string;
   facturasTemp: any = [];
+  env = environment.assetsUrl;
+
   constructor(
     private _MerchantsService: MerchantsService,
     private _Router: Router,
     private _DialogService: DialogService,
     private _TagsService: TagsService,
     private _ActivatedRoute: ActivatedRoute,
+    private ordersService: OrderService,
     private headerService: HeaderService
   ) {}
 
   ngOnInit(): void {
-    this.facturasList = [];
+    this.invoiceListForOrders = [];
     this.status = 'loading';
     this.subscription = this._ActivatedRoute.queryParams.subscribe(
       async (params) => {
         this.status = 'loading';
         let {
           by = 1,
-          limit = 50,
+          limit = null,
           sort = 'desc',
           at = 'createdAt',
           type = 'facturas',
           phone = '',
+          startDate = null,
+          endDate = null,
         } = params;
         phone = phone.replace('+', '');
         this.phone = phone;
@@ -91,13 +100,16 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           limit = 50;
         }
         this.option = type.replace('%20');
-        this.facturasList = [];
+        this.helperHeaderTextConfig.text =
+          this.option[0].toUpperCase() + this.option.slice(1);
+
+        this.invoiceListForOrders = [];
         const atList = ['createdAt', 'updatedAt'];
         if (!atList.includes(at)) {
           at = 'createdAt';
         }
         const sortList = ['asc', 'desc'];
-        if (!sortList.includes(at)) {
+        if (!sortList.includes(sort)) {
           sort = 'desc';
         }
         this.limit = limit;
@@ -108,7 +120,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           const pagination: PaginationInput = {
             options: {
               sortBy: `${at}:${sort}`,
-              limit: 6000,
+              limit: limit ? Number(limit) : 6000,
             },
             findBy: {
               orderStatus:
@@ -117,6 +129,25 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                   : ['draft'],
             },
           };
+
+          if (startDate || endDate)
+            pagination.options.range = { from: null, to: null };
+
+          if (startDate) {
+            const [year, month, day] = startDate.split('-');
+            let from = new Date(year, month - 1, day).toISOString();
+            from = from.split('T')[0] + 'T00:00:00.000Z';
+
+            pagination.options.range.from = from;
+          }
+
+          if (endDate) {
+            const [year, month, day] = endDate.split('-');
+            let to = new Date(year, month - 1, day).toISOString();
+            to = to.split('T')[0] + 'T00:00:00.000Z';
+
+            pagination.options.range.to = to;
+          }
 
           const { ordersByMerchant } =
             await this._MerchantsService.ordersByMerchant(_id, pagination);
@@ -138,6 +169,8 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
               _id,
               orderStatus,
             }) => {
+              let userIdLabel: string = null;
+
               const result: any = {
                 createdAt: createdAt,
                 total: subtotals
@@ -152,49 +185,61 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
                 _id,
               };
 
-              if (orderStatus !== 'draft' && user) result.phone = user.phone;
+              if (orderStatus !== 'draft' && user) {
+                result.phone = user.phone;
+
+                if (user && user.name) userIdLabel = 'Usuario: ' + user.name;
+                if (user && user.phone) userIdLabel = 'Usuario: ' + user.phone;
+                if (user && user.email) userIdLabel = 'Usuario: ' + user.email;
+
+                result.userIdLabel = userIdLabel;
+              }
 
               return result;
             }
           );
-          this.facturasList = [];
+          this.invoiceListForOrders = [];
           while (temp.length) {
             const facturas = [...temp.filter((item, index) => index < by)];
             temp = temp.filter((item, index) => index >= by);
-            this.facturasList.push({ facturas, tag: { _id: '' } });
+            this.invoiceListForOrders.push({ facturas, tag: { _id: '' } });
           }
           let tags: any = (await this._TagsService.tagsByUser()) || [];
           this.tagsCarousell = tags;
-          this.status = this.facturasList.some(
+          this.status = this.invoiceListForOrders.some(
             ({ facturas }) => facturas.length
           )
             ? 'complete'
             : 'empty';
-          this.facturasTemp = this.facturasList;
+          this.facturasTemp = this.invoiceListForOrders;
           this.controller.valueChanges.subscribe((value) => {
-            this.facturasTemp = this.facturasList.map(({ facturas }) => ({
-              facturas: facturas.filter(({ phone, tags, dateId, products }) => {
-                const productNameMatches = products.map((product) => {
-                  return value && product
-                    ? product.toLowerCase().includes(value.toLowerCase())
-                    : (value && product === '') || !product
-                    ? false
-                    : true;
-                });
+            this.facturasTemp = this.invoiceListForOrders.map(
+              ({ facturas }) => ({
+                facturas: facturas.filter(
+                  ({ phone, tags, dateId, products }) => {
+                    const productNameMatches = products.map((product) => {
+                      return value && product
+                        ? product.toLowerCase().includes(value.toLowerCase())
+                        : (value && product === '') || !product
+                        ? false
+                        : true;
+                    });
 
-                return value
-                  ? `${phone}`.includes(value) ||
-                      dateId.includes(value) ||
-                      productNameMatches.includes(true)
-                  : true;
-              }),
-              // this.tags.length
-              //   ? tags.some((tag) =>
-              //       this.tags.map(({ _id }) => _id).includes(tag)
-              //     )
-              //   :
-              tag: { _id: '' },
-            }));
+                    return value
+                      ? `${phone}`.includes(value) ||
+                          dateId.includes(value) ||
+                          productNameMatches.includes(true)
+                      : true;
+                  }
+                ),
+                // this.tags.length
+                //   ? tags.some((tag) =>
+                //       this.tags.map(({ _id }) => _id).includes(tag)
+                //     )
+                //   :
+                tag: { _id: '' },
+              })
+            );
             this.status = this.facturasTemp.some(
               ({ facturas }) => facturas.length
             )
@@ -203,6 +248,26 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
           });
         };
         ordersByMerchant();
+
+        const ordersTotalResponse = await this.ordersService.ordersTotal(
+          ['in progress', 'to confirm', 'completed'],
+          this._MerchantsService.merchantData._id
+        );
+
+        const incomeMerchantResponse =
+          await this._MerchantsService.incomeMerchant(
+            this._MerchantsService.merchantData._id
+          );
+
+        if (
+          ordersTotalResponse &&
+          ordersTotalResponse !== null &&
+          incomeMerchantResponse &&
+          incomeMerchantResponse !== null
+        ) {
+          this.ordersAmount = ordersTotalResponse.length;
+          this.merchantIncome = incomeMerchantResponse;
+        }
       }
     );
   }
@@ -216,7 +281,9 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   handleController = (value: any): void => {
     const loadData = async (value) => {
       this.fillOptions(value);
-      this.status = this.facturasList.some((facturas) => facturas.length)
+      this.status = this.invoiceListForOrders.some(
+        (facturas) => facturas.length
+      )
         ? 'complete'
         : 'empty';
     };
@@ -237,7 +304,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
   navigate(): void {
     if (this.editable) {
-      this.resetEdition();  
+      this.resetEdition();
     } else this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
@@ -384,22 +451,22 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
       const value = this.multipleTags ? [...this.tags, tag] : [tag];
       this.tags = value;
     }
-    this.mainText = {
+    this.helperHeaderTextConfig = {
       text: this.tags.length
         ? 'Ingreso: $IngresoID'
         : 'Facturas y Pre-facturas',
       fontSize: '21px',
       fontFamily: 'SfPro',
     };
-    let temp = this.facturasList;
+    let temp = this.invoiceListForOrders;
     // while (temp.length) {
     this.facturasTemp = [];
-    if (!this.tags.length) this.facturasTemp = this.facturasList;
+    if (!this.tags.length) this.facturasTemp = this.invoiceListForOrders;
     for (const _tag of this.tags) {
       // const facturas = [
       //   ...
       let _facturas = [];
-      this.facturasList.forEach(({ facturas }, index) => {
+      this.invoiceListForOrders.forEach(({ facturas }, index) => {
         _facturas = [
           ..._facturas,
           ...facturas.filter((factura) => factura.tags.includes(_tag._id)),
@@ -415,7 +482,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
 
   resetTags(): void {
     this.tags = [];
-    this.facturasTemp = this.facturasList;
+    this.facturasTemp = this.invoiceListForOrders;
   }
 
   goToOrderInfo(orderId: string) {

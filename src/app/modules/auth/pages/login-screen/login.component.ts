@@ -34,7 +34,8 @@ type AuthTypes =
   | 'order'
   | 'address'
   | 'anonymous'
-  | 'payment';
+  | 'payment'
+  | 'merchant';
 
 interface ValidateData {
   name: string;
@@ -259,6 +260,8 @@ export class LoginComponent implements OnInit {
           replaceUrl: true,
         });
       }
+    } else if(this.auth === 'merchant') {
+      console.log("merchant access")
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -340,6 +343,18 @@ export class LoginComponent implements OnInit {
               }
             );
           }
+
+
+          if (this.auth === 'merchant') {
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `admin/entity-detail-metrics`,
+              this.userID,
+              'MerchantAccess',
+              null
+            );
+          }
+
           if (
             this.orderId &&
             (this.auth === 'anonymous' || this.auth === 'payment')
