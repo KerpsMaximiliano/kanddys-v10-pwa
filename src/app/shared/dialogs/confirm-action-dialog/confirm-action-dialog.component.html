@@ -1,0 +1,17 @@
+<div class="main-container">
+  <p class="main-text">{{ topText }}</p>
+  <button
+    class="main-button"
+    (click)="callbackButton('top')"
+    *ngIf="topButtonText && topBtnCallback"
+  >
+    {{ topButtonText }}
+  </button>
+  <button
+    class="secondary-button"
+    (click)="callbackButton('bottom')"
+    *ngIf="bottomButtonText && bottomBtnCallback"
+  >
+    {{ bottomButtonText }}
+  </button>
+</div>
