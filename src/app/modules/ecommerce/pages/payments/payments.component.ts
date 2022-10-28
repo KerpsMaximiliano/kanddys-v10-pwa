@@ -196,8 +196,21 @@ export class PaymentsComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         topText:
-          'Si tocas en “Cancelar mi factura” empezarás una nueva factura.',
+          'Si tocas en cta[0] empezarás una nueva factura.',
         topButtonText: 'Seguir en el pago de mi factura actual',
+        cta: [
+          {
+            text: "\"Cancelar mi factura\"",
+            styles: {
+              color: '#FFF'
+            },
+            callback: () => {
+              this.router.navigate([
+                `/ecommerce/store/${this.headerService.saleflow._id}`,
+              ]);
+            }
+          }
+        ],
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',
         bottomBtnCallback: () => {

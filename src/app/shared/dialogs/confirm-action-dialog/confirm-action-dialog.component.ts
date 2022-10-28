@@ -10,6 +10,11 @@ export class ConfirmActionDialogComponent implements OnInit {
   @Input() topButtonText: string;
   @Input() bottomButtonText: string;
   @Input() topText: string;
+  @Input() cta: [{
+    text: string,
+    styles?: Record<string, any>,
+    callback?: () => void
+  }];
   @Input() topBtnCallback: () => void;
   @Input() bottomBtnCallback: () => void;
   @Output() buttonEvent: EventEmitter<any> = new EventEmitter();
@@ -25,5 +30,16 @@ export class ConfirmActionDialogComponent implements OnInit {
     if (type === 'bottom') this.bottomBtnCallback();
     if (type === 'top') this.topBtnCallback();
     this.close();
+  }
+
+  replaceCTA(text: string) {
+    for (let index = 0; index < this.cta.length; index++) {
+      if (text.includes(`cta[${index}]`)) {
+        const stringToReplace = `cta[${index}]`;
+        console.log(this.cta[index].styles);
+        text = text.replace(stringToReplace, `<span>${this.cta[index].text}</span>`);
+      }
+    }
+    return text;
   }
 }
