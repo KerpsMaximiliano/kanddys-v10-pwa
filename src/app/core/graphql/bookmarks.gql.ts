@@ -1,52 +1,26 @@
 import gql from 'graphql-tag';
 
 export const addMark = gql`
-  mutation addMark ($input: [MarkInput!]!) {
-    addMark (input: $input) {
-        _id
-        post {
-          _id
-        }
-        code {
-          _id
-        }
-        gift {
-          _id
-        }
-        own
-        refBookmark
-        createdAt
+  mutation addMark($idBookMark: ObjectID!, $input: [MarkInput!]!) {
+    addMark(idBookMark: $idBookMark, input: $input) {
+      _id
     }
   }
 `;
 
 export const removeMark = gql`
-  mutation removeMark ($input: [ObjectID!]!) {
-    Boolean: removeMark (input: $input)
+  mutation removeMark($idBookMark: ObjectID!, $input: [ObjectID]!) {
+    Boolean: removeMark(idBookMark: $idBookMark, input: $input)
   }
 `;
 
-
 export const bookmarkByUser = gql`
   query {
-    bookmarkByUser  {  
+    bookmarkByUser {
+      _id
+      marks {
         _id
-        marks {
-          _id
-          post {
-              _id
-          }
-          code {
-            _id
-            link
-            image
-            keyword
-          }
-          gift {
-            _id
-          }
-        }
-        createdAt
+      }
+    }
   }
-}
 `;

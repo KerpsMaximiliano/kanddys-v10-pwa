@@ -27,15 +27,16 @@ export class Need extends Model<Need> {
 }
 
 export class Mark extends Model<Mark> {
-  post: Post;
-  code: Code;
-  gift: Gift;
-  need: Need;
-  item: Item;
   markType: String;
   tag: string[];
   own: boolean;
   refBookmark: string;
+}
+
+export class MarkInput {
+  reference: string;
+  markType: string;
+  tag: Array<string>;
 }
 
 export class BookMark extends Model<BookMark> {
@@ -43,4 +44,6 @@ export class BookMark extends Model<BookMark> {
   user: User;
   community: Community;
   ipUser: IpUser;
+  name: string;
+  image: string;
 }
