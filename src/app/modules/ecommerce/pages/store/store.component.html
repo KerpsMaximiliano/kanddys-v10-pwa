@@ -1,6 +1,6 @@
 <div class="component">
   <header>
-    <div class="header">
+    <div class="header" *ngIf="selectedTags.length === 0">
       <div class="title">
         {{
           (saleflowData?.merchant?.name.length < 26
