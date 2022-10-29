@@ -12,6 +12,8 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -44,7 +46,8 @@ export class PaymentsComponent implements OnInit {
     private postsService: PostsService,
     private merchantService: MerchantsService,
     private headerService: HeaderService,
-    private location: LocationStrategy
+    private location: LocationStrategy,
+    private dialogService: DialogService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -186,5 +189,38 @@ export class PaymentsComponent implements OnInit {
         this.headerService.user._id
       )
     ).authOrder;
+  }
+
+  onBackClick() {
+    this.dialogService.open(ConfirmActionDialogComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        topText:
+          'Si tocas en cta[0] empezarás una nueva factura.',
+        topButtonText: 'Seguir en el pago de mi factura actual',
+        cta: [
+          {
+            text: "\"Cancelar mi factura\"",
+            styles: {
+              color: '#FFF'
+            },
+            callback: () => {
+              this.router.navigate([
+                `/ecommerce/store/${this.headerService.saleflow._id}`,
+              ]);
+            }
+          }
+        ],
+        topBtnCallback: () => {},
+        bottomButtonText: 'Cancelar mi factura',
+        bottomBtnCallback: () => {
+          this.router.navigate([
+            `/ecommerce/store/${this.headerService.saleflow._id}`,
+          ]);
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

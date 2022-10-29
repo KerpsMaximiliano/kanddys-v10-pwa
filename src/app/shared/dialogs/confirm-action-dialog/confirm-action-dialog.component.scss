@@ -1,0 +1,49 @@
+.main-container {
+  width: 100%;
+  display: flex;
+  margin: 0 0 32px;
+  position: absolute;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+
+  .main-text {
+     max-width: 70%;
+     font-family: "SfProRegular";
+     font-size: 1.063rem;
+     color: #ffffff;
+     margin: 0;
+     margin-bottom: 50px;
+     text-align: center;
+     span {
+      font-family: "SfProLight";
+      font-style: italic;
+      cursor: pointer;
+     }
+  }
+
+  button {
+     all: unset;
+     width: fit-content;
+     padding: 12px 30px;
+     font-family: "SfProRegular";
+     font-size: 1.063rem;
+     color: #272727;
+     border-radius: 19px;
+     text-align: center;
+     cursor: pointer;
+     text-transform: uppercase;
+  }
+
+  .main-button {
+     background-color: #82f18d;
+     margin-bottom: 70px;
+  }
+
+  .secondary-button {
+     background-color: #fc2727;
+     color: #ffffff;
+  }
+}
