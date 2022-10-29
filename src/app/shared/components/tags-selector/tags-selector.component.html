@@ -1,4 +1,8 @@
-<div class="tags-grid" [style.background]="containerBackground">
+<div
+  class="tags-grid"
+  [style.background]="containerBackground"
+  [ngStyle]="containerStyles"
+>
   <button
     *ngFor="let tg of tags"
     [style.background]="tag.includes(tg) ? background : selectedBackground"

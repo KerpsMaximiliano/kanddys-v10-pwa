@@ -8,12 +8,13 @@ import { Component, Input, OnInit } from '@angular/core';
 export class TagsSelectorComponent implements OnInit {
   @Input('tags') tags: string[] = [];
   tag: string[] = [];
+  @Input() containerStyles: Record<string, string> = null;
   @Input('multipleTags') multipleTags: boolean = false;
-  @Input('containerBackground') containerBackground:string = '#2874ad';
-  @Input('background') background:string = '#fff';
-  @Input('selectedBackground') selectedBackground:string = '#2874ad';
-  @Input('color') color:string = '#fff';
-  @Input('selectedColor') selectedColor:string = '#2874ad';
+  @Input('containerBackground') containerBackground: string = '#2874ad';
+  @Input('background') background: string = '#fff';
+  @Input('selectedBackground') selectedBackground: string = '#2874ad';
+  @Input('color') color: string = '#fff';
+  @Input('selectedColor') selectedColor: string = '#2874ad';
 
   setTag(tag): void {
     if (this.tag.includes(tag)) this.tag = this.tag.filter((tg) => tg !== tag);
@@ -25,6 +26,5 @@ export class TagsSelectorComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 }
