@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SwiperConfig } from 'ngx-swiper-wrapper';
+import { SwiperComponent, SwiperConfig } from 'ngx-swiper-wrapper';
 import { Item } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Tag } from 'src/app/core/models/tags';
@@ -23,6 +23,14 @@ import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Reservation } from 'src/app/core/models/reservation';
 import { OrderService } from 'src/app/core/services/order.service';
 import { FormControl } from '@angular/forms';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 
 interface MenuOption {
   name: string;
@@ -42,6 +50,7 @@ interface ExtendedCalendar extends Calendar {
   styleUrls: ['./items-dashboard.component.scss'],
 })
 export class ItemsDashboardComponent implements OnInit {
+  URI: string = environment.uri;
   headerConfiguration: HelperHeaderInput = {
     mode: 'basic',
     fixed: true,
@@ -72,6 +81,7 @@ export class ItemsDashboardComponent implements OnInit {
   activeItems: Item[] = [];
   inactiveItems: Item[] = [];
   itemsWithoutTags: Item[] = [];
+  filteredItemsWithoutTags: Item[] = [];
   highlightedItems: Item[] = [];
   filteredHighlightedItems: Item[] = [];
   activeMenuOptionIndex: number = 0;
@@ -112,6 +122,8 @@ export class ItemsDashboardComponent implements OnInit {
   hasCustomizer: boolean;
   itemSearchbar: FormControl = new FormControl('');
 
+  @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
+
   constructor(
     private merchantsService: MerchantsService,
     private saleflowService: SaleFlowService,
@@ -122,7 +134,10 @@ export class ItemsDashboardComponent implements OnInit {
     private ordersService: OrderService,
     private itemsService: ItemsService,
     private router: Router,
-    private route: ActivatedRoute
+    private headerService: HeaderService,
+    private route: ActivatedRoute,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private dialog: DialogService
   ) {}
 
   async ngOnInit() {
@@ -130,6 +145,7 @@ export class ItemsDashboardComponent implements OnInit {
     await this.inicializeTags();
     await this.inicializeItems();
     await this.getOrdersTotal();
+    await this.getMerchantBuyers();
     await this.inicializeSaleflowCalendar();
 
     this.itemSearchbar.valueChanges.subscribe((change) =>
@@ -199,6 +215,8 @@ export class ItemsDashboardComponent implements OnInit {
         this.itemsWithoutTags.push(item);
       }
     }
+
+    this.filteredItemsWithoutTags = this.itemsWithoutTags;
 
     for (const tag of this.tagsList) {
       if (
@@ -303,9 +321,12 @@ export class ItemsDashboardComponent implements OnInit {
         this.merchantsService.merchantData._id
       );
 
-      if (ordersTotalResponse && incomeMerchantResponse) {
-        this.ordersTotal = { length: null, total: null };
+      this.ordersTotal = { length: null, total: null };
+      if (ordersTotalResponse) {
         this.ordersTotal.length = ordersTotalResponse.length;
+      }
+
+      if (incomeMerchantResponse) {
         this.ordersTotal.total = incomeMerchantResponse;
       }
     } catch (error) {
@@ -361,6 +382,8 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   goToDetail(id: string) {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
     this.router.navigate([`admin/item-display/${id}`]);
   }
 
@@ -371,20 +394,294 @@ export class ItemsDashboardComponent implements OnInit {
       );
 
       this.filteredHighlightedItems = this.highlightedItems.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        this.filterItemsPerSearchTerm(item, searchTerm)
       );
 
       this.filteredItemsPerTag = JSON.parse(JSON.stringify(this.itemsPerTag));
 
       this.filteredItemsPerTag.forEach((group) => {
         group.items = group.items.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+          this.filterItemsPerSearchTerm(item, searchTerm)
         );
       });
+
+      this.filteredItemsWithoutTags = this.itemsWithoutTags.filter((item) =>
+        this.filterItemsPerSearchTerm(item, searchTerm)
+      );
     } else {
       this.filteredTagsList = this.tagsList;
       this.filteredHighlightedItems = this.highlightedItems;
       this.filteredItemsPerTag = this.itemsPerTag;
+      this.filteredItemsWithoutTags = this.itemsWithoutTags;
     }
+  }
+
+  filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
+    let shouldIncludeItemInSearchResults = false;
+
+    if (
+      item.name &&
+      typeof item.name === 'string' &&
+      item.params.length === 0
+    ) {
+      if (item.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        shouldIncludeItemInSearchResults = true;
+      }
+    }
+
+    if (item.params.length > 0) {
+      item.params[0].values.forEach((typeOfItem) => {
+        if (typeOfItem.name && typeof typeOfItem.name === 'string') {
+          if (
+            typeOfItem.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            shouldIncludeItemInSearchResults = true;
+          }
+        }
+      });
+    }
+
+    return shouldIncludeItemInSearchResults;
+  }
+
+  goToCreateTag(tagId: string) {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+    this.router.navigate([`/admin/create-tag/${tagId}`]);
+  }
+
+  itemMenuCallback = (id: string) => {
+    const item = this.allItems.find((item) => item._id === id);
+    const list: StoreShareList[] = [
+      {
+        title: item.name || 'Producto',
+        titleStyles: {
+          margin: '0px',
+          marginTop: '15px',
+          marginBottom: '25px',
+        },
+        options: [
+          {
+            text: 'DESTACAR',
+            mode: 'func',
+            func: async () => {
+              try {
+                const updatedItem = await this.itemsService.updateItem(
+                  {
+                    status: 'featured',
+                  },
+                  item._id
+                );
+
+                if (updatedItem) item.status = 'featured';
+                this.highlightedItems.push(item);
+              } catch (error) {
+                console.log(error);
+              }
+            },
+          },
+          {
+            text: item.status === 'disabled' ? 'MOSTRAR' : 'ESCONDER',
+            mode: 'func',
+            func: async () => {
+              try {
+                const updatedItem = await this.itemsService.updateItem(
+                  {
+                    status:
+                      item.status === 'active' || item.status === 'featured'
+                        ? 'disabled'
+                        : item.status === 'disabled'
+                        ? 'active'
+                        : 'draft',
+                  },
+                  item._id
+                );
+
+                if (updatedItem) {
+                  item.status =
+                    item.status === 'active' || item.status === 'featured'
+                      ? 'disabled'
+                      : item.status === 'disabled'
+                      ? 'active'
+                      : 'draft';
+                  if (item.status !== 'active') {
+                    this.activeItems = this.activeItems.filter(
+                      (listItem) => listItem._id !== item._id
+                    );
+                    this.highlightedItems = this.highlightedItems.filter(
+                      (listItem) => listItem._id !== item._id
+                    );
+                    this.filteredHighlightedItems =
+                      this.filteredHighlightedItems.filter(
+                        (listItem) => listItem._id !== item._id
+                      );
+                    this.inactiveItems.push(item);
+                  } else {
+                    this.activeItems.push(item);
+                    this.inactiveItems = this.inactiveItems.filter(
+                      (listItem) => listItem._id !== item._id
+                    );
+                  }
+                }
+              } catch (error) {
+                console.log(error);
+              }
+            },
+          },
+          {
+            text: 'BORRAR (ELIMINA LA DATA)',
+            mode: 'func',
+            func: async () => {
+              const removeItemFromSaleFlow =
+                await this.saleflowService.removeItemFromSaleFlow(
+                  item._id,
+                  this.saleflowService.saleflowData._id
+                );
+              if (!removeItemFromSaleFlow) return;
+              const deleteItem = await this.itemsService.deleteItem(item._id);
+              if (!deleteItem) return;
+              this.allItems = this.allItems.filter(
+                (listItem) => listItem._id !== item._id
+              );
+              this.activeItems = this.activeItems.filter(
+                (listItem) => listItem._id !== item._id
+              );
+              this.inactiveItems = this.inactiveItems.filter(
+                (listItem) => listItem._id !== item._id
+              );
+              this.itemsWithoutTags = this.itemsWithoutTags.filter(
+                (listItem) => listItem._id !== item._id
+              );
+              this.highlightedItems = this.highlightedItems.filter(
+                (listItem) => listItem._id !== item._id
+              );
+              this.filteredHighlightedItems =
+                this.filteredHighlightedItems.filter(
+                  (listItem) => listItem._id !== item._id
+                );
+            },
+          },
+        ],
+      },
+    ];
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
+  openItemManagementDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'GESTIÓN DE ITEMS',
+        titleStyles: {
+          margin: '0px',
+          marginTop: '15px',
+          marginBottom: '25px',
+        },
+        options: [
+          {
+            text: 'ADICIONAR',
+            mode: 'func',
+            func: () => {
+              this.router.navigate(['admin/create-item/']);
+            },
+          },
+          {
+            text: 'DESTACAR',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`admin/merchant-items`], {
+                queryParams: {
+                  initialMode: 'highlight',
+                },
+              });
+            },
+          },
+          {
+            text: 'ESCONDER',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`admin/merchant-items`], {
+                queryParams: {
+                  initialMode: 'hide',
+                },
+              });
+            },
+          },
+          {
+            text: 'BORRAR (ELIMINA LA DATA)',
+            mode: 'func',
+            func: () => {
+              this.router.navigate([`admin/merchant-items`], {
+                queryParams: {
+                  initialMode: 'delete',
+                },
+              });
+            },
+          },
+        ],
+      },
+    ];
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
+  openHeaderDialog() {
+    const list = [
+      {
+        text: 'Vende online. Comparte el link',
+        callback: async () => {
+          const link = `${this.URI}/ecommerce/store/${this.saleflowService.saleflowData._id}`;
+
+          await this.ngNavigatorShareService
+            .share({
+              title: '',
+              url: link,
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+      },
+      {
+        text: 'Cerrar Sesión',
+        callback: async () => {
+          await this.authService.signout();
+        },
+      },
+    ];
+
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        title: 'Sobre las facturas',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

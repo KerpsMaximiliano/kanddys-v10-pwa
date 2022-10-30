@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { error } from 'console';
 import { environment } from 'src/environments/environment';
 
-interface Text {
+export interface Text {
   text: string;
   fontFamily?: string;
   fontSize?: string;
