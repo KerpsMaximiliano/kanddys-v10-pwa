@@ -1,5 +1,6 @@
 <div class="container">
   <app-helper-headerv2
+    *ngIf="selectedTags.length === 0"
     [mode]="headerConfiguration.mode"
     [fixed]="headerConfiguration.fixed"
     [mainText]="headerConfiguration.mainText"
@@ -12,7 +13,24 @@
     (dotEvent)="openHeaderDialog()"
   ></app-helper-headerv2>
 
-  <div class="helper-header-space"></div>
+  <app-helper-headerv3
+    *ngIf="selectedTags.length > 0"
+    (arrowsClick)="resetSelectedTags()"
+  ></app-helper-headerv3>
+
+  <app-tags-selector
+    *ngIf="selectedTags.length > 0"
+    [tags]="getSelectedTagsNames()"
+    [selectedBackground]="'#ffffff'"
+    [color]="'#2874ad'"
+    [containerStyles]="{
+      padding: '18px 18px 21px 18px'
+    }"
+  ></app-tags-selector>
+
+  <div class="helper-header-space"
+    *ngIf="selectedTags.length === 0"
+  ></div>
 
   <form class="search-bar-wrapper">
     <input

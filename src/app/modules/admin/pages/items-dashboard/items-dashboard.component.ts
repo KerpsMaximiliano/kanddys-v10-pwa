@@ -299,10 +299,10 @@ export class ItemsDashboardComponent implements OnInit {
     const items = await this.saleflowService.listItems(pagination);
     const itemsQueryResult = items?.listItems;
 
-    if (itemsQueryResult) {
-      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
-        this.paginationState.page--;
+    if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
+      this.paginationState.page--;
 
+    if (itemsQueryResult && itemsQueryResult.length > 0) {
       if (this.paginationState.page === 1) {
         this.allItems = itemsQueryResult;
       } else {
@@ -775,5 +775,17 @@ export class ItemsDashboardComponent implements OnInit {
     }
 
     this.inicializeItems(true);
+  }
+
+  getSelectedTagsNames() {
+    return this.selectedTags.map((tag) => tag.name);
+  }
+
+  async resetSelectedTags() {
+    this.selectedTags = [];
+    this.selectedTagsCounter = 0;
+    this.tagsList.forEach((tag) => (tag.selected = false));
+
+    await this.inicializeItems(true);
   }
 }
