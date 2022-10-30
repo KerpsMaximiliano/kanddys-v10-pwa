@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -88,6 +88,15 @@ export class StoreComponent implements OnInit {
   selectedTags: Array<Tag> = [];
   user: User = null;
   userDefaultMerchant: Merchant = null;
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+    page: 1,
+    pageSize: 5,
+    status: 'loading',
+  };
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
@@ -106,6 +115,13 @@ export class StoreComponent implements OnInit {
     freeMode: false,
     spaceBetween: 0,
   };
+
+  @HostListener('window:scroll', [])
+  async infinitePagination() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      await this.getItems();
+    }
+  }
 
   constructor(
     private dialog: DialogService,
@@ -263,7 +279,7 @@ export class StoreComponent implements OnInit {
           },
           options: {
             sortBy: 'createdAt:desc',
-            limit: 60,
+            limit: this.paginationState.pageSize,
           },
         });
         const selectedItems = orderData?.products?.length
@@ -310,11 +326,18 @@ export class StoreComponent implements OnInit {
         }
         await this.organizeItems(merchant);
 
-        this.searchBar.valueChanges.subscribe((change) =>
-          this.filterItemsBySearch(change)
-        );
+        this.searchBar.valueChanges.subscribe(async (change) => {
+          await this.getItems(true);
+          /*
+          if (this.selectedTags.length === 0) await this.getItems(true);
+          else {
+            this.filterItemsBySearch(change);
+          }
+          */
+        });
 
         this.status = 'complete';
+        this.paginationState.status = 'complete';
         unlockUI();
       }
       if (
@@ -322,6 +345,7 @@ export class StoreComponent implements OnInit {
         !this.saleflowData.items.length
       ) {
         this.status = 'complete';
+        this.paginationState.status = 'complete';
         unlockUI();
       }
     });
@@ -611,10 +635,11 @@ export class StoreComponent implements OnInit {
       this.selectedTagsCounter++;
     }
 
-    await this.getItems();
+    await this.getItems(true);
   }
 
-  async getItems() {
+  async getItems(restartPagination = false) {
+    this.paginationState.status = 'loading';
     const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const orderData = this.header.getOrder(this.saleflowData._id);
 
@@ -624,6 +649,12 @@ export class StoreComponent implements OnInit {
       index: saleflowItem.index,
     }));
 
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
     const pagination: PaginationInput = {
       findBy: {
         _id: {
@@ -632,7 +663,8 @@ export class StoreComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: 60,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
       },
     };
 
@@ -642,14 +674,46 @@ export class StoreComponent implements OnInit {
       };
     }
 
+    if (this.searchBar.value !== '') {
+      pagination.findBy = {
+        ...pagination.findBy,
+        $or: [
+          {
+            name: {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
+          {
+            'params.values.name': {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
+        ],
+      };
+    }
+
     const items = await this.saleflow.listItems(pagination);
-    this.items = items.listItems.filter((item) => {
+    const itemsQueryResult = items.listItems.filter((item) => {
       return item.status === 'active' || item.status === 'featured';
     });
+
+    if (this.paginationState.page === 1) {
+      this.items = itemsQueryResult;
+    } else {
+      this.items = this.items.concat(itemsQueryResult);
+    }
 
     this.filteredItems = this.items;
 
     this.organizeItems(this.merchantService.merchantData);
+
+    this.paginationState.status = 'complete';
   }
 
   getSelectedTagsNames(selectedTags: Array<Tag>) {
