@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent, SwiperConfig } from 'ngx-swiper-wrapper';
 import { Item } from 'src/app/core/models/item';
@@ -44,6 +44,14 @@ interface ExtendedCalendar extends Calendar {
   noLimitsMode?: boolean;
 }
 
+interface ExtendedTag extends Tag {
+  selected?: boolean;
+}
+
+interface ExtendedItem extends Item {
+  tagsFilled?: Array<Tag>;
+}
+
 @Component({
   selector: 'app-items-dashboard',
   templateUrl: './items-dashboard.component.html',
@@ -77,30 +85,21 @@ export class ItemsDashboardComponent implements OnInit {
       name: 'Facturas',
     },
   ];
-  allItems: Item[] = [];
+  allItems: ExtendedItem[] = [];
   activeItems: Item[] = [];
   inactiveItems: Item[] = [];
-  itemsWithoutTags: Item[] = [];
-  filteredItemsWithoutTags: Item[] = [];
-  highlightedItems: Item[] = [];
-  filteredHighlightedItems: Item[] = [];
+  highlightedItems: ExtendedItem[] = [];
+  filteredHighlightedItems: ExtendedItem[] = [];
   activeMenuOptionIndex: number = 0;
-  tagsList: Array<Tag> = [];
-  filteredTagsList: Array<Tag> = [];
-  itemsPerTag: Array<{
-    tag: Tag;
-    items: Array<Item>;
-  }> = [];
-  filteredItemsPerTag: Array<{
-    tag: Tag;
-    items: Array<Item>;
-  }> = [];
+  tagsList: Array<ExtendedTag> = [];
+  tagsHashTable: Record<string, Tag> = {};
+  selectedTags: Array<Tag> = [];
+  selectedTagsCounter: number = 0;
   user: User;
   merchantDefault: Merchant;
   menuNavigationSwiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
-    spaceBetween: 16,
   };
   tagsSwiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
@@ -121,8 +120,24 @@ export class ItemsDashboardComponent implements OnInit {
   env: string = environment.assetsUrl;
   hasCustomizer: boolean;
   itemSearchbar: FormControl = new FormControl('');
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+    page: 1,
+    pageSize: 5,
+    status: 'loading',
+  };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
+
+  @HostListener('window:scroll', [])
+  async infinitePagination() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      await this.inicializeItems();
+    }
+  }
 
   constructor(
     private merchantsService: MerchantsService,
@@ -143,13 +158,14 @@ export class ItemsDashboardComponent implements OnInit {
   async ngOnInit() {
     await this.verifyIfUserIsLogged();
     await this.inicializeTags();
-    await this.inicializeItems();
+    await this.inicializeItems(true);
+    await this.inicializeHighlightedItems();
     await this.getOrdersTotal();
     await this.getMerchantBuyers();
     await this.inicializeSaleflowCalendar();
 
     this.itemSearchbar.valueChanges.subscribe((change) =>
-      this.filterItemsBySearch(change)
+      this.inicializeItems(true)
     );
   }
 
@@ -167,11 +183,58 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   async inicializeTags() {
-    this.tagsList = await this.tagsService.tagsByUser();
-    this.filteredTagsList = this.tagsList;
+    const tagsList = await this.tagsService.tagsByUser();
+
+    if (tagsList) {
+      this.tagsList = tagsList;
+      for (const tag of this.tagsList) {
+        this.tagsHashTable[tag._id] = tag;
+      }
+    }
   }
 
-  async inicializeItems() {
+  async inicializeHighlightedItems() {
+    const saleflowItems = this.saleflowService.saleflowData.items.map(
+      (saleflowItem) => ({
+        itemId: saleflowItem.item._id,
+        customizer: saleflowItem.customizer?._id,
+        index: saleflowItem.index,
+      })
+    );
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.itemId)),
+        },
+        status: 'featured',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 10,
+      },
+    };
+
+    const { listItems: highlitedItems } = await this.itemsService.listItems(
+      pagination
+    );
+
+    if (highlitedItems) {
+      this.highlightedItems = highlitedItems;
+
+      for (const item of this.highlightedItems) {
+        item.tagsFilled = [];
+
+        if (item.tags.length > 0) {
+          for (const tagId of item.tags) {
+            item.tagsFilled.push(this.tagsHashTable[tagId]);
+          }
+        }
+      }
+    }
+  }
+
+  async inicializeItems(restartPagination = false) {
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const saleflowItems = this.saleflowService.saleflowData.items.map(
       (saleflowItem) => ({
         itemId: saleflowItem.item._id,
@@ -181,7 +244,16 @@ export class ItemsDashboardComponent implements OnInit {
     );
     if (saleflowItems.some((item) => item.customizer))
       this.hasCustomizer = true;
-    const { listItems: items } = await this.saleflowService.listItems({
+
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const pagination: PaginationInput = {
       findBy: {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.itemId)),
@@ -189,56 +261,76 @@ export class ItemsDashboardComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: 60,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
       },
-    });
+    };
 
-    this.allItems = items;
+    if (this.selectedTags.length > 0) {
+      pagination.findBy.tags = {
+        __in: selectedTagIds,
+      };
+    }
 
-    this.activeItems = this.allItems.filter(
-      (item) => item.status === 'active' || item.status === 'featured'
-    );
-    this.inactiveItems = this.allItems.filter(
-      (item) => item.status === 'disabled'
-    );
+    if (this.itemSearchbar.value !== '') {
+      pagination.findBy = {
+        ...pagination.findBy,
+        $or: [
+          {
+            name: {
+              __regex: {
+                pattern: this.itemSearchbar.value,
+                options: 'gi',
+              },
+            },
+          },
+          {
+            'params.values.name': {
+              __regex: {
+                pattern: this.itemSearchbar.value,
+                options: 'gi',
+              },
+            },
+          },
+        ],
+      };
+    }
 
-    const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
+    const items = await this.saleflowService.listItems(pagination);
+    const itemsQueryResult = items?.listItems;
 
-    //*************************FILLS EACH TAG SECTION WITH ITEMS THAT ARE BINDED TO THAT TAG***************//
-    for (const item of this.allItems) {
-      if (item.tags.length > 0) {
-        for (const tagId of item.tags) {
-          if (!tagsAndItemsHashtable[tagId]) tagsAndItemsHashtable[tagId] = [];
-          tagsAndItemsHashtable[tagId].push(item);
-        }
+    if (itemsQueryResult) {
+      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
+        this.paginationState.page--;
+
+      if (this.paginationState.page === 1) {
+        this.allItems = itemsQueryResult;
       } else {
-        this.itemsWithoutTags.push(item);
+        this.allItems = this.allItems.concat(itemsQueryResult);
       }
-    }
 
-    this.filteredItemsWithoutTags = this.itemsWithoutTags;
+      this.activeItems = this.allItems.filter(
+        (item) => item.status === 'active' || item.status === 'featured'
+      );
+      this.inactiveItems = this.allItems.filter(
+        (item) => item.status === 'disabled'
+      );
 
-    for (const tag of this.tagsList) {
-      if (
-        tagsAndItemsHashtable[tag._id] &&
-        tagsAndItemsHashtable[tag._id].length > 0
-      ) {
-        this.itemsPerTag.push({
-          tag,
-          items: tagsAndItemsHashtable[tag._id],
-        });
-        this.filteredItemsPerTag = this.itemsPerTag;
+      const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
+
+      //*************************FILLS EACH TAG SECTION WITH ITEMS THAT ARE BINDED TO THAT TAG***************//
+      for (const item of this.allItems) {
+        item.tagsFilled = [];
+
+        if (item.tags.length > 0) {
+          for (const tagId of item.tags) {
+            item.tagsFilled.push(this.tagsHashTable[tagId]);
+          }
+        }
       }
-    }
-    //*************************                        END                   *****************************//
 
-    //sets the highlighted items
-    for (const item of items) {
-      if (item.status === 'featured') {
-        this.highlightedItems.push(item);
-      }
+      this.paginationState.status = 'complete';
     }
-    this.filteredHighlightedItems = this.highlightedItems;
   }
 
   async inicializeSaleflowCalendar() {
@@ -353,13 +445,13 @@ export class ItemsDashboardComponent implements OnInit {
     if (this.menuOpened) {
       setTimeout(() => {
         this.executingMenuOpeningAnimation = false;
-      }, 3000);
+      }, 1750);
     }
 
     if (!this.menuOpened) {
       setTimeout(() => {
         this.executingMenuClosingAnimation = false;
-      }, 3000);
+      }, 900);
     }
   }
 
@@ -389,30 +481,11 @@ export class ItemsDashboardComponent implements OnInit {
 
   filterItemsBySearch(searchTerm: string) {
     if (searchTerm !== '' && searchTerm) {
-      this.filteredTagsList = this.tagsList.filter((tag) =>
-        tag.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
       this.filteredHighlightedItems = this.highlightedItems.filter((item) =>
         this.filterItemsPerSearchTerm(item, searchTerm)
       );
-
-      this.filteredItemsPerTag = JSON.parse(JSON.stringify(this.itemsPerTag));
-
-      this.filteredItemsPerTag.forEach((group) => {
-        group.items = group.items.filter((item) =>
-          this.filterItemsPerSearchTerm(item, searchTerm)
-        );
-      });
-
-      this.filteredItemsWithoutTags = this.itemsWithoutTags.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
     } else {
-      this.filteredTagsList = this.tagsList;
       this.filteredHighlightedItems = this.highlightedItems;
-      this.filteredItemsPerTag = this.itemsPerTag;
-      this.filteredItemsWithoutTags = this.itemsWithoutTags;
     }
   }
 
@@ -549,9 +622,6 @@ export class ItemsDashboardComponent implements OnInit {
               this.inactiveItems = this.inactiveItems.filter(
                 (listItem) => listItem._id !== item._id
               );
-              this.itemsWithoutTags = this.itemsWithoutTags.filter(
-                (listItem) => listItem._id !== item._id
-              );
               this.highlightedItems = this.highlightedItems.filter(
                 (listItem) => listItem._id !== item._id
               );
@@ -683,5 +753,27 @@ export class ItemsDashboardComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  async selectTag(tag: ExtendedTag, tagIndex: number) {
+    if (this.tagsList[tagIndex].selected) {
+      this.tagsList[tagIndex].selected = false;
+      this.selectedTagsCounter--;
+
+      this.selectedTags = this.selectedTags.filter(
+        (selectedTag) => selectedTag._id !== tag._id
+      );
+    } else {
+      const selectedTagObject = { ...tag };
+
+      this.tagsList[tagIndex].selected = true;
+
+      delete selectedTagObject.selected;
+
+      this.selectedTags.push(selectedTagObject);
+      this.selectedTagsCounter++;
+    }
+
+    this.inicializeItems(true);
   }
 }

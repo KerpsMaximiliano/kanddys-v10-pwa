@@ -41,6 +41,20 @@ interface Icon {
   callback: () => void;
 }
 
+export interface HelperHeaderInput {
+  mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test';
+  fixed?: boolean;
+  mainText: Text;
+  bgColor?: string;
+  returnable?: boolean;
+  returnEvent?(...params): any;
+  dots?: {
+    active: boolean;
+    color?: string;
+    func?: () => void;
+  };
+}
+
 @Component({
   selector: 'app-helper-headerv2',
   templateUrl: './helper-headerv2.component.html',

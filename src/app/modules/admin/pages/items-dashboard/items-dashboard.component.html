@@ -19,7 +19,7 @@
       type="text"
       name="item-search"
       class="input search-bar"
-      placeholder="Busca por tag, articulo, referencia"
+      placeholder="Busca por tag, articulo, referencia..."
       [formControl]="itemSearchbar"
     />
 
@@ -48,7 +48,7 @@
           opened: menuOpened
         }"
         [ngStyle]="{
-          transitionDelay: menuOpened ? '0s' : '2.5s'
+          transitionDelay: menuOpened ? '0s' : '1.5s'
         }"
       ></div>
 
@@ -64,6 +64,12 @@
           class="menu-background"
           [ngClass]="{
             opened: menuOpened
+          }"
+          [ngStyle]="{
+            transition:
+              menuOpened && executingMenuClosingAnimation
+                ? '0.5s top ease-in, 1s transform ease-out 0s'
+                : '0.5s top ease-in, 1s transform ease-out 0.25s'
           }"
         ></div>
       </div>
@@ -100,9 +106,18 @@
               : 'block'
         }"
       >
-        <swiper [config]="menuNavigationSwiperConfig">
+        <swiper
+          [config]="menuNavigationSwiperConfig"
+          *ngIf="
+            !(
+              !menuOpened &&
+              !(executingMenuOpeningAnimation || executingMenuClosingAnimation)
+            )
+          "
+        >
           <div
-            class="menu-option swiper-item"
+            class="menu-option swiper-slide"
+            style="width: 102px !important"
             [ngClass]="{
               selected: option.active
             }"
@@ -283,17 +298,18 @@
     <swiper [config]="tagsSwiperConfig" *ngIf="tagsList.length > 0" #tagSwiper>
       <div
         class="tag-wrapper swiper-slide"
-        style="width: 89px !important"
-        *ngFor="let tag of filteredTagsList"
+        style="width: 81px !important"
+        *ngFor="let tag of tagsList; let tagIndex = index"
       >
         <div
           class="tag-image"
-          (click)="goToCreateTag(tag._id)"
+          (click)="selectTag(tag, tagIndex)"
           [ngStyle]="{
             'background-image':
               tag.images?.length > 0
                 ? 'url(' + tag.images[0] + ')'
-                : 'url(/assets/images/noimage.png)'
+                : 'url(/assets/images/noimage.png)',
+            border: tag.selected ? 'solid 3px #e9e371' : 'none'
           }"
         >
           <div
@@ -312,7 +328,7 @@
   <!-- HIGHLIGHTED ITEMS SWIPER-->
   <section
     class="highlited-items-area"
-    *ngIf="filteredHighlightedItems.length > 0"
+    *ngIf="highlightedItems.length > 0 && selectedTags.length === 0"
   >
     <div class="title-and-options">
       <h2 class="title">Destacados</h2>
@@ -355,10 +371,11 @@
     <div class="highlited-items-swiper" *ngIf="highlightedItems.length > 0">
       <swiper [config]="highlightedConfigSwiper">
         <div
-          *ngFor="let item of filteredHighlightedItems; let i = index"
+          *ngFor="let item of highlightedItems; let i = index"
           [ngStyle]="{
             width: 'auto',
             paddingBottom: '10px',
+            paddingTop: '10px',
             paddingRight: '16.5px'
           }"
         >
@@ -371,6 +388,7 @@
             [price]="item.pricing"
             [itemParams]="item.params"
             [showPrice]="true"
+            [tags]="item.tagsFilled"
             [dynamicStyles]="{
               itemContainer: {
                 minWidth: '242px',
@@ -396,12 +414,9 @@
   </section>
 
   <!--SHOWS ITEMS GROUPED BY TAGS-->
-  <section
-    class="items-by-tag-grid"
-    *ngFor="let tagAndItemsGroup of filteredItemsPerTag"
-  >
+  <section class="items-by-tag-grid">
     <div class="title-and-options">
-      <h2 class="title">{{ tagAndItemsGroup.tag.name }}</h2>
+      <h2 class="title">Todos los productos</h2>
 
       <div class="dot-trio" (click)="openItemManagementDialog()">
         <div
@@ -434,29 +449,18 @@
       </div>
     </div>
 
-    <p
-      class="subtitle"
-      style="max-width: 334px"
-      *ngIf="tagAndItemsGroup.items.length === 0"
-    >
-      {{
-        itemSearchbar.value === "" && tagAndItemsGroup.items.length === 0
-          ? "No hay items enlazados a esta tag"
-          : itemSearchbar.value !== "" && tagAndItemsGroup.items.length === 0
-          ? "No hay items enlazados a esta tag que concuerden con el término de busqueda"
-          : null
-      }}
+    <p class="subtitle" style="max-width: 334px" *ngIf="allItems.length === 0">
+      No hay productos
     </p>
 
-    <div class="saleflows-item-grid" *ngIf="tagAndItemsGroup.items?.length">
-      <app-saleflow-item
-        [type]="'ADD_NEW_ITEM'"
-        (itemClicked)="goToCreateItem()"
-      ></app-saleflow-item>
-      <div
-        class="capsize"
-        *ngFor="let item of tagAndItemsGroup.items; let itemIndex = index"
-      >
+    <div class="saleflows-item-grid" *ngIf="allItems.length">
+      <div class="capsize">
+        <app-saleflow-item
+          [type]="'ADD_NEW_ITEM'"
+          (itemClicked)="goToCreateItem()"
+        ></app-saleflow-item>
+      </div>
+      <div class="capsize" *ngFor="let item of allItems; let itemIndex = index">
         <app-saleflow-item
           [itemIndex]="itemIndex"
           [itemId]="item._id"
@@ -468,95 +472,25 @@
           [imgURL]="item.images ? item.images[0] : ''"
           [price]="item.pricing"
           [showPrice]="true"
+          [tags]="item.tagsFilled"
           [itemParams]="item.params"
           (itemClicked)="goToDetail(item._id)"
           [responsiveWidthVersion]="true"
+          [featured]="item.status === 'featured'"
         ></app-saleflow-item>
       </div>
     </div>
   </section>
 
-  <!--SHOW ITEMS WITHOUT TAG-->
-  <section class="items-without-tags">
-    <div class="title-and-options">
-      <h2 class="title">Items sin tags</h2>
-
-      <div class="dot-trio" (click)="openItemManagementDialog()">
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-        <div
-          class="dot"
-          [ngStyle]="{
-            'background-color': '#2874ad',
-            margin: '0 2.5px'
-          }"
-        >
-           
-        </div>
-      </div>
-    </div>
-
-    <p
-      class="subtitle"
-      style="max-width: 334px"
-      *ngIf="!filteredItemsWithoutTags?.length"
+  <!--
+    <div
+      class="create-btn"
+      [ngClass]="{
+        invisible: menuOpened
+      }"
+      (click)="goToCreateItem()"
     >
-      {{
-        itemSearchbar.value === "" && !filteredItemsWithoutTags?.length
-          ? "No hay items sin tags"
-          : itemSearchbar.value !== "" && !filteredItemsWithoutTags?.length
-          ? "No hay items sin tags que concuerden con el término de busqueda"
-          : null
-      }}
-    </p>
-
-    <div class="saleflows-item-grid" *ngIf="filteredItemsWithoutTags?.length">
-      <div
-        class="capsize"
-        *ngFor="let item of filteredItemsWithoutTags; let itemIndex = index"
-      >
-        <app-saleflow-item
-          [itemIndex]="itemIndex"
-          [itemId]="item._id"
-          [type]="4"
-          [inactive]="
-            item.status != 'active' && item.status != 'featured' ? true : false
-          "
-          [imgURL]="item.images ? item.images[0] : ''"
-          [price]="item.pricing"
-          [showPrice]="true"
-          [itemParams]="item.params"
-          [responsiveWidthVersion]="true"
-          (itemClicked)="goToDetail(item._id)"
-          [menuCallback]="itemMenuCallback"
-        ></app-saleflow-item>
-      </div>
+      Crea
     </div>
-  </section>
-
-  <div
-    class="create-btn"
-    [ngClass]="{
-      invisible: menuOpened
-    }"
-    (click)="goToCreateItem()"
-  >
-    Crea
-  </div>
+  -->
 </div>

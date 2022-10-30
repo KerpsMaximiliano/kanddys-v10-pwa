@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { ItemParam } from 'src/app/core/models/item';
+import { Tag } from 'src/app/core/models/tags';
 
 @Component({
   selector: 'app-saleflow-item',
@@ -21,7 +22,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() index3: number;
   @Input() selecteds: [];
   @Input() itemExtra: any;
-  @Input() type: 1 | 2 | 3 | 4 = 1;
+  @Input() type: 1 | 2 | 3 | 4 | 'ADD_NEW_ITEM' = 1;
   @Input() description: string;
   @Input() showPrice: boolean;
   @Input() showDescription: boolean;
@@ -40,6 +41,7 @@ export class SaleflowItemComponent implements OnInit {
   @Input() inactive: boolean;
   @Input() itemParams: ItemParam[];
   @Input() big: boolean = false;
+  @Input() tags: Array<Tag> = [];
   @Input() backgroundSize: 'cover' | 'contain' = 'cover';
   @Input() icon: {
     src: string;
@@ -58,7 +60,7 @@ export class SaleflowItemComponent implements OnInit {
     cursor?: boolean;
   };
   @Input() responsiveWidthVersion: boolean = false;
-  @Input() itemId: string | number = null;
+  @Input() itemId: string = null;
   @Input() itemIndex: number = null;
   @Input() dynamicStyles: {
     itemContainer?: Record<string, string | number>;
@@ -67,6 +69,8 @@ export class SaleflowItemComponent implements OnInit {
     infoArea?: Record<string, string | number>;
   } = null;
   @Input() shouldHaveFallbackImage: boolean = false;
+  @Input() menuCallback?: (id: string) => void;
+  @Input() featured: boolean = false;
 
   @Output() changeSelection = new EventEmitter();
   @Output() itemClicked = new EventEmitter();
@@ -129,6 +133,11 @@ export class SaleflowItemComponent implements OnInit {
       });
       this.price = this.price + lowest;
     }
+
+  }
+
+  showTags(tags: Array<Tag>) {
+    return tags.map((tag) => tag.name).join(', ');
   }
 
   navigateDetails(): void {

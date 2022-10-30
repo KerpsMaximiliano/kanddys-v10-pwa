@@ -227,6 +227,7 @@ export const listItems = gql`
         _id
         name
       }
+      tags
     }
   }
 `;
