@@ -8,11 +8,14 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class HelperHeaderv3Component implements OnInit {
   @Input('text') text: string = '';
   @Output('arrowsClick') arrowsClick: EventEmitter<any> = new EventEmitter();
+  @Output('searchClick') searchClick: EventEmitter<any> = new EventEmitter();
+  @Input() showSearch: boolean; 
   constructor() {}
 
   ngOnInit(): void {}
 
-  handleClick(): void {
-    this.arrowsClick.emit();
+  handleClick(type: 'arrows' | 'search'): void {
+    if (type === 'arrows') this.arrowsClick.emit();
+    else if (type === 'search') this.searchClick.emit();
   }
 }

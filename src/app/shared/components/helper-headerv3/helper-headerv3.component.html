@@ -1,11 +1,17 @@
-<div class="header-grid">
-  <div class="arrows" (click)="handleClick()">
+<div class="header-grid" [ngClass]="{ search: showSearch }">
+  <div class="arrows" (click)="handleClick('arrows')">
     <img
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-double-up.svg"
       alt="button"
     />
   </div>
   <div class="header-text">{{ text }}</div>
+  <div class="search" (click)="handleClick('search')" *ngIf="showSearch">
+    <img
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search-white.svg"
+      alt="button"
+    />
+  </div>
   <div class="dots">
     <div class="dot-trio">
       <div class="dot" *ngFor="let dot of ['', '', '']"></div>

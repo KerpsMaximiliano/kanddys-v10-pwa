@@ -120,6 +120,7 @@ export class ItemsDashboardComponent implements OnInit {
   env: string = environment.assetsUrl;
   hasCustomizer: boolean;
   itemSearchbar: FormControl = new FormControl('');
+  showSearchbar: boolean = true;
   paginationState: {
     pageSize: number;
     page: number;
@@ -772,6 +773,12 @@ export class ItemsDashboardComponent implements OnInit {
 
       this.selectedTags.push(selectedTagObject);
       this.selectedTagsCounter++;
+    }
+
+    if (this.selectedTagsCounter) {
+      this.showSearchbar = false;
+    } else {
+      this.showSearchbar = true;
     }
 
     this.inicializeItems(true);

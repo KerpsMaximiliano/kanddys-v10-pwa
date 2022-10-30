@@ -16,6 +16,8 @@
   <app-helper-headerv3
     *ngIf="selectedTags.length > 0"
     (arrowsClick)="resetSelectedTags()"
+    [showSearch]="true"
+    (searchClick)="showSearchbar = true"
   ></app-helper-headerv3>
 
   <app-tags-selector
@@ -28,9 +30,7 @@
     }"
   ></app-tags-selector>
 
-  <div class="helper-header-space"
-    *ngIf="selectedTags.length === 0"
-  ></div>
+  <div class="helper-header-space" *ngIf="selectedTags.length === 0"></div>
 
   <form class="search-bar-wrapper">
     <input
@@ -39,9 +39,10 @@
       class="input search-bar"
       placeholder="Busca por tag, articulo, referencia..."
       [formControl]="itemSearchbar"
+      *ngIf="showSearchbar"
     />
 
-    <button class="menu-btn">
+    <button *ngIf="showSearchbar" class="menu-btn">
       <svg
         class="menu-icon"
         xmlns="http://www.w3.org/2000/svg"
