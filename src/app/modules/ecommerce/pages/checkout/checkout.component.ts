@@ -18,6 +18,80 @@ import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+
+const options = [
+   {
+     status: true,
+     click: true,
+     value: 'No tendrá mensaje de regalo',
+     valueStyles: {
+       'font-family': 'SfProBold',
+       'font-size': '13px',
+       color: '#202020',
+     },
+   },
+   {
+     status: true,
+     click: true,
+     value: 'Con mensaje virtual e impreso',
+     valueStyles: {
+       'font-family': 'SfProBold',
+       'font-size': '13px',
+       color: '#202020',
+     },
+     subtexts: [
+       {
+         text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+         styles: {
+           fontFamily: 'SfProRegular',
+           fontSize: '1rem',
+           color: '#7B7B7B',
+         },
+       },
+     ],
+   },
+   {
+     status: true,
+     click: true,
+     value: 'Mensaje virtual',
+     valueStyles: {
+       'font-family': 'SfProBold',
+       'font-size': '13px',
+       color: '#202020',
+     },
+     subtexts: [
+       {
+         text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+         styles: {
+           fontFamily: 'SfProRegular',
+           fontSize: '1rem',
+           color: '#7B7B7B',
+         },
+       },
+     ],
+   },
+   {
+     status: true,
+     click: true,
+     value: 'Mensaje impreso',
+     valueStyles: {
+       'font-family': 'SfProBold',
+       'font-size': '13px',
+       color: '#202020',
+     },
+     subtexts: [
+       {
+         text: `Agregue texto a la tarjeta.`,
+         styles: {
+           fontFamily: 'SfProRegular',
+           fontSize: '1rem',
+           color: '#7B7B7B',
+         },
+       },
+     ],
+   },
+ ];
 
 @Component({
   selector: 'app-checkout',
@@ -49,6 +123,11 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
+  missingOrderData: boolean;
+  options: OptionAnswerSelector[] = options;
+  selectedPostOption: number;
+  postSlideImage: string | ArrayBuffer;
+
   constructor(
     private dialogService: DialogService,
     public headerService: HeaderService,
@@ -196,6 +275,9 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id)
       this.hasPaymentModule = true;
     this.checkLogged();
+    if (!this.headerService.orderInputComplete()) {
+      this.missingOrderData = true;
+    }
   }
 
   editOrder(
@@ -431,6 +513,48 @@ export class CheckoutComponent implements OnInit {
       return;
     }
   }
+
+  selectSelect(index: number) {
+   switch (index) {
+     case 0: {
+       this.post = {
+         message: '',
+         targets: [
+           {
+             name: '',
+             emailOrPhone: '',
+           },
+         ],
+         from: '',
+         socialNetworks: [
+           {
+             url: '',
+           },
+         ],
+       };
+       this.headerService.NFstorePost(this.post);
+       break;
+     }
+     case 1: {
+       break;
+     }
+     case 2: {
+       this.router.navigate([`../create-article`], {
+         relativeTo: this.route,
+         replaceUrl: true,
+       });
+       break;
+     }
+     case 3: {
+       this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+       this.router.navigate([`../create-giftcard`], {
+         relativeTo: this.route,
+         replaceUrl: true,
+       });
+       break;
+     }
+   }
+ }
 
   mouseDown: boolean;
   startX: number;

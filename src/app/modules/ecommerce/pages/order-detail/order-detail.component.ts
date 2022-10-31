@@ -12,6 +12,9 @@ import { ReservationService } from 'src/app/core/services/reservations.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-order-detail',
@@ -36,6 +39,7 @@ export class OrderDetailComponent implements OnInit {
   };
   flowRoute: string = null;
   messageLink: string;
+  loggedUser: User;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +49,9 @@ export class OrderDetailComponent implements OnInit {
     private postsService: PostsService,
     private customizerValueService: CustomizerValueService,
     private reservationService: ReservationService,
-    private location: LocationStrategy
+    private location: LocationStrategy,
+    private authService: AuthService,
+    public headerService: HeaderService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -84,7 +90,8 @@ export class OrderDetailComponent implements OnInit {
     const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
 
     this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
-
+    this.checkUser();
+    
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
@@ -350,6 +357,12 @@ export class OrderDetailComponent implements OnInit {
     let link = this.order.items[0].saleflow._id;
     this.router.navigate([`ecommerce/store/${link}`]);
   }
+
+  async checkUser() {
+   const user = await this.authService.me();
+   if (user) this.loggedUser = user;
+   else return;
+ }
 
   mouseDown: boolean;
   startX: number;

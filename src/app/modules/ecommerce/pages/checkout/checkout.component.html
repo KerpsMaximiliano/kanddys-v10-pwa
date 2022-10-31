@@ -4,7 +4,7 @@
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
-    bgColor="#2874AD"
+    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
     [mainText]="{
       text: '',
       fontSize: '21px',
@@ -12,8 +12,14 @@
     }"
   ></app-helper-headerv2>
 
-  <header class="header" *ngIf="logged || headerService.user">
-    <a> <i class="fas fa-chevron-left" (click)="back()"></i></a>
+  <header
+    class="header"
+    *ngIf="logged || headerService.user"
+    [ngStyle]="{ backgroundColor: headerService.colorTheme ? headerService.colorTheme : '#2874AD' }"
+  >
+    <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
+
+    <img [src]="env + '/carrito_blanco.svg'" alt="Icono de un carrito" />
 
     <div class="right-area">
       <span class="header-text">{{
@@ -36,7 +42,11 @@
       <div class="between">
         <h2 class="section-title">Articulos facturados:</h2>
         <button (click)="editOrder('item')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
@@ -96,15 +106,16 @@
               1 || headerService.saleflow?.module?.delivery?.deliveryLocation
           "
         >
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
       <div class="items-container column">
-        <p
-          class="address-name"
-          *ngIf="deliveryLocation.nickName"
-        >
+        <p class="address-name" *ngIf="deliveryLocation.nickName">
           {{ deliveryLocation.nickName }}
         </p>
         <p
@@ -135,7 +146,11 @@
         <h2 class="section-title">Fecha de la sesión:</h2>
 
         <button (click)="editOrder('reservation')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
@@ -156,46 +171,71 @@
         <h2 class="section-title">Mensaje de regalo:</h2>
 
         <button (click)="editOrder('message')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
 
-      <div
-        class="message-box"
-        *ngIf="
-          post?.message || post?.from || post?.targets[0].name;
-          else noMessage
-        "
-      >
-        <section *ngIf="post.message">
-          <h3 class="sub">Mensaje a escribir:</h3>
-          <p class="message-text inner">
-            {{ post.message }}
-          </p>
-        </section>
-
-        <section *ngIf="post.targets?.length && post.targets[0]?.name">
-          <h3 class="sub">Para:</h3>
-          <p class="message-text inner">{{ post.targets[0]?.name }}</p>
-        </section>
-
-        <section *ngIf="post.from">
-          <h3 class="sub">De:</h3>
-          <p class="message-text inner">{{ post.from }}</p>
-        </section>
-      </div>
-      <ng-template #noMessage>
-        <div class="items-container">
-          <span class="address-name"> Sin mensaje de regalo </span>
+      <ng-container *ngIf="post">
+        <div *ngIf="post.slides?.length && postSlideImage">
+          <img [src]="postSlideImage" width="100%" />
         </div>
-      </ng-template>
+        <ng-container *ngIf="!post.slides?.length">
+          <div
+            class="message-box"
+            *ngIf="
+              post?.message || post?.from || post?.targets[0].name;
+              else noMessage
+            "
+          >
+            <section *ngIf="post.message">
+              <h3 class="sub">Mensaje a escribir:</h3>
+              <p class="message-text inner">
+                {{ post.message }}
+              </p>
+            </section>
+
+            <section *ngIf="post.targets?.length && post.targets[0]?.name">
+              <h3 class="sub">Para:</h3>
+              <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+            </section>
+
+            <section *ngIf="post.from">
+              <h3 class="sub">De:</h3>
+              <p class="message-text inner">{{ post.from }}</p>
+            </section>
+          </div>
+          <ng-template #noMessage>
+            <div class="items-container">
+              <span class="address-name"> Sin mensaje de regalo </span>
+            </div>
+          </ng-template>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="!post">
+        <app-answer-selector
+          [options]="options"
+          [indicator]="true"
+          (onSelector)="selectSelect($event)"
+          [containerStyles]="{
+            margin: '0px'
+          }"
+        ></app-answer-selector>
+      </ng-container>
     </section>
     <section class="section" *ngIf="customizer" style="margin-top: 32px">
       <div class="between">
         <h2 class="section-title">Personalización:</h2>
 
         <button (click)="editOrder('customizer')">
-          <img [src]="env + '/pencil.svg'" alt="Icono de un lápiz" />
+          <img
+            [src]="env + '/pencil.svg'"
+            class="edit-image"
+            alt="Icono de un lápiz"
+          />
         </button>
       </div>
       <div class="items-container" style="flex-direction: column">
@@ -217,31 +257,45 @@
   </main>
 
   <app-sticky-button
-    [mode]="!disableButton ? 'double' : 'disabled-fixed'"
+    [mode]="
+      !disableButton &&
+      ((headerService.saleflow.module?.post && post) ||
+        !headerService.saleflow.module?.post)
+        ? 'double'
+        : 'disabled-fixed'
+    "
     [extra]="{
-      bgColor: '#2874AD',
+      bgColor: headerService.colorTheme,
       return: true,
       returnCallback: back
     }"
     [color]="'#FFF'"
     [fontSize]="'17px'"
     [bgColor]="'#A1A1A1'"
-    [text]="'CONFIRMAR' + (hasPaymentModule ? ' Y PASAR A PAGAR' : '')"
+    [text]="missingOrderData ? 'LLEVAME A LLENAR LO INCOMPLETO' : 'CONFIRMAR'"
     [customLeftButtonStyles]="{
       width: '84.65%',
       'max-width': 'none',
       'border-left': '1px solid #FFFFFF',
-      backgroundColor: '#2874ad',
+      backgroundColor: headerService.colorTheme,
       color: '#FFFFFF',
       cursor: 'pointer'
     }"
     [customRightButtonStyles]="{
-      width: '1px',
-      heigth: '1px',
-      cursor: 'unset'
+      width: '75px',
+      heigth: 'auto',
+      cursor: 'pointer',
+      backgroundColor: headerService.colorTheme,
+      color: '#FFFFFF',
+      fontSize: '12px'
     }"
-    [text2]="''"
+    [text2]="'pago >'"
     size="small"
-    (left)="!disableButton && createOrder()"
+    (left)="
+      !disableButton &&
+        ((headerService.saleflow.module?.post && post) ||
+          !headerService.saleflow.module?.post) &&
+        createOrder()
+    "
   ></app-sticky-button>
 </div>

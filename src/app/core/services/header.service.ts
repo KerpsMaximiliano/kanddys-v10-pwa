@@ -95,6 +95,7 @@ export class HeaderService {
   newTempItemRoute: string = null;
   checkoutRoute: string;
   loadedMerchants = new EventEmitter();
+   colorTheme: '#272727' | '#2874AD';
 
   public session: Session;
   constructor(
@@ -170,6 +171,26 @@ export class HeaderService {
     this.location.back();
   }
 
+  orderInputComplete(): boolean {
+   if (!this.saleflow) return;
+   if (this.saleflow.module?.delivery?.isActive) {
+     const location = this.NFgetLocation();
+     if (!location || !this.isComplete.delivery) return;
+   }
+   if (this.saleflow.items.some((item) => item.customizer)) {
+     if (!this.isComplete.qualityQuantity) return;
+     if (!this.isComplete.customizer) return;
+   }
+   if (this.saleflow.module?.appointment?.isActive) {
+     const reservation = this.NFgetReservation();
+     if (!reservation || !this.isComplete.reservation) return;
+   }
+   if (this.hasScenarios) {
+     if (!this.isComplete.scenarios) return;
+   }
+   return true;
+ }
+ 
   isDataComplete(): boolean {
     if (!this.saleflow) return;
     if (
@@ -304,7 +325,14 @@ export class HeaderService {
   storePost(saleflow: string, post: PostInput) {
     let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify({ ...rest, post }));
-  }
+  } 
+
+  //Temporal Fix
+  NFstorePost(post: PostInput) {
+   let rest: SaleflowData =
+     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+   localStorage.setItem(this.saleflow._id, JSON.stringify({ ...rest, post }));
+ }
 
   // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput) {
@@ -392,6 +420,19 @@ export class HeaderService {
     };
   }
 
+  //Temporal Fix
+  NFgetReservation(): {
+   reservation: ReservationInput;
+   date: any;
+ } {
+   let { reservation, date }: SaleflowData =
+     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+   return {
+     reservation,
+     date,
+   };
+ }
+
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
     let { post }: SaleflowData =
@@ -404,6 +445,13 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     return deliveryLocation;
   }
+
+  //Temporal Fix
+  NFgetLocation() {
+   let { deliveryLocation }: SaleflowData =
+     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+   return deliveryLocation;
+ }
 
   // Returns order creation progress
   getOrderProgress(saleflow: string) {
