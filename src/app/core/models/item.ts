@@ -38,7 +38,7 @@ export class ItemPricing {
   amount: number;
 }
 
-export type ItemStatus = 'draft' | 'disabled' | 'active' | 'featured';
+export type ItemStatus = 'draft' | 'disabled' | 'active' | 'featured' | 'archived';
 
 export class Item extends Model<Item> {
   hasSelection?: boolean;

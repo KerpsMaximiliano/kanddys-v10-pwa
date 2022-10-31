@@ -199,6 +199,15 @@
               </h2>
               <h2 class="amount">INVISIBLES</h2>
             </div>
+
+            <div class="card unset" routerLink="/admin/merchant-items">
+              <h2 class="amount quantity">
+                {{
+                  ordersTotal && ordersTotal.selled ? ordersTotal.selled : "0"
+                }}
+              </h2>
+              <h2 class="amount">ARTICULOS VENDIDOS</h2>
+            </div>
           </div>
 
           <ng-container *ngIf="saleflowCalendar">
@@ -401,7 +410,7 @@
           <app-saleflow-item
             [itemIndex]="i"
             [itemId]="item._id"
-            [menuCallback]="itemMenuCallback"
+            [menuCallback]="openItemOptionsDialog"
             [type]="4"
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
@@ -483,7 +492,7 @@
         <app-saleflow-item
           [itemIndex]="itemIndex"
           [itemId]="item._id"
-          [menuCallback]="itemMenuCallback"
+          [menuCallback]="openItemOptionsDialog"
           [type]="4"
           [inactive]="
             item.status != 'active' && item.status != 'featured' ? true : false

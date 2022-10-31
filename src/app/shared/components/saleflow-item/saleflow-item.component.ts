@@ -133,11 +133,15 @@ export class SaleflowItemComponent implements OnInit {
       });
       this.price = this.price + lowest;
     }
-
   }
 
   showTags(tags: Array<Tag>) {
-    return tags.map((tag) => tag.name).join(', ');
+    return tags
+      .map((tag) => {
+
+        return tag.name;
+      })
+      .join(', ');
   }
 
   navigateDetails(): void {

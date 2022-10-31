@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperComponent, SwiperConfig } from 'ngx-swiper-wrapper';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemInput, ItemStatus } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { Tag } from 'src/app/core/models/tags';
 import { User } from 'src/app/core/models/user';
@@ -29,8 +29,13 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { ToastrService } from 'ngx-toastr';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 
 interface MenuOption {
   name: string;
@@ -92,6 +97,7 @@ export class ItemsDashboardComponent implements OnInit {
   filteredHighlightedItems: ExtendedItem[] = [];
   activeMenuOptionIndex: number = 0;
   tagsList: Array<ExtendedTag> = [];
+  tagsLoaded: boolean;
   tagsHashTable: Record<string, Tag> = {};
   selectedTags: Array<Tag> = [];
   selectedTagsCounter: number = 0;
@@ -115,6 +121,7 @@ export class ItemsDashboardComponent implements OnInit {
   ordersTotal: {
     total: number;
     length: number;
+    selled?: number;
   };
   saleflowCalendar: ExtendedCalendar;
   env: string = environment.assetsUrl;
@@ -128,7 +135,7 @@ export class ItemsDashboardComponent implements OnInit {
   } = {
     page: 1,
     pageSize: 5,
-    status: 'loading',
+    status: 'complete',
   };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
@@ -136,7 +143,9 @@ export class ItemsDashboardComponent implements OnInit {
   @HostListener('window:scroll', [])
   async infinitePagination() {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      await this.inicializeItems();
+      if (this.paginationState.status === 'complete' && this.tagsLoaded) {
+        await this.inicializeItems();
+      }
     }
   }
 
@@ -153,6 +162,7 @@ export class ItemsDashboardComponent implements OnInit {
     private headerService: HeaderService,
     private route: ActivatedRoute,
     private ngNavigatorShareService: NgNavigatorShareService,
+    private toastr: ToastrService,
     private dialog: DialogService
   ) {}
 
@@ -192,6 +202,8 @@ export class ItemsDashboardComponent implements OnInit {
         this.tagsHashTable[tag._id] = tag;
       }
     }
+
+    this.tagsLoaded = true;
   }
 
   async inicializeHighlightedItems() {
@@ -215,7 +227,7 @@ export class ItemsDashboardComponent implements OnInit {
       },
     };
 
-    const { listItems: highlitedItems } = await this.itemsService.listItems(
+    const { listItems: highlitedItems } = await this.saleflowService.listItems(
       pagination
     );
 
@@ -227,7 +239,9 @@ export class ItemsDashboardComponent implements OnInit {
 
         if (item.tags.length > 0) {
           for (const tagId of item.tags) {
-            item.tagsFilled.push(this.tagsHashTable[tagId]);
+            if (this.tagsHashTable[tagId]) {
+              item.tagsFilled.push(this.tagsHashTable[tagId]);
+            }
           }
         }
       }
@@ -417,6 +431,7 @@ export class ItemsDashboardComponent implements OnInit {
       this.ordersTotal = { length: null, total: null };
       if (ordersTotalResponse) {
         this.ordersTotal.length = ordersTotalResponse.length;
+        this.ordersTotal.selled = ordersTotalResponse.items;
       }
 
       if (incomeMerchantResponse) {
@@ -715,7 +730,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   openHeaderDialog() {
-    const list = [
+    const list: Array<SettingsDialogButton> = [
       {
         text: 'Vende online. Comparte el link',
         callback: async () => {
@@ -746,7 +761,7 @@ export class ItemsDashboardComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         optionsList: list,
-        title: 'Sobre las facturas',
+        title: 'Menu de opciones',
         cancelButton: {
           text: 'Cerrar',
         },
@@ -755,6 +770,295 @@ export class ItemsDashboardComponent implements OnInit {
       flags: ['no-header'],
     });
   }
+
+  toggleActivateItem = async (item: Item): Promise<string> => {
+    try {
+      this.itemsService.updateItem(
+        {
+          status:
+            item.status === 'disabled'
+              ? 'active'
+              : item.status === 'active'
+              ? 'featured'
+              : 'disabled',
+        },
+        item._id
+      );
+
+      item.status =
+        item.status === 'disabled'
+          ? 'active'
+          : item.status === 'active'
+          ? 'featured'
+          : 'disabled';
+
+      return item.status;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openItemOptionsDialog = async (id: string) => {
+    const item = await this.itemsService.item(id);
+    const allItemIndex = this.allItems.findIndex((item) => item._id === id);
+    const highlightedItemsIndex = this.highlightedItems.findIndex(
+      (item) => item._id === id
+    );
+    const visibleItemsIndex = this.activeItems.findIndex(
+      (item) => item._id === id
+    );
+    const invisibleItemsIndex = this.inactiveItems.findIndex(
+      (item) => item._id === id
+    );
+
+    const toggleStatus = () => {
+      return new Promise((resolve, reject) => {
+        this.toggleActivateItem(item).then((newStatus) => {
+          newStatus === 'disabled'
+            ? (number = 2)
+            : newStatus === 'active'
+            ? (number = 0)
+            : (number = 1);
+
+          this.allItems[allItemIndex].status = newStatus as ItemStatus;
+
+          if (newStatus === 'disabled' && visibleItemsIndex >= 0) {
+            this.activeItems.splice(visibleItemsIndex, 1);
+            this.inactiveItems.push(item);
+          }
+
+          if (newStatus === 'disabled' && highlightedItemsIndex >= 0) {
+            this.highlightedItems.splice(highlightedItemsIndex, 1);
+            this.inactiveItems.push(item);
+            console.log('over hiar');
+          }
+
+          if (newStatus === 'active' && invisibleItemsIndex >= 0) {
+            this.inactiveItems.splice(invisibleItemsIndex, 1);
+            this.activeItems.push(item);
+          }
+
+          if (newStatus === 'featured' && invisibleItemsIndex >= 0) {
+            this.inactiveItems.splice(invisibleItemsIndex, 1);
+            this.highlightedItems.push(item);
+          }
+
+          if (newStatus === 'featured' && visibleItemsIndex >= 0) {
+            this.highlightedItems.push(item);
+          }
+
+          resolve(true);
+        });
+      });
+    };
+
+    let number: number =
+      item.status === 'disabled' ? 2 : item.status === 'active' ? 0 : 1;
+    const statuses = [
+      {
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: '#FFFFFF',
+        asyncCallback: toggleStatus,
+      },
+    ];
+
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Vista del visitante',
+        callback: async () => {
+          this.router.navigate([
+            `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
+          ]);
+        },
+      },
+      {
+        text: 'Duplicar',
+        callback: async () => {
+          const imageFiles: Array<File> = [];
+
+          const toDataURL = (url) =>
+            fetch(url)
+              .then((response) => response.blob())
+              .then(
+                (blob) =>
+                  new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                  })
+              );
+
+          for (const imageURL of item.images) {
+            const dataURL = await toDataURL(imageURL);
+            if (dataURL) {
+              const file = base64ToFile(dataURL as string);
+              imageFiles.push(file);
+            }
+          }
+
+          const itemInput: ItemInput = {
+            name: item.name || null,
+            description: item.description || null,
+            pricing: item.pricing,
+            images: imageFiles,
+            merchant: item.merchant._id,
+            content: [],
+            currencies: [],
+            hasExtraPrice: false,
+            purchaseLocations: [],
+            showImages: item.images.length > 0,
+            status: item.status,
+          };
+
+          try {
+            const { createItem } = await this.itemsService.createItem(
+              itemInput
+            );
+            await this.saleflowService.addItemToSaleFlow(
+              {
+                item: createItem._id,
+              },
+              this.saleflowService.saleflowData._id
+            );
+
+            if (item.params) {
+              const { createItemParam } =
+                await this.itemsService.createItemParam(
+                  item.merchant._id,
+                  createItem._id,
+                  {
+                    name: item.params[0].name,
+                    formType: 'color',
+                    values: [],
+                  }
+                );
+              const paramValues = item.params[0].values.map((value) => {
+                return {
+                  name: value.name,
+                  image: value.image,
+                  price: value.price,
+                  description: value.description,
+                };
+              });
+
+              const result = await this.itemsService.addItemParamValue(
+                paramValues,
+                createItemParam._id,
+                item.merchant._id,
+                createItem._id
+              );
+            }
+
+            const itemWithParams = await this.itemsService.item(createItem._id);
+
+            this.allItems.push(itemWithParams);
+            this.toastr.info('¡Item duplicado exitosamente!');
+          } catch (error) {
+            this.toastr.error('Ocurrio un error al crear el item', null, {
+              timeOut: 1500,
+            });
+          }
+        },
+      },
+      {
+        text: 'Archivar (Sin eliminar la data)',
+        callback: async () => {
+          try {
+            const response = await this.itemsService.updateItem(
+              {
+                status: 'archived',
+              },
+              id
+            );
+
+            if (allItemIndex > 0 && response) {
+              this.allItems.splice(allItemIndex, 1);
+            }
+
+            if (highlightedItemsIndex > 0 && response) {
+              this.highlightedItems.splice(highlightedItemsIndex, 1);
+            }
+            if (visibleItemsIndex > 0 && response) {
+              this.activeItems.splice(visibleItemsIndex, 1);
+            }
+            if (invisibleItemsIndex > 0 && response) {
+              this.inactiveItems.splice(invisibleItemsIndex, 1);
+            }
+            this.toastr.info('¡Item archivado exitosamente!');
+          } catch (error) {
+            console.log(error);
+            this.toastr.error('Ocurrio un error al archivar el item', null, {
+              timeOut: 1500,
+            });
+          }
+        },
+      },
+      {
+        text: 'Eliminar',
+        callback: async () => {
+          try {
+            const removeItemFromSaleFlow =
+              await this.saleflowService.removeItemFromSaleFlow(
+                item._id,
+                this.saleflowService.saleflowData._id
+              );
+            if (!removeItemFromSaleFlow) return;
+            const deleteItem = await this.itemsService.deleteItem(item._id);
+            if (!deleteItem) return;
+            this.allItems = this.allItems.filter(
+              (listItem) => listItem._id !== item._id
+            );
+            this.activeItems = this.activeItems.filter(
+              (listItem) => listItem._id !== item._id
+            );
+            this.inactiveItems = this.inactiveItems.filter(
+              (listItem) => listItem._id !== item._id
+            );
+            this.highlightedItems = this.highlightedItems.filter(
+              (listItem) => listItem._id !== item._id
+            );
+
+            this.toastr.info('¡Item borrado exitosamente!');
+          } catch (error) {
+            console.log(error);
+            this.toastr.error('Ocurrio un error al borrar el item', null, {
+              timeOut: 1500,
+            });
+          }
+        },
+      },
+    ];
+
+    this.dialog.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        statuses,
+        //qr code in the xd's too small to scanning to work
+        indexValue: number,
+        title: item.name,
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
     if (this.tagsList[tagIndex].selected) {
