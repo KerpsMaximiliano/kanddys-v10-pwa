@@ -72,3 +72,20 @@ export const notificationCheckers = gql`
     }
   }
 `;
+
+export const addNotificationInTag = gql`
+  mutation addNotifificationInTag(
+    $merchantId: ObjectID!
+    $notificationId: ObjectID!
+    $tagId: ObjectID!
+  ) {
+    addNotifificationInTag: addNotifificationInTag(
+      merchantId: $merchantId
+      notificationId: $notificationId
+      tagId: $tagId
+    ) {
+      _id
+      name
+    }
+  }
+`;

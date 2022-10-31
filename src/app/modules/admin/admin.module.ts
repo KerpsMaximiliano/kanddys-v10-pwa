@@ -13,6 +13,7 @@ import { ReservationListComponent } from 'src/app/shared/components/reservation-
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
+import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 
 const routes: Routes = [
   {
@@ -75,6 +76,10 @@ const routes: Routes = [
         path: 'time-block/:calendarId',
         component: TimeBlockComponent,
       },
+      {
+        path: 'create-tag',
+        component: CreateTagComponent,
+      },
     ],
   },
 ];
@@ -89,7 +94,8 @@ const routes: Routes = [
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
-    TimeBlockComponent
+    TimeBlockComponent,
+    CreateTagComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
