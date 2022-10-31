@@ -35,9 +35,9 @@ main {
     font-family: "RobotoMedium";
     font-size: 1.063rem;
     color: #7b7b7b;
-    text-indent: 16px;
     padding-bottom: 11px;
     padding-top: 18px;
+    padding-left: 10px;
 
     &::placeholder {
       text-align: center;
@@ -84,9 +84,7 @@ main {
   display: flex;
   align-items: center;
   padding: 0px;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-top: 15px;
+  margin: 0px;
   justify-content: space-between;
 
   .items-header {
@@ -220,8 +218,8 @@ main {
   justify-content: space-between;
   font-size: 14px;
   font-family: "Roboto";
-  padding-left: 34px;
-  padding-right: 31px;
+  padding-top: 21px;
+  padding-bottom: 23px;
 
   .see-all-more {
     color: #7b7b7b;
@@ -263,7 +261,7 @@ main {
   padding: 0px 28px;
   display: flex;
   justify-content: space-between;
-  padding-top: 10px;
+  padding-top: 32px;
 
   .title {
     margin: 0px;

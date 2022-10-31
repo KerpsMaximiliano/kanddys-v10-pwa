@@ -94,7 +94,7 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 60,
     status: 'loading',
   };
 
@@ -725,6 +725,6 @@ export class StoreComponent implements OnInit {
     this.selectedTagsCounter = 0;
     this.tags.forEach((tag) => (tag.selected = false));
 
-    await this.getItems();
+    await this.getItems(true);
   }
 }

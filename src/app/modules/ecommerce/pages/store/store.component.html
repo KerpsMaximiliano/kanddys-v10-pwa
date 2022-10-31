@@ -31,7 +31,7 @@
     ></app-tags-selector>
 
     <div
-      *ngIf="!hasCustomizer"
+      *ngIf="selectedTags.length === 0"
       class="blank"
       [ngStyle]="{ paddingBottom: '36px' }"
     ></div>
@@ -85,13 +85,7 @@
           paddingLeft: '25px'
         }"
       >
-        <div
-          class="header-wrapper"
-          [ngStyle]="{
-            paddingLeft: '0px',
-            paddingBottom: '17px'
-          }"
-        >
+        <div class="header-wrapper">
           <h2 class="items-header">Destacados</h2>
         </div>
 
