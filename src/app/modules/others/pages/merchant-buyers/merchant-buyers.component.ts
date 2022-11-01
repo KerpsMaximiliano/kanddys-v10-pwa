@@ -186,7 +186,7 @@ export class MerchantBuyersComponent implements OnInit {
     };
 
 goToMetrics = () =>{
-    this.router.navigate([`admin/entity-detail-metrics`]);
+    this.router.navigate([`admin/items-dashboards`]);
   };
 
   search(event){

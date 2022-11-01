@@ -17,7 +17,7 @@
     *ngIf="selectedTags.length > 0"
     (arrowsClick)="resetSelectedTags()"
     [showSearch]="true"
-    (searchClick)="showSearchbar = true"
+    (searchClick)="makeSearchBarVisible()"
   ></app-helper-headerv3>
 
   <app-tags-selector
@@ -200,7 +200,7 @@
               <h2 class="amount">INVISIBLES</h2>
             </div>
 
-            <div class="card unset" routerLink="/admin/merchant-items">
+            <div class="card unset">
               <h2 class="amount quantity">
                 {{
                   ordersTotal && ordersTotal.selled ? ordersTotal.selled : "0"
@@ -482,7 +482,7 @@
     </p>
 
     <div class="saleflows-item-grid" *ngIf="allItems.length">
-      <div class="capsize">
+      <div class="capsize" *ngIf="selectedTags.length === 0">
         <app-saleflow-item
           [type]="'ADD_NEW_ITEM'"
           (itemClicked)="goToCreateItem()"

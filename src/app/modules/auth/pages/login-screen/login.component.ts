@@ -348,7 +348,7 @@ export class LoginComponent implements OnInit {
           if (this.auth === 'merchant') {
             await this.authService.generateMagicLink(
               this.merchantNumber,
-              `admin/entity-detail-metrics`,
+              `admin/items-dashboards`,
               this.userID,
               'MerchantAccess',
               null
@@ -542,7 +542,7 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        this.router.navigate([`admin/entity-detail-metrics`], {
+        this.router.navigate([`admin/items-dashboards`], {
           replaceUrl: true,
         });
         this.status = 'ready';
@@ -631,7 +631,7 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        this.router.navigate([`admin/entity-detail-metrics`], {
+        this.router.navigate([`admin/items-dashboards`], {
           replaceUrl: true,
         });
         this.status = 'ready';
@@ -698,7 +698,7 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      this.router.navigate([`admin/entity-detail-metrics`], {
+      this.router.navigate([`admin/items-dashboards`], {
         replaceUrl: true,
       });
       this.status = 'ready';
@@ -753,7 +753,7 @@ export class LoginComponent implements OnInit {
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
-        //   `admin/entity-detail-metrics`,
+        //   `admin/items-dashboards`,
         //   newUser._id,
         //   'MerchantAccess',
         //   null
@@ -847,7 +847,7 @@ export class LoginComponent implements OnInit {
               return;
             }    
 
-            this.router.navigate([`admin/entity-detail-metrics`], {
+            this.router.navigate([`admin/items-dashboards`], {
               replaceUrl: true,
             });
           }

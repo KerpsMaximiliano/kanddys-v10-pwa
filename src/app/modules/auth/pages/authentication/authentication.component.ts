@@ -194,7 +194,7 @@ export class Authentication implements OnInit {
                     params.scrollToStep(1);
                     await this.authService.generateMagicLink(
                       phoneNumber,
-                      `admin/entity-detail-metrics`,
+                      `admin/items-dashboards`,
                       myUser._id,
                       'MerchantAccess',
                       null
@@ -206,7 +206,7 @@ export class Authentication implements OnInit {
                       false
                     );
                     if (!signin) return;
-                    this.router.navigate([`admin/entity-detail-metrics`]);
+                    this.router.navigate([`admin/items-dashboards`]);
                   }
                 } else {
                   params.scrollToStep(1);
@@ -220,7 +220,7 @@ export class Authentication implements OnInit {
                   );
                   await this.authService.generateMagicLink(
                     phoneNumber,
-                    `admin/entity-detail-metrics`,
+                    `admin/items-dashboards`,
                     user._id,
                     'MerchantAccess',
                     null

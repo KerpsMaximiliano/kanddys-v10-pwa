@@ -24,7 +24,7 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
+      { path: '', redirectTo: 'admin/items-dashboard', pathMatch: 'full' },
       {
         path: 'create-item/:itemId',
         component: CreateItemComponent,
@@ -55,7 +55,7 @@ const routes: Routes = [
         component: OrdersAndPreOrdersList,
       },
       {
-        path: 'entity-detail-metrics/reservations/:calendar/:type',
+        path: 'items-dashboard/reservations/:calendar/:type',
         component: ReservationListComponent,
         data: { animation: 'EntityDetailMetrics' },
       },

@@ -219,7 +219,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
   navigate(): void {
     if (this.editable) {
       this.resetEdition();
-    } else this._Router.navigate([`/admin/entity-detail-metrics`]);
+    } else this._Router.navigate([`/admin/items-dashboards`]);
   }
 
   resetEdition(): void {
@@ -336,7 +336,7 @@ export class ReservationListComponent implements OnInit, OnDestroy {
     let params = {};
     if (this.limit) params['limit'] = this.limit;
     this._Router.navigate(
-      [`/admin/entity-detail-metrics/reservations/${this.calendar}/${option}`],
+      [`/admin/items-dashboards/reservations/${this.calendar}/${option}`],
       { queryParams: params }
     );
   }

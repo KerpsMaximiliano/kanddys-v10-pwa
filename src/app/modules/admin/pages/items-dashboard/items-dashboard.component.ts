@@ -167,6 +167,9 @@ export class ItemsDashboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    localStorage.removeItem('flowRoute');
+    this.headerService.flowRoute = null;
+
     await this.verifyIfUserIsLogged();
     await this.inicializeTags();
     await this.inicializeItems(true);
@@ -480,9 +483,6 @@ export class ItemsDashboardComponent implements OnInit {
     this.menuNavigationOptions[this.activeMenuOptionIndex].active = !Boolean(
       this.menuNavigationOptions[this.activeMenuOptionIndex].active
     );
-
-    console.log(this.activeMenuOptionIndex);
-    console.log(this.menuNavigationOptions);
   }
 
   goToCreateItem() {
@@ -830,7 +830,6 @@ export class ItemsDashboardComponent implements OnInit {
           if (newStatus === 'disabled' && highlightedItemsIndex >= 0) {
             this.highlightedItems.splice(highlightedItemsIndex, 1);
             this.inactiveItems.push(item);
-            console.log('over hiar');
           }
 
           if (newStatus === 'active' && invisibleItemsIndex >= 0) {
@@ -1096,7 +1095,12 @@ export class ItemsDashboardComponent implements OnInit {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
     this.tagsList.forEach((tag) => (tag.selected = false));
+    this.showSearchbar = true;
 
     await this.inicializeItems(true);
+  }
+
+  makeSearchBarVisible() {
+    this.showSearchbar = true;
   }
 }

@@ -286,7 +286,7 @@ export class ItemDisplayComponent implements OnInit {
         queryParams: { type: 'item' },
       });
     } else {
-      this.router.navigate([`/admin/merchant-items`]);
+      this.router.navigate([this.headerService.flowRoute]);
     }
   }
 
