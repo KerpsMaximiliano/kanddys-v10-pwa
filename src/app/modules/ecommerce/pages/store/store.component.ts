@@ -1,5 +1,11 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -31,6 +37,10 @@ import {
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
 
 interface ExtendedTag extends Tag {
   selected?: boolean;
@@ -49,6 +59,8 @@ export class StoreComponent implements OnInit {
   items: Item[] = [];
   filteredItems: Item[] = [];
   tags: ExtendedTag[] = [];
+  tagsHashTable: Record<string, Tag> = {};
+  tagsByNameHashTable: Record<string, Tag> = {};
   itemsByCategory: {
     label: string;
     items: Item[];
@@ -99,7 +111,7 @@ export class StoreComponent implements OnInit {
   };
 
   public swiperConfigTag: SwiperOptions = {
-    slidesPerView: 5,
+    slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 0,
   };
@@ -122,6 +134,8 @@ export class StoreComponent implements OnInit {
       await this.getItems();
     }
   }
+
+  @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
 
   constructor(
     private dialog: DialogService,
@@ -614,6 +628,15 @@ export class StoreComponent implements OnInit {
       },
     });
     this.tags = userTag.tags;
+
+    for (const tag of this.tags) {
+      this.tagsHashTable[tag._id] = tag;
+      this.tagsByNameHashTable[tag.name] = tag;
+    }
+
+    setTimeout(() => {
+      this.tagsSwiper.directiveRef.update();
+    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
@@ -640,7 +663,6 @@ export class StoreComponent implements OnInit {
 
   async getItems(restartPagination = false) {
     this.paginationState.status = 'loading';
-    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const orderData = this.header.getOrder(this.saleflowData._id);
 
     const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
@@ -668,6 +690,24 @@ export class StoreComponent implements OnInit {
       },
     };
 
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    //Search tagids that match the searchbar value
+    Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+      if (
+        tagName
+          .toLowerCase()
+          .includes((this.searchBar.value as string).toLowerCase()) &&
+        (this.searchBar.value as string) !== ''
+      ) {
+        const tagId = this.tagsByNameHashTable[tagName]._id;
+
+        if (!selectedTagIds.includes(tagId)) {
+          selectedTagIds.push(tagId);
+        }
+      }
+    });
+
     if (this.selectedTags.length > 0) {
       pagination.findBy.tags = selectedTagIds;
     }
@@ -694,6 +734,15 @@ export class StoreComponent implements OnInit {
           },
         ],
       };
+
+      //Happens when the searchbar value matches a tag name
+      if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+        pagination.findBy['$or'][2] = {
+          tags: {
+            $in: selectedTagIds,
+          },
+        };
+      }
     }
 
     const items = await this.saleflow.listItems(pagination);

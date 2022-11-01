@@ -49,8 +49,8 @@
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
       <div style="width: 100%; padding: 0px 0px 0px 21px">
-        <swiper [config]="swiperConfigTag">
-          <div class="tags-area" *ngFor="let tag of tags; let tagIndex = index">
+        <swiper [config]="swiperConfigTag" #tagsSwiper>
+          <div class="tags-area swiper-slide" *ngFor="let tag of tags; let tagIndex = index">
             <div
               (click)="selectTag(tag, tagIndex)"
               class="tag-item"
