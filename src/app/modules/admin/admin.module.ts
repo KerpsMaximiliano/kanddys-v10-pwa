@@ -13,11 +13,17 @@ import { ReservationListComponent } from 'src/app/shared/components/reservation-
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
+import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
+import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 
 const routes: Routes = [
   {
     path: 'create-item',
-    component: CreateItemComponent,
+    component: ArticleCreatorComponent,
+  },
+  {
+    path: 'article-params',
+    component: ArticleParamsComponent,
   },
   {
     path: '',
@@ -89,8 +95,11 @@ const routes: Routes = [
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
-    TimeBlockComponent
+    TimeBlockComponent,
+    ArticleCreatorComponent,
+    ArticleParamsComponent,
   ],
+  exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

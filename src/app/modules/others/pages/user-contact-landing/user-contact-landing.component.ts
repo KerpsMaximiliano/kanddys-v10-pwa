@@ -314,7 +314,9 @@ export class UserContactLandingComponent implements OnInit {
         ]);
         if (!user) return unlockUI();
         this.user = user;
-        this.exchangeData = await this.walletService.exchangeDataByUser(user._id);
+        this.exchangeData = await this.walletService.exchangeDataByUser(
+          user._id
+        );
 
         if (user._id === currentUser?._id) this.admin = true;
         this.merchant = await this.merchantsService.merchantDefault(
@@ -376,7 +378,7 @@ export class UserContactLandingComponent implements OnInit {
         src: item.images.length ? item.images[0] : this.defaultImage,
         callback: () =>
           this.router.navigate([
-            `/ecommerce/item-detail/${this.saleflow._id}/${item._id}`,
+            `/ecommerce/${this.saleflow._id}/article-detail/item/${item._id}`,
           ]),
       }));
     } catch (error) {

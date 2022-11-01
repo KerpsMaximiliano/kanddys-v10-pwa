@@ -77,7 +77,7 @@ export class EcommerceComponent implements OnInit {
       type: 'flat-action-sheet',
       props: {
         orderFinished: !(
-          this.activePath === 'item-detail/:saleflow/:id' ||
+          this.activePath === ':saleflowId/article-detail/:entity/:entityId' ||
           this.activePath === 'store/:id'
         ),
         headerButton: this.activePath !== 'store/:id' && 'Ver mas productos',

@@ -57,6 +57,7 @@ export class ItemsService {
     new: File[];
   };
   hasTemporalItemNewImages: boolean = null;
+  itemImages: File[];
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;

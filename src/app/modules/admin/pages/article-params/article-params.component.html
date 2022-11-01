@@ -1,0 +1,167 @@
+<div class="container">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [icon]="
+      steps !== 'save'
+        ? {
+            src: '/arrow-double-up.svg',
+            width: 17,
+            height: 21,
+            callback: iconCallback
+          }
+        : null
+    "
+    [mainText]="{
+      text:
+        steps !== 'save'
+          ? 'Artículo para vender'
+          : 'Guardando el artículo que se venderá',
+      fontSize: '1.313rem',
+      fontFamily: 'SfProBold'
+    }"
+    [dots]="
+      steps !== 'save'
+        ? {
+            active: true,
+            func: dotsCallback
+          }
+        : null
+    "
+    [returnAble]="steps !== 'save' ? false : true"
+    (return)="goBack()"
+  ></app-helper-headerv2>
+
+  <div class="top-headers" *ngIf="steps !== 'save'">
+    <div
+      class="second-header"
+      #elemt
+      (mousedown)="startDragging($event, elemt)"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="moveEvent($event, elemt)"
+    >
+      <ng-container *ngFor="let item of models; index as i">
+        <div
+          class="tab"
+          [ngClass]="{ active: active === i }"
+          (click)="changeModel(i)"
+        >
+          {{ item }}
+        </div>
+      </ng-container>
+    </div>
+    <div
+      class="second-header"
+      #elemt
+      (mousedown)="startDragging($event, elemt)"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="moveEvent($event, elemt)"
+    >
+      <ng-container *ngFor="let item of options; index as j">
+        <div
+          class="tab option"
+          [ngClass]="{ 'second-active': activeStep === j }"
+          (click)="changeStep(j)"
+        >
+          {{ item }}*
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div [ngSwitch]="steps">
+    <div class="price-form" *ngSwitchCase="'price'">
+      <input
+        type="number"
+        class="price-input"
+        [formControl]="price"
+        placeholder="$ pagan"
+      />
+
+      <div class="name-area">
+        <label for="name" class="name-label">Nombre del modelo</label>
+
+        <div class="input-button">
+          <input
+            type="text"
+            class="name-input"
+            [formControl]="name"
+            placeholder="Modelo sin nombre..."
+          />
+          <button class="list-button" (click)="openDialog()">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+
+      <app-sticky-button
+        [mode]="price.valid && name.valid ? 'fixed' : 'disabled-fixed'"
+        [text]="
+          price.valid && name.valid
+            ? 'ADICIONA LA IMAGEN'
+            : 'ADICIONA EL PRECIO'
+        "
+        [bgColor]="price.valid && name.valid ? '#2874AD' : '#7B7B7B'"
+        [fontSize]="'1.063rem'"
+        (click)="price.valid && name.valid && toSave()"
+      ></app-sticky-button>
+    </div>
+
+    <div class="image-selector" *ngSwitchCase="'images'">
+      <label for="Selector de imagenes" class="image-label"
+        >Imágenes que tendrán el precio de venta:</label
+      >
+
+      <div class="image-area">
+        <input
+          id="filemultiple"
+          (change)="fileProgressMultiple($event)"
+          type="file"
+          style="display: none"
+          accept="image/*"
+          multiple
+          [accept]="['.png', '.jpg', '.jpeg']"
+        />
+        <label
+          [style.background]="sanitize('')"
+          for="filemultiple"
+          class="add-image"
+        >
+          <div class="add"></div>
+        </label>
+        <!-- <button class="add-image">
+          
+        </button> -->
+
+        <button
+          class="image-container"
+          *ngFor="let item of selectedImages; index as i"
+          [style.background]="sanitize(item)"
+        >
+          <div class="selected"></div>
+        </button>
+      </div>
+
+      <app-sticky-button
+        [mode]="selectedImages.length > 0 ? 'fixed' : 'disabled-fixed'"
+        [text]="
+          selectedImages.length > 0
+            ? 'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'
+            : 'SELECCIONA O ADICIONA'
+        "
+        [bgColor]="selectedImages.length > 0 ? '#2874AD' : '#7B7B7B'"
+        [fontSize]="'1.063rem'"
+        (click)="toSave()"
+      ></app-sticky-button>
+    </div>
+
+    <div class="save" *NgSwitchCase="'save'">
+      <label for="Save input" class="save-input"
+        >Escribe tu número del WhatsApp que guardará el artículo y donde serás
+        notificado de la venta:</label
+      >
+      <input type="text" class="input" placeholder="inputID" />
+    </div>
+  </div>
+</div>

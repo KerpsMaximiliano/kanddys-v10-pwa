@@ -337,7 +337,9 @@ export class StoreComponent implements OnInit {
       ]);
     } else {
       this.router.navigate(
-        [`/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`],
+        [
+          `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
+        ],
         {
           replaceUrl: this.header.checkoutRoute ? true : false,
         }

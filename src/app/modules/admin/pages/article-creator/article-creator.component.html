@@ -1,0 +1,166 @@
+<div class="nav">
+  <div class="icon-container">
+    <div>
+      <i
+        class="fas fa-chevron-up"
+        aria-hidden="true"
+        style="color: rgb(255, 255, 255); display: block"
+      ></i>
+      <i
+        class="fas fa-chevron-up"
+        aria-hidden="true"
+        style="color: rgb(255, 255, 255); display: block"
+      ></i>
+    </div>
+  </div>
+  <img src="{{ env }}/d.png" class="notification" alt="" />
+  <img src="{{ env }}/d.png" class="notification" alt="" />
+  <img src="{{ env }}/save-blue.png" class="notification" alt="" />
+  <img src="{{ env }}/padlock.png" class="notification" alt="" />
+  <img src="{{ env }}/message.png" class="notification" alt="" />
+  <span class="text">VISTA</span>
+</div>
+<div class="container">
+  <ng-container *ngFor="let controller of controllers.controls; let i = index">
+    <ng-container *ngFor="let field of fields; let j = index">
+      <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">
+        <ng-container *ngSwitchCase="'file'">
+          <swiper
+            *ngIf="controller.get(field.name).value.length"
+            [config]="swiperConfig"
+          >
+            <div
+              *ngFor="
+                let file of controller.get(field.name)
+                  ? controller.get(field.name).value
+                  : [];
+                let k = index
+              "
+              class="media-placeholder"
+              id="{{ i }}{{ j }}{{ k }}"
+              attr.aria-label="{{ k + 1 }} / {{ multimedia[i].length }}"
+              role="group"
+              (mouseup)="handleSlide($event)"
+            >
+              <div class="grid">
+                <div
+                  [style.visibility]="
+                    multimedia[i].length > 1 ? 'initial' : 'hidden'
+                  "
+                  class="col"
+                >
+                  <button class="grid-btn" (click)="removeFile(i, k)">
+                    <span class="icon">x</span>
+                    <span class="copy">slide</span>
+                  </button>
+                </div>
+                <div class="col">
+                  <button
+                    *ngIf="controller.valid"
+                    class="grid-btn"
+                    (click)="addFile(i, j, k)"
+                  >
+                    <span class="icon">+</span>
+                    <span class="copy">slide</span>
+                  </button>
+                </div>
+              </div>
+              <input
+                id="{{ i }}{{ k }}"
+                class="hidden"
+                type="file"
+                (change)="loadFile($event, i, k)"
+              />
+              <label
+                [style.height]="
+                  types[i][k] === ''
+                    ? '100vh'
+                    : imageFiles.includes(types[i][k])
+                    ? '100vh'
+                    : '0'
+                "
+                for="{{ i }}{{ k }}"
+                class="slide {{ types[i][k] }}"
+                [style.background]="
+                  imageFiles.includes(types[i][k]) ? multimedia[i][k] : ''
+                "
+              ></label>
+              <video
+                *ngIf="videoFiles.includes(types[i][k])"
+                controls
+                [src]="multimedia[i][k]"
+              ></video>
+              <div *ngIf="audioFiles.includes(types[i][k])" class="audio">
+                <div class="audio-container">
+                  <svg
+                    class="audio-file"
+                    xmlns="http://www.w3.org/2000/svg"
+                    version="1.0"
+                    width="500"
+                    height="500"
+                    viewBox="0 0 75 75"
+                  >
+                    <path
+                      d="M39.389,13.769 L22.235,28.606 L6,28.606 L6,47.699 L21.989,47.699 L39.389,62.75 L39.389,13.769z"
+                      style="
+                        stroke: #111;
+                        stroke-width: 5;
+                        stroke-linejoin: round;
+                        fill: #111;
+                      "
+                    />
+                    <path
+                      d="M48,27.6a19.5,19.5 0 0 1 0,21.4M55.1,20.5a30,30 0 0 1 0,35.6M61.6,14a38.8,38.8 0 0 1 0,48.6"
+                      style="
+                        fill: none;
+                        stroke: #111;
+                        stroke-width: 5;
+                        stroke-linecap: round;
+                      "
+                    />
+                  </svg>
+                  <audio controls="controls">
+                    <source
+                      [src]="multimedia[i][k]"
+                      attr.type="{{ types[i][k] }}"
+                    />
+                  </audio>
+                </div>
+              </div>
+            </div>
+          </swiper>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-container>
+  <div class="fixed">
+    <div
+      class="lines"
+      [style]="{
+        'grid-template-columns': '' + fractions + ''
+      }"
+    >
+      <div
+        *ngFor="let media of multimedia[0]; let i = index"
+        class="line"
+        [style.background]="activeSlide === i ? '#82f18d' : '#ffffff'"
+      ></div>
+    </div>
+    <div class="bottom">
+      <span
+        (click)="changeMode('symbols')"
+        [ngClass]="{ active: mode === 'symbols' }"
+        >Simbolos</span
+      >
+      <span (click)="changeMode('item')" [ngClass]="{ active: mode === 'item' }"
+        >Precios</span
+      >
+      <span>Citas</span>
+      <span>Planilla</span>
+    </div>
+    <div class="description" *ngIf="ctaDescription">
+      {{ ctaDescription }}
+    </div>
+    <button class="button" (click)="submit()">{{ ctaText }}</button>
+  </div>
+</div>

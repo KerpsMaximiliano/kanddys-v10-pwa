@@ -78,7 +78,7 @@
               [itemIndex]="i"
               [itemId]="item._id"
               [type]="4"
-              [imgURL]="item.images ? item.images[0] : ''"
+              [imgURL]="item.images?.length ? item.images[0] : ''"
               [price]="item.pricing"
               [itemParams]="item.params"
               [showPrice]="true"
