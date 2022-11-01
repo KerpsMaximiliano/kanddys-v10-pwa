@@ -251,7 +251,10 @@ export class ItemsDashboardComponent implements OnInit {
     }
   }
 
-  async inicializeItems(restartPagination = false, triggeredFromScroll = false) {
+  async inicializeItems(
+    restartPagination = false,
+    triggeredFromScroll = false
+  ) {
     const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const saleflowItems = this.saleflowService.saleflowData.items.map(
       (saleflowItem) => ({
@@ -338,7 +341,7 @@ export class ItemsDashboardComponent implements OnInit {
       for (const item of this.allItems) {
         item.tagsFilled = [];
 
-        if (item.tags.length > 0) {
+        if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
           for (const tagId of item.tags) {
             item.tagsFilled.push(this.tagsHashTable[tagId]);
           }
@@ -927,6 +930,7 @@ export class ItemsDashboardComponent implements OnInit {
             purchaseLocations: [],
             showImages: item.images.length > 0,
             status: item.status,
+            tags: item.tags ? item.tags : [],
           };
 
           try {
@@ -940,7 +944,7 @@ export class ItemsDashboardComponent implements OnInit {
               this.saleflowService.saleflowData._id
             );
 
-            if (item.params) {
+            if (item.params && item.params.length > 0) {
               const { createItemParam } =
                 await this.itemsService.createItemParam(
                   item.merchant._id,
@@ -968,11 +972,26 @@ export class ItemsDashboardComponent implements OnInit {
               );
             }
 
-            const itemWithParams = await this.itemsService.item(createItem._id);
+            const itemWithParams: ExtendedItem = await this.itemsService.item(
+              createItem._id
+            );
 
-            this.allItems.push(itemWithParams);
+            if (itemWithParams.tags && itemWithParams.tags.length) {
+              itemWithParams.tagsFilled = [];
+
+              if (item.tags.length > 0) {
+                for (const tagId of item.tags) {
+                  if (this.tagsHashTable[tagId]) {
+                    itemWithParams.tagsFilled.push(this.tagsHashTable[tagId]);
+                  }
+                }
+              }
+            }
+
+            this.allItems = [itemWithParams].concat(this.allItems);
             this.toastr.info('¡Item duplicado exitosamente!');
           } catch (error) {
+            console.log(error);
             this.toastr.error('Ocurrio un error al crear el item', null, {
               timeOut: 1500,
             });
@@ -990,17 +1009,17 @@ export class ItemsDashboardComponent implements OnInit {
               id
             );
 
-            if (allItemIndex > 0 && response) {
+            if (allItemIndex >= 0 && response) {
               this.allItems.splice(allItemIndex, 1);
             }
 
-            if (highlightedItemsIndex > 0 && response) {
+            if (highlightedItemsIndex >= 0 && response) {
               this.highlightedItems.splice(highlightedItemsIndex, 1);
             }
-            if (visibleItemsIndex > 0 && response) {
+            if (visibleItemsIndex >= 0 && response) {
               this.activeItems.splice(visibleItemsIndex, 1);
             }
-            if (invisibleItemsIndex > 0 && response) {
+            if (invisibleItemsIndex >= 0 && response) {
               this.inactiveItems.splice(invisibleItemsIndex, 1);
             }
             this.toastr.info('¡Item archivado exitosamente!');

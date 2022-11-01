@@ -141,6 +141,7 @@ export const item = gql`
       status
       showImages
       notifications
+      tags
       calendar {
         _id
       }
