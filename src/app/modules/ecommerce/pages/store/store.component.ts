@@ -30,7 +30,6 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -512,6 +511,7 @@ export class StoreComponent implements OnInit {
     });
   };
 
+  //Same dialog as openUserManagementDialog() but with SettingsComponent
   openDialog() {
     const list = [
       {
@@ -529,7 +529,7 @@ export class StoreComponent implements OnInit {
         callback: async () => {
           this.router.navigate(['auth/login'], {
             queryParams: {
-              redirect: 'ecommerce/store/' + this.saleflowData._id
+              redirect: 'ecommerce/store/' + this.saleflowData._id,
             },
           });
         },
@@ -559,6 +559,50 @@ export class StoreComponent implements OnInit {
     });
   }
 
+  //Same dialog as openDialog() but with StoreShare
+  openUserManagementDialog() {
+    const list: StoreShareList[] = [
+      {
+        title: 'Menu de opciones',
+        options: [
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: async () => {
+              await this.authService.signout();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (!this.user) {
+      list[0].options.pop();
+      list[0].options.push({
+        text: 'Iniciar sesión',
+        mode: 'func',
+        func: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.saleflowData._id,
+            },
+          });
+        },
+      });
+    }
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
   back() {
     this.location.back();
   }
@@ -578,6 +622,7 @@ export class StoreComponent implements OnInit {
     for (const tag of this.tags) {
       this.tagsHashTable[tag._id] = tag;
       this.tagsByNameHashTable[tag.name] = tag;
+      tag.selected = false;
     }
 
     setTimeout(() => {
