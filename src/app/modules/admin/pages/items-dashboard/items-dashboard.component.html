@@ -356,7 +356,7 @@
   <!-- HIGHLIGHTED ITEMS SWIPER-->
   <section
     class="highlited-items-area"
-    *ngIf="highlightedItems.length > 0 && selectedTags.length === 0"
+    *ngIf="highlightedItems.length > 0 && selectedTags.length === 0 && itemSearchbar.value === ''"
   >
     <div class="title-and-options">
       <h2 class="title">Destacados</h2>
@@ -482,7 +482,7 @@
     </p>
 
     <div class="saleflows-item-grid" *ngIf="allItems.length">
-      <div class="capsize" *ngIf="selectedTags.length === 0">
+      <div class="capsize" *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''">
         <app-saleflow-item
           [type]="'ADD_NEW_ITEM'"
           (itemClicked)="goToCreateItem()"

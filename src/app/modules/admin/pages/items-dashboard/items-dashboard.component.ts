@@ -144,7 +144,7 @@ export class ItemsDashboardComponent implements OnInit {
   async infinitePagination() {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
       if (this.paginationState.status === 'complete' && this.tagsLoaded) {
-        await this.inicializeItems();
+        await this.inicializeItems(false, true);
       }
     }
   }
@@ -251,7 +251,7 @@ export class ItemsDashboardComponent implements OnInit {
     }
   }
 
-  async inicializeItems(restartPagination = false) {
+  async inicializeItems(restartPagination = false, triggeredFromScroll = false) {
     const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const saleflowItems = this.saleflowService.saleflowData.items.map(
       (saleflowItem) => ({
@@ -285,9 +285,7 @@ export class ItemsDashboardComponent implements OnInit {
     };
 
     if (this.selectedTags.length > 0) {
-      pagination.findBy.tags = {
-        __in: selectedTagIds,
-      };
+      pagination.findBy.tags = selectedTagIds;
     }
 
     if (this.itemSearchbar.value !== '') {
@@ -348,6 +346,14 @@ export class ItemsDashboardComponent implements OnInit {
       }
 
       this.paginationState.status = 'complete';
+    }
+
+    if (
+      itemsQueryResult.length === 0 &&
+      this.itemSearchbar.value !== '' &&
+      !triggeredFromScroll
+    ) {
+      this.allItems = [];
     }
   }
 
@@ -1060,6 +1066,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
+    this.menuOpened = false;
     if (this.tagsList[tagIndex].selected) {
       this.tagsList[tagIndex].selected = false;
       this.selectedTagsCounter--;
