@@ -669,9 +669,7 @@ export class StoreComponent implements OnInit {
     };
 
     if (this.selectedTags.length > 0) {
-      pagination.findBy.tags = {
-        __in: selectedTagIds,
-      };
+      pagination.findBy.tags = selectedTagIds;
     }
 
     if (this.searchBar.value !== '') {
