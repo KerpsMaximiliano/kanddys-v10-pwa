@@ -41,8 +41,11 @@
       <!-- ********************************************** SEARCHBAR ************************************-->
       <input
         class="text"
-        placeholder="Busca por tag, nombre de articulo o variante"
+        placeholder="Busca por tag o nombre de articulo"
         class="input-top"
+        [ngStyle]="{
+          marginBottom: tags.length !== 0 ? '28px' : '0px'
+        }"
         [formControl]="searchBar"
       />
       <!-- ******************************************** ENDSEARCHBAR ************************************-->
@@ -50,7 +53,10 @@
       <!-- ******************************************* TAG SWIPER ***************************************-->
       <div style="width: 100%; padding: 0px 0px 0px 21px">
         <swiper [config]="swiperConfigTag" #tagsSwiper>
-          <div class="tags-area swiper-slide" *ngFor="let tag of tags; let tagIndex = index">
+          <div
+            class="tags-area swiper-slide"
+            *ngFor="let tag of tags; let tagIndex = index"
+          >
             <div
               (click)="selectTag(tag, tagIndex)"
               class="tag-item"
@@ -70,14 +76,7 @@
     </form>
 
     <!--REGULAR MERCHANT-->
-    <div
-      class="content"
-      [ngStyle]="{
-        paddingBottom: '1rem',
-        paddingTop: !tags.length ? '0px' : '15px'
-      }"
-      *ngIf="!hasCustomizer && items.length"
-    >
+    <div class="content">
       <!--SHOWS ITEMS HIGHLIGHTED-->
       <div
         *ngIf="highlightedItems.length > 0 && searchBar.value === ''"
@@ -137,52 +136,23 @@
               ? "Resultados"
               : searchBar.value === "" && selectedTags.length === 0
               ? "Todos los productos"
-              : null
+              : "Resultados"
           }}
         </h2>
-
-        <!--
-          <div class="dot-trio">
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-          </div>
-        -->
       </div>
 
-      <p class="subtitle" *ngIf="filteredItems.length === 0">
+      <p class="subtitle" *ngIf="items.length === 0">
         {{
-          searchBar.value === "" && filteredItems.length === 0
+          searchBar.value === "" && items.length === 0
             ? "No hay items"
-            : searchBar.value !== "" && filteredItems.length === 0
+            : searchBar.value !== "" && items.length === 0
             ? "No se encontró nada"
             : null
         }}
       </p>
 
       <div class="saleflows-item-grid">
-        <div
-          class="capsize"
-          *ngFor="let item of filteredItems; let itemIndex = index"
-        >
+        <div class="capsize" *ngFor="let item of items; let itemIndex = index">
           <app-saleflow-item
             [itemIndex]="itemIndex"
             [itemId]="item._id"

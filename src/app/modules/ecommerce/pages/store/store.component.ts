@@ -57,7 +57,6 @@ export class StoreComponent implements OnInit {
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   items: Item[] = [];
-  filteredItems: Item[] = [];
   tags: ExtendedTag[] = [];
   tagsHashTable: Record<string, Tag> = {};
   tagsByNameHashTable: Record<string, Tag> = {};
@@ -76,16 +75,6 @@ export class StoreComponent implements OnInit {
   }[] = [];
   categorylessItems: Item[] = [];
   filteredCategoryLessItems: Item[] = [];
-  itemsPerTag: Array<{
-    tag: ExtendedTag;
-    items: Array<Item>;
-  }> = [];
-  filteredItemsPerTag: Array<{
-    tag: ExtendedTag;
-    items: Array<Item>;
-  }> = [];
-  itemsWithoutTags: Item[] = [];
-  filteredItemsWithoutTags: Item[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
   highlightedItems: Item[] = [];
@@ -200,31 +189,9 @@ export class StoreComponent implements OnInit {
           if (!tagsAndItemsHashtable[tagId]) tagsAndItemsHashtable[tagId] = [];
           tagsAndItemsHashtable[tagId].push(item);
         }
-      } else {
-        this.itemsWithoutTags.push(item);
       }
     }
 
-    this.filteredItemsWithoutTags = this.itemsWithoutTags;
-
-    for (const tag of this.tags) {
-      if (
-        tagsAndItemsHashtable[tag._id] &&
-        tagsAndItemsHashtable[tag._id].length > 0
-      ) {
-        this.itemsPerTag.push({
-          tag,
-          items: tagsAndItemsHashtable[tag._id],
-        });
-        this.filteredItemsPerTag = this.itemsPerTag;
-      } else {
-        this.itemsPerTag.push({
-          tag,
-          items: [],
-        });
-        this.filteredItemsPerTag = this.itemsPerTag;
-      }
-    }
     //*************************                        END                   *****************************//
   }
 
@@ -302,7 +269,6 @@ export class StoreComponent implements OnInit {
         this.items = items.listItems.filter((item) => {
           return item.status === 'active' || item.status === 'featured';
         });
-        this.filteredItems = this.items;
 
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
@@ -367,30 +333,6 @@ export class StoreComponent implements OnInit {
       if (queries.viewtype === 'preview') this.viewtype = 'preview';
     });
     if (this.header.customizerData) this.header.customizerData = null;
-  }
-
-  filterItemsBySearch(searchTerm: string) {
-    if (searchTerm !== '' && searchTerm) {
-      this.filteredItemsPerTag = JSON.parse(JSON.stringify(this.itemsPerTag));
-
-      this.filteredItemsPerTag.forEach((group) => {
-        group.items = group.items.filter((item) =>
-          this.filterItemsPerSearchTerm(item, searchTerm)
-        );
-      });
-
-      this.filteredItemsWithoutTags = this.itemsWithoutTags.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
-
-      this.filteredItems = this.items.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
-    } else {
-      this.filteredItemsPerTag = this.itemsPerTag;
-      this.filteredItems = this.items;
-      this.filteredItemsWithoutTags = this.itemsWithoutTags;
-    }
   }
 
   filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
@@ -585,7 +527,11 @@ export class StoreComponent implements OnInit {
       list.push({
         text: 'Iniciar sesión',
         callback: async () => {
-          this.router.navigate(['auth/login']);
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.saleflowData._id
+            },
+          });
         },
       });
     }
@@ -755,8 +701,6 @@ export class StoreComponent implements OnInit {
     } else {
       this.items = this.items.concat(itemsQueryResult);
     }
-
-    this.filteredItems = this.items;
 
     this.organizeItems(this.merchantService.merchantData);
 
