@@ -48,26 +48,43 @@
 .content {
   width: 90%;
   margin: auto;
-  margin-bottom: 30px;
-  margin-top: 20px;
+  padding-bottom: 76px;
+  padding-top: 20px;
 }
 
-.factura {
+.order {
   background: white;
-  min-width: 300px;
-  min-height: 115px;
-  margin-right: 6px;
+  max-width: 300px;
   border-radius: 6px;
   box-shadow: 0px 3px 10px -5px #979797;
   cursor: pointer;
   color: #000;
   display: flex;
-  align-items: center;
   padding: 0px 20px;
-  padding-top: 9px;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  margin-left: 10px;
+  padding-top: 18px;
+  padding-bottom: 11px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 100%;
+
+  &.all-orders-mode {
+    margin-top: 11px;
+    max-width: 100%;
+  }
+
+  .inner-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .order-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1px;
+      align-items: end;
+    }
+  }
 
   p {
     margin: 0px;
@@ -99,31 +116,40 @@
   font-family: "SfProBold";
 }
 
-.text-grid {
-  display: grid;
-  grid-template-columns: 3fr 3fr 1fr;
-  margin-top: 20px;
+.group-of-items-header-flex {
+  display: flex;
+  margin-top: 60px;
   margin-bottom: 10px;
-  align-items: end;
-  margin-right: 25px;
-}
+  align-items: center;
+  justify-content: space-between;
 
-.text-right {
-  text-align: right;
-  color: #2874ad;
-  font-family: "SfProDisplay";
-  font-size: 14px;
-}
+  .group-title {
+    font-family: "RobotoMedium";
+    font-size: 19px;
+    margin-left: 6px;
+  }
 
-.destacada {
-  font-family: "RobotoMedium";
-  font-size: 19px;
-}
+  .incomes-and-show-all {
+    display: flex;
+  }
 
-.middle {
-  font-family: "SfProDisplay";
-  color: #7b7b7b;
-  font-size: 14px;
+  .middle {
+    font-family: SfProRegular;
+    color: #7b7b7b;
+    font-size: 14px;
+  }
+
+  .text-right {
+    margin-left: 20px;
+    text-align: right;
+    color: #2874ad;
+    font-family: SfProRegular;
+    font-size: 14px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .submit {
@@ -152,7 +178,7 @@
 
 .tap {
   color: #7b7b7b;
-  font-family: "SfProDisplay";
+  font-family: SfProRegular;
   font-size: 17px;
 }
 
@@ -165,23 +191,30 @@
   margin-bottom: 3px;
 }
 
-.price,
-.name,
-.user-id {
+.price {
   color: #7b7b7b;
   font-family: SfProRegular;
-  font-size: 17px;
-  margin: 0px;
-}
-
-.price {
-  margin: 0px;
-  font-family: SfProBold;
   font-size: 16px;
+  font-weight: bold;
   margin-top: 10px;
 }
 
+.order-tags {
+  font-size: 14px;
+  color: #7b7b7b;
+  font-family: SfProRegular;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 122px;
+  text-align: right;
+}
+
 .name {
+  color: #7b7b7b;
+  font-family: SfProRegular;
+  font-size: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 260px;
@@ -204,8 +237,8 @@
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 1px;
-  padding-top: 18px;
-  padding-bottom: 11px;
+  padding-top: 10px;
+  padding-bottom: 6px;
   align-items: end;
 }
 
@@ -274,7 +307,7 @@
   background: #2874ad;
   display: grid;
   grid-template-columns: 1fr 9fr 1fr;
-  padding: 20px 20px;
+  padding: 8px 17px 0px 10px;
 }
 
 .header-text {
@@ -309,15 +342,22 @@
   justify-content: space-between;
   padding: 0px 17px;
   z-index: 999;
+
+  img {
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 nav {
-  margin-top: 36px;
+  margin-top: 42px;
   height: 37px;
   display: flex;
   align-items: center;
   padding: 0px 17px;
   font-size: 17px;
+  background-color: #ffffff;
 
   button {
     color: #7b7b7b;
@@ -333,6 +373,54 @@ nav {
 
     &:hover {
       cursor: pointer;
+    }
+  }
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+  background-color: #2874ad;
+  display: flex;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0px 17px;
+  align-items: center;
+  color: white;
+  z-index: 9999;
+
+  .icon-and-title {
+    display: flex;
+
+    span {
+      font-family: SfProBold;
+      font-size: 21px;
+    }
+
+    img {
+      margin-right: 16px;
+      width: 17px;
+      height: 21px;
+    }
+  }
+
+  .userid {
+    display: flex;
+    align-items: center;
+
+    span {
+      font-size: 13px;
+      font-family: RobotoRegular;
+      margin-right: 10px;
+    }
+
+    img {
+      width: 13px;
+      height: 17px;
     }
   }
 }

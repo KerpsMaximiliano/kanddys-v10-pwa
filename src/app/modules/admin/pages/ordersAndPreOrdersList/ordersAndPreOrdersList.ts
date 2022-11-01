@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -10,27 +9,33 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
-import { environment } from '../../../../../environments/environment';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
+import { Tag } from 'src/app/core/models/tags';
+import { ItemOrder, OrderSubtotal } from 'src/app/core/models/order';
+import { environment } from '../../../../../environments/environment';
 import { OrderService } from 'src/app/core/services/order.service';
+
+interface TagGroup {
+  tag: Tag;
+  orders: ItemOrder[];
+}
 
 @Component({
   selector: 'app-ordersAndPreOrdersList',
   templateUrl: './ordersAndPreOrdersList.component.html',
   styleUrls: ['./ordersAndPreOrdersList.component.scss'],
 })
-export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
-  status = 'loading';
-  controller: FormControl = new FormControl();
-  helperHeaderTextConfig: any = {
+export class OrdersAndPreOrdersList implements OnInit {
+  loadingStatus = 'loading';
+  searchBar: FormControl = new FormControl();
+  headerText: any = {
     text: 'Facturas y Pre-facturas',
     fontSize: '21px',
     fontFamily: 'SfProBold',
@@ -38,275 +43,322 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   dots = {
     active: false,
   };
-  activeIndex: number;
-  options: OptionAnswerSelector[];
+  typeOfList: string;
+  tags: Array<Tag> = [];
+  selectedTags: Array<Tag> = [];
+  tagGroups: Array<TagGroup> = [];
+  tagsHashTable: Record<string, Tag> = {};
+  ordersPerTagHashTable: Record<string, Array<ItemOrder>> = {};
+  selectedTagGroups: Array<TagGroup> = [];
+  nonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
+  filteredNonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
+  filteredTagGroups: Array<TagGroup> = [];
+  tagGroupsToRender: 'ALL' | 'SELECTED_TAGS' = 'ALL';
+  expandedTagOrders: {
+    tag: Tag;
+    orders: ItemOrder[];
+  } = null;
+  filteredExpandedTagOrders: {
+    tag: Tag;
+    orders: ItemOrder[];
+  } = null;
+  expandedOrdersWithoutTags: Array<ItemOrder> = null;
+  filteredExpandedOrdersWithoutTags: Array<ItemOrder> = null;
+  detailedOrdersWithoutTags: ItemOrder[] = [];
+  ordersList: ItemOrder[] = [];
+  ordersWithoutTags: ItemOrder[] = [];
+  filteredOrdersWithoutTags: ItemOrder[] = [];
+  defaultMerchant: Merchant;
+  ordersByMerchantLimit: number = 6000;
+  ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
+  ordersByMerchantSortField: string = 'createdAt';
   optionIndexArray: any[] = [];
   editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
   buttons: string[] = ['facturas', 'pre - facturas'];
   calendar: string = '';
-  option: string;
-  invoiceListForOrders: any[] = [];
+  facturasList: any[] = [];
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
     spaceBetween: 5,
   };
-  ordersAmount: number = 0;
-  merchantIncome: number = 0;
-  tags: any[] = [];
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
-  subscription: Subscription;
   phone: string = '';
   limit: number;
   sort: string;
   facturasTemp: any = [];
+  merchantIncome: number = 0;
   env = environment.assetsUrl;
+  ordersAmount: number = 0;
 
   constructor(
-    private _MerchantsService: MerchantsService,
-    private _Router: Router,
-    private _DialogService: DialogService,
-    private _TagsService: TagsService,
-    private _ActivatedRoute: ActivatedRoute,
-    private ordersService: OrderService,
-    private headerService: HeaderService
+    private merchantsService: MerchantsService,
+    private router: Router,
+    private dialogService: DialogService,
+    private tagsService: TagsService,
+    private route: ActivatedRoute,
+    private headerService: HeaderService,
+    private ordersService: OrderService
   ) {}
 
   ngOnInit(): void {
-    this.invoiceListForOrders = [];
-    this.status = 'loading';
-    this.subscription = this._ActivatedRoute.queryParams.subscribe(
-      async (params) => {
-        this.status = 'loading';
-        let {
-          by = 1,
-          limit = null,
-          sort = 'desc',
-          at = 'createdAt',
-          type = 'facturas',
-          phone = '',
-          startDate = null,
-          endDate = null,
-        } = params;
-        phone = phone.replace('+', '');
-        this.phone = phone;
-        if (isNaN(+by)) {
-          by = 10;
-        }
-        if (isNaN(+limit)) {
-          limit = 50;
-        }
-        this.option = type.replace('%20');
-        this.helperHeaderTextConfig.text =
-          this.option[0].toUpperCase() + this.option.slice(1);
+    this.facturasList = [];
+    this.loadingStatus = 'loading';
+    this.route.queryParams.subscribe(async (params) => {
+      let {
+        at = 'createdAt',
+        type = 'facturas',
+        limit = 50,
+        sort = 'desc',
+      } = params;
+      this.ordersByMerchantLimit = limit;
+      this.ordersByMerchantSortField = at;
+      this.ordersByMerchantSortOrder = sort;
 
-        this.invoiceListForOrders = [];
-        const atList = ['createdAt', 'updatedAt'];
-        if (!atList.includes(at)) {
-          at = 'createdAt';
-        }
-        const sortList = ['asc', 'desc'];
-        if (!sortList.includes(sort)) {
-          sort = 'desc';
-        }
-        this.limit = limit;
-        this.sort = sort;
-        const ordersByMerchant = async () => {
-          const { _id }: Merchant =
-            await this._MerchantsService.merchantDefault();
-          const pagination: PaginationInput = {
-            options: {
-              sortBy: `${at}:${sort}`,
-              limit: limit ? Number(limit) : 6000,
-            },
-            findBy: {
-              orderStatus:
-                this.option === 'facturas'
-                  ? ['in progress', 'to confirm', 'completed']
-                  : ['draft'],
-            },
-          };
+      this.loadingStatus = 'loading';
+      let tags: Array<Tag> = (await this.tagsService.tagsByUser()) || [];
+      this.tags = tags;
 
-          if (startDate || endDate)
-            pagination.options.range = { from: null, to: null };
+      //Fills an object or hash table for fast access to each tag by its id
+      this.tags.forEach((tag) => {
+        this.tagGroups.push({
+          tag,
+          orders: [],
+        });
 
-          if (startDate) {
-            const [year, month, day] = startDate.split('-');
-            let from = new Date(year, month - 1, day).toISOString();
-            from = from.split('T')[0] + 'T00:00:00.000Z';
+        this.tagsHashTable[tag._id] = tag;
+      });
 
-            pagination.options.range.from = from;
-          }
+      this.typeOfList = type.replace('%20');
 
-          if (endDate) {
-            const [year, month, day] = endDate.split('-');
-            let to = new Date(year, month - 1, day).toISOString();
-            to = to.split('T')[0] + 'T00:00:00.000Z';
+      console.log('tipo', this.typeOfList);
 
-            pagination.options.range.to = to;
-          }
+      this.defaultMerchant = this.merchantsService.merchantData;
 
-          const { ordersByMerchant } =
-            await this._MerchantsService.ordersByMerchant(_id, pagination);
-          const _ordersByMerchant = ordersByMerchant.filter((order) => {
-            const result =
-              type === 'facturas'
-                ? order.orderStatus !== 'draft'
-                : order.orderStatus === 'draft';
-            return result;
+      await this.loadOrders();
+
+      this.searchBar.valueChanges.subscribe((change: string) => {
+        if (!this.selectedTagGroups.length) {
+          this.filteredTagGroups.forEach((tagGroup) => {
+            if (this.ordersPerTagHashTable[tagGroup.tag._id]) {
+              tagGroup.orders = this.ordersPerTagHashTable[
+                tagGroup.tag._id
+              ].filter((order) => {
+                const productNames = order.items.map((item) => item.item.name);
+                const productNamesMatches = productNames.find((productName) => {
+                  if (productName) {
+                    return productName.toLowerCase().includes(change);
+                  }
+
+                  return false;
+                });
+
+                if (order.dateId) {
+                  return (
+                    order.dateId.toLowerCase().includes(change.toLowerCase()) ||
+                    productNamesMatches
+                  );
+                }
+
+                return false;
+              });
+            }
           });
-          let temp = _ordersByMerchant.map(
-            ({
-              createdAt,
-              subtotals,
-              dateId,
-              items,
-              user,
-              tags,
-              _id,
-              orderStatus,
-            }) => {
-              let userIdLabel: string = null;
+        } else if (this.selectedTagGroups.length > 0) {
+          this.filteredNonRepeatingSelectedTagGroupOrders =
+            this.nonRepeatingSelectedTagGroupOrders.filter((order) => {
+              const productNames = order.items.map((item) => item.item.name);
+              const productNamesMatches = productNames.find((productName) => {
+                if (productName) {
+                  return productName.toLowerCase().includes(change);
+                }
 
-              const result: any = {
-                createdAt: createdAt,
-                total: subtotals
-                  .map(({ amount }) => amount)
-                  .reduce((a, b) => a + b),
-                dateId: formatID(`${dateId}`),
-                products: items.map(({ item }) => {
-                  const { name } = item;
-                  return name;
-                }),
-                tags,
-                _id,
-              };
+                return false;
+              });
 
-              if (orderStatus !== 'draft' && user) {
-                result.phone = user.phone;
-
-                if (user && user.name && user.name !== '')
-                  userIdLabel = 'Usuario: ' + user.name;
-                else if (user && user.phone && user.phone !== '')
-                  userIdLabel = 'Usuario: ' + user.phone;
-                else if (user && user.email && user.email !== '')
-                  userIdLabel = 'Usuario: ' + user.email;
-
-                result.userIdLabel = userIdLabel;
+              if (order.dateId) {
+                return (
+                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
+                  productNamesMatches
+                );
               }
 
-              return result;
+              return false;
+            });
+        }
+
+        this.filteredOrdersWithoutTags = this.ordersWithoutTags.filter(
+          (order) => {
+            const productNames = order.items.map((item) => item.item.name);
+            const productNamesMatches = productNames.find((productName) => {
+              if (productName) {
+                return productName.toLowerCase().includes(change);
+              }
+
+              return false;
+            });
+
+            if (order.dateId) {
+              return (
+                order.dateId.toLowerCase().includes(change.toLowerCase()) ||
+                productNamesMatches
+              );
             }
-          );
-          this.invoiceListForOrders = [];
-          while (temp.length) {
-            const facturas = [...temp.filter((item, index) => index < by)];
-            temp = temp.filter((item, index) => index >= by);
-            this.invoiceListForOrders.push({ facturas, tag: { _id: '' } });
+
+            return false;
           }
-          let tags: any = (await this._TagsService.tagsByUser()) || [];
-          this.tagsCarousell = tags;
-          this.status = this.invoiceListForOrders.some(
-            ({ facturas }) => facturas.length
-          )
-            ? 'complete'
-            : 'empty';
-          this.facturasTemp = this.invoiceListForOrders;
-          this.controller.valueChanges.subscribe((value) => {
-            this.facturasTemp = this.invoiceListForOrders.map(
-              ({ facturas }) => ({
-                facturas: facturas.filter(
-                  ({ phone, tags, dateId, products }) => {
-                    const productNameMatches = products.map((product) => {
-                      return value && product
-                        ? product.toLowerCase().includes(value.toLowerCase())
-                        : (value && product === '') || !product
-                        ? false
-                        : true;
-                    });
-
-                    return value
-                      ? `${phone}`.includes(value) ||
-                          dateId.includes(value) ||
-                          productNameMatches.includes(true)
-                      : true;
-                  }
-                ),
-                // this.tags.length
-                //   ? tags.some((tag) =>
-                //       this.tags.map(({ _id }) => _id).includes(tag)
-                //     )
-                //   :
-                tag: { _id: '' },
-              })
-            );
-            this.status = this.facturasTemp.some(
-              ({ facturas }) => facturas.length
-            )
-              ? 'complete'
-              : 'empty';
-          });
-        };
-        ordersByMerchant();
-
-        const ordersTotalResponse = await this.ordersService.ordersTotal(
-          ['in progress', 'to confirm', 'completed'],
-          this._MerchantsService.merchantData._id
         );
 
-        const incomeMerchantResponse =
-          await this._MerchantsService.incomeMerchant(
-            this._MerchantsService.merchantData._id
+        if (this.expandedTagOrders) {
+          this.filteredExpandedTagOrders.orders =
+            this.expandedTagOrders.orders.filter((order) => {
+              const productNames = order.items.map((item) => item.item.name);
+              const productNamesMatches = productNames.find((productName) => {
+                if (productName) {
+                  return productName.toLowerCase().includes(change);
+                }
+
+                return false;
+              });
+
+              if (order.dateId) {
+                return (
+                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
+                  productNamesMatches
+                );
+              }
+
+              return false;
+            });
+        }
+
+        if (this.filteredOrdersWithoutTags) {
+          this.filteredExpandedOrdersWithoutTags =
+            this.filteredOrdersWithoutTags.filter((order) => {
+              const productNames = order.items.map((item) => item.item.name);
+              const productNamesMatches = productNames.find((productName) => {
+                if (productName) {
+                  return productName.toLowerCase().includes(change);
+                }
+
+                return false;
+              });
+
+              if (order.dateId) {
+                return (
+                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
+                  productNamesMatches
+                );
+              }
+
+              return false;
+            });
+        }
+      });
+    });
+  }
+
+  async loadOrders() {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: this.ordersByMerchantLimit,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    this.ordersList = ordersByMerchant;
+
+    this.organizeOrdersByTag();
+
+    const ordersTotalResponse = await this.ordersService.ordersTotal(
+      ['in progress', 'to confirm', 'completed'],
+      this.merchantsService.merchantData._id
+    );
+
+    const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
+      this.merchantsService.merchantData._id
+    );
+
+    if (
+      ordersTotalResponse &&
+      ordersTotalResponse !== null &&
+      incomeMerchantResponse &&
+      incomeMerchantResponse !== null
+    ) {
+      this.ordersAmount = ordersTotalResponse.length;
+      this.merchantIncome = incomeMerchantResponse;
+    }
+
+    if (this.ordersList.length === 0) this.loadingStatus = 'empty';
+    else if (this.ordersList.length > 0) this.loadingStatus = 'complete';
+  }
+
+  organizeOrdersByTag() {
+    this.ordersList.forEach((order) => {
+      if (order.tags.length > 0) {
+        order.tags.forEach((orderTagId) => {
+          const tagGroupIndex = this.tagGroups.findIndex(
+            (tagGroup) => tagGroup.tag._id === orderTagId
           );
 
-        if (ordersTotalResponse && ordersTotalResponse !== null) {
-          this.ordersAmount = ordersTotalResponse.length;
-        }
+          this.tagGroups[tagGroupIndex].orders.push(order);
 
-        if (incomeMerchantResponse && incomeMerchantResponse !== null) {
-          this.merchantIncome = incomeMerchantResponse;
-        }
+          if (!this.ordersPerTagHashTable[orderTagId])
+            this.ordersPerTagHashTable[orderTagId] = [order];
+          else {
+            this.ordersPerTagHashTable[orderTagId].push(order);
+          }
+        });
+      } else {
+        this.ordersWithoutTags.push(order);
       }
-    );
+    });
+
+    this.filteredOrdersWithoutTags = this.ordersWithoutTags;
+
+    this.filteredTagGroups = this.tagGroups;
+  }
+
+  getTotalAmountOfMoneySpentInOrder(subtotals: Array<OrderSubtotal>): number {
+    return subtotals
+      .map(({ amount }) => amount)
+      .reduce((accumulator, orderAmount) => accumulator + orderAmount);
+  }
+
+  getTotalAmountOfMoneySpentOnEachTagGroup(orders: Array<ItemOrder>): number {
+    let total = 0;
+
+    orders.forEach((order) => {
+      total += this.getTotalAmountOfMoneySpentInOrder(order.subtotals);
+    });
+
+    return total;
+  }
+
+  getOrderTagList(tagsIds: Array<string>) {
+    return tagsIds.map((tagId) => this.tagsHashTable[tagId].name).join(', ');
   }
 
   handleInputValue(value, _Router, option): void {}
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  handleController = (value: any): void => {
-    const loadData = async (value) => {
-      this.fillOptions(value);
-      this.status = this.invoiceListForOrders.some(
-        (facturas) => facturas.length
-      )
-        ? 'complete'
-        : 'empty';
-    };
-    loadData(value);
-  };
-
-  handleReservation = (reservation, value, index) => {
-    const { from } = reservation.date;
-    const { until } = reservation.date;
-    const starts = new Date(from);
-    const ends = new Date(until);
-    const day = starts.getDate();
-    const result = value ? `${day}` === value : true;
-    return result;
-  };
-
-  fillOptions(value?) {}
-
   navigate(): void {
     if (this.editable) {
       this.resetEdition();
-    } else this._Router.navigate([`/admin/entity-detail-metrics`]);
+    } else this.router.navigate([`/admin/items-dashboard`]);
   }
 
   resetEdition(): void {
@@ -316,180 +368,111 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
     this.text2 = '';
   }
 
-  handleDotsEvent() {
-    this.list = [
-      {
-        title: 'RESERVACIONES',
-        options: [
-          {
-            text: 'BORRAR',
-            mode: 'func',
-            func: () => {
-              this.editable = true;
-              this.dots = {
-                active: !this.editable,
-              };
-            },
-          },
-        ],
-      },
-    ];
-    this._DialogService.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        mainButton: () => {},
-        title: 'Borrar Reservaciones?',
-        buttonText: 'Borrar reservaciones',
-        mainText:
-          'Al borrar las reservaciones las fechas involucradas volveran a estar disponibles.',
-        topButton: '',
-        list: this.list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
-  handleValue(id: string): void {
-    if (!this.editable) return;
-    if (this.optionIndexArray.includes(id))
-      this.optionIndexArray = this.optionIndexArray.filter((_id) => _id !== id);
-    else this.optionIndexArray.push(id);
-    this.text2 = this.optionIndexArray.length
-      ? 'BORRAR ESTAS RESREVACIONES'
-      : '';
-  }
-
-  handleSubmit(): void {
-    if (!this.optionIndexArray.length) return;
-    this._DialogService.open(SingleActionDialogComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        mainButton: () => {
-          this.status = 'loading';
-          let results = [];
-          const deleteReservations = async () => {};
-          deleteReservations();
-        },
-        title: 'Borrar Reservaciones?',
-        buttonText: 'Borrar reservaciones',
-        mainText:
-          'Al borrar las reservaciones las fechas involucradas volveran a estar disponibles.',
-        topButton: '',
-        list: this.list,
-        alternate: true,
-        hideCancelButtton: true,
-        dynamicStyles: {
-          container: {
-            paddingBottom: '45px',
-          },
-          dialogCard: {
-            borderRadius: '25px',
-            paddingTop: '47px',
-            paddingBottom: '30px',
-          },
-          titleWrapper: {
-            margin: 0,
-            marginBottom: '42px',
-          },
-          description: {
-            marginTop: '12px',
-          },
-          button: {
-            border: 'none',
-            margin: '0px',
-          },
-        },
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
-
   handleOption(option: string): void {
-    this.option = option;
-    this._Router.navigate([`/admin/orders`], {
-      queryParams: {
-        type: option,
-        // phone: this.phone,
-        limit: this.limit,
-        sort: this.sort,
-      },
-    });
+    this.typeOfList = option;
+    this.tagGroups = this.tagGroups.map((tagGroup) => ({
+      tag: tagGroup.tag,
+      orders: [],
+    }));
+    this.ordersWithoutTags = [];
+    // this.tagGroups = [];
+    this.selectedTagGroups = [];
+    this.filteredTagGroups = [];
+    this.selectedTags = [];
+    this.ordersList = [];
+    this.loadOrders();
   }
 
   returnScreen(): void {
     this.resetEdition();
   }
 
-  handleTag(tag): void {
-    if (this.tags.includes(tag))
-      this.tags = this.tags.filter((tg) => tg !== tag);
+  handleTag(seletedTag: Tag): void {
+    if (this.selectedTags.includes(seletedTag))
+      this.selectedTags = this.selectedTags.filter((tag) => tag !== seletedTag);
     else {
-      const value = this.multipleTags ? [...this.tags, tag] : [tag];
-      this.tags = value;
+      const value = this.multipleTags
+        ? [...this.selectedTags, seletedTag]
+        : [seletedTag];
+      this.selectedTags = value;
     }
-    this.helperHeaderTextConfig = {
-      text: this.tags.length
-        ? 'Ingreso: $IngresoID'
-        : 'Facturas y Pre-facturas',
-      fontSize: '21px',
-      fontFamily: 'SfPro',
-    };
-    let temp = this.invoiceListForOrders;
-    // while (temp.length) {
-    this.facturasTemp = [];
-    if (!this.tags.length) this.facturasTemp = this.invoiceListForOrders;
-    for (const _tag of this.tags) {
-      // const facturas = [
-      //   ...
-      let _facturas = [];
-      this.invoiceListForOrders.forEach(({ facturas }, index) => {
-        _facturas = [
-          ..._facturas,
-          ...facturas.filter((factura) => factura.tags.includes(_tag._id)),
-        ];
+
+    const isTheClickedTagAlreadySelected = this.selectedTagGroups.find(
+      (tagGroup) => tagGroup.tag._id === seletedTag._id
+    );
+
+    if (isTheClickedTagAlreadySelected)
+      this.selectedTagGroups = this.selectedTagGroups.filter(
+        (tagGroup) => tagGroup.tag._id !== seletedTag._id
+      );
+    else {
+      const tagGroup = this.tagGroups.find(
+        (tagGroup) => tagGroup.tag._id === seletedTag._id
+      );
+
+      if (tagGroup) {
+        this.selectedTagGroups.push(tagGroup);
+      }
+    }
+
+    if (this.selectedTagGroups.length > 0) {
+      const alreadyFoundOrders = {};
+      let ordersForEachTag: Array<ItemOrder> = [];
+      this.selectedTagGroups.forEach((tagGroup) => {
+        ordersForEachTag = ordersForEachTag.concat(tagGroup.orders);
       });
-      if (_facturas.length)
-        this.facturasTemp.push({ facturas: _facturas, tag: _tag });
+
+      const nonRepeatingOrders: Array<ItemOrder> = [];
+      ordersForEachTag.forEach((order) => {
+        if (!alreadyFoundOrders[order._id]) {
+          alreadyFoundOrders[order._id] = true;
+          nonRepeatingOrders.push(order);
+        }
+      });
+
+      this.nonRepeatingSelectedTagGroupOrders = nonRepeatingOrders;
+      this.filteredNonRepeatingSelectedTagGroupOrders =
+        this.nonRepeatingSelectedTagGroupOrders;
+
+      this.filteredTagGroups = this.selectedTagGroups;
+    } else {
+      this.filteredTagGroups = this.tagGroups;
     }
-    this.status = this.facturasTemp.some(({ facturas }) => facturas.length)
-      ? 'complete'
-      : 'empty';
   }
 
-  resetTags(): void {
-    this.tags = [];
-    this.facturasTemp = this.invoiceListForOrders;
+  viewExpandedTagOrders(tagGroup: TagGroup) {
+    this.selectedTags.push(tagGroup.tag);
+    this.expandedTagOrders = tagGroup;
+    this.filteredExpandedTagOrders = this.expandedTagOrders;
+  }
+
+  viewExpandedOrdersWithoutTags(ordersWithoutTags: Array<ItemOrder>) {
+    this.expandedOrdersWithoutTags = ordersWithoutTags;
+    this.filteredExpandedOrdersWithoutTags = ordersWithoutTags;
+  }
+
+  resetSelectedTags(): void {
+    this.selectedTags = [];
+    this.selectedTagGroups = [];
+    this.filteredNonRepeatingSelectedTagGroupOrders = [];
+    this.nonRepeatingSelectedTagGroupOrders = [];
+
+    this.facturasTemp = this.facturasList;
+    this.filteredTagGroups = this.tagGroups;
+
+    if (this.expandedTagOrders) {
+      this.expandedTagOrders = null;
+    }
+
+    if (this.expandedOrdersWithoutTags) {
+      this.expandedOrdersWithoutTags = null;
+    }
   }
 
   goToOrderInfo(orderId: string) {
-    this.headerService.flowRoute = this._Router.url;
-    localStorage.setItem('flowRoute', this._Router.url);
-    this._Router.navigate([`ecommerce/order-info/${orderId}`]);
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.router.url);
+    this.router.navigate([`ecommerce/order-info/${orderId}`]);
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {

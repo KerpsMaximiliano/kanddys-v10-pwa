@@ -1,102 +1,469 @@
-<app-helper-headerv2
-  *ngIf="!tags.length"
-  [mainText]="helperHeaderTextConfig"
-  mode="basic"
-  [fixed]="true"
-  [dots]="dots"
-  (returnEvent)="navigate()"
-  (dotEvent)="handleDotsEvent()"
-></app-helper-headerv2>
-<!--
-  <app-helper-headerv3
-    *ngIf="tags.length"
-    (arrowsClick)="resetTags()"
-  ></app-helper-headerv3>
--->
+<div
+  class="header"
+  *ngIf="selectedTags.length === 0 && !expandedOrdersWithoutTags"
+>
+  <div class="icon-and-title">
+    <img
+      [src]="env + '/double-arrow-up.png'"
+      (click)="navigate()"
+      alt="open info"
+    />
 
-<div class="container" style="padding-top: 36px">
-  <div *ngIf="!tags.length" class="pr-25px">
+    <span>{{ typeOfList | titlecase }}</span>
+  </div>
+
+  <div class="userid" *ngIf="defaultMerchant">
+    <span>
+      {{
+        defaultMerchant.name ||
+          defaultMerchant.owner.phone ||
+          defaultMerchant.owner.email
+      }}
+    </span>
+    <img [src]="env + '/user-white.svg'" alt="user id" />
+  </div>
+</div>
+
+<app-helper-headerv3
+  *ngIf="
+    selectedTags.length > 0 || expandedOrdersWithoutTags || expandedTagOrders
+  "
+  (arrowsClick)="resetSelectedTags()"
+></app-helper-headerv3>
+
+<nav *ngIf="!selectedTags.length && !expandedOrdersWithoutTags">
+  <button
+    *ngFor="let button of buttons"
+    [ngClass]="{
+      active: button === typeOfList
+    }"
+    (click)="handleOption(button)"
+  >
+    {{ button | titlecase }}
+  </button>
+</nav>
+
+<div
+  class="container"
+  [ngStyle]="{
+    paddingTop: selectedTags.length ? '0px' : '0px'
+  }"
+>
+  <app-tags-selector
+    *ngIf="selectedTags.length > 0"
+    [tags]="selectedTags"
+    [selectedBackground]="'#ffffff'"
+    [color]="'#2874ad'"
+  ></app-tags-selector>
+
+  <div class="pr-25px">
     <input
-      [formControl]="controller"
+      [formControl]="searchBar"
       class="search input"
       type="tel"
       placeholder="Busca por tag, articulo, referencia.."
     />
   </div>
-  <ng-container [ngSwitch]="status">
-    <div *ngIf="!tags.length" class="grid">
-      <button
-        *ngFor="let button of buttons"
-        class="col"
-        [style]="{
-          background: option === button ? '#fff' : 'transparent',
-          color: option === button ? '#000' : '#fff',
-          boxShadow: option === button ? '0px 0px 4px 0px rgb(171 171 171)' : ''
-        }"
-        (click)="handleOption(button)"
-      >
-        {{ button | titlecase }}
-      </button>
-    </div>
-
-    <!-- <app-tags-selector *ngIf="tags.length" [tags]="tags"></app-tags-selector>
-    <app-tags-carousell [tags]="tagsCarousell" (tag)="handleTag($event)"></app-tags-carousell> -->
+  <ng-container [ngSwitch]="loadingStatus">
+    <app-tags-carousell
+      *ngIf="!expandedTagOrders && !expandedOrdersWithoutTags"
+      [tags]="tags"
+      (tag)="handleTag($event)"
+    ></app-tags-carousell>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
-        <div
-          *ngFor="let facturas of facturasTemp; let i = index"
-          class="item"
-          (click)="handleValue('')"
-        >
-          <!-- <div class="text-grid" *ngIf="facturas.tag._id">
-            <div *ngIf="facturas.facturas.length" class="destacada">{{ i === 0&&!tags.length ? "Destacadas" : facturas.tag.name }}</div>
-            <div *ngIf="!tags.length" class="mb-3 middle">Ingreso: $IngresoID</div>
-            <div *ngIf="!tags.length" class="mb-3 text-right">VER</div>
+        <!-- WHEN THERE IS NOT AN EXPANDED TAG VIEW-->
+        <ng-container *ngIf="!expandedTagOrders && !expandedOrdersWithoutTags">
+          <div
+            *ngFor="
+              let tagGroup of filteredTagGroups;
+              let tagGroupIndex = index
+            "
+            class="item"
+          >
+            <ng-container *ngIf="tagGroup.orders.length > 0">
+              <div
+                *ngIf="this.selectedTagGroups.length === 0"
+                class="group-of-items-header-flex"
+                [ngStyle]="{
+                  marginTop: tagGroupIndex !== 0 ? '60px' : '16px'
+                }"
+              >
+                <div class="group-title">
+                  {{ tagGroup.tag.name }}
+                </div>
+                <div class="incomes-and-show-all">
+                  <div class="mb-3 middle">
+                    Ingreso: ${{
+                      getTotalAmountOfMoneySpentOnEachTagGroup(tagGroup.orders)
+                        | number: "1.2-2"
+                    }}
+                  </div>
+                  <div
+                    class="mb-3 text-right"
+                    (click)="handleTag(tagGroup.tag)"
+                  >
+                    VER TODOS
+                  </div>
+                </div>
+              </div>
+
+              <swiper
+                [config]="swiperConfig"
+                *ngIf="this.selectedTagGroups.length === 0"
+              >
+                <div
+                  *ngFor="
+                    let order of tagGroup.orders.slice(0, 10);
+                    let orderIndex = index
+                  "
+                  class="swiper-slide"
+                  style="
+                    padding: 0px 0px 4px 0px !important;
+                    width: 300px;
+                    height: auto;
+                  "
+                >
+                  <div class="order" (click)="goToOrderInfo(order._id)">
+                    <div class="inner-wrapper">
+                      <div class="order-grid" style="margin-bottom: 10px">
+                        <span class="id">
+                          {{ order.dateId }}
+                        </span>
+                        <span class="reference">{{
+                          getCreationDateDifferenceAsItsSaid(order.createdAt)
+                        }}</span>
+                      </div>
+                      <ng-container *ngFor="let product of order.items">
+                        <p class="name" *ngIf="product.item.name">
+                          {{ product.item.name }}
+                        </p>
+
+                        <ng-container
+                          *ngIf="
+                            product.item.params &&
+                            product.item.params.length > 0
+                          "
+                        >
+                          <ng-container
+                            *ngFor="let param of product.item.params"
+                          >
+                            <ng-container
+                              *ngFor="let itemOption of param.values"
+                            >
+                              <p
+                                class="name"
+                                *ngIf="
+                                  itemOption.name &&
+                                  itemOption._id ===
+                                    product.params[0].paramValue
+                                "
+                              >
+                                {{ itemOption.name }}
+                              </p>
+                            </ng-container>
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                      <div class="order-grid" style="margin-top: auto">
+                        <span class="price">
+                          ${{
+                            getTotalAmountOfMoneySpentInOrder(
+                              order.subtotals
+                            ).toLocaleString("es-MX")
+                          }}
+                        </span>
+
+                        <span
+                          class="order-tags"
+                          *ngIf="order.tags && order.tags.length > 0"
+                        >
+                          {{ getOrderTagList(order.tags) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </swiper>
+            </ng-container>
           </div>
-          <p *ngIf="i === 0 && !tags.length" class="tap">
-            Tap dos veces encima para destacar <br />algunas facturas.
-          </p> -->
-          <!-- <div class="card"> -->
-          <swiper [config]="swiperConfig">
+
+          <ng-container *ngIf="this.selectedTagGroups.length > 0">
             <div
-              *ngFor="let factura of facturas.facturas; let j = index"
-              class=""
+              *ngFor="
+                let order of filteredNonRepeatingSelectedTagGroupOrders;
+                let orderIndex = index
+              "
             >
-              <div class="factura" (click)="goToOrderInfo(factura._id)">
-                <div class="w-100">
-                  <div class="factura-grid">
+              <div
+                class="order all-orders-mode"
+                (click)="goToOrderInfo(order._id)"
+              >
+                <div class="inner-wrapper">
+                  <div class="order-grid" style="margin-bottom: 10px">
                     <span class="id">
-                      {{ factura.dateId }}
+                      {{ order.dateId }}
                     </span>
                     <span class="reference">{{
-                      getCreationDateDifferenceAsItsSaid(factura.createdAt)
+                      getCreationDateDifferenceAsItsSaid(order.createdAt)
                     }}</span>
                   </div>
-                  <p *ngFor="let product of factura.products" class="name">
-                    {{ product }}
-                  </p>
-                  <div
-                    class="factura-grid"
-                    *ngIf="factura.userIdLabel"
-                    style="padding: 0px; margin: 0px; grid-column: span 2"
-                  >
-                    <span class="user-id" style="grid-column: span 2">
-                      {{ factura.userIdLabel }}
-                    </span>
-                  </div>
-                  <div class="factura-grid" style="padding: 0px; margin: 0px">
+                  <ng-container *ngFor="let product of order.items">
+                    <p class="name" *ngIf="product.item.name">
+                      {{ product.item.name }}
+                    </p>
+
+                    <ng-container
+                      *ngIf="
+                        product.item.params && product.item.params.length > 0
+                      "
+                    >
+                      <ng-container *ngFor="let param of product.item.params">
+                        <ng-container *ngFor="let itemOption of param.values">
+                          <p
+                            class="name"
+                            *ngIf="
+                              itemOption.name &&
+                              itemOption._id === product.params[0].paramValue
+                            "
+                          >
+                            {{ itemOption.name }}
+                          </p>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                  <div class="order-grid" style="margin-top: auto">
                     <span class="price">
-                      ${{ factura.total.toLocaleString("es-MX") }}
+                      ${{
+                        getTotalAmountOfMoneySpentInOrder(
+                          order.subtotals
+                        ).toLocaleString("es-MX")
+                      }}
+                    </span>
+
+                    <span
+                      class="order-tags"
+                      *ngIf="order.tags && order.tags.length > 0"
+                    >
+                      {{ getOrderTagList(order.tags) }}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-          </swiper>
-          <!-- </div> -->
-        </div>
+          </ng-container>
 
-        <div class="blank-space" style="height: 42px; width: 100%"></div>
+          <ng-container
+            *ngIf="
+              filteredOrdersWithoutTags.length > 0 &&
+              selectedTags.length === 0 &&
+              !expandedOrdersWithoutTags
+            "
+          >
+            <div class="group-of-items-header-flex">
+              <div class="group-title">Sin Tags</div>
+              <div class="incomes-and-show-all">
+                <div class="mb-3 middle">
+                  Ingreso: ${{
+                    getTotalAmountOfMoneySpentOnEachTagGroup(ordersWithoutTags)
+                      | number: "1.2-2"
+                  }}
+                </div>
+                <div
+                  class="mb-3 text-right"
+                  (click)="viewExpandedOrdersWithoutTags(ordersWithoutTags)"
+                >
+                  VER TODOS
+                </div>
+              </div>
+            </div>
+
+            <swiper [config]="swiperConfig">
+              <div
+                *ngFor="
+                  let order of filteredOrdersWithoutTags.slice(0, 10);
+                  let orderIndex = index
+                "
+                class="swiper-slide"
+                style="
+                  padding: 0px 0px 4px 0px !important;
+                  width: 300px;
+                  height: auto;
+                "
+              >
+                <div class="order" (click)="goToOrderInfo(order._id)">
+                  <div class="inner-wrapper">
+                    <div class="order-grid" style="margin-bottom: 10px">
+                      <span class="id">
+                        {{ order.dateId }}
+                      </span>
+                      <span class="reference">{{
+                        getCreationDateDifferenceAsItsSaid(order.createdAt)
+                      }}</span>
+                    </div>
+                    <ng-container *ngFor="let product of order.items">
+                      <p class="name" *ngIf="product.item.name">
+                        {{ product.item.name }}
+                      </p>
+
+                      <ng-container
+                        *ngIf="
+                          product.item.params && product.item.params.length > 0
+                        "
+                      >
+                        <ng-container *ngFor="let param of product.item.params">
+                          <ng-container *ngFor="let itemOption of param.values">
+                            <p
+                              class="name"
+                              *ngIf="
+                                itemOption.name &&
+                                itemOption._id === product.params[0].paramValue
+                              "
+                            >
+                              {{ itemOption.name }}
+                            </p>
+                          </ng-container>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <div class="order-grid" style="margin-top: auto">
+                      <span class="price">
+                        ${{
+                          getTotalAmountOfMoneySpentInOrder(
+                            order.subtotals
+                          ).toLocaleString("es-MX")
+                        }}
+                      </span>
+
+                      <span
+                        class="order-tags"
+                        *ngIf="order.tags && order.tags.length > 0"
+                      >
+                        {{ getOrderTagList(order.tags) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </swiper>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="expandedTagOrders">
+          <div
+            class="order all-orders-mode"
+            *ngFor="let order of filteredExpandedTagOrders.orders"
+            (click)="goToOrderInfo(order._id)"
+          >
+            <div class="inner-wrapper">
+              <div class="order-grid" style="margin-bottom: 10px">
+                <span class="id">
+                  {{ order.dateId }}
+                </span>
+                <span class="reference">{{
+                  getCreationDateDifferenceAsItsSaid(order.createdAt)
+                }}</span>
+              </div>
+              <ng-container *ngFor="let product of order.items">
+                <p class="name" *ngIf="product.item.name">
+                  {{ product.item.name }}
+                </p>
+
+                <ng-container
+                  *ngIf="product.item.params && product.item.params.length > 0"
+                >
+                  <ng-container *ngFor="let param of product.item.params">
+                    <ng-container *ngFor="let itemOption of param.values">
+                      <p
+                        class="name"
+                        *ngIf="
+                          itemOption.name &&
+                          itemOption._id === product.params[0].paramValue
+                        "
+                      >
+                        {{ itemOption.name }}
+                      </p>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <div class="order-grid" style="margin-top: auto">
+                <span class="price">
+                  ${{
+                    getTotalAmountOfMoneySpentInOrder(
+                      order.subtotals
+                    ).toLocaleString("es-MX")
+                  }}
+                </span>
+
+                <span
+                  class="order-tags"
+                  *ngIf="order.tags && order.tags.length > 0"
+                >
+                  {{ getOrderTagList(order.tags) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="expandedOrdersWithoutTags">
+          <div
+            class="order all-orders-mode"
+            *ngFor="let order of filteredExpandedOrdersWithoutTags"
+            (click)="goToOrderInfo(order._id)"
+          >
+            <div class="inner-wrapper">
+              <div class="order-grid" style="margin-bottom: 10px">
+                <span class="id">
+                  {{ order.dateId }}
+                </span>
+                <span class="reference">{{
+                  getCreationDateDifferenceAsItsSaid(order.createdAt)
+                }}</span>
+              </div>
+              <ng-container *ngFor="let product of order.items">
+                <p class="name" *ngIf="product.item.name">
+                  {{ product.item.name }}
+                </p>
+                <ng-container
+                  *ngIf="product.item.params && product.item.params.length > 0"
+                >
+                  <ng-container *ngFor="let param of product.item.params">
+                    <ng-container *ngFor="let itemOption of param.values">
+                      <p
+                        class="name"
+                        *ngIf="
+                          itemOption.name &&
+                          itemOption._id === product.params[0].paramValue
+                        "
+                      >
+                        {{ itemOption.name }}
+                      </p>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <div class="order-grid" style="margin-top: auto">
+                <span class="price">
+                  ${{
+                    getTotalAmountOfMoneySpentInOrder(
+                      order.subtotals
+                    ).toLocaleString("es-MX")
+                  }}
+                </span>
+
+                <span
+                  class="order-tags"
+                  *ngIf="order.tags && order.tags.length > 0"
+                >
+                  {{ getOrderTagList(order.tags) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </div>
       <!--
         <button class="submit">Crea UNA NUEVA FACTURA</button>
@@ -111,12 +478,28 @@
   </ng-container>
 </div>
 
-<div class="orders-and-invoices-info" *ngIf="!editable">
-  <img [src]="env + '/double-arrow-up.png'" alt="open info" />
-  <span>EN {{ ordersAmount }} FACTURAS</span> <span>/</span>
+<div
+  class="orders-and-invoices-info"
+  *ngIf="!editable && selectedTagGroups.length > 0"
+>
+  <img
+    [src]="env + '/double-arrow-up.png'"
+    (click)="navigate()"
+    alt="open info"
+  />
+  <span
+    >EN
+    {{ filteredNonRepeatingSelectedTagGroupOrders.length }}
+    FACTURAS</span
+  >
+  <span>/</span>
   <span
     >$
-    {{ merchantIncome | number: "1.2-2" }}
+    {{
+      getTotalAmountOfMoneySpentOnEachTagGroup(
+        filteredNonRepeatingSelectedTagGroupOrders
+      ) | number: "1.2-2"
+    }}
   </span>
 </div>
 
@@ -143,6 +526,6 @@
   [text2]="text2"
   [size]="'small'"
   [bgColor]="text2 ? '#2874ad' : '#ababab'"
-  (right)="handleSubmit()"
+  (right)="(null)"
   fontSize="12px"
 ></app-sticky-button>

@@ -21,6 +21,7 @@ export const tagsByUser = gql`
 		tagsByUser {
       _id
 			name
+      images
     }
   }
 `;
