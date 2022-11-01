@@ -98,6 +98,19 @@
                 width: fit-content;
                 padding: 0 5px;
             }
+
+            .icons-text{
+               all: unset;
+               margin-right: 5px;
+               padding: 2.5px 0;
+               cursor: pointer;
+
+               .text{
+                  font-family: 'RobotoRegular';
+                  font-size: 0.8125rem;
+                  color: #FFFFFF;
+               }
+            }
         }
 
         .header-btn{

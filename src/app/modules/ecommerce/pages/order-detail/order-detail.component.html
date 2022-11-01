@@ -1,17 +1,31 @@
 <div class="container">
-  <header
-    class="header"
-    [ngStyle]="{ backgroundColor: headerService.colorTheme ? headerService.colorTheme : '#2874AD' }"
-  >
-    <h1 class="merchant-name">{{ order?.items[0].saleflow.merchant.name }}</h1>
-
-    <div class="right-area" *ngIf="loggedUser">
-      <span class="header-text">
-        {{ loggedUser?.name || loggedUser?.phone || loggedUser?.email }}
-      </span>
-      <img [src]="env + '/person.svg'" (click)="(redirectToUserContact)" />
-    </div>
-  </header>
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="false"
+    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21
+    }"
+    [rightText]="
+      loggedUser
+        ? {
+            text: loggedUser?.name || loggedUser?.phone || loggedUser?.email
+          }
+        : null
+    "
+    [icons]="[
+      {
+        src: '/person.svg',
+        width: '13px',
+        height: '17px',
+        color: 'brightness(3)',
+        callback: redirectToUserContact
+      }
+    ]"
+    (agnosticAction)="openLogoutDialog()"
+  ></app-helper-headerv2>
 
   <div class="top-area">
     <button class="top-button" (click)="goToStore()">
@@ -93,9 +107,9 @@
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
-        <span class="top-name">{{
+        <button class="top-name" (click)="sendMessage()">{{
           order.user?.name || order.user?.phone || order.user?.email
-        }}</span>
+        }}</button>
       </h2>
 
       <div class="info-display">
@@ -276,11 +290,22 @@
       <h2 class="section-title">Mensaje de regalo:</h2>
 
       <div class="message-box">
-         <div class="buttons-share">
-            <button class="btn"><img [src]="env + '/QR.svg'" width="34px" height="34px"></button>
-            <button class="btn"> <img [src]="env + '/print.svg'" width="34px" height="34px"> </button>
-            <button class="btn"><img [src]="env + '/download.svg'" width="34px" height="34px" style="filter: brightness(0);"></button>
-         </div>
+        <div class="buttons-share">
+          <button class="btn">
+            <img [src]="env + '/QR.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img [src]="env + '/print.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img
+              [src]="env + '/download.svg'"
+              width="34px"
+              height="34px"
+              style="filter: brightness(0)"
+            />
+          </button>
+        </div>
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -315,7 +340,29 @@
     </section>
   </main>
 
+  <footer class="footer-display" *ngIf="merchant">
+    <div class="pages-tabs">
+      <div class="images-container">
+        <img
+          [src]="env + image.src"
+          *ngFor="let image of imageList"
+          class="image"
+          (click)="image.callback()"
+          [ngStyle]="{
+            filter: image.filter && image.filter
+          }"
+        />
+      </div>
+    </div>
+    
+     <div class="tab-pages">
+       <div class="tab" *ngFor="let tab of tabs"></div>
+     </div>
+     
+  </footer>
+
   <app-sticky-button
+    *ngIf="!merchant"
     [mode]="'fixed'"
     [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
     [size]="'small'"
