@@ -10,8 +10,10 @@ import {
   addTagsInUserOrder,
   removeTagsInUserOrder,
   tag,
+  tags,
   addTagContainersPublic,
 } from '../graphql/tags.gql';
+import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
 @Injectable({
@@ -151,4 +153,16 @@ export class TagsService {
       console.log(e);
     }
   }
+
+  async tags(paginate: PaginationInput){
+    try{
+       const result = await this.graphql.query({
+          query: tags,
+          variables: { paginate },
+       });
+       return result;
+    } catch (e) {
+       console.log(e);
+    };
+   };
 }
