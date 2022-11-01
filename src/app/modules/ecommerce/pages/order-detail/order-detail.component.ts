@@ -7,14 +7,17 @@ import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
 import { Post } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
+import { Tag } from 'src/app/core/models/tags';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { CustomizerValueService } from 'src/app/core/services/customizer-value.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { ReservationService } from 'src/app/core/services/reservations.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
@@ -51,14 +54,24 @@ export class OrderDetailComponent implements OnInit {
   flowRoute: string = null;
   messageLink: string;
   loggedUser: User;
+  tags: Tag[];
+  selectedTags: any = {};
   tabs: any[] = ['', '', '', '', ''];
   imageList: Image[] = [
     {
       src: '/bookmark-checked.svg',
       filter: 'brightness(2)',
-      /* callback: async () => {
-       this.tagDialog();
-     }, */
+      callback: async () => {
+        const tags = (await this.tagsService.tagsByUser()) || [];
+        for (const tag of tags) {
+          this.selectedTags[tag._id] = false;
+          if (this.order.tags.includes(tag._id)) {
+            this.selectedTags[tag._id] = true;
+          }
+        }
+        this.tags = tags;
+        this.tagDialog();
+      },
     },
     {
       src: '/QR.svg',
@@ -93,7 +106,8 @@ export class OrderDetailComponent implements OnInit {
     private authService: AuthService,
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private tagsService: TagsService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -383,6 +397,53 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
+  tagDialog() {
+    this.dialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props: {
+        text: 'SALVAR EL ARTICULO EN TAGS SELECCIOANDOS',
+        tags: this.tags,
+        orderId: this.order._id,
+        activeTags:
+          this.order.tags &&
+          (this.order.tags !== null ||
+            (undefined && this.order.tags.length > 0))
+            ? this.order.tags
+            : null,
+        tagAction: async (param) => {
+          // !this.selectedTags[param._id] ? this.selectedTags[param._id] = true : this.selectedTags[param._id] = false;
+          this.addTag(param._id);
+        },
+      },
+    });
+  }
+
+  async addTag(tagId?: string) {
+    if (!this.selectedTags[tagId]) {
+      const added = await this.tagsService.addTagsInOrder(
+        this.order.items[0].saleflow.merchant._id,
+        tagId,
+        this.order._id
+      );
+      this.selectedTags[tagId] = true;
+      this.order.tags.push(tagId);
+    } else {
+      const removed = await this.tagsService.removeTagsInOrder(
+        this.order.items[0].saleflow.merchant._id,
+        tagId,
+        this.order._id
+      );
+      console.log(removed);
+      this.selectedTags[tagId] = false;
+      if (this.order.tags.includes(tagId)) {
+        this.order.tags = this.order.tags.filter((tag) => tag !== tagId);
+      }
+      console.log(this.order.tags);
+    }
+  }
+
   downloadQr() {
     const parentElement = this.qr.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
@@ -429,7 +490,7 @@ export class OrderDetailComponent implements OnInit {
     this.messageLink = `https://api.whatsapp.com/send?phone=${
       this.order.user?.name || this.order.user?.phone || this.order.user?.email
     }&text=${encodeURIComponent(message)}`;
-    window.open(this.messageLink, "_blank");
+    window.open(this.messageLink, '_blank');
   }
 
   formatHour(date: Date, breakTime?: number) {
