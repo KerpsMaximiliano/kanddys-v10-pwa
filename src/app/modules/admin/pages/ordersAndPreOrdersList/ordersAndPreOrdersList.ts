@@ -78,7 +78,6 @@ export class OrdersAndPreOrdersList implements OnInit {
   text2: string = '';
   buttons: string[] = ['facturas', 'pre - facturas'];
   calendar: string = '';
-  facturasList: any[] = [];
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
@@ -89,7 +88,6 @@ export class OrdersAndPreOrdersList implements OnInit {
   phone: string = '';
   limit: number;
   sort: string;
-  facturasTemp: any = [];
   merchantIncome: number = 0;
   env = environment.assetsUrl;
   ordersAmount: number = 0;
@@ -105,7 +103,6 @@ export class OrdersAndPreOrdersList implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.facturasList = [];
     this.loadingStatus = 'loading';
     this.route.queryParams.subscribe(async (params) => {
       let {
@@ -133,8 +130,6 @@ export class OrdersAndPreOrdersList implements OnInit {
       });
 
       this.typeOfList = type.replace('%20');
-
-      console.log('tipo', this.typeOfList);
 
       this.defaultMerchant = this.merchantsService.merchantData;
 
@@ -261,6 +256,32 @@ export class OrdersAndPreOrdersList implements OnInit {
     });
   }
 
+  loadFirstsOrdersForTagGroup = async (tag: Tag): Promise<any> => {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: 10,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+        tags: [tag._id],
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    return {
+      tag: tag,
+      orders: ordersByMerchant,
+    };
+  };
+
   async loadOrders() {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
@@ -274,6 +295,18 @@ export class OrdersAndPreOrdersList implements OnInit {
             : ['draft'],
       },
     };
+
+    const ordersByMerchantPerTagPromises = [];
+
+    for (const tagGroup of this.tagGroups) {
+      ordersByMerchantPerTagPromises.push(
+        this.loadFirstsOrdersForTagGroup(tagGroup.tag)
+      );
+    }
+
+    for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
+      console.log('respuesta', orderByMerchantResponse);
+    }
 
     const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
       this.defaultMerchant._id,
@@ -457,7 +490,6 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.filteredNonRepeatingSelectedTagGroupOrders = [];
     this.nonRepeatingSelectedTagGroupOrders = [];
 
-    this.facturasTemp = this.facturasList;
     this.filteredTagGroups = this.tagGroups;
 
     if (this.expandedTagOrders) {
