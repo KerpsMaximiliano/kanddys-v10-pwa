@@ -397,9 +397,10 @@
     </p>
 
     <div class="highlited-items-swiper" *ngIf="highlightedItems.length > 0">
-      <swiper [config]="highlightedConfigSwiper">
+      <swiper [config]="highlightedConfigSwiper" #highlightedItemsSwiper>
         <div
           *ngFor="let item of highlightedItems; let i = index"
+          class="swiper-slide"
           [ngStyle]="{
             width: 'auto',
             paddingBottom: '10px',

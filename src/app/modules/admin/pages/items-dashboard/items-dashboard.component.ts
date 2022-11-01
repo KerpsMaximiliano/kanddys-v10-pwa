@@ -99,6 +99,7 @@ export class ItemsDashboardComponent implements OnInit {
   tagsList: Array<ExtendedTag> = [];
   tagsLoaded: boolean;
   tagsHashTable: Record<string, Tag> = {};
+  tagsByNameHashTable: Record<string, Tag> = {};
   selectedTags: Array<Tag> = [];
   selectedTagsCounter: number = 0;
   user: User;
@@ -139,6 +140,7 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
+  @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
 
   @HostListener('window:scroll', [])
   async infinitePagination() {
@@ -203,6 +205,7 @@ export class ItemsDashboardComponent implements OnInit {
       this.tagsList = tagsList;
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
+        this.tagsByNameHashTable[tag.name] = tag;
       }
     }
 
@@ -249,13 +252,20 @@ export class ItemsDashboardComponent implements OnInit {
         }
       }
     }
+
+    setTimeout(() => {
+      if (
+        this.highlightedItemsSwiper &&
+        this.highlightedItemsSwiper.directiveRef
+      )
+        this.highlightedItemsSwiper.directiveRef.update();
+    }, 300);
   }
 
   async inicializeItems(
     restartPagination = false,
     triggeredFromScroll = false
   ) {
-    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const saleflowItems = this.saleflowService.saleflowData.items.map(
       (saleflowItem) => ({
         itemId: saleflowItem.item._id,
@@ -273,6 +283,24 @@ export class ItemsDashboardComponent implements OnInit {
     } else {
       this.paginationState.page++;
     }
+
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    //Search tagids that match the searchbar value
+    Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+      if (
+        tagName
+          .toLowerCase()
+          .includes((this.itemSearchbar.value as string).toLowerCase()) &&
+        (this.itemSearchbar.value as string) !== ''
+      ) {
+        const tagId = this.tagsByNameHashTable[tagName]._id;
+
+        if (!selectedTagIds.includes(tagId)) {
+          selectedTagIds.push(tagId);
+        }
+      }
+    });
 
     const pagination: PaginationInput = {
       findBy: {
@@ -313,6 +341,15 @@ export class ItemsDashboardComponent implements OnInit {
           },
         ],
       };
+
+      //Happens when the searchbar value matches a tag name
+      if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+        pagination.findBy['$or'][2] = {
+          tags: {
+            $in: selectedTagIds,
+          },
+        };
+      }
     }
 
     const items = await this.saleflowService.listItems(pagination);
@@ -573,6 +610,14 @@ export class ItemsDashboardComponent implements OnInit {
 
                 if (updatedItem) item.status = 'featured';
                 this.highlightedItems.push(item);
+
+                setTimeout(() => {
+                  if (
+                    this.highlightedItemsSwiper &&
+                    this.highlightedItemsSwiper.directiveRef
+                  )
+                    this.highlightedItemsSwiper.directiveRef.update();
+                }, 300);
               } catch (error) {
                 console.log(error);
               }
@@ -614,6 +659,14 @@ export class ItemsDashboardComponent implements OnInit {
                         (listItem) => listItem._id !== item._id
                       );
                     this.inactiveItems.push(item);
+
+                    setTimeout(() => {
+                      if (
+                        this.highlightedItemsSwiper &&
+                        this.highlightedItemsSwiper.directiveRef
+                      )
+                        this.highlightedItemsSwiper.directiveRef.update();
+                    }, 300);
                   } else {
                     this.activeItems.push(item);
                     this.inactiveItems = this.inactiveItems.filter(
@@ -654,6 +707,14 @@ export class ItemsDashboardComponent implements OnInit {
                 this.filteredHighlightedItems.filter(
                   (listItem) => listItem._id !== item._id
                 );
+
+              setTimeout(() => {
+                if (
+                  this.highlightedItemsSwiper &&
+                  this.highlightedItemsSwiper.directiveRef
+                )
+                  this.highlightedItemsSwiper.directiveRef.update();
+              }, 300);
             },
           },
         ],
@@ -808,7 +869,18 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   openItemOptionsDialog = async (id: string) => {
-    const item = await this.itemsService.item(id);
+    const itemsQueryResult = await this.itemsService.item(id);
+    const item: ExtendedItem = itemsQueryResult;
+    item.tagsFilled = [];
+
+    if (item.tags.length > 0) {
+      for (const tagId of item.tags) {
+        if (this.tagsHashTable[tagId]) {
+          item.tagsFilled.push(this.tagsHashTable[tagId]);
+        }
+      }
+    }
+
     const allItemIndex = this.allItems.findIndex((item) => item._id === id);
     const highlightedItemsIndex = this.highlightedItems.findIndex(
       (item) => item._id === id
@@ -849,10 +921,26 @@ export class ItemsDashboardComponent implements OnInit {
           if (newStatus === 'featured' && invisibleItemsIndex >= 0) {
             this.inactiveItems.splice(invisibleItemsIndex, 1);
             this.highlightedItems.push(item);
+
+            setTimeout(() => {
+              if (
+                this.highlightedItemsSwiper &&
+                this.highlightedItemsSwiper.directiveRef
+              )
+                this.highlightedItemsSwiper.directiveRef.update();
+            }, 300);
           }
 
           if (newStatus === 'featured' && visibleItemsIndex >= 0) {
             this.highlightedItems.push(item);
+
+            setTimeout(() => {
+              if (
+                this.highlightedItemsSwiper &&
+                this.highlightedItemsSwiper.directiveRef
+              )
+                this.highlightedItemsSwiper.directiveRef.update();
+            }, 300);
           }
 
           resolve(true);
@@ -1055,6 +1143,14 @@ export class ItemsDashboardComponent implements OnInit {
             this.highlightedItems = this.highlightedItems.filter(
               (listItem) => listItem._id !== item._id
             );
+
+            setTimeout(() => {
+              if (
+                this.highlightedItemsSwiper &&
+                this.highlightedItemsSwiper.directiveRef
+              )
+                this.highlightedItemsSwiper.directiveRef.update();
+            }, 300);
 
             this.toastr.info('¡Item borrado exitosamente!');
           } catch (error) {
