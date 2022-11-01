@@ -1,8 +1,6 @@
 <div class="container">
   <header class="header">
-    <a class="return-holder"
-      (click)="goBackToFlowRoute()"
-      *ngIf="flowRoute"
+    <a class="return-holder" (click)="goBackToFlowRoute()" *ngIf="flowRoute"
       ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
     </a>
 
@@ -282,12 +280,26 @@
     </section>
   </main>
 
-  <app-sticky-button
-    [mode]="'fixed'"
-    [bgColor]="'#2874AD'"
-    [size]="'small'"
-    [fontSize]="'1.25rem'"
-    [text]="'VOLVER A LA TIENDA'"
-    (click)="goToStore()"
-  ></app-sticky-button>
+  <footer class="footer-display" *ngIf="merchant">
+    <i class="fas fa-chevron-left"></i>
+    <div class="pages-tabs">
+      <div class="images-container">
+        <img
+          [src]="env + image.src"
+          *ngFor="let image of imageList"
+          class="image"
+          (click)="image.callback()"
+          [ngStyle]="{
+            filter: image.filter && image.filter
+          }"
+        />
+      </div>
+
+      <div class="tab-pages">
+        <div class="tab" *ngFor="let tab of tabs"></div>
+      </div>
+    </div>
+
+    <i class="fas fa-chevron-right"></i>
+  </footer>
 </div>

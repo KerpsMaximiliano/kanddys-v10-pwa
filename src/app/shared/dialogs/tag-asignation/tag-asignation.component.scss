@@ -1,0 +1,52 @@
+.body-container {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  background-color: #f6f6f6;
+}
+.text-grid {
+  display: grid;
+  grid-template-columns: 4fr 2fr;
+  gap: 2px;
+  align-items: center;
+}
+.title {
+  font-family: "SfProRegular";
+  color: #272727;
+  font-size: 21px;
+  padding-left: 37px;
+  margin: 0px;
+  margin-top: 45px;
+}
+.save {
+  background: #2874ad;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: none;
+  height: 67px;
+  cursor: pointer;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.icon {
+  height: 26px;
+}
+
+.icon-blue {
+  height: 20px;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.save-text {
+  color: #fff;
+  font-family: SfProBold;
+  font-size: 13px;
+  padding-left: 16px;
+}
