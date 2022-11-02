@@ -240,63 +240,35 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     },
     {
       fieldsList: [
-        {
-          name: 'receiver',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
-          },
-          label: '¿Para quién es?',
-          placeholder: 'Type...',
-          topLabelAction: {
-            text: 'Sin mensaje de regalo',
-            clickable: true,
-            callback: (params) => {
-              this.storeEmptyMessageAndGoToShipmentDataForm(params);
-            },
-          },
-          styles: {
-            topLabelActionStyles: {
-              display: 'block',
-              color: '#27A2FF',
-              fontSize: '16px',
-              fontFamily: 'RobotoMedium',
-              cursor: 'pointer',
-              margin: '0px',
-              marginTop: '32px',
-              marginBottom: '24px',
-            },
-            labelStyles: lightLabelStyles,
-          },
-        },
-        {
-          name: 'sender',
-          fieldControl: {
-            type: 'single',
-            control: new FormControl('', Validators.pattern(/[\S]/)),
-          },
-          label: '¿De parte de quién o quienes?',
-          placeholder: 'Type...',
-          styles: {
-            containerStyles: {
-              marginTop: '32px',
-              marginBottom: '32px',
-            },
-            labelStyles: lightLabelStyles,
-          },
-        },
+        /* {
+           name: 'sender',
+           fieldControl: {
+             type: 'single',
+             control: new FormControl('', Validators.pattern(/[\S]/)),
+           },
+           label: '¿De parte de quién o quienes?',
+           placeholder: 'Type...',
+           styles: {
+             containerStyles: {
+               marginTop: '32px',
+               marginBottom: '32px',
+             },
+             labelStyles: lightLabelStyles,
+           },
+         }, */
         {
           name: 'message',
           fieldControl: {
             type: 'single',
             control: new FormControl('', Validators.pattern(/[\S]/)),
           },
-          label: '¿Que mensaje escribiremos?',
+          label: 'Mensaje de Regalo (impreso o escrito a mano):',
           inputType: 'textarea',
-          placeholder: 'Type your message here...',
+          placeholder: 'Type..',
           styles: {
             containerStyles: {
-              marginBottom: '30px',
+              marginBottom: '57px',
+              marginTop: '48px',
             },
             fieldStyles: {
               boxShadow: '0px 4px 5px 0px #ddd inset',
@@ -315,7 +287,95 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             labelStyles: lightLabelStyles,
           },
         },
+        {
+          name: 'receiver',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl('', Validators.pattern(/[\S]/)),
+          },
+          label: 'Nombre del sobre:',
+          placeholder: 'Type..',
+          /* topLabelAction: {
+             text: 'Sin mensaje de regalo',
+             clickable: true,
+             callback: (params) => {
+               this.storeEmptyMessageAndGoToShipmentDataForm(params);
+             },
+           }, */
+          styles: {
+            /* topLabelActionStyles: {
+               display: 'block',
+               color: '#27A2FF',
+               fontSize: '16px',
+               fontFamily: 'RobotoMedium',
+               cursor: 'pointer',
+               margin: '0px',
+               marginTop: '32px',
+               marginBottom: '24px',
+             }, */
+            labelStyles: lightLabelStyles,
+          },
+        },
+        {
+          inputType: 'button',
+          name: 'confirmButton',
+          fieldControl: {
+            type: 'single',
+            control: new FormControl(),
+          },
+          label: 'Adicione el contenido',
+          styles: {
+            containerStyles: {
+              width: '89%',
+              maxWidth: '445px',
+              margin: '42.3vh auto 43px',
+              display: 'flex',
+              justifyContent: 'center',
+            },
+            fieldStyles: {
+              width: '90%',
+              height: '37px',
+              borderRadius: '19px',
+              backgroundColor: '#7B7B7B',
+              fontFamily: 'SfProBold',
+              fontSize: '0.973rem',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+            },
+            hoverStyles: {
+              width: '90%',
+              maxWidth: '325px',
+              height: '37px',
+              borderRadius: '19px',
+              backgroundColor: '#7B7B7B',
+              fontFamily: 'SfProBold',
+              fontSize: '0.973rem',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+            },
+            disabledStyles: {
+              backgroundColor: '#7B7B7B',
+            },
+            labelStyles: {
+              fontFamily: 'SfPrBold',
+              fontSize: '13px',
+              color: '#fff',
+            },
+          },
+        },
       ],
+      customHelperHeaderConfig: {
+        bgcolor: '#272727' /* this.header.colorTheme */,
+        justifyContent: 'center',
+        icon: {
+          src: '/arrow-double-up.svg',
+          width: 17,
+          height: 21,
+          cursor: 'pointer',
+        },
+      },
       customScrollToStepBackwards: (params) => {
         if (this.scrollableForm) {
           params.unblockScrollPastCurrentStep();
@@ -333,8 +393,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         function: async (params) => {
           if (
             params.dataModel.value['2']['message'] === '' &&
-            params.dataModel.value['2']['receiver'] === '' &&
-            params.dataModel.value['2']['sender'] === ''
+            params.dataModel.value['2']['receiver'] === '' /* &&
+            params.dataModel.value['2']['sender'] === '' */
           ) {
             this.storeEmptyMessageAndGoToShipmentDataForm(params);
             return of({
@@ -350,7 +410,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
                 emailOrPhone: '',
               },
             ],
-            from: params.dataModel.value['2']['sender']?.trim(),
+            // from: params.dataModel.value['2']['sender']?.trim(),
             // multimedia: this.header.flowImage,
             socialNetworks: [
               {
@@ -398,16 +458,20 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       shoppingCartCallback: () => {
         this.showShoppingCartDialog();
       },
-      headerText: 'Comprar más',
+      hideMainStepCTA: true,
+/*       headerText: 'Comprar más',
       headerTextSide: 'LEFT',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
-      stepButtonValidText: 'CONTINUAR',
+      stepButtonValidText: 'CONTINUAR', */
       headerMode: 'v2',
       headerTextStyles: {
         marginLeft: '0px',
         fontFamily: 'RobotoMedium',
         fontWeight: 'normal',
         fontSize: '17px',
+      },
+      footerConfig: {
+        bgColor: '#272727'/* this.header.colorTheme */,
       },
     },
   ];
