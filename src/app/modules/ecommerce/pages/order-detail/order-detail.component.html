@@ -24,10 +24,22 @@
         callback: redirectToUserContact
       }
     ]"
+    [mainText]="
+      !merchant
+        ? {
+            text:
+              order?.items[0].saleflow.headline.length < 38
+                ? order?.items[0].saleflow.headline
+                : order?.items[0].saleflow.headline.split(' ')['0'],
+            fontSize: '21px',
+            fontFamily: 'SfProBold'
+          }
+        : null
+    "
     (agnosticAction)="openLogoutDialog()"
   ></app-helper-headerv2>
 
-  <div class="top-area">
+  <div class="top-area" *ngIf="!notify">
     <button class="top-button" (click)="goToStore()">
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
@@ -40,6 +52,27 @@
       </p>
     </div>
   </div>
+
+  <div class="bill-area" *ngIf="notify">
+   <h2 class="user-name">
+     {{ order.user?.name || order.user?.phone || order.user?.email }}
+   </h2>
+   <h2 class="success">Tu factura se creó exitosamente.</h2>
+
+   <a
+     [href]="messageLink"
+     target="_blank"
+     class="bill-button"
+     (click)="notificationClicked()"
+   >
+     Confirmar por WhatsApp
+   </a>
+
+   <p class="bill-clarity">
+     Al “confirmar” se abrirá tu WhatsApp con la factura para
+     {{ order?.items[0].saleflow.merchant.name }}.
+   </p>
+ </div>
 
   <!-- <div class="bill-area" *ngIf="notify">
     <h2 class="user-name">{{ order.user?.name || order.user?.phone || order.user?.email }}</h2>
@@ -107,14 +140,15 @@
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
-        <button class="top-name" (click)="sendMessage()">{{
-          order.user?.name || order.user?.phone || order.user?.email
-        }}</button>
+        <button class="top-name" (click)="sendMessage()" *ngIf="merchant">
+          {{ order.user?.name || order.user?.phone || order.user?.email }}
+        </button>
+        <span class="top-headline" *ngIf="!merchant">{{order?.items[0].saleflow.headline}}</span>
       </h2>
 
       <div class="info-display">
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
-        <span class="info">{{ orderStatus | titlecase }}</span>
+        <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
       </div>
     </section>
     <section class="section">
@@ -340,7 +374,7 @@
     </section>
   </main>
 
-  <footer class="footer-display" *ngIf="merchant">
+  <footer class="footer-display" >
     <div class="pages-tabs">
       <div class="images-container">
         <img
@@ -354,13 +388,11 @@
         />
       </div>
     </div>
-    
-     <div class="tab-pages">
-       <div class="tab" *ngFor="let tab of tabs"></div>
-     </div>
-     
+    <div class="tab-pages">
+      <div class="tab" *ngFor="let tab of tabs"></div>
+    </div>
   </footer>
-
+  <!-- 
   <app-sticky-button
     *ngIf="!merchant"
     [mode]="'fixed'"
@@ -369,5 +401,5 @@
     [fontSize]="'1.25rem'"
     [text]="'VOLVER A LA TIENDA'"
     (click)="goToStore()"
-  ></app-sticky-button>
+  ></app-sticky-button> -->
 </div>

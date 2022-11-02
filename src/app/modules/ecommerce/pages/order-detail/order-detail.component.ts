@@ -133,7 +133,7 @@ export class OrderDetailComponent implements OnInit {
     const temporalDate = new Date(this.order.createdAt);
     const day = temporalDate.getDate();
     const dayString = String(day).length < 2 ? '0' + day : day;
-    const month = temporalDate.getMonth() + 1;
+    const month = temporalDate.toLocaleDateString('es-ES', {month: 'long'}).substring(0,3).toLocaleUpperCase();
     const monthString = String(month).length < 2 ? '0' + month : month;
     const year = temporalDate.getFullYear();
     const yearString = String(year).length < 2 ? '0' + year : year;
@@ -145,7 +145,7 @@ export class OrderDetailComponent implements OnInit {
     const seconds = temporalDate.getSeconds();
     const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
 
-    this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
+    this.orderDate = `${dayString}/${month}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
     this.checkUser();
     this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (this.order.items[0].post) {
