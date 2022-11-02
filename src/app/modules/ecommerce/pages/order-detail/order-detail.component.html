@@ -2,7 +2,7 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
+    [bgColor]="headerService.colorTheme"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -107,9 +107,9 @@
     <section class="top">
       <h2 class="top-h" *ngIf="order">
         FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
-        <button class="top-name" (click)="sendMessage()">{{
-          order.user?.name || order.user?.phone || order.user?.email
-        }}</button>
+        <button class="top-name" (click)="sendMessage()">
+          {{ order.user?.name || order.user?.phone || order.user?.email }}
+        </button>
       </h2>
 
       <div class="info-display">
@@ -354,20 +354,9 @@
         />
       </div>
     </div>
-    
-     <div class="tab-pages">
-       <div class="tab" *ngFor="let tab of tabs"></div>
-     </div>
-     
-  </footer>
 
-  <app-sticky-button
-    *ngIf="!merchant"
-    [mode]="'fixed'"
-    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
-    [size]="'small'"
-    [fontSize]="'1.25rem'"
-    [text]="'VOLVER A LA TIENDA'"
-    (click)="goToStore()"
-  ></app-sticky-button>
+    <div class="tab-pages">
+      <div class="tab" *ngFor="let tab of tabs"></div>
+    </div>
+  </footer>
 </div>

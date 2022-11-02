@@ -2595,7 +2595,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         unlockUI();
         this.saveDataInHeader(customizerValues);
         if (
-          !this.header.isComplete.message &&
+          !this.header.orderProgress.message &&
           this.header.saleflow.module.post &&
           this.header.saleflow.module.post.isActive
         )
@@ -2615,7 +2615,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
           customizerValues,
           this.customizerValueID
         );
-        this.router.navigate([`/ecommerce/order-info/${this.itemId}`]);
+        this.router.navigate([`/ecommerce/order-detail/${this.itemId}`]);
         unlockUI();
       }
     } catch (err) {
@@ -2643,12 +2643,12 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
       this.header.saleflow?._id ?? this.header.getSaleflow()._id,
       {...customizerValues}
     );
-    this.header.isComplete.customizer = true;
+    this.header.orderProgress.customizer = true;
   }
 
   goBack() {
     if (this.customizerValueID)
-      this.router.navigate([`/ecommerce/order-info/${this.itemId}`]);
+      this.router.navigate([`/ecommerce/order-detail/${this.itemId}`]);
     else
       this.router.navigate([
         `/ecommerce/provider-store/${

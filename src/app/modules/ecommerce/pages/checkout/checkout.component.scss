@@ -113,6 +113,8 @@ a {
             padding: 10px 12px;
             border-radius: 6px;
             box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
+            width: 100%;
+            box-sizing: border-box;
 
             .image-container {
                display: flex;
@@ -258,4 +260,7 @@ table {
 }
 .customizer-preview {
    width: 100%;
+}
+.pointer {
+   cursor: pointer;
 }

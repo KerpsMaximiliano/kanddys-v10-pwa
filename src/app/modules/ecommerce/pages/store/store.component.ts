@@ -176,7 +176,7 @@ export class StoreComponent implements OnInit {
   // =====================================================
 
   async ngOnInit(): Promise<void> {
-    this.header.resetIsComplete();
+    this.header.resetOrderProgress();
     this.executeProcessesAfterLoading();
   }
 

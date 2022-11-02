@@ -76,7 +76,7 @@ export class HeaderService {
   merchantInfo: Merchant;
   myMerchants: Merchant[];
   tags: any;
-  isComplete: OrderProgress = {
+  orderProgress: OrderProgress = {
     qualityQuantity: false,
     customizer: false,
     scenarios: false,
@@ -95,7 +95,7 @@ export class HeaderService {
   newTempItemRoute: string = null;
   checkoutRoute: string;
   loadedMerchants = new EventEmitter();
-   colorTheme: '#272727' | '#2874AD';
+  colorTheme: '#272727' | '#2874AD' = '#2874AD';
 
   public session: Session;
   constructor(
@@ -172,54 +172,54 @@ export class HeaderService {
   }
 
   orderInputComplete(): boolean {
-   if (!this.saleflow) return;
-   if (this.saleflow.module?.delivery?.isActive) {
-     const location = this.NFgetLocation();
-     if (!location || !this.isComplete.delivery) return;
-   }
-   if (this.saleflow.items.some((item) => item.customizer)) {
-     if (!this.isComplete.qualityQuantity) return;
-     if (!this.isComplete.customizer) return;
-   }
-   if (this.saleflow.module?.appointment?.isActive) {
-     const reservation = this.NFgetReservation();
-     if (!reservation || !this.isComplete.reservation) return;
-   }
-   if (this.hasScenarios) {
-     if (!this.isComplete.scenarios) return;
-   }
-   return true;
- }
- 
+    if (!this.saleflow) return;
+    if (this.saleflow.module?.delivery?.isActive) {
+      const location = this.NFgetLocation();
+      if (!location || !this.orderProgress.delivery) return;
+    }
+    if (this.saleflow.items.some((item) => item.customizer)) {
+      if (!this.orderProgress.qualityQuantity) return;
+      if (!this.orderProgress.customizer) return;
+    }
+    if (this.saleflow.module?.appointment?.isActive) {
+      const reservation = this.NFgetReservation();
+      if (!reservation || !this.orderProgress.reservation) return;
+    }
+    if (this.hasScenarios) {
+      if (!this.orderProgress.scenarios) return;
+    }
+    return true;
+  }
+
   isDataComplete(): boolean {
     if (!this.saleflow) return;
     if (
       this.saleflow.module.delivery &&
       this.saleflow.module.delivery.isActive
     ) {
-      if (!this.isComplete.delivery) return;
+      if (!this.orderProgress.delivery) return;
     }
     if (this.items.some((item) => item.customizerId)) {
-      if (!this.isComplete.qualityQuantity) return;
-      if (!this.isComplete.customizer) return;
+      if (!this.orderProgress.qualityQuantity) return;
+      if (!this.orderProgress.customizer) return;
     }
     if (
       this.saleflow.module.appointment &&
       this.saleflow.module.appointment.isActive
     ) {
-      if (!this.isComplete.reservation) return;
+      if (!this.orderProgress.reservation) return;
     }
     if (this.hasScenarios) {
-      if (!this.isComplete.scenarios) return;
+      if (!this.orderProgress.scenarios) return;
     }
     if (this.saleflow.module.post && this.saleflow.module.post.isActive) {
-      if (!this.isComplete.message) return;
+      if (!this.orderProgress.message) return;
     }
     return true;
   }
 
-  resetIsComplete() {
-    this.isComplete = {
+  resetOrderProgress() {
+    this.orderProgress = {
       scenarios: false,
       reservation: false,
       qualityQuantity: false,
@@ -325,14 +325,7 @@ export class HeaderService {
   storePost(saleflow: string, post: PostInput) {
     let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(saleflow, JSON.stringify({ ...rest, post }));
-  } 
-
-  //Temporal Fix
-  NFstorePost(post: PostInput) {
-   let rest: SaleflowData =
-     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-   localStorage.setItem(this.saleflow._id, JSON.stringify({ ...rest, post }));
- }
+  }
 
   // Stores location to first order product in localStorage
   storeLocation(saleflow: string, deliveryLocation: DeliveryLocationInput) {
@@ -350,7 +343,7 @@ export class HeaderService {
     let rest: SaleflowData = JSON.parse(localStorage.getItem(saleflow)) || {};
     localStorage.setItem(
       saleflow,
-      JSON.stringify({ ...rest, orderProgress: this.isComplete })
+      JSON.stringify({ ...rest, orderProgress: this.orderProgress })
     );
   }
 
@@ -422,16 +415,16 @@ export class HeaderService {
 
   //Temporal Fix
   NFgetReservation(): {
-   reservation: ReservationInput;
-   date: any;
- } {
-   let { reservation, date }: SaleflowData =
-     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-   return {
-     reservation,
-     date,
-   };
- }
+    reservation: ReservationInput;
+    date: any;
+  } {
+    let { reservation, date }: SaleflowData =
+      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    return {
+      reservation,
+      date,
+    };
+  }
 
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
@@ -448,10 +441,10 @@ export class HeaderService {
 
   //Temporal Fix
   NFgetLocation() {
-   let { deliveryLocation }: SaleflowData =
-     JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-   return deliveryLocation;
- }
+    let { deliveryLocation }: SaleflowData =
+      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    return deliveryLocation;
+  }
 
   // Returns order creation progress
   getOrderProgress(saleflow: string) {
@@ -459,7 +452,7 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(saleflow)) || {};
     if (orderProgress) {
       this.hasScenarios = orderProgress.scenarios;
-      this.isComplete = orderProgress;
+      this.orderProgress = orderProgress;
     }
   }
 

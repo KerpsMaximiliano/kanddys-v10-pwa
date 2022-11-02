@@ -66,10 +66,6 @@ const routes: Routes = [
         component: StoreComponent,
       },
       {
-        path: 'order-info/:id',
-        component: OrderDetailComponent,
-      },
-      {
         path: ':saleflowId/new-address',
         component: NewAddressComponent,
       },
@@ -90,7 +86,7 @@ const routes: Routes = [
         component: ReservationsComponent,
       },
       {
-        path: 'order-detail/:id',
+        path: 'order-detail/:orderId',
         component: OrderDetailComponent,
       },
       {

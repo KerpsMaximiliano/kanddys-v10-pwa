@@ -127,7 +127,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   orderCompleted(id?: string) {
-    this.router.navigate([`ecommerce/order-info/${id || this.order._id}`], {
+    this.router.navigate([`ecommerce/order-detail/${id || this.order._id}`], {
       replaceUrl: true,
       queryParams: { notify: 'true' },
     });

@@ -179,7 +179,7 @@ export class ProviderStoreComponent implements OnInit {
             ) {
               this.header.order.products[0].deliveryLocation =
                 this.header.saleflow.module.delivery.pickUpLocations[0];
-              this.header.isComplete.delivery = true;
+              this.header.orderProgress.delivery = true;
               this.header.storeOrderProgress(this.header.saleflow._id);
               this.header.storeLocation(
                 this.header.getSaleflow()._id,
@@ -250,7 +250,7 @@ export class ProviderStoreComponent implements OnInit {
       const item = await this.itemService.item(itemId);
       this.header.emptyOrderProducts(saleflowId);
       this.header.emptyItems(saleflowId);
-      this.header.resetIsComplete();
+      this.header.resetOrderProgress();
       item.customizerId = customizerId;
       this.header.items = [item];
       this.router.navigate([
@@ -285,7 +285,7 @@ export class ProviderStoreComponent implements OnInit {
   }
 
   async ngOnInit() {
-    // if (this.header.orderId) return this.router.navigate([`/ecommerce/order-info/${this.header.orderId}`]);
+    // if (this.header.orderId) return this.router.navigate([`/ecommerce/order-detail/${this.header.orderId}`]);
     let saleflowId: string;
     let itemId: string;
     this.route.params.subscribe((params) => {

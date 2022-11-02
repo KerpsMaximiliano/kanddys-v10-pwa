@@ -51,7 +51,6 @@ export class OrderDetailComponent implements OnInit {
     weekday: string;
     time: string;
   };
-  flowRoute: string = null;
   messageLink: string;
   loggedUser: User;
   tags: Tag[];
@@ -86,7 +85,7 @@ export class OrderDetailComponent implements OnInit {
       callback: async () => {
         await this.ngNavigatorShareService.share({
           title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-info/${this.order.items[0].saleflow.headline}`,
+          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
         });
       },
     },
@@ -117,9 +116,8 @@ export class OrderDetailComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const notification = this.route.snapshot.queryParamMap.get('notify');
-    const id = this.route.snapshot.paramMap.get('id');
-    this.order = (await this.orderService.order(id))?.order;
-    this.flowRoute = localStorage.getItem('flowRoute');
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    this.order = (await this.orderService.order(orderId))?.order;
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
@@ -131,21 +129,7 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    const day = temporalDate.getDate();
-    const dayString = String(day).length < 2 ? '0' + day : day;
-    const month = temporalDate.getMonth() + 1;
-    const monthString = String(month).length < 2 ? '0' + month : month;
-    const year = temporalDate.getFullYear();
-    const yearString = String(year).length < 2 ? '0' + year : year;
-    const hour = temporalDate.getHours();
-    const hourString = String(hour).length < 2 ? '0' + hour : hour;
-    const timeOfDay = hour < 12 ? 'AM' : 'PM';
-    const minutes = temporalDate.getMinutes();
-    const minutesString = String(minutes).length < 2 ? '0' + minutes : minutes;
-    const seconds = temporalDate.getSeconds();
-    const secondsString = String(seconds).length < 2 ? '0' + seconds : seconds;
-
-    this.orderDate = `${dayString}/${monthString}/${year}, ${hourString}:${minutesString} ${timeOfDay}`;
+    this.orderDate = temporalDate.toLocaleString('es-MX', { hour12: true });
     this.checkUser();
     this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (this.order.items[0].post) {
@@ -267,14 +251,19 @@ export class OrderDetailComponent implements OnInit {
     if (notification == 'true') {
       let address = '';
       const location = this.order.items[0].deliveryLocation;
-      if (location.street) {
-        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
-        address += location.street + ', ';
-        if (location.referencePoint) address += location.referencePoint + ', ';
-        address += location.city + ', República Dominicana';
-        if (location.note) address += ` (${location.note})`;
-      } else {
-        address = location.nickName;
+      if (location) {
+        address = '\n\nDirección: ';
+        if (location.street) {
+          if (location.houseNumber)
+            address += '#' + location.houseNumber + ', ';
+          address += location.street + ', ';
+          if (location.referencePoint)
+            address += location.referencePoint + ', ';
+          address += location.city + ', República Dominicana';
+          if (location.note) address += ` (${location.note})`;
+        } else {
+          address += location.nickName;
+        }
       }
 
       let giftMessage = '';
@@ -341,7 +330,7 @@ export class OrderDetailComponent implements OnInit {
         }
       }
 
-      const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
       const message = `*🐝 FACTURA ${formatID(
         this.order.dateId
       )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -351,9 +340,9 @@ export class OrderDetailComponent implements OnInit {
         this.order.user?.phone ||
         this.order.user?.email ||
         'Anónimo'
-      }\n\n*Dirección*: ${address}\n\n${
+      }${address}\n\n${
         giftMessage
-          ? '\n\n*Mensaje en la tarjetita de regalo*: \n' + giftMessage
+          ? '\n\nMensaje en la tarjetita de regalo: \n' + giftMessage
           : ''
       }${customizerMessage ? '\n\nCustomizer:\n' + customizerMessage : ''}`;
 
@@ -480,7 +469,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   sendMessage() {
-    const fullLink = `${environment.uri}/ecommerce/order-info/${this.order._id}`;
+    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
     const message = `*🐝 FACTURA ${formatID(
       this.order.dateId
     )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -520,8 +509,9 @@ export class OrderDetailComponent implements OnInit {
   };
 
   goToStore() {
-    let link = this.order.items[0].saleflow._id;
-    this.router.navigate([`ecommerce/store/${link}`]);
+    this.router.navigate([
+      `/ecommerce/store/${this.order.items[0].saleflow._id}`,
+    ]);
   }
 
   async checkUser() {
@@ -532,7 +522,7 @@ export class OrderDetailComponent implements OnInit {
 
   async isMerchantOwner(merchant: string) {
     const ismerchant = await this.merchantsService.merchantDefault();
-    merchant === ismerchant?._id ? (this.merchant = true) : null;
+    this.merchant = merchant === ismerchant?._id;
   }
 
   mouseDown: boolean;
@@ -557,9 +547,5 @@ export class OrderDetailComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
-  }
-
-  goBackToFlowRoute() {
-    this.router.navigate([this.flowRoute]);
   }
 }
