@@ -129,7 +129,7 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate.toLocaleString('es-MX', { hour12: true, month: 'short' });
+    this.orderDate = temporalDate.toLocaleString('es-MX', { hour12: true, day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).toLocaleUpperCase();
     this.checkUser();
     this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (this.order.items[0].post) {
