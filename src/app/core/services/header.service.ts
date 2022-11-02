@@ -174,7 +174,7 @@ export class HeaderService {
   orderInputComplete(): boolean {
     if (!this.saleflow) return;
     if (this.saleflow.module?.delivery?.isActive) {
-      const location = this.NFgetLocation();
+      const location = this.getLocation(this.saleflow._id);
       if (!location || !this.orderProgress.delivery) return;
     }
     if (this.saleflow.items.some((item) => item.customizer)) {
@@ -182,7 +182,7 @@ export class HeaderService {
       if (!this.orderProgress.customizer) return;
     }
     if (this.saleflow.module?.appointment?.isActive) {
-      const reservation = this.NFgetReservation();
+      const reservation = this.getReservation(this.saleflow._id);
       if (!reservation || !this.orderProgress.reservation) return;
     }
     if (this.hasScenarios) {
@@ -413,19 +413,6 @@ export class HeaderService {
     };
   }
 
-  //Temporal Fix
-  NFgetReservation(): {
-    reservation: ReservationInput;
-    date: any;
-  } {
-    let { reservation, date }: SaleflowData =
-      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-    return {
-      reservation,
-      date,
-    };
-  }
-
   // Returns post data and option from provider-store
   getPost(saleflow: string) {
     let { post }: SaleflowData =
@@ -436,13 +423,6 @@ export class HeaderService {
   getLocation(saleflow: string) {
     let { deliveryLocation }: SaleflowData =
       JSON.parse(localStorage.getItem(saleflow)) || {};
-    return deliveryLocation;
-  }
-
-  //Temporal Fix
-  NFgetLocation() {
-    let { deliveryLocation }: SaleflowData =
-      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     return deliveryLocation;
   }
 
