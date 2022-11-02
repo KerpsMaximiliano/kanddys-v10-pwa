@@ -63,7 +63,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 5,
+    spaceBetween: 0,
   };
   tagsCarousell: any[] = [];
   multipleTags: boolean = true;
@@ -479,6 +479,8 @@ export class OrdersAndPreOrdersList implements OnInit {
   resetSelectedTags(): void {
     this.selectedTags = [];
     this.tags = [...this.tags];
+
+    this.loadOrdersAssociatedToTag(true);
   }
 
   goToOrderInfo(orderId: string) {

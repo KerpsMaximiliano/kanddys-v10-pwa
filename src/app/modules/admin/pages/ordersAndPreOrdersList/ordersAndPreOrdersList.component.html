@@ -108,9 +108,10 @@
                   *ngFor="let order of tagGroup.orders; let orderIndex = index"
                   class="swiper-slide"
                   style="
-                    padding: 0px 0px 4px 0px !important;
-                    width: 300px;
+                    padding: 0px 8px 4px 0px !important;
+                    width: 308px;
                     height: auto;
+                    margin-right: 0px !important;
                   "
                 >
                   <div class="order" (click)="goToOrderInfo(order._id)">
@@ -203,9 +204,10 @@
               *ngFor="let order of ordersWithoutTags; let orderIndex = index"
               class="swiper-slide"
               style="
-                padding: 0px 0px 4px 0px !important;
-                width: 300px;
+                padding: 0px 8px 4px 0px !important;
+                width: 308px;
                 height: auto;
+                margin-right: 0px !important;
               "
             >
               <div class="order" (click)="goToOrderInfo(order._id)">
