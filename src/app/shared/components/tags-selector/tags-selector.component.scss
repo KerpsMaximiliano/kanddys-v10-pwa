@@ -1,7 +1,7 @@
 
 .tags-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 9px 4px;
   padding: 20px 16px;
 }
@@ -12,4 +12,5 @@
   border: none;
   font-family: 'SfProMedium';
   cursor: pointer;
+  white-space: nowrap;
 }
