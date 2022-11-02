@@ -407,6 +407,13 @@ main {
   margin: auto;
   z-index: 999;
 
+  .title {
+    max-width: 56.7757%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .user-area {
     span {
       font-size: 13px;

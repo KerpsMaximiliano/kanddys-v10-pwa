@@ -6,7 +6,7 @@
     />
   </div>
   <div class="header-text">{{ text }}</div>
-  <div class="dots">
+  <div class="dots" (click)="handleClick2()">
     <div class="dot-trio">
       <div class="dot" *ngFor="let dot of ['', '', '']"></div>
     </div>
