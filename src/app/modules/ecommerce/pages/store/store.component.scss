@@ -421,6 +421,9 @@ main {
   }
 
   .user-area {
+    display: flex;
+    align-items: baseline;
+    
     span {
       font-size: 13px;
       font-family: RobotoRegular;
