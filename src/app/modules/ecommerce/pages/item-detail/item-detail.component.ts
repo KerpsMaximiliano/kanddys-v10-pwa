@@ -166,24 +166,6 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
             });
             return;
           }
-          if (this.header.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.header.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/reservations/${this.header.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.header.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.header.saleflow._id}/new-address`,
-            ]);
-            return;
-          }
           this.router.navigate([
             `/ecommerce/${this.header.saleflow._id}/checkout`,
           ]);

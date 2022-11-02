@@ -2,7 +2,7 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
+    [bgColor]="headerService.colorTheme"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -392,14 +392,4 @@
       <div class="tab" *ngFor="let tab of tabs"></div>
     </div>
   </footer>
-  <!-- 
-  <app-sticky-button
-    *ngIf="!merchant"
-    [mode]="'fixed'"
-    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
-    [size]="'small'"
-    [fontSize]="'1.25rem'"
-    [text]="'VOLVER A LA TIENDA'"
-    (click)="goToStore()"
-  ></app-sticky-button> -->
 </div>

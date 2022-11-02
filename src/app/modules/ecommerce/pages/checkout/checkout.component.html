@@ -4,7 +4,7 @@
     [mode]="'basic'"
     [returnAble]="true"
     (returnEvent)="back()"
-    [bgColor]="headerService.colorTheme ? headerService.colorTheme : '#2874AD'"
+    [bgColor]="headerService.colorTheme"
     [mainText]="{
       text: '',
       fontSize: '21px',
@@ -15,7 +15,7 @@
   <header
     class="header"
     *ngIf="logged || headerService.user"
-    [ngStyle]="{ backgroundColor: headerService.colorTheme ? headerService.colorTheme : '#2874AD' }"
+    [ngStyle]="{ backgroundColor: headerService.colorTheme }"
   >
     <a> <i class="far fa-angle-double-up" (click)="back()"></i></a>
 
@@ -92,7 +92,10 @@
       </div>
     </section>
 
-    <section class="section" *ngIf="deliveryLocation">
+    <section
+      class="section"
+      *ngIf="headerService.saleflow?.module?.delivery?.isActive"
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">
           Lugar de
@@ -114,7 +117,7 @@
         </button>
       </div>
 
-      <div class="items-container column">
+      <div class="items-container column" *ngIf="deliveryLocation">
         <p class="address-name" *ngIf="deliveryLocation.nickName">
           {{ deliveryLocation.nickName }}
         </p>
@@ -139,9 +142,22 @@
           {{ deliveryLocation.city }}, República Dominicana
         </p>
       </div>
+      <button
+        class="items-container column pointer"
+        *ngIf="!deliveryLocation"
+        (click)="editOrder('address')"
+      >
+        <p class="address-name">Selecciona una dirección...</p>
+      </button>
     </section>
 
-    <section class="section" *ngIf="reservation && date">
+    <section
+      class="section"
+      *ngIf="
+        headerService.saleflow?.module?.appointment?.isActive &&
+        headerService.saleflow?.module?.appointment?.calendar?._id
+      "
+    >
       <div class="between" style="margin-top: 32px">
         <h2 class="section-title">Fecha de la sesión:</h2>
 
@@ -154,12 +170,23 @@
         </button>
       </div>
 
-      <div class="items-container" style="padding: 10px 32px">
+      <div
+        class="items-container"
+        style="padding: 10px 32px"
+        *ngIf="reservation && date"
+      >
         <p class="amount">
           {{ date.weekday }}, {{ date.day }} de {{ date.month }}.
           {{ date.time }}
         </p>
       </div>
+      <button
+        class="items-container column pointer"
+        *ngIf="!reservation && !date"
+        (click)="editOrder('reservation')"
+      >
+        <p class="address-name">Haz una reservación...</p>
+      </button>
     </section>
 
     <section
@@ -170,7 +197,7 @@
       <div class="between">
         <h2 class="section-title">Mensaje de regalo:</h2>
 
-        <button (click)="editOrder('message')">
+        <button (click)="editOrder('message')" *ngIf="post">
           <img
             [src]="env + '/pencil.svg'"
             class="edit-image"
@@ -259,8 +286,8 @@
   <app-sticky-button
     [mode]="
       !disableButton &&
-      ((headerService.saleflow.module?.post && post) ||
-        !headerService.saleflow.module?.post)
+      ((headerService.saleflow?.module?.post && post) ||
+        !headerService.saleflow?.module?.post)
         ? 'double'
         : 'disabled-fixed'
     "

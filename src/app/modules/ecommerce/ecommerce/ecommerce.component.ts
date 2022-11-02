@@ -33,6 +33,7 @@ export class EcommerceComponent implements OnInit {
         this.headerService.saleflow = s as SaleFlow;
         this.allowMultipleItems =
           this.headerService.saleflow.canBuyMultipleItems;
+        this.setColorScheme();
         this.getOrder();
       },
     });
@@ -57,6 +58,14 @@ export class EcommerceComponent implements OnInit {
       .subscribe((e) => {
         this.getItemsAmount();
       });
+  }
+
+  setColorScheme() {
+    this.headerService.colorTheme =
+      this.headerService.user?._id ===
+      this.headerService.saleflow?.merchant?.owner?._id
+        ? '#2874AD'
+        : '#272727';
   }
 
   getOrder() {
@@ -90,24 +99,6 @@ export class EcommerceComponent implements OnInit {
             this.router.navigate([this.headerService.checkoutRoute], {
               replaceUrl: true,
             });
-            return;
-          }
-          if (this.headerService.saleflow.module?.post) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/create-giftcard`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.appointment?.calendar?._id) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-            ]);
-            return;
-          }
-          if (this.headerService.saleflow.module?.delivery) {
-            this.router.navigate([
-              `/ecommerce/${this.headerService.saleflow._id}/new-address`,
-            ]);
             return;
           }
           this.router.navigate([

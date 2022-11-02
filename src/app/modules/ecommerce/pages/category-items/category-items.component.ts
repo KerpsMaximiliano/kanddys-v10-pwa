@@ -125,7 +125,7 @@ export class CategoryItemsComponent implements OnInit {
             item.isSelected = selectedItems.includes(item._id);
         });
       });
-    this.header.resetIsComplete();
+    this.header.resetOrderProgress();
     if (this.header.customizerData) this.header.customizerData = null;
     this.route.params.subscribe(async (params) => {
       lockUI();

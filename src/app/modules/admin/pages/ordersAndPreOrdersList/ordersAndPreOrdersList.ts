@@ -489,7 +489,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   goToOrderInfo(orderId: string) {
     this.headerService.flowRoute = this._Router.url;
     localStorage.setItem('flowRoute', this._Router.url);
-    this._Router.navigate([`ecommerce/order-info/${orderId}`]);
+    this._Router.navigate([`ecommerce/order-detail/${orderId}`]);
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {

@@ -840,7 +840,7 @@ export class ReservationsCreatorComponent implements OnInit {
         reservationInput,
         this.selectedDate
       );
-      this.headerService.isComplete.reservation = true;
+      this.headerService.orderProgress.reservation = true;
       this.headerService.storeOrderProgress(this.headerService.saleflow._id);
       this.router.navigate([
         `/ecommerce/${this.headerService.saleflow._id}/new-address`,

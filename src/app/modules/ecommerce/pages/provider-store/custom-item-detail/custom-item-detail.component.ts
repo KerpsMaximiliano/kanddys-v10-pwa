@@ -85,10 +85,10 @@ export class CustomItemDetailComponent implements OnInit {
     }
     this.header.addParams(this.header.saleflow._id, this.header.order.products[0].params[1]);
     this.header.storeAmount(this.header.saleflow._id, this.header.order.products[0].amount);
-    this.header.isComplete.qualityQuantity = true;
+    this.header.orderProgress.qualityQuantity = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
     if (this.header.customizerData) this.header.customizerData = null;
-    this.header.isComplete.customizer = false;
+    this.header.orderProgress.customizer = false;
     this.router.navigate([`ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/redirect-to-customizer`]);
   }
 

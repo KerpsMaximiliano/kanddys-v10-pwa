@@ -176,7 +176,7 @@ export class LoginComponent implements OnInit {
       this.merchant = await this.merchantService.merchant(
         order.merchants?.[0]?._id
       );
-      this.fullLink = `${environment.uri}/ecommerce/order-info/${order._id}`;
+      this.fullLink = `${environment.uri}/ecommerce/order-detail/${order._id}`;
       this.paymentAmount = order.subtotals.reduce((a, b) => a + b.amount, 0);
       order.items[0].customizer
         ? (this.paymentAmount = this.paymentAmount * 1.18)
@@ -1011,7 +1011,7 @@ export class LoginComponent implements OnInit {
         order._id
       );
     }
-    this.router.navigate([`ecommerce/order-info/${order._id}`], {
+    this.router.navigate([`ecommerce/order-detail/${order._id}`], {
       queryParams: { notify: 'true' },
     });
   }

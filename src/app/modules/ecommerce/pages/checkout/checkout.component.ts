@@ -15,83 +15,83 @@ import { CustomizerValueService } from 'src/app/core/services/customizer-value.s
 import { HeaderService } from 'src/app/core/services/header.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 
 const options = [
-   {
-     status: true,
-     click: true,
-     value: 'No tendrá mensaje de regalo',
-     valueStyles: {
-       'font-family': 'SfProBold',
-       'font-size': '13px',
-       color: '#202020',
-     },
-   },
-   {
-     status: true,
-     click: true,
-     value: 'Con mensaje virtual e impreso',
-     valueStyles: {
-       'font-family': 'SfProBold',
-       'font-size': '13px',
-       color: '#202020',
-     },
-     subtexts: [
-       {
-         text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
-         styles: {
-           fontFamily: 'SfProRegular',
-           fontSize: '1rem',
-           color: '#7B7B7B',
-         },
-       },
-     ],
-   },
-   {
-     status: true,
-     click: true,
-     value: 'Mensaje virtual',
-     valueStyles: {
-       'font-family': 'SfProBold',
-       'font-size': '13px',
-       color: '#202020',
-     },
-     subtexts: [
-       {
-         text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
-         styles: {
-           fontFamily: 'SfProRegular',
-           fontSize: '1rem',
-           color: '#7B7B7B',
-         },
-       },
-     ],
-   },
-   {
-     status: true,
-     click: true,
-     value: 'Mensaje impreso',
-     valueStyles: {
-       'font-family': 'SfProBold',
-       'font-size': '13px',
-       color: '#202020',
-     },
-     subtexts: [
-       {
-         text: `Agregue texto a la tarjeta.`,
-         styles: {
-           fontFamily: 'SfProRegular',
-           fontSize: '1rem',
-           color: '#7B7B7B',
-         },
-       },
-     ],
-   },
- ];
+  {
+    status: true,
+    click: true,
+    value: 'No tendrá mensaje de regalo',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Con mensaje virtual e impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta y texto a la tarjeta impresa.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje virtual',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Para compartir fotos, videos, canciones desde el qrcode de la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+  {
+    status: true,
+    click: true,
+    value: 'Mensaje impreso',
+    valueStyles: {
+      'font-family': 'SfProBold',
+      'font-size': '13px',
+      color: '#202020',
+    },
+    subtexts: [
+      {
+        text: `Agregue texto a la tarjeta.`,
+        styles: {
+          fontFamily: 'SfProRegular',
+          fontSize: '1rem',
+          color: '#7B7B7B',
+        },
+      },
+    ],
+  },
+];
 
 @Component({
   selector: 'app-checkout',
@@ -123,9 +123,9 @@ export class CheckoutComponent implements OnInit {
   };
   logged: boolean;
   env: string = environment.assetsUrl;
-  missingOrderData: boolean;
   options: OptionAnswerSelector[] = options;
   selectedPostOption: number;
+  missingOrderData: boolean;
   postSlideImage: string | ArrayBuffer;
 
   constructor(
@@ -144,13 +144,13 @@ export class CheckoutComponent implements OnInit {
   async setCustomizerPreview() {
     this.customizer =
       this.headerService.customizer ||
-      this.headerService.getCustomizer(this.headerService.saleflow?._id);
+      this.headerService.getCustomizer(this.headerService.saleflow._id);
     if (!this.customizer) return;
     this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
     this.items[0].images[0] = this.customizerPreview?.base64;
     this.payment =
       (this.items[0].qualityQuantity.price +
-        this.order.products[0].amount *
+        this.headerService.order.products[0].amount *
           this.items[0].params[0].values[0].price) *
       1.18;
     // Customizer data table
@@ -163,7 +163,8 @@ export class CheckoutComponent implements OnInit {
         value: printType,
       });
     const selectedQuality = this.items[0].params[1].values.find(
-      (value) => value._id === this.order.products[0].params[1].paramValue
+      (value) =>
+        value._id === this.headerService.order.products[0].params[1].paramValue
     )?.name;
     if (selectedQuality)
       this.customizerDetails.push({
@@ -232,12 +233,16 @@ export class CheckoutComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-    await this.headerService.fetchSaleflow(saleflowId);
-    this.order = this.headerService.getOrder(this.headerService.saleflow._id);
     this.items = this.headerService.getItems(this.headerService.saleflow._id);
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost(this.headerService.saleflow._id);
+    if (this.post?.slides?.length) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.postSlideImage = reader.result;
+      };
+      reader.readAsDataURL(this.post.slides[0].media);
+    }
     this.deliveryLocation = this.headerService.getLocation(
       this.headerService.saleflow._id
     );
@@ -295,12 +300,8 @@ export class CheckoutComponent implements OnInit {
         break;
       }
       case 'message': {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.post = null;
+        this.headerService.emptyPost(this.headerService.saleflow._id);
         break;
       }
       case 'address': {
@@ -364,6 +365,31 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    if (this.missingOrderData) {
+      if (
+        this.headerService.saleflow?.module?.appointment?.isActive &&
+        this.headerService.saleflow.module?.appointment?.calendar?._id &&
+        !this.reservation
+      ) {
+        this.router.navigate([
+          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+        ]);
+        return;
+      }
+      if (
+        this.headerService.saleflow.module?.delivery &&
+        !this.deliveryLocation
+      ) {
+        this.router.navigate(
+          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
+          {
+            replaceUrl: true,
+          }
+        );
+        return;
+      }
+      return;
+    }
     this.disableButton = true;
     lockUI();
     const userInput = JSON.parse(
@@ -381,9 +407,12 @@ export class CheckoutComponent implements OnInit {
       );
       localStorage.setItem('registered-user', JSON.stringify(user));
     }
-    this.order.products[0].saleflow = this.headerService.saleflow._id;
-    this.order.products[0].deliveryLocation = this.deliveryLocation;
-    if (this.reservation) this.order.products[0].reservation = this.reservation;
+    this.headerService.order.products[0].saleflow =
+      this.headerService.saleflow._id;
+    this.headerService.order.products[0].deliveryLocation =
+      this.deliveryLocation;
+    if (this.reservation)
+      this.headerService.order.products[0].reservation = this.reservation;
     // ---------------------- Managing Customizer ----------------------
     if (this.customizer) {
       localStorage.removeItem('customizerFile');
@@ -403,7 +432,7 @@ export class CheckoutComponent implements OnInit {
         await this.customizerValueService.createCustomizerValue(
           this.customizer
         );
-      this.order.products[0].customizer = customizerId;
+      this.headerService.order.products[0].customizer = customizerId;
       this.headerService.customizer = null;
       this.headerService.customizerData = null;
     }
@@ -412,7 +441,7 @@ export class CheckoutComponent implements OnInit {
     if (this.headerService.saleflow.module?.post) {
       const postResult = (await this.postsService.createPost(this.post))
         ?.createPost?._id;
-      this.order.products[0].post = postResult;
+      this.headerService.order.products[0].post = postResult;
     }
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
@@ -421,14 +450,16 @@ export class CheckoutComponent implements OnInit {
         this.headerService.saleflow._id
       );
       if (this.headerService.user && !anonymous) {
-        createdOrder = (await this.orderService.createOrder(this.order))
-          .createOrder._id;
+        createdOrder = (
+          await this.orderService.createOrder(this.headerService.order)
+        ).createOrder._id;
       } else {
-        createdOrder = (await this.orderService.createPreOrder(this.order))
-          ?.createPreOrder._id;
+        createdOrder = (
+          await this.orderService.createPreOrder(this.headerService.order)
+        )?.createPreOrder._id;
       }
       this.headerService.deleteSaleflowOrder(this.headerService.saleflow._id);
-      this.headerService.resetIsComplete();
+      this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
@@ -450,42 +481,9 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
-        const fullLink = `/ecommerce/order-info/${createdOrder}`;
-        const order = (await this.orderService.order(createdOrder)).order;
-        let address = '';
-        const location = order.items[0].deliveryLocation;
-        if (location.street) {
-          if (location.houseNumber)
-            address += '#' + location.houseNumber + ', ';
-          address += location.street + ', ';
-          if (location.referencePoint)
-            address += location.referencePoint + ', ';
-          address += location.city + ', República Dominicana';
-          if (location.note) address += ` (nota: ${location.note})`;
-        } else {
-          address = location.nickName;
-        }
-        let giftMessage = '';
-        if (this.post?.from) giftMessage += 'De: ' + this.post.from + '\n';
-        if (this.post?.targets?.[0]?.name)
-          giftMessage += 'Para: ' + this.post.targets[0].name + '\n';
-        if (this.post?.message) giftMessage += 'Mensaje: ' + this.post.message;
-        const message = `*FACTURA ${formatID(
-          order.dateId
-        )} Y ARTÍCULOS COMPRADOS POR MONTO $${this.payment.toLocaleString(
-          'es-MX'
-        )}: ${fullLink}*\n\nComprador: ${
-          this.headerService.user?.name ||
-          this.headerService.user?.phone ||
-          this.headerService.user?.email ||
-          'Anónimo'
-        }\n\nDirección: ${address}\n\n${
-          giftMessage ? 'Mensaje en la tarjetita de regalo: ' + giftMessage : ''
-        }`;
-        this.router.navigate([fullLink], {
+        this.router.navigate([`/ecommerce/order-detail/${createdOrder}`], {
           replaceUrl: true,
         });
-        window.location.href = message;
         return;
       }
       unlockUI();
@@ -498,7 +496,7 @@ export class CheckoutComponent implements OnInit {
 
   async checkLogged() {
     try {
-      const anonymous = await this.headerService.getOrderAnonymous(
+      const anonymous = this.headerService.getOrderAnonymous(
         this.headerService.saleflow._id
       );
       const registeredUser = JSON.parse(
@@ -515,46 +513,50 @@ export class CheckoutComponent implements OnInit {
   }
 
   selectSelect(index: number) {
-   switch (index) {
-     case 0: {
-       this.post = {
-         message: '',
-         targets: [
-           {
-             name: '',
-             emailOrPhone: '',
-           },
-         ],
-         from: '',
-         socialNetworks: [
-           {
-             url: '',
-           },
-         ],
-       };
-       this.headerService.NFstorePost(this.post);
-       break;
-     }
-     case 1: {
-       break;
-     }
-     case 2: {
-       this.router.navigate([`../create-article`], {
-         relativeTo: this.route,
-         replaceUrl: true,
-       });
-       break;
-     }
-     case 3: {
-       this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
-       this.router.navigate([`../create-giftcard`], {
-         relativeTo: this.route,
-         replaceUrl: true,
-       });
-       break;
-     }
-   }
- }
+    switch (index) {
+      case 0: {
+        this.post = {
+          message: '',
+          targets: [
+            {
+              name: '',
+              emailOrPhone: '',
+            },
+          ],
+          from: '',
+          socialNetworks: [
+            {
+              url: '',
+            },
+          ],
+        };
+        this.headerService.storePost(
+          this.headerService.saleflow._id,
+          this.post
+        );
+        break;
+      }
+      case 1: {
+        break;
+      }
+      case 2: {
+        // this.router.navigate([`ecommerce/create-article`], {
+        //   replaceUrl: true,
+        // });
+        break;
+      }
+      case 3: {
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+        this.router.navigate(
+          [`/ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
+          {
+            replaceUrl: true,
+          }
+        );
+        break;
+      }
+    }
+  }
 
   mouseDown: boolean;
   startX: number;

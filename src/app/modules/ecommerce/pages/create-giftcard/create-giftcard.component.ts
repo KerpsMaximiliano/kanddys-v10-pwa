@@ -58,7 +58,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       params.unblockScrollBeforeCurrentStep();
     }
 
-    this.header.isComplete.message = true;
+    this.header.orderProgress.message = true;
     this.header.storeOrderProgress(this.header.saleflow._id);
     if (this.header.checkoutRoute) {
       this.router.navigate([this.header.checkoutRoute], {
@@ -366,7 +366,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           );
 
           try {
-            this.header.isComplete.message = true;
+            this.header.orderProgress.message = true;
             this.header.storeOrderProgress(this.header.saleflow._id);
             if (this.header.checkoutRoute) {
               this.router.navigate([this.header.checkoutRoute], {
