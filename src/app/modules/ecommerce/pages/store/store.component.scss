@@ -412,6 +412,9 @@ main {
   }
 
   .user-area {
+    display: flex;
+    align-items: baseline;
+    
     span {
       max-width: 77px;
       font-size: 13px;
