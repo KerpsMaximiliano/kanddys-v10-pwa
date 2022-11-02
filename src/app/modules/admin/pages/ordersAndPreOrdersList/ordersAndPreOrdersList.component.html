@@ -1,6 +1,6 @@
 <div
   class="header"
-  *ngIf="selectedTags.length === 0 && !expandedOrdersWithoutTags"
+  *ngIf="selectedTags.length === 0"
 >
   <div class="icon-and-title">
     <img
@@ -26,12 +26,12 @@
 
 <app-helper-headerv3
   *ngIf="
-    selectedTags.length > 0 || expandedOrdersWithoutTags || expandedTagOrders
+    selectedTags.length > 0
   "
   (arrowsClick)="resetSelectedTags()"
 ></app-helper-headerv3>
 
-<nav *ngIf="!selectedTags.length && !expandedOrdersWithoutTags">
+<nav *ngIf="!selectedTags.length">
   <button
     *ngFor="let button of buttons"
     [ngClass]="{
@@ -66,15 +66,15 @@
   </div>
   <ng-container [ngSwitch]="loadingStatus">
     <app-tags-carousell
-      *ngIf="!expandedTagOrders && !expandedOrdersWithoutTags"
       [tags]="tags"
       (tag)="handleTag($event)"
       [multipleTags]="true"
+      [selectedTagsIds]="getIdsOfSelectedTags()"
     ></app-tags-carousell>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <!-- WHEN THERE IS NOT AN EXPANDED TAG VIEW-->
-        <ng-container *ngIf="!expandedTagOrders && !expandedOrdersWithoutTags">
+        <ng-container>
           <!--
             SHOW OORDERS GROUPED PER TAG
           -->
@@ -189,9 +189,7 @@
               marginTop: '60px'
             }"
           >
-            <div class="group-title">
-              Ordenes sin tags
-            </div>
+            <div class="group-title">Ordenes sin tags</div>
             <div class="incomes-and-show-all">
               <div class="mb-3 middle">
                 <!--
@@ -201,9 +199,7 @@
                   }}
                 -->
               </div>
-              <div class="mb-3 text-right">
-                VER TODAS
-              </div>
+              <div class="mb-3 text-right">VER TODAS</div>
             </div>
           </div>
 
@@ -274,6 +270,7 @@
           </swiper>
         </ng-container>
 
+        <!--
         <ng-container *ngIf="expandedTagOrders">
           <div
             class="order all-orders-mode"
@@ -388,6 +385,7 @@
             </div>
           </div>
         </ng-container>
+        -->
       </div>
       <!--
         <button class="submit">Crea UNA NUEVA FACTURA</button>
@@ -400,31 +398,6 @@
       <p class="message">Cargando...</p>
     </div>
   </ng-container>
-</div>
-
-<div
-  class="orders-and-invoices-info"
-  *ngIf="!editable && selectedTagGroups.length > 0"
->
-  <img
-    [src]="env + '/double-arrow-up.png'"
-    (click)="navigate()"
-    alt="open info"
-  />
-  <span
-    >EN
-    {{ filteredNonRepeatingSelectedTagGroupOrders.length }}
-    FACTURAS</span
-  >
-  <span>/</span>
-  <span
-    >$
-    {{
-      getTotalAmountOfMoneySpentOnEachTagGroup(
-        filteredNonRepeatingSelectedTagGroupOrders
-      ) | number: "1.2-2"
-    }}
-  </span>
 </div>
 
 <app-sticky-button

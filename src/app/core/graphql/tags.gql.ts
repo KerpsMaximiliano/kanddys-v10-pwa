@@ -22,6 +22,7 @@ export const tagsByUser = gql`
       _id
 			name
       images
+      status
     }
   }
 `;

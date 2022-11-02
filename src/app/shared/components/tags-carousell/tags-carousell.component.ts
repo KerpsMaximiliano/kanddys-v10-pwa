@@ -13,7 +13,7 @@ export class TagsCarousellComponent implements OnInit {
     spaceBetween: 5,
   };
   @Output('tag') tag: EventEmitter<any> = new EventEmitter();
-  selectedTagsIds: string[] = [];
+  @Input() selectedTagsIds: string[] = [];
   @Input('tags') tags: any = [];
   @Input('multipleTags') multipleTags: boolean = false;
   @Input('border') border: string = '#e9e371';

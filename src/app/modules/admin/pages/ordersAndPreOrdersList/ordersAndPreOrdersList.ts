@@ -46,28 +46,10 @@ export class OrdersAndPreOrdersList implements OnInit {
   typeOfList: string;
   tags: Array<Tag> = [];
   selectedTags: Array<Tag> = [];
-  selectedOrdersWithoutTags: boolean;
   tagGroups: Array<TagGroup> = [];
   tagsHashTable: Record<string, Tag> = {};
-  ordersPerTagHashTable: Record<string, Array<ItemOrder>> = {};
-  selectedTagGroups: Array<TagGroup> = [];
-  nonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
-  filteredNonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
-  filteredTagGroups: Array<TagGroup> = [];
-  expandedTagOrders: {
-    tag: Tag;
-    orders: ItemOrder[];
-  } = null;
-  filteredExpandedTagOrders: {
-    tag: Tag;
-    orders: ItemOrder[];
-  } = null;
-  expandedOrdersWithoutTags: Array<ItemOrder> = null;
-  filteredExpandedOrdersWithoutTags: Array<ItemOrder> = null;
-  detailedOrdersWithoutTags: ItemOrder[] = [];
   ordersList: ItemOrder[] = [];
   ordersWithoutTags: ItemOrder[] = [];
-  filteredOrdersWithoutTags: ItemOrder[] = [];
   defaultMerchant: Merchant;
   ordersByMerchantLimit: number = 6000;
   ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
@@ -388,6 +370,10 @@ export class OrdersAndPreOrdersList implements OnInit {
     }
   }
 
+  getIdsOfSelectedTags() {
+    return this.selectedTags.map((tag) => tag._id);
+  }
+
   async loadOrders() {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
@@ -464,8 +450,6 @@ export class OrdersAndPreOrdersList implements OnInit {
     }));
     this.ordersWithoutTags = [];
     // this.tagGroups = [];
-    this.selectedTagGroups = [];
-    this.filteredTagGroups = [];
     this.selectedTags = [];
     this.ordersList = [];
     this.loadOrders();
@@ -484,38 +468,11 @@ export class OrdersAndPreOrdersList implements OnInit {
         : [seletedTag];
       this.selectedTags = value;
     }
-
-    const isTheClickedTagAlreadySelected = this.selectedTagGroups.find(
-      (tagGroup) => tagGroup.tag._id === seletedTag._id
-    );
-  }
-
-  viewExpandedTagOrders(tagGroup: TagGroup) {
-    this.selectedTags.push(tagGroup.tag);
-    this.expandedTagOrders = tagGroup;
-    this.filteredExpandedTagOrders = this.expandedTagOrders;
-  }
-
-  viewExpandedOrdersWithoutTags(ordersWithoutTags: Array<ItemOrder>) {
-    this.expandedOrdersWithoutTags = ordersWithoutTags;
-    this.filteredExpandedOrdersWithoutTags = ordersWithoutTags;
   }
 
   resetSelectedTags(): void {
     this.selectedTags = [];
-    this.selectedTagGroups = [];
-    this.filteredNonRepeatingSelectedTagGroupOrders = [];
-    this.nonRepeatingSelectedTagGroupOrders = [];
-
-    //this.filteredTagGroups = this.tagGroups;
-
-    if (this.expandedTagOrders) {
-      this.expandedTagOrders = null;
-    }
-
-    if (this.expandedOrdersWithoutTags) {
-      this.expandedOrdersWithoutTags = null;
-    }
+    this.tags = [...this.tags];
   }
 
   goToOrderInfo(orderId: string) {
