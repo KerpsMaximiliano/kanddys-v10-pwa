@@ -230,6 +230,11 @@ export const listItems = gql`
       hasExtraPrice
       showImages
       tags
+      visitorCounter {
+        entity
+        counter
+        reference
+      }
       category {
         _id
         name

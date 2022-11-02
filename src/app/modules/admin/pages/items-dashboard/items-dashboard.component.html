@@ -356,7 +356,11 @@
   <!-- HIGHLIGHTED ITEMS SWIPER-->
   <section
     class="highlited-items-area"
-    *ngIf="highlightedItems.length > 0 && selectedTags.length === 0 && itemSearchbar.value === ''"
+    *ngIf="
+      highlightedItems.length > 0 &&
+      selectedTags.length === 0 &&
+      itemSearchbar.value === ''
+    "
   >
     <div class="title-and-options">
       <h2 class="title">Destacados</h2>
@@ -404,7 +408,7 @@
           [ngStyle]="{
             width: 'auto',
             paddingBottom: '10px',
-            paddingTop: '10px',
+            paddingTop: '19px',
             paddingRight: '16.5px'
           }"
         >
@@ -413,6 +417,8 @@
             [itemId]="item._id"
             [menuCallback]="openItemOptionsDialog"
             [type]="4"
+            [showViews]="true"
+            [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
             [itemParams]="item.params"
@@ -445,7 +451,7 @@
 
   <!--SHOWS ITEMS GROUPED BY TAGS-->
   <section class="items-by-tag-grid">
-    <div class="title-and-options">
+    <div class="title-and-options" style="padding-top: 37px;">
       <h2 class="title">Todos los productos</h2>
 
       <div class="dot-trio" (click)="openItemManagementDialog()">
@@ -484,7 +490,10 @@
     </p>
 
     <div class="saleflows-item-grid" *ngIf="allItems.length">
-      <div class="capsize" *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''">
+      <div
+        class="capsize"
+        *ngIf="selectedTags.length === 0 && itemSearchbar.value === ''"
+      >
         <app-saleflow-item
           [type]="'ADD_NEW_ITEM'"
           (itemClicked)="goToCreateItem()"
@@ -496,6 +505,8 @@
           [itemId]="item._id"
           [menuCallback]="openItemOptionsDialog"
           [type]="4"
+          [showViews]="true"
+          [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
           [inactive]="
             item.status != 'active' && item.status != 'featured' ? true : false
           "

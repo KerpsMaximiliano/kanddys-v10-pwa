@@ -27,6 +27,8 @@ export class SaleflowItemComponent implements OnInit {
   @Input() showPrice: boolean;
   @Input() showDescription: boolean;
   @Input() income: number;
+  @Input() viewsCounter: number = 0;
+  @Input() showViews: boolean;
   // new
   @Input() imgURL: string;
   @Input() name: string;

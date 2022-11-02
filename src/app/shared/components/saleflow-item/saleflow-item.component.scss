@@ -316,6 +316,8 @@
     }
   }
 
+ 
+
   .checkBox {
     margin-top: 17px;
     width: 100%;
@@ -699,4 +701,18 @@
   filter: brightness(0) invert(1);
   width: 19px;
   height: 15px;
+}
+
+.views {
+  color: #7b7b7b;
+  font-size: 16px;
+  font-family: SfProLight;
+
+
+  &.inactiveViews {
+    background-color: transparent;
+    color: white;
+    padding-right: 9px;
+    margin-left: auto;
+  }
 }

@@ -11,7 +11,7 @@
 .search-bar-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 0px 15px 0px 20px;
+  padding: 0px 14px 0px 19px;
   padding-top: 12px;
 
   .search-bar {
@@ -25,6 +25,10 @@
     text-align: left;
     height: fit-content;
     padding: 18px 20px 11px 18px;
+    box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-appearance: none;
   }
 
   button {
@@ -113,7 +117,7 @@
   color: white;
   z-index: 50;
   position: relative;
-  margin-top: 19px;
+  margin-top: 25px;
   opacity: 0;
 
   &.visible {
@@ -213,6 +217,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 7px;
   }
 }
 
@@ -274,7 +279,7 @@
   }
 
   .highlited-items-swiper {
-    padding-top: 13px;
+    padding-top: 0px;
     padding-left: 28px;
   }
 }
@@ -284,9 +289,9 @@
   padding: 23px 18px 11px 25px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  -moz-column-gap: 14px;
-  column-gap: 14px;
-  row-gap: 25px;
+  -moz-column-gap: 13px;
+  column-gap: 13px;
+  row-gap: 22px;
   overflow-x: hidden;
   justify-items: center;
   .capsize {

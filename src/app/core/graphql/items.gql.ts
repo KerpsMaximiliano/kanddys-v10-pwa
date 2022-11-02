@@ -142,6 +142,11 @@ export const item = gql`
       showImages
       notifications
       tags
+      visitorCounter {
+        entity
+        counter
+        reference
+      }
       calendar {
         _id
       }

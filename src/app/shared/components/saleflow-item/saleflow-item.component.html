@@ -291,6 +291,12 @@
           </div>
         </div>
 
+        <div class="views"
+          [ngClass]="{
+            inactiveViews: inactive && !selectable
+          }"
+        *ngIf="showViews">{{ viewsCounter }} vistas</div>
+
         <div class="flex-column" *ngIf="inactive && !selectable">
           <img
             [src]="!icon2?.src ? env + '/closed-eye.svg' : env + icon2.src"
