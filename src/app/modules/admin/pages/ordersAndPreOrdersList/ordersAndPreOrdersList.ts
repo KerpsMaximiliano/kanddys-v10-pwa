@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
@@ -46,6 +46,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   typeOfList: string;
   tags: Array<Tag> = [];
   selectedTags: Array<Tag> = [];
+  selectedOrdersWithoutTags: boolean;
   tagGroups: Array<TagGroup> = [];
   tagsHashTable: Record<string, Tag> = {};
   ordersPerTagHashTable: Record<string, Array<ItemOrder>> = {};
@@ -53,7 +54,6 @@ export class OrdersAndPreOrdersList implements OnInit {
   nonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
   filteredNonRepeatingSelectedTagGroupOrders: Array<ItemOrder> = [];
   filteredTagGroups: Array<TagGroup> = [];
-  tagGroupsToRender: 'ALL' | 'SELECTED_TAGS' = 'ALL';
   expandedTagOrders: {
     tag: Tag;
     orders: ItemOrder[];
@@ -91,6 +91,23 @@ export class OrdersAndPreOrdersList implements OnInit {
   merchantIncome: number = 0;
   env = environment.assetsUrl;
   ordersAmount: number = 0;
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+    page: 1,
+    pageSize: 5,
+    status: 'complete',
+  };
+
+  @HostListener('window:scroll', [])
+  async infinitePagination() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if (this.paginationState.status === 'complete') {
+      }
+    }
+  }
 
   constructor(
     private merchantsService: MerchantsService,
@@ -136,6 +153,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       await this.loadOrders();
 
       this.searchBar.valueChanges.subscribe((change: string) => {
+        /*
         if (!this.selectedTagGroups.length) {
           this.filteredTagGroups.forEach((tagGroup) => {
             if (this.ordersPerTagHashTable[tagGroup.tag._id]) {
@@ -252,6 +270,7 @@ export class OrdersAndPreOrdersList implements OnInit {
               return false;
             });
         }
+        */
       });
     });
   }
@@ -282,6 +301,93 @@ export class OrdersAndPreOrdersList implements OnInit {
     };
   };
 
+  async loadOrdersWithoutTags() {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: 10,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+        tags: {
+          $size: 0,
+        },
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    if (ordersByMerchant) {
+      this.ordersWithoutTags = ordersByMerchant;
+    }
+  }
+
+  async loadOrdersAssociatedToTag(
+    restartPagination = false,
+    triggeredFromScroll = false
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+        tags: this.selectedTags.map((tag) => tag._id),
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    if (ordersByMerchant) {
+      this.ordersWithoutTags = ordersByMerchant;
+    }
+
+    if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
+      this.paginationState.page--;
+
+    if (ordersByMerchant && ordersByMerchant.length > 0) {
+      if (this.paginationState.page === 1) {
+        this.ordersList = ordersByMerchant;
+      } else {
+        this.ordersList = this.ordersList.concat(ordersByMerchant);
+      }
+
+      const tagsAndOrdersHashtable: Record<string, Array<ItemOrder>> = {};
+
+      this.paginationState.status = 'complete';
+    }
+
+    if (
+      ordersByMerchant.length === 0 &&
+      this.searchBar.value !== '' &&
+      !triggeredFromScroll
+    ) {
+      this.allItems = [];
+    }
+  }
+
   async loadOrders() {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
@@ -304,66 +410,15 @@ export class OrdersAndPreOrdersList implements OnInit {
       );
     }
 
+    this.tagGroups = [];
     for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
-      console.log('respuesta', orderByMerchantResponse);
+      if ('orders' in orderByMerchantResponse)
+        this.tagGroups.push(orderByMerchantResponse);
     }
 
-    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
-      this.defaultMerchant._id,
-      ordersByMerchantPagination
-    );
+    await this.loadOrdersWithoutTags();
 
-    this.ordersList = ordersByMerchant;
-
-    this.organizeOrdersByTag();
-
-    const ordersTotalResponse = await this.ordersService.ordersTotal(
-      ['in progress', 'to confirm', 'completed'],
-      this.merchantsService.merchantData._id
-    );
-
-    const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
-      this.merchantsService.merchantData._id
-    );
-
-    if (
-      ordersTotalResponse &&
-      ordersTotalResponse !== null &&
-      incomeMerchantResponse &&
-      incomeMerchantResponse !== null
-    ) {
-      this.ordersAmount = ordersTotalResponse.length;
-      this.merchantIncome = incomeMerchantResponse;
-    }
-
-    if (this.ordersList.length === 0) this.loadingStatus = 'empty';
-    else if (this.ordersList.length > 0) this.loadingStatus = 'complete';
-  }
-
-  organizeOrdersByTag() {
-    this.ordersList.forEach((order) => {
-      if (order.tags.length > 0) {
-        order.tags.forEach((orderTagId) => {
-          const tagGroupIndex = this.tagGroups.findIndex(
-            (tagGroup) => tagGroup.tag._id === orderTagId
-          );
-
-          this.tagGroups[tagGroupIndex].orders.push(order);
-
-          if (!this.ordersPerTagHashTable[orderTagId])
-            this.ordersPerTagHashTable[orderTagId] = [order];
-          else {
-            this.ordersPerTagHashTable[orderTagId].push(order);
-          }
-        });
-      } else {
-        this.ordersWithoutTags.push(order);
-      }
-    });
-
-    this.filteredOrdersWithoutTags = this.ordersWithoutTags;
-
-    this.filteredTagGroups = this.tagGroups;
+    this.loadingStatus = 'complete';
   }
 
   getTotalAmountOfMoneySpentInOrder(subtotals: Array<OrderSubtotal>): number {
@@ -433,44 +488,6 @@ export class OrdersAndPreOrdersList implements OnInit {
     const isTheClickedTagAlreadySelected = this.selectedTagGroups.find(
       (tagGroup) => tagGroup.tag._id === seletedTag._id
     );
-
-    if (isTheClickedTagAlreadySelected)
-      this.selectedTagGroups = this.selectedTagGroups.filter(
-        (tagGroup) => tagGroup.tag._id !== seletedTag._id
-      );
-    else {
-      const tagGroup = this.tagGroups.find(
-        (tagGroup) => tagGroup.tag._id === seletedTag._id
-      );
-
-      if (tagGroup) {
-        this.selectedTagGroups.push(tagGroup);
-      }
-    }
-
-    if (this.selectedTagGroups.length > 0) {
-      const alreadyFoundOrders = {};
-      let ordersForEachTag: Array<ItemOrder> = [];
-      this.selectedTagGroups.forEach((tagGroup) => {
-        ordersForEachTag = ordersForEachTag.concat(tagGroup.orders);
-      });
-
-      const nonRepeatingOrders: Array<ItemOrder> = [];
-      ordersForEachTag.forEach((order) => {
-        if (!alreadyFoundOrders[order._id]) {
-          alreadyFoundOrders[order._id] = true;
-          nonRepeatingOrders.push(order);
-        }
-      });
-
-      this.nonRepeatingSelectedTagGroupOrders = nonRepeatingOrders;
-      this.filteredNonRepeatingSelectedTagGroupOrders =
-        this.nonRepeatingSelectedTagGroupOrders;
-
-      this.filteredTagGroups = this.selectedTagGroups;
-    } else {
-      this.filteredTagGroups = this.tagGroups;
-    }
   }
 
   viewExpandedTagOrders(tagGroup: TagGroup) {
@@ -490,7 +507,7 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.filteredNonRepeatingSelectedTagGroupOrders = [];
     this.nonRepeatingSelectedTagGroupOrders = [];
 
-    this.filteredTagGroups = this.tagGroups;
+    //this.filteredTagGroups = this.tagGroups;
 
     if (this.expandedTagOrders) {
       this.expandedTagOrders = null;
