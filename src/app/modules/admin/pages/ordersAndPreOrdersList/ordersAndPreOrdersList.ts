@@ -86,7 +86,11 @@ export class OrdersAndPreOrdersList implements OnInit {
   @HostListener('window:scroll', [])
   async infinitePagination() {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      if (this.paginationState.status === 'complete') {
+      if (
+        this.paginationState.status === 'complete' &&
+        this.selectedTags.length > 0
+      ) {
+        this.loadOrdersAssociatedToTag(false, true);
       }
     }
   }
@@ -468,6 +472,8 @@ export class OrdersAndPreOrdersList implements OnInit {
         : [seletedTag];
       this.selectedTags = value;
     }
+
+    this.loadOrdersAssociatedToTag(true);
   }
 
   resetSelectedTags(): void {
