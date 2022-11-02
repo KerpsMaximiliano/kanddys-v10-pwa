@@ -13,12 +13,13 @@ export class TagsCarousellComponent implements OnInit {
     spaceBetween: 5,
   };
   @Output('tag') tag: EventEmitter<any> = new EventEmitter();
-  _tag: string[] = [];
+  selectedTagsIds: string[] = [];
   @Input('tags') tags: any = [];
   @Input('multipleTags') multipleTags: boolean = false;
   @Input('border') border: string = '#e9e371';
   @Input('selectedBorder') selectedBorder: string = '#e9e371';
   @Input('borderWidth') borderWidth: string = '3px';
+  @Input('shouldHaveBorder') shouldHaveBorder: boolean = true;
   @Input('circleBackground') circleBackground: string = '#fff';
   @Input('selectedBackground') selectedBackground: string = '#fff';
   @Input('background') background: string = 'transparent';
@@ -41,11 +42,14 @@ export class TagsCarousellComponent implements OnInit {
   handleTag(tag: any): void {
     this.tag.emit(tag);
     const { _id } = tag;
-    if (this._tag.includes(_id))
-      this._tag = this._tag.filter((tg) => tg !== _id);
+    console.log();
+    if (this.selectedTagsIds.includes(_id))
+      this.selectedTagsIds = this.selectedTagsIds.filter(
+        (alreadySelectedTagId) => alreadySelectedTagId !== _id
+      );
     else {
-      const value = this.multipleTags ? [...this._tag, _id] : [_id];
-      this._tag = value;
+      const value = this.multipleTags ? [...this.selectedTagsIds, _id] : [_id];
+      this.selectedTagsIds = value;
     }
   }
 }

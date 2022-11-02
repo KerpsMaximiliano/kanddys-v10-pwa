@@ -384,7 +384,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.searchBar.value !== '' &&
       !triggeredFromScroll
     ) {
-      this.allItems = [];
+      this.ordersList = [];
     }
   }
 

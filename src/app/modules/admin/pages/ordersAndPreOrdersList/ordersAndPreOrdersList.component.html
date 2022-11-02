@@ -69,6 +69,7 @@
       *ngIf="!expandedTagOrders && !expandedOrdersWithoutTags"
       [tags]="tags"
       (tag)="handleTag($event)"
+      [multipleTags]="true"
     ></app-tags-carousell>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">

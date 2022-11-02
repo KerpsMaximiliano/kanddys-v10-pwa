@@ -16,9 +16,11 @@
         (click)="handleTag(tag)"
         class="circle"
         [style.border]="
-          borderWidth +
-          ' solid ' +
-          (_tag.includes(tag[_id]) ? selectedBorder : border)
+          selectedTagsIds.includes(tag[_id])
+              ? borderWidth +
+                ' solid ' +
+                selectedBorder
+              : 'none'
         "
         [style.backgroundColor]="circleBackground"
         [style.backgroundImage]="
@@ -30,7 +32,7 @@
         [style.color]="tagTitleColor"
         [style.fontSize]="fontSize"
         [style.fontFamily]="fontFamily"
-        [style.color]="_tag.includes(tag[_id]) ? selectedFontColor : fontColor"
+        [style.color]="selectedTagsIds.includes(tag[_id]) ? selectedFontColor : fontColor"
         (click)="handleTag(tag)"
       >
         {{ tag[property] }}
