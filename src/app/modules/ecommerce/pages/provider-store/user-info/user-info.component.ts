@@ -41,7 +41,7 @@ export class UserInfoComponent implements OnInit {
         }
       );
       this.router.navigate([`ecommerce/${this.header.saleflow._id}/checkout`]);
-      this.header.storeOrderAnonymous(this.header.saleflow._id);
+      this.header.storeOrderAnonymous();
       return;
     }
   }
@@ -58,7 +58,7 @@ export class UserInfoComponent implements OnInit {
       .subscribe((e) => {
         if (e.data)
           this.router.navigate([
-            `ecommerce/provider-store/${this.header.saleflow._id}/${this.header.items[0]._id}/${e.data}`,
+            `ecommerce/${this.header.saleflow._id}/provider-store/${this.header.items[0]._id}/${e.data}`,
           ]);
         sub.unsubscribe();
       });

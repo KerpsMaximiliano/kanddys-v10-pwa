@@ -143,8 +143,7 @@ export class CheckoutComponent implements OnInit {
 
   async setCustomizerPreview() {
     this.customizer =
-      this.headerService.customizer ||
-      this.headerService.getCustomizer(this.headerService.saleflow._id);
+      this.headerService.customizer || this.headerService.getCustomizer();
     if (!this.customizer) return;
     this.customizerPreview = JSON.parse(localStorage.getItem('customizerFile'));
     this.items[0].images[0] = this.customizerPreview?.base64;
@@ -233,9 +232,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.items = this.headerService.getItems(this.headerService.saleflow._id);
+    this.items = this.headerService.getItems();
     if (!this.items?.length) this.editOrder('item');
-    this.post = this.headerService.getPost(this.headerService.saleflow._id);
+    this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -243,16 +242,12 @@ export class CheckoutComponent implements OnInit {
       };
       reader.readAsDataURL(this.post.slides[0].media);
     }
-    this.deliveryLocation = this.headerService.getLocation(
-      this.headerService.saleflow._id
-    );
-    this.reservation = this.headerService.getReservation(
-      this.headerService.saleflow._id
-    ).reservation;
+    this.deliveryLocation = this.headerService.getLocation();
+    this.reservation = this.headerService.getReservation().reservation;
     if (this.reservation) {
       const fromDate = new Date(this.reservation.date.from);
       if (fromDate < new Date()) {
-        this.headerService.emptyReservation(this.headerService.saleflow._id);
+        this.headerService.emptyReservation();
         this.editOrder('reservation');
       }
       const untilDate = new Date(this.reservation.date.until);
@@ -291,40 +286,40 @@ export class CheckoutComponent implements OnInit {
     this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
     switch (mode) {
       case 'item': {
-        this.router.navigate(
-          [`ecommerce/store/${this.headerService.saleflow._id}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../store`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 'message': {
         this.post = null;
-        this.headerService.emptyPost(this.headerService.saleflow._id);
+        this.headerService.emptyPost();
         break;
       }
       case 'address': {
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
+        break;
+      }
+      case 'reservation': {
         this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
           {
-            replaceUrl: true,
+            relativeTo: this.route,
           }
         );
         break;
       }
-      case 'reservation': {
-        this.router.navigate([
-          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-        ]);
-        break;
-      }
       case 'customizer': {
         this.router.navigate(
-          [
-            `ecommerce/provider-store/${this.headerService.saleflow._id}/${this.items[0]._id}/quantity-and-quality`,
-          ],
+          [`../provider-store/${this.items[0]._id}/quantity-and-quality`],
           {
+            relativeTo: this.route,
             replaceUrl: true,
           }
         );
@@ -371,21 +366,23 @@ export class CheckoutComponent implements OnInit {
         this.headerService.saleflow.module?.appointment?.calendar?._id &&
         !this.reservation
       ) {
-        this.router.navigate([
-          `ecommerce/${this.headerService.saleflow._id}/reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
-        ]);
+        this.router.navigate(
+          [
+            `../reservations/${this.headerService.saleflow.module.appointment.calendar._id}`,
+          ],
+          {
+            relativeTo: this.route,
+          }
+        );
         return;
       }
       if (
         this.headerService.saleflow.module?.delivery &&
         !this.deliveryLocation
       ) {
-        this.router.navigate(
-          [`ecommerce/${this.headerService.saleflow._id}/new-address`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../new-address`], {
+          relativeTo: this.route,
+        });
         return;
       }
       return;
@@ -446,9 +443,7 @@ export class CheckoutComponent implements OnInit {
     // ++++++++++++++++++++++ Managing Post ++++++++++++++++++++++++++++
     try {
       let createdOrder: string;
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       if (this.headerService.user && !anonymous) {
         createdOrder = (
           await this.orderService.createOrder(this.headerService.order)
@@ -458,19 +453,17 @@ export class CheckoutComponent implements OnInit {
           await this.orderService.createPreOrder(this.headerService.order)
         )?.createPreOrder._id;
       }
-      this.headerService.deleteSaleflowOrder(this.headerService.saleflow._id);
+      this.headerService.deleteSaleflowOrder();
       this.headerService.resetOrderProgress();
       this.headerService.orderId = createdOrder;
       this.headerService.currentMessageOption = undefined;
       this.headerService.post = undefined;
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
-        this.router.navigate(
-          [`/ecommerce/payments/${this.headerService.orderId}`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../payments/${this.headerService.orderId}`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
       } else {
         if (!this.headerService.user || anonymous) {
           this.router.navigate([`/auth/login`], {
@@ -481,9 +474,15 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
-        this.router.navigate([`/ecommerce/order-detail/${createdOrder}`], {
-          replaceUrl: true,
-        });
+        this.router.navigate(
+          [
+            `../order-detail/${createdOrder}`,
+          ],
+          {
+            relativeTo: this.route,
+            replaceUrl: true,
+          }
+        );
         return;
       }
       unlockUI();
@@ -496,9 +495,7 @@ export class CheckoutComponent implements OnInit {
 
   async checkLogged() {
     try {
-      const anonymous = this.headerService.getOrderAnonymous(
-        this.headerService.saleflow._id
-      );
+      const anonymous = this.headerService.getOrderAnonymous();
       const registeredUser = JSON.parse(
         localStorage.getItem('registered-user')
       ) as User;
@@ -530,29 +527,25 @@ export class CheckoutComponent implements OnInit {
             },
           ],
         };
-        this.headerService.storePost(
-          this.headerService.saleflow._id,
-          this.post
-        );
+        this.headerService.storePost(this.post);
         break;
       }
       case 1: {
         break;
       }
       case 2: {
-        // this.router.navigate([`ecommerce/create-article`], {
+        // this.router.navigate([`../create-article`], {
+        //   relativeTo: this.route,
         //   replaceUrl: true,
         // });
         break;
       }
       case 3: {
         this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
-        this.router.navigate(
-          [`/ecommerce/${this.headerService.saleflow._id}/create-giftcard`],
-          {
-            replaceUrl: true,
-          }
-        );
+        this.router.navigate([`../create-giftcard`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
     }

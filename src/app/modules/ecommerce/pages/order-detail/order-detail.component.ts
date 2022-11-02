@@ -85,7 +85,7 @@ export class OrderDetailComponent implements OnInit {
       callback: async () => {
         await this.ngNavigatorShareService.share({
           title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+          url: `${this.URI}/ecommerce/${this.order.items[0].saleflow._id}/order-detail/${this.order.items[0].saleflow.headline}`,
         });
       },
     },
@@ -330,7 +330,7 @@ export class OrderDetailComponent implements OnInit {
         }
       }
 
-      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+      const fullLink = `${environment.uri}/ecommerce/${this.headerService.saleflow._id}/order-detail/${this.order._id}`;
       const message = `*🐝 FACTURA ${formatID(
         this.order.dateId
       )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -469,7 +469,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   sendMessage() {
-    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    const fullLink = `${environment.uri}/ecommerce/${this.headerService.saleflow._id}/order-detail/${this.order._id}`;
     const message = `*🐝 FACTURA ${formatID(
       this.order.dateId
     )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -510,7 +510,7 @@ export class OrderDetailComponent implements OnInit {
 
   goToStore() {
     this.router.navigate([
-      `/ecommerce/store/${this.order.items[0].saleflow._id}`,
+      `/ecommerce/${this.order.items[0].saleflow._id}/store`,
     ]);
   }
 

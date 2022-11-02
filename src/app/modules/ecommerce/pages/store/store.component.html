@@ -6,14 +6,14 @@
       *ngIf="!hasCustomizer"
       [mainText]="{
         text:
-          (saleflowData?.merchant?.name.length < 38
-            ? saleflowData?.merchant?.name
-            : saleflowData?.merchant?.name.split(' ')['0']) || 'Tienda',
+          (header.saleflow?.merchant?.name.length < 38
+            ? header.saleflow?.merchant?.name
+            : header.saleflow?.merchant?.name.split(' ')['0']) || 'Tienda',
         fontFamily: 'SfProBold',
         fontSize: '21px',
         color: '#FFF'
       }"
-      bgColor="#2874AD"
+      [bgColor]="header.colorTheme"
       [dots]="{
         active: header.user ? true : false,
         func: openLogoutDialog
@@ -28,11 +28,11 @@
       [ngStyle]="{ paddingBottom: '36px' }"
     ></div>
 
-    <div class="header-bg" *ngIf="saleflowData && hasCustomizer">
+    <div class="header-bg" *ngIf="hasCustomizer">
       <app-header-info
-        [profileImage]="saleflowData.banner"
-        [title]="saleflowData.headline"
-        [description]="saleflowData.subheadline"
+        [profileImage]="header.saleflow.banner"
+        [title]="header.saleflow.headline"
+        [description]="header.saleflow.subheadline"
         [route]="contactLandingRoute"
         type="route"
       ></app-header-info>
@@ -138,9 +138,9 @@
             </h2>
 
             <div class="dot-trio" (click)="seeCategories(i)">
-              <div class="dot"> </div>
-              <div class="dot"> </div>
-              <div class="dot"> </div>
+              <div class="dot"> </div>
+              <div class="dot"> </div>
+              <div class="dot"> </div>
             </div>
           </div>
 

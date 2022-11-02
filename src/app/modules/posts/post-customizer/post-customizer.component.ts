@@ -2586,11 +2586,11 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
         lines,
         preview: file,
       };
-      const items = this.header.getItems(this.header.getSaleflow()._id);
-      this.header.emptyItems(this.header.getSaleflow()._id);
+      const items = this.header.getItems();
+      this.header.emptyItems();
       this.header.items[0].images[0] = url;
       items[0].images[0] = url;
-      this.header.storeItem(this.header.getSaleflow()._id, items[0]);
+      this.header.storeItem(items[0]);
       if (!this.customizerValueID) {
         unlockUI();
         this.saveDataInHeader(customizerValues);
@@ -2600,15 +2600,15 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
           this.header.saleflow.module.post.isActive
         )
           this.router.navigate([
-            `ecommerce/provider-store/${
+            `ecommerce/${
               this.header.saleflow?._id || this.header.getSaleflow()?._id
-            }/${this.itemId}/gift-message`,
+            }/provider-store/${this.itemId}/gift-message`,
           ]);
         else
           this.router.navigate([
-            `ecommerce/provider-store/${
+            `ecommerce/${
               this.header.saleflow?._id || this.header.getSaleflow()?._id
-            }/${this.itemId}/user-info`,
+            }/provider-store/${this.itemId}/user-info`,
           ]);
       } else {
         await this.customizerValueService.updateCustomizerValue(
@@ -2639,10 +2639,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
       id: this.customizerRuleID,
     };
 
-    this.header.storeCustomizer(
-      this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-      {...customizerValues}
-    );
+    this.header.storeCustomizer({ ...customizerValues });
     this.header.orderProgress.customizer = true;
   }
 
@@ -2651,9 +2648,9 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
       this.router.navigate([`/ecommerce/order-detail/${this.itemId}`]);
     else
       this.router.navigate([
-        `/ecommerce/provider-store/${
+        `/ecommerce/${
           this.header.saleflow?._id || this.header.getSaleflow()?._id
-        }/${this.itemId}/quantity-and-quality`,
+        }/provider-store/${this.itemId}/quantity-and-quality`,
       ]);
   }
 

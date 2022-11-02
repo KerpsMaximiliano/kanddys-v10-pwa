@@ -286,8 +286,8 @@
   <app-sticky-button
     [mode]="
       !disableButton &&
-      ((headerService.saleflow?.module?.post && post) ||
-        !headerService.saleflow?.module?.post)
+      ((headerService.saleflow.module?.post && post) ||
+        !headerService.saleflow.module?.post)
         ? 'double'
         : 'disabled-fixed'
     "
