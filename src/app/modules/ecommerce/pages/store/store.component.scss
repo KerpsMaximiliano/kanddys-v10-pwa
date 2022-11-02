@@ -393,8 +393,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 21px;
-  padding-right: 23px;
+  padding-left: 25px;
+  padding-right: 25px;
   color: white;
   font-family: SfProBold;
   font-size: 21px;
@@ -408,14 +408,12 @@ main {
   z-index: 999;
 
   .title {
-    max-width: 56.7757%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: clamp(16px, 4vw, 21px);
   }
 
   .user-area {
     span {
+      max-width: 77px;
       font-size: 13px;
       font-family: RobotoRegular;
       margin-right: 5px;

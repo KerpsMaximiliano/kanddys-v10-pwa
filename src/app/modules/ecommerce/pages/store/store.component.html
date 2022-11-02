@@ -3,14 +3,20 @@
     <div class="header" *ngIf="selectedTags.length === 0">
       <div class="title">
         {{
-          (saleflowData?.merchant?.name.length < 26
+          saleflowData?.merchant?.name.length < 18
             ? "Bienvenido a " + saleflowData?.merchant?.name
-            : saleflowData?.merchant?.name.split(" ")["0"]) || "Tienda"
+            : "Bienvenido a " +
+                saleflowData?.merchant?.name.slice(0, 18) +
+                ".." || "Tienda"
         }}
       </div>
 
       <div class="user-area" (click)="openUserManagementDialog()">
-        <span *ngIf="user">{{ user.name || user.phone || user.email }}</span>
+        <span *ngIf="user">{{
+          (user.name || user.phone || user.email).length > 10
+            ? (user.name || user.phone || user.email).slice(0, 10) + ".."
+            : user.name || user.phone || user.email
+        }}</span>
         <img class="icon" [src]="env + '/user-white.svg'" />
       </div>
     </div>
