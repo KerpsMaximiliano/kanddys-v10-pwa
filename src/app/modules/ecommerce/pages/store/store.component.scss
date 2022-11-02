@@ -31,7 +31,10 @@ main {
     background-color: #ffffff;
     border: none;
     border-radius: 11px;
-    box-shadow: inset 0px 3px 5px lightgrey;
+    box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-appearance: none;
     font-family: "RobotoMedium";
     font-size: 1.063rem;
     color: #7b7b7b;
@@ -134,6 +137,9 @@ main {
       display: flex;
       align-items: center;
       box-shadow: 0px 4px 10px #ddd;
+      -webkit-box-shadow: 0px 4px 10px #ddd;
+      -moz-box-shadow: 0px 4px 10px #ddd;
+      -webkit-appearance: none;
       border-radius: 10px;
       cursor: pointer;
 
