@@ -18,6 +18,7 @@
     <app-helper-headerv3
       *ngIf="selectedTags.length > 0"
       (arrowsClick)="resetSelectedTags()"
+      (dotsClicked)="openUserManagementDialog()"
     ></app-helper-headerv3>
 
     <app-tags-selector

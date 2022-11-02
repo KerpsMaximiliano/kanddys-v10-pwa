@@ -560,7 +560,7 @@ export class StoreComponent implements OnInit {
   }
 
   //Same dialog as openDialog() but with StoreShare
-  openUserManagementDialog() {
+  openUserManagementDialog = () => {
     const list: StoreShareList[] = [
       {
         title: 'Menu de opciones',
