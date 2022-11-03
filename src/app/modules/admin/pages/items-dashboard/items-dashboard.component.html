@@ -16,18 +16,22 @@
   <app-helper-headerv3
     *ngIf="selectedTags.length > 0"
     (arrowsClick)="resetSelectedTags()"
-    [showSearch]="true"
+    [showSearch]="!showSearchbar"
     (searchClick)="makeSearchBarVisible()"
   ></app-helper-headerv3>
 
   <app-tags-selector
     *ngIf="selectedTags.length > 0"
-    [tags]="getSelectedTagsNames()"
-    [selectedBackground]="'#ffffff'"
+    [tags]="selectedTagsPermanent"
+    [multipleTags]="true"
+    [selectedBackground]="'#2874ad'"
+    [background]="'#ffffff'"
+    [selectedColor]="'#fff'"
+    [fillSelectedTagsOnStart]="true"
+    [useIdToRemoveOrAddTags]="true"
     [color]="'#2874ad'"
-    [containerStyles]="{
-      padding: '18px 18px 21px 18px'
-    }"
+    [useAlternativeOutput]="true"
+    (tagSelect2)="selectTagFromHeader($event)"
   ></app-tags-selector>
 
   <div class="helper-header-space" *ngIf="selectedTags.length === 0"></div>
@@ -326,28 +330,32 @@
     <swiper [config]="tagsSwiperConfig" *ngIf="tagsList.length > 0" #tagSwiper>
       <div
         class="tag-wrapper swiper-slide"
-        style="width: 81px !important"
-        *ngFor="let tag of tagsList; let tagIndex = index"
+        style="width: 81px !important; margin-right: 8px !important;"
+        *ngFor="let tag of unselectedTags; let tagIndex = index"
       >
-        <div
-          class="tag-image"
-          (click)="selectTag(tag, tagIndex)"
-          [ngStyle]="{
-            'background-image':
-              tag.images?.length > 0
-                ? 'url(' + tag.images[0] + ')'
-                : 'url(/assets/images/noimage.png)',
-            border: tag.selected ? 'solid 3px #e9e371' : 'none'
-          }"
-        >
-          <div
-            class="badge"
-            *ngIf="tag.status === 'disabled'"
-            [ngStyle]="{
-              'background-image': 'url(' + env + '/closed-eye-white.svg' + ')'
-            }"
-          ></div>
-        </div>
+        <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">
+          <ng-container *ngIf="tag2._id === tag._id">
+            <div
+              class="tag-image"
+              (click)="selectTag(tag, tagIndex)"
+              [ngStyle]="{
+                'background-image':
+                  tag.images?.length > 0
+                    ? 'url(' + tag.images[0] + ')'
+                    : 'url(/assets/images/noimage.png)'
+              }"
+            >
+              <div
+                class="badge"
+                *ngIf="tag.status === 'disabled'"
+                [ngStyle]="{
+                  'background-image':
+                    'url(' + env + '/closed-eye-white.svg' + ')'
+                }"
+              ></div>
+            </div>
+          </ng-container>
+        </ng-container>
         <div class="tag-id">#{{ tag.name }}</div>
       </div>
     </swiper>
@@ -418,7 +426,9 @@
             [menuCallback]="openItemOptionsDialog"
             [type]="4"
             [showViews]="true"
-            [viewsCounter]="item.visitorCounter ? item.visitorCounter.counter : 0"
+            [viewsCounter]="
+              item.visitorCounter ? item.visitorCounter.counter : 0
+            "
             [imgURL]="item.images ? item.images[0] : ''"
             [price]="item.pricing"
             [itemParams]="item.params"
@@ -451,7 +461,7 @@
 
   <!--SHOWS ITEMS GROUPED BY TAGS-->
   <section class="items-by-tag-grid">
-    <div class="title-and-options" style="padding-top: 37px;">
+    <div class="title-and-options" style="padding-top: 37px">
       <h2 class="title">Todos los productos</h2>
 
       <div class="dot-trio" (click)="openItemManagementDialog()">

@@ -1,18 +1,28 @@
-<div
-  class="tags-grid"
-  [style.background]="containerBackground"
-  [ngStyle]="containerStyles"
->
+<div class="tags-grid" [style.background]="containerBackground">
   <button
     *ngFor="let tg of tags"
-    [style.background]="tag.includes(tg) ? background : selectedBackground"
+    [style.background]="tag.includes(tg._id) ? selectedBackground : background"
     [style.border]="
-      '1px solid ' + (tag.includes(tg) ? selectedBackground : background)
+      '1px solid ' + (tag.includes(tg._id) ? background : selectedBackground)
     "
-    [style.color]="tag.includes(tg) ? selectedColor : color"
+    [style.color]="tag.includes(tg._id) ? selectedColor : color"
     class="tag"
     (click)="setTag(tg)"
   >
-    {{ tg }}
+    {{ tg.name }}
+    <img
+      *ngIf="tg.notify"
+      [src]="env + '/notification-outlined-badged.svg'"
+      alt=""
+      [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"
+      class="image"
+    />
+    <img
+      *ngIf="tg.status !== 'active'"
+      [src]="!tag.includes(tg._id) ? env + '/closed-eye-blue.svg' : env + '/closed-eye-white.svg'"
+      alt=""
+      [style.filter]="tag.includes(tg._id) ? selectedFilter : ''"
+      class="image"
+    />
   </button>
 </div>

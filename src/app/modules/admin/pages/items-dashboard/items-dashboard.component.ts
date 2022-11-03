@@ -101,8 +101,9 @@ export class ItemsDashboardComponent implements OnInit {
   tagsHashTable: Record<string, Tag> = {};
   tagsByNameHashTable: Record<string, Tag> = {};
   selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
   selectedTagsCounter: number = 0;
-  unselectedTags: Array<Tag> = [];
+  unselectedTags: Array<ExtendedTag> = [];
   user: User;
   merchantDefault: Merchant;
   menuNavigationSwiperConfig: SwiperOptions = {
@@ -204,8 +205,8 @@ export class ItemsDashboardComponent implements OnInit {
 
     if (tagsList) {
       this.tagsList = tagsList;
-      this.unselectedTags = this.tagsList;
-      
+      this.unselectedTags = [...this.tagsList];
+
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
         this.tagsByNameHashTable[tag.name] = tag;
@@ -357,6 +358,10 @@ export class ItemsDashboardComponent implements OnInit {
 
     const items = await this.saleflowService.listItems(pagination);
     const itemsQueryResult = items?.listItems;
+
+    if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
+      this.allItems = [];
+    }
 
     if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
       this.paginationState.page--;
@@ -1192,6 +1197,13 @@ export class ItemsDashboardComponent implements OnInit {
       this.selectedTags = this.selectedTags.filter(
         (selectedTag) => selectedTag._id !== tag._id
       );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tagsList];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+        this.itemSearchbar.setValue('');
+      }
     } else {
       const selectedTagObject = { ...tag };
 
@@ -1200,7 +1212,24 @@ export class ItemsDashboardComponent implements OnInit {
       delete selectedTagObject.selected;
 
       this.selectedTags.push(selectedTagObject);
+
+      if (
+        !this.selectedTagsPermanent.find(
+          (tag) => tag._id === selectedTagObject._id
+        )
+      ) {
+        this.selectedTagsPermanent.push(tag);
+      }
+
       this.selectedTagsCounter++;
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => unselectedTag._id === tag._id
+      );
+
+      if (unselectedTagIndexToDelete > 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
     }
 
     if (this.selectedTagsCounter) {
@@ -1212,6 +1241,17 @@ export class ItemsDashboardComponent implements OnInit {
     this.inicializeItems(true);
   }
 
+  async selectTagFromHeader(eventData: {
+    selected: boolean;
+    tag: ExtendedTag;
+  }) {
+    const tagIndex = this.tagsList.findIndex((tag) => {
+      return tag._id === eventData.tag._id;
+    });
+
+    this.selectTag(eventData.tag, tagIndex);
+  }
+
   getSelectedTagsNames() {
     return this.selectedTags.map((tag) => tag.name);
   }
@@ -1219,8 +1259,12 @@ export class ItemsDashboardComponent implements OnInit {
   async resetSelectedTags() {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = [...this.tagsList];
     this.tagsList.forEach((tag) => (tag.selected = false));
+    this.unselectedTags = this.tagsList;
     this.showSearchbar = true;
+    this.itemSearchbar.setValue('');
 
     await this.inicializeItems(true);
   }
