@@ -90,6 +90,10 @@ export class MerchantItemsComponent implements OnInit {
     if (status) this.statusQueryParam = status;
     this.status = 'loading';
 
+    if (!this.headerService.flowRoute) {
+      this.headerService.flowRoute = localStorage.getItem('flowRoute');
+    }
+
     await Promise.all([
       this.getOrderTotal(this.merchantsService.merchantData._id),
       this.getItems(this.merchantsService.merchantData._id, status),
@@ -156,6 +160,8 @@ export class MerchantItemsComponent implements OnInit {
   }
 
   goToDetail(id: string) {
+    this.headerService.flowRoute = this.router.url;
+    localStorage.setItem('flowRoute', this.headerService.flowRoute);
     this.router.navigate([`admin/item-display/${id}`]);
   }
 
@@ -168,18 +174,18 @@ export class MerchantItemsComponent implements OnInit {
       ,
       {
         queryParams: {
-          redirect: '/admin/entity-detail-metrics',
+          redirect: '/admin/items-dashboards',
         },
       },
     ]);
   }
 
   goToMetrics = () => {
-    this.router.navigate([`admin/entity-detail-metrics`]);
+    this.router.navigate([`admin/items-dashboards`]);
   };
 
   back() {
-    this.router.navigate([`admin/entity-detail-metrics`]);
+    this.router.navigate([`admin/items-dashboards`]);
   }
 
   createItem() {
@@ -689,6 +695,6 @@ export class MerchantItemsComponent implements OnInit {
   };
 
   goToEntityDetailMetrics = () => {
-    this.router.navigate(['admin/entity-detail-metrics']);
+    this.router.navigate(['admin/items-dashboards']);
   };
 }

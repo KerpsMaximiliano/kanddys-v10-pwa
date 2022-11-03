@@ -57,6 +57,7 @@ export class TagsSelectorComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    console.log(this.tags);
     if (
       this.multipleTags &&
       ((this.activeTags && this.activeTags !== undefined) ||

@@ -306,7 +306,7 @@ export class OrdersAndPreOrdersList implements OnInit, OnDestroy {
   navigate(): void {
     if (this.editable) {
       this.resetEdition();
-    } else this._Router.navigate([`/admin/entity-detail-metrics`]);
+    } else this._Router.navigate([`/admin/items-dashboards`]);
   }
 
   resetEdition(): void {

@@ -97,7 +97,7 @@ export class OrderService {
     merchantId: string,
     orders: string[] = [],
     itemCategoryId?: string
-  ): Promise<{ total: number; length: number }> {
+  ): Promise<{ total: number; length: number; items: number }> {
     try {
       const response = await this.graphql.query({
         query: ordersTotal,

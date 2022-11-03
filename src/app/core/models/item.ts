@@ -38,7 +38,18 @@ export class ItemPricing {
   amount: number;
 }
 
-export type ItemStatus = 'draft' | 'disabled' | 'active' | 'featured';
+export type ItemStatus =
+  | 'draft'
+  | 'disabled'
+  | 'active'
+  | 'featured'
+  | 'archived';
+
+export class VisitorCounter extends Model<VisitorCounter> {
+  entity?: string;
+  counter?: number;
+  reference?: string;
+}
 
 export class Item extends Model<Item> {
   hasSelection?: boolean;
@@ -78,6 +89,7 @@ export class Item extends Model<Item> {
     quantity: number;
   };
   index?: number;
+  visitorCounter?: VisitorCounter;
 }
 
 export class ItemPackageRule extends Model<ItemPackageRule> {
