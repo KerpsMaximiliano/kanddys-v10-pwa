@@ -70,7 +70,11 @@
       <div class="content">
         <!-- WHEN THERE IS NOT AN EXPANDED TAG VIEW-->
         <ng-container
-          *ngIf="selectedTags.length === 0 && !justShowHighlightedOrders"
+          *ngIf="
+            selectedTags.length === 0 &&
+            !justShowHighlightedOrders &&
+            !justShowUntaggedOrders
+          "
         >
           <!-- SHOW HIGHLIGHTED ORDERS-->
           <ng-container *ngIf="highlightedOrders.length > 0">
@@ -309,7 +313,9 @@
                   }}
                 -->
               </div>
-              <div class="mb-3 text-right">VER TODAS</div>
+              <div class="mb-3 text-right" (click)="showOrdersUntagged()">
+                VER TODAS
+              </div>
             </div>
           </div>
 
@@ -390,7 +396,11 @@
         </ng-container>
 
         <ng-container
-          *ngIf="selectedTags.length > 0 || justShowHighlightedOrders"
+          *ngIf="
+            selectedTags.length > 0 ||
+            justShowHighlightedOrders ||
+            justShowUntaggedOrders
+          "
         >
           <div
             class="order all-orders-mode"

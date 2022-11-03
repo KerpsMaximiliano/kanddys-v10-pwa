@@ -75,6 +75,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   env = environment.assetsUrl;
   ordersAmount: number = 0;
   justShowHighlightedOrders: boolean;
+  justShowUntaggedOrders: boolean;
   paginationState: {
     pageSize: number;
     page: number;
@@ -150,126 +151,37 @@ export class OrdersAndPreOrdersList implements OnInit {
       await this.loadOrders();
 
       this.searchBar.valueChanges.subscribe((change: string) => {
-        /*
-        if (!this.selectedTagGroups.length) {
-          this.filteredTagGroups.forEach((tagGroup) => {
-            if (this.ordersPerTagHashTable[tagGroup.tag._id]) {
-              tagGroup.orders = this.ordersPerTagHashTable[
-                tagGroup.tag._id
-              ].filter((order) => {
-                const productNames = order.items.map((item) => item.item.name);
-                const productNamesMatches = productNames.find((productName) => {
-                  if (productName) {
-                    return productName.toLowerCase().includes(change);
-                  }
-
-                  return false;
-                });
-
-                if (order.dateId) {
-                  return (
-                    order.dateId.toLowerCase().includes(change.toLowerCase()) ||
-                    productNamesMatches
-                  );
-                }
-
-                return false;
-              });
-            }
-          });
-        } else if (this.selectedTagGroups.length > 0) {
-          this.filteredNonRepeatingSelectedTagGroupOrders =
-            this.nonRepeatingSelectedTagGroupOrders.filter((order) => {
-              const productNames = order.items.map((item) => item.item.name);
-              const productNamesMatches = productNames.find((productName) => {
-                if (productName) {
-                  return productName.toLowerCase().includes(change);
-                }
-
-                return false;
-              });
-
-              if (order.dateId) {
-                return (
-                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
-                  productNamesMatches
-                );
-              }
-
-              return false;
-            });
+        if (this.selectedTags.length === 0) {
+          this.loadOrdersAssociatedToTag(true);
         }
-
-        this.filteredOrdersWithoutTags = this.ordersWithoutTags.filter(
-          (order) => {
-            const productNames = order.items.map((item) => item.item.name);
-            const productNamesMatches = productNames.find((productName) => {
-              if (productName) {
-                return productName.toLowerCase().includes(change);
-              }
-
-              return false;
-            });
-
-            if (order.dateId) {
-              return (
-                order.dateId.toLowerCase().includes(change.toLowerCase()) ||
-                productNamesMatches
-              );
-            }
-
-            return false;
-          }
-        );
-
-        if (this.expandedTagOrders) {
-          this.filteredExpandedTagOrders.orders =
-            this.expandedTagOrders.orders.filter((order) => {
-              const productNames = order.items.map((item) => item.item.name);
-              const productNamesMatches = productNames.find((productName) => {
-                if (productName) {
-                  return productName.toLowerCase().includes(change);
-                }
-
-                return false;
-              });
-
-              if (order.dateId) {
-                return (
-                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
-                  productNamesMatches
-                );
-              }
-
-              return false;
-            });
-        }
-
-        if (this.filteredOrdersWithoutTags) {
-          this.filteredExpandedOrdersWithoutTags =
-            this.filteredOrdersWithoutTags.filter((order) => {
-              const productNames = order.items.map((item) => item.item.name);
-              const productNamesMatches = productNames.find((productName) => {
-                if (productName) {
-                  return productName.toLowerCase().includes(change);
-                }
-
-                return false;
-              });
-
-              if (order.dateId) {
-                return (
-                  order.dateId.toLowerCase().includes(change.toLowerCase()) ||
-                  productNamesMatches
-                );
-              }
-
-              return false;
-            });
-        }
-        */
       });
     });
+  }
+
+  async loadOrders() {
+    const ordersByMerchantPerTagPromises = [];
+
+    for (const tagGroup of this.tagGroups) {
+      ordersByMerchantPerTagPromises.push(
+        this.loadFirstsOrdersForTagGroup(tagGroup.tag)
+      );
+    }
+
+    const highlightedOrders = await this.loadFirstsHighlightedOrders();
+
+    if (highlightedOrders) {
+      this.highlightedOrders = highlightedOrders;
+    }
+
+    this.tagGroups = [];
+    for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
+      if ('orders' in orderByMerchantResponse)
+        this.tagGroups.push(orderByMerchantResponse);
+    }
+
+    await this.loadOrdersWithoutTags();
+
+    this.loadingStatus = 'complete';
   }
 
   loadFirstsOrdersForTagGroup = async (tag: Tag): Promise<any> => {
@@ -282,7 +194,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         orderStatus:
           this.typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
+            : 'draft',
         tags: [tag._id],
       },
     };
@@ -308,7 +220,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         orderStatus:
           this.typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
+            : 'draft',
         'status.status': 'featured',
         'status.access': this.merchantsService.merchantData.owner._id,
       },
@@ -332,7 +244,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         orderStatus:
           this.typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
+            : 'draft',
         tags: {
           $size: 0,
         },
@@ -371,10 +283,37 @@ export class OrdersAndPreOrdersList implements OnInit {
         orderStatus:
           this.typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
-        tags: this.selectedTags.map((tag) => tag._id),
+            : 'draft',
       },
     };
+
+    if (this.selectedTags.length && !this.justShowUntaggedOrders) {
+      ordersByMerchantPagination.findBy.tags = this.selectedTags.map(
+        (tag) => tag._id
+      );
+    }
+
+    if (this.justShowUntaggedOrders) {
+      ordersByMerchantPagination.findBy.tags = {
+        $size: 0,
+      };
+    }
+
+    if (this.searchBar.value !== '') {
+      ordersByMerchantPagination.findBy = {
+        ...ordersByMerchantPagination.findBy,
+        $or: [
+          {
+            name: {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
+        ],
+      };
+    }
 
     const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
       this.defaultMerchant._id,
@@ -394,8 +333,6 @@ export class OrdersAndPreOrdersList implements OnInit {
       } else {
         this.ordersList = this.ordersList.concat(ordersByMerchant);
       }
-
-      const tagsAndOrdersHashtable: Record<string, Array<ItemOrder>> = {};
     }
 
     if (
@@ -431,7 +368,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         orderStatus:
           this.typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
+            : 'draft',
         'status.status': 'featured',
         'status.access': this.merchantsService.merchantData.owner._id,
       },
@@ -478,45 +415,6 @@ export class OrdersAndPreOrdersList implements OnInit {
 
   getIdsOfSelectedTags() {
     return this.selectedTags.map((tag) => tag._id);
-  }
-
-  async loadOrders() {
-    const ordersByMerchantPagination: PaginationInput = {
-      options: {
-        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
-        limit: this.ordersByMerchantLimit,
-      },
-      findBy: {
-        orderStatus:
-          this.typeOfList === 'facturas'
-            ? ['in progress', 'to confirm', 'completed']
-            : ['draft'],
-      },
-    };
-
-    const ordersByMerchantPerTagPromises = [];
-
-    for (const tagGroup of this.tagGroups) {
-      ordersByMerchantPerTagPromises.push(
-        this.loadFirstsOrdersForTagGroup(tagGroup.tag)
-      );
-    }
-
-    const highlightedOrders = await this.loadFirstsHighlightedOrders();
-
-    if (highlightedOrders) {
-      this.highlightedOrders = highlightedOrders;
-    }
-
-    this.tagGroups = [];
-    for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
-      if ('orders' in orderByMerchantResponse)
-        this.tagGroups.push(orderByMerchantResponse);
-    }
-
-    await this.loadOrdersWithoutTags();
-
-    this.loadingStatus = 'complete';
   }
 
   getTotalAmountOfMoneySpentInOrder(subtotals: Array<OrderSubtotal>): number {
@@ -587,9 +485,13 @@ export class OrdersAndPreOrdersList implements OnInit {
   showHighlightedOrders() {
     this.justShowHighlightedOrders = true;
 
-    if (this.justShowHighlightedOrders) {
-      this.loadHighlightedOrders(true);
-    }
+    this.loadHighlightedOrders(true);
+  }
+
+  showOrdersUntagged() {
+    this.justShowUntaggedOrders = true;
+
+    this.loadOrdersAssociatedToTag(true);
   }
 
   resetSelectedTags(): void {
