@@ -86,8 +86,10 @@ export class StoreComponent implements OnInit {
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
   selectedTags: Array<Tag> = [];
+  unselectedTags: Array<Tag> = [];
   user: User = null;
   userDefaultMerchant: Merchant = null;
+  showSearchbar: boolean = true;
   paginationState: {
     pageSize: number;
     page: number;
@@ -601,7 +603,7 @@ export class StoreComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
-  }
+  };
 
   back() {
     this.location.back();
@@ -618,6 +620,7 @@ export class StoreComponent implements OnInit {
       },
     });
     this.tags = userTag.tags;
+    this.unselectedTags = this.tags;
 
     for (const tag of this.tags) {
       this.tagsHashTable[tag._id] = tag;
@@ -647,6 +650,12 @@ export class StoreComponent implements OnInit {
 
       this.selectedTags.push(selectedTagObject);
       this.selectedTagsCounter++;
+    }
+
+    this.unselectedTags = this.tags.filter((tag) => !tag.selected);
+
+    if (this.selectedTags.length === 1) {
+      this.showSearchbar = false;
     }
 
     await this.getItems(true);
@@ -760,6 +769,8 @@ export class StoreComponent implements OnInit {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
     this.tags.forEach((tag) => (tag.selected = false));
+    this.unselectedTags = this.tags;
+    this.showSearchbar = true;
 
     await this.getItems(true);
   }

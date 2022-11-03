@@ -3,6 +3,21 @@
   display: grid;
   grid-template-columns: 1fr 9fr 1fr;
   padding: 8px 17px 0px 10px;
+
+  &.search {
+    grid-template-columns: 1fr 9fr 1fr 1fr;
+  }
+
+  .search {
+    cursor: pointer;
+    display: flex;
+    margin-left: auto;
+
+    img {
+      height: 23px;
+      width: 23px;
+    }
+  }
 }
 .arrows {
   cursor: pointer;
