@@ -31,12 +31,16 @@
 
     <app-tags-selector
       *ngIf="selectedTags.length > 0"
-      [tags]="getSelectedTagsNames(selectedTags)"
-      [selectedBackground]="'#ffffff'"
+      [tags]="selectedTagsPermanent"
+      [multipleTags]="true"
+      [selectedBackground]="'#2874ad'"
+      [background]="'#ffffff'"
+      [selectedColor]="'#fff'"
+      [fillSelectedTagsOnStart]="true"
+      [useIdToRemoveOrAddTags]="true"
       [color]="'#2874ad'"
-      [containerStyles]="{
-        padding: '18px 18px 21px 18px'
-      }"
+      [useAlternativeOutput]="true"
+      (tagSelect2)="selectTagFromHeader($event)"
     ></app-tags-selector>
 
     <div

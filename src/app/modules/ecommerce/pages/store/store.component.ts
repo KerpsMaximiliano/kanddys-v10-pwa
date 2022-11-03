@@ -86,6 +86,7 @@ export class StoreComponent implements OnInit {
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
   selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
   unselectedTags: Array<Tag> = [];
   user: User = null;
   userDefaultMerchant: Merchant = null;
@@ -620,7 +621,7 @@ export class StoreComponent implements OnInit {
       },
     });
     this.tags = userTag.tags;
-    this.unselectedTags = this.tags;
+    this.unselectedTags = [...this.tags];
 
     for (const tag of this.tags) {
       this.tagsHashTable[tag._id] = tag;
@@ -641,6 +642,12 @@ export class StoreComponent implements OnInit {
       this.selectedTags = this.selectedTags.filter(
         (selectedTag) => selectedTag._id !== tag._id
       );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tags];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+      }
     } else {
       const selectedTagObject = { ...tag };
 
@@ -649,16 +656,42 @@ export class StoreComponent implements OnInit {
       delete selectedTagObject.selected;
 
       this.selectedTags.push(selectedTagObject);
-      this.selectedTagsCounter++;
-    }
 
-    this.unselectedTags = this.tags.filter((tag) => !tag.selected);
+      if (
+        !this.selectedTagsPermanent.find(
+          (tag) => tag._id === selectedTagObject._id
+        )
+      ) {
+        this.selectedTagsPermanent.push(tag);
+      }
+
+      this.selectedTagsCounter++;
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => unselectedTag._id === tag._id
+      );
+
+      if (unselectedTagIndexToDelete > 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
+    }
 
     if (this.selectedTags.length === 1) {
       this.showSearchbar = false;
     }
 
     await this.getItems(true);
+  }
+
+  async selectTagFromHeader(eventData: {
+    selected: boolean;
+    tag: ExtendedTag;
+  }) {
+    const tagIndex = this.tags.findIndex((tag) => {
+      return tag._id === eventData.tag._id;
+    });
+
+    this.selectTag(eventData.tag, tagIndex);
   }
 
   async getItems(restartPagination = false) {
@@ -693,20 +726,22 @@ export class StoreComponent implements OnInit {
     const selectedTagIds = this.selectedTags.map((tag) => tag._id);
 
     //Search tagids that match the searchbar value
-    Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
-      if (
-        tagName
-          .toLowerCase()
-          .includes((this.searchBar.value as string).toLowerCase()) &&
-        (this.searchBar.value as string) !== ''
-      ) {
-        const tagId = this.tagsByNameHashTable[tagName]._id;
+    if (this.selectedTags.length === 0) {
+      Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+        if (
+          tagName
+            .toLowerCase()
+            .includes((this.searchBar.value as string).toLowerCase()) &&
+          (this.searchBar.value as string) !== ''
+        ) {
+          const tagId = this.tagsByNameHashTable[tagName]._id;
 
-        if (!selectedTagIds.includes(tagId)) {
-          selectedTagIds.push(tagId);
+          if (!selectedTagIds.includes(tagId)) {
+            selectedTagIds.push(tagId);
+          }
         }
-      }
-    });
+      });
+    }
 
     if (this.selectedTags.length > 0) {
       pagination.findBy.tags = selectedTagIds;
@@ -768,6 +803,8 @@ export class StoreComponent implements OnInit {
   async resetSelectedTags() {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = this.tags;
     this.tags.forEach((tag) => (tag.selected = false));
     this.unselectedTags = this.tags;
     this.showSearchbar = true;
