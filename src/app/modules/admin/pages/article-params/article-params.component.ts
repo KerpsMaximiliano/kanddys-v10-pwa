@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -23,6 +25,8 @@ export class ArticleParamsComponent implements OnInit {
   ];
   options: string[] = ['Precio', 'Imagen o imágenes'];
   searchValue: string;
+  saleFlow: SaleFlow;
+  items: any;
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
@@ -42,9 +46,11 @@ export class ArticleParamsComponent implements OnInit {
     protected _DomSanitizer: DomSanitizer,
     private dialog: DialogService,
     private _ItemsService: ItemsService,
+    private _HeaderService: HeaderService,
     private _MerchantService: MerchantsService,
     private _SaleflowService: SaleFlowService,
-    private _Router: Router
+    private _Router: Router,
+    private _Route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -86,59 +92,55 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   openDialog() {
-    this.dialog.open(AnexosDialogComponent, {
-      props: {
-        title: 'Previamente Usados',
-        options: [
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('primero');
-            },
-          },
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('segundo');
-            },
-          },
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('tercero');
-            },
-          },
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('sublime');
-            },
-          },
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('quinto');
-            },
-          },
-          {
-            option: 'NAMEID',
-            subOption: '$priceId',
-            callback: () => {
-              console.log('sexto');
-            },
-          },
-        ],
-      },
-      type: 'fullscreen-translucent',
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
+   const items: {
+     option: string;
+     subOption: string;
+     callback?: () => void;
+   }[] = [];
+   for (const item of this.items) {
+     items.push({
+       option: item.name,
+       subOption: `$${item.pricing}`,
+       callback: () => {
+         this.name.setValue(item.name);
+         this.price.setValue(item.pricing);
+       },
+     });
+   }
+   this.dialog.open(AnexosDialogComponent, {
+     props: {
+       title: 'Previamente Usados',
+       options: items,
+     },
+     type: 'fullscreen-translucent',
+     customClass: 'app-dialog',
+     flags: ['no-header'],
+   });
+ }
+
+ obtainLasts() {
+   this._Route.params.subscribe(async (params) => {
+     this.saleFlow = await this._HeaderService.fetchSaleflow(params.id);
+     const saleflowItems = this.saleFlow.items.map((saleflowItem) => ({
+       item: saleflowItem.item._id,
+     }));
+     this.items = await this._SaleflowService.listItems({
+       findBy: {
+         _id: {
+           __in: ([] = saleflowItems.map((items) => items.item)),
+         },
+       },
+       options: {
+         sortBy: 'createdAt:desc',
+         limit: 60,
+       }
+     });
+     this.items = this.items.listItems.filter((item) =>{
+        return item.params == null || undefined || item.params.length == 0;
+     });
+     this.items.length <= 6 ? null : this.items.length = 6;
+   });
+ }
 
   async toSave() {
     if (this.steps === 'price') {
