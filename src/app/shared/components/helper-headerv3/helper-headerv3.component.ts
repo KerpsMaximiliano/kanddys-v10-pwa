@@ -9,7 +9,8 @@ export class HelperHeaderv3Component implements OnInit {
   @Input('text') text: string = '';
   @Output('arrowsClick') arrowsClick: EventEmitter<any> = new EventEmitter();
   @Output('searchClick') searchClick: EventEmitter<any> = new EventEmitter();
-  @Input() showSearch: boolean; 
+  @Output('dotsClicked') dotsClicked: EventEmitter<any> = new EventEmitter();
+  @Input('showSearch') showSearch: boolean;
   constructor() {}
 
   ngOnInit(): void {}
@@ -17,5 +18,14 @@ export class HelperHeaderv3Component implements OnInit {
   handleClick(type: 'arrows' | 'search'): void {
     if (type === 'arrows') this.arrowsClick.emit();
     else if (type === 'search') this.searchClick.emit();
+  }
+
+  handleSearch() {
+    this.searchClick.emit();
+    this.showSearch = false;
+  }
+
+  handleClick2(): void {
+    this.dotsClicked.emit();
   }
 }
