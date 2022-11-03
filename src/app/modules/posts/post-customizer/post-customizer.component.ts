@@ -2615,11 +2615,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
           customizerValues,
           this.customizerValueID
         );
-        this.router.navigate([
-          `/ecommerce/${
-            this.header.saleflow?._id || this.header.getSaleflow()?._id
-          }/order-detail/${this.itemId}`,
-        ]);
+        this.router.navigate([`/ecommerce/order-detail/${this.itemId}`]);
         unlockUI();
       }
     } catch (err) {
@@ -2649,11 +2645,7 @@ export class PostCustomizerComponent implements OnInit, AfterViewInit {
 
   goBack() {
     if (this.customizerValueID)
-      this.router.navigate([
-        `/ecommerce/${
-          this.header.saleflow?._id || this.header.getSaleflow()?._id
-        }/order-detail/${this.itemId}`,
-      ]);
+      this.router.navigate([`/ecommerce/order-detail/${this.itemId}`]);
     else
       this.router.navigate([
         `/ecommerce/${

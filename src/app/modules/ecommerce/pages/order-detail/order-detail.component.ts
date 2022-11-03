@@ -85,7 +85,7 @@ export class OrderDetailComponent implements OnInit {
       callback: async () => {
         await this.ngNavigatorShareService.share({
           title: `Mi orden`,
-          url: `${this.URI}/ecommerce/${this.order.items[0].saleflow._id}/order-detail/${this.order.items[0].saleflow.headline}`,
+          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
         });
       },
     },
@@ -339,7 +339,7 @@ export class OrderDetailComponent implements OnInit {
         }
       }
 
-      const fullLink = `${environment.uri}/ecommerce/${this.headerService.saleflow._id}/order-detail/${this.order._id}`;
+      const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
       const message = `*🐝 FACTURA ${formatID(
         this.order.dateId
       )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -478,7 +478,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   sendMessage() {
-    const fullLink = `${environment.uri}/ecommerce/${this.headerService.saleflow._id}/order-detail/${this.order._id}`;
+    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
     const message = `*🐝 FACTURA ${formatID(
       this.order.dateId
     )}* \n\nLink de lo facturado por $${this.payment.toLocaleString(
@@ -517,11 +517,18 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
-  buyAgain() {
+  async buyAgain() {
+    if (!this.headerService.saleflow)
+      await this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
     this.headerService.deleteSaleflowOrder();
     this.headerService.order = {
       products: this.order.items.map((item) => {
-        this.headerService.storeItem(item.item);
+        if (item.params?.length) {
+          const paramItem = item.item.params[0].values.find(
+            (itemParam) => itemParam._id === item.params[0].paramValue
+          );
+          this.headerService.storeItem(paramItem);
+        } else this.headerService.storeItem(item.item);
         return {
           amount: item.amount,
           item: item.item._id,
@@ -533,7 +540,7 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.storeLocation(deliveryLocation);
     this.headerService.order.products[0] = {
       ...this.headerService.order.products[0],
-      saleflow: this.headerService.saleflow._id,
+      saleflow: this.order.items[0].saleflow._id,
       deliveryLocation,
     };
     this.headerService.storeOrder(this.headerService.order);
@@ -558,9 +565,12 @@ export class OrderDetailComponent implements OnInit {
     this.headerService.orderProgress.message = true;
     this.headerService.storeOrderProgress();
 
-    this.router.navigate([`../../checkout`], {
-      relativeTo: this.route,
-    });
+    this.router.navigate(
+      [`../../${this.order.items[0].saleflow._id}/checkout`],
+      {
+        relativeTo: this.route,
+      }
+    );
   }
 
   async checkUser() {

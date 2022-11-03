@@ -120,7 +120,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   orderCompleted(id?: string) {
-    this.router.navigate([`../../order-detail/${id || this.order._id}`], {
+    this.router.navigate([`../../../order-detail/${id || this.order._id}`], {
       relativeTo: this.route,
       replaceUrl: true,
       queryParams: { notify: 'true' },

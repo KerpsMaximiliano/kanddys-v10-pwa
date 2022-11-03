@@ -39,6 +39,15 @@ const routes: Routes = [
     component: ItemDetailComponent,
   },
   {
+    path: 'order-info/:orderId',
+    redirectTo: 'order-detail/:orderId',
+    pathMatch: 'full',
+  },
+  {
+    path: 'order-detail/:orderId',
+    component: OrderDetailComponent,
+  },
+  {
     path: 'megaphone-v3/:saleflowId',
     redirectTo: ':saleflowId/store',
     pathMatch: 'full',
@@ -93,15 +102,6 @@ const routes: Routes = [
       {
         path: 'reservations/:calendarId',
         component: ReservationsComponent,
-      },
-      {
-        path: 'order-info/:orderId',
-        redirectTo: 'order-detail/:orderId',
-        pathMatch: 'full',
-      },
-      {
-        path: 'order-detail/:orderId',
-        component: OrderDetailComponent,
       },
       {
         path: 'checkout',

@@ -474,7 +474,7 @@ export class CheckoutComponent implements OnInit {
           });
           return;
         }
-        this.router.navigate([`../order-detail/${createdOrder}`], {
+        this.router.navigate([`../../order-detail/${createdOrder}`], {
           relativeTo: this.route,
           replaceUrl: true,
         });
