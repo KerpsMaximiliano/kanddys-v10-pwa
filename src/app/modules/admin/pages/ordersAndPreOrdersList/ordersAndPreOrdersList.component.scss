@@ -29,6 +29,7 @@
   color: #a1a1a1;
   box-shadow: inset 0px 3px 5px lightgrey;
   margin: 20px auto;
+  margin-bottom: 42px;
   display: block;
   width: 91%;
 
@@ -46,10 +47,10 @@
 }
 
 .content {
-  width: 90%;
+  width: 100%;
   margin: auto;
   padding-bottom: 76px;
-  padding-top: 20px;
+  padding-left: 22px;
 }
 
 .order {
@@ -69,7 +70,7 @@
 
   &.all-orders-mode {
     margin-top: 11px;
-    max-width: 100%;
+    max-width: calc(100% - 22px);
   }
 
   .inner-wrapper {
@@ -122,6 +123,7 @@
   margin-bottom: 10px;
   align-items: center;
   justify-content: space-between;
+  padding-right: 22px;
 
   .group-title {
     font-family: "RobotoMedium";

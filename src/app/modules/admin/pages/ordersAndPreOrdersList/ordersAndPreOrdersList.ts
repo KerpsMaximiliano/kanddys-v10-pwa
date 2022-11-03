@@ -74,6 +74,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   merchantIncome: number = 0;
   env = environment.assetsUrl;
   ordersAmount: number = 0;
+  justShowHighlightedOrders: boolean;
   paginationState: {
     pageSize: number;
     page: number;
@@ -89,9 +90,18 @@ export class OrdersAndPreOrdersList implements OnInit {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
       if (
         this.paginationState.status === 'complete' &&
-        this.selectedTags.length > 0
+        this.selectedTags.length > 0 &&
+        !this.justShowHighlightedOrders
       ) {
         this.loadOrdersAssociatedToTag(false, true);
+      }
+
+      if (
+        this.paginationState.status === 'complete' &&
+        this.selectedTags.length > 0 &&
+        this.justShowHighlightedOrders
+      ) {
+        this.loadHighlightedOrders(false, true);
       }
     }
   }
@@ -386,8 +396,6 @@ export class OrdersAndPreOrdersList implements OnInit {
       }
 
       const tagsAndOrdersHashtable: Record<string, Array<ItemOrder>> = {};
-
-      this.paginationState.status = 'complete';
     }
 
     if (
@@ -397,6 +405,75 @@ export class OrdersAndPreOrdersList implements OnInit {
     ) {
       this.ordersList = [];
     }
+
+    this.paginationState.status = 'complete';
+  }
+
+  async loadHighlightedOrders(
+    restartPagination = false,
+    triggeredFromScroll = false
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+        'status.status': 'featured',
+        'status.access': this.merchantsService.merchantData.owner._id,
+      },
+    };
+
+    if (this.selectedTags.length > 0) {
+      ordersByMerchantPagination.findBy.tags = this.selectedTags.map(
+        (tag) => tag._id
+      );
+    }
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    if (ordersByMerchant) {
+      this.ordersList = ordersByMerchant;
+    }
+
+    if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
+      this.paginationState.page--;
+
+    if (ordersByMerchant && ordersByMerchant.length > 0) {
+      if (this.paginationState.page === 1) {
+        this.ordersList = ordersByMerchant;
+      } else {
+        this.ordersList = this.ordersList.concat(ordersByMerchant);
+      }
+
+      const tagsAndOrdersHashtable: Record<string, Array<ItemOrder>> = {};
+    }
+
+    if (
+      ordersByMerchant.length === 0 &&
+      this.searchBar.value !== '' &&
+      !triggeredFromScroll
+    ) {
+      this.ordersList = [];
+    }
+
+    this.paginationState.status = 'complete';
   }
 
   getIdsOfSelectedTags() {
@@ -427,7 +504,7 @@ export class OrdersAndPreOrdersList implements OnInit {
 
     const highlightedOrders = await this.loadFirstsHighlightedOrders();
 
-    if(highlightedOrders) {
+    if (highlightedOrders) {
       this.highlightedOrders = highlightedOrders;
     }
 
@@ -507,6 +584,14 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.loadOrdersAssociatedToTag(true);
   }
 
+  showHighlightedOrders() {
+    this.justShowHighlightedOrders = true;
+
+    if (this.justShowHighlightedOrders) {
+      this.loadHighlightedOrders(true);
+    }
+  }
+
   resetSelectedTags(): void {
     this.selectedTags = [];
     this.tags = [...this.tags];
@@ -529,5 +614,9 @@ export class OrdersAndPreOrdersList implements OnInit {
 
     moment.locale('es');
     return moment([year, month, day, hour]).fromNow();
+  }
+
+  formatDateID(dateid: string) {
+    return formatID(dateid);
   }
 }

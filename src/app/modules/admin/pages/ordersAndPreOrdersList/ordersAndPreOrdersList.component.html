@@ -69,13 +69,15 @@
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <!-- WHEN THERE IS NOT AN EXPANDED TAG VIEW-->
-        <ng-container *ngIf="selectedTags.length === 0">
+        <ng-container
+          *ngIf="selectedTags.length === 0 && !justShowHighlightedOrders"
+        >
           <!-- SHOW HIGHLIGHTED ORDERS-->
           <ng-container *ngIf="highlightedOrders.length > 0">
             <div
               class="group-of-items-header-flex"
               [ngStyle]="{
-                marginTop: '60px'
+                marginTop: '36px'
               }"
             >
               <div class="group-title">DESTACADAS</div>
@@ -88,7 +90,9 @@
                           }}
                         -->
                 </div>
-                <div class="mb-3 text-right">VER TODAS</div>
+                <div class="mb-3 text-right" (click)="showHighlightedOrders()">
+                  VER TODAS
+                </div>
               </div>
             </div>
 
@@ -107,11 +111,21 @@
                   <div class="inner-wrapper">
                     <div class="order-grid" style="margin-bottom: 10px">
                       <span class="id">
-                        {{ order.dateId }}
+                        {{
+                          order.user.name ||
+                            order.user.phone ||
+                            order.user.email
+                        }}
                       </span>
                       <span class="reference">{{
                         getCreationDateDifferenceAsItsSaid(order.createdAt)
+                          | titlecase
                       }}</span>
+                    </div>
+                    <div class="order-grid" style="margin-bottom: 10px">
+                      <span class="id">
+                        {{ formatDateID(order.dateId) }}
+                      </span>
                     </div>
                     <ng-container *ngFor="let product of order.items">
                       <p class="name" *ngIf="product.item.name">
@@ -208,11 +222,21 @@
                     <div class="inner-wrapper">
                       <div class="order-grid" style="margin-bottom: 10px">
                         <span class="id">
-                          {{ order.dateId }}
+                          {{
+                            order.user.name ||
+                              order.user.phone ||
+                              order.user.email
+                          }}
                         </span>
                         <span class="reference">{{
                           getCreationDateDifferenceAsItsSaid(order.createdAt)
+                            | titlecase
                         }}</span>
+                      </div>
+                      <div class="order-grid" style="margin-bottom: 10px">
+                        <span class="id">
+                          {{ formatDateID(order.dateId) }}
+                        </span>
                       </div>
                       <ng-container *ngFor="let product of order.items">
                         <p class="name" *ngIf="product.item.name">
@@ -304,11 +328,19 @@
                 <div class="inner-wrapper">
                   <div class="order-grid" style="margin-bottom: 10px">
                     <span class="id">
-                      {{ order.dateId }}
+                      {{
+                        order.user.name || order.user.phone || order.user.email
+                      }}
                     </span>
                     <span class="reference">{{
                       getCreationDateDifferenceAsItsSaid(order.createdAt)
+                        | titlecase
                     }}</span>
+                  </div>
+                  <div class="order-grid" style="margin-bottom: 10px">
+                    <span class="id">
+                      {{ formatDateID(order.dateId) }}
+                    </span>
                   </div>
                   <ng-container *ngFor="let product of order.items">
                     <p class="name" *ngIf="product.item.name">
@@ -357,7 +389,9 @@
           </swiper>
         </ng-container>
 
-        <ng-container *ngIf="selectedTags.length > 0">
+        <ng-container
+          *ngIf="selectedTags.length > 0 || justShowHighlightedOrders"
+        >
           <div
             class="order all-orders-mode"
             *ngFor="let order of ordersList"
@@ -366,11 +400,17 @@
             <div class="inner-wrapper">
               <div class="order-grid" style="margin-bottom: 10px">
                 <span class="id">
-                  {{ order.dateId }}
+                  {{ order.user.name || order.user.phone || order.user.email }}
                 </span>
                 <span class="reference">{{
                   getCreationDateDifferenceAsItsSaid(order.createdAt)
+                    | titlecase
                 }}</span>
+              </div>
+              <div class="order-grid" style="margin-bottom: 10px">
+                <span class="id">
+                  {{ formatDateID(order.dateId) }}
+                </span>
               </div>
               <ng-container *ngFor="let product of order.items">
                 <p class="name" *ngIf="product.item.name">
