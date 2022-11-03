@@ -100,6 +100,7 @@ import { TagsSelectorComponent } from './components/tags-selector/tags-selector.
 import { TagsCarousellComponent } from './components/tags-carousell/tags-carousell.component';
 import { HelperHeaderv3Component } from './components/helper-headerv3/helper-headerv3.component';
 import { FunctionalityParametersComponent } from './components/functionality-parameters/functionality-parameters.component';
+import { ConfirmActionDialogComponent } from './dialogs/confirm-action-dialog/confirm-action-dialog.component';
 
 const imports = [
   CommonModule,
@@ -205,7 +206,8 @@ const declarations = [
   TagsSelectorComponent,
   TagsCarousellComponent,
   HelperHeaderv3Component,
-  FunctionalityParametersComponent
+  FunctionalityParametersComponent,
+  ConfirmActionDialogComponent,
 ];
 
 @NgModule({
@@ -213,6 +215,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}
