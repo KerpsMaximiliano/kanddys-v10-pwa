@@ -227,6 +227,10 @@ export const ordersByMerchant = gql`
         }
       }
       orderStatus
+      status {
+        status
+        access
+      }
       dateId
       createdAt
       tags

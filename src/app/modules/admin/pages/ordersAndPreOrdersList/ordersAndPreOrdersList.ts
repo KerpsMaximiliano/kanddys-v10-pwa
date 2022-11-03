@@ -47,6 +47,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   tags: Array<Tag> = [];
   selectedTags: Array<Tag> = [];
   tagGroups: Array<TagGroup> = [];
+  highlightedOrders: Array<ItemOrder> = [];
   tagsHashTable: Record<string, Tag> = {};
   ordersList: ItemOrder[] = [];
   ordersWithoutTags: ItemOrder[] = [];
@@ -287,6 +288,30 @@ export class OrdersAndPreOrdersList implements OnInit {
     };
   };
 
+  loadFirstsHighlightedOrders = async (): Promise<Array<ItemOrder>> => {
+    const ordersByMerchantPagination: PaginationInput = {
+      options: {
+        sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
+        limit: 10,
+      },
+      findBy: {
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : ['draft'],
+        'status.status': 'featured',
+        'status.access': this.merchantsService.merchantData.owner._id,
+      },
+    };
+
+    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+      this.defaultMerchant._id,
+      ordersByMerchantPagination
+    );
+
+    return ordersByMerchant;
+  };
+
   async loadOrdersWithoutTags() {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
@@ -398,6 +423,12 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPerTagPromises.push(
         this.loadFirstsOrdersForTagGroup(tagGroup.tag)
       );
+    }
+
+    const highlightedOrders = await this.loadFirstsHighlightedOrders();
+
+    if(highlightedOrders) {
+      this.highlightedOrders = highlightedOrders;
     }
 
     this.tagGroups = [];

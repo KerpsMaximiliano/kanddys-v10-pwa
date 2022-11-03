@@ -105,6 +105,10 @@ export class ItemOrder extends Model<ItemOrder> {
   itemPackage: ItemPackage;
   merchants: Merchant[];
   tags: string[];
+  status?: Array<{
+    status: string;
+    access: string;
+  }>;
 }
 
 export class ItemOrderInput {
