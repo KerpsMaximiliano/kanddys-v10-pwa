@@ -25,6 +25,8 @@
       *ngIf="selectedTags.length > 0"
       (arrowsClick)="resetSelectedTags()"
       (dotsClicked)="openUserManagementDialog()"
+      [showSearch]="selectedTags.length > 0"
+      (searchClick)="showSearchbar = true"
     ></app-helper-headerv3>
 
     <app-tags-selector
@@ -53,6 +55,7 @@
         [ngStyle]="{
           marginBottom: tags.length !== 0 ? '28px' : '0px'
         }"
+        *ngIf="showSearchbar"
         [formControl]="searchBar"
       />
       <!-- ******************************************** ENDSEARCHBAR ************************************-->
@@ -62,20 +65,23 @@
         <swiper [config]="swiperConfigTag" #tagsSwiper>
           <div
             class="tags-area swiper-slide"
-            *ngFor="let tag of tags; let tagIndex = index"
+            *ngFor="let tag of unselectedTags"
           >
-            <div
-              (click)="selectTag(tag, tagIndex)"
-              class="tag-item"
-              [ngStyle]="{
-                'background-image':
-                  tag.images?.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(' + env + '/noimage.png' + ')',
-                border: tag.selected ? 'solid 3px #82f18d' : 'none'
-              }"
-            ></div>
-            <span class="tag-name">{{ tag.name }}</span>
+            <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
+              <ng-container *ngIf="tag2._id === tag._id">
+                <div
+                  (click)="selectTag(tag, tagIndex)"
+                  class="tag-item"
+                  [ngStyle]="{
+                    'background-image':
+                      tag.images?.length > 0
+                        ? 'url(' + tag.images[0] + ')'
+                        : 'url(' + env + '/noimage.png' + ')'
+                  }"
+                ></div>
+                <span class="tag-name">{{ tag.name }}</span>
+              </ng-container>
+            </ng-container>
           </div>
         </swiper>
       </div>
