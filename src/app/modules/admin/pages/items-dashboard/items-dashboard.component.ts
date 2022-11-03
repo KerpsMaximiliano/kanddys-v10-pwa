@@ -102,6 +102,7 @@ export class ItemsDashboardComponent implements OnInit {
   tagsByNameHashTable: Record<string, Tag> = {};
   selectedTags: Array<Tag> = [];
   selectedTagsCounter: number = 0;
+  unselectedTags: Array<Tag> = [];
   user: User;
   merchantDefault: Merchant;
   menuNavigationSwiperConfig: SwiperOptions = {
@@ -203,6 +204,8 @@ export class ItemsDashboardComponent implements OnInit {
 
     if (tagsList) {
       this.tagsList = tagsList;
+      this.unselectedTags = this.tagsList;
+      
       for (const tag of this.tagsList) {
         this.tagsHashTable[tag._id] = tag;
         this.tagsByNameHashTable[tag.name] = tag;
