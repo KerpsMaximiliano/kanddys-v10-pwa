@@ -1,0 +1,39 @@
+<app-helper-headerv3
+  text="Selecciones"
+  background="#2874ad"
+  height="42px"
+  padding="0"
+  fontFamily="SfProBold"
+  iconsize="24px"
+  iconHeight="11px"
+  iconTop="-6px"
+  padding="0px 7px"
+  [align]="'left'"
+></app-helper-headerv3>
+<div class="container">
+  <input
+    [formControl]="controller"
+    class="base-input"
+    type="text"
+    placeholder="Cantidad"
+  />
+</div>
+<div class="bottom-btn">
+  <app-helper-headerv3
+    text="Generar"
+    [align]="'center'"
+    background="#2874ad"
+    [dots]="false"
+    height="42px"
+    padding="0"
+    direction="left"
+    [quantity]="2"
+    fontFamily="SfProMedium"
+    fontSize="1.063rem"
+    iconsize="24px"
+    textCursor="pointer"
+    [iconsBetween]="true"
+    (arrowsClick)="submit()"
+    (textClick)="submit()"
+  ></app-helper-headerv3>
+</div>
