@@ -116,6 +116,10 @@ a {
             width: 100%;
             box-sizing: border-box;
 
+            &.green {
+               background-color: #82f18d;
+            }
+
             .image-container {
                display: flex;
                overflow-x: scroll;

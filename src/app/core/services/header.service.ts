@@ -254,6 +254,19 @@ export class HeaderService {
     return saleflow;
   }
 
+  // Stores order input in localStorage
+  storeOrder(order: ItemOrderInput) {
+    let rest: SaleflowData =
+      JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
+    localStorage.setItem(
+      this.saleflow._id,
+      JSON.stringify({
+        ...rest,
+        order,
+      })
+    );
+  }
+
   // Stores order product data in localStorage
   storeOrderProduct(product: ItemSubOrderInput) {
     let { order, ...rest }: SaleflowData =
@@ -287,11 +300,16 @@ export class HeaderService {
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
     if (!itemData) itemData = [];
     const index = itemData.findIndex((item) => item._id === product._id);
-    if (index >= 0) itemData.splice(index, 1);
-    else itemData.push(product);
+    if (index >= 0) {
+      itemData.splice(index, 1);
+      this.items.splice(index, 1);
+    } else {
+      itemData.push(product);
+      this.items.push(product as Item);
+    }
     localStorage.setItem(
       this.saleflow._id,
-      JSON.stringify({ itemData, ...rest })
+      JSON.stringify({ ...rest, itemData })
     );
   }
 
@@ -405,8 +423,8 @@ export class HeaderService {
   getItems(): Item[] {
     let { itemData }: SaleflowData =
       JSON.parse(localStorage.getItem(this.saleflow._id)) || {};
-    this.items = itemData;
-    return itemData;
+    this.items = itemData || [];
+    return this.items;
   }
 
   // Return order reservation

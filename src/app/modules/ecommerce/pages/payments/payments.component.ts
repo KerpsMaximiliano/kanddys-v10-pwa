@@ -120,7 +120,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   orderCompleted(id?: string) {
-    this.router.navigate([`../order-detail/${id || this.order._id}`], {
+    this.router.navigate([`../../order-detail/${id || this.order._id}`], {
       relativeTo: this.route,
       replaceUrl: true,
       queryParams: { notify: 'true' },
@@ -198,7 +198,7 @@ export class PaymentsComponent implements OnInit {
               color: '#FFF',
             },
             callback: () => {
-              this.router.navigate([`../store`], {
+              this.router.navigate([`../../store`], {
                 relativeTo: this.route,
               });
             },
@@ -207,7 +207,7 @@ export class PaymentsComponent implements OnInit {
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',
         bottomBtnCallback: () => {
-          this.router.navigate([`../store`], {
+          this.router.navigate([`../../store`], {
             relativeTo: this.route,
           });
         },

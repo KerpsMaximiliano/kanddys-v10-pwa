@@ -5,7 +5,7 @@ import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
 import { ItemOrder, OrderStatusNameType } from 'src/app/core/models/order';
-import { Post } from 'src/app/core/models/post';
+import { Post, PostInput } from 'src/app/core/models/post';
 import { User } from 'src/app/core/models/user';
 import { Tag } from 'src/app/core/models/tags';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -129,7 +129,16 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate.toLocaleString('es-MX', { hour12: true, day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).toLocaleUpperCase();
+    this.orderDate = temporalDate
+      .toLocaleString('es-MX', {
+        hour12: true,
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .toLocaleUpperCase();
     this.checkUser();
     this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
     if (this.order.items[0].post) {
@@ -508,10 +517,50 @@ export class OrderDetailComponent implements OnInit {
     ]);
   };
 
-  goToStore() {
-    this.router.navigate([
-      `/ecommerce/${this.order.items[0].saleflow._id}/store`,
-    ]);
+  buyAgain() {
+    this.headerService.deleteSaleflowOrder();
+    this.headerService.order = {
+      products: this.order.items.map((item) => {
+        this.headerService.storeItem(item.item);
+        return {
+          amount: item.amount,
+          item: item.item._id,
+          params: item.params,
+        };
+      }),
+    };
+    const deliveryLocation = this.order.items[0].deliveryLocation;
+    this.headerService.storeLocation(deliveryLocation);
+    this.headerService.order.products[0] = {
+      ...this.headerService.order.products[0],
+      saleflow: this.headerService.saleflow._id,
+      deliveryLocation,
+    };
+    this.headerService.storeOrder(this.headerService.order);
+    this.headerService.orderProgress.delivery = true;
+    const postInput: PostInput = {
+      message: this.post?.message || '',
+      targets: [
+        {
+          name: this.post?.targets?.[0]?.name || '',
+          emailOrPhone: '',
+        },
+      ],
+      from: this.post?.from || '',
+      socialNetworks: [
+        {
+          url: '',
+        },
+      ],
+    };
+    this.headerService.post = postInput;
+    this.headerService.storePost(postInput);
+    this.headerService.orderProgress.message = true;
+    this.headerService.storeOrderProgress();
+
+    this.router.navigate([`../../checkout`], {
+      relativeTo: this.route,
+    });
   }
 
   async checkUser() {

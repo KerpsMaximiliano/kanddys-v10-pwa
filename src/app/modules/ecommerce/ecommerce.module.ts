@@ -83,11 +83,7 @@ const routes: Routes = [
         component: NewAddressComponent,
       },
       {
-        path: 'item-detail',
-        component: ItemDetailComponent,
-      },
-      {
-        path: 'item-detail/:id',
+        path: 'item-detail/:itemId',
         component: ItemDetailComponent,
       },
       {
@@ -112,7 +108,7 @@ const routes: Routes = [
         component: CheckoutComponent,
       },
       {
-        path: 'payments/:id',
+        path: 'payments/:orderId',
         component: PaymentsComponent,
       },
       {

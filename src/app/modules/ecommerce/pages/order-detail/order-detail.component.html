@@ -28,7 +28,7 @@
       !merchant
         ? {
             text:
-              order?.items[0].saleflow.headline.length < 38
+              order?.items[0].saleflow.headline?.length < 38
                 ? order?.items[0].saleflow.headline
                 : order?.items[0].saleflow.headline.split(' ')['0'],
             fontSize: '21px',
@@ -40,7 +40,7 @@
   ></app-helper-headerv2>
 
   <div class="top-area" *ngIf="!notify">
-    <button class="top-button" (click)="goToStore()">
+    <button class="top-button" (click)="buyAgain()">
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
 
@@ -54,25 +54,25 @@
   </div>
 
   <div class="bill-area" *ngIf="notify">
-   <h2 class="user-name">
-     {{ order.user?.name || order.user?.phone || order.user?.email }}
-   </h2>
-   <h2 class="success">Tu factura se creó exitosamente.</h2>
+    <h2 class="user-name">
+      {{ order.user?.name || order.user?.phone || order.user?.email }}
+    </h2>
+    <h2 class="success">Tu factura se creó exitosamente.</h2>
 
-   <a
-     [href]="messageLink"
-     target="_blank"
-     class="bill-button"
-     (click)="notificationClicked()"
-   >
-     Confirmar por WhatsApp
-   </a>
+    <a
+      [href]="messageLink"
+      target="_blank"
+      class="bill-button"
+      (click)="notificationClicked()"
+    >
+      Confirmar por WhatsApp
+    </a>
 
-   <p class="bill-clarity">
-     Al “confirmar” se abrirá tu WhatsApp con la factura para
-     {{ order?.items[0].saleflow.merchant.name }}.
-   </p>
- </div>
+    <p class="bill-clarity">
+      Al “confirmar” se abrirá tu WhatsApp con la factura para
+      {{ order?.items[0].saleflow.merchant.name }}.
+    </p>
+  </div>
 
   <!-- <div class="bill-area" *ngIf="notify">
     <h2 class="user-name">{{ order.user?.name || order.user?.phone || order.user?.email }}</h2>
@@ -143,7 +143,9 @@
         <button class="top-name" (click)="sendMessage()" *ngIf="merchant">
           {{ order.user?.name || order.user?.phone || order.user?.email }}
         </button>
-        <span class="top-headline" *ngIf="!merchant">{{order?.items[0].saleflow.headline}}</span>
+        <span class="top-headline" *ngIf="!merchant">{{
+          order?.items[0].saleflow.headline
+        }}</span>
       </h2>
 
       <div class="info-display">
@@ -374,7 +376,7 @@
     </section>
   </main>
 
-  <footer class="footer-display" >
+  <footer class="footer-display" *ngIf="merchant">
     <div class="pages-tabs">
       <div class="images-container">
         <img

@@ -289,9 +289,7 @@ export class NewAddressComponent implements OnInit {
 
   selectAddress(save?: boolean) {
     const { _id, ...addressInput } = this.addresses[this.selectedDeliveryIndex];
-    this.headerService.order.products.forEach((product) => {
-      product.deliveryLocation = addressInput;
-    });
+    this.headerService.order.products[0].deliveryLocation = addressInput;
     this.headerService.storeLocation(addressInput);
     this.headerService.orderProgress.delivery = true;
     this.headerService.storeOrderProgress();
