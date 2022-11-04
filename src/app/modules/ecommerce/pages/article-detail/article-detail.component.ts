@@ -56,6 +56,7 @@ export class ArticleDetailComponent implements OnInit {
     freeMode: true,
     spaceBetween: 0,
   };
+  fractions: string = '';
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -92,7 +93,7 @@ export class ArticleDetailComponent implements OnInit {
   async getItemData() {
     try {
       this.itemData = await this.itemsService.item(this.entityId);
-
+      this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
       this.itemTags.forEach((tag) => {
         tag.selected = this.itemData.tags?.includes(tag._id);
@@ -315,5 +316,22 @@ export class ArticleDetailComponent implements OnInit {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
       }
     );
+  }
+
+  updateFrantions(): void {
+    this.fractions = this.itemData.images
+      .map(
+        () =>
+          `${
+            this.itemData.images.length < 3
+              ? '1'
+              : this.getRandomArbitrary(0, this.itemData.images.length)
+          }fr`
+      )
+      .join(' ');
+  }
+
+  getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
   }
 }

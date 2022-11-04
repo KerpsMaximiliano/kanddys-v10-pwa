@@ -197,6 +197,7 @@ export class ArticleCreatorComponent implements OnInit {
       const _Swiper = new Swiper('.swiper');
       const next = document.getElementById(`${i}${j}${k + 1}`);
       _Swiper.slideTo(this.multimedia[i].length);
+      this.activeSlide = this.multimedia[i].length - 1;
     }, 50);
     this.updateFrantions();
   }
@@ -268,8 +269,14 @@ export class ArticleCreatorComponent implements OnInit {
       } else this.controllers.at(i).get('multimedia').setValue(aux);
       setTimeout(() => {
         const _Swiper = new Swiper('.swiper');
-        if (j > this.multimedia[i].length - 1) _Swiper.slideTo(j - 1);
-        else _Swiper.slideTo(j);
+        if (j > this.multimedia[i].length - 1){
+          _Swiper.slideTo(j - 1);
+          this.activeSlide = j - 1;
+        }
+        else{
+          this.activeSlide = j;
+          _Swiper.slideTo(j)
+        };
       }, 50);
     }, 50);
     this.updateFrantions();

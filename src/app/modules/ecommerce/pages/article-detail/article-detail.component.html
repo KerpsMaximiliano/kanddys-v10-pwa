@@ -58,7 +58,11 @@
     }"
   >
     <div class="inner-wrapper-top">
-      <div class="current-media-shown-indicators">
+      <div
+      class="current-media-shown-indicators"
+      [style]="{
+        'grid-template-columns': '' + fractions + ''
+      }">
         <ng-container *ngIf="itemData?.images.length > 0">
           <div
             class="indicator"
