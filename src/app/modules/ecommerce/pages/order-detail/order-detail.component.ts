@@ -21,6 +21,7 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 
 interface Image {
   src: string;
@@ -83,10 +84,7 @@ export class OrderDetailComponent implements OnInit {
       src: '/upload.svg',
       filter: 'brightness(2)',
       callback: async () => {
-        await this.ngNavigatorShareService.share({
-          title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
-        });
+        this.settingsDialog();
       },
     },
   ];
@@ -414,6 +412,34 @@ export class OrderDetailComponent implements OnInit {
           // !this.selectedTags[param._id] ? this.selectedTags[param._id] = true : this.selectedTags[param._id] = false;
           this.addTag(param._id);
         },
+      },
+    });
+  }
+
+  settingsDialog() {
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props: {
+         title: 'Compartir esta Orden',
+        optionsList: [
+          {
+            text: 'Compartir',
+            callback: async () => {
+              await this.ngNavigatorShareService.share({
+                title: `Mi orden`,
+                url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+              });
+            },
+          },
+          {
+            text: 'Vista del Visitante',
+            callback: () => {
+               console.log('A la vista del visitante. No se cual es :/');
+            }
+          },
+        ],
       },
     });
   }

@@ -44,14 +44,14 @@
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
 
-    <div class="coins-info">
+    <!-- <div class="coins-info">
       <h2 class="info-headline">Gana Coins</h2>
 
       <p class="info-paragraph">
         Te faltan N facturas para ganar XYZ MerchantID Coins
       </p>
-    </div>
-  </div>
+    </div>-->
+  </div> 
 
   <div class="bill-area" *ngIf="notify">
     <h2 class="user-name">
@@ -251,10 +251,10 @@
         <p class="total">Subtotal:</p>
         <p class="amount">{{ payment | number: "1.2-2" }}</p>
       </div>
-      <div class="items-container space-between" style="margin-top: 4px">
+<!--       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Coins:</p>
         <p class="amount">- {{ payment | number: "1.2-2" }}</p>
-      </div>
+      </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Total Pagado:</p>
         <p class="amount">{{ payment | number: "1.2-2" }}</p>
@@ -323,25 +323,30 @@
       "
       style="margin-top: 32px"
     >
+
       <h2 class="section-title">Mensaje de regalo:</h2>
 
+      <div class="buttons-share" *ngIf="!notify">
+         <div class="buttons-area">
+            <button class="btn">
+               <img [src]="env + '/QR.svg'" width="34px" height="34px" />
+             </button>
+             <button class="btn">
+               <img [src]="env + '/print.svg'" width="34px" height="34px" />
+             </button>
+             <button class="btn">
+               <img
+                 [src]="env + '/download.svg'"
+                 width="34px"
+                 height="34px"
+                 style="filter: brightness(0)"
+               />
+             </button>
+         </div>
+         <h3 class="virtual">Mensaje Virtual</h3>
+       </div>
+
       <div class="message-box">
-        <div class="buttons-share">
-          <button class="btn">
-            <img [src]="env + '/QR.svg'" width="34px" height="34px" />
-          </button>
-          <button class="btn">
-            <img [src]="env + '/print.svg'" width="34px" height="34px" />
-          </button>
-          <button class="btn">
-            <img
-              [src]="env + '/download.svg'"
-              width="34px"
-              height="34px"
-              style="filter: brightness(0)"
-            />
-          </button>
-        </div>
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -376,7 +381,7 @@
     </section>
   </main>
 
-  <footer class="footer-display" *ngIf="merchant">
+  <footer class="footer-display" [style.backgroundColor]="headerService.colorTheme">
     <div class="pages-tabs">
       <div class="images-container">
         <img
