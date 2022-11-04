@@ -221,6 +221,19 @@ export const ordersByMerchant = gql`
           name
           images
           pricing
+          params {
+            _id
+            name
+            values {
+              _id
+              name
+              price
+            }
+          }
+        }
+        params {
+          param
+          paramValue
         }
         reservation {
           _id

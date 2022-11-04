@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { formatID } from 'src/app/core/helpers/strings.helpers';
+import { formatID, unformatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { CalendarService } from 'src/app/core/services/calendar.service';
@@ -45,7 +45,10 @@ export class OrdersAndPreOrdersList implements OnInit {
   };
   typeOfList: string;
   tags: Array<Tag> = [];
+  showSearchbar: boolean;
   selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
+  unselectedTags: Array<Tag> = [];
   tagGroups: Array<TagGroup> = [];
   highlightedOrders: Array<ItemOrder> = [];
   tagsHashTable: Record<string, Tag> = {};
@@ -151,9 +154,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       await this.loadOrders();
 
       this.searchBar.valueChanges.subscribe((change: string) => {
-        if (this.selectedTags.length === 0) {
-          this.loadOrdersAssociatedToTag(true);
-        }
+        this.loadOrdersAssociatedToTag(true);
       });
     });
   }
@@ -299,7 +300,9 @@ export class OrdersAndPreOrdersList implements OnInit {
       };
     }
 
-    if (this.searchBar.value !== '') {
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    if (this.searchBar.value && this.searchBar.value !== '') {
       ordersByMerchantPagination.findBy = {
         ...ordersByMerchantPagination.findBy,
         $or: [
@@ -311,8 +314,38 @@ export class OrdersAndPreOrdersList implements OnInit {
               },
             },
           },
+          {
+            'params.values.name': {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
         ],
       };
+    }
+
+    //Happens when the searchbar value matches a tag name
+    if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+      ordersByMerchantPagination.findBy['$or'][2] = {
+        tags: {
+          $in: selectedTagIds,
+        },
+      };
+    }
+
+    const orderRefereceRegex =
+      /#?([0-9]{4})([0-9]{1,2})([0-9]{1,2})(N[0-9]{1,})/;
+
+    if (orderRefereceRegex.test(this.searchBar.value)) {
+      const [wholeDateId, year, month, day, number] = (
+        this.searchBar.value as string
+      ).match(orderRefereceRegex);
+
+      ordersByMerchantPagination.findBy['$or'].push({
+        dateId: unformatID(month, day, year, number),
+      });
     }
 
     const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
@@ -469,17 +502,51 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.resetEdition();
   }
 
-  handleTag(seletedTag: Tag): void {
-    if (this.selectedTags.includes(seletedTag))
-      this.selectedTags = this.selectedTags.filter((tag) => tag !== seletedTag);
-    else {
+  handleTag(selectedTag: Tag): void {
+    if (this.selectedTags.includes(selectedTag)) {
+      this.selectedTags = this.selectedTags.filter(
+        (tag) => tag !== selectedTag
+      );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tags];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+      }
+    } else {
       const value = this.multipleTags
-        ? [...this.selectedTags, seletedTag]
-        : [seletedTag];
+        ? [...this.selectedTags, selectedTag]
+        : [selectedTag];
       this.selectedTags = value;
+
+      if (
+        !this.selectedTagsPermanent.find((tag) => tag._id === selectedTag._id)
+      ) {
+        this.selectedTagsPermanent.push(selectedTag);
+      }
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => unselectedTag._id === selectedTag._id
+      );
+
+      if (unselectedTagIndexToDelete > 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
+    }
+
+    if (this.selectedTags.length === 1) {
+      this.showSearchbar = false;
     }
 
     this.loadOrdersAssociatedToTag(true);
+  }
+
+  async selectTagFromHeader(eventData: { selected: boolean; tag: Tag }) {
+    const tagIndex = this.tags.findIndex((tag) => {
+      return tag._id === eventData.tag._id;
+    });
+
+    this.handleTag(eventData.tag);
   }
 
   showHighlightedOrders() {

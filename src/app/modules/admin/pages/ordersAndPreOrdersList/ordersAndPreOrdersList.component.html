@@ -73,7 +73,8 @@
           *ngIf="
             selectedTags.length === 0 &&
             !justShowHighlightedOrders &&
-            !justShowUntaggedOrders
+            !justShowUntaggedOrders &&
+            !(searchBar.value && searchBar.value.length > 0)
           "
         >
           <!-- SHOW HIGHLIGHTED ORDERS-->
@@ -84,7 +85,7 @@
                 marginTop: '36px'
               }"
             >
-              <div class="group-title">DESTACADAS</div>
+              <div class="group-title">Destacadas</div>
               <div class="incomes-and-show-all">
                 <div class="mb-3 middle">
                   <!--
@@ -114,7 +115,7 @@
                 <div class="order" (click)="goToOrderInfo(order._id)">
                   <div class="inner-wrapper">
                     <div class="order-grid" style="margin-bottom: 10px">
-                      <span class="id">
+                      <span class="id" *ngIf="order.user">
                         {{
                           order.user.name ||
                             order.user.phone ||
@@ -225,7 +226,7 @@
                   <div class="order" (click)="goToOrderInfo(order._id)">
                     <div class="inner-wrapper">
                       <div class="order-grid" style="margin-bottom: 10px">
-                        <span class="id">
+                        <span class="id" *ngIf="order.user">
                           {{
                             order.user.name ||
                               order.user.phone ||
@@ -333,7 +334,7 @@
               <div class="order" (click)="goToOrderInfo(order._id)">
                 <div class="inner-wrapper">
                   <div class="order-grid" style="margin-bottom: 10px">
-                    <span class="id">
+                    <span class="id" *ngIf="order.user">
                       {{
                         order.user.name || order.user.phone || order.user.email
                       }}
@@ -399,7 +400,8 @@
           *ngIf="
             selectedTags.length > 0 ||
             justShowHighlightedOrders ||
-            justShowUntaggedOrders
+            justShowUntaggedOrders ||
+            (searchBar.value && searchBar.value.length > 0)
           "
         >
           <div
@@ -409,7 +411,7 @@
           >
             <div class="inner-wrapper">
               <div class="order-grid" style="margin-bottom: 10px">
-                <span class="id">
+                <span class="id" *ngIf="order.user">
                   {{ order.user.name || order.user.phone || order.user.email }}
                 </span>
                 <span class="reference">{{
