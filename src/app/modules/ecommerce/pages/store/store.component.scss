@@ -30,14 +30,17 @@ main {
     margin: 0 auto 28px;
     background-color: #ffffff;
     border: none;
-    border-radius: 9px;
-    box-shadow: inset 0px 3px 5px lightgrey;
+    border-radius: 11px;
+    box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -moz-box-shadow: inset 0px 3px 5px #d3d3d3;
+    -webkit-appearance: none;
     font-family: "RobotoMedium";
     font-size: 1.063rem;
     color: #7b7b7b;
-    text-indent: 16px;
     padding-bottom: 11px;
     padding-top: 18px;
+    padding-left: 10px;
 
     &::placeholder {
       text-align: center;
@@ -84,9 +87,7 @@ main {
   display: flex;
   align-items: center;
   padding: 0px;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-top: 15px;
+  margin: 0px;
   justify-content: space-between;
 
   .items-header {
@@ -136,6 +137,9 @@ main {
       display: flex;
       align-items: center;
       box-shadow: 0px 4px 10px #ddd;
+      -webkit-box-shadow: 0px 4px 10px #ddd;
+      -moz-box-shadow: 0px 4px 10px #ddd;
+      -webkit-appearance: none;
       border-radius: 10px;
       cursor: pointer;
 
@@ -184,10 +188,6 @@ main {
   }
 }
 
-.content {
-  padding-top: 15px;
-}
-
 .item-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -220,8 +220,8 @@ main {
   justify-content: space-between;
   font-size: 14px;
   font-family: "Roboto";
-  padding-left: 34px;
-  padding-right: 31px;
+  padding-top: 21px;
+  padding-bottom: 23px;
 
   .see-all-more {
     color: #7b7b7b;
@@ -263,7 +263,7 @@ main {
   padding: 0px 28px;
   display: flex;
   justify-content: space-between;
-  padding-top: 10px;
+  padding-top: 32px;
 
   .title {
     margin: 0px;
@@ -399,7 +399,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding-left: 25px;
+  padding-right: 25px;
   color: white;
   font-family: SfProBold;
   font-size: 21px;
@@ -412,8 +413,16 @@ main {
   margin: auto;
   z-index: 999;
 
+  .title {
+    font-size: clamp(16px, 4vw, 21px);
+  }
+
   .user-area {
+    display: flex;
+    align-items: baseline;
+    
     span {
+      max-width: 77px;
       font-size: 13px;
       font-family: RobotoRegular;
       margin-right: 5px;

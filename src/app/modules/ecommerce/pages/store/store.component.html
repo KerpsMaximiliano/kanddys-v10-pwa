@@ -3,14 +3,20 @@
     <div class="header" *ngIf="selectedTags.length === 0">
       <div class="title">
         {{
-          (saleflowData?.merchant?.name.length < 26
+          saleflowData?.merchant?.name.length < 18
             ? "Bienvenido a " + saleflowData?.merchant?.name
-            : saleflowData?.merchant?.name.split(" ")["0"]) || "Tienda"
+            : "Bienvenido a " +
+                saleflowData?.merchant?.name.slice(0, 18) +
+                ".." || "Tienda"
         }}
       </div>
 
-      <div class="user-area" (click)="openDialog()">
-        <span *ngIf="user">{{ user.name || user.phone || user.email }}</span>
+      <div class="user-area" (click)="openUserManagementDialog()">
+        <span *ngIf="user">{{
+          (user.name || user.phone || user.email).length > 10
+            ? (user.name || user.phone || user.email).slice(0, 10) + ".."
+            : user.name || user.phone || user.email
+        }}</span>
         <img class="icon" [src]="env + '/user-white.svg'" />
       </div>
     </div>
@@ -18,17 +24,27 @@
     <app-helper-headerv3
       *ngIf="selectedTags.length > 0"
       (arrowsClick)="resetSelectedTags()"
+      (dotsClicked)="openUserManagementDialog()"
+      [showSearch]="selectedTags.length > 0"
+      (searchClick)="showSearchbar = true"
     ></app-helper-headerv3>
 
     <app-tags-selector
       *ngIf="selectedTags.length > 0"
-      [tags]="getSelectedTagsNames(selectedTags)"
-      [selectedBackground]="'#ffffff'"
+      [tags]="selectedTagsPermanent"
+      [multipleTags]="true"
+      [selectedBackground]="'#2874ad'"
+      [background]="'#ffffff'"
+      [selectedColor]="'#fff'"
+      [fillSelectedTagsOnStart]="true"
+      [useIdToRemoveOrAddTags]="true"
       [color]="'#2874ad'"
+      [useAlternativeOutput]="true"
+      (tagSelect2)="selectTagFromHeader($event)"
     ></app-tags-selector>
 
     <div
-      *ngIf="!hasCustomizer"
+      *ngIf="selectedTags.length === 0"
       class="blank"
       [ngStyle]="{ paddingBottom: '36px' }"
     ></div>
@@ -38,28 +54,38 @@
       <!-- ********************************************** SEARCHBAR ************************************-->
       <input
         class="text"
-        placeholder="Busca por tag, nombre de articulo o variante"
+        placeholder="Busca por tag o nombre de articulo"
         class="input-top"
+        [ngStyle]="{
+          marginBottom: tags.length !== 0 ? '28px' : '0px'
+        }"
+        *ngIf="showSearchbar"
         [formControl]="searchBar"
       />
       <!-- ******************************************** ENDSEARCHBAR ************************************-->
 
       <!-- ******************************************* TAG SWIPER ***************************************-->
       <div style="width: 100%; padding: 0px 0px 0px 21px">
-        <swiper [config]="swiperConfigTag">
-          <div class="tags-area" *ngFor="let tag of tags; let tagIndex = index">
-            <div
-              (click)="selectTag(tag, tagIndex)"
-              class="tag-item"
-              [ngStyle]="{
-                'background-image':
-                  tag.images?.length > 0
-                    ? 'url(' + tag.images[0] + ')'
-                    : 'url(' + env + '/noimage.png' + ')',
-                border: tag.selected ? 'solid 3px #e9e371' : 'none'
-              }"
-            ></div>
-            <span class="tag-name">{{ tag.name }}</span>
+        <swiper [config]="swiperConfigTag" #tagsSwiper>
+          <div
+            class="tags-area swiper-slide"
+            *ngFor="let tag of unselectedTags"
+          >
+            <ng-container *ngFor="let tag2 of tags; let tagIndex = index">
+              <ng-container *ngIf="tag2._id === tag._id">
+                <div
+                  (click)="selectTag(tag, tagIndex)"
+                  class="tag-item"
+                  [ngStyle]="{
+                    'background-image':
+                      tag.images?.length > 0
+                        ? 'url(' + tag.images[0] + ')'
+                        : 'url(' + env + '/noimage.png' + ')'
+                  }"
+                ></div>
+                <span class="tag-name">{{ tag.name }}</span>
+              </ng-container>
+            </ng-container>
           </div>
         </swiper>
       </div>
@@ -67,28 +93,19 @@
     </form>
 
     <!--REGULAR MERCHANT-->
-    <div
-      class="content"
-      [ngStyle]="{
-        paddingBottom: '1rem',
-        paddingTop: !tags.length ? '0px' : '15px'
-      }"
-      *ngIf="!hasCustomizer && items.length"
-    >
+    <div class="content">
       <!--SHOWS ITEMS HIGHLIGHTED-->
       <div
-        *ngIf="highlightedItems.length > 0 && searchBar.value === ''"
+        *ngIf="
+          highlightedItems.length > 0 &&
+          searchBar.value === '' &&
+          selectedTags.length === 0
+        "
         [ngStyle]="{
           paddingLeft: '25px'
         }"
       >
-        <div
-          class="header-wrapper"
-          [ngStyle]="{
-            paddingLeft: '0px',
-            paddingBottom: '17px'
-          }"
-        >
+        <div class="header-wrapper">
           <h2 class="items-header">Destacados</h2>
         </div>
 
@@ -140,52 +157,23 @@
               ? "Resultados"
               : searchBar.value === "" && selectedTags.length === 0
               ? "Todos los productos"
-              : null
+              : "Resultados"
           }}
         </h2>
-
-        <!--
-          <div class="dot-trio">
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-            <div
-              class="dot"
-              [ngStyle]="{
-                'background-color': '#2874ad',
-                margin: '0 2.5px'
-              }"
-            ></div>
-          </div>
-        -->
       </div>
 
-      <p class="subtitle" *ngIf="filteredItems.length === 0">
+      <p class="subtitle" *ngIf="items.length === 0">
         {{
-          searchBar.value === "" && filteredItems.length === 0
+          searchBar.value === "" && items.length === 0
             ? "No hay items"
-            : searchBar.value !== "" && filteredItems.length === 0
+            : searchBar.value !== "" && items.length === 0
             ? "No se encontró nada"
             : null
         }}
       </p>
 
       <div class="saleflows-item-grid">
-        <div
-          class="capsize"
-          *ngFor="let item of filteredItems; let itemIndex = index"
-        >
+        <div class="capsize" *ngFor="let item of items; let itemIndex = index">
           <app-saleflow-item
             [itemIndex]="itemIndex"
             [itemId]="item._id"

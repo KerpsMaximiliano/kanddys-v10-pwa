@@ -1,5 +1,11 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -24,13 +30,16 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
 
 interface ExtendedTag extends Tag {
   selected?: boolean;
@@ -47,8 +56,9 @@ export class StoreComponent implements OnInit {
   saleflowData: SaleFlow;
   hasCustomizer: boolean;
   items: Item[] = [];
-  filteredItems: Item[] = [];
   tags: ExtendedTag[] = [];
+  tagsHashTable: Record<string, Tag> = {};
+  tagsByNameHashTable: Record<string, Tag> = {};
   itemsByCategory: {
     label: string;
     items: Item[];
@@ -64,16 +74,6 @@ export class StoreComponent implements OnInit {
   }[] = [];
   categorylessItems: Item[] = [];
   filteredCategoryLessItems: Item[] = [];
-  itemsPerTag: Array<{
-    tag: ExtendedTag;
-    items: Array<Item>;
-  }> = [];
-  filteredItemsPerTag: Array<{
-    tag: ExtendedTag;
-    items: Array<Item>;
-  }> = [];
-  itemsWithoutTags: Item[] = [];
-  filteredItemsWithoutTags: Item[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
   highlightedItems: Item[] = [];
@@ -86,20 +86,23 @@ export class StoreComponent implements OnInit {
   searchBar: FormControl = new FormControl('');
   selectedTagsCounter: number = 0;
   selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
+  unselectedTags: Array<Tag> = [];
   user: User = null;
   userDefaultMerchant: Merchant = null;
+  showSearchbar: boolean = true;
   paginationState: {
     pageSize: number;
     page: number;
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 60,
     status: 'loading',
   };
 
   public swiperConfigTag: SwiperOptions = {
-    slidesPerView: 5,
+    slidesPerView: 'auto',
     freeMode: true,
     spaceBetween: 0,
   };
@@ -122,6 +125,8 @@ export class StoreComponent implements OnInit {
       await this.getItems();
     }
   }
+
+  @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
 
   constructor(
     private dialog: DialogService,
@@ -186,31 +191,9 @@ export class StoreComponent implements OnInit {
           if (!tagsAndItemsHashtable[tagId]) tagsAndItemsHashtable[tagId] = [];
           tagsAndItemsHashtable[tagId].push(item);
         }
-      } else {
-        this.itemsWithoutTags.push(item);
       }
     }
 
-    this.filteredItemsWithoutTags = this.itemsWithoutTags;
-
-    for (const tag of this.tags) {
-      if (
-        tagsAndItemsHashtable[tag._id] &&
-        tagsAndItemsHashtable[tag._id].length > 0
-      ) {
-        this.itemsPerTag.push({
-          tag,
-          items: tagsAndItemsHashtable[tag._id],
-        });
-        this.filteredItemsPerTag = this.itemsPerTag;
-      } else {
-        this.itemsPerTag.push({
-          tag,
-          items: [],
-        });
-        this.filteredItemsPerTag = this.itemsPerTag;
-      }
-    }
     //*************************                        END                   *****************************//
   }
 
@@ -288,7 +271,6 @@ export class StoreComponent implements OnInit {
         this.items = items.listItems.filter((item) => {
           return item.status === 'active' || item.status === 'featured';
         });
-        this.filteredItems = this.items;
 
         for (let i = 0; i < this.items.length; i++) {
           const saleflowItem = saleflowItems.find(
@@ -353,30 +335,6 @@ export class StoreComponent implements OnInit {
       if (queries.viewtype === 'preview') this.viewtype = 'preview';
     });
     if (this.header.customizerData) this.header.customizerData = null;
-  }
-
-  filterItemsBySearch(searchTerm: string) {
-    if (searchTerm !== '' && searchTerm) {
-      this.filteredItemsPerTag = JSON.parse(JSON.stringify(this.itemsPerTag));
-
-      this.filteredItemsPerTag.forEach((group) => {
-        group.items = group.items.filter((item) =>
-          this.filterItemsPerSearchTerm(item, searchTerm)
-        );
-      });
-
-      this.filteredItemsWithoutTags = this.itemsWithoutTags.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
-
-      this.filteredItems = this.items.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
-    } else {
-      this.filteredItemsPerTag = this.itemsPerTag;
-      this.filteredItems = this.items;
-      this.filteredItemsWithoutTags = this.itemsWithoutTags;
-    }
   }
 
   filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
@@ -556,6 +514,7 @@ export class StoreComponent implements OnInit {
     });
   };
 
+  //Same dialog as openUserManagementDialog() but with SettingsComponent
   openDialog() {
     const list = [
       {
@@ -571,7 +530,11 @@ export class StoreComponent implements OnInit {
       list.push({
         text: 'Iniciar sesión',
         callback: async () => {
-          this.router.navigate(['auth/login']);
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.saleflowData._id,
+            },
+          });
         },
       });
     }
@@ -599,6 +562,50 @@ export class StoreComponent implements OnInit {
     });
   }
 
+  //Same dialog as openDialog() but with StoreShare
+  openUserManagementDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Menu de opciones',
+        options: [
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: async () => {
+              await this.authService.signout();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (!this.user) {
+      list[0].options.pop();
+      list[0].options.push({
+        text: 'Iniciar sesión',
+        mode: 'func',
+        func: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.saleflowData._id,
+            },
+          });
+        },
+      });
+    }
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
   back() {
     this.location.back();
   }
@@ -614,6 +621,17 @@ export class StoreComponent implements OnInit {
       },
     });
     this.tags = userTag.tags;
+    this.unselectedTags = [...this.tags];
+
+    for (const tag of this.tags) {
+      this.tagsHashTable[tag._id] = tag;
+      this.tagsByNameHashTable[tag.name] = tag;
+      tag.selected = false;
+    }
+
+    setTimeout(() => {
+      this.tagsSwiper.directiveRef.update();
+    }, 300);
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
@@ -624,6 +642,12 @@ export class StoreComponent implements OnInit {
       this.selectedTags = this.selectedTags.filter(
         (selectedTag) => selectedTag._id !== tag._id
       );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tags];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+      }
     } else {
       const selectedTagObject = { ...tag };
 
@@ -632,15 +656,46 @@ export class StoreComponent implements OnInit {
       delete selectedTagObject.selected;
 
       this.selectedTags.push(selectedTagObject);
+
+      if (
+        !this.selectedTagsPermanent.find(
+          (tag) => tag._id === selectedTagObject._id
+        )
+      ) {
+        this.selectedTagsPermanent.push(tag);
+      }
+
       this.selectedTagsCounter++;
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => unselectedTag._id === tag._id
+      );
+
+      if (unselectedTagIndexToDelete > 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
+    }
+
+    if (this.selectedTags.length === 1) {
+      this.showSearchbar = false;
     }
 
     await this.getItems(true);
   }
 
+  async selectTagFromHeader(eventData: {
+    selected: boolean;
+    tag: ExtendedTag;
+  }) {
+    const tagIndex = this.tags.findIndex((tag) => {
+      return tag._id === eventData.tag._id;
+    });
+
+    this.selectTag(eventData.tag, tagIndex);
+  }
+
   async getItems(restartPagination = false) {
     this.paginationState.status = 'loading';
-    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
     const orderData = this.header.getOrder(this.saleflowData._id);
 
     const saleflowItems = this.saleflowData.items.map((saleflowItem) => ({
@@ -668,10 +723,28 @@ export class StoreComponent implements OnInit {
       },
     };
 
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    //Search tagids that match the searchbar value
+    if (this.selectedTags.length === 0) {
+      Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+        if (
+          tagName
+            .toLowerCase()
+            .includes((this.searchBar.value as string).toLowerCase()) &&
+          (this.searchBar.value as string) !== ''
+        ) {
+          const tagId = this.tagsByNameHashTable[tagName]._id;
+
+          if (!selectedTagIds.includes(tagId)) {
+            selectedTagIds.push(tagId);
+          }
+        }
+      });
+    }
+
     if (this.selectedTags.length > 0) {
-      pagination.findBy.tags = {
-        __in: selectedTagIds,
-      };
+      pagination.findBy.tags = selectedTagIds;
     }
 
     if (this.searchBar.value !== '') {
@@ -696,6 +769,15 @@ export class StoreComponent implements OnInit {
           },
         ],
       };
+
+      //Happens when the searchbar value matches a tag name
+      if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+        pagination.findBy['$or'][2] = {
+          tags: {
+            $in: selectedTagIds,
+          },
+        };
+      }
     }
 
     const items = await this.saleflow.listItems(pagination);
@@ -709,8 +791,6 @@ export class StoreComponent implements OnInit {
       this.items = this.items.concat(itemsQueryResult);
     }
 
-    this.filteredItems = this.items;
-
     this.organizeItems(this.merchantService.merchantData);
 
     this.paginationState.status = 'complete';
@@ -723,8 +803,12 @@ export class StoreComponent implements OnInit {
   async resetSelectedTags() {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = this.tags;
     this.tags.forEach((tag) => (tag.selected = false));
+    this.unselectedTags = this.tags;
+    this.showSearchbar = true;
 
-    await this.getItems();
+    await this.getItems(true);
   }
 }
