@@ -10,6 +10,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anexos-dialog.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
+import { Item } from 'src/app/core/models/item';
 
 @Component({
   selector: 'app-article-params',
@@ -24,6 +25,7 @@ export class ArticleParamsComponent implements OnInit {
   searchValue: string;
   saleFlow: SaleFlow;
   items: any;
+  item: Item;
   mouseDown: boolean;
   startX: number;
   scrollLeft: number;
@@ -44,13 +46,27 @@ export class ArticleParamsComponent implements OnInit {
     private dialog: DialogService,
     private _ItemsService: ItemsService,
     private _HeaderService: HeaderService,
-    private _MerchantService: MerchantsService,
+    private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _Router: Router,
     private _Route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const itemId = this._Route.snapshot.paramMap.get('itemId');
+    if (itemId) {
+      this.item = await this._ItemsService.item(itemId);
+      if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
+        this._Router.navigate(['../../'], {
+          relativeTo: this._Route,
+        });
+        return;
+      }
+      this.price.setValue(this.item.pricing);
+      this.name.setValue(this.item.name);
+      if (this.item.name.trim()) this.models[0] = this.item.name;
+      else this.models[0] = 'Modelo sin nombre';
+    }
     this._ItemsService.itemImages?.forEach((file) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -156,7 +172,7 @@ export class ArticleParamsComponent implements OnInit {
         // description: description || null,
         pricing: this.price.value,
         images: this._ItemsService.itemImages,
-        merchant: this._MerchantService.merchantData?._id,
+        merchant: this._MerchantsService.merchantData?._id,
         content: [],
         currencies: [],
         hasExtraPrice: false,
@@ -164,7 +180,30 @@ export class ArticleParamsComponent implements OnInit {
         showImages: this._ItemsService.itemImages.length > 0,
       };
 
-      if (this._MerchantService.merchantData) {
+      if (this.item) {
+        delete itemInput.images;
+        delete itemInput.merchant;
+        const { updateItem: updatedItem } = await this._ItemsService.updateItem(
+          itemInput,
+          this.item._id
+        );
+        if (this._ItemsService.changedImages) {
+          await this._ItemsService.deleteImageItem(
+            this.item.images,
+            updatedItem._id
+          );
+          await this._ItemsService.addImageItem(
+            this._ItemsService.itemImages,
+            updatedItem._id
+          );
+        }
+
+        this._ItemsService.removeTemporalItem();
+        this._Router.navigate([`/admin/merchant-items`]);
+        return;
+      }
+
+      if (this._MerchantsService.merchantData) {
         const { createItem } = await this._ItemsService.createItem(itemInput);
         await this._SaleflowService.addItemToSaleFlow(
           {
@@ -194,6 +233,12 @@ export class ArticleParamsComponent implements OnInit {
 
   goBack() {
     this.steps = 'price';
+  }
+
+  deleteImage(index: number) {
+    this.selectedImages.splice(index, 1);
+    this._ItemsService.itemImages.splice(index, 1);
+    this._ItemsService.changedImages = true;
   }
 
   changeModel(index: number) {
@@ -235,6 +280,7 @@ export class ArticleParamsComponent implements OnInit {
         this.selectedImages.push(reader.result);
       };
       reader.readAsDataURL(file);
+      this._ItemsService.changedImages = true;
     }
   }
 

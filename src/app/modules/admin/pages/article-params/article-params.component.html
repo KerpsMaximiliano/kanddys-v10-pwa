@@ -129,20 +129,23 @@
           for="filemultiple"
           class="add-image"
         >
-          <div class="add"></div>
+          <div class="corner-btn add"></div>
         </label>
         <!-- <button class="add-image">
           
         </button> -->
 
-        <button
+        <div
           class="image-container"
           *ngFor="let item of selectedImages; index as i"
-          [style.background]="sanitize(item)"
-          (click)="openImageModal(item)"
         >
-          <div class="selected"></div>
-        </button>
+          <button
+            class="image"
+            [style.background]="sanitize(item)"
+            (click)="openImageModal(item)"
+          ></button>
+          <button class="corner-btn delete" (click)="deleteImage(i)"></button>
+        </div>
       </div>
 
       <app-sticky-button

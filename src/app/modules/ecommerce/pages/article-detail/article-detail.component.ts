@@ -301,9 +301,9 @@ export class ArticleDetailComponent implements OnInit {
     if (this.previewMode) {
       if (this.itemData._id)
         return this.router.navigate([
-          `/admin/create-item/${this.itemData._id}`,
+          `/admin/create-article/${this.itemData._id}`,
         ]);
-      else return this.router.navigate([`/admin/create-item`]);
+      else return this.router.navigate([`/admin/create-article`]);
     }
     if (this.selectedParam) {
       this.selectedParam = null;

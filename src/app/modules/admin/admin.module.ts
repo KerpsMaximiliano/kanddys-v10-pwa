@@ -31,8 +31,12 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
       {
-        path: 'create-item/:itemId',
-        component: CreateItemComponent,
+        path: 'create-article/:itemId',
+        component: ArticleCreatorComponent,
+      },
+      {
+        path: 'article-params/:itemId',
+        component: ArticleParamsComponent,
       },
       {
         path: 'entity-detail-metrics',
