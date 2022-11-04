@@ -182,9 +182,7 @@
               [queryParams]="{ status: 'active' }"
             >
               <h2 class="amount quantity">
-                {{
-                  activeItemsCounter
-                }}
+                {{ activeItemsCounter }}
               </h2>
               <h2 class="amount">VISIBLES</h2>
             </div>
@@ -195,25 +193,21 @@
               [queryParams]="{ status: 'disabled' }"
             >
               <h2 class="amount quantity">
-                {{
-                  inactiveItemsCounter
-                }}
+                {{ inactiveItemsCounter }}
               </h2>
               <h2 class="amount">INVISIBLES</h2>
             </div>
 
             <div
-            class="card pointer"
-            routerLink="/admin/merchant-items"
-            [queryParams]="{ status: 'featured' }"
-          >
-            <h2 class="amount quantity">
-              {{
-                featuredItemsCounter
-              }}
-            </h2>
-            <h2 class="amount">DESTACADOS</h2>
-          </div>
+              class="card pointer"
+              routerLink="/admin/merchant-items"
+              [queryParams]="{ status: 'featured' }"
+            >
+              <h2 class="amount quantity">
+                {{ featuredItemsCounter }}
+              </h2>
+              <h2 class="amount">DESTACADOS</h2>
+            </div>
 
             <div class="card unset">
               <h2 class="amount quantity">
@@ -224,16 +218,12 @@
               <h2 class="amount">ARTICULOS VENDIDOS</h2>
             </div>
 
-            <!--
-              <div class="card unset">
-                <h2 class="amount quantity">
-                  {{
-                    archivedItemsCounter
-                  }}
-                </h2>
-                <h2 class="amount">ARCHIVADOS</h2>
-              </div>
-            -->
+            <div class="card unset">
+              <h2 class="amount quantity">
+                {{ archivedItemsCounter }}
+              </h2>
+              <h2 class="amount">ARCHIVADOS</h2>
+            </div>
           </div>
 
           <ng-container *ngIf="saleflowCalendar">
@@ -352,7 +342,7 @@
     <swiper [config]="tagsSwiperConfig" *ngIf="tagsList.length > 0" #tagSwiper>
       <div
         class="tag-wrapper swiper-slide"
-        style="width: 81px !important; margin-right: 8px !important;"
+        style="width: 81px !important; margin-right: 8px !important"
         *ngFor="let tag of unselectedTags; let tagIndex = index"
       >
         <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">

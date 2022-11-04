@@ -184,6 +184,7 @@ export class ItemsDashboardComponent implements OnInit {
     await this.inicializeTags();
     await this.inicializeItems(true, false, true);
     await this.inicializeHighlightedItems();
+    await this.inicializeArchivedItems();
     await this.getOrdersTotal();
     await this.getMerchantBuyers();
     await this.inicializeSaleflowCalendar();
@@ -270,6 +271,34 @@ export class ItemsDashboardComponent implements OnInit {
       )
         this.highlightedItemsSwiper.directiveRef.update();
     }, 300);
+  }
+
+  async inicializeArchivedItems() {
+    const saleflowItems = this.saleflowService.saleflowData.items.map(
+      (saleflowItem) => ({
+        itemId: saleflowItem.item._id,
+        customizer: saleflowItem.customizer?._id,
+        index: saleflowItem.index,
+      })
+    );
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.itemId)),
+        },
+        status: 'archived',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
+    };
+
+    const response = await this.itemsService.itemsArchived(pagination);
+
+    if (response && Array.isArray(response)) {
+      this.archivedItemsCounter = response.length;
+    }
   }
 
   async inicializeItems(
@@ -380,8 +409,6 @@ export class ItemsDashboardComponent implements OnInit {
           this.activeItemsCounter++;
         } else if (item.status === 'disabled') {
           this.inactiveItemsCounter++;
-        } else if (item.status === 'archived') {
-          this.archivedItemsCounter++;
         }
       });
 
@@ -985,19 +1012,19 @@ export class ItemsDashboardComponent implements OnInit {
                 }
               }
             }
-            
+
             this.totalItemsCounter++;
 
-            if(itemWithParams.status === 'featured') {
+            if (itemWithParams.status === 'featured') {
               this.activeItemsCounter++;
               this.featuredItemsCounter++;
             }
 
-            if(itemWithParams.status === 'active') {
+            if (itemWithParams.status === 'active') {
               this.activeItemsCounter++;
             }
 
-            if(itemWithParams.status === 'disabled') {
+            if (itemWithParams.status === 'disabled') {
               this.inactiveItemsCounter++;
             }
 
@@ -1040,6 +1067,9 @@ export class ItemsDashboardComponent implements OnInit {
               this.inactiveItems.splice(invisibleItemsIndex, 1);
               this.inactiveItemsCounter--;
             }
+
+            this.archivedItemsCounter++;
+
             this.toastr.info('¡Item archivado exitosamente!');
           } catch (error) {
             console.log(error);
