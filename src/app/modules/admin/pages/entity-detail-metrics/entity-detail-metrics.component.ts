@@ -262,7 +262,7 @@ export class EntityDetailMetricsComponent implements OnInit {
             this.headerService.flowRoute = this.router.url;
             this.router.navigate([`auth/login`], {
               queryParams: {
-                redirect: '/admin/items-dashboard'
+                redirect: '/admin/entity-detail-metrics'
               }
             });
             resolve(true);

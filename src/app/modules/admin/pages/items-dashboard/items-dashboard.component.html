@@ -52,11 +52,7 @@
         xmlns="http://www.w3.org/2000/svg"
         width="27"
         height="27"
-        (click)="
-          !executingMenuOpeningAnimation || !executingMenuOpeningAnimation
-            ? openOrCloseMenu()
-            : null
-        "
+        (click)="openOrCloseMenu()"
       >
         <path
           d="M3.375 0A3.375 3.375 0 0 0 0 3.375v20.25A3.375 3.375 0 0 0 3.375 27h20.25A3.375 3.375 0 0 0 27 23.625V3.375A3.375 3.375 0 0 0 23.625 0H3.375Zm.844 8.438a.844.844 0 0 0 0 1.687H22.78a.844.844 0 0 0 0-1.688H4.22Zm2.531 5.906c0-.466.378-.844.844-.844h11.812a.844.844 0 0 1 0 1.688H7.594a.844.844 0 0 1-.844-.844Zm3.375 5.062c0-.466.378-.843.844-.843h5.062a.844.844 0 0 1 0 1.687H10.97a.844.844 0 0 1-.844-.844Z"
@@ -81,6 +77,12 @@
           show: menuOpened,
           animationRunning:
             executingMenuOpeningAnimation || executingMenuClosingAnimation
+        }"
+        [ngStyle]="{
+          height:
+            menuNavigationOptions[activeMenuOptionIndex].name === 'Items'
+              ? '580px'
+              : '413px'
         }"
       >
         <div
@@ -111,12 +113,18 @@
         visible:
           menuOpened &&
           !executingMenuOpeningAnimation &&
-          !executingMenuClosingAnimation,
+          !executingMenuClosingAnimation &&
+          menuNavigationOptions[activeMenuOptionIndex].name === 'Items',
+        visible2:
+          menuOpened &&
+          !executingMenuOpeningAnimation &&
+          !executingMenuClosingAnimation &&
+          menuNavigationOptions[activeMenuOptionIndex].name !== 'Items',
         animationRunning:
           executingMenuOpeningAnimation || executingMenuClosingAnimation
       }"
       [ngStyle]="{
-        transition: '0.5s height linear'
+        transition: '0.3s height linear'
       }"
     >
       <div
@@ -244,7 +252,7 @@
               <div
                 class="card pointer"
                 [routerLink]="
-                  '/admin/items-dashboard/reservations/' +
+                  '/admin/entity-detail-metrics/reservations/' +
                   saleflowCalendar._id +
                   '/pasadas'
                 "
@@ -262,7 +270,7 @@
               <div
                 class="card pointer"
                 [routerLink]="
-                  '/admin/items-dashboard/reservations/' +
+                  '/admin/entity-detail-metrics/reservations/' +
                   saleflowCalendar._id +
                   '/futuras'
                 "
@@ -385,7 +393,7 @@
     <div class="title-and-options">
       <h2 class="title">Destacados</h2>
 
-      <div class="dot-trio" (click)="openItemManagementDialog()">
+      <div class="dot-trio" (click)="openItemManagementDialog('featured')">
         <div
           class="dot"
           [ngStyle]="{

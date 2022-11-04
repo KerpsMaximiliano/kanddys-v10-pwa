@@ -63,6 +63,7 @@ export class CreateItemComponent implements OnInit {
   hasParams: boolean;
   justDynamicMode: boolean = false;
   parseFloat = parseFloat;
+  previousRoute: string = null;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -76,6 +77,8 @@ export class CreateItemComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.previousRoute = this.route.snapshot.queryParamMap.get('from');
+
     this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const justdynamicmode =
@@ -180,13 +183,22 @@ export class CreateItemComponent implements OnInit {
   }
 
   goBack() {
-    if (this.hasParams) {
-      this.hasParams = false;
-      this.router.navigate(['/admin/merchant-items']);
-      return;
+    if (!this.previousRoute) {
+      if (this.hasParams) {
+        this.hasParams = false;
+        this.router.navigate(['/admin/merchant-items']);
+        return;
+      } else {
+        this.itemService.removeTemporalItem();
+        this.router.navigate(['/admin/merchant-items']);
+      }
     } else {
-      this.itemService.removeTemporalItem();
-      this.router.navigate(['/admin/merchant-items']);
+      let route = 'admin/entity-detail-metrics';
+
+      if (this.previousRoute === 'dashboard')
+        route = 'admin/entity-detail-metrics';
+
+      this.router.navigate([route]);
     }
   }
 
@@ -284,7 +296,9 @@ export class CreateItemComponent implements OnInit {
               updatedItem._id
             );
             await this.itemService.addImageItem(
-              images.length ? images as File[] : this.itemService.temporalImages.new,
+              images.length
+                ? (images as File[])
+                : this.itemService.temporalImages.new,
               updatedItem._id
             );
           }

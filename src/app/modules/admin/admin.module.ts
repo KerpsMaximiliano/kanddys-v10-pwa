@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CreateItemComponent } from './pages/create-item/create-item.component';
-import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
@@ -24,16 +23,16 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'admin/items-dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'admin/entity-detail-metrics', pathMatch: 'full' },
       {
         path: 'create-item/:itemId',
         component: CreateItemComponent,
       },
-      {
+      /*{
         path: 'entity-detail-metrics',
         component: EntityDetailMetricsComponent,
         data: { animation: 'EntityDetailMetrics' },
-      },
+      },*/
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
@@ -55,7 +54,7 @@ const routes: Routes = [
         component: OrdersAndPreOrdersList,
       },
       {
-        path: 'items-dashboard/reservations/:calendar/:type',
+        path: 'entity-detail-metrics/reservations/:calendar/:type',
         component: ReservationListComponent,
         data: { animation: 'EntityDetailMetrics' },
       },
@@ -77,7 +76,7 @@ const routes: Routes = [
         component: TimeBlockComponent,
       },
       {
-        path: 'items-dashboard',
+        path: 'entity-detail-metrics',
         component: ItemsDashboardComponent,
       },
     ],
@@ -87,7 +86,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CreateItemComponent,
-    EntityDetailMetricsComponent,
     MerchantItemsComponent,
     ItemDisplayComponent,
     ActionsMenuComponent,

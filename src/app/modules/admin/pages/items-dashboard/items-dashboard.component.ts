@@ -649,7 +649,9 @@ export class ItemsDashboardComponent implements OnInit {
     this.router.navigate([`/admin/create-tag/${tagId}`]);
   }
 
-  openItemManagementDialog = () => {
+  openItemManagementDialog = (
+    section: 'featured' | 'all-items' = 'all-items'
+  ) => {
     const list: StoreShareList[] = [
       {
         title: 'GESTIÓN DE ITEMS',
@@ -663,7 +665,12 @@ export class ItemsDashboardComponent implements OnInit {
             text: 'ADICIONAR',
             mode: 'func',
             func: () => {
-              this.router.navigate(['admin/create-item/']);
+              //this.headerService.flowRoute = this.router.url;
+              this.router.navigate(['admin/create-item/'], {
+                queryParams: {
+                  from: 'dashboard',
+                },
+              });
             },
           },
           {
@@ -681,27 +688,44 @@ export class ItemsDashboardComponent implements OnInit {
             text: 'ESCONDER',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/merchant-items`], {
+              const routerConfig: any = {
                 queryParams: {
                   initialMode: 'hide',
+                  actionFromDashboard: true,
                 },
-              });
+              };
+
+              if (section === 'featured')
+                routerConfig.queryParams.status = 'featured';
+
+              this.router.navigate([`admin/merchant-items`], routerConfig);
             },
           },
           {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
             func: () => {
-              this.router.navigate([`admin/merchant-items`], {
+              const routerConfig: any = {
                 queryParams: {
                   initialMode: 'delete',
+                  actionFromDashboard: true,
                 },
-              });
+              };
+
+              if (section === 'featured')
+                routerConfig.queryParams.status = 'featured';
+
+              this.router.navigate([`admin/merchant-items`], routerConfig);
             },
           },
         ],
       },
     ];
+
+    if (section === 'featured') {
+      list[0].options.shift();
+      list[0].options.shift();
+    }
 
     this.dialog.open(StoreShareComponent, {
       type: 'fullscreen-translucent',
@@ -882,7 +906,7 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'INVISIBLE',
         backgroundColor: '#B17608',
-        color: '#FFFFFF',
+        color: 'white',
         asyncCallback: toggleStatus,
       },
     ];
@@ -920,29 +944,6 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Duplicar',
         callback: async () => {
-          /*const imageFiles: Array<File> = [];
-
-          const toDataURL = (url) =>
-            fetch(url)
-              .then((response) => response.blob())
-              .then(
-                (blob) =>
-                  new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                  })
-              );
-
-          for (const imageURL of item.images) {
-            const dataURL = await toDataURL(imageURL);
-            if (dataURL) {
-              const file = base64ToFile(dataURL as string);
-              imageFiles.push(file);
-            }
-          }*/
-
           const itemInput: ItemInput = {
             name: item.name || null,
             description: item.description || null,
@@ -968,6 +969,11 @@ export class ItemsDashboardComponent implements OnInit {
               },
               this.saleflowService.saleflowData._id
             );
+
+            this.saleflowService.saleflowData =
+              await this.saleflowService.saleflowDefault(
+                this.merchantsService.merchantData._id
+              );
 
             if (item.params && item.params.length > 0) {
               const { createItemParam } =
