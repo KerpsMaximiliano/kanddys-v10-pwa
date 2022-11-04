@@ -60,8 +60,8 @@
     >
       <ng-container *ngFor="let item of options; index as j">
         <div
-          class="tab option"
-          [ngClass]="{ 'second-active': activeStep === j }"
+          class="tab"
+          [ngClass]="{ option: activeStep === j }"
           (click)="changeStep(j)"
         >
           {{ item }}*
@@ -87,6 +87,7 @@
             type="text"
             class="name-input"
             [formControl]="name"
+            (input)="onChangeName($event)"
             placeholder="Modelo sin nombre..."
           />
           <button class="list-button" (click)="openDialog()">
@@ -138,6 +139,7 @@
           class="image-container"
           *ngFor="let item of selectedImages; index as i"
           [style.background]="sanitize(item)"
+          (click)="openImageModal(item)"
         >
           <div class="selected"></div>
         </button>

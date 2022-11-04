@@ -49,6 +49,9 @@ export class ArticleCreatorComponent implements OnInit {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
     },
+    autoplay: {
+      delay: 10000,
+    },
   };
   entity: string;
   isOrder: boolean;
@@ -125,20 +128,28 @@ export class ArticleCreatorComponent implements OnInit {
     });
   }
 
-  loadFile(event: any, i: number, j: number) {
-    const [file] = event.target.files;
-    const { type } = file;
-    if (
-      !file ||
-      ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
-        file.type
+  onFileInput(event: Event, i: number, j: number, k: number) {
+    const fileList = (event.target as HTMLInputElement).files;
+    for (let f = 0; f < fileList.length; f++) {
+      if (f > 0) this.addFile(i, j, k);
+      const file = fileList.item(f);
+      if (
+        !file ||
+        ![...this.imageFiles, ...this.videoFiles, ...this.audioFiles].includes(
+          file.type
+        )
       )
-    )
-      return;
+        return;
+      this.loadFile(file, i, k + f);
+    }
+  }
+
+  loadFile(file: File, i: number, j: number) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = (e) => {
+      const { type } = file;
       const result = reader.result;
       if (this.videoFiles.includes(type))
         this.multimedia[i][j] = (<FileReader>e.target).result;
@@ -240,7 +251,7 @@ export class ArticleCreatorComponent implements OnInit {
     }
   }
 
-  removeFile(i, j): void {
+  removeFile(i: number, j: number): void {
     const controller = this.controllers.at(i).get('multimedia');
     controller.setValue(controller.value.filter((image, index) => index !== j));
     this.multimedia[i] = this.multimedia[i].filter(
@@ -250,7 +261,11 @@ export class ArticleCreatorComponent implements OnInit {
     const aux = this.controllers.at(i).get('multimedia').value;
     this.controllers.at(i).get('multimedia').setValue([]);
     setTimeout(() => {
-      this.controllers.at(i).get('multimedia').setValue(aux);
+      if (!this.multimedia[0][0]) {
+        this.controllers.at(i).get('multimedia').setValue(['']);
+        this.multimedia[0][0] = '';
+        this.types[0][0] = '';
+      } else this.controllers.at(i).get('multimedia').setValue(aux);
       setTimeout(() => {
         const _Swiper = new Swiper('.swiper');
         if (j > this.multimedia[i].length - 1) _Swiper.slideTo(j - 1);

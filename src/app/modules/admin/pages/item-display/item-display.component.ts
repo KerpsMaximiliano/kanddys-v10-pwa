@@ -383,7 +383,7 @@ export class ItemDisplayComponent implements OnInit {
       {
         text: 'Adicionar nuevo Item',
         callback: () => {
-          this.router.navigate([`/admin/create-item`]);
+          this.router.navigate([`/admin/create-article`]);
         },
       },
     ];

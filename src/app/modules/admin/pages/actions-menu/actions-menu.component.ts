@@ -206,7 +206,7 @@ export class ActionsMenuComponent implements OnInit {
         break;
       case 4:
         this.router.navigate(
-          [`admin/create-item`],
+          [`admin/create-article`],
           this.item.params?.[0]?.values?.length && {
             queryParams: {
               justdynamicmode: true,

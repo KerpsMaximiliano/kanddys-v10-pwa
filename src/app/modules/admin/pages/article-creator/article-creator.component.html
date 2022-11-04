@@ -44,9 +44,7 @@
             >
               <div class="grid">
                 <div
-                  [style.visibility]="
-                    multimedia[i].length > 1 ? 'initial' : 'hidden'
-                  "
+                  [style.visibility]="controller.valid ? 'initial' : 'hidden'"
                   class="col"
                 >
                   <button class="grid-btn" (click)="removeFile(i, k)">
@@ -69,7 +67,8 @@
                 id="{{ i }}{{ k }}"
                 class="hidden"
                 type="file"
-                (change)="loadFile($event, i, k)"
+                multiple
+                (change)="onFileInput($event, i, j, k)"
               />
               <label
                 [style.height]="

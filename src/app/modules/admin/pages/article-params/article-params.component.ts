@@ -9,6 +9,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anexos-dialog.component';
+import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 
 @Component({
   selector: 'app-article-params',
@@ -18,11 +19,7 @@ import { AnexosDialogComponent } from 'src/app/shared/dialogs/anexos-dialog/anex
 export class ArticleParamsComponent implements OnInit {
   steps: 'price' | 'images' | 'save' = 'price';
   selectedImages: (string | ArrayBuffer)[] = [];
-  models: string[] = [
-    'Modelo sin nombre',
-    'Modelo sin nombre',
-    'Modelo sin nombre',
-  ];
+  models: string[] = ['Modelo sin nombre'];
   options: string[] = ['Precio', 'Imagen o imágenes'];
   searchValue: string;
   saleFlow: SaleFlow;
@@ -92,59 +89,65 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   openDialog() {
-   const items: {
-     option: string;
-     subOption: string;
-     callback?: () => void;
-   }[] = [];
-   for (const item of this.items) {
-     items.push({
-       option: item.name,
-       subOption: `$${item.pricing}`,
-       callback: () => {
-         this.name.setValue(item.name);
-         this.price.setValue(item.pricing);
-       },
-     });
-   }
-   this.dialog.open(AnexosDialogComponent, {
-     props: {
-       title: 'Previamente Usados',
-       options: items,
-     },
-     type: 'fullscreen-translucent',
-     customClass: 'app-dialog',
-     flags: ['no-header'],
-   });
- }
+    const items: {
+      option: string;
+      subOption: string;
+      callback?: () => void;
+    }[] = [];
+    for (const item of this.items) {
+      items.push({
+        option: item.name,
+        subOption: `$${item.pricing}`,
+        callback: () => {
+          this.name.setValue(item.name);
+          this.price.setValue(item.pricing);
+        },
+      });
+    }
+    this.dialog.open(AnexosDialogComponent, {
+      props: {
+        title: 'Previamente Usados',
+        options: items,
+      },
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
 
- obtainLasts() {
-   this._Route.params.subscribe(async (params) => {
-     this.saleFlow = await this._HeaderService.fetchSaleflow(params.id);
-     const saleflowItems = this.saleFlow.items.map((saleflowItem) => ({
-       item: saleflowItem.item._id,
-     }));
-     this.items = await this._SaleflowService.listItems({
-       findBy: {
-         _id: {
-           __in: ([] = saleflowItems.map((items) => items.item)),
-         },
-       },
-       options: {
-         sortBy: 'createdAt:desc',
-         limit: 60,
-       }
-     });
-     this.items = this.items.listItems.filter((item) =>{
+  obtainLasts() {
+    this._Route.params.subscribe(async (params) => {
+      this.saleFlow = await this._HeaderService.fetchSaleflow(params.id);
+      const saleflowItems = this.saleFlow.items.map((saleflowItem) => ({
+        item: saleflowItem.item._id,
+      }));
+      this.items = await this._SaleflowService.listItems({
+        findBy: {
+          _id: {
+            __in: ([] = saleflowItems.map((items) => items.item)),
+          },
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 60,
+        },
+      });
+      this.items = this.items.listItems.filter((item) => {
         return item.params == null || undefined || item.params.length == 0;
-     });
-     this.items.length <= 6 ? null : this.items.length = 6;
-   });
- }
+      });
+      this.items.length <= 6 ? null : (this.items.length = 6);
+    });
+  }
+
+  onChangeName(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    if (value.trim()) this.models[0] = value;
+    else this.models[0] = 'Modelo sin nombre';
+  }
 
   async toSave() {
     if (this.steps === 'price') {
-      this.steps = 'images';
+      this.changeStep(1);
       return;
     }
     if (this.steps === 'images') {
@@ -239,5 +242,16 @@ export class ArticleParamsComponent implements OnInit {
     return this._DomSanitizer.bypassSecurityTrustStyle(
       `url(${image}) no-repeat center center / cover #E9E371`
     );
+  }
+
+  openImageModal(imageSourceURL: string | ArrayBuffer) {
+    this.dialog.open(ImageViewComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        imageSourceURL,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 }

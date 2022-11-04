@@ -18,7 +18,7 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 
 const routes: Routes = [
   {
-    path: 'create-item',
+    path: 'create-article',
     component: ArticleCreatorComponent,
   },
   {

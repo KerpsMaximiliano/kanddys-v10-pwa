@@ -452,7 +452,7 @@ export class UserContactLandingComponent implements OnInit {
               this.headerService.flowRoute = this.router.url;
 
               this.itemsService.temporalItem = null;
-              this.router.navigate([`/admin/create-item`]);
+              this.router.navigate([`/admin/create-article`]);
             },
             plus: true,
           },
