@@ -1,7 +1,7 @@
 <div class="tags-grid" [style.background]="containerBackground">
   <button
     *ngFor="let tg of tags"
-    [style.background]="tag.includes(tg._id) ? background : selectedBackground"
+    [style.background]="tag.includes(tg._id) ? selectedBackground : background"
     [style.color]="tag.includes(tg._id) ? selectedColor : color"
     class="tag"
     (click)="setTag(tg)"

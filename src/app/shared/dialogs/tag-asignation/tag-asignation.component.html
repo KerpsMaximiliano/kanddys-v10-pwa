@@ -18,14 +18,18 @@
         ? activeTags
         : null
     "
+
+
     [multipleTags]="true"
-    containerBackground="#f6f6f6"
-    background="#2874ad"
-    selectedBackground="#fff"
-    color="#2874ad"
-    selectedColor="#fff"
-    selectedFilter="brightness(2)"
+    [selectedBackground]="'#2874ad'"
+    [background]="'#ffffff'"
+    [selectedColor]="'#fff'"
+    [fillSelectedTagsOnStart]="true"
     [useIdToRemoveOrAddTags]="true"
+    [color]="'#2874ad'"
+    containerBackground="#f6f6f6"
+    selectedBackground="#fff"
+    selectedFilter="brightness(2)"
     (tagSelect)="tagAction($event)"
   ></app-tags-selector>
   <button class="save">

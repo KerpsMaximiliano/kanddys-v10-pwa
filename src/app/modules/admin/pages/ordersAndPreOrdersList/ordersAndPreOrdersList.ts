@@ -45,7 +45,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   };
   typeOfList: string;
   tags: Array<Tag> = [];
-  showSearchbar: boolean;
+  showSearchbar: boolean = true;
   selectedTags: Array<Tag> = [];
   selectedTagsPermanent: Array<Tag> = [];
   unselectedTags: Array<Tag> = [];
@@ -136,6 +136,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.loadingStatus = 'loading';
       let tags: Array<Tag> = (await this.tagsService.tagsByUser()) || [];
       this.tags = tags;
+      this.unselectedTags = [...this.tags];
 
       //Fills an object or hash table for fast access to each tag by its id
       this.tags.forEach((tag) => {
@@ -309,7 +310,7 @@ export class OrdersAndPreOrdersList implements OnInit {
           {
             name: {
               __regex: {
-                pattern: this.searchBar.value,
+                pattern: (this.searchBar.value as string).trim(),
                 options: 'gi',
               },
             },
@@ -317,7 +318,23 @@ export class OrdersAndPreOrdersList implements OnInit {
           {
             'params.values.name': {
               __regex: {
-                pattern: this.searchBar.value,
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+          {
+            email: {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
+                options: 'gi',
+              },
+            },
+          },
+          {
+            phone: {
+              __regex: {
+                pattern: (this.searchBar.value as string).trim(),
                 options: 'gi',
               },
             },
@@ -526,10 +543,12 @@ export class OrdersAndPreOrdersList implements OnInit {
       }
 
       const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
-        (unselectedTag) => unselectedTag._id === selectedTag._id
+        (unselectedTag) => {
+          return unselectedTag._id === selectedTag._id;
+        }
       );
 
-      if (unselectedTagIndexToDelete > 0) {
+      if (unselectedTagIndexToDelete >= 0) {
         this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
       }
     }
@@ -563,7 +582,11 @@ export class OrdersAndPreOrdersList implements OnInit {
 
   resetSelectedTags(): void {
     this.selectedTags = [];
-    this.tags = [...this.tags];
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = [...this.tags];
+    this.showSearchbar = true;
+    this.justShowHighlightedOrders = false;
+    this.justShowUntaggedOrders = false;
 
     this.loadOrdersAssociatedToTag(true);
   }

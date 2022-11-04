@@ -1,4 +1,11 @@
-<div class="header" *ngIf="selectedTags.length === 0">
+<div
+  class="header"
+  *ngIf="
+    selectedTags.length === 0 &&
+    !justShowHighlightedOrders &&
+    !justShowUntaggedOrders
+  "
+>
   <div class="icon-and-title">
     <img
       [src]="env + '/double-arrow-up.png'"
@@ -22,11 +29,29 @@
 </div>
 
 <app-helper-headerv3
-  *ngIf="selectedTags.length > 0"
+  *ngIf="
+    selectedTags.length > 0 ||
+    justShowHighlightedOrders ||
+    justShowUntaggedOrders
+  "
+  [containerStyles]="{
+    height:
+      justShowHighlightedOrders || justShowUntaggedOrders ? '42px' : 'auto'
+  }"
   (arrowsClick)="resetSelectedTags()"
+  [showSearch]="
+    selectedTags.length > 0
+  "
+  (searchClick)="showSearchbar = true"
 ></app-helper-headerv3>
 
-<nav *ngIf="!selectedTags.length">
+<nav
+  *ngIf="!selectedTags.length"
+  [ngStyle]="{
+    marginTop:
+      justShowHighlightedOrders || justShowUntaggedOrders ? '0px' : '42px'
+  }"
+>
   <button
     *ngFor="let button of buttons"
     [ngClass]="{
@@ -46,26 +71,40 @@
 >
   <app-tags-selector
     *ngIf="selectedTags.length > 0"
-    [tags]="selectedTags"
-    [selectedBackground]="'#ffffff'"
+    [tags]="selectedTagsPermanent"
+    [multipleTags]="true"
+    [selectedBackground]="'#2874ad'"
+    [background]="'#ffffff'"
+    [selectedColor]="'#fff'"
+    [fillSelectedTagsOnStart]="true"
+    [useIdToRemoveOrAddTags]="true"
     [color]="'#2874ad'"
+    [useAlternativeOutput]="true"
+    (tagSelect2)="selectTagFromHeader($event)"
   ></app-tags-selector>
 
   <div class="pr-25px">
     <input
       [formControl]="searchBar"
       class="search input"
+      *ngIf="showSearchbar"
       type="tel"
       placeholder="Busca por tag, articulo, referencia.."
     />
   </div>
   <ng-container [ngSwitch]="loadingStatus">
-    <app-tags-carousell
-      [tags]="tags"
-      (tag)="handleTag($event)"
-      [multipleTags]="true"
-      [selectedTagsIds]="getIdsOfSelectedTags()"
-    ></app-tags-carousell>
+    <div
+      [ngStyle]="{
+        marginTop: selectedTags.length > 0 ? '13px' : '0px'
+      }"
+    >
+      <app-tags-carousell
+        [tags]="unselectedTags"
+        (tag)="handleTag($event)"
+        [multipleTags]="true"
+        [selectedTagsIds]="getIdsOfSelectedTags()"
+      ></app-tags-carousell>
+    </div>
     <ng-container *ngSwitchCase="'complete'">
       <div class="content">
         <!-- WHEN THERE IS NOT AN EXPANDED TAG VIEW-->
