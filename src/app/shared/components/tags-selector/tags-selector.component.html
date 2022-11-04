@@ -2,9 +2,6 @@
   <button
     *ngFor="let tg of tags"
     [style.background]="tag.includes(tg._id) ? background : selectedBackground"
-    [style.border]="
-      '1px solid ' + (tag.includes(tg._id) ? selectedBackground : background)
-    "
     [style.color]="tag.includes(tg._id) ? selectedColor : color"
     class="tag"
     (click)="setTag(tg)"
