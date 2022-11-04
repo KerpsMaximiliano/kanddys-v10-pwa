@@ -155,7 +155,7 @@ export class ItemInput {
   merchant?: string;
   category?: string[];
   name?: string;
-  images?: File[];
+  images?: File[] | string[];
   iconImage?: string;
   fixedQuantity?: number;
   pricePerUnit?: number;

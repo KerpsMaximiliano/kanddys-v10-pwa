@@ -284,7 +284,7 @@ export class CreateItemComponent implements OnInit {
               updatedItem._id
             );
             await this.itemService.addImageItem(
-              images.length ? images : this.itemService.temporalImages.new,
+              images.length ? images as File[] : this.itemService.temporalImages.new,
               updatedItem._id
             );
           }
@@ -465,42 +465,42 @@ export class CreateItemComponent implements OnInit {
 
   onOpenDialog = () => {
     const list: Array<any> = [
-          {
-            text: 'Simple',
-            callback: () => {
-              //this.router.navigate(['/ecommerce/item-detail']);
-            },
-          },
-          {
-            text: 'WhatsApp Form',
-            callback: () => {
-              this.headerService.flowRoute = this.router.url;
-              this.router.navigate(['/webforms/webform-questions']);
-            },
-          },
-          {
-            text: !this.hasParams ? 'Dinámico' : 'Estático',
-            callback: () => {
-              if (!this.hasParams) {
-                this.itemForm.get('pricing').reset(0);
-                this.itemForm.get('name').reset();
-                this.itemForm.get('description').reset();
-                this.formattedPricing.item = '$0.00';
-                if (!this.getArrayLength(this.itemParamsForm, 'params')) {
-                  this.generateFields();
-                  this.generateFields();
-                }
-              } else {
-                this.itemParamsForm.reset();
+      {
+        text: 'Simple',
+        callback: () => {
+          //this.router.navigate(['/ecommerce/item-detail']);
+        },
+      },
+      {
+        text: 'WhatsApp Form',
+        callback: () => {
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate(['/webforms/webform-questions']);
+        },
+      },
+      {
+        text: !this.hasParams ? 'Dinámico' : 'Estático',
+        callback: () => {
+          if (!this.hasParams) {
+            this.itemForm.get('pricing').reset(0);
+            this.itemForm.get('name').reset();
+            this.itemForm.get('description').reset();
+            this.formattedPricing.item = '$0.00';
+            if (!this.getArrayLength(this.itemParamsForm, 'params')) {
+              this.generateFields();
+              this.generateFields();
+            }
+          } else {
+            this.itemParamsForm.reset();
 
-                while (this.itemParamsForm.get('params').value.length !== 0) {
-                  (<FormArray>this.itemParamsForm.get('params')).removeAt(0);
-                }
-                this.formattedPricing.values = [];
-              }
-              this.hasParams = !this.hasParams;
-            },
-          },
+            while (this.itemParamsForm.get('params').value.length !== 0) {
+              (<FormArray>this.itemParamsForm.get('params')).removeAt(0);
+            }
+            this.formattedPricing.values = [];
+          }
+          this.hasParams = !this.hasParams;
+        },
+      },
     ];
 
     if (
@@ -529,7 +529,7 @@ export class CreateItemComponent implements OnInit {
           });
           this.itemService.temporalImages = {
             old: this.item?.images,
-            new: images,
+            new: images as File[],
           };
           this.router.navigate(['/ecommerce/item-detail']);
         },
