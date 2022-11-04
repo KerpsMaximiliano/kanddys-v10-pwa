@@ -1,9 +1,9 @@
 
 .tags-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 9px 4px;
-  padding: 20px 16px;
+  padding: 18px 18px 21px 18px;
 }
 
 .tag {

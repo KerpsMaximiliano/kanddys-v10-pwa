@@ -137,7 +137,7 @@ a {
 
     .bill-button {
       width: 85%;
-      background-color: #51983A;
+      background-color: #51983a;
       font-family: "SfProRegular";
       font-size: 1.063rem;
       color: #ffffff;
@@ -180,14 +180,14 @@ a {
           all: unset;
           font-family: "SfProBold";
           font-size: 1.25rem;
-          color: #2874AD;
+          color: #2874ad;
           cursor: pointer;
         }
 
         .top-headline {
           font-family: "SfProBold";
           font-size: 1.25rem;
-          color: #7B7B7B;
+          color: #7b7b7b;
           margin-top: 3px;
         }
       }
@@ -298,7 +298,7 @@ a {
         font-size: 19px;
         color: #272727;
         margin: 0;
-        background-color: #FFF;
+        background-color: #fff;
         padding: 12px 18px;
         border-radius: 6px;
       }
@@ -311,31 +311,31 @@ a {
       .message-box {
         position: relative;
         border-radius: 6px;
-        background-color: #FFF;
+        background-color: #fff;
         flex-direction: column;
         padding: 24px;
 
-        .buttons-share{
-           position: absolute;
-           width: 52%;
-           display: flex;
-           justify-content: space-between;
-           background-color: #82F18D;
-           top: 0;
-           right: 0;
-           border-radius: 5px;
-           padding: 7px 5%;
+        .buttons-share {
+          position: absolute;
+          width: 52%;
+          display: flex;
+          justify-content: space-between;
+          background-color: #82f18d;
+          top: 0;
+          right: 0;
+          border-radius: 5px;
+          padding: 7px 5%;
 
-           .btn{
-              all: unset;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              width: 34px;
-              height: 34px;
-              background-color: transparent;
-              cursor: pointer;
-           }
+          .btn {
+            all: unset;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background-color: transparent;
+            cursor: pointer;
+          }
         }
 
         > :not(:first-child) {
@@ -401,59 +401,86 @@ table {
   width: 100%;
 }
 
-.footer-display{
-   width: 100%;
-   height: 70px;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   position: sticky;
-   bottom: 0px;
-   background-color: #2874AD;
+.footer-display {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  bottom: 0px;
+  background-color: #2874ad;
 
-   &.temporal {
+  &.temporal {
     height: 50px;
-   }
+  }
 
-   .pages-tabs{
+  .pages-tabs {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px auto 0;
+
+    .images-container {
       width: 100%;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 15px auto 0;
+      justify-content: space-around;
 
-      .images-container{
-         width: 100%;
-         display: flex;
-         justify-content: space-around;  
-
-         .image{
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-         }
+      .image {
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
       }
-   }
-   
-   .tab-pages{
-      width: 100%;
-      height: 20px;
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      padding: 0 5px;
-      position: absolute;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
 
-      .tab{
-         width: 80px;
-         height: 4px;
-         background-color: #ffffff;
+  .tab-pages {
+    width: 100%;
+    height: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 5px;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
 
-         &:nth-child(2){
-            background-color: #82f18d;
-         }
+    .tab {
+      width: 80px;
+      height: 4px;
+      background-color: #ffffff;
+
+      &:nth-child(2) {
+        background-color: #82f18d;
       }
-   }
+    }
+  }
+}
+
+.left-arrow,
+.right-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  width: 11px;
+  height: 17px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.left-arrow {
+  left: 15px;
+}
+
+.right-arrow {
+  right: 15px;
 }

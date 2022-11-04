@@ -37,6 +37,7 @@ export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   notify: boolean;
+  todayOrders: ItemOrder[] = [];
   customizerDetails: { name: string; value: string }[] = [];
   customizer: CustomizerValue;
   order: ItemOrder;
@@ -118,6 +119,7 @@ export class OrderDetailComponent implements OnInit {
     const notification = this.route.snapshot.queryParamMap.get('notify');
     const orderId = this.route.snapshot.paramMap.get('orderId');
     this.order = (await this.orderService.order(orderId))?.order;
+
     if (!this.order) {
       this.router.navigate([`others/error-screen/`], {
         queryParams: { type: 'order' },
@@ -401,7 +403,7 @@ export class OrderDetailComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
       props: {
-        text: 'SALVAR EL ARTICULO EN TAGS SELECCIOANDOS',
+        text: 'SALVAR TAGS SELECCIOANDOS EN LA ORDEN',
         tags: this.tags,
         orderId: this.order._id,
         activeTags:
