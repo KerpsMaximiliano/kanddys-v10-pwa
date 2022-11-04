@@ -91,8 +91,14 @@ export class ItemsDashboardComponent implements OnInit {
     },
   ];
   allItems: ExtendedItem[] = [];
+  itemsTotalCounter = 0;
   activeItems: Item[] = [];
   inactiveItems: Item[] = [];
+  inactiveItemsCounter: number = 0;
+  totalItemsCounter: number = 0;
+  activeItemsCounter: number = 0;
+  featuredItemsCounter: number = 0;
+  archivedItemsCounter: number = 0;
   highlightedItems: ExtendedItem[] = [];
   filteredHighlightedItems: ExtendedItem[] = [];
   activeMenuOptionIndex: number = 0;
@@ -176,14 +182,15 @@ export class ItemsDashboardComponent implements OnInit {
 
     await this.verifyIfUserIsLogged();
     await this.inicializeTags();
-    await this.inicializeItems(true);
+    await this.inicializeItems(true, false, true);
     await this.inicializeHighlightedItems();
+    await this.inicializeArchivedItems();
     await this.getOrdersTotal();
     await this.getMerchantBuyers();
     await this.inicializeSaleflowCalendar();
 
     this.itemSearchbar.valueChanges.subscribe((change) =>
-      this.inicializeItems(true)
+      this.inicializeItems(true, false)
     );
   }
 
@@ -266,9 +273,38 @@ export class ItemsDashboardComponent implements OnInit {
     }, 300);
   }
 
+  async inicializeArchivedItems() {
+    const saleflowItems = this.saleflowService.saleflowData.items.map(
+      (saleflowItem) => ({
+        itemId: saleflowItem.item._id,
+        customizer: saleflowItem.customizer?._id,
+        index: saleflowItem.index,
+      })
+    );
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.itemId)),
+        },
+        status: 'archived',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+      },
+    };
+
+    const response = await this.itemsService.itemsArchived(pagination);
+
+    if (response && Array.isArray(response)) {
+      this.archivedItemsCounter = response.length;
+    }
+  }
+
   async inicializeItems(
     restartPagination = false,
-    triggeredFromScroll = false
+    triggeredFromScroll = false,
+    getTotalNumberOfItems = false
   ) {
     const saleflowItems = this.saleflowService.saleflowData.items.map(
       (saleflowItem) => ({
@@ -358,6 +394,26 @@ export class ItemsDashboardComponent implements OnInit {
 
     const items = await this.saleflowService.listItems(pagination);
     const itemsQueryResult = items?.listItems;
+
+    if (getTotalNumberOfItems) {
+      pagination.options.limit = -1;
+      const { listItems: allItems } = await this.saleflowService.hotListItems(
+        pagination
+      );
+
+      allItems.forEach((item) => {
+        if (item.status === 'featured') {
+          this.featuredItemsCounter++;
+          this.activeItemsCounter++;
+        } else if (item.status === 'active') {
+          this.activeItemsCounter++;
+        } else if (item.status === 'disabled') {
+          this.inactiveItemsCounter++;
+        }
+      });
+
+      this.totalItemsCounter = allItems.length;
+    }
 
     if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
       this.allItems = [];
@@ -592,154 +648,6 @@ export class ItemsDashboardComponent implements OnInit {
     localStorage.setItem('flowRoute', this.router.url);
     this.router.navigate([`/admin/create-tag/${tagId}`]);
   }
-
-  itemMenuCallback = (id: string) => {
-    const item = this.allItems.find((item) => item._id === id);
-    const list: StoreShareList[] = [
-      {
-        title: item.name || 'Producto',
-        titleStyles: {
-          margin: '0px',
-          marginTop: '15px',
-          marginBottom: '25px',
-        },
-        options: [
-          {
-            text: 'DESTACAR',
-            mode: 'func',
-            func: async () => {
-              try {
-                const updatedItem = await this.itemsService.updateItem(
-                  {
-                    status: 'featured',
-                  },
-                  item._id
-                );
-
-                if (updatedItem) item.status = 'featured';
-                this.highlightedItems.push(item);
-
-                setTimeout(() => {
-                  if (
-                    this.highlightedItemsSwiper &&
-                    this.highlightedItemsSwiper.directiveRef
-                  )
-                    this.highlightedItemsSwiper.directiveRef.update();
-                }, 300);
-              } catch (error) {
-                console.log(error);
-              }
-            },
-          },
-          {
-            text: item.status === 'disabled' ? 'MOSTRAR' : 'ESCONDER',
-            mode: 'func',
-            func: async () => {
-              try {
-                const updatedItem = await this.itemsService.updateItem(
-                  {
-                    status:
-                      item.status === 'active' || item.status === 'featured'
-                        ? 'disabled'
-                        : item.status === 'disabled'
-                        ? 'active'
-                        : 'draft',
-                  },
-                  item._id
-                );
-
-                if (updatedItem) {
-                  item.status =
-                    item.status === 'active' || item.status === 'featured'
-                      ? 'disabled'
-                      : item.status === 'disabled'
-                      ? 'active'
-                      : 'draft';
-                  if (item.status !== 'active') {
-                    this.activeItems = this.activeItems.filter(
-                      (listItem) => listItem._id !== item._id
-                    );
-                    this.highlightedItems = this.highlightedItems.filter(
-                      (listItem) => listItem._id !== item._id
-                    );
-                    this.filteredHighlightedItems =
-                      this.filteredHighlightedItems.filter(
-                        (listItem) => listItem._id !== item._id
-                      );
-                    this.inactiveItems.push(item);
-
-                    setTimeout(() => {
-                      if (
-                        this.highlightedItemsSwiper &&
-                        this.highlightedItemsSwiper.directiveRef
-                      )
-                        this.highlightedItemsSwiper.directiveRef.update();
-                    }, 300);
-                  } else {
-                    this.activeItems.push(item);
-                    this.inactiveItems = this.inactiveItems.filter(
-                      (listItem) => listItem._id !== item._id
-                    );
-                  }
-                }
-              } catch (error) {
-                console.log(error);
-              }
-            },
-          },
-          {
-            text: 'BORRAR (ELIMINA LA DATA)',
-            mode: 'func',
-            func: async () => {
-              const removeItemFromSaleFlow =
-                await this.saleflowService.removeItemFromSaleFlow(
-                  item._id,
-                  this.saleflowService.saleflowData._id
-                );
-              if (!removeItemFromSaleFlow) return;
-              const deleteItem = await this.itemsService.deleteItem(item._id);
-              if (!deleteItem) return;
-              this.allItems = this.allItems.filter(
-                (listItem) => listItem._id !== item._id
-              );
-              this.activeItems = this.activeItems.filter(
-                (listItem) => listItem._id !== item._id
-              );
-              this.inactiveItems = this.inactiveItems.filter(
-                (listItem) => listItem._id !== item._id
-              );
-              this.highlightedItems = this.highlightedItems.filter(
-                (listItem) => listItem._id !== item._id
-              );
-              this.filteredHighlightedItems =
-                this.filteredHighlightedItems.filter(
-                  (listItem) => listItem._id !== item._id
-                );
-
-              setTimeout(() => {
-                if (
-                  this.highlightedItemsSwiper &&
-                  this.highlightedItemsSwiper.directiveRef
-                )
-                  this.highlightedItemsSwiper.directiveRef.update();
-              }, 300);
-            },
-          },
-        ],
-      },
-    ];
-
-    this.dialog.open(StoreShareComponent, {
-      type: 'fullscreen-translucent',
-      props: {
-        list,
-        alternate: true,
-        hideCancelButtton: true,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  };
 
   openItemManagementDialog = () => {
     const list: StoreShareList[] = [
@@ -983,15 +891,36 @@ export class ItemsDashboardComponent implements OnInit {
       {
         text: 'Vista del visitante',
         callback: async () => {
-          this.router.navigate([
-            `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
-          ]);
+          if (item.status !== 'disabled') {
+            this.router.navigate([
+              `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${item._id}`,
+            ]);
+          } else {
+            const { images, name, description, pricing, _id, ...rest } = item;
+            const params = item.params;
+            params?.forEach((param) => {
+              param.values = param.values.filter(
+                (values) => values.name || values.price || values.description
+              );
+            });
+            this.itemsService.storeTemporalItem({
+              ...rest,
+              name,
+              description,
+              params,
+              images: images,
+              pricing,
+            });
+            this.headerService.flowRoute = this.router.url;
+            localStorage.setItem('flowRoute', this.headerService.flowRoute);
+            this.router.navigate(['/ecommerce/item-detail']);
+          }
         },
       },
       {
         text: 'Duplicar',
         callback: async () => {
-          const imageFiles: Array<File> = [];
+          /*const imageFiles: Array<File> = [];
 
           const toDataURL = (url) =>
             fetch(url)
@@ -1012,13 +941,13 @@ export class ItemsDashboardComponent implements OnInit {
               const file = base64ToFile(dataURL as string);
               imageFiles.push(file);
             }
-          }
+          }*/
 
           const itemInput: ItemInput = {
             name: item.name || null,
             description: item.description || null,
             pricing: item.pricing,
-            images: imageFiles,
+            images: item.images,
             merchant: item.merchant._id,
             content: [],
             currencies: [],
@@ -1084,6 +1013,21 @@ export class ItemsDashboardComponent implements OnInit {
               }
             }
 
+            this.totalItemsCounter++;
+
+            if (itemWithParams.status === 'featured') {
+              this.activeItemsCounter++;
+              this.featuredItemsCounter++;
+            }
+
+            if (itemWithParams.status === 'active') {
+              this.activeItemsCounter++;
+            }
+
+            if (itemWithParams.status === 'disabled') {
+              this.inactiveItemsCounter++;
+            }
+
             this.allItems = [itemWithParams].concat(this.allItems);
             this.toastr.info('¡Item duplicado exitosamente!');
           } catch (error) {
@@ -1107,17 +1051,25 @@ export class ItemsDashboardComponent implements OnInit {
 
             if (allItemIndex >= 0 && response) {
               this.allItems.splice(allItemIndex, 1);
+              this.totalItemsCounter--;
             }
 
             if (highlightedItemsIndex >= 0 && response) {
               this.highlightedItems.splice(highlightedItemsIndex, 1);
+              this.activeItemsCounter--;
+              this.featuredItemsCounter--;
             }
             if (visibleItemsIndex >= 0 && response) {
               this.activeItems.splice(visibleItemsIndex, 1);
+              this.activeItemsCounter--;
             }
             if (invisibleItemsIndex >= 0 && response) {
               this.inactiveItems.splice(invisibleItemsIndex, 1);
+              this.inactiveItemsCounter--;
             }
+
+            this.archivedItemsCounter++;
+
             this.toastr.info('¡Item archivado exitosamente!');
           } catch (error) {
             console.log(error);
@@ -1139,18 +1091,36 @@ export class ItemsDashboardComponent implements OnInit {
             if (!removeItemFromSaleFlow) return;
             const deleteItem = await this.itemsService.deleteItem(item._id);
             if (!deleteItem) return;
+
+            let typeOfItem;
+
             this.allItems = this.allItems.filter(
               (listItem) => listItem._id !== item._id
             );
-            this.activeItems = this.activeItems.filter(
-              (listItem) => listItem._id !== item._id
-            );
-            this.inactiveItems = this.inactiveItems.filter(
-              (listItem) => listItem._id !== item._id
-            );
-            this.highlightedItems = this.highlightedItems.filter(
-              (listItem) => listItem._id !== item._id
-            );
+            this.activeItems = this.activeItems.filter((listItem) => {
+              if (listItem._id === item._id) typeOfItem = 'active';
+
+              return listItem._id !== item._id;
+            });
+            this.inactiveItems = this.inactiveItems.filter((listItem) => {
+              if (listItem._id === item._id) typeOfItem = 'disabled';
+
+              return listItem._id !== item._id;
+            });
+            this.highlightedItems = this.highlightedItems.filter((listItem) => {
+              if (listItem._id === item._id) typeOfItem = 'featured';
+
+              return listItem._id !== item._id;
+            });
+
+            this.totalItemsCounter--;
+
+            if (typeOfItem === 'active') this.activeItemsCounter--;
+            else if (typeOfItem === 'disabled') this.inactiveItemsCounter--;
+            else if (typeOfItem === 'featured') {
+              this.activeItemsCounter--;
+              this.featuredItemsCounter--;
+            }
 
             setTimeout(() => {
               if (
@@ -1178,7 +1148,7 @@ export class ItemsDashboardComponent implements OnInit {
         statuses,
         //qr code in the xd's too small to scanning to work
         indexValue: number,
-        title: item.name,
+        title: item.name ? item.name : 'Producto sin nombre',
         cancelButton: {
           text: 'Cerrar',
         },

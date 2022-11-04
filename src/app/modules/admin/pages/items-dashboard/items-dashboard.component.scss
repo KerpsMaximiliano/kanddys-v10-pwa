@@ -80,7 +80,7 @@
       margin: auto;
       overflow: hidden;
       width: 1000px;
-      height: 413px;
+      height: 580px;
       z-index: -80;
 
       &.show {
@@ -130,7 +130,7 @@
 
     &.visible,
     &.animationRunning {
-      height: 450px;
+      height: 601px;
       display: block;
     }
   }

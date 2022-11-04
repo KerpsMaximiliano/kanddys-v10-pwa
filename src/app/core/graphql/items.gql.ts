@@ -569,3 +569,11 @@ export const itemCategoryHeadlineByMerchant = gql`
     }
   }
 `;
+
+export const itemsArchived = gql`
+  query itemsArchived($params: PaginationInput) {
+    itemsArchived(params: $params) {
+      _id
+    }
+  }
+`;

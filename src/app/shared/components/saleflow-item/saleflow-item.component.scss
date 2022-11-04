@@ -316,8 +316,6 @@
     }
   }
 
- 
-
   .checkBox {
     margin-top: 17px;
     width: 100%;
@@ -399,7 +397,13 @@
       border-bottom-left-radius: 14px;
       border-bottom-right-radius: 14px;
       height: calc(100% - 201px);
+      background-color: white;
       font-size: 16px;
+
+      &.inactive2 {
+        background-color: #b17608;
+        color: #fff;
+      }
 
       &.transition-class {
         transition: 0.5s background-color ease-in-out, 0.5s color ease-in-out;
@@ -653,6 +657,14 @@
     .price2 {
       font-size: 13px;
     }
+
+    .dynamic-choices {
+      font-size: 13px;
+    }
+
+    .views {
+      font-size: 13px;
+    }
   }
 
   .inactive-img {
@@ -707,7 +719,6 @@
   color: #7b7b7b;
   font-size: 16px;
   font-family: SfProLight;
-
 
   &.inactiveViews {
     background-color: transparent;

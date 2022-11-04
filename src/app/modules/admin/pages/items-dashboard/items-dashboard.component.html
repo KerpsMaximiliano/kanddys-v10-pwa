@@ -171,7 +171,7 @@
           >
             <div class="card pointer" routerLink="/admin/merchant-items">
               <h2 class="amount quantity">
-                {{ allItems ? allItems.length : "0" }}
+                {{ totalItemsCounter }}
               </h2>
               <h2 class="amount">EN TOTAL</h2>
             </div>
@@ -182,9 +182,7 @@
               [queryParams]="{ status: 'active' }"
             >
               <h2 class="amount quantity">
-                {{
-                  activeItems && activeItems.length > 0 ? activeItems.length : 0
-                }}
+                {{ activeItemsCounter }}
               </h2>
               <h2 class="amount">VISIBLES</h2>
             </div>
@@ -195,13 +193,20 @@
               [queryParams]="{ status: 'disabled' }"
             >
               <h2 class="amount quantity">
-                {{
-                  inactiveItems && inactiveItems.length > 0
-                    ? inactiveItems.length
-                    : 0
-                }}
+                {{ inactiveItemsCounter }}
               </h2>
               <h2 class="amount">INVISIBLES</h2>
+            </div>
+
+            <div
+              class="card pointer"
+              routerLink="/admin/merchant-items"
+              [queryParams]="{ status: 'featured' }"
+            >
+              <h2 class="amount quantity">
+                {{ featuredItemsCounter }}
+              </h2>
+              <h2 class="amount">DESTACADOS</h2>
             </div>
 
             <div class="card unset">
@@ -211,6 +216,13 @@
                 }}
               </h2>
               <h2 class="amount">ARTICULOS VENDIDOS</h2>
+            </div>
+
+            <div class="card unset">
+              <h2 class="amount quantity">
+                {{ archivedItemsCounter }}
+              </h2>
+              <h2 class="amount">ARCHIVADOS</h2>
             </div>
           </div>
 
@@ -330,7 +342,7 @@
     <swiper [config]="tagsSwiperConfig" *ngIf="tagsList.length > 0" #tagSwiper>
       <div
         class="tag-wrapper swiper-slide"
-        style="width: 81px !important; margin-right: 8px !important;"
+        style="width: 81px !important; margin-right: 8px !important"
         *ngFor="let tag of unselectedTags; let tagIndex = index"
       >
         <ng-container *ngFor="let tag2 of tagsList; let tagIndex = index">

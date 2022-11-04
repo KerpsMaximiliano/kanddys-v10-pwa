@@ -261,6 +261,15 @@ export const listItems = gql`
   }
 `;
 
+export const hotListItems = gql`
+  query listItems($params: PaginationInput) {
+    listItems(params: $params) {
+      _id
+      status
+    }
+  }
+`;
+
 export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
