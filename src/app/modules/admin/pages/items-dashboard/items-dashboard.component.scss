@@ -128,15 +128,15 @@
     height: 0px;
     width: 100%;
 
-    &.visible,
+    &.visible2,
     &.animationRunning {
-      height: 601px;
+      height: 437px;
       display: block;
     }
 
-    &.visible2,
+    &.visible,
     &.animationRunning {
-      height: 413px;
+      height: 601px;
       display: block;
     }
   }

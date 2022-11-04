@@ -347,7 +347,7 @@ export class ItemDisplayComponent implements OnInit {
       {
         text: 'INVISIBLE',
         backgroundColor: '#B17608',
-        color: '#FFFFFF',
+        color: 'white',
         asyncCallback: () => {
           return new Promise((resolve, reject) => {
             this.toggleActivateItem();
@@ -390,7 +390,7 @@ export class ItemDisplayComponent implements OnInit {
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: this.item.name,
+        title: this.item.name ? this.item.name : 'Producto sin nombre',
         optionsList: list,
         statuses: statuses,
         indexValue: number,

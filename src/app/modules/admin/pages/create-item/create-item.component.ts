@@ -24,6 +24,8 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
+type InitialStatusEnum = 'active' | 'disabled' | 'featured';
+
 @Component({
   selector: 'app-create-item',
   templateUrl: './create-item.component.html',
@@ -64,6 +66,7 @@ export class CreateItemComponent implements OnInit {
   justDynamicMode: boolean = false;
   parseFloat = parseFloat;
   previousRoute: string = null;
+  initialStatus: InitialStatusEnum = null;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -78,6 +81,13 @@ export class CreateItemComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.previousRoute = this.route.snapshot.queryParamMap.get('from');
+    const initialStatus = this.route.snapshot.queryParamMap.get(
+      'initialStatus'
+    ) as InitialStatusEnum;
+
+    if (initialStatus) {
+      this.initialStatus = initialStatus;
+    }
 
     this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
@@ -308,7 +318,7 @@ export class CreateItemComponent implements OnInit {
           this.router.navigate([`/admin/merchant-items`]);
         }
       } else {
-        const itemInput = {
+        const itemInput: ItemInput = {
           name: name || null,
           description: description || null,
           pricing,
@@ -322,6 +332,10 @@ export class CreateItemComponent implements OnInit {
             images.length > 0 ||
             this.itemService.temporalImages?.new?.length > 0,
         };
+
+        if(this.initialStatus) {
+          itemInput.status = this.initialStatus;
+        }
 
         if (this.merchant) {
           const { createItem } = await this.itemService.createItem(itemInput);

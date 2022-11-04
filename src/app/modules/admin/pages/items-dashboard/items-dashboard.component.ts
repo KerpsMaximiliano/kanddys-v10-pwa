@@ -666,11 +666,16 @@ export class ItemsDashboardComponent implements OnInit {
             mode: 'func',
             func: () => {
               //this.headerService.flowRoute = this.router.url;
-              this.router.navigate(['admin/create-item/'], {
+              const routerConfig: any = {
                 queryParams: {
                   from: 'dashboard',
                 },
-              });
+              };
+
+              if (section === 'featured')
+                routerConfig.queryParams.initialStatus = 'featured';
+
+              this.router.navigate(['admin/create-item'], routerConfig);
             },
           },
           {
@@ -723,8 +728,7 @@ export class ItemsDashboardComponent implements OnInit {
     ];
 
     if (section === 'featured') {
-      list[0].options.shift();
-      list[0].options.shift();
+      list[0].options.splice(1, 1);
     }
 
     this.dialog.open(StoreShareComponent, {
