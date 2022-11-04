@@ -78,6 +78,13 @@ export type OrderStatusType =
   | 'error'
   | 'draft';
 
+export type OrderStatusType2 =
+  | 'active'
+  | 'draft'
+  | 'disabled'
+  | 'featured'
+  | 'archived';
+
 export type OrderStatusNameType =
   | 'cancelado'
   | 'empezado'

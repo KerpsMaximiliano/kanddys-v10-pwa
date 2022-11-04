@@ -10,7 +10,7 @@ export class TagsCarousellComponent implements OnInit {
   swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: false,
-    spaceBetween: 5,
+    spaceBetween: 8,
   };
   @Output('tag') tag: EventEmitter<any> = new EventEmitter();
   @Input() selectedTagsIds: string[] = [];

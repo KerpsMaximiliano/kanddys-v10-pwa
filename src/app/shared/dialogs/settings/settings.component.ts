@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
 
-interface Button {
+export interface Button {
   text: string;
   callback?(...params): any;
   asyncCallback?(...params): Promise<any>;

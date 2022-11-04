@@ -1,26 +1,32 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID, unformatID } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput } from 'src/app/core/models/saleflow';
-import { CalendarService } from 'src/app/core/services/calendar.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { ReservationService } from 'src/app/core/services/reservations.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { SwiperOptions } from 'swiper';
 import * as moment from 'moment';
 import { Tag } from 'src/app/core/models/tags';
-import { ItemOrder, OrderSubtotal } from 'src/app/core/models/order';
+import {
+  ItemOrder,
+  OrderStatusType2,
+  OrderSubtotal,
+} from 'src/app/core/models/order';
 import { environment } from '../../../../../environments/environment';
 import { OrderService } from 'src/app/core/services/order.service';
+import {
+  SettingsComponent,
+  Button as SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+
+SwiperCore.use([Virtual]);
 
 interface TagGroup {
   tag: Tag;
@@ -88,6 +94,9 @@ export class OrdersAndPreOrdersList implements OnInit {
     pageSize: 5,
     status: 'complete',
   };
+
+  @ViewChild('highlightedOrdersSwiper')
+  highlightedOrdersSwiper: SwiperComponent;
 
   @HostListener('window:scroll', [])
   async infinitePagination() {
@@ -610,5 +619,103 @@ export class OrdersAndPreOrdersList implements OnInit {
 
   formatDateID(dateid: string) {
     return formatID(dateid);
+  }
+
+  async highlightOrder(order: ItemOrder) {
+    const list = [];
+
+    order.status.forEach((userObject, statusIndex) => {
+      if (
+        userObject.access === this.merchantsService.merchantData.owner._id &&
+        userObject.status !== 'featured'
+      ) {
+        list.push({
+          text: 'Destacar orden',
+          callback: async () => {
+            const response = await this.ordersService.orderSetStatus(
+              'featured',
+              order._id
+            );
+
+            if (response) {
+              order.status[statusIndex].status = 'featured';
+
+              this.tagGroups.forEach((tagGroup) => {
+                tagGroup.orders.forEach((order) =>
+                  this.changeOrderStatus('featured', order)
+                );
+              });
+
+              this.ordersWithoutTags.forEach((order) =>
+                this.changeOrderStatus('featured', order)
+              );
+
+              this.highlightedOrders.push(order);
+            }
+
+            setTimeout(() => {
+              this.highlightedOrdersSwiper.directiveRef.update();
+            }, 300);
+          },
+        });
+      }
+
+      if (
+        userObject.access === this.merchantsService.merchantData.owner._id &&
+        userObject.status === 'featured'
+      ) {
+        list.push({
+          text: 'Dejar de destacar orden',
+          callback: async () => {
+            const response = await this.ordersService.orderSetStatus(
+              'active',
+              order._id
+            );
+
+            if (response) {
+              order.status[statusIndex].status = 'active';
+
+              this.tagGroups.forEach((tagGroup) => {
+                tagGroup.orders.forEach((order) =>
+                  this.changeOrderStatus('active', order)
+                );
+              });
+
+              this.ordersWithoutTags.forEach((order) =>
+                this.changeOrderStatus('active', order)
+              );
+
+              const indexToDelete = this.highlightedOrders.findIndex(
+                (highlightedOrder) => highlightedOrder._id === order._id
+              );
+
+              this.highlightedOrders.splice(indexToDelete, 1);
+            }
+
+            setTimeout(() => {
+              this.highlightedOrdersSwiper.directiveRef.update();
+            }, 300);
+          },
+        });
+      }
+    });
+
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        title: 'Orden ' + formatID(order.dateId),
+        optionsList: list,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  }
+
+  changeOrderStatus(status: OrderStatusType2, order: ItemOrder) {
+    order.status.forEach((userObject) => {
+      if (userObject.access === this.merchantsService.merchantData.owner._id) {
+        userObject.status = status;
+      }
+    });
   }
 }

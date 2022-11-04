@@ -39,9 +39,7 @@
       justShowHighlightedOrders || justShowUntaggedOrders ? '42px' : 'auto'
   }"
   (arrowsClick)="resetSelectedTags()"
-  [showSearch]="
-    selectedTags.length > 0
-  "
+  [showSearch]="selectedTags.length > 0"
   (searchClick)="showSearchbar = true"
 ></app-helper-headerv3>
 
@@ -140,19 +138,20 @@
               </div>
             </div>
 
-            <swiper [config]="swiperConfig">
+            <swiper [config]="swiperConfig" #highlightedOrdersSwiper>
               <div
                 *ngFor="let order of highlightedOrders; let orderIndex = index"
                 class="swiper-slide"
                 style="
-                  padding: 0px 8px 4px 0px !important;
+                  padding: 10px 8px 4px 0px !important;
                   width: 308px;
                   height: auto;
                   margin-right: 0px !important;
                 "
               >
-                <div class="order" (click)="goToOrderInfo(order._id)">
-                  <div class="inner-wrapper">
+                <div class="order">
+                  <div class="dot-trio" (click)="highlightOrder(order)"></div>
+                  <div class="inner-wrapper" (click)="goToOrderInfo(order._id)">
                     <div class="order-grid" style="margin-bottom: 10px">
                       <span class="id" *ngIf="order.user">
                         {{
@@ -256,14 +255,18 @@
                   *ngFor="let order of tagGroup.orders; let orderIndex = index"
                   class="swiper-slide"
                   style="
-                    padding: 0px 8px 4px 0px !important;
+                    padding: 10px 8px 4px 0px !important;
                     width: 308px;
                     height: auto;
                     margin-right: 0px !important;
                   "
                 >
-                  <div class="order" (click)="goToOrderInfo(order._id)">
-                    <div class="inner-wrapper">
+                  <div class="order">
+                    <div class="dot-trio" (click)="highlightOrder(order)"></div>
+                    <div
+                      class="inner-wrapper"
+                      (click)="goToOrderInfo(order._id)"
+                    >
                       <div class="order-grid" style="margin-bottom: 10px">
                         <span class="id" *ngIf="order.user">
                           {{
@@ -364,14 +367,15 @@
               *ngFor="let order of ordersWithoutTags; let orderIndex = index"
               class="swiper-slide"
               style="
-                padding: 0px 8px 4px 0px !important;
+                padding: 10px 8px 4px 0px !important;
                 width: 308px;
                 height: auto;
                 margin-right: 0px !important;
               "
             >
-              <div class="order" (click)="goToOrderInfo(order._id)">
-                <div class="inner-wrapper">
+              <div class="order">
+                <div class="dot-trio" (click)="highlightOrder(order)"></div>
+                <div class="inner-wrapper" (click)="goToOrderInfo(order._id)">
                   <div class="order-grid" style="margin-bottom: 10px">
                     <span class="id" *ngIf="order.user">
                       {{
