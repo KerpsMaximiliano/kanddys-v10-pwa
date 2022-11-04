@@ -543,7 +543,7 @@ export class StoreComponent implements OnInit {
       list.unshift({
         text: 'Ir a mi Dashboard',
         callback: async () => {
-          this.router.navigate(['admin/items-dashboard']);
+          this.router.navigate(['admin/entity-detail-metrics']);
         },
       });
     }

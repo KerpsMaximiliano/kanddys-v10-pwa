@@ -1,8 +1,7 @@
-// import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemStatus } from 'src/app/core/models/item';
+import { Item, ItemStatus, TypeOfItem } from 'src/app/core/models/item';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -26,6 +25,8 @@ interface ExtendedItem extends Item {
 })
 export class MerchantItemsComponent implements OnInit {
   items: ExtendedItem[] = [];
+  simpleItems: ExtendedItem[] = [];
+  dynamicItems: ExtendedItem[] = [];
   highlightedItems: ExtendedItem[] = [];
   ordersTotal: {
     total: number;
@@ -42,6 +43,8 @@ export class MerchantItemsComponent implements OnInit {
   };
   selectedItemsCounter: number = 0;
   statusQueryParam: ItemStatus;
+  typeOfItem: TypeOfItem;
+  actionFromDashboard: boolean;
   // Dummy Data
   itemList: Array<any> = [
     {
@@ -69,6 +72,7 @@ export class MerchantItemsComponent implements OnInit {
       quantity: 0,
     },
   ];
+  initialMode: string = null;
 
   constructor(
     public merchantsService: MerchantsService,
@@ -87,7 +91,21 @@ export class MerchantItemsComponent implements OnInit {
     const status = this.route.snapshot.queryParamMap.get(
       'status'
     ) as ItemStatus;
+    const typeOfItem = this.route.snapshot.queryParamMap.get(
+      'typeOfItem'
+    ) as TypeOfItem;
+    const initialMode = this.route.snapshot.queryParamMap.get(
+      'initialMode'
+    ) as string;
+    const actionFromDashboard = this.route.snapshot.queryParamMap.get(
+      'actionFromDashboard'
+    ) as string;
+
+    if (initialMode) this.initialMode = initialMode;
+
     if (status) this.statusQueryParam = status;
+    if (typeOfItem) this.typeOfItem = typeOfItem;
+    if (actionFromDashboard) this.actionFromDashboard = true;
     this.status = 'loading';
 
     if (!this.headerService.flowRoute) {
@@ -107,6 +125,21 @@ export class MerchantItemsComponent implements OnInit {
     }
     this.status = 'complete';
     if (this.ordersTotal?.total) this.hasSalesData = true;
+
+    if (initialMode) {
+      switch (initialMode) {
+        case 'highlight':
+          await this.switchToHighlightItemsMode();
+          break;
+        case 'hide':
+          await this.switchToHideItemsMode();
+          break;
+        case 'delete':
+          await this.switchToDeleteItemsMode();
+          break;
+      }
+    }
+
     unlockUI();
   }
 
@@ -114,6 +147,19 @@ export class MerchantItemsComponent implements OnInit {
     try {
       const items = (await this.itemsService.itemsByMerchant(merchantID, true))
         .itemsByMerchant;
+
+      if (this.typeOfItem === 'DYNAMIC') {
+        this.items = items.filter(
+          (item) => item.params && item.params.length > 0 // && ['featured', 'active'].includes(item.status)
+        );
+
+        return;
+      } else if (this.typeOfItem === 'SIMPLE') {
+        this.items = items.filter(
+          (item) => !item.params || (item.params && item.params.length === 0)
+        );
+        return;
+      }
 
       if (status === 'active') {
         this.items = items.filter(
@@ -174,18 +220,18 @@ export class MerchantItemsComponent implements OnInit {
       ,
       {
         queryParams: {
-          redirect: '/admin/items-dashboards',
+          redirect: '/admin/items-dashboard',
         },
       },
     ]);
   }
 
   goToMetrics = () => {
-    this.router.navigate([`admin/items-dashboards`]);
+    this.router.navigate([`admin/items-dashboard`]);
   };
 
   back() {
-    this.router.navigate([`admin/items-dashboards`]);
+    this.router.navigate([`admin/items-dashboard`]);
   }
 
   createItem() {
@@ -316,12 +362,11 @@ export class MerchantItemsComponent implements OnInit {
 
         let itemIndex = 0;
 
-        for (const item of selectedItems) {
+        for await (const item of selectedItems) {
           const deletedItem = await this.deleteItem(item);
 
           if (deletedItem) {
             arrayOfResults.push(deletedItem);
-            console.log('Se borro este', deletedItem, 'index', itemIndex);
           }
 
           itemIndex += 1;
@@ -345,6 +390,15 @@ export class MerchantItemsComponent implements OnInit {
           this.items.forEach((item) => {
             item.changedSelection = false;
           });
+
+          if (this.initialMode && this.initialMode === 'delete') {
+            this.saleflowService.saleflowData =
+              await this.saleflowService.saleflowDefault(
+                this.merchantsService.merchantData._id
+              );
+
+            this.back();
+          }
         }
       }
     } catch (error) {
@@ -393,6 +447,10 @@ export class MerchantItemsComponent implements OnInit {
           this.selectedItemsCounter = 0;
           this.selectionConfiguration.mode = 'NONE';
           this.selectionConfiguration.active = false;
+
+          if (this.initialMode && this.initialMode === 'hide') {
+            this.back();
+          }
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
@@ -430,8 +488,6 @@ export class MerchantItemsComponent implements OnInit {
   };
 
   deleteItem = (item: ExtendedItem): Promise<any> => {
-    console.log('item to delete', item._id);
-
     return new Promise(async (resolve, reject) => {
       try {
         const removedItemFromSaleFlow =
@@ -492,6 +548,10 @@ export class MerchantItemsComponent implements OnInit {
           this.selectedItemsCounter = 0;
           this.selectionConfiguration.mode = 'NONE';
           this.selectionConfiguration.active = false;
+
+          if (this.initialMode && this.initialMode === 'highlight') {
+            this.back();
+          }
         })
         .catch((arrayOfErrors) => {
           console.log(arrayOfErrors);
@@ -543,42 +603,12 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'DESTACAR',
             mode: 'func',
-            func: async () => {
-              this.selectedItemsCounter = 0;
-
-              await this.getItems(this.merchantsService.merchantData._id, null);
-              this.items = this.items.filter((item) => {
-                if (item.status === 'featured') return false;
-                else {
-                  item.selected = false;
-                  item.changedSelection = false;
-                  return true;
-                }
-              });
-
-              this.selectionConfiguration.mode = 'HIGHLIGHT';
-              this.selectionConfiguration.active = true;
-            },
+            func: this.switchToHighlightItemsMode,
           },
           {
             text: 'ESCONDER',
             mode: 'func',
-            func: async () => {
-              this.selectionConfiguration.mode = 'HIDE';
-              this.selectionConfiguration.active = true;
-              this.selectedItemsCounter = 0;
-
-              await this.getItems(this.merchantsService.merchantData._id, null);
-
-              this.items = this.items.filter((item) => {
-                if (item.status === 'disabled') return false;
-                else {
-                  item.selected = false;
-                  item.changedSelection = false;
-                  return true;
-                }
-              });
-            },
+            func: this.switchToHideItemsMode,
           },
           /*{
             text: 'MOSTRAR ITEMS INVISIBLES EN LA TIENDA',
@@ -587,9 +617,7 @@ export class MerchantItemsComponent implements OnInit {
               this.selectionConfiguration.mode = 'SHOW';
               this.selectionConfiguration.active = true;
               this.selectedItemsCounter = 0;
-
               await this.getItems(this.merchantsService.merchantData._id, null);
-
               this.items = this.items.filter((item) => {
                 if (item.status === 'disabled') {
                   item.selected = false;
@@ -604,19 +632,7 @@ export class MerchantItemsComponent implements OnInit {
           {
             text: 'BORRAR (ELIMINA LA DATA)',
             mode: 'func',
-            func: async () => {
-              this.selectedItemsCounter = 0;
-
-              await this.getItems(this.merchantsService.merchantData._id, null);
-
-              this.items.forEach((item) => {
-                item.selected = false;
-                item.changedSelection = false;
-              });
-
-              this.selectionConfiguration.mode = 'DELETE';
-              this.selectionConfiguration.active = true;
-            },
+            func: this.switchToDeleteItemsMode,
           },
         ],
       },
@@ -694,7 +710,61 @@ export class MerchantItemsComponent implements OnInit {
     }
   };
 
-  goToEntityDetailMetrics = () => {
-    this.router.navigate(['admin/items-dashboards']);
+  switchToHighlightItemsMode = async () => {
+    this.selectedItemsCounter = 0;
+
+    await this.getItems(this.merchantsService.merchantData._id, null);
+    this.items = this.items.filter((item) => {
+      if (item.status === 'featured') return false;
+      else {
+        item.selected = false;
+        item.changedSelection = false;
+        return true;
+      }
+    });
+
+    this.selectionConfiguration.mode = 'HIGHLIGHT';
+    this.selectionConfiguration.active = true;
+  };
+
+  switchToHideItemsMode = async () => {
+    this.selectionConfiguration.mode = 'HIDE';
+    this.selectionConfiguration.active = true;
+    this.selectedItemsCounter = 0;
+
+    await this.getItems(
+      this.merchantsService.merchantData._id,
+      !this.actionFromDashboard ? null : this.statusQueryParam
+    );
+
+    this.items = this.items.filter((item) => {
+      if (item.status === 'disabled') return false;
+      else {
+        item.selected = false;
+        item.changedSelection = false;
+        return true;
+      }
+    });
+  };
+
+  switchToDeleteItemsMode = async () => {
+    this.selectedItemsCounter = 0;
+
+    await this.getItems(
+      this.merchantsService.merchantData._id,
+      !this.actionFromDashboard ? null : this.statusQueryParam
+    );
+
+    this.items.forEach((item) => {
+      item.selected = false;
+      item.changedSelection = false;
+    });
+
+    this.selectionConfiguration.mode = 'DELETE';
+    this.selectionConfiguration.active = true;
+  };
+
+  goToAdmin = () => {
+    this.router.navigate(['admin/items-dashboard']);
   };
 }

@@ -133,6 +133,12 @@
       height: 601px;
       display: block;
     }
+
+    &.visible2,
+    &.animationRunning {
+      height: 413px;
+      display: block;
+    }
   }
 }
 

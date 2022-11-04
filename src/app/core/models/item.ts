@@ -45,6 +45,8 @@ export type ItemStatus =
   | 'featured'
   | 'archived';
 
+export type TypeOfItem = 'SIMPLE' | 'DYNAMIC';
+
 export class VisitorCounter extends Model<VisitorCounter> {
   entity?: string;
   counter?: number;

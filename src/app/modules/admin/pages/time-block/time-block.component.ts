@@ -194,7 +194,7 @@ export class TimeBlockComponent implements OnInit {
   }
 
   navigate(): void {
-    this._Router.navigate([`/admin/items-dashboards`]);
+    this._Router.navigate([`/admin/entity-detail-metrics`]);
   }
 
   async save() {
@@ -255,7 +255,7 @@ export class TimeBlockComponent implements OnInit {
         flags: ['no-header'],
       });
       this.submitting = false;
-      this._Router.navigate([`/admin/items-dashboards`]);
+      this._Router.navigate([`/admin/entity-detail-metrics`]);
     } catch (error) {
       this.dialog.open(GeneralFormSubmissionDialogComponent, {
         type: 'centralized-fullscreen',
