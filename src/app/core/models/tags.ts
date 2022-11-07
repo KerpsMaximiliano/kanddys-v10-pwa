@@ -15,10 +15,10 @@ export class TagContainersInput {
 export class Tag extends Model<Tag> {
   counter: number;
   name: string;
-  images?: string[];
-  user: string;
-  status?: string;
-  notifications?: string[];
+  user?: string;
+  status: string;
+  images?: [string];
+  notifications: string[];
   merchant: string;
   entity?: string;
   containers?: TagContainers[];

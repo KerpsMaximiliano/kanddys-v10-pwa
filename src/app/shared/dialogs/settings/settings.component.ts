@@ -12,6 +12,8 @@ interface Button {
   styles?: Record<string, string | number>;
 }
 
+export interface SettingsDialogButton extends Button {}
+
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',

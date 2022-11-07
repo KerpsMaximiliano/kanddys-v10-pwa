@@ -33,6 +33,7 @@ import {
   deleteItem,
   addItemParamValue,
   deleteItemParamValue,
+  itemsArchived,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -457,5 +458,15 @@ export class ItemsService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async itemsArchived(params: PaginationInput) {
+    const result = await this.graphql.query({
+      query: itemsArchived,
+      variables: {},
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result.itemsArchived;
   }
 }

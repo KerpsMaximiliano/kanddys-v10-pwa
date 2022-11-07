@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CreateItemComponent } from './pages/create-item/create-item.component';
-import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
@@ -15,6 +14,7 @@ import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-crea
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
 import { ArticleParamsComponent } from './pages/article-params/article-params.component';
+import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 
 const routes: Routes = [
   {
@@ -29,7 +29,7 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
+      { path: '', redirectTo: 'admin/entity-detail-metrics', pathMatch: 'full' },
       {
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
@@ -38,11 +38,11 @@ const routes: Routes = [
         path: 'article-params/:itemId',
         component: ArticleParamsComponent,
       },
-      {
+      /*{
         path: 'entity-detail-metrics',
         component: EntityDetailMetricsComponent,
         data: { animation: 'EntityDetailMetrics' },
-      },
+      },*/
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
@@ -85,6 +85,10 @@ const routes: Routes = [
         path: 'time-block/:calendarId',
         component: TimeBlockComponent,
       },
+      {
+        path: 'entity-detail-metrics',
+        component: ItemsDashboardComponent,
+      },
     ],
   },
 ];
@@ -92,7 +96,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CreateItemComponent,
-    EntityDetailMetricsComponent,
     MerchantItemsComponent,
     ItemDisplayComponent,
     ActionsMenuComponent,
@@ -102,6 +105,7 @@ const routes: Routes = [
     TimeBlockComponent,
     ArticleCreatorComponent,
     ArticleParamsComponent,
+    ItemsDashboardComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

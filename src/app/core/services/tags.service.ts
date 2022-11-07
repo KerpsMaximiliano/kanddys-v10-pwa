@@ -195,6 +195,7 @@ export class TagsService {
       const result = await this.graphql.query({
          query: tags,
          variables: { paginate },
+         fetchPolicy: 'no-cache'
       });
       return result;
    } catch (e) {
