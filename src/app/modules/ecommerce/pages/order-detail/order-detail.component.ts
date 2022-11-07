@@ -21,6 +21,10 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { StoreShareComponent } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+import * as moment from 'moment';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { Merchant } from 'src/app/core/models/merchant';
 
 interface Image {
   src: string;
@@ -37,7 +41,11 @@ export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   notify: boolean;
-  todayOrders: ItemOrder[] = [];
+  currentDayOrdersRange: {
+    fromISO: string;
+    toISO: string;
+  } = null;
+  ordersInTheSameDay: ItemOrder[] = [];
   customizerDetails: { name: string; value: string }[] = [];
   customizer: CustomizerValue;
   order: ItemOrder;
@@ -91,6 +99,9 @@ export class OrderDetailComponent implements OnInit {
       },
     },
   ];
+  orderSaleflow: SaleFlow;
+  orderMerchant: Merchant;
+  orderInDayIndex: number = null;
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
@@ -107,7 +118,8 @@ export class OrderDetailComponent implements OnInit {
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private merchantsService: MerchantsService,
-    private tagsService: TagsService
+    private tagsService: TagsService,
+    private saleflowService: SaleFlowService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -116,8 +128,18 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const notification = this.route.snapshot.queryParamMap.get('notify');
-    const orderId = this.route.snapshot.paramMap.get('orderId');
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const { notify: notification } = queryParams;
+
+      this.route.params.subscribe(async (params) => {
+        const { orderId } = params;
+
+        await this.executeProcessesAfterLoading(orderId, notification);
+      });
+    });
+  }
+
+  async executeProcessesAfterLoading(orderId: string, notification?: string) {
     this.order = (await this.orderService.order(orderId))?.order;
 
     if (!this.order) {
@@ -142,7 +164,8 @@ export class OrderDetailComponent implements OnInit {
       })
       .toLocaleUpperCase();
     this.checkUser();
-    this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+    await this.isMerchantOwner(this.order.items[0].saleflow.merchant._id);
+
     if (this.order.items[0].post) {
       this.post = (
         await this.postsService.getPost(this.order.items[0].post._id)
@@ -243,21 +266,23 @@ export class OrderDetailComponent implements OnInit {
       const reservation = await this.reservationService.getReservation(
         this.order.items[0].reservation._id
       );
-      const fromDate = new Date(reservation.date.from);
-      const untilDate = new Date(reservation.date.until);
-      this.date = {
-        day: fromDate.getDate(),
-        weekday: fromDate.toLocaleString('es-MX', {
-          weekday: 'short',
-        }),
-        month: fromDate.toLocaleString('es-MX', {
-          month: 'short',
-        }),
-        time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
-          untilDate,
-          reservation.breakTime
-        )}`,
-      };
+      if (reservation) {
+        const fromDate = new Date(reservation.date.from);
+        const untilDate = new Date(reservation.date.until);
+        this.date = {
+          day: fromDate.getDate(),
+          weekday: fromDate.toLocaleString('es-MX', {
+            weekday: 'short',
+          }),
+          month: fromDate.toLocaleString('es-MX', {
+            month: 'short',
+          }),
+          time: `De ${this.formatHour(fromDate)} a ${this.formatHour(
+            untilDate,
+            reservation.breakTime
+          )}`,
+        };
+      }
     }
     if (notification == 'true') {
       let address = '';
@@ -361,6 +386,169 @@ export class OrderDetailComponent implements OnInit {
         this.order.items[0].saleflow.merchant.owner.phone
       }&text=${encodeURIComponent(message)}`;
       this.notify = true;
+    }
+
+    const today = new Date(this.order.createdAt);
+    const utcOffset = today.getTimezoneOffset() / 60;
+    const todayFromISO = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    ).toISOString();
+
+    this.currentDayOrdersRange = {
+      fromISO: moment(todayFromISO)
+        .subtract(utcOffset, 'hours')
+        .toDate()
+        .toISOString(),
+      toISO: moment(todayFromISO)
+        .subtract(utcOffset, 'hours')
+        .add(23, 'hours')
+        .add(59, 'minutes')
+        .add(59, 'seconds')
+        .toDate()
+        .toISOString(),
+    };
+
+    await this.getAdjacentOrders();
+  }
+
+  async getAdjacentOrders(
+    getOrdersFromTheNextDay = false,
+    getOrdersFromThePreviousDay = false
+  ) {
+    let closestOrderDayBeforeCurrentOrderCreationDate = null;
+    let closestOrderDayAfterCurrentOrderCreationDate = null;
+
+    //I SHOULD MOVE ON FROM HERE
+    /*
+    if(getOrdersFromThePreviousDay) {
+      const pagination: PaginationInput = {
+        options: {
+          range: {
+            from: 
+          },
+          limit: -1,
+        },
+      };
+  
+      const { ordersByMerchant: ordersInTheSameDay } =
+        await this.merchantsService.ordersByMerchant(
+          this.orderMerchant._id,
+          pagination
+        );
+    }
+
+    if (getOrdersFromThePreviousDay) {
+      this.currentDayOrdersRange = {
+        fromISO: moment(closestOrderDayBeforeCurrentOrderCreationDate)
+          .subtract(1, 'day')
+          .toDate()
+          .toISOString(),
+        toISO: moment(closestOrderDayBeforeCurrentOrderCreationDate)
+          .subtract(1, 'day')
+          .add(23, 'hours')
+          .add(59, 'minutes')
+          .add(59, 'seconds')
+          .toDate()
+          .toISOString(),
+      };
+    }
+
+    if (getOrdersFromTheNextDay) {
+      this.currentDayOrdersRange = {
+        fromISO: moment(closestOrderDayAfterCurrentOrderCreationDate)
+          .add(1, 'day')
+          .toDate()
+          .toISOString(),
+        toISO: moment(closestOrderDayAfterCurrentOrderCreationDate)
+          .add(1, 'day')
+          .add(23, 'hours')
+          .add(59, 'minutes')
+          .add(59, 'seconds')
+          .toDate()
+          .toISOString(),
+      };
+    }*/
+
+    let from = this.currentDayOrdersRange.fromISO;
+    let to = this.currentDayOrdersRange.toISO;
+    const range = {
+      from: from,
+      to: to,
+    };
+
+    const pagination: PaginationInput = {
+      options: {
+        range,
+        limit: -1,
+      },
+    };
+
+    const { ordersByMerchant: ordersInTheSameDay } =
+      await this.merchantsService.ordersByMerchant(
+        this.orderMerchant._id,
+        pagination
+      );
+
+    if (
+      ordersInTheSameDay &&
+      !getOrdersFromTheNextDay &&
+      !getOrdersFromThePreviousDay
+    ) {
+      this.ordersInTheSameDay = ordersInTheSameDay;
+
+      const orderIndex = this.ordersInTheSameDay.findIndex(
+        (order) => order._id === this.order._id
+      );
+
+      if (orderIndex >= 0) {
+        this.orderInDayIndex = orderIndex;
+      }
+    }
+
+    if (ordersInTheSameDay && getOrdersFromThePreviousDay) {
+      this.orderInDayIndex = ordersInTheSameDay.length - 1;
+
+      this.executeProcessesAfterLoading(
+        this.ordersInTheSameDay[this.orderInDayIndex]._id
+      );
+    }
+
+    if (ordersInTheSameDay && getOrdersFromTheNextDay) {
+      this.orderInDayIndex = 0;
+
+      this.executeProcessesAfterLoading(
+        this.ordersInTheSameDay[this.orderInDayIndex]._id
+      );
+    }
+  }
+
+  goToNextOrPreviousOrder(direction: 'NEXT' | 'PREVIOUS') {
+    if (
+      this.orderInDayIndex < this.ordersInTheSameDay.length - 1 &&
+      direction === 'NEXT'
+    ) {
+      this.executeProcessesAfterLoading(
+        this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
+      );
+    }
+
+    if (this.orderInDayIndex > 0 && direction === 'PREVIOUS') {
+      this.executeProcessesAfterLoading(
+        this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
+      );
+    }
+
+    if (this.orderInDayIndex === 0 && direction === 'PREVIOUS') {
+      this.getAdjacentOrders(false, true);
+    }
+
+    if (
+      this.orderInDayIndex === this.ordersInTheSameDay.length - 1 &&
+      direction === 'NEXT'
+    ) {
+      this.getAdjacentOrders(true, false);
     }
   }
 
@@ -584,6 +772,7 @@ export class OrderDetailComponent implements OnInit {
   async isMerchantOwner(merchant: string) {
     const ismerchant = await this.merchantsService.merchantDefault();
     this.merchant = merchant === ismerchant?._id;
+    if (ismerchant) this.orderMerchant = ismerchant;
   }
 
   mouseDown: boolean;
