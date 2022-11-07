@@ -1,8 +1,11 @@
+button {
+  all: unset;
+}
 .nav {
   background: #000000;
   height: 46px;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
 }
 .slide {
@@ -46,6 +49,10 @@
   height: 36px;
   cursor: pointer;
   font-family: "SfProBold";
+  font-size: 15px;
+  text-align: center;
+  border: solid 1px #2e2e2e;
+  box-sizing: border-box;
 }
 .grid {
   display: grid;
@@ -99,7 +106,6 @@ video {
   width: 100%;
   height: 100%;
   z-index: 0;
-  height: 100vh;
   object-fit: cover;
   margin-bottom: 63px;
 }
@@ -174,6 +180,6 @@ audio {
   }
 }
 
-.media-placeholder {
-  height: 100vh !important;
-}
+// .media-placeholder {
+//   height: 100vh !important;
+// }

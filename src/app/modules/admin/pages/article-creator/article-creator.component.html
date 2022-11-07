@@ -1,6 +1,6 @@
 <div class="nav">
   <div class="icon-container">
-    <div>
+    <button (click)="goBack()">
       <i
         class="fas fa-chevron-up"
         aria-hidden="true"
@@ -11,13 +11,13 @@
         aria-hidden="true"
         style="color: rgb(255, 255, 255); display: block"
       ></i>
-    </div>
+    </button>
   </div>
-  <img src="{{ env }}/d.png" class="notification" alt="" />
-  <img src="{{ env }}/d.png" class="notification" alt="" />
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
   <img src="{{ env }}/save-blue.png" class="notification" alt="" />
-  <img src="{{ env }}/padlock.png" class="notification" alt="" />
-  <img src="{{ env }}/message.png" class="notification" alt="" />
+  <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
+  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
   <span class="text">VISTA</span>
 </div>
 <div class="container">
@@ -73,9 +73,9 @@
               <label
                 [style.height]="
                   types[i][k] === ''
-                    ? '100vh'
+                    ? 'calc(100vh - 46px)'
                     : imageFiles.includes(types[i][k])
-                    ? '100vh'
+                    ? 'calc(100vh - 46px)'
                     : '0'
                 "
                 for="{{ i }}{{ k }}"

@@ -255,7 +255,7 @@ audio {
 .bottom-user-actions-panel {
   background: #000000;
   position: fixed;
-  z-index: 1000;
+  z-index: 1;
   bottom: 0;
   left: 0;
   right: 0;
@@ -302,9 +302,9 @@ audio {
     min-height: 133px;
 
     .content-wrapper {
-      width: 88.55%;
+      width: 100%;
       height: 133px;
-      margin-left: auto;
+      padding-left: 45px;
       display: flex;
       align-items: center;
 
@@ -385,7 +385,7 @@ audio {
     flex-direction: column;
     justify-content: center;
     color: white;
-    font-family: SfProBold;
+    font-family: 'SfProBold';
 
     .item-price {
       font-size: 17px;

@@ -23,8 +23,8 @@ export class ArticleParamsComponent implements OnInit {
   models: string[] = ['Modelo sin nombre'];
   options: string[] = ['Precio', 'Imagen o imágenes'];
   searchValue: string;
-  saleFlow: SaleFlow;
   items: any;
+  itemId: string;
   item: Item;
   mouseDown: boolean;
   startX: number;
@@ -40,6 +40,8 @@ export class ArticleParamsComponent implements OnInit {
     Validators.minLength(2),
     Validators.pattern(/[\S]/),
   ]);
+  blockSubmitButton: boolean = false;
+  parseFloat = parseFloat;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -53,9 +55,10 @@ export class ArticleParamsComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const itemId = this._Route.snapshot.paramMap.get('itemId');
-    if (itemId) {
-      this.item = await this._ItemsService.item(itemId);
+    this.obtainLasts();
+    this.itemId = this._Route.snapshot.paramMap.get('itemId');
+    if (this.itemId) {
+      this.item = await this._ItemsService.item(this.itemId);
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._Route,
@@ -67,6 +70,12 @@ export class ArticleParamsComponent implements OnInit {
       if (this.item.name.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
     }
+    this._MerchantsService.merchantData =
+      await this._MerchantsService.merchantDefault();
+    this._SaleflowService.saleflowData =
+      await this._SaleflowService.saleflowDefault(
+        this._MerchantsService.merchantData._id
+      );
     this._ItemsService.itemImages?.forEach((file) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -77,11 +86,13 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   iconCallback = () => {
-    console.log('string');
+    this._Router.navigate([
+      `admin/create-article${this.item ? '/' + this.item._id : ''}`,
+    ]);
   };
 
   dotsCallback = () => {
-    console.log('Dots');
+    // console.log('Dots');
   };
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
@@ -92,7 +103,6 @@ export class ArticleParamsComponent implements OnInit {
 
   changeStep(index: number) {
     this.activeStep = index;
-    console.log(index);
     switch (this.activeStep) {
       case 0:
         this.steps = 'price';
@@ -133,10 +143,12 @@ export class ArticleParamsComponent implements OnInit {
 
   obtainLasts() {
     this._Route.params.subscribe(async (params) => {
-      this.saleFlow = await this._HeaderService.fetchSaleflow(params.id);
-      const saleflowItems = this.saleFlow.items.map((saleflowItem) => ({
-        item: saleflowItem.item._id,
-      }));
+      await this._HeaderService.fetchSaleflow(params.itemId);
+      const saleflowItems = this._HeaderService.saleflow.items.map(
+        (saleflowItem) => ({
+          item: saleflowItem.item._id,
+        })
+      );
       this.items = await this._SaleflowService.listItems({
         findBy: {
           _id: {
@@ -167,6 +179,7 @@ export class ArticleParamsComponent implements OnInit {
       return;
     }
     if (this.steps === 'images') {
+      this.blockSubmitButton = true;
       const itemInput = {
         name: this.name.value || null,
         // description: description || null,
@@ -243,7 +256,6 @@ export class ArticleParamsComponent implements OnInit {
 
   changeModel(index: number) {
     this.active = index;
-    console.log(index);
   }
 
   stopDragging() {
@@ -288,6 +300,10 @@ export class ArticleParamsComponent implements OnInit {
     return this._DomSanitizer.bypassSecurityTrustStyle(
       `url(${image}) no-repeat center center / cover #E9E371`
     );
+  }
+
+  handleCurrencyInput(value: number) {
+    this.price.setValue(value);
   }
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {

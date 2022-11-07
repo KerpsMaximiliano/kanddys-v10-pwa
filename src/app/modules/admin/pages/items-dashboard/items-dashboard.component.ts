@@ -596,7 +596,7 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   goToCreateItem() {
-    this.router.navigate([`admin/create-item/`]);
+    this.router.navigate([`admin/create-article`]);
   }
 
   goToDetail(id: string) {
@@ -675,7 +675,7 @@ export class ItemsDashboardComponent implements OnInit {
               if (section === 'featured')
                 routerConfig.queryParams.initialStatus = 'featured';
 
-              this.router.navigate(['admin/create-item'], routerConfig);
+              this.router.navigate(['admin/create-article'], routerConfig);
             },
           },
           {

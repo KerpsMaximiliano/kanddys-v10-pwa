@@ -70,14 +70,17 @@
     </div>
   </div>
 
-  <div [ngSwitch]="steps">
+  <div [ngSwitch]="steps" *ngIf="!itemId || (itemId && item)">
     <div class="price-form" *ngSwitchCase="'price'">
-      <input
-        type="number"
-        class="price-input"
-        [formControl]="price"
-        placeholder="$ pagan"
-      />
+      <div class="price-input">
+        <app-currency-input
+          [fieldStyles]="{
+            boxShadow: 'lightgrey 0px 3px 8px inset'
+          }"
+          [initialValue]="price.value"
+          (onInputEvent)="handleCurrencyInput($event)"
+        ></app-currency-input>
+      </div>
 
       <div class="name-area">
         <label for="name" class="name-label">Nombre del modelo</label>
@@ -149,15 +152,11 @@
       </div>
 
       <app-sticky-button
-        [mode]="selectedImages.length > 0 ? 'fixed' : 'disabled-fixed'"
-        [text]="
-          selectedImages.length > 0
-            ? 'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'
-            : 'SELECCIONA O ADICIONA'
-        "
-        [bgColor]="selectedImages.length > 0 ? '#2874AD' : '#7B7B7B'"
+        [mode]="!blockSubmitButton ? 'fixed' : 'disabled-fixed'"
+        [text]="'SALVAR EL ARTICULO PARA EMPEZAR A VENDER'"
+        [bgColor]="!blockSubmitButton ? '#2874AD' : '#7B7B7B'"
         [fontSize]="'1.063rem'"
-        (click)="toSave()"
+        (click)="!blockSubmitButton && toSave()"
       ></app-sticky-button>
     </div>
 
