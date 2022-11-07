@@ -59,6 +59,7 @@
             display: flex;
             margin-left: 17px;
             align-items: center;
+            overflow: hidden;
 
             .icon{
                 width: 15px;
@@ -73,6 +74,9 @@
                 font-family: 'SfProBold';
                 font-size: 14px;
                 color: #FFFFFF;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
 
             .fas {
@@ -86,9 +90,20 @@
             display: flex;
             align-items: center;
             margin-right: 17px;
+            overflow: auto;
 
             :not(:last-child) {
                 margin: 0 15px 0 0;
+            }
+
+            .text-icons{
+               font-family: 'RobotoRegular';
+               font-size: 13px;
+               color: #FFFFFF;
+               margin-right: 5px;
+               text-overflow: ellipsis;
+               white-space: nowrap;
+               overflow: hidden;
             }
 
             .icon-item{
@@ -203,6 +218,9 @@
                 background-color: #FFFFFF;
                 padding: 2px 12px;
                 border-radius: 17px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
         }
 
@@ -246,6 +264,9 @@
                 font-family: 'SfProBold';
                 font-size: 21px;
                 margin: 0;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
         }
 
@@ -259,6 +280,9 @@
             color: #FFFFFF;
             font-family: 'SfProMedium';
             font-size: 14px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
             cursor: pointer;
         }
     }

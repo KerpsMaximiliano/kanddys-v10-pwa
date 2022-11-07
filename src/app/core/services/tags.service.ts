@@ -16,10 +16,16 @@ import {
 import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
+interface TagContainer extends TagInput {
+   orderId?: string;
+ }
+
 @Injectable({
   providedIn: 'root',
 })
 export class TagsService {
+   temporalTag: TagContainer = null;
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async updateTag(input: TagInput, tagId: string) {

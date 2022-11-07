@@ -1,0 +1,186 @@
+<div style="min-height: 100vh; padding-bottom: 30px">
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [mainText]="{
+      text: 'Creando un nuevo tag',
+      fontSize: '21px',
+      fontFamily: 'SfProBold'
+    }"
+    [returnAble]="false"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21
+    }"
+    [rightText]="{
+      text: user? user?.name || user?.phone || user?.phone : ''
+    }"
+    [icons]="[
+      {
+        src: '/person.svg',
+        width: '13px',
+        height: '17px',
+        callback: openDialog,
+        color: 'brightness(2)'
+      }
+    ]"
+    [bgColor]="'#2874AD'"
+  ></app-helper-headerv2>
+
+  <div
+    class="options-container"
+    #elemt
+    (mousedown)="startDragging($event, elemt)"
+    (mouseup)="stopDragging()"
+    (mouseleave)="stopDragging()"
+    (mousemove)="moveEvent($event, elemt)"
+  >
+    <button
+      class="option"
+      *ngFor="let item of options; index as i"
+      [ngClass]="{ active: active === i }"
+      (click)="changeStep(i)"
+    >{{item}}</button>
+  </div>
+
+  <form [formGroup]="createTagForm">
+    <div class="inputs-wrapper-flex">
+      <div class="image-input">
+        <label for="image" class="input-label">Imagen</label>
+
+        <app-image-input
+          [id]="'tag-image'"
+          [useSwiper]="false"
+          [allowedTypes]="['png', 'jpg', 'jpeg']"
+          [multiple]="true"
+          [imageField]="!tagID ? [''] : [createTagForm.controls.images.value]"
+          [placeholderImage]="true"
+          [expandImage]="true"
+          [uploadImagesWithoutPlaceholderBox]="true"
+          [circleInputMode]="true"
+          [allowDeletion]="true"
+          [max]="1"
+          [containerStyles]="{
+            width: '66px',
+            height: '66px'
+          }"
+          [placeholderImageSize]="'SMALL'"
+          (onFileInputMultiple)="handleImageInput($event, 'ADD')"
+          (onFileDeletion)="handleImageInput($event, 'DELETE')"
+        ></app-image-input>
+      </div>
+
+      <div class="name-input">
+        <label for="name" class="input-label"> Nombre Hashtag</label>
+        <input
+          class="input customWidth"
+          type="text"
+          formControlName="name"
+          placeholder="Escribe..."
+        />
+      </div>
+
+      <div class="visibility-input">
+        <label for="visibility" class="input-label"
+          >Visibilidad del visitante</label
+        >
+
+        <button class="icon">
+          <img
+            [src]="visibilityImage"
+            alt="hide-tag"
+            (click)="changeVisibility()"
+          />
+        </button>
+      </div>
+
+      <div class="textarea-area">
+        <label for="note" class="input-label">Nota</label>
+
+        <textarea
+          name="note"
+          id="note"
+          cols="30"
+          rows="14"
+          class="textarea"
+          placeholder="Escribe..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- <div
+      class="optional-functionality"
+      *ngIf="optionalFunctionalityList.length > 0"
+    >
+      <h2 class="input-label">Funcionalidades opcionales</h2>
+
+      <app-answer-selector
+        [complexOptions]="optionalFunctionalityList"
+        [hasComplexOptionsLayout]="true"
+        [indicator]="true"
+        [showSelectedFeedback]="true"
+        [showDescription]="false"
+        [containerStyles]="{
+          margin: '0px',
+          paddingBottom: '16px'
+        }"
+      ></app-answer-selector>
+    </div> -->
+  </form>
+
+  <app-sticky-button
+    *ngIf="finishedMutation"
+    [mode]="'double'"
+    [extra]="{
+      bgColor: '#2874AD',
+      return: true
+    }"
+    [color]="'#FFF'"
+    [fontSize]="'17px'"
+    [bgColor]="'#A1A1A1'"
+    [text]="!tagID ? 'SALVAR ESTE NUEVO TAG' : 'ACTUALIZAR TAG'"
+    [customLeftButtonStyles]="{
+      width: '85%',
+      'max-width': 'none',
+      'border-left': '1px solid #FFFFFF',
+      color: '#FFFFFF',
+      backgroundColor: createTagForm.status === 'VALID' ? '#2874AD' : '#7b7b7b',
+      cursor: createTagForm.status === 'VALID' ? 'pointer' : 'none'
+    }"
+    [customRightButtonStyles]="{
+      width: '1px',
+      heigth: '1px',
+      cursor: 'pointer'
+    }"
+    (left)="createTagForm.status === 'VALID' ? save() : null"
+    size="small"
+  ></app-sticky-button>
+
+  <app-sticky-button
+    *ngIf="!finishedMutation"
+    [mode]="'double'"
+    [extra]="{
+      bgColor: '#2874AD',
+      return: true
+    }"
+    [color]="'#FFF'"
+    [fontSize]="'17px'"
+    [bgColor]="'#7b7b7b'"
+    [text]="'CARGANDO...'"
+    [customLeftButtonStyles]="{
+      width: '85%',
+      'max-width': 'none',
+      'border-left': '1px solid #FFFFFF',
+      color: '#FFFFFF',
+      backgroundColor: '#7b7b7b',
+      cursor: 'none'
+    }"
+    [customRightButtonStyles]="{
+      width: '1px',
+      heigth: '1px',
+      cursor: 'pointer'
+    }"
+    (left)="(null)"
+    size="small"
+  ></app-sticky-button>
+</div>

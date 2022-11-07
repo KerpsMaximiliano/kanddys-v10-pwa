@@ -13,6 +13,7 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
+import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 
 const routes: Routes = [
   {
@@ -23,7 +24,11 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'admin/entity-detail-metrics', pathMatch: 'full' },
+      {
+        path: '',
+        redirectTo: 'admin/entity-detail-metrics',
+        pathMatch: 'full',
+      },
       {
         path: 'create-item/:itemId',
         component: CreateItemComponent,
@@ -79,6 +84,14 @@ const routes: Routes = [
         path: 'entity-detail-metrics',
         component: ItemsDashboardComponent,
       },
+      {
+        path: 'create-tag',
+        component: CreateTagComponent,
+      },
+      {
+        path: 'create-tag/:tagId',
+        component: CreateTagComponent,
+      },
     ],
   },
 ];
@@ -94,6 +107,7 @@ const routes: Routes = [
     CalendarCreatorComponent,
     TimeBlockComponent,
     ItemsDashboardComponent,
+    CreateTagComponent,
   ],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
