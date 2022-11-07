@@ -1,14 +1,15 @@
-<router-outlet></router-outlet>
+<router-outlet *ngIf="headerService.saleflow"></router-outlet>
 <app-bubble-button
+  *ngIf="
+    headerService.saleflow?.canBuyMultipleItems &&
+    headerService.order?.products?.length &&
+    activePath !== 'checkout'
+  "
   position="right"
   color="blue"
+  [bgColor]="headerService.colorTheme"
   [solo]="false"
   [cart]="true"
-  [cartAmount]="itemCartAmount"
-  *ngIf="
-    allowMultipleItems &&
-    itemCartAmount &&
-    activePath !== ':saleflowId/checkout'
-  "
+  [cartAmount]="headerService.order?.products?.length"
   (click)="showShoppingCartDialog()"
 ></app-bubble-button>

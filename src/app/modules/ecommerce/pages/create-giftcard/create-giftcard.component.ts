@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { PostsService } from 'src/app/core/services/posts.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
-import { PostEditButtonsComponent } from 'src/app/shared/components/post-edit-buttons/post-edit-buttons.component';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 const lightLabelStyles = {
   fontFamily: 'RobotoRegular',
@@ -25,9 +23,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
-    private route: ActivatedRoute,
-    private dialog: DialogService,
-    private post: PostsService
+    private dialog: DialogService
   ) {}
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
@@ -48,18 +44,15 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
     };
     this.header.post = emptyPost;
 
-    this.header.storePost(
-      this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-      emptyPost
-    );
+    this.header.storePost(emptyPost);
 
     if (this.scrollableForm) {
       params.unblockScrollPastCurrentStep();
       params.unblockScrollBeforeCurrentStep();
     }
 
-    this.header.isComplete.message = true;
-    this.header.storeOrderProgress(this.header.saleflow._id);
+    this.header.orderProgress.message = true;
+    this.header.storeOrderProgress();
     if (this.header.checkoutRoute) {
       this.router.navigate([this.header.checkoutRoute], {
         replaceUrl: true,
@@ -119,7 +112,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
           ]),
         headerCallback: () =>
-          this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]),
+          this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]),
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
@@ -183,6 +176,9 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           },
         },
       ],
+      customHelperHeaderConfig: {
+        bgcolor: this.header.colorTheme,
+      },
       stepProcessingFunction: (params) => {
         this.scrollBlockerBefore = params.blockScrollBeforeCurrentStep;
         this.removeScrollBlockerBefore = params.unblockScrollBeforeCurrentStep;
@@ -220,7 +216,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           params.unblockScrollBeforeCurrentStep();
         }
 
-        this.router.navigate([`ecommerce/store/${this.header.saleflow._id}`]);
+        this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]);
       },
       showShoppingCartOnCurrentStep: true,
       shoppingCartCallback: () => {
@@ -420,14 +416,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           };
 
           this.header.post = postInput;
-          this.header.storePost(
-            this.header.saleflow?._id ?? this.header.getSaleflow()._id,
-            postInput
-          );
+          this.header.storePost(postInput);
 
           try {
-            this.header.isComplete.message = true;
-            this.header.storeOrderProgress(this.header.saleflow._id);
+            this.header.orderProgress.message = true;
+            this.header.storeOrderProgress();
             if (this.header.checkoutRoute) {
               this.router.navigate([this.header.checkoutRoute], {
                 replaceUrl: true,
@@ -477,47 +470,11 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    if (!this.header.saleflow) {
-      const saleflowId = this.route.snapshot.paramMap.get('saleflowId');
-      const saleflow = await this.header.fetchSaleflow(saleflowId);
-      if (saleflow) {
-        this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
-        localStorage.setItem(
-          'flowRoute',
-          `${this.header.saleflow._id}/create-giftcard`
-        );
-        this.header.order = this.header.getOrder(saleflow._id);
-        if (!this.header.order) {
-          this.router.navigate([
-            `/ecommerce/store/${this.header.saleflow._id}`,
-          ]);
-          return;
-        }
-        this.header.getOrderProgress(saleflow._id);
-        const items = this.header.getItems(saleflow._id);
-        if (items && items.length > 0) this.header.items = items;
-        else
-          this.router.navigate([
-            `/ecommerce/store/${this.header.saleflow._id}`,
-          ]);
-      } else
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
-    } else {
-      this.header.flowRoute = `${this.header.saleflow._id}/create-giftcard`;
-      localStorage.setItem(
-        'flowRoute',
-        `${this.header.saleflow._id}/create-giftcard`
-      );
-      this.header.order = this.header.getOrder(this.header.saleflow._id);
-      if (!this.header.order) {
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
-        return;
-      }
-      const items = this.header.getItems(this.header.saleflow._id);
-      if (items && items.length > 0) this.header.items = items;
-      else
-        this.router.navigate([`/ecommerce/store/${this.header.saleflow._id}`]);
-    }
+    this.header.flowRoute = `create-giftcard`;
+    localStorage.setItem(
+      'flowRoute',
+      `${this.header.saleflow._id}/create-giftcard`
+    );
   }
 
   ngOnDestroy(): void {

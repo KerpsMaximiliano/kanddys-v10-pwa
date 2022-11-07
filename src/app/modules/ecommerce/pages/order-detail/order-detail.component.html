@@ -1,20 +1,57 @@
 <div class="container">
-  <header class="header">
-    <a class="return-holder"
-      (click)="goBackToFlowRoute()"
-      *ngIf="flowRoute"
-      ><i class="fas fa-chevron-left" [style.color]="'white'"></i>
-    </a>
+  <app-helper-headerv2
+    [mode]="'basic'"
+    [returnAble]="false"
+    [bgColor]="headerService.colorTheme"
+    [icon]="{
+      src: '/arrow-double-up.svg',
+      width: 17,
+      height: 21
+    }"
+    [rightText]="
+      loggedUser
+        ? {
+            text: loggedUser?.name || loggedUser?.phone || loggedUser?.email
+          }
+        : null
+    "
+    [icons]="[
+      {
+        src: '/person.svg',
+        width: '13px',
+        height: '17px',
+        color: 'brightness(3)',
+        callback: redirectToUserContact
+      }
+    ]"
+    [mainText]="
+      !merchant
+        ? {
+            text:
+              order?.items[0].saleflow.headline?.length < 38
+                ? order?.items[0].saleflow.headline
+                : order?.items[0].saleflow.headline.split(' ')['0'],
+            fontSize: '21px',
+            fontFamily: 'SfProBold'
+          }
+        : null
+    "
+    (agnosticAction)="openLogoutDialog()"
+  ></app-helper-headerv2>
 
-    <h1 class="merchant-name">{{ order?.items[0].saleflow.merchant.name }}</h1>
+  <div class="top-area" *ngIf="!notify">
+    <button class="top-button" (click)="buyAgain()">
+      <span class="plus"> + </span> COMPRAR OTRA VEZ
+    </button>
 
-    <div class="right-area">
-      <span class="header-text" *ngIf="order">
-        {{ order.user?.name || order.user?.phone || order.user?.email }}
-      </span>
-      <img [src]="env + '/person.svg'" (click)="(redirectToUserContact)" />
+    <div class="coins-info">
+      <h2 class="info-headline">Gana Coins</h2>
+
+      <p class="info-paragraph">
+        Te faltan N facturas para ganar XYZ MerchantID Coins
+      </p>
     </div>
-  </header>
+  </div>
 
   <div class="bill-area" *ngIf="notify">
     <h2 class="user-name">
@@ -36,6 +73,25 @@
       {{ order?.items[0].saleflow.merchant.name }}.
     </p>
   </div>
+
+  <!-- <div class="bill-area" *ngIf="notify">
+    <h2 class="user-name">{{ order.user?.name || order.user?.phone || order.user?.email }}</h2>
+    <h2 class="success">Tu factura se creó exitosamente.</h2>
+
+    <a
+      [href]="messageLink"
+      target="_blank"
+      class="bill-button"
+      (click)="notificationClicked()"
+    >
+      Confirmar por WhatsApp
+    </a>
+
+    <p class="bill-clarity">
+      Al “confirmar” se abrirá tu WhatsApp con la factura para {{ order?.items[0].saleflow.merchant.name }}.
+    </p>
+  </div> -->
+
   <!-- <app-helper-headerv2
     [mode]="'basic'"
     bgColor="#2874AD"
@@ -83,13 +139,18 @@
   <main class="information">
     <section class="top">
       <h2 class="top-h" *ngIf="order">
-        FACTURA {{ formatId(order.dateId) }} EN <br />
-        <span class="top-name">{{ order?.items[0].saleflow.headline }}</span>
+        FACTURA {{ formatId(order.dateId) }} FACTURADA <br />
+        <button class="top-name" (click)="sendMessage()" *ngIf="merchant">
+          {{ order.user?.name || order.user?.phone || order.user?.email }}
+        </button>
+        <span class="top-headline" *ngIf="!merchant">{{
+          order?.items[0].saleflow.headline
+        }}</span>
       </h2>
 
       <div class="info-display">
         <span class="info" style="margin-left: 0">{{ orderDate }}</span>
-        <span class="info">{{ orderStatus | titlecase }}</span>
+        <!-- <span class="info">{{ orderStatus | titlecase }}</span> -->
       </div>
     </section>
     <section class="section">
@@ -186,6 +247,18 @@
           </button>
         </div>
       </div>
+      <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Subtotal:</p>
+        <p class="amount">{{ payment | number: "1.2-2" }}</p>
+      </div>
+      <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Coins:</p>
+        <p class="amount">- {{ payment | number: "1.2-2" }}</p>
+      </div>
+      <div class="items-container space-between" style="margin-top: 4px">
+        <p class="total">Total Pagado:</p>
+        <p class="amount">{{ payment | number: "1.2-2" }}</p>
+      </div>
     </section>
 
     <section class="section" *ngIf="order?.items[0].deliveryLocation">
@@ -196,14 +269,19 @@
       <div class="items-container column">
         <p
           class="address-name"
-          *ngIf="order.items[0].deliveryLocation.nickName"
+          *ngIf="
+            (order.items[0].deliveryLocation.nickName &&
+              headerService.user?._id === order.user._id) ||
+            (order.items[0].deliveryLocation.nickName &&
+              !order.items[0].deliveryLocation.street)
+          "
         >
           {{ order.items[0].deliveryLocation.nickName }}
         </p>
         <p
           [ngClass]="{
-            added: order.items[0].deliveryLocation.nickName,
-            'address-name': !order.items[0].deliveryLocation.nickName
+            added: headerService.user?._id === order.user._id,
+            'address-name': headerService.user?._id !== order.user._id
           }"
           *ngIf="order.items[0].deliveryLocation.street"
         >
@@ -248,6 +326,22 @@
       <h2 class="section-title">Mensaje de regalo:</h2>
 
       <div class="message-box">
+        <div class="buttons-share">
+          <button class="btn">
+            <img [src]="env + '/QR.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img [src]="env + '/print.svg'" width="34px" height="34px" />
+          </button>
+          <button class="btn">
+            <img
+              [src]="env + '/download.svg'"
+              width="34px"
+              height="34px"
+              style="filter: brightness(0)"
+            />
+          </button>
+        </div>
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -282,12 +376,22 @@
     </section>
   </main>
 
-  <app-sticky-button
-    [mode]="'fixed'"
-    [bgColor]="'#2874AD'"
-    [size]="'small'"
-    [fontSize]="'1.25rem'"
-    [text]="'VOLVER A LA TIENDA'"
-    (click)="goToStore()"
-  ></app-sticky-button>
+  <footer class="footer-display" *ngIf="merchant">
+    <div class="pages-tabs">
+      <div class="images-container">
+        <img
+          [src]="env + image.src"
+          *ngFor="let image of imageList"
+          class="image"
+          (click)="image.callback()"
+          [ngStyle]="{
+            filter: image.filter && image.filter
+          }"
+        />
+      </div>
+    </div>
+    <div class="tab-pages">
+      <div class="tab" *ngFor="let tab of tabs"></div>
+    </div>
+  </footer>
 </div>

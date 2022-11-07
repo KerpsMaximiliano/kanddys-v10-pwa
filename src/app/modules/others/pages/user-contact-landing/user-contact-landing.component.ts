@@ -314,7 +314,9 @@ export class UserContactLandingComponent implements OnInit {
         ]);
         if (!user) return unlockUI();
         this.user = user;
-        this.exchangeData = await this.walletService.exchangeDataByUser(user._id);
+        this.exchangeData = await this.walletService.exchangeDataByUser(
+          user._id
+        );
 
         if (user._id === currentUser?._id) this.admin = true;
         this.merchant = await this.merchantsService.merchantDefault(
@@ -376,7 +378,7 @@ export class UserContactLandingComponent implements OnInit {
         src: item.images.length ? item.images[0] : this.defaultImage,
         callback: () =>
           this.router.navigate([
-            `/ecommerce/item-detail/${this.saleflow._id}/${item._id}`,
+            `/ecommerce/${this.saleflow._id}/item-detail/${item._id}`,
           ]),
       }));
     } catch (error) {
@@ -402,28 +404,28 @@ export class UserContactLandingComponent implements OnInit {
   openShareDialog() {
     const list: StoreShareList[] = [
       {
-        qrlink: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+        qrlink: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
         options: [
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           },
           // {
           //   text: 'Descarga el qrCode',
           //   mode: 'qr',
-          //   link: `${this.URI}/ecommerce/store/${this.saleflow._id}`,
+          //   link: `${this.URI}/ecommerce/${this.saleflow._id}/store`,
           // },
           {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () =>
-              this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]),
+              this.router.navigate([`/ecommerce/${this.saleflow._id}/store`]),
           },
         ],
       },
@@ -476,6 +478,6 @@ export class UserContactLandingComponent implements OnInit {
   };
 
   goToStore = () => {
-    this.router.navigate([`/ecommerce/store/${this.saleflow._id}`]);
+    this.router.navigate([`/ecommerce/${this.saleflow._id}/store`]);
   };
 }

@@ -21,12 +21,10 @@ a {
   .header {
     width: 100%;
     height: 36px;
-    background-color: #2874ad;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 23px 0 33px;
-    padding-left: 17px;
 
     .merchant-name {
       font-family: "SfProBold";
@@ -35,8 +33,6 @@ a {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      margin-right: auto;
-      margin-left: 17px;
     }
 
     .right-area {
@@ -53,6 +49,65 @@ a {
       img {
         width: 14px;
         filter: brightness(2);
+      }
+    }
+  }
+
+  .top-area {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 72px auto 0;
+
+    .top-button {
+      all: unset;
+      width: 60%;
+      max-width: 245px;
+      position: fixed;
+      top: 73px;
+      padding: 7px 0;
+      font-family: "SfProBold";
+      font-size: 13px;
+      color: #202020;
+      text-align: center;
+      border-radius: 17px;
+      background-color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
+      z-index: 1;
+
+      .plus {
+        font-family: "SfProBold";
+        font-size: 1.063rem;
+        color: #202020;
+      }
+    }
+
+    .coins-info {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 17px 21px;
+      margin: 13px auto 0;
+      box-shadow: 0px 3px 6px 3px rgba(0, 0, 0, 10%);
+
+      .info-headline {
+        font-family: "SfProBold";
+        font-size: 1.063rem;
+        margin: 0 0 6px;
+        color: #000000;
+      }
+
+      .info-paragraph {
+        font-family: "SfProMedium";
+        font-size: 1.063rem;
+        color: #7b7b7b;
+        max-width: 84.5%;
+        margin: 0;
       }
     }
   }
@@ -82,7 +137,7 @@ a {
 
     .bill-button {
       width: 85%;
-      background-color: #2874ad;
+      background-color: #51983A;
       font-family: "SfProRegular";
       font-size: 1.063rem;
       color: #ffffff;
@@ -104,11 +159,11 @@ a {
 
   .information {
     width: 100%;
-    margin: 40px 0 40px 0;
+    margin: 61px 0 40px 0;
     padding: 0 24px 32px;
 
     .top {
-      margin: 33px 0 59.5px;
+      margin: 0 0 59.5px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -122,9 +177,18 @@ a {
         text-align: center;
 
         .top-name {
+          all: unset;
           font-family: "SfProBold";
           font-size: 1.25rem;
-          color: #7b7b7b;
+          color: #2874AD;
+          cursor: pointer;
+        }
+
+        .top-headline {
+          font-family: "SfProBold";
+          font-size: 1.25rem;
+          color: #7B7B7B;
+          margin-top: 3px;
         }
       }
 
@@ -135,7 +199,7 @@ a {
         justify-content: center;
         margin-top: 10px;
 
-        .info{
+        .info {
           font-family: "RobotoRegular";
           font-size: 0.813rem;
           color: #7b7b7b;
@@ -148,7 +212,7 @@ a {
       width: 100%;
 
       .items-container {
-        background-color: #82f18d;
+        background-color: #ffffff;
         padding: 10px 12px;
         border-radius: 6px;
 
@@ -206,14 +270,14 @@ a {
         .amount {
           font-family: "SfProBold";
           font-size: 17px;
-          color: #174b72;
+          color: #272727;
           text-transform: capitalize;
         }
 
         .address-name {
           font-family: "RobotoMedium";
           font-size: 19px;
-          color: #174b72;
+          color: #272727;
           margin: 0 8px 0;
           word-break: break-word;
         }
@@ -221,7 +285,7 @@ a {
         .added {
           font-family: "SfProRegular";
           font-size: 14px;
-          color: #174b72;
+          color: #272727;
           margin: 3px 8px 0;
         }
       }
@@ -232,9 +296,9 @@ a {
         justify-content: center;
         font-family: "RobotoMedium";
         font-size: 19px;
-        color: #174b72;
+        color: #272727;
         margin: 0;
-        background-color: #82f18d;
+        background-color: #FFF;
         padding: 12px 18px;
         border-radius: 6px;
       }
@@ -245,10 +309,34 @@ a {
         margin: 0;
       }
       .message-box {
+        position: relative;
         border-radius: 6px;
-        background-color: #82f18d;
+        background-color: #FFF;
         flex-direction: column;
         padding: 24px;
+
+        .buttons-share{
+           position: absolute;
+           width: 52%;
+           display: flex;
+           justify-content: space-between;
+           background-color: #82F18D;
+           top: 0;
+           right: 0;
+           border-radius: 5px;
+           padding: 7px 5%;
+
+           .btn{
+              all: unset;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 34px;
+              height: 34px;
+              background-color: transparent;
+              cursor: pointer;
+           }
+        }
 
         > :not(:first-child) {
           margin-top: 32px;
@@ -258,7 +346,7 @@ a {
       .message-text {
         font-family: "RobotoMedium";
         font-size: 19px;
-        color: #174b72;
+        color: #272727;
         margin: 0;
         word-break: break-word;
       }
@@ -313,6 +401,59 @@ table {
   width: 100%;
 }
 
-.return-holder{
-  cursor: pointer;
+.footer-display{
+   width: 100%;
+   height: 70px;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   position: sticky;
+   bottom: 0px;
+   background-color: #2874AD;
+
+   &.temporal {
+    height: 50px;
+   }
+
+   .pages-tabs{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 15px auto 0;
+
+      .images-container{
+         width: 100%;
+         display: flex;
+         justify-content: space-around;  
+
+         .image{
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+         }
+      }
+   }
+   
+   .tab-pages{
+      width: 100%;
+      height: 20px;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: 0 5px;
+      position: absolute;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.2);
+
+      .tab{
+         width: 80px;
+         height: 4px;
+         background-color: #ffffff;
+
+         &:nth-child(2){
+            background-color: #82f18d;
+         }
+      }
+   }
 }

@@ -72,6 +72,7 @@ const orderData = `
           _id
           name
           image
+          price
         }
       }
     }

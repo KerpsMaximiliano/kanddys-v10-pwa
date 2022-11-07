@@ -24,9 +24,9 @@ export const updateReservation = gql`
   }
 `;
 
-export const validateExpirableReservation  = gql`
-  mutation validateExpirableReservation ($id: ObjectID!) {
-    validateExpirableReservation (id: $id) {
+export const validateExpirableReservation = gql`
+  mutation validateExpirableReservation($id: ObjectID!) {
+    validateExpirableReservation(id: $id) {
       _id
       status
       createdAt
@@ -34,9 +34,9 @@ export const validateExpirableReservation  = gql`
   }
 `;
 
-export const confirmMerchantOrder  = gql`
-  mutation confirmMerchantOrder ($merchantID: ObjectID!, $orderID: ObjectID!) {
-    confirmMerchantOrder (merchantID: $merchantID, orderID: $orderID) {
+export const confirmMerchantOrder = gql`
+  mutation confirmMerchantOrder($merchantID: ObjectID!, $orderID: ObjectID!) {
+    confirmMerchantOrder(merchantID: $merchantID, orderID: $orderID) {
       _id
       orderStatus
     }
@@ -52,7 +52,7 @@ export const getReservation = gql`
       expiration
       breakTime
       calendar
-      date{
+      date {
         from
         until
         fromHour
@@ -74,7 +74,7 @@ export const getReservationByCalendar = gql`
         _id
         name
       }
-      date{
+      date {
         from
         until
         fromHour
@@ -97,7 +97,7 @@ export const getReservationByMerchant = gql`
         _id
         name
       }
-      date{
+      date {
         from
         until
         fromHour
@@ -108,20 +108,20 @@ export const getReservationByMerchant = gql`
 `;
 
 export const listReservations = gql`
-  query listReservations($params: PaginationInput, $merchantId: ObjectID!){
-    listReservations(params: $params, merchantId: $merchantId){
+  query listReservations($params: PaginationInput, $merchantId: ObjectID!) {
+    listReservations(params: $params, merchantId: $merchantId) {
       _id
-    status
-    type
-    date {
-      dateType
-      from
-      until
-      fromHour
-      toHour
+      status
+      type
+      date {
+        dateType
+        from
+        until
+        fromHour
+        toHour
+      }
     }
   }
-}
 `;
 
 export const deleteReservation = gql`
@@ -131,7 +131,15 @@ export const deleteReservation = gql`
 `;
 
 export const reservationSpacesAvailable = gql`
-  query reservationSpacesAvailable($until: Date!,$from: Date,$calendarId: ObjectID!) {
-    reservationSpacesAvailable(until: $until,from: $from,calendarId: $calendarId)
+  query reservationSpacesAvailable(
+    $until: Date!
+    $from: Date
+    $calendarId: ObjectID!
+  ) {
+    reservationSpacesAvailable(
+      until: $until
+      from: $from
+      calendarId: $calendarId
+    )
   }
 `;
