@@ -342,7 +342,7 @@ export const usersOrderMerchant = gql`
 `;
 
 export const incomeMerchant = gql`
-  query incomeMerchant($merchantId: ObjectID!) {
-    incomeMerchant(merchantId: $merchantId)
+  query incomeMerchant($input: PaginationInput) {
+    incomeMerchant(input: $input)
   }
 `;

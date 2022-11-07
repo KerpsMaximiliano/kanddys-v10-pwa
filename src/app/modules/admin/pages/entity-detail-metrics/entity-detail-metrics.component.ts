@@ -141,7 +141,11 @@ export class EntityDetailMetricsComponent implements OnInit {
       );
 
       const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
-        this.merchantsService.merchantData._id
+        {
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+          },
+        }
       );
 
       if (ordersTotalResponse !== null && incomeMerchantResponse !== null) {
@@ -262,8 +266,8 @@ export class EntityDetailMetricsComponent implements OnInit {
             this.headerService.flowRoute = this.router.url;
             this.router.navigate([`auth/login`], {
               queryParams: {
-                redirect: '/admin/entity-detail-metrics'
-              }
+                redirect: '/admin/entity-detail-metrics',
+              },
             });
             resolve(true);
           });

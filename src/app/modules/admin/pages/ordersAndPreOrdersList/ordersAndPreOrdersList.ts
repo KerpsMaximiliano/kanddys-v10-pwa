@@ -31,6 +31,7 @@ SwiperCore.use([Virtual]);
 interface TagGroup {
   tag: Tag;
   orders: ItemOrder[];
+  income?: number;
 }
 
 @Component({
@@ -57,15 +58,17 @@ export class OrdersAndPreOrdersList implements OnInit {
   unselectedTags: Array<Tag> = [];
   tagGroups: Array<TagGroup> = [];
   highlightedOrders: Array<ItemOrder> = [];
+  highlightedOrdersIncome: number = 0;
   tagsHashTable: Record<string, Tag> = {};
   ordersList: ItemOrder[] = [];
   ordersWithoutTags: ItemOrder[] = [];
+  ordersWithoutTagsIncome: number = 0;
   defaultMerchant: Merchant;
   ordersByMerchantLimit: number = 6000;
   ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
   ordersByMerchantSortField: string = 'createdAt';
+  ordersIncomeForSelectedTags: number = null;
   optionIndexArray: any[] = [];
-  editable: boolean = false;
   list: StoreShareList[];
   text2: string = '';
   buttons: string[] = ['facturas', 'pre - facturas'];
@@ -147,15 +150,46 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.tags = tags;
       this.unselectedTags = [...this.tags];
 
+      const ordersIncomeWithoutTags =
+        await this.merchantsService.incomeMerchant({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+            tags: [],
+          },
+        });
+
+      if (typeof ordersIncomeWithoutTags === 'number')
+        this.ordersWithoutTagsIncome = ordersIncomeWithoutTags;
+
+      const highlightedOrdersIncomeWithoutTags =
+        await this.merchantsService.incomeMerchant({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+            'status.status': 'featured',
+          },
+        });
+
+      if (typeof highlightedOrdersIncomeWithoutTags === 'number')
+        this.highlightedOrdersIncome = highlightedOrdersIncomeWithoutTags;
+
       //Fills an object or hash table for fast access to each tag by its id
-      this.tags.forEach((tag) => {
+      for await (const tag of tags) {
         this.tagGroups.push({
           tag,
           orders: [],
         });
 
+        const income = await this.merchantsService.incomeMerchant({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+            tags: [tag._id],
+          },
+        });
+
+        this.tagGroups[this.tagGroups.length - 1].income = income;
+
         this.tagsHashTable[tag._id] = tag;
-      });
+      }
 
       this.typeOfList = type.replace('%20');
 
@@ -215,9 +249,17 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPagination
     );
 
+    const income = await this.merchantsService.incomeMerchant({
+      findBy: {
+        merchant: this.merchantsService.merchantData._id,
+        tags: [tag._id],
+      },
+    });
+
     return {
       tag: tag,
       orders: ordersByMerchant,
+      income,
     };
   };
 
@@ -379,6 +421,21 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPagination
     );
 
+    if (
+      this.selectedTags.length > 0
+    ) {
+      const ordersIncomeForSelectedTags =
+        await this.merchantsService.incomeMerchant({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+            tags: selectedTagIds,
+          },
+        });
+
+      if (typeof ordersIncomeForSelectedTags === 'number')
+        this.ordersIncomeForSelectedTags = ordersIncomeForSelectedTags;
+    }
+
     if (ordersByMerchant) {
       this.ordersWithoutTags = ordersByMerchant;
     }
@@ -499,16 +556,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   handleInputValue(value, _Router, option): void {}
 
   navigate(): void {
-    if (this.editable) {
-      this.resetEdition();
-    } else this.router.navigate([`/admin/items-dashboard`]);
-  }
-
-  resetEdition(): void {
-    this.editable = false;
-    this.dots = { active: !this.editable };
-    this.optionIndexArray = [];
-    this.text2 = '';
+    this.router.navigate([`/admin/items-dashboard`]);
   }
 
   handleOption(option: string): void {
@@ -522,10 +570,6 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.selectedTags = [];
     this.ordersList = [];
     this.loadOrders();
-  }
-
-  returnScreen(): void {
-    this.resetEdition();
   }
 
   handleTag(selectedTag: Tag): void {
@@ -570,10 +614,6 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   async selectTagFromHeader(eventData: { selected: boolean; tag: Tag }) {
-    const tagIndex = this.tags.findIndex((tag) => {
-      return tag._id === eventData.tag._id;
-    });
-
     this.handleTag(eventData.tag);
   }
 
@@ -596,6 +636,7 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.showSearchbar = true;
     this.justShowHighlightedOrders = false;
     this.justShowUntaggedOrders = false;
+    this.ordersIncomeForSelectedTags = null;
 
     this.loadOrdersAssociatedToTag(true);
   }

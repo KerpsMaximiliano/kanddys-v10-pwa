@@ -327,10 +327,10 @@ export class MerchantsService {
     return response;
   }
 
-  async incomeMerchant(merchantId: string) {
+  async incomeMerchant(input: PaginationInput) {
     const response = await this.graphql.query({
       query: incomeMerchant,
-      variables: { merchantId },
+      variables: { input },
       fetchPolicy: 'no-cache',
     });
     if (!response || response?.errors) return undefined;
