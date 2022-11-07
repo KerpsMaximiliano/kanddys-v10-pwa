@@ -53,7 +53,7 @@ export class ArticleDetailComponent implements OnInit {
   typeOfMenuToShow: TypesOfMenu;
   swiperConfigTag: SwiperOptions = {
     slidesPerView: 5,
-    freeMode: true,
+    freeMode: false,
     spaceBetween: 0,
   };
   fractions: string = '';
