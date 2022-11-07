@@ -152,54 +152,13 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.tags = tags;
       this.unselectedTags = [...this.tags];
 
-      const ordersIncomeWithoutTags =
-        await this.merchantsService.incomeMerchant({
-          findBy: {
-            merchant: this.merchantsService.merchantData._id,
-            tags: [],
-          },
-        });
+      await this.getOrdersWithoutTagsIncome();
 
-      if (typeof ordersIncomeWithoutTags === 'number')
-        this.ordersWithoutTagsIncome = ordersIncomeWithoutTags;
-
-      const highlightedOrdersIncomeWithoutTags =
-        await this.merchantsService.incomeMerchant({
-          findBy: {
-            merchant: this.merchantsService.merchantData._id,
-            orderStatus:
-              this.typeOfList === 'facturas'
-                ? ['in progress', 'to confirm', 'completed']
-                : 'draft',
-            'status.status': 'featured',
-          },
-        });
-
-      if (typeof highlightedOrdersIncomeWithoutTags === 'number')
-        this.highlightedOrdersIncome = highlightedOrdersIncomeWithoutTags;
+      await this.getHighlightedOrdersIncome();
 
       //Fills an object or hash table for fast access to each tag by its id
-      for await (const tag of tags) {
-        this.tagGroups.push({
-          tag,
-          orders: [],
-        });
 
-        const income = await this.merchantsService.incomeMerchant({
-          findBy: {
-            merchant: this.merchantsService.merchantData._id,
-            orderStatus:
-              this.typeOfList === 'facturas'
-                ? ['in progress', 'to confirm', 'completed']
-                : 'draft',
-            tags: [tag._id],
-          },
-        });
-
-        this.tagGroups[this.tagGroups.length - 1].income = income;
-
-        this.tagsHashTable[tag._id] = tag;
-      }
+      await this.organizeTagsGroups();
 
       this.typeOfList = type.replace('%20');
 
@@ -262,6 +221,10 @@ export class OrdersAndPreOrdersList implements OnInit {
     const income = await this.merchantsService.incomeMerchant({
       findBy: {
         merchant: this.merchantsService.merchantData._id,
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
         tags: [tag._id],
       },
     });
@@ -296,6 +259,31 @@ export class OrdersAndPreOrdersList implements OnInit {
 
     return ordersByMerchant;
   };
+
+  async organizeTagsGroups() {
+    this.tagGroups = [];
+    for await (const tag of this.tags) {
+      this.tagGroups.push({
+        tag,
+        orders: [],
+      });
+
+      const income = await this.merchantsService.incomeMerchant({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          orderStatus:
+            this.typeOfList === 'facturas'
+              ? ['in progress', 'to confirm', 'completed']
+              : 'draft',
+          tags: [tag._id],
+        },
+      });
+
+      this.tagGroups[this.tagGroups.length - 1].income = income;
+
+      this.tagsHashTable[tag._id] = tag;
+    }
+  }
 
   async loadOrdersWithoutTags() {
     const ordersByMerchantPagination: PaginationInput = {
@@ -431,10 +419,19 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPagination
     );
 
-    if (this.selectedTagsPermanent.length > 0) {
+    if (this.selectedTagsPermanent.length > 0 || this.searchBar.value !== '') {
+      const paginationOptions = {
+        ...ordersByMerchantPagination.options,
+        limit: -1,
+      };
+      delete paginationOptions.page;
+
       const ordersIncomeForMatchingOrders =
         await this.merchantsService.incomeMerchant({
+          ...ordersByMerchantPagination,
+          options: paginationOptions,
           findBy: {
+            ...ordersByMerchantPagination.findBy,
             merchant: this.merchantsService.merchantData._id,
             tags: selectedTagIds,
           },
@@ -460,10 +457,6 @@ export class OrdersAndPreOrdersList implements OnInit {
       else this.matchingOrdersTotalCounter = null;
     } else {
       this.matchingOrdersTotalCounter = null;
-    }
-
-    if (ordersByMerchant) {
-      this.ordersWithoutTags = ordersByMerchant;
     }
 
     if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
@@ -592,11 +585,10 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   async handleOption(option: string) {
-    this.tags = [];
+    this.unselectedTags = [...this.tags];
     this.showSearchbar = true;
     this.selectedTags = [];
     this.selectedTagsPermanent = [];
-    this.unselectedTags = [];
     this.highlightedOrders = [];
     this.highlightedOrdersIncome = 0;
     this.tagsHashTable = {};
@@ -614,6 +606,9 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.matchingOrdersTotalCounter = null;
     this.ordersIncomeForMatchingOrders = null;
     this.searchBar.setValue('');
+    await this.organizeTagsGroups();
+    await this.getHighlightedOrdersIncome();
+    await this.getOrdersWithoutTagsIncome();
     await this.loadOrders();
   }
 
@@ -708,7 +703,11 @@ export class OrdersAndPreOrdersList implements OnInit {
     return formatID(dateid);
   }
 
-  async highlightOrder(order: ItemOrder) {
+  async highlightOrder(
+    order: ItemOrder,
+    ordersArray: Array<ItemOrder>,
+    orderIndex: number
+  ) {
     const list = [];
 
     order.status.forEach((userObject, statusIndex) => {
@@ -725,18 +724,16 @@ export class OrdersAndPreOrdersList implements OnInit {
             );
 
             if (response) {
-              order.status[statusIndex].status = 'featured';
-
-              this.tagGroups.forEach((tagGroup) => {
-                tagGroup.orders.forEach((order) =>
-                  this.changeOrderStatus('featured', order)
-                );
+              ordersArray[orderIndex].status.forEach((userObject) => {
+                if (
+                  userObject.access ===
+                  this.merchantsService.merchantData.owner._id
+                ) {
+                  userObject.status = 'featured';
+                }
               });
 
-              this.ordersWithoutTags.forEach((order) =>
-                this.changeOrderStatus('featured', order)
-              );
-
+              await this.getHighlightedOrdersIncome();
               this.highlightedOrders.push(order);
             }
 
@@ -760,22 +757,20 @@ export class OrdersAndPreOrdersList implements OnInit {
             );
 
             if (response) {
-              order.status[statusIndex].status = 'active';
-
-              this.tagGroups.forEach((tagGroup) => {
-                tagGroup.orders.forEach((order) =>
-                  this.changeOrderStatus('active', order)
-                );
+              ordersArray[orderIndex].status.forEach((userObject) => {
+                if (
+                  userObject.access ===
+                  this.merchantsService.merchantData.owner._id
+                ) {
+                  userObject.status = 'active';
+                }
               });
-
-              this.ordersWithoutTags.forEach((order) =>
-                this.changeOrderStatus('active', order)
-              );
 
               const indexToDelete = this.highlightedOrders.findIndex(
                 (highlightedOrder) => highlightedOrder._id === order._id
               );
 
+              await this.getHighlightedOrdersIncome();
               this.highlightedOrders.splice(indexToDelete, 1);
             }
 
@@ -796,6 +791,39 @@ export class OrdersAndPreOrdersList implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
     });
+  }
+
+  async getHighlightedOrdersIncome() {
+    const highlightedOrdersIncomeWithoutTags =
+      await this.merchantsService.incomeMerchant({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+          orderStatus:
+            this.typeOfList === 'facturas'
+              ? ['in progress', 'to confirm', 'completed']
+              : 'draft',
+          status: [{ status: 'featured' }],
+        },
+      });
+
+    if (typeof highlightedOrdersIncomeWithoutTags === 'number')
+      this.highlightedOrdersIncome = highlightedOrdersIncomeWithoutTags;
+  }
+
+  async getOrdersWithoutTagsIncome() {
+    const ordersIncomeWithoutTags = await this.merchantsService.incomeMerchant({
+      findBy: {
+        merchant: this.merchantsService.merchantData._id,
+        orderStatus:
+          this.typeOfList === 'facturas'
+            ? ['in progress', 'to confirm', 'completed']
+            : 'draft',
+        tags: [],
+      },
+    });
+
+    if (typeof ordersIncomeWithoutTags === 'number')
+      this.ordersWithoutTagsIncome = ordersIncomeWithoutTags;
   }
 
   changeOrderStatus(status: OrderStatusType2, order: ItemOrder) {

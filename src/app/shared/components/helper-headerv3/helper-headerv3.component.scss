@@ -2,8 +2,7 @@
   background: #2874ad;
   display: grid;
   grid-template-columns: 1fr 9fr 1fr;
-  padding: 0px 17px 0px 17px;
-  align-content: center;
+  padding: 8px 17px 0px 10px;
 
   &.search {
     grid-template-columns: 1fr 9fr 1fr 1fr;
@@ -22,11 +21,6 @@
 }
 .arrows {
   cursor: pointer;
-
-  img {
-    height: 21px;
-    width: 17px;
-  }
 }
 .header-text {
   font-size: 21px;
