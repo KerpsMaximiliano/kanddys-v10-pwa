@@ -336,6 +336,7 @@ export class ArticleCreatorComponent implements OnInit {
     switch (mode) {
       // case 'symbols':
       //   this.ctaText = 'SALVAR';
+      //   this.ctaDescription = '';
       //   break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
