@@ -512,17 +512,20 @@
 
 <div
   class="orders-and-invoices-info"
-  *ngIf="ordersIncomeForSelectedTags !== null"
+  *ngIf="
+    ordersIncomeForMatchingOrders !== null &&
+    matchingOrdersTotalCounter !== null
+  "
 >
   <img
     [src]="env + '/double-arrow-up.png'"
     (click)="navigate()"
     alt="open info"
   />
-  <span>EN X FACTURAS</span>
+  <span>EN {{ matchingOrdersTotalCounter }} FACTURAS</span>
   <span>/</span>
   <span
     >$
-    {{ ordersIncomeForSelectedTags | number: "1.2-2" }}
+    {{ ordersIncomeForMatchingOrders | number: "1.2-2" }}
   </span>
 </div>

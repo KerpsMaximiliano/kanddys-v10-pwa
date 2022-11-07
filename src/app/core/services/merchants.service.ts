@@ -33,6 +33,7 @@ import {
   usersOrderMerchant,
   incomeMerchant,
   merchantDefault2,
+  ordersByMerchantHot,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -99,6 +100,18 @@ export class MerchantsService {
   ): Promise<{ ordersByMerchant: ItemOrder[] }> {
     const response = await this.graphql.query({
       query: ordersByMerchant,
+      variables: { pagination, merchant },
+      fetchPolicy: 'no-cache',
+    });
+    return response;
+  }
+
+  async hotOrdersByMerchant(
+    merchant: string,
+    pagination?: PaginationInput
+  ): Promise<{ ordersByMerchant: ItemOrder[] }> {
+    const response = await this.graphql.query({
+      query: ordersByMerchantHot,
       variables: { pagination, merchant },
       fetchPolicy: 'no-cache',
     });

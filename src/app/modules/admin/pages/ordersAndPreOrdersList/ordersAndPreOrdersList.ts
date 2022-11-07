@@ -67,7 +67,8 @@ export class OrdersAndPreOrdersList implements OnInit {
   ordersByMerchantLimit: number = 6000;
   ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
   ordersByMerchantSortField: string = 'createdAt';
-  ordersIncomeForSelectedTags: number = null;
+  ordersIncomeForMatchingOrders: number = null;
+  matchingOrdersTotalCounter: number = 0;
   optionIndexArray: any[] = [];
   list: StoreShareList[];
   text2: string = '';
@@ -141,6 +142,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         limit = 50,
         sort = 'desc',
       } = params;
+      this.typeOfList = type;
       this.ordersByMerchantLimit = limit;
       this.ordersByMerchantSortField = at;
       this.ordersByMerchantSortOrder = sort;
@@ -165,6 +167,10 @@ export class OrdersAndPreOrdersList implements OnInit {
         await this.merchantsService.incomeMerchant({
           findBy: {
             merchant: this.merchantsService.merchantData._id,
+            orderStatus:
+              this.typeOfList === 'facturas'
+                ? ['in progress', 'to confirm', 'completed']
+                : 'draft',
             'status.status': 'featured',
           },
         });
@@ -182,6 +188,10 @@ export class OrdersAndPreOrdersList implements OnInit {
         const income = await this.merchantsService.incomeMerchant({
           findBy: {
             merchant: this.merchantsService.merchantData._id,
+            orderStatus:
+              this.typeOfList === 'facturas'
+                ? ['in progress', 'to confirm', 'completed']
+                : 'draft',
             tags: [tag._id],
           },
         });
@@ -421,10 +431,8 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPagination
     );
 
-    if (
-      this.selectedTags.length > 0
-    ) {
-      const ordersIncomeForSelectedTags =
+    if (this.selectedTagsPermanent.length > 0) {
+      const ordersIncomeForMatchingOrders =
         await this.merchantsService.incomeMerchant({
           findBy: {
             merchant: this.merchantsService.merchantData._id,
@@ -432,8 +440,26 @@ export class OrdersAndPreOrdersList implements OnInit {
           },
         });
 
-      if (typeof ordersIncomeForSelectedTags === 'number')
-        this.ordersIncomeForSelectedTags = ordersIncomeForSelectedTags;
+      if (typeof ordersIncomeForMatchingOrders === 'number')
+        this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
+    }
+
+    if (
+      this.selectedTagsPermanent.length > 0 ||
+      (this.searchBar.value !== '' && this.searchBar.value !== null)
+    ) {
+      ordersByMerchantPagination.options.limit = -1;
+      const { ordersByMerchant } =
+        await this.merchantsService.hotOrdersByMerchant(
+          this.defaultMerchant._id,
+          ordersByMerchantPagination
+        );
+
+      if (ordersByMerchant)
+        this.matchingOrdersTotalCounter = ordersByMerchant.length;
+      else this.matchingOrdersTotalCounter = null;
+    } else {
+      this.matchingOrdersTotalCounter = null;
     }
 
     if (ordersByMerchant) {
@@ -550,7 +576,13 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   getOrderTagList(tagsIds: Array<string>) {
-    return tagsIds.map((tagId) => this.tagsHashTable[tagId].name).join(', ');
+    return tagsIds
+      .filter(
+        (tagId) =>
+          this.tagsHashTable[tagId] && 'name' in this.tagsHashTable[tagId]
+      )
+      .map((tagId) => this.tagsHashTable[tagId].name)
+      .join(', ');
   }
 
   handleInputValue(value, _Router, option): void {}
@@ -559,17 +591,30 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.router.navigate([`/admin/items-dashboard`]);
   }
 
-  handleOption(option: string): void {
+  async handleOption(option: string) {
+    this.tags = [];
+    this.showSearchbar = true;
+    this.selectedTags = [];
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = [];
+    this.highlightedOrders = [];
+    this.highlightedOrdersIncome = 0;
+    this.tagsHashTable = {};
+    this.ordersList = [];
+    this.ordersWithoutTags = [];
     this.typeOfList = option;
     this.tagGroups = this.tagGroups.map((tagGroup) => ({
-      tag: tagGroup.tag,
       orders: [],
+      tag: tagGroup.tag,
+      income: 0,
     }));
     this.ordersWithoutTags = [];
-    // this.tagGroups = [];
     this.selectedTags = [];
     this.ordersList = [];
-    this.loadOrders();
+    this.matchingOrdersTotalCounter = null;
+    this.ordersIncomeForMatchingOrders = null;
+    this.searchBar.setValue('');
+    await this.loadOrders();
   }
 
   handleTag(selectedTag: Tag): void {
@@ -636,7 +681,8 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.showSearchbar = true;
     this.justShowHighlightedOrders = false;
     this.justShowUntaggedOrders = false;
-    this.ordersIncomeForSelectedTags = null;
+    this.ordersIncomeForMatchingOrders = null;
+    this.matchingOrdersTotalCounter = 0;
 
     this.loadOrdersAssociatedToTag(true);
   }
