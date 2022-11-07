@@ -53,6 +53,7 @@ export class ArticleParamsComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.obtainLasts();
     const itemId = this._Route.snapshot.paramMap.get('itemId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
@@ -133,7 +134,8 @@ export class ArticleParamsComponent implements OnInit {
 
   obtainLasts() {
     this._Route.params.subscribe(async (params) => {
-      this.saleFlow = await this._HeaderService.fetchSaleflow(params.id);
+      this.saleFlow = await this._HeaderService.fetchSaleflow(params.itemId);
+      console.log(params)
       const saleflowItems = this.saleFlow.items.map((saleflowItem) => ({
         item: saleflowItem.item._id,
       }));
@@ -152,6 +154,7 @@ export class ArticleParamsComponent implements OnInit {
         return item.params == null || undefined || item.params.length == 0;
       });
       this.items.length <= 6 ? null : (this.items.length = 6);
+      console.log(this.items)
     });
   }
 

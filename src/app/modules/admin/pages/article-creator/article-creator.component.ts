@@ -59,9 +59,9 @@ export class ArticleCreatorComponent implements OnInit {
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode = 'symbols';
-  ctaText: string = 'SALVAR';
-  ctaDescription: string = '';
+  mode: Mode = 'item';
+  ctaText: string = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
+  ctaDescription: string = 'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
   item: Item;
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -331,6 +331,7 @@ export class ArticleCreatorComponent implements OnInit {
     switch (mode) {
       case 'symbols':
         this.ctaText = 'SALVAR';
+        this.ctaDescription = '';
         break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
