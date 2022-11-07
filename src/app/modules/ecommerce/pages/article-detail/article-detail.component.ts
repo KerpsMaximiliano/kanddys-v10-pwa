@@ -75,7 +75,9 @@ export class ArticleDetailComponent implements OnInit {
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const validEntities = ['item', 'post'];
-        const { entity, entityId } = routeParams;
+        const { saleflowId, entity, entityId } = routeParams;
+        if (!this.headerService.saleflow)
+          this.headerService.fetchSaleflow(saleflowId);
 
         if (validEntities.includes(entity)) {
           this.entityId = entityId;
@@ -95,7 +97,7 @@ export class ArticleDetailComponent implements OnInit {
       this.itemData = await this.itemsService.item(this.entityId);
       this.updateFrantions();
       this.itemTags = await this.tagsService.tagsByUser();
-      this.itemTags.forEach((tag) => {
+      this.itemTags?.forEach((tag) => {
         tag.selected = this.itemData.tags?.includes(tag._id);
       });
 

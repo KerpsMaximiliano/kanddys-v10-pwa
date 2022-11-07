@@ -53,16 +53,19 @@ export class ArticleCreatorComponent implements OnInit {
     },
     autoplay: {
       delay: 10000,
+      disableOnInteraction: false,
     },
   };
   entity: string;
   isOrder: boolean;
   fractions: string = '1fr';
   activeSlide: number;
-  mode: Mode = 'symbols';
-  ctaText: string = 'SALVAR';
-  ctaDescription: string = '';
+  mode: Mode = 'item';
+  ctaText: string = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
+  ctaDescription: string =
+    'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
   item: Item;
+  blockSubmitButton: boolean = false;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -241,6 +244,7 @@ export class ArticleCreatorComponent implements OnInit {
 
   submit(): void {
     // console.log(this.controllers.value);
+    this.blockSubmitButton = true;
     if (this.mode === 'symbols') {
       if (this.controllers.invalid) return;
       let result = [];
@@ -276,6 +280,7 @@ export class ArticleCreatorComponent implements OnInit {
         const result = { slides, message: 'test-post' };
         createPost(result);
       });
+      this.blockSubmitButton = false;
     }
     if (this.mode === 'item') {
       const images = [];
@@ -327,11 +332,11 @@ export class ArticleCreatorComponent implements OnInit {
   }
 
   changeMode(mode: Mode) {
-    this.mode = mode;
+    // this.mode = mode;
     switch (mode) {
-      case 'symbols':
-        this.ctaText = 'SALVAR';
-        break;
+      // case 'symbols':
+      //   this.ctaText = 'SALVAR';
+      //   break;
       case 'item': {
         this.ctaText = 'ADICIONAR PRECIO PARA VENDER EL ARTÍCULO';
         this.ctaDescription =
@@ -339,5 +344,9 @@ export class ArticleCreatorComponent implements OnInit {
         break;
       }
     }
+  }
+
+  goBack() {
+    this._Router.navigate([`admin/items-dashboard`]);
   }
 }

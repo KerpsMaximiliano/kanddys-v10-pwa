@@ -17,6 +17,7 @@ import { ArticleParamsComponent } from './pages/article-params/article-params.co
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 
 const routes: Routes = [
+  { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
   {
     path: 'create-article',
     component: ArticleCreatorComponent,
@@ -29,7 +30,16 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'admin/entity-detail-metrics', pathMatch: 'full' },
+      {
+        path: '',
+        redirectTo: 'admin/entity-detail-metrics',
+        pathMatch: 'full',
+      },
+      {
+        path: 'create-item/:itemId',
+        redirectTo: 'create-article/:itemId',
+        pathMatch: 'full',
+      },
       {
         path: 'create-article/:itemId',
         component: ArticleCreatorComponent,
@@ -105,7 +115,7 @@ const routes: Routes = [
     TimeBlockComponent,
     ArticleCreatorComponent,
     ArticleParamsComponent,
-    ItemsDashboardComponent
+    ItemsDashboardComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
