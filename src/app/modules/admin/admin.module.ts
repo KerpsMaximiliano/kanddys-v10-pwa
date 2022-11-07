@@ -21,6 +21,10 @@ const routes: Routes = [
     component: CreateItemComponent,
   },
   {
+    path: 'create-tag',
+    component: CreateTagComponent,
+  },
+  {
     path: '',
     component: AdminComponent,
     children: [
@@ -75,10 +79,6 @@ const routes: Routes = [
       {
         path: 'time-block/:calendarId',
         component: TimeBlockComponent,
-      },
-      {
-        path: 'create-tag',
-        component: CreateTagComponent,
       },
     ],
   },

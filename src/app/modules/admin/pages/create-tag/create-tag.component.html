@@ -13,14 +13,14 @@
       height: 21
     }"
     [rightText]="{
-      text: 'logged ID'
+      text: user? user?.name || user?.phone || user?.phone : ''
     }"
     [icons]="[
       {
         src: '/person.svg',
         width: '13px',
         height: '17px',
-        callback: null,
+        callback: openDialog,
         color: 'brightness(2)'
       }
     ]"

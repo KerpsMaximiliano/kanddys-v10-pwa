@@ -29,6 +29,11 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 
 export function imagesValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -45,6 +50,7 @@ export function imagesValidator(): ValidatorFn {
 export class CreateTagComponent implements OnInit {
   env: string = environment.assetsUrl;
   user: User;
+  logged: boolean;
   merchantDefault: Merchant;
   createTagForm: FormGroup = new FormGroup({
     name: new FormControl('', [
@@ -74,6 +80,7 @@ export class CreateTagComponent implements OnInit {
     private merchantsService: MerchantsService,
     private router: Router,
     private headerService: HeaderService,
+    private dialog: DialogService,
     private notificationService: NotificationsService,
     private toastr: ToastrService,
     private route: ActivatedRoute,
@@ -94,10 +101,11 @@ export class CreateTagComponent implements OnInit {
         this.setOptionalFunctionalityList();
         await this.verifyIfUserIsLogged();
 
+        this.logged = Boolean(localStorage.getItem('logged'));
         this.hasTemporalTag = Boolean(
           localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
         );
-        if (this.tagID || this.hasTemporalTag) this.inicializeExistingTagData();
+        if (this.tagID || this.hasTemporalTag || this.logged) this.inicializeExistingTagData();
       });
     });
   }
@@ -256,20 +264,45 @@ export class CreateTagComponent implements OnInit {
         temporalNotification.phoneNumbers
           .map((phoneObject) => phoneObject.phoneNumber)
           .join(', ');
+
+    } else if (this.logged) {
+      let temporalTag = this.tagsService.temporalTag;
+
+      if (!temporalTag) {
+        temporalTag = JSON.parse(localStorage.getItem('temporalTag'));
+      }
+
+      name.setValue(temporalTag?.name);
+
+      temporalTag.status === 'active'
+        ? this.setTagAsVisible()
+        : this.setTagAsInvisible();
+
+      if (temporalTag.images) {
+        const reader = new FileReader();
+        reader.readAsDataURL(temporalTag.images as unknown as File); //Im so sorry xd
+        reader.onload = () => {
+          images.setValue(reader.result);
+          this.convertedDefaultImageToBase64 = true;
+        };
+        reader.onerror = (error) => {
+          console.log('Error: ', error);
+          this.convertedDefaultImageToBase64 = false;
+        };
+      }
     }
   }
 
   async verifyIfUserIsLogged() {
     this.user = await this.authService.me();
-
-    if (this.user) {
-      const merchantDefault = await this.merchantsService.merchantDefault();
-
-      if (merchantDefault) this.merchantDefault = merchantDefault;
-      else {
-        this.router.navigate(['others/error-screen']);
-      }
+    if (!this.user) {
+      this.logged = false;
+      return;
     }
+    this.logged = true
+    const merchantDefault = await this.merchantsService.merchantDefault();
+    if (merchantDefault) this.merchantDefault = merchantDefault;
+    else return;
   }
 
   changeVisibility() {
@@ -315,6 +348,17 @@ export class CreateTagComponent implements OnInit {
     const { name, visibility, images } = this.createTagForm.controls;
     this.finishedMutation = false;
 
+    if (this.logged === false) {
+      this.saveTemporalTagSimple();
+      localStorage.setItem('logged', 'true');
+      this.router.navigate(['auth/login'], {
+        queryParams: {
+          redirect: 'admin/create-tag',
+        },
+      });
+      return;
+    }
+
     const data: TagInput = {
       name: name.value,
       status: visibility.value,
@@ -356,6 +400,7 @@ export class CreateTagComponent implements OnInit {
       }
 
       localStorage.removeItem('temporalTag');
+      localStorage.removeItem('logged');
       localStorage.removeItem('temporalNotification');
       localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
 
@@ -491,7 +536,75 @@ export class CreateTagComponent implements OnInit {
     });
   }
 
-  saveTemporalTagAndRedirectToForm(redirectionRoute: string) {
+  openDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Menu de opciones',
+        options: [
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: async () => {
+              await this.authService.signout();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (!this.user) {
+      list[0].options.pop();
+      list[0].options.push({
+        text: 'Iniciar sesión',
+        mode: 'func',
+        func: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'admin/entity-detail-metrics',
+            },
+          });
+        },
+      });
+    }
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
+  saveTemporalTagSimple() {
+    const { name, visibility, images } = this.createTagForm.controls;
+
+    this.tagsService.temporalTag = {
+      name: name.value,
+      status: visibility.value,
+    };
+
+    localStorage.setItem(
+      'temporalTag',
+      JSON.stringify(this.tagsService.temporalTag)
+    );
+
+    if (
+      (images.value && !this.tagID) ||
+      !(
+        this.tagID &&
+        Array.isArray(images.value) &&
+        typeof images.value[0] === 'string'
+      )
+    ) {
+      this.tagsService.temporalTag.images = images.value;
+    }
+  }
+
+  saveTemporalTagAndRedirectToForm(redirectionRoute?: string) {
     const { name, visibility, images } = this.createTagForm.controls;
 
     this.tagsService.temporalTag = {
@@ -544,7 +657,7 @@ export class CreateTagComponent implements OnInit {
       );
     }
 
-    this.router.navigate([redirectionRoute]);
+    redirectionRoute ? this.router.navigate([redirectionRoute]) : null;
   }
 
   goBack() {
