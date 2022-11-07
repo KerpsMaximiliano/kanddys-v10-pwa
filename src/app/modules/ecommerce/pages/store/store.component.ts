@@ -464,9 +464,17 @@ export class StoreComponent implements OnInit {
         });
         this.header.storeItem(this.saleflowData._id, itemData);
       }
-      this.router.navigate([
-        `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      ]);
+      this.router.navigate(
+        [
+          `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
+        ],
+        {
+          replaceUrl: this.header.checkoutRoute ? true : false,
+        }
+      );
+      // this.router.navigate([
+      //   `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
+      // ]);
     }
   }
 

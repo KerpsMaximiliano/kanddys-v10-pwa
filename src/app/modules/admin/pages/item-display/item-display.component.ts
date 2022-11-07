@@ -220,12 +220,12 @@ export class ItemDisplayComponent implements OnInit {
           {
             text: 'Copia el link',
             mode: 'clipboard',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
           },
           {
             text: 'Comparte el link',
             mode: 'share',
-            link: `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+            link: `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
             icon: {
               src: '/upload.svg',
               size: {
@@ -239,7 +239,7 @@ export class ItemDisplayComponent implements OnInit {
             mode: 'func',
             func: () => {
               this.router.navigate([
-                `/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`,
+                `/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
               ]);
             },
           },
@@ -367,12 +367,12 @@ export class ItemDisplayComponent implements OnInit {
         text: 'Editar producto',
         callback: () => {
           if (this.item.params.length === 0) {
-            this.router.navigate([`admin/create-item/${this.item._id}`]);
+            this.router.navigate([`admin/create-article/${this.item._id}`]);
           } else if (
             this.item.params.length > 0 &&
             this.item.params[0].values.length > 0
           ) {
-            this.router.navigate([`admin/create-item/${this.item._id}`], {
+            this.router.navigate([`admin/create-article/${this.item._id}`], {
               queryParams: {
                 justdynamicmode: true,
               },
@@ -383,7 +383,7 @@ export class ItemDisplayComponent implements OnInit {
       {
         text: 'Adicionar nuevo Item',
         callback: () => {
-          this.router.navigate([`/admin/create-item`]);
+          this.router.navigate([`/admin/create-article`]);
         },
       },
     ];
@@ -404,12 +404,12 @@ export class ItemDisplayComponent implements OnInit {
     this.headerService.flowRoute = this.router.url;
 
     this.itemsService.temporalItem = null;
-    this.router.navigate(['/admin/create-item/' + this.item._id]);
+    this.router.navigate(['/admin/create-article/' + this.item._id]);
   };
 
   copyLink() {
     this.clipboard.copy(
-      `${this.URI}/ecommerce/item-detail/${this.saleflowService.saleflowData._id}/${this.item._id}`
+      `${this.URI}/ecommerce/${this.saleflowService.saleflowData._id}/article-detail/item/${this.item._id}`
     );
     this.toastr.info('Enlace del producto copiado en el clipboard', null, {
       timeOut: 2000,

@@ -57,7 +57,8 @@ export class ItemsService {
     old: string[];
     new: File[];
   };
-  hasTemporalItemNewImages: boolean = null;
+  changedImages: boolean = null;
+  itemImages: File[] = [];
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -66,7 +67,7 @@ export class ItemsService {
   removeTemporalItem() {
     this.temporalItem = null;
     this.temporalImages = null;
-    this.hasTemporalItemNewImages = null;
+    this.changedImages = null;
   }
 
   constructor(private graphql: GraphQLWrapper) {}

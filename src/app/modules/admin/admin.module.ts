@@ -12,12 +12,18 @@ import { ReservationListComponent } from 'src/app/shared/components/reservation-
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
+import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
+import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 
 const routes: Routes = [
   {
-    path: 'create-item',
-    component: CreateItemComponent,
+    path: 'create-article',
+    component: ArticleCreatorComponent,
+  },
+  {
+    path: 'article-params',
+    component: ArticleParamsComponent,
   },
   {
     path: '',
@@ -25,8 +31,12 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'admin/entity-detail-metrics', pathMatch: 'full' },
       {
-        path: 'create-item/:itemId',
-        component: CreateItemComponent,
+        path: 'create-article/:itemId',
+        component: ArticleCreatorComponent,
+      },
+      {
+        path: 'article-params/:itemId',
+        component: ArticleParamsComponent,
       },
       /*{
         path: 'entity-detail-metrics',
@@ -93,8 +103,11 @@ const routes: Routes = [
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
     TimeBlockComponent,
-    ItemsDashboardComponent,
+    ArticleCreatorComponent,
+    ArticleParamsComponent,
+    ItemsDashboardComponent
   ],
+  exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}
