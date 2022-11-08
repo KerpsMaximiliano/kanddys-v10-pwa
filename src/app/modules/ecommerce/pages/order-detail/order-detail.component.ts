@@ -46,6 +46,8 @@ export class OrderDetailComponent implements OnInit {
     toISO: string;
   } = null;
   ordersInTheSameDay: ItemOrder[] = [];
+  orderBeforeOrderDay: ItemOrder = null;
+  orderAfterOrderDay: ItemOrder = null;
   customizerDetails: { name: string; value: string }[] = [];
   customizer: CustomizerValue;
   order: ItemOrder;
@@ -413,77 +415,66 @@ export class OrderDetailComponent implements OnInit {
     await this.getAdjacentOrders();
   }
 
-  async getAdjacentOrders(
-    getOrdersFromTheNextDay = false,
-    getOrdersFromThePreviousDay = false
-  ) {
-    let closestOrderDayBeforeCurrentOrderCreationDate = null;
-    let closestOrderDayAfterCurrentOrderCreationDate = null;
-
-    //I SHOULD MOVE ON FROM HERE
-    if (getOrdersFromThePreviousDay) {
-      const pagination: PaginationInput = {
-        options: {
-          range: {
-            to: this.currentDayOrdersRange.fromISO,
-          },
-          limit: -1,
+  async getAdjacentOrders() {
+    //Get the 1st order before current day
+    let pagination: PaginationInput = {
+      options: {
+        range: {
+          to: this.currentDayOrdersRange.fromISO,
         },
-      };
+        sortBy: 'createdAt:desc',
+        limit: 1,
+      },
+    };
 
-      const { ordersByMerchant: ordersInTheSameDay } =
-        await this.merchantsService.ordersByMerchant(
-          this.orderMerchant._id,
-          pagination
-        );
+    const { ordersByMerchant: orderBeforeOrderDay } =
+      await this.merchantsService.ordersByMerchant(
+        this.orderMerchant._id,
+        pagination
+      );
 
-      console.log(ordersInTheSameDay);
+    if (orderBeforeOrderDay && orderBeforeOrderDay.length > 0) {
+      this.orderBeforeOrderDay = orderBeforeOrderDay[0];
+    } else {
+      this.orderBeforeOrderDay = null;
     }
 
-    /*
-    if (getOrdersFromThePreviousDay) {
-      this.currentDayOrdersRange = {
-        fromISO: moment(closestOrderDayBeforeCurrentOrderCreationDate)
-          .subtract(1, 'day')
-          .toDate()
-          .toISOString(),
-        toISO: moment(closestOrderDayBeforeCurrentOrderCreationDate)
-          .subtract(1, 'day')
-          .add(23, 'hours')
-          .add(59, 'minutes')
-          .add(59, 'seconds')
-          .toDate()
-          .toISOString(),
-      };
+    //Get the 1st after current day
+    pagination = {
+      options: {
+        range: {
+          from: moment(this.currentDayOrdersRange.fromISO)
+            .add(1, 'days')
+            .toDate()
+            .toISOString(),
+        },
+        sortBy: 'createdAt:asc',
+        limit: 1,
+      },
+    };
+
+    const { ordersByMerchant: orderAfterOrderDay } =
+      await this.merchantsService.ordersByMerchant(
+        this.orderMerchant._id,
+        pagination
+      );
+
+    if (orderAfterOrderDay && orderAfterOrderDay.length > 0) {
+      this.orderAfterOrderDay = orderAfterOrderDay[0];
+    } else {
+      this.orderAfterOrderDay = null;
     }
 
-    if (getOrdersFromTheNextDay) {
-      this.currentDayOrdersRange = {
-        fromISO: moment(closestOrderDayAfterCurrentOrderCreationDate)
-          .add(1, 'day')
-          .toDate()
-          .toISOString(),
-        toISO: moment(closestOrderDayAfterCurrentOrderCreationDate)
-          .add(1, 'day')
-          .add(23, 'hours')
-          .add(59, 'minutes')
-          .add(59, 'seconds')
-          .toDate()
-          .toISOString(),
-      };
-    }*/
-
-    /*
+    //get orders from the same day
     let from = this.currentDayOrdersRange.fromISO;
     let to = this.currentDayOrdersRange.toISO;
 
-    console.log(from, to);
     const range = {
       from: from,
       to: to,
     };
 
-    const pagination: PaginationInput = {
+    pagination = {
       options: {
         range,
         limit: -1,
@@ -496,11 +487,7 @@ export class OrderDetailComponent implements OnInit {
         pagination
       );
 
-    if (
-      ordersInTheSameDay &&
-      !getOrdersFromTheNextDay &&
-      !getOrdersFromThePreviousDay
-    ) {
+    if (ordersInTheSameDay) {
       this.ordersInTheSameDay = ordersInTheSameDay;
 
       const orderIndex = this.ordersInTheSameDay.findIndex(
@@ -511,23 +498,6 @@ export class OrderDetailComponent implements OnInit {
         this.orderInDayIndex = orderIndex;
       }
     }
-
-    if (ordersInTheSameDay && getOrdersFromThePreviousDay) {
-      this.orderInDayIndex = ordersInTheSameDay.length - 1;
-
-      this.executeProcessesAfterLoading(
-        this.ordersInTheSameDay[this.orderInDayIndex]._id
-      );
-    }
-
-    if (ordersInTheSameDay && getOrdersFromTheNextDay) {
-      this.orderInDayIndex = 0;
-
-      this.executeProcessesAfterLoading(
-        this.ordersInTheSameDay[this.orderInDayIndex]._id
-      );
-    }
-    */
   }
 
   goToNextOrPreviousOrder(direction: 'NEXT' | 'PREVIOUS') {
@@ -535,26 +505,57 @@ export class OrderDetailComponent implements OnInit {
       this.orderInDayIndex < this.ordersInTheSameDay.length - 1 &&
       direction === 'NEXT'
     ) {
+      history.pushState(
+        null,
+        null,
+        'ecommerce/order-detail/' +
+          this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
+      );
+
       this.executeProcessesAfterLoading(
         this.ordersInTheSameDay[this.orderInDayIndex + 1]._id
       );
     }
 
     if (this.orderInDayIndex > 0 && direction === 'PREVIOUS') {
+      history.pushState(
+        null,
+        null,
+        'ecommerce/order-detail/' +
+          this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
+      );
+
       this.executeProcessesAfterLoading(
         this.ordersInTheSameDay[this.orderInDayIndex - 1]._id
       );
     }
 
-    if (this.orderInDayIndex === 0 && direction === 'PREVIOUS') {
-      this.getAdjacentOrders(false, true);
+    if (
+      this.orderInDayIndex === 0 &&
+      direction === 'PREVIOUS' &&
+      this.orderBeforeOrderDay
+    ) {
+      history.pushState(
+        null,
+        null,
+        'ecommerce/order-detail/' + this.orderBeforeOrderDay._id
+      );
+
+      this.executeProcessesAfterLoading(this.orderBeforeOrderDay._id);
     }
 
     if (
       this.orderInDayIndex === this.ordersInTheSameDay.length - 1 &&
-      direction === 'NEXT'
+      direction === 'NEXT' &&
+      this.orderAfterOrderDay
     ) {
-      this.getAdjacentOrders(true, false);
+      history.pushState(
+        null,
+        null,
+        'ecommerce/order-detail/' + this.orderAfterOrderDay._id
+      );
+
+      this.executeProcessesAfterLoading(this.orderAfterOrderDay._id);
     }
   }
 

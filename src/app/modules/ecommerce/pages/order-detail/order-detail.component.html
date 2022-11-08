@@ -377,7 +377,11 @@
   </main>
 
   <footer class="footer-display" *ngIf="merchant">
-    <div class="left-arrow" (click)="goToNextOrPreviousOrder('PREVIOUS')">
+    <div
+      class="left-arrow"
+      *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
+      (click)="goToNextOrPreviousOrder('PREVIOUS')"
+    >
       <img
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-left-white.svg"
         alt=""
@@ -399,7 +403,14 @@
     <div class="tab-pages">
       <div class="tab" *ngFor="let tab of tabs"></div>
     </div>
-    <div class="right-arrow" (click)="goToNextOrPreviousOrder('NEXT')">
+    <div
+      class="right-arrow"
+      *ngIf="
+        this.orderInDayIndex < this.ordersInTheSameDay.length - 1 ||
+        orderAfterOrderDay
+      "
+      (click)="goToNextOrPreviousOrder('NEXT')"
+    >
       <img
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-right-white.svg"
         alt=""
