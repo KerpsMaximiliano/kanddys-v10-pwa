@@ -59,10 +59,11 @@ export class TagsService {
     return result;
   }
 
-  async tagsByUser(): Promise<Tag[]> {
+  async tagsByUser(pagination: any = { paginate: { options: { limit: -1 } } }): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
+        variables: pagination,
         fetchPolicy: 'no-cache',
       });
       if (!result) return undefined;
