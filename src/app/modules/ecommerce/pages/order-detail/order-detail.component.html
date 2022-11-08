@@ -393,7 +393,7 @@
     colorDark="#000"
   ></qrcode>
 
-  <footer class="footer-display" [style.backgroundColor]="headerService.colorTheme">
+  <footer class="footer-display" [style.backgroundColor]="changeColor ? changeColor : headerService.colorTheme">
     <div class="pages-tabs">
       <div class="images-container">
         <img
