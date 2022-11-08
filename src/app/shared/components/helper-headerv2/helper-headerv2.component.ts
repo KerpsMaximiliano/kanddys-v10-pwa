@@ -113,6 +113,12 @@ export class HelperHeaderv2Component implements OnInit {
     color?: string;
     func?: () => void;
   };
+  @Input() tags: {
+    active: boolean;
+  } = {
+    active: false
+  }
+  @Output() tagIconClicked = new EventEmitter();
   @Input() edit?: {
     active: boolean;
     batch?: boolean;

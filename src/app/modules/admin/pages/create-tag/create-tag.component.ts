@@ -73,6 +73,8 @@ export class CreateTagComponent implements OnInit {
   startX: number;
   scrollLeft: number;
   active: number = 0;
+  entity: 'item' | 'order' = 'order';
+  entityId: string = null;
 
   constructor(
     private tagsService: TagsService,
@@ -90,22 +92,22 @@ export class CreateTagComponent implements OnInit {
   async ngOnInit() {
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        console.log(this.location.getState());
-
         const { tagId } = routeParams;
-        const { orderId } = queryParams;
+        const { orderId, entity, entityId } = queryParams;
 
         this.tagID = tagId;
         this.orderID = orderId;
+        this.entity = entity;
+        this.entityId = entityId;
 
         this.setOptionalFunctionalityList();
         await this.verifyIfUserIsLogged();
 
-        this.logged = Boolean(localStorage.getItem('logged'));
         this.hasTemporalTag = Boolean(
           localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
         );
-        if (this.tagID || this.hasTemporalTag || this.logged) this.inicializeExistingTagData();
+        if (this.tagID || this.hasTemporalTag || this.logged)
+          this.inicializeExistingTagData();
       });
     });
   }
@@ -115,6 +117,7 @@ export class CreateTagComponent implements OnInit {
     if (this.tagID) {
       const { tag } = await this.tagsService.tag(this.tagID);
 
+      /*
       if (!this.notificationService.temporalNotification)
         this.notificationService.temporalNotification = JSON.parse(
           localStorage.getItem('temporalNotification')
@@ -185,6 +188,7 @@ export class CreateTagComponent implements OnInit {
             .map((phoneObject) => phoneObject.phoneNumber)
             .join(', ');
       }
+      */
 
       if (!this.hasTemporalTag) {
         name.setValue(tag.name);
@@ -220,6 +224,7 @@ export class CreateTagComponent implements OnInit {
         }
       }
     } else if (this.hasTemporalTag) {
+      /*
       let temporalTag = this.tagsService.temporalTag;
       let temporalNotification = this.notificationService.temporalNotification;
 
@@ -264,8 +269,9 @@ export class CreateTagComponent implements OnInit {
         temporalNotification.phoneNumbers
           .map((phoneObject) => phoneObject.phoneNumber)
           .join(', ');
-
+      */
     } else if (this.logged) {
+      /*
       let temporalTag = this.tagsService.temporalTag;
 
       if (!temporalTag) {
@@ -290,6 +296,7 @@ export class CreateTagComponent implements OnInit {
           this.convertedDefaultImageToBase64 = false;
         };
       }
+      */
     }
   }
 
@@ -299,7 +306,7 @@ export class CreateTagComponent implements OnInit {
       this.logged = false;
       return;
     }
-    this.logged = true
+    this.logged = true;
     const merchantDefault = await this.merchantsService.merchantDefault();
     if (merchantDefault) this.merchantDefault = merchantDefault;
     else return;
@@ -333,11 +340,15 @@ export class CreateTagComponent implements OnInit {
   }
 
   handleImageInput(value: any, operation: 'ADD' | 'DELETE') {
-    if (operation === 'ADD' && value instanceof FileList)
-      this.createTagForm.controls.images.setValue(value[0], {
+    if (operation === 'ADD' && value instanceof FileList) {
+      const myNewFile = new File([value[0]], 'new_name.png', {
+        type: value[0].type,
+      });
+
+      this.createTagForm.controls.images.setValue(myNewFile, {
         emitEvent: false,
       });
-    else {
+    } else {
       this.createTagForm.controls.images.setValue([''], {
         emitEvent: false,
       });
@@ -374,7 +385,6 @@ export class CreateTagComponent implements OnInit {
     if (images.value && this.tagID && this.convertedDefaultImageToBase64) {
       data.images = base64ToFile(images.value) as any;
 
-      console.log(data.images);
       isImageAFile = true;
     }
 
@@ -386,6 +396,7 @@ export class CreateTagComponent implements OnInit {
     if (!this.tagID || this.tagID.length < 1) {
       const { _id: createdTagId } = await this.tagsService.createTag(data);
 
+      /*
       if (this.hasTemporalTag) {
         const { _id: createdNotificationId } =
           await this.notificationService.createNotification(
@@ -398,6 +409,7 @@ export class CreateTagComponent implements OnInit {
           createdTagId
         );
       }
+      */
 
       localStorage.removeItem('temporalTag');
       localStorage.removeItem('logged');
@@ -409,7 +421,10 @@ export class CreateTagComponent implements OnInit {
       if (this.orderID) {
         this.router.navigate(['ecommerce/order-info/' + this.orderID]);
       } else {
-        this.router.navigate(['admin/items-dashboard']);
+        if (this.entity === 'item') {
+          this.router.navigate(['admin/item-display/' + this.entityId]);
+        }
+        if (!this.entity) this.router.navigate(['admin/items-dashboard']);
       }
 
       this.toastr.info('Tag creado exitosamente', null, {
@@ -418,6 +433,7 @@ export class CreateTagComponent implements OnInit {
     } else {
       data.merchant = this.merchantDefault._id;
 
+      /*
       if (this.notificationService.temporalNotification) {
         const notificationId =
           this.notificationService.temporalNotification._id;
@@ -426,14 +442,16 @@ export class CreateTagComponent implements OnInit {
           this.notificationService.temporalNotification,
           notificationId
         );
-      }
+      }*/
 
       result = await this.tagsService.updateTag(data, this.tagID);
 
       this.finishedMutation = true;
 
       if (result) {
+        /*
         this.notificationService.temporalNotification = null;
+        */
 
         let redirectionRoute = this.orderID
           ? 'ecommerce/order-info/' + this.orderID
@@ -650,12 +668,13 @@ export class CreateTagComponent implements OnInit {
       localStorage.setItem('temporalTag', JSON.stringify(temporalTag));
     }
 
+    /*
     if (this.tagID && this.notificationService.temporalNotification) {
       localStorage.setItem(
         'temporalNotification',
         JSON.stringify(this.notificationService.temporalNotification)
       );
-    }
+    }*/
 
     redirectionRoute ? this.router.navigate([redirectionRoute]) : null;
   }
@@ -716,7 +735,7 @@ export class CreateTagComponent implements OnInit {
 
     this.headerService.flowRoute = null;
     this.tagsService.temporalTag = null;
-    this.notificationService.temporalNotification = null;
+    //this.notificationService.temporalNotification = null;
 
     if (redirectionRoute.includes('items-dashboard')) {
       localStorage.removeItem('flowRoute');

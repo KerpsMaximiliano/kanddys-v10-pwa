@@ -17,14 +17,14 @@ import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
 
 interface TagContainer extends TagInput {
-   orderId?: string;
- }
+  orderId?: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class TagsService {
-   temporalTag: TagContainer = null;
+  temporalTag: TagContainer = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -32,6 +32,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: updateTag,
       variables: { input, tagId },
+      context: {
+        useMultipart: true,
+      },
     });
     console.log('Intentando updateTags');
 
@@ -45,6 +48,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
+      context: {
+        useMultipart: true,
+      },
     });
 
     if (!result || result?.errors) return undefined;
@@ -146,7 +152,7 @@ export class TagsService {
     }
   }
 
-  async tag(tagId: string): Promise<{ tag: Tag }>  {
+  async tag(tagId: string): Promise<{ tag: Tag }> {
     try {
       const result = await this.graphql.query({
         query: tag,
@@ -160,15 +166,15 @@ export class TagsService {
     }
   }
 
-  async tags(paginate: PaginationInput){
-    try{
-       const result = await this.graphql.query({
-          query: tags,
-          variables: { paginate },
-       });
-       return result;
+  async tags(paginate: PaginationInput) {
+    try {
+      const result = await this.graphql.query({
+        query: tags,
+        variables: { paginate },
+      });
+      return result;
     } catch (e) {
-       console.log(e);
-    };
-   };
+      console.log(e);
+    }
+  }
 }

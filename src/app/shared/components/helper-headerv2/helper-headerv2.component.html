@@ -141,6 +141,17 @@
           </ng-container>
 
           <div
+            class="tag-icon"
+            *ngIf="tags.active"
+            (click)="tagIconClicked.emit()"
+          >
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/bookmark-checked.svg"
+              alt="add tags"
+            />
+          </div>
+
+          <div
             class="dot-trio"
             *ngIf="dots?.active"
             (click)="dotAction($event)"

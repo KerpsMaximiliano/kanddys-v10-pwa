@@ -96,6 +96,8 @@ export const tag = gql`
     tag(tagId: $tagId) {
       _id
       name
+      images
+      status
     }
   }
 `;

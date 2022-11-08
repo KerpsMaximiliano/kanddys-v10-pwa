@@ -19,11 +19,13 @@ export class TagsSelectorComponent implements OnInit {
   @Input('selectedFilter') selectedFilter: string = 'brightness(2)';
   @Input('color') color: string = '#fff';
   @Input('selectedColor') selectedColor: string = '#2874ad';
+  @Input('outputAllSelectedTags') outputAllSelectedTags: boolean = false;
   @Input('useAlternativeOutput') useAlternativeOutput: boolean;
   env: string = environment.assetsUrl;
 
   @Output() tagSelect: EventEmitter<any> = new EventEmitter();
   @Output() tagSelect2: EventEmitter<any> = new EventEmitter();
+  @Output() tagSelect3: EventEmitter<any> = new EventEmitter();
 
   setTag(tag): void {
     if (this.useIdToRemoveOrAddTags) {
@@ -42,7 +44,13 @@ export class TagsSelectorComponent implements OnInit {
       }
     }
 
-    this.tagSelected(tag, this.tag.includes(tag));
+    if (!this.outputAllSelectedTags)
+      this.tagSelected(tag, this.tag.includes(tag));
+    else {
+      this.tagSelect3.emit({
+        selectedTags: this.tag,
+      });
+    }
   }
 
   tagSelected(args: any, selected: boolean) {
@@ -57,7 +65,6 @@ export class TagsSelectorComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log(this.tags);
     if (
       this.multipleTags &&
       ((this.activeTags && this.activeTags !== undefined) ||
@@ -69,6 +76,7 @@ export class TagsSelectorComponent implements OnInit {
 
   discriminator(id: string) {
     this.tags.forEach((tag) => {
+      console.log(tag[id]);
       this.activeTags.includes(tag[id]) ? this.tag.push(tag[id]) : null;
     });
   }

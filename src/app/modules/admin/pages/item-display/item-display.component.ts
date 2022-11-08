@@ -23,6 +23,10 @@ import {
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { TagsService } from 'src/app/core/services/tags.service';
+import { Tag } from 'src/app/core/models/tags';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -41,6 +45,7 @@ export class ItemDisplayComponent implements OnInit {
   totalByItem: any;
   env: string = environment.assetsUrl;
   notifications: ExtraNotification[];
+  selectedTags: Array<string>;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,7 +58,8 @@ export class ItemDisplayComponent implements OnInit {
     private headerService: HeaderService,
     private notificationsService: NotificationsService,
     private clipboard: Clipboard,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private tagsService: TagsService
   ) {}
 
   swiperConfig: SwiperOptions = {
@@ -405,6 +411,63 @@ export class ItemDisplayComponent implements OnInit {
 
     this.itemsService.temporalItem = null;
     this.router.navigate(['/admin/create-item/' + this.item._id]);
+  };
+
+  openTagsDialog = async () => {
+    this.selectedTags = [];
+    const userTags = await this.tagsService.tagsByUser();
+    const itemTags = (
+      await this.tagsService.tags({
+        options: {
+          limit: -1,
+        },
+        findBy: {
+          id: {
+            __in: this.item.tags,
+          },
+        },
+      })
+    ).tags;
+
+    this.dialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        text: 'SALVAR LOS TAGS EN EL ITEM',
+        tags: userTags,
+        //orderId: this.order._id,
+        entity: 'item',
+        entityId: this.item._id,
+        activeTags:
+          itemTags && Array.isArray(itemTags)
+            ? itemTags.map((tag) => tag._id)
+            : null,
+        tagAction: async ({ selectedTags }) => {
+          this.selectedTags = selectedTags;
+        },
+        ctaAction: async (params) => {
+          try {
+            const response = await this.itemsService.updateItem(
+              {
+                tags: this.selectedTags,
+              },
+              this.item._id
+            );
+
+            if (response) {
+              this.toastr.info('Tags asignados al item', null, {
+                timeOut: 1000,
+              });
+            }
+          } catch (error) {
+            this.toastr.error('Error al asignar tags', null, {
+              timeOut: 1000,
+            });
+          }
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   };
 
   copyLink() {
