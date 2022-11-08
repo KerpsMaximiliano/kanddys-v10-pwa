@@ -57,12 +57,20 @@ export class OrdersAndPreOrdersList implements OnInit {
   selectedTagsPermanent: Array<Tag> = [];
   unselectedTags: Array<Tag> = [];
   tagGroups: Array<TagGroup> = [];
+  permanentOrdersTagGroups: Array<TagGroup> = [];
+  permanentPreOrdersTagGroups: Array<TagGroup> = [];
   highlightedOrders: Array<ItemOrder> = [];
+  highlightedOrdersPermanent: Array<ItemOrder> = [];
+  highlightedPreOrdersPermanent: Array<ItemOrder> = [];
   highlightedOrdersIncome: number = 0;
   tagsHashTable: Record<string, Tag> = {};
   ordersList: ItemOrder[] = [];
   ordersWithoutTags: ItemOrder[] = [];
+  ordersWithoutTagsPermanent: ItemOrder[] = [];
+  preordersWithoutTagsPermanent: ItemOrder[] = [];
   ordersWithoutTagsIncome: number = 0;
+  ordersWithoutTagsIncomePermanent: number = 0;
+  preordersWithoutTagsIncomePermanent: number = 0;
   defaultMerchant: Merchant;
   ordersByMerchantLimit: number = 6000;
   ordersByMerchantSortOrder: 'asc' | 'desc' = 'desc';
@@ -107,7 +115,7 @@ export class OrdersAndPreOrdersList implements OnInit {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
       if (
         this.paginationState.status === 'complete' &&
-        this.selectedTags.length > 0 &&
+        (this.selectedTags.length > 0 || this.searchBar.value !== '') &&
         !this.justShowHighlightedOrders
       ) {
         this.loadOrdersAssociatedToTag(false, true);
@@ -115,7 +123,7 @@ export class OrdersAndPreOrdersList implements OnInit {
 
       if (
         this.paginationState.status === 'complete' &&
-        this.selectedTags.length > 0 &&
+        (this.selectedTags.length > 0 || this.searchBar.value !== '') &&
         this.justShowHighlightedOrders
       ) {
         this.loadHighlightedOrders(false, true);
@@ -152,13 +160,10 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.tags = tags;
       this.unselectedTags = [...this.tags];
 
-      await this.getOrdersWithoutTagsIncome();
-
+      await this.inicializeOrdersWithoutTagsIncome();
       await this.getHighlightedOrdersIncome();
 
       //Fills an object or hash table for fast access to each tag by its id
-
-      await this.organizeTagsGroups();
 
       this.typeOfList = type.replace('%20');
 
@@ -174,31 +179,99 @@ export class OrdersAndPreOrdersList implements OnInit {
 
   async loadOrders() {
     const ordersByMerchantPerTagPromises = [];
-
+    const opposite =
+      this.typeOfList === 'facturas' ? 'prefacturas' : 'facturas';
+    //first loads orders by facturas or prefacturas
+    await this.organizeTagsGroups();
     for (const tagGroup of this.tagGroups) {
       ordersByMerchantPerTagPromises.push(
-        this.loadFirstsOrdersForTagGroup(tagGroup.tag)
+        this.loadFirstsOrdersForTagGroup(tagGroup.tag, this.typeOfList)
       );
-    }
-
-    const highlightedOrders = await this.loadFirstsHighlightedOrders();
-
-    if (highlightedOrders) {
-      this.highlightedOrders = highlightedOrders;
     }
 
     this.tagGroups = [];
     for await (const orderByMerchantResponse of ordersByMerchantPerTagPromises) {
-      if ('orders' in orderByMerchantResponse)
+      if ('orders' in orderByMerchantResponse) {
         this.tagGroups.push(orderByMerchantResponse);
+
+        if (this.typeOfList === 'facturas')
+          this.permanentOrdersTagGroups.push(orderByMerchantResponse);
+        else this.permanentPreOrdersTagGroups.push(orderByMerchantResponse);
+      }
     }
 
-    await this.loadOrdersWithoutTags();
+    this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+
+    let highlightedOrders = await this.loadFirstsHighlightedOrders(
+      this.typeOfList
+    );
+
+    if (highlightedOrders) {
+      this.highlightedOrders = highlightedOrders;
+
+      if (this.typeOfList === 'facturas')
+        this.highlightedOrdersPermanent = highlightedOrders;
+      else this.highlightedPreOrdersPermanent = highlightedOrders;
+    }
+
+    this.ordersWithoutTags = await this.loadOrdersWithoutTags(this.typeOfList);
+
+    if (this.typeOfList === 'facturas') {
+      this.ordersWithoutTagsPermanent = [...this.ordersWithoutTags];
+    } else {
+      this.preordersWithoutTagsPermanent = [...this.ordersWithoutTags];
+    }
+
+    //then does the same for the opposite(if typeOflist === facturas, its oposite is prefacturas)
+    const oppositeOrdersByMerchantPerTagPromises = [];
+    for (const tagGroup of this.tagGroups) {
+      oppositeOrdersByMerchantPerTagPromises.push(
+        this.loadFirstsOrdersForTagGroup(tagGroup.tag, opposite)
+      );
+    }
+
+    for await (const orderByMerchantResponse of oppositeOrdersByMerchantPerTagPromises) {
+      if ('orders' in orderByMerchantResponse) {
+        if (opposite === 'facturas')
+          this.permanentOrdersTagGroups.push(orderByMerchantResponse);
+        else this.permanentPreOrdersTagGroups.push(orderByMerchantResponse);
+      }
+    }
+
+    if (opposite === 'facturas')
+      this.permanentOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+        this.permanentOrdersTagGroups
+      );
+    else
+      this.permanentPreOrdersTagGroups = await this.getPermanentTagGroupsIncome(
+        this.permanentPreOrdersTagGroups
+      );
+
+    highlightedOrders = await this.loadFirstsHighlightedOrders(opposite);
+
+    if (highlightedOrders) {
+      if (opposite === 'facturas')
+        this.highlightedOrdersPermanent = highlightedOrders;
+      else this.highlightedPreOrdersPermanent = highlightedOrders;
+    }
+
+    const oppositeOrdersWithoutTags = await this.loadOrdersWithoutTags(
+      opposite
+    );
+
+    if (opposite === 'facturas') {
+      this.ordersWithoutTagsPermanent = [...oppositeOrdersWithoutTags];
+    } else {
+      this.preordersWithoutTagsPermanent = [...oppositeOrdersWithoutTags];
+    }
 
     this.loadingStatus = 'complete';
   }
 
-  loadFirstsOrdersForTagGroup = async (tag: Tag): Promise<any> => {
+  loadFirstsOrdersForTagGroup = async (
+    tag: Tag,
+    typeOfList: string
+  ): Promise<any> => {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
         sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
@@ -206,7 +279,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       },
       findBy: {
         orderStatus:
-          this.typeOfList === 'facturas'
+          typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
             : 'draft',
         tags: [tag._id],
@@ -222,7 +295,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       findBy: {
         merchant: this.merchantsService.merchantData._id,
         orderStatus:
-          this.typeOfList === 'facturas'
+          typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
             : 'draft',
         tags: [tag._id],
@@ -236,7 +309,9 @@ export class OrdersAndPreOrdersList implements OnInit {
     };
   };
 
-  loadFirstsHighlightedOrders = async (): Promise<Array<ItemOrder>> => {
+  loadFirstsHighlightedOrders = async (
+    typeOfList: string
+  ): Promise<Array<ItemOrder>> => {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
         sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
@@ -244,7 +319,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       },
       findBy: {
         orderStatus:
-          this.typeOfList === 'facturas'
+          typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
             : 'draft',
         'status.status': 'featured',
@@ -268,6 +343,14 @@ export class OrdersAndPreOrdersList implements OnInit {
         orders: [],
       });
 
+      this.tagsHashTable[tag._id] = tag;
+    }
+  }
+
+  async getPermanentTagGroupsIncome(
+    tagGroups: Array<TagGroup>
+  ): Promise<Array<TagGroup>> {
+    for await (const tagGroup of tagGroups) {
       const income = await this.merchantsService.incomeMerchant({
         findBy: {
           merchant: this.merchantsService.merchantData._id,
@@ -275,17 +358,17 @@ export class OrdersAndPreOrdersList implements OnInit {
             this.typeOfList === 'facturas'
               ? ['in progress', 'to confirm', 'completed']
               : 'draft',
-          tags: [tag._id],
+          tags: [tagGroup.tag._id],
         },
       });
 
-      this.tagGroups[this.tagGroups.length - 1].income = income;
-
-      this.tagsHashTable[tag._id] = tag;
+      tagGroup.income = income;
     }
+
+    return tagGroups;
   }
 
-  async loadOrdersWithoutTags() {
+  async loadOrdersWithoutTags(typeOfList: string): Promise<Array<ItemOrder>> {
     const ordersByMerchantPagination: PaginationInput = {
       options: {
         sortBy: `${this.ordersByMerchantSortField}:${this.ordersByMerchantSortOrder}`,
@@ -293,7 +376,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       },
       findBy: {
         orderStatus:
-          this.typeOfList === 'facturas'
+          typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
             : 'draft',
         tags: {
@@ -308,8 +391,10 @@ export class OrdersAndPreOrdersList implements OnInit {
     );
 
     if (ordersByMerchant) {
-      this.ordersWithoutTags = ordersByMerchant;
+      return ordersByMerchant;
     }
+
+    return [];
   }
 
   async loadOrdersAssociatedToTag(
@@ -606,10 +691,21 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.matchingOrdersTotalCounter = null;
     this.ordersIncomeForMatchingOrders = null;
     this.searchBar.setValue('');
-    await this.organizeTagsGroups();
     await this.getHighlightedOrdersIncome();
-    await this.getOrdersWithoutTagsIncome();
-    await this.loadOrders();
+
+    if (option === 'facturas') {
+      this.tagGroups = [...this.permanentOrdersTagGroups];
+      this.highlightedOrders = [...this.highlightedOrdersPermanent];
+      this.ordersWithoutTags = [...this.ordersWithoutTagsPermanent];
+      this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+      this.ordersWithoutTagsIncome = this.ordersWithoutTagsIncomePermanent;
+    } else {
+      this.tagGroups = [...this.permanentPreOrdersTagGroups];
+      this.highlightedOrders = [...this.highlightedPreOrdersPermanent];
+      this.ordersWithoutTags = [...this.preordersWithoutTagsPermanent];
+      this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+      this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
+    }
   }
 
   handleTag(selectedTag: Tag): void {
@@ -810,12 +906,31 @@ export class OrdersAndPreOrdersList implements OnInit {
       this.highlightedOrdersIncome = highlightedOrdersIncomeWithoutTags;
   }
 
-  async getOrdersWithoutTagsIncome() {
+  async inicializeOrdersWithoutTagsIncome() {
+    const opposite =
+      this.typeOfList === 'facturas' ? 'prefacturas' : 'facturas';
+    this.ordersWithoutTagsIncome = await this.getOrdersWithoutTagsIncome(
+      this.typeOfList
+    );
+    const oppositeWithoutTagsIncome = await this.getOrdersWithoutTagsIncome(
+      opposite
+    );
+
+    if (this.typeOfList === 'facturas') {
+      this.ordersWithoutTagsIncomePermanent = this.ordersWithoutTagsIncome;
+      this.preordersWithoutTagsIncomePermanent = oppositeWithoutTagsIncome;
+    } else {
+      this.preordersWithoutTagsIncomePermanent = this.ordersWithoutTagsIncome;
+      this.ordersWithoutTagsIncomePermanent = oppositeWithoutTagsIncome;
+    }
+  }
+
+  async getOrdersWithoutTagsIncome(typeOfList: string): Promise<number> {
     const ordersIncomeWithoutTags = await this.merchantsService.incomeMerchant({
       findBy: {
         merchant: this.merchantsService.merchantData._id,
         orderStatus:
-          this.typeOfList === 'facturas'
+          typeOfList === 'facturas'
             ? ['in progress', 'to confirm', 'completed']
             : 'draft',
         tags: [],
@@ -823,7 +938,9 @@ export class OrdersAndPreOrdersList implements OnInit {
     });
 
     if (typeof ordersIncomeWithoutTags === 'number')
-      this.ordersWithoutTagsIncome = ordersIncomeWithoutTags;
+      return ordersIncomeWithoutTags;
+
+    return 0;
   }
 
   changeOrderStatus(status: OrderStatusType2, order: ItemOrder) {
