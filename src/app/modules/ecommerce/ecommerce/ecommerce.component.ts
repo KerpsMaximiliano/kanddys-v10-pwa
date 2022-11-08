@@ -24,7 +24,7 @@ export class EcommerceComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dialogService: DialogService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private appService: AppService
   ) {
@@ -34,6 +34,7 @@ export class EcommerceComponent implements OnInit {
         this.allowMultipleItems =
           this.headerService.saleflow.canBuyMultipleItems;
         this.getOrder();
+        this.setColorScheme();
       },
     });
   }
@@ -56,7 +57,16 @@ export class EcommerceComponent implements OnInit {
       )
       .subscribe((e) => {
         this.getItemsAmount();
+        if (e.data) this.setColorScheme();
       });
+  }
+
+  setColorScheme() {
+    this.headerService.colorTheme =
+      this.headerService.user?._id ===
+      this.headerService.saleflow?.merchant?.owner?._id
+        ? '#2874AD'
+        : '#272727';
   }
 
   getOrder() {

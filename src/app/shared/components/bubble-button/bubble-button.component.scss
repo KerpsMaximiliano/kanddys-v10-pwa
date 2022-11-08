@@ -47,6 +47,18 @@ button {
             background-color: #3e90cf;
         }
     }
+
+    &.black{
+      background-color: #272727;
+           color: #FFFFFF;
+   
+           img {
+               filter: brightness(5) !important;
+           }
+           &:hover {
+               background-color: #3f3f3f;
+           }
+   }
 }
     
 .right{
@@ -103,4 +115,8 @@ button {
     font-family: 'SfProMedium';
     font-size: 14px;
     margin: 4px 0 0;
+}
+
+.custom{
+   border: none;
 }
