@@ -2,7 +2,7 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [bgColor]="headerService.colorTheme"
+    [bgColor]="changeColor ? changeColor : headerService.colorTheme"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -381,7 +381,7 @@
     </section>
   </main>
 
-  <footer class="footer-display" [style.backgroundColor]="headerService.colorTheme">
+  <footer class="footer-display" [style.backgroundColor]=" changeColor ? changeColor : headerService.colorTheme">
     <div class="pages-tabs">
       <div class="images-container">
         <img

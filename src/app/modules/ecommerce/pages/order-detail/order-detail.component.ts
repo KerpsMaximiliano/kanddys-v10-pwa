@@ -44,6 +44,8 @@ export class OrderDetailComponent implements OnInit {
   post: Post;
   payment: number;
   merchant: boolean;
+  merchantOwner: boolean;
+  changeColor: string;
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -422,7 +424,7 @@ export class OrderDetailComponent implements OnInit {
       customClass: 'app-dialog',
       flags: ['no-header'],
       props: {
-         title: 'Compartir esta Orden',
+        title: 'Compartir esta Orden',
         optionsList: [
           {
             text: 'Compartir',
@@ -433,12 +435,21 @@ export class OrderDetailComponent implements OnInit {
               });
             },
           },
-          {
-            text: 'Vista del Visitante',
-            callback: () => {
-               console.log('A la vista del visitante. No se cual es :/');
-            }
-          },
+          this.merchantOwner
+            ? {
+                text: this.merchant
+                  ? 'Vista del Visitante'
+                  : 'Volver a la vista del merchant',
+                callback: () => {
+                  this.merchant
+                    ? (this.merchant = !this.merchant)
+                    : this.merchant = true;
+                  this.merchant
+                    ? (this.changeColor = '#2874AD')
+                    : (this.changeColor = '#272727');
+                },
+              }
+            : null,
         ],
       },
     });
@@ -608,6 +619,7 @@ export class OrderDetailComponent implements OnInit {
   async isMerchantOwner(merchant: string) {
     const ismerchant = await this.merchantsService.merchantDefault();
     this.merchant = merchant === ismerchant?._id;
+    this.merchantOwner = true;
   }
 
   mouseDown: boolean;
