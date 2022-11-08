@@ -421,24 +421,26 @@ export class OrderDetailComponent implements OnInit {
     let closestOrderDayAfterCurrentOrderCreationDate = null;
 
     //I SHOULD MOVE ON FROM HERE
-    /*
-    if(getOrdersFromThePreviousDay) {
+    if (getOrdersFromThePreviousDay) {
       const pagination: PaginationInput = {
         options: {
           range: {
-            from: 
+            to: this.currentDayOrdersRange.fromISO,
           },
           limit: -1,
         },
       };
-  
+
       const { ordersByMerchant: ordersInTheSameDay } =
         await this.merchantsService.ordersByMerchant(
           this.orderMerchant._id,
           pagination
         );
+
+      console.log(ordersInTheSameDay);
     }
 
+    /*
     if (getOrdersFromThePreviousDay) {
       this.currentDayOrdersRange = {
         fromISO: moment(closestOrderDayBeforeCurrentOrderCreationDate)
@@ -471,8 +473,11 @@ export class OrderDetailComponent implements OnInit {
       };
     }*/
 
+    /*
     let from = this.currentDayOrdersRange.fromISO;
     let to = this.currentDayOrdersRange.toISO;
+
+    console.log(from, to);
     const range = {
       from: from,
       to: to,
@@ -522,6 +527,7 @@ export class OrderDetailComponent implements OnInit {
         this.ordersInTheSameDay[this.orderInDayIndex]._id
       );
     }
+    */
   }
 
   goToNextOrPreviousOrder(direction: 'NEXT' | 'PREVIOUS') {
