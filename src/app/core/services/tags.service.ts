@@ -59,7 +59,9 @@ export class TagsService {
     return result;
   }
 
-  async tagsByUser(pagination: any = { paginate: { options: { limit: -1 } } }): Promise<Tag[]> {
+  async tagsByUser(
+    pagination: any = { paginate: { options: { limit: -1 } } }
+  ): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
@@ -158,6 +160,7 @@ export class TagsService {
       const result = await this.graphql.query({
         query: tag,
         variables: { tagId },
+        fetchPolicy: 'no-cache',
       });
 
       console.log(result);

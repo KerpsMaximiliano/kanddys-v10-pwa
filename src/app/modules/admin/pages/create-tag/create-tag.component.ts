@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -35,6 +35,7 @@ import {
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { Subscription } from 'rxjs';
 
 export function imagesValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -48,7 +49,7 @@ export function imagesValidator(): ValidatorFn {
   templateUrl: './create-tag.component.html',
   styleUrls: ['./create-tag.component.scss'],
 })
-export class CreateTagComponent implements OnInit {
+export class CreateTagComponent implements OnInit, OnDestroy {
   env: string = environment.assetsUrl;
   user: User;
   logged: boolean;
@@ -76,6 +77,8 @@ export class CreateTagComponent implements OnInit {
   active: number = 0;
   entity: 'item' | 'order' = 'order';
   entityId: string = null;
+  routeParamsSubscription: Subscription;
+  routeQueryParamsSubscription: Subscription;
 
   constructor(
     private tagsService: TagsService,
@@ -92,26 +95,30 @@ export class CreateTagComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.route.params.subscribe(async (routeParams) => {
-      this.route.queryParams.subscribe(async (queryParams) => {
-        const { tagId } = routeParams;
-        const { orderId, entity, entityId } = queryParams;
+    this.routeParamsSubscription = this.route.params.subscribe(
+      async (routeParams) => {
+        this.routeQueryParamsSubscription = this.route.queryParams.subscribe(
+          async (queryParams) => {
+            const { tagId } = routeParams;
+            const { orderId, entity, entityId } = queryParams;
 
-        this.tagID = tagId;
-        this.orderID = orderId;
-        this.entity = entity;
-        this.entityId = entityId;
+            this.tagID = tagId;
+            this.orderID = orderId;
+            this.entity = entity;
+            this.entityId = entityId;
 
-        this.setOptionalFunctionalityList();
-        await this.verifyIfUserIsLogged();
+            this.setOptionalFunctionalityList();
+            await this.verifyIfUserIsLogged();
 
-        this.hasTemporalTag = Boolean(
-          localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
+            this.hasTemporalTag = Boolean(
+              localStorage.getItem('preloadTemporalNotificationAndTemporalTag')
+            );
+            if (this.tagID || this.hasTemporalTag || this.logged)
+              this.inicializeExistingTagData();
+          }
         );
-        if (this.tagID || this.hasTemporalTag || this.logged)
-          this.inicializeExistingTagData();
-      });
-    });
+      }
+    );
   }
 
   async inicializeExistingTagData() {
@@ -119,7 +126,6 @@ export class CreateTagComponent implements OnInit {
     if (this.tagID) {
       const { tag } = await this.tagsService.tag(this.tagID);
 
-      /*
       if (!this.notificationService.temporalNotification)
         this.notificationService.temporalNotification = JSON.parse(
           localStorage.getItem('temporalNotification')
@@ -190,7 +196,6 @@ export class CreateTagComponent implements OnInit {
             .map((phoneObject) => phoneObject.phoneNumber)
             .join(', ');
       }
-      */
 
       if (!this.hasTemporalTag) {
         name.setValue(tag.name);
@@ -805,5 +810,10 @@ export class CreateTagComponent implements OnInit {
     const x = e.pageX - el.offsetLeft;
     const scroll = x - this.startX;
     el.scrollLeft = this.scrollLeft - scroll;
+  }
+
+  ngOnDestroy(): void {
+    this.routeParamsSubscription.unsubscribe();
+    this.routeQueryParamsSubscription.unsubscribe();
   }
 }
