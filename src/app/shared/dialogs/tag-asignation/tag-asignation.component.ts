@@ -23,9 +23,12 @@ export class TagAsignationComponent implements OnInit {
   @Input() entityId: string = null;
   background: string = '#2874ad';
   @Input('text') text: string = '';
+  @Input('loadingText') loadingText: string = 'ESPERE...';
+  @Input('untouchedActionText') untouchedActionText: string = null;
   @Input() orderId: string = null;
   @Input() public tagAction: (args?: any) => any;
   @Input() public ctaAction: (args?: any) => any;
+  blockCta: boolean = false;
 
   constructor(
     private router: Router,
@@ -33,9 +36,7 @@ export class TagAsignationComponent implements OnInit {
     private headerService: HeaderService
   ) {}
 
-  ngOnInit(): void {
-    console.log(this.tags);
-  }
+  ngOnInit(): void {}
 
   goToCreateTag() {
     if (this.headerService.flowRoute)
@@ -69,8 +70,16 @@ export class TagAsignationComponent implements OnInit {
     this.ref.close();
   }
 
-  submit = () => {
-    this.ctaAction();
+  selectTagHandler(eventData: any) {
+    this.untouchedActionText = null;
+    this.blockCta = true;
+    this.tagAction(eventData);
+  }
+
+  submit = async () => {
+    this.blockCta = false;
+    await this.ctaAction();
+    this.blockCta = true;
     this.ref.close();
   };
 }

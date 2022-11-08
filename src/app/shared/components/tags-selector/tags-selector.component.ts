@@ -76,7 +76,6 @@ export class TagsSelectorComponent implements OnInit {
 
   discriminator(id: string) {
     this.tags.forEach((tag) => {
-      console.log(tag[id]);
       this.activeTags.includes(tag[id]) ? this.tag.push(tag[id]) : null;
     });
   }

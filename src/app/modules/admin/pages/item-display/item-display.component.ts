@@ -46,6 +46,7 @@ export class ItemDisplayComponent implements OnInit {
   env: string = environment.assetsUrl;
   notifications: ExtraNotification[];
   selectedTags: Array<string>;
+  tagsAsignationOnStart: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -70,25 +71,33 @@ export class ItemDisplayComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      lockUI();
-      this.item = await this.itemsService.item(params.itemId);
-      if (!this.item) return this.redirect();
-      if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
-        return this.redirect();
-      if (this.item.images.length > 1)
-        this.swiperConfig.pagination = {
-          el: '.swiper-pagination',
-          type: 'bullets',
-          clickable: true,
-        };
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { tagsAsignationOnStart } = queryParams;
 
-      this.shouldRedirectToPreviousPage = true;
-      await Promise.all([
-        this.getTotalByItem(this.item._id),
-        this.getBuyersByItem(this.item._id),
-        this.getNotifications(),
-      ]);
-      unlockUI();
+        if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
+
+        lockUI();
+        this.item = await this.itemsService.item(params.itemId);
+        if (!this.item) return this.redirect();
+        if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
+          return this.redirect();
+        if (this.item.images.length > 1)
+          this.swiperConfig.pagination = {
+            el: '.swiper-pagination',
+            type: 'bullets',
+            clickable: true,
+          };
+
+        this.shouldRedirectToPreviousPage = true;
+        await Promise.all([
+          this.getTotalByItem(this.item._id),
+          this.getBuyersByItem(this.item._id),
+          this.getNotifications(),
+        ]);
+        unlockUI();
+
+        if (this.tagsAsignationOnStart) await this.openTagsDialog();
+      });
     });
   }
 
@@ -292,7 +301,11 @@ export class ItemDisplayComponent implements OnInit {
         queryParams: { type: 'item' },
       });
     } else {
-      this.router.navigate([this.headerService.flowRoute]);
+      if (this.headerService.flowRoute) {
+        this.router.navigate([this.headerService.flowRoute]);
+      } else {
+        this.router.navigate(['admin/entity-detail-metrics']);
+      }
     }
   }
 
@@ -433,6 +446,8 @@ export class ItemDisplayComponent implements OnInit {
       type: 'fullscreen-translucent',
       props: {
         text: 'SALVAR LOS TAGS EN EL ITEM',
+        loadingText: 'ESPERE...',
+        untouchedActionText: 'SELECCIONE LOS TAGS QUE DESEE ASIGNAR AL ITEM',
         tags: userTags,
         //orderId: this.order._id,
         entity: 'item',
@@ -454,6 +469,8 @@ export class ItemDisplayComponent implements OnInit {
             );
 
             if (response) {
+              this.item.tags = this.selectedTags;
+
               this.toastr.info('Tags asignados al item', null, {
                 timeOut: 1000,
               });

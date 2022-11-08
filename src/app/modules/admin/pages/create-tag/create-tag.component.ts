@@ -34,6 +34,7 @@ import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { ItemsService } from 'src/app/core/services/items.service';
 
 export function imagesValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -86,6 +87,7 @@ export class CreateTagComponent implements OnInit {
     private notificationService: NotificationsService,
     private toastr: ToastrService,
     private route: ActivatedRoute,
+    private itemsService: ItemsService,
     private location: Location
   ) {}
 
@@ -201,6 +203,7 @@ export class CreateTagComponent implements OnInit {
           images.setValue(tag.images[0]);
         }
       } else {
+        /*
         let temporalTag = this.tagsService.temporalTag;
         console.log(temporalTag.images);
 
@@ -222,6 +225,7 @@ export class CreateTagComponent implements OnInit {
             console.log('Error: ', error);
           };
         }
+        */
       }
     } else if (this.hasTemporalTag) {
       /*
@@ -394,42 +398,52 @@ export class CreateTagComponent implements OnInit {
 
     let result = null;
     if (!this.tagID || this.tagID.length < 1) {
-      const { _id: createdTagId } = await this.tagsService.createTag(data);
-
-      /*
-      if (this.hasTemporalTag) {
-        const { _id: createdNotificationId } =
-          await this.notificationService.createNotification(
-            this.notificationToAdd
-          );
-
-        await this.notificationService.addNotificationInTag(
-          this.merchantDefault._id,
-          createdNotificationId,
-          createdTagId
+      try {
+        const { createTag: createdTag } = await this.tagsService.createTag(
+          data
         );
-      }
-      */
 
-      localStorage.removeItem('temporalTag');
-      localStorage.removeItem('logged');
-      localStorage.removeItem('temporalNotification');
-      localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
+        this.finishedMutation = true;
 
-      this.finishedMutation = true;
+        if (this.orderID) {
+          this.router.navigate(['ecommerce/order-info/' + this.orderID]);
+        } else {
+          if (this.entity === 'item') {
+            const item = await this.itemsService.item(this.entityId);
+            const tagsUpdated = [...item.tags];
+            tagsUpdated.push(createdTag._id);
 
-      if (this.orderID) {
-        this.router.navigate(['ecommerce/order-info/' + this.orderID]);
-      } else {
-        if (this.entity === 'item') {
-          this.router.navigate(['admin/item-display/' + this.entityId]);
+            await this.itemsService.updateItem(
+              {
+                tags: tagsUpdated,
+              },
+              this.entityId
+            );
+
+            this.router.navigate(['admin/item-display/' + this.entityId], {
+              queryParams: {
+                tagsAsignationOnStart: true,
+              },
+            });
+          }
+          if (!this.entity) this.router.navigate(['admin/items-dashboard']);
         }
-        if (!this.entity) this.router.navigate(['admin/items-dashboard']);
-      }
 
-      this.toastr.info('Tag creado exitosamente', null, {
-        timeOut: 1500,
-      });
+        this.toastr.info('Tag creado exitosamente', null, {
+          timeOut: 1500,
+        });
+        /*
+          localStorage.removeItem('temporalTag');
+          localStorage.removeItem('logged');
+          localStorage.removeItem('temporalNotification');
+          localStorage.removeItem('preloadTemporalNotificationAndTemporalTag');
+        */
+      } catch (error) {
+        console.error(error);
+        this.toastr.info('Ocurrió un error al crear el tag', null, {
+          timeOut: 1500,
+        });
+      }
     } else {
       data.merchant = this.merchantDefault._id;
 
@@ -453,15 +467,18 @@ export class CreateTagComponent implements OnInit {
         this.notificationService.temporalNotification = null;
         */
 
-        let redirectionRoute = this.orderID
-          ? 'ecommerce/order-info/' + this.orderID
-          : 'admin/items-dashboard';
+        if (this.orderID) {
+          this.router.navigate(['ecommerce/order-info/' + this.orderID]);
+        } else {
+          if (this.entity === 'item') {
+            this.router.navigate(['admin/item-display/' + this.entityId]);
+          }
+          if (!this.entity) this.router.navigate(['admin/items-dashboard']);
+        }
 
         this.toastr.info('Tag actualizado', null, {
           timeOut: 1500,
         });
-
-        this.router.navigate([redirectionRoute]);
       }
 
       localStorage.removeItem('temporalTag');
@@ -698,13 +715,14 @@ export class CreateTagComponent implements OnInit {
       } else {
         let flowRoute = localStorage.getItem('flowRoute');
 
-        if (!flowRoute) this.headerService.flowRoute = 'admin/items-dashboard';
+        if (!flowRoute)
+          this.headerService.flowRoute = 'admin/entity-detail-metrics';
         else this.headerService.flowRoute = flowRoute;
       }
     } else {
       if (!flowRoute.includes('create-tag'))
         this.headerService.flowRoute = flowRoute;
-      else this.headerService.flowRoute = 'admin/items-dashboard';
+      else this.headerService.flowRoute = 'admin/entity-detail-metrics';
     }
 
     const redirectionRoute = this.headerService.flowRoute;
@@ -768,6 +786,16 @@ export class CreateTagComponent implements OnInit {
     this.active = index;
     console.log(index);
   }
+
+  goBack2 = () => {
+    if (this.entity === 'item')
+      this.router.navigate(['admin/item-display/' + this.entityId]);
+    else if (this.entity === 'order') {
+      this.router.navigate(['ecommerce/order-detail/' + this.entityId]);
+    } else {
+      this.router.navigate(['admin/entity-detail-metrics']);
+    }
+  };
 
   moveEvent(e: MouseEvent, el: HTMLDivElement) {
     e.preventDefault();
