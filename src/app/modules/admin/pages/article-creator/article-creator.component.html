@@ -18,7 +18,12 @@
   <img src="{{ env }}/save-blue.png" class="notification" alt="" />
   <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
   <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
-  <span class="text">VISTA</span>
+  <!-- <span class="text">VISTA</span> -->
+  <div
+    class="dot-trio"
+    *ngIf="mode === 'item' && item"
+    (click)="openItemOptionsDialog()"
+  ></div>
 </div>
 <div class="container">
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
@@ -49,7 +54,7 @@
                 >
                   <button class="grid-btn" (click)="removeFile(i, k)">
                     <span class="icon">x</span>
-                    <span class="copy">slide</span>
+                    <span class="copy">SLIDE</span>
                   </button>
                 </div>
                 <div class="col">
@@ -59,7 +64,7 @@
                     (click)="addFile(i, j, k)"
                   >
                     <span class="icon">+</span>
-                    <span class="copy">slide</span>
+                    <span class="copy">SLIDE</span>
                   </button>
                 </div>
               </div>
@@ -157,9 +162,27 @@
       <span>Citas</span>
       <span>Planilla</span>
     </div>
-    <div class="description" *ngIf="ctaDescription">
-      {{ ctaDescription }}
+    <div class="extra">
+      <div
+        class="description"
+        *ngIf="ctaDescription"
+        [ngStyle]="{ textAlign: mode === 'item' && item ? 'left' : 'center' }"
+      >
+        {{ ctaDescription }}
+      </div>
+      <button
+        *ngIf="mode === 'item' && item"
+        class="grid-btn"
+        (click)="submit()"
+      >
+        EDITAR
+      </button>
     </div>
-    <button class="button" (click)="submit()">{{ ctaText }}</button>
+    <button
+      class="button"
+      (click)="mode === 'item' && item ? openShareDialog() : submit()"
+    >
+      {{ mode === "item" && item ? "Compartir" : ctaText }}
+    </button>
   </div>
 </div>

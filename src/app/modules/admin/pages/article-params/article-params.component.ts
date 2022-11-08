@@ -55,7 +55,6 @@ export class ArticleParamsComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.obtainLasts();
     this.itemId = this._Route.snapshot.paramMap.get('itemId');
     if (this.itemId) {
       this.item = await this._ItemsService.item(this.itemId);
@@ -72,10 +71,13 @@ export class ArticleParamsComponent implements OnInit {
     }
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
-    this._SaleflowService.saleflowData =
-      await this._SaleflowService.saleflowDefault(
-        this._MerchantsService.merchantData._id
-      );
+    if (this._MerchantsService.merchantData) {
+      this._SaleflowService.saleflowData =
+        await this._SaleflowService.saleflowDefault(
+          this._MerchantsService.merchantData._id
+        );
+      if (this._SaleflowService.saleflowData) this.obtainLasts();
+    }
     this._ItemsService.itemImages?.forEach((file) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -115,6 +117,7 @@ export class ArticleParamsComponent implements OnInit {
   }
 
   openDialog() {
+    if (!this.items?.length) return;
     const items: {
       option: string;
       subOption: string;
@@ -123,7 +126,7 @@ export class ArticleParamsComponent implements OnInit {
     for (const item of this.items) {
       items.push({
         option: item.name,
-        subOption: `$${item.pricing}`,
+        subOption: `$${item.pricing.toLocaleString('es-MX')}`,
         callback: () => {
           this.name.setValue(item.name);
           this.price.setValue(item.pricing);
@@ -143,8 +146,7 @@ export class ArticleParamsComponent implements OnInit {
 
   obtainLasts() {
     this._Route.params.subscribe(async (params) => {
-      await this._HeaderService.fetchSaleflow(params.itemId);
-      const saleflowItems = this._HeaderService.saleflow.items.map(
+      const saleflowItems = this._SaleflowService.saleflowData.items.map(
         (saleflowItem) => ({
           item: saleflowItem.item._id,
         })

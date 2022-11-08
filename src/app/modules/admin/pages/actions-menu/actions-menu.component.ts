@@ -155,6 +155,22 @@ export class ActionsMenuComponent implements OnInit {
     const itemId = this.route.snapshot.paramMap.get('itemId');
     this.item = await this.itemsService.item(itemId);
     if (!this.item) return;
+    const mode = this.route.snapshot.queryParamMap.get('mode');
+    if (mode === 'new-item' && this.item.status === 'draft') {
+      await this.itemsService.authItem(
+        this.merchantsService.merchantData._id,
+        itemId
+      );
+
+      if (this.saleflowService.saleflowData) {
+        await this.saleflowService.addItemToSaleFlow(
+          {
+            item: itemId,
+          },
+          this.saleflowService.saleflowData._id
+        );
+      }
+    }
 
     options[3].value = this.merchantsService.merchantData.name || 'MerchantID';
 

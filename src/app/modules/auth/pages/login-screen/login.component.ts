@@ -260,8 +260,8 @@ export class LoginComponent implements OnInit {
           replaceUrl: true,
         });
       }
-    } else if(this.auth === 'merchant') {
-      console.log("merchant access")
+    } else if (this.auth === 'merchant') {
+      console.log('merchant access');
     } else {
       this.auth = 'phone';
       this.loggin = false;
@@ -344,6 +344,15 @@ export class LoginComponent implements OnInit {
             );
           }
 
+          if (this.action === 'precreateitem') {
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `admin/options/`,
+              this.itemId,
+              'NewItem',
+              {}
+            );
+          }
 
           if (this.auth === 'merchant') {
             await this.authService.generateMagicLink(
@@ -535,10 +544,10 @@ export class LoginComponent implements OnInit {
           return;
         } NO LO BORRÉ PORQUE QUIZAS LO USEMOS LUEGO*/
 
-        if(this.redirectionRoute) {
+        if (this.redirectionRoute) {
           this.router.navigate([this.redirectionRoute], {
             replaceUrl: true,
-          });            
+          });
           return;
         }
 
@@ -624,10 +633,10 @@ export class LoginComponent implements OnInit {
           return;
         }
 
-        if(this.redirectionRoute) {
+        if (this.redirectionRoute) {
           this.router.navigate([this.redirectionRoute], {
             replaceUrl: true,
-          });            
+          });
           return;
         }
 
@@ -691,10 +700,10 @@ export class LoginComponent implements OnInit {
         return;
       }
 
-      if(this.redirectionRoute) {
+      if (this.redirectionRoute) {
         this.router.navigate([this.redirectionRoute], {
           replaceUrl: true,
-        });            
+        });
         return;
       }
 
@@ -839,13 +848,12 @@ export class LoginComponent implements OnInit {
               }
             );
           } else {
-
-            if(this.redirectionRoute) {
+            if (this.redirectionRoute) {
               this.router.navigate([this.redirectionRoute], {
                 replaceUrl: true,
-              });            
+              });
               return;
-            }    
+            }
 
             this.router.navigate([`admin/entity-detail-metrics`], {
               replaceUrl: true,

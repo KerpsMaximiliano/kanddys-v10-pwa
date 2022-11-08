@@ -2,12 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Item } from 'src/app/core/models/item';
+import { ToastrService } from 'ngx-toastr';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  SettingsComponent,
+  SettingsDialogButton,
+} from 'src/app/shared/dialogs/settings/settings.component';
+import {
+  StoreShareComponent,
+  StoreShareList,
+} from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 
@@ -20,6 +31,7 @@ type Mode = 'symbols' | 'item';
 })
 export class ArticleCreatorComponent implements OnInit {
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
   multimedia: any = [];
   types: any = [];
@@ -73,7 +85,10 @@ export class ArticleCreatorComponent implements OnInit {
     private _PostsService: PostsService,
     private _HeaderService: HeaderService,
     private _ItemsService: ItemsService,
-    private _MerchantsService: MerchantsService
+    private _MerchantsService: MerchantsService,
+    private _SaleflowService: SaleFlowService,
+    private _DialogService: DialogService,
+    private _ToastrService: ToastrService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -88,6 +103,7 @@ export class ArticleCreatorComponent implements OnInit {
     const itemId = this._ActivatedRoute.snapshot.paramMap.get('itemId');
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
+      if (!this.item) this.goBack();
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
@@ -331,6 +347,75 @@ export class ArticleCreatorComponent implements OnInit {
     this.activeSlide = +activeSlide.id;
   }
 
+  openShareDialog = () => {
+    const styles = [
+      { 'background-color': '#82F18D', color: '#174B72' },
+      { 'background-color': '#B17608', color: '#FFFFFF' },
+    ];
+    const list: StoreShareList[] = [
+      {
+        title: 'Sobre ' + (this.item.name || 'el artículo'),
+        label: {
+          text:
+            this.item.status === 'active'
+              ? 'VISIBLE (NO DESTACADO)'
+              : this.item.status === 'featured'
+              ? 'VISIBLE (Y DESTACADO)'
+              : 'INVISIBLE',
+          labelStyles: this.item.status === 'disabled' ? styles[1] : styles[0],
+        },
+        options: [
+          {
+            text: 'Copia el link',
+            mode: 'clipboard',
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+          },
+          {
+            text: 'Comparte el link',
+            mode: 'share',
+            link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+            icon: {
+              src: '/upload.svg',
+              size: {
+                width: 20,
+                height: 26,
+              },
+            },
+          },
+          {
+            text: 'Ir a la vista del visitante',
+            mode: 'func',
+            func: () => {
+              this._Router.navigate([
+                `/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
+              ]);
+            },
+          },
+        ],
+      },
+    ];
+    this._DialogService.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        hideCancelButtton: true,
+        dynamicStyles: {
+          titleWrapper: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            paddingBottom: '26px',
+          },
+          dialogCard: {
+            paddingTop: '0px',
+          },
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
   changeMode(mode: Mode) {
     // this.mode = mode;
     switch (mode) {
@@ -350,4 +435,215 @@ export class ArticleCreatorComponent implements OnInit {
   goBack() {
     this._Router.navigate([`admin/items-dashboard`]);
   }
+
+  toggleActivateItem = async (item: Item): Promise<string> => {
+    try {
+      this._ItemsService.updateItem(
+        {
+          status:
+            item.status === 'disabled'
+              ? 'active'
+              : item.status === 'active'
+              ? 'featured'
+              : 'disabled',
+        },
+        item._id
+      );
+
+      item.status =
+        item.status === 'disabled'
+          ? 'active'
+          : item.status === 'active'
+          ? 'featured'
+          : 'disabled';
+
+      return item.status;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openItemOptionsDialog = async () => {
+    const itemsQueryResult = await this._ItemsService.item(this.item._id);
+    const item: Item = itemsQueryResult;
+
+    const toggleStatus = () => {
+      return new Promise((resolve, reject) => {
+        this.toggleActivateItem(item).then((newStatus) => {
+          newStatus === 'disabled'
+            ? (number = 2)
+            : newStatus === 'active'
+            ? (number = 0)
+            : (number = 1);
+          resolve(true);
+        });
+      });
+    };
+
+    let number =
+      item.status === 'disabled' ? 2 : item.status === 'active' ? 0 : 1;
+    const statuses = [
+      {
+        text: 'VISIBLE (NO DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'VISIBLE (Y DESTACADO)',
+        backgroundColor: '#82F18D',
+        color: '#174B72',
+        asyncCallback: toggleStatus,
+      },
+      {
+        text: 'INVISIBLE',
+        backgroundColor: '#B17608',
+        color: 'white',
+        asyncCallback: toggleStatus,
+      },
+    ];
+
+    const list: Array<SettingsDialogButton> = [
+      {
+        text: 'Duplicar',
+        callback: async () => {
+          const itemInput: ItemInput = {
+            name: item.name || null,
+            description: item.description || null,
+            pricing: item.pricing,
+            images: item.images,
+            merchant: item.merchant._id,
+            content: [],
+            currencies: [],
+            hasExtraPrice: false,
+            purchaseLocations: [],
+            showImages: item.images.length > 0,
+            status: item.status,
+            tags: item.tags ? item.tags : [],
+          };
+
+          try {
+            const { createItem } = await this._ItemsService.createItem(
+              itemInput
+            );
+            await this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createItem._id,
+              },
+              this._SaleflowService.saleflowData._id
+            );
+
+            this._SaleflowService.saleflowData =
+              await this._SaleflowService.saleflowDefault(
+                this._MerchantsService.merchantData._id
+              );
+
+            if (item.params && item.params.length > 0) {
+              const { createItemParam } =
+                await this._ItemsService.createItemParam(
+                  item.merchant._id,
+                  createItem._id,
+                  {
+                    name: item.params[0].name,
+                    formType: 'color',
+                    values: [],
+                  }
+                );
+              const paramValues = item.params[0].values.map((value) => {
+                return {
+                  name: value.name,
+                  image: value.image,
+                  price: value.price,
+                  description: value.description,
+                };
+              });
+
+              const result = await this._ItemsService.addItemParamValue(
+                paramValues,
+                createItemParam._id,
+                item.merchant._id,
+                createItem._id
+              );
+            }
+            this._ToastrService.info('¡Item duplicado exitosamente!');
+          } catch (error) {
+            console.log(error);
+            this._ToastrService.error(
+              'Ocurrio un error al crear el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          }
+        },
+      },
+      {
+        text: 'Archivar (Sin eliminar la data)',
+        callback: async () => {
+          try {
+            const response = await this._ItemsService.updateItem(
+              {
+                status: 'archived',
+              },
+              this.item._id
+            );
+            this._ToastrService.info('¡Item archivado exitosamente!');
+          } catch (error) {
+            console.log(error);
+            this._ToastrService.error(
+              'Ocurrio un error al archivar el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          }
+        },
+      },
+      {
+        text: 'Eliminar',
+        callback: async () => {
+          try {
+            const removeItemFromSaleFlow =
+              await this._SaleflowService.removeItemFromSaleFlow(
+                item._id,
+                this._SaleflowService.saleflowData._id
+              );
+            if (!removeItemFromSaleFlow) return;
+            const deleteItem = await this._ItemsService.deleteItem(item._id);
+            if (!deleteItem) return;
+
+            this._ToastrService.info('¡Item borrado exitosamente!');
+            this.goBack();
+          } catch (error) {
+            console.log(error);
+            this._ToastrService.error(
+              'Ocurrio un error al borrar el item',
+              null,
+              {
+                timeOut: 1500,
+              }
+            );
+          }
+        },
+      },
+    ];
+
+    this._DialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        optionsList: list,
+        statuses,
+        //qr code in the xd's too small to scanning to work
+        indexValue: number,
+        title: item.name ? item.name : 'Producto sin nombre',
+        cancelButton: {
+          text: 'Cerrar',
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
 }

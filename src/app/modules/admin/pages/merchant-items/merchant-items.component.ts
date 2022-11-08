@@ -208,7 +208,7 @@ export class MerchantItemsComponent implements OnInit {
   goToDetail(id: string) {
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
-    this.router.navigate([`admin/item-display/${id}`]);
+    this.router.navigate([`admin/create-article/${id}`]);
   }
 
   errorScreen() {

@@ -35,10 +35,13 @@ button {
     }
   }
 }
-.description {
+.extra {
   background: #2e2e2e;
-  text-align: center;
+  display: flex;
+  align-items: center;
   padding: 16px 24px;
+}
+.description {
   font-family: SfProRegular;
   color: #ffffff;
   font-size: 15px;
@@ -62,16 +65,11 @@ button {
   width: 100%;
   z-index: 2;
 }
-
-.grid-btn {
-  background: #ffffff;
-  color: #272727;
-  border-radius: 3px;
-}
 .col:nth-child(2) {
   text-align: right;
 }
 .grid-btn {
+  background: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 43px;
@@ -79,6 +77,7 @@ button {
   color: #272727;
   font-size: 15px;
   cursor: pointer;
+  box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
 }
 .icon {
   color: #272727;
@@ -177,6 +176,23 @@ audio {
   align-items: center;
   .line {
     height: 3px;
+  }
+}
+
+.dot-trio {
+  background-color: white;
+  height: 28px;
+  width: 28px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/dots-black.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: auto;
+
+  &:hover {
+    background-color: lightgray;
+    cursor: pointer;
   }
 }
 
