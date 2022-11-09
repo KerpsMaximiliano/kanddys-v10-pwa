@@ -1,0 +1,44 @@
+<div class="container">
+  <app-helper-headerv3
+    background="#ffffff"
+    text="Acceso"
+    padding="0px 10px"
+    height="42px"
+    textColor="#272727"
+    iconColor="#000"
+    fontFamily="SfProBold"
+    [align]="'center'"
+    iconsize="24px"
+    iconWeight="700"
+    iconHeight="11px"
+    iconTop="-4px"
+  ></app-helper-headerv3>
+  <div class="options">
+    <p
+      *ngFor="let option of options"
+      [style.color]="selected === option ? '#272727' : '#7b7b7b'"
+      class="option"
+      (click)="handleOption(option)"
+    >
+      {{ option }}
+    </p>
+  </div>
+  <div class="selection">
+    <div
+      *ngFor="let item of list"
+      class="select-option"
+      [style.backgroundPosition]="
+        choice.includes(item.text) ? 'left bottom' : 'right bottom'
+      "
+      (click)="handleSelection(item.text)"
+    >
+      <div class="square"></div>
+      <div class="grid-content">
+        <img [src]="env + '/' + item.img" width="22" height="22" />
+        <span class="text">
+          {{ item.text }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

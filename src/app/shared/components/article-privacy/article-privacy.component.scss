@@ -1,0 +1,61 @@
+.container {
+  height: 100vh;
+  background: #f6f6f6;
+}
+
+.options {
+  font-family: "SfProBold";
+  font-size: 17px;
+  display: grid;
+  grid-template-columns: 2fr 2fr 6fr;
+  text-align: center;
+  background: #ffffff;
+  border-top: 3px solid #efefef;
+}
+
+.option {
+  cursor: pointer;
+}
+
+.selection {
+  margin: 20px 20px;
+}
+
+.select-option {
+  display: grid;
+  grid-template-columns: 0.5fr 12fr;
+  align-items: center;
+  height: 58px;
+  color: #272727;
+  font-size: 17px;
+  font-family: "SfProDisplay";
+  cursor: pointer;
+  margin-bottom: 20px;
+  border-radius: 9px;
+  background-size: 200% 100% !important;
+  transition: all 0.5s ease-out;
+  background: linear-gradient(to right, #82f18d 50%, transparent 50%);
+}
+
+.square {
+  display: inline-block;
+  background: #82f18d;
+  min-width: 18px;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.grid-content {
+  padding-left: 20px;
+  display: grid;
+  grid-template-columns: 0.8fr 10.2fr;
+}
+
+img {
+  position: relative;
+  top: 2px;
+}
+
+.text {
+  padding-left: 7px;
+}

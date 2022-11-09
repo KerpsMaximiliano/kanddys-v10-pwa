@@ -14,6 +14,7 @@ import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-crea
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 import { CreateTagComponent } from './pages/create-tag/create-tag.component';
+import { ArticlePrivacyComponent } from 'src/app/shared/components/article-privacy/article-privacy.component';
 
 const routes: Routes = [
   {
@@ -91,6 +92,10 @@ const routes: Routes = [
       {
         path: 'create-tag/:tagId',
         component: CreateTagComponent,
+      },
+      {
+        path: 'article-privacy',
+        component: ArticlePrivacyComponent,
       },
     ],
   },
