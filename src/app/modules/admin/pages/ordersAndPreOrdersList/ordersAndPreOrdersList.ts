@@ -638,10 +638,6 @@ export class OrdersAndPreOrdersList implements OnInit {
       ordersByMerchantPagination
     );
 
-    if (ordersByMerchant) {
-      this.ordersList = ordersByMerchant;
-    }
-
     if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
       this.paginationState.page--;
 
@@ -742,6 +738,8 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   handleTag(selectedTag: Tag): void {
+    this.scrollToTheTopOfThePage();
+
     if (this.selectedTags.includes(selectedTag)) {
       this.selectedTags = this.selectedTags.filter(
         (tag) => tag !== selectedTag
@@ -787,15 +785,23 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   showHighlightedOrders() {
+    this.scrollToTheTopOfThePage();
+
     this.justShowHighlightedOrders = true;
 
     this.loadHighlightedOrders(true);
   }
 
   showOrdersUntagged() {
-    this.justShowUntaggedOrders = true;
+    this.scrollToTheTopOfThePage();
 
+    this.justShowUntaggedOrders = true;
     this.loadOrdersAssociatedToTag(true);
+  }
+
+  scrollToTheTopOfThePage() {
+    const scrollElem = document.querySelector('#top-of-the-page');
+    scrollElem.scrollIntoView();
   }
 
   resetSelectedTags(): void {
