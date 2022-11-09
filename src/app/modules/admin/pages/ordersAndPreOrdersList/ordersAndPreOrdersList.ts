@@ -142,34 +142,41 @@ export class OrdersAndPreOrdersList implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadingStatus = 'loading';
     this.route.queryParams.subscribe(async (params) => {
+      this.loadingStatus = 'loading';
       let {
         at = 'createdAt',
         type = 'facturas',
         limit = 50,
         sort = 'desc',
+        startOnSnapshot,
       } = params;
-      this.typeOfList = type;
-      this.ordersByMerchantLimit = limit;
-      this.ordersByMerchantSortField = at;
-      this.ordersByMerchantSortOrder = sort;
+      startOnSnapshot = Boolean(startOnSnapshot);
 
-      this.loadingStatus = 'loading';
-      let tags: Array<Tag> = (await this.tagsService.tagsByUser()) || [];
-      this.tags = tags;
-      this.unselectedTags = [...this.tags];
+      if (!this.headerService.ordersPageTemporalData || !startOnSnapshot) {
+        this.typeOfList = type;
+        this.ordersByMerchantLimit = limit;
+        this.ordersByMerchantSortField = at;
+        this.ordersByMerchantSortOrder = sort;
 
-      await this.inicializeOrdersWithoutTagsIncome();
-      await this.getHighlightedOrdersIncome();
+        this.loadingStatus = 'loading';
+        let tags: Array<Tag> = (await this.tagsService.tagsByUser()) || [];
+        this.tags = tags;
+        this.unselectedTags = [...this.tags];
 
-      //Fills an object or hash table for fast access to each tag by its id
+        await this.inicializeOrdersWithoutTagsIncome();
+        await this.getHighlightedOrdersIncome();
 
-      this.typeOfList = type.replace('%20');
+        //Fills an object or hash table for fast access to each tag by its id
 
-      this.defaultMerchant = this.merchantsService.merchantData;
+        this.typeOfList = type.replace('%20');
 
-      await this.loadOrders();
+        this.defaultMerchant = this.merchantsService.merchantData;
+
+        await this.loadOrders();
+      } else {
+        this.getPageSnapshot();
+      }
 
       this.searchBar.valueChanges.subscribe((change: string) => {
         this.loadOrdersAssociatedToTag(true);
@@ -779,8 +786,16 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   goToOrderInfo(orderId: string) {
-    this.headerService.flowRoute = this.router.url;
-    localStorage.setItem('flowRoute', this.router.url);
+    this.headerService.flowRoute = !this.router.url.includes('?')
+      ? this.router.url
+      : this.router.url.split('?')[0];
+    localStorage.setItem(
+      'flowRoute',
+      !this.router.url.includes('?')
+        ? this.router.url
+        : this.router.url.split('?')[0]
+    );
+    this.savePageSnapshot();
     this.router.navigate([`ecommerce/order-info/${orderId}`]);
   }
 
@@ -949,5 +964,68 @@ export class OrdersAndPreOrdersList implements OnInit {
         userObject.status = status;
       }
     });
+  }
+
+  savePageSnapshot() {
+    this.headerService.ordersPageTemporalData = {
+      loadingStatus: this.loadingStatus,
+      searchBar: this.searchBar.value,
+      typeOfList: this.typeOfList,
+      tags: this.tags,
+      showSearchbar: this.showSearchbar,
+      selectedTags: this.selectedTags,
+      selectedTagsPermanent: this.selectedTagsPermanent,
+      unselectedTags: this.unselectedTags,
+      tagGroups: this.tagGroups,
+      permanentOrdersTagGroups: this.permanentOrdersTagGroups,
+      permanentPreOrdersTagGroups: this.permanentPreOrdersTagGroups,
+      highlightedOrders: this.highlightedOrders,
+      highlightedOrdersPermanent: this.highlightedOrdersPermanent,
+      highlightedPreOrdersPermanent: this.highlightedPreOrdersPermanent,
+      highlightedOrdersIncome: this.highlightedOrdersIncome,
+      tagsHashTable: this.tagsHashTable,
+      ordersList: this.ordersList,
+      ordersWithoutTags: this.ordersWithoutTags,
+      ordersWithoutTagsPermanent: this.ordersWithoutTagsPermanent,
+      preordersWithoutTagsPermanent: this.preordersWithoutTagsPermanent,
+      ordersWithoutTagsIncome: this.ordersWithoutTagsIncome,
+      ordersWithoutTagsIncomePermanent: this.ordersWithoutTagsIncomePermanent,
+      preordersWithoutTagsIncomePermanent:
+        this.preordersWithoutTagsIncomePermanent,
+      defaultMerchant: this.defaultMerchant,
+      ordersByMerchantLimit: this.ordersByMerchantLimit,
+      ordersByMerchantSortOrder: this.ordersByMerchantSortOrder,
+      ordersByMerchantSortField: this.ordersByMerchantSortField,
+      ordersIncomeForMatchingOrders: this.ordersIncomeForMatchingOrders,
+      matchingOrdersTotalCounter: this.matchingOrdersTotalCounter,
+      optionIndexArray: this.optionIndexArray,
+      list: this.list,
+      tagsCarousell: this.tagsCarousell,
+      merchantIncome: this.merchantIncome,
+      ordersAmount: this.ordersAmount,
+      justShowHighlightedOrders: this.justShowHighlightedOrders,
+      justShowUntaggedOrders: this.justShowUntaggedOrders,
+      paginationState: this.paginationState,
+    };
+  }
+
+  getPageSnapshot() {
+    for (const property of Object.keys(
+      this.headerService.ordersPageTemporalData
+    )) {
+      if (property !== 'searchBar') {
+        this[property] = this.headerService.ordersPageTemporalData[property];
+      } else {
+        this.searchBar.setValue(
+          this.headerService.ordersPageTemporalData[property]
+        );
+      }
+    }
+
+    this.headerService.ordersPageTemporalData = null;
+  }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.selectedTags.map((tag) => tag._id);
   }
 }

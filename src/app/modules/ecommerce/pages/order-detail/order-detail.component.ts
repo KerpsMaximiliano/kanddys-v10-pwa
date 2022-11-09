@@ -503,6 +503,14 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goBackToFlowRoute() {
-    this.router.navigate([this.flowRoute]);
+    if (this.flowRoute.includes('admin/orders')) {
+      this.router.navigate([this.flowRoute], {
+        queryParams: {
+          startOnSnapshot: true,
+        },
+      });
+    } else {
+      this.router.navigate([this.flowRoute]);
+    }
   }
 }
