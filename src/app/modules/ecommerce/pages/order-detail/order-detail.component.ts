@@ -632,18 +632,12 @@ export class OrderDetailComponent implements OnInit {
               });
             },
           },
-          this.merchantOwner
+          this.merchantOwner && this.merchant
             ? {
-                text: this.merchant
-                  ? 'Vista del Visitante'
-                  : 'Volver a la vista del merchant',
+                text: 'Vista del Visitante',
                 callback: () => {
-                  this.merchant
-                    ? (this.merchant = !this.merchant)
-                    : this.merchant = true;
-                  this.merchant
-                    ? (this.changeColor = '#2874AD')
-                    : (this.changeColor = '#272727');
+                  this.merchant = false;
+                  this.changeColor = '#272727';
                 },
               }
             : null,
@@ -811,6 +805,14 @@ export class OrderDetailComponent implements OnInit {
     const user = await this.authService.me();
     if (user) this.loggedUser = user;
     else return;
+  }
+
+  changeView = ()=>{
+    if(this.merchantOwner && !this.merchant){
+      this.merchant = true;
+      this.changeColor = '#2874AD'
+    }
+    else return
   }
 
   async isMerchantOwner(merchant: string) {
