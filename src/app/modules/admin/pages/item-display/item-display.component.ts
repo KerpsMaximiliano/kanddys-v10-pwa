@@ -304,7 +304,11 @@ export class ItemDisplayComponent implements OnInit {
       if (this.headerService.flowRoute) {
         this.router.navigate([this.headerService.flowRoute]);
       } else {
-        this.router.navigate(['admin/entity-detail-metrics']);
+        this.router.navigate(['admin/entity-detail-metrics'], {
+          queryParams: {
+            startOnSnapshot: true
+          }
+        });
       }
     }
   }

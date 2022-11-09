@@ -145,9 +145,14 @@ export class StoreComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.header.resetIsComplete();
+    this.route.queryParams.subscribe(async (queryParams) => {
+      let { startOnSnapshot } = queryParams;
+      startOnSnapshot = Boolean(startOnSnapshot);
 
-    if (!this.header.storeTemporalData) this.executeProcessesAfterLoading();
-    else this.getPageSnapshot();
+      if (!this.header.storeTemporalData || !startOnSnapshot)
+        this.executeProcessesAfterLoading();
+      else this.getPageSnapshot();
+    });
   }
 
   setMerchant(merchant: Merchant) {

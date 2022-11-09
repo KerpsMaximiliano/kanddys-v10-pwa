@@ -177,22 +177,26 @@ export class ItemsDashboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    localStorage.removeItem('flowRoute');
-    this.headerService.flowRoute = null;
+    this.route.queryParams.subscribe(async (queryParams) => {
+      let { startOnSnapshot } = queryParams;
+      startOnSnapshot = Boolean(startOnSnapshot);
+      localStorage.removeItem('flowRoute');
+      this.headerService.flowRoute = null;
 
-    await this.verifyIfUserIsLogged();
+      await this.verifyIfUserIsLogged();
 
-    if (!this.headerService.dashboardTemporalData) {
-      await this.inicializeTags();
-      await this.inicializeItems(true, false, true);
-      await this.inicializeHighlightedItems();
-      await this.inicializeArchivedItems();
-      await this.getOrdersTotal();
-      await this.getMerchantBuyers();
-      await this.inicializeSaleflowCalendar();
-    } else {
-      this.getPageSnapshot();
-    }
+      if (!this.headerService.dashboardTemporalData || !startOnSnapshot) {
+        await this.inicializeTags();
+        await this.inicializeItems(true, false, true);
+        await this.inicializeHighlightedItems();
+        await this.inicializeArchivedItems();
+        await this.getOrdersTotal();
+        await this.getMerchantBuyers();
+        await this.inicializeSaleflowCalendar();
+      } else {
+        this.getPageSnapshot();
+      }
+    });
 
     this.itemSearchbar.valueChanges.subscribe((change) =>
       this.inicializeItems(true, false)
@@ -606,9 +610,6 @@ export class ItemsDashboardComponent implements OnInit {
 
   goToDetail(id: string) {
     this.savePageSnapshot();
-
-    this.headerService.flowRoute = this.router.url;
-    localStorage.setItem('flowRoute', this.headerService.flowRoute);
     this.router.navigate([`admin/item-display/${id}`]);
   }
 
