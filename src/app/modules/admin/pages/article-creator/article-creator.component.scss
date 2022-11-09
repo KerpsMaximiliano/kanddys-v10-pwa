@@ -164,6 +164,7 @@ audio {
 }
 .notification {
   margin: auto;
+  filter: invert(96%) sepia(96%) saturate(16%) hue-rotate(283deg) brightness(134%) contrast(104%);
   cursor: pointer;
 }
 

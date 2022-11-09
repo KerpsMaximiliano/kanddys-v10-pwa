@@ -2,23 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { Item, ItemInput } from 'src/app/core/models/item';
+import { ToastrService } from 'ngx-toastr';
 import { PostInput } from 'src/app/core/models/post';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { PostsService } from 'src/app/core/services/posts.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { TagsService } from 'src/app/core/services/tags.service';
+import { PostsService } from 'src/app/core/services/posts.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  SettingsComponent,
-  SettingsDialogButton,
-} from 'src/app/shared/dialogs/settings/settings.component';
-import {
-  StoreShareComponent,
-  StoreShareList,
-} from 'src/app/shared/dialogs/store-share/store-share.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { StoreShareComponent, StoreShareList } from 'src/app/shared/dialogs/store-share/store-share.component';
+import { SettingsComponent, SettingsDialogButton } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
 
@@ -78,6 +74,8 @@ export class ArticleCreatorComponent implements OnInit {
     'Al adicionar “un precio” el visitante potencialmente se convierte en comprador.';
   item: Item;
   blockSubmitButton: boolean = false;
+  selectedTags: Array<string>;
+  tagsAsignationOnStart: boolean = false;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -88,7 +86,9 @@ export class ArticleCreatorComponent implements OnInit {
     private _MerchantsService: MerchantsService,
     private _SaleflowService: SaleFlowService,
     private _DialogService: DialogService,
-    private _ToastrService: ToastrService
+    private _ToastrService: ToastrService,
+    private _TagsService: TagsService,
+    private toastr: ToastrService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -133,6 +133,7 @@ export class ArticleCreatorComponent implements OnInit {
         });
       }
     }
+    if (this.tagsAsignationOnStart) await this.openTagsDialog()
   }
 
   updateFrantions(): void {
@@ -431,6 +432,63 @@ export class ArticleCreatorComponent implements OnInit {
       }
     }
   }
+
+  openTagsDialog = async () => {
+   this.selectedTags = [];
+   const userTags = await this._TagsService.tagsByUser();
+   const itemTags = (
+     await this._TagsService.tags({
+       options: {
+         limit: -1,
+       },
+       findBy: {
+         id: {
+           __in: this.item.tags,
+         },
+       },
+     })
+   ).tags;
+
+   this._DialogService.open(TagAsignationComponent, {
+     type: 'fullscreen-translucent',
+     props: {
+       tags: userTags,
+       //orderId: this.order._id,
+       entity: 'item',
+       entityId: this.item._id,
+       activeTags:
+         itemTags && Array.isArray(itemTags)
+           ? itemTags.map((tag) => tag._id)
+           : null,
+       tagAction: async ({ selectedTags }) => {
+         this.selectedTags = selectedTags;
+
+         try {
+           const response = await this._ItemsService.updateItem(
+             {
+               tags: this.selectedTags,
+             },
+             this.item._id
+           );
+
+           if (response) {
+             this.item.tags = this.selectedTags;
+
+             this.toastr.info('Tags asignados al item', null, {
+               timeOut: 1000,
+             });
+           }
+         } catch (error) {
+           this.toastr.error('Error al asignar tags', null, {
+             timeOut: 1000,
+           });
+         }
+       },
+     },
+     customClass: 'app-dialog',
+     flags: ['no-header'],
+   });
+ };
 
   goBack() {
     this._Router.navigate([`admin/items-dashboard`]);
