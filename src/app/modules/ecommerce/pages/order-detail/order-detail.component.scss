@@ -59,7 +59,7 @@ a {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 72px auto 0;
+    margin: 32px auto 0;
 
     .top-button {
       all: unset;
@@ -290,6 +290,41 @@ a {
         }
       }
 
+      .buttons-share {
+        width: 52%;
+        display: flex;
+        flex-direction: column;
+        background-color: #82f18d;
+        border-radius: 5px;
+        margin: 16px 0 21px;
+        padding: 16px 5% 6px;
+
+        .buttons-area {
+          display: flex;
+          justify-content: space-between;
+
+          .btn {
+            all: unset;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            background-color: transparent;
+            cursor: pointer;
+          }
+        }
+
+        .virtual {
+          font-size: 1.063rem;
+          font-family: "RobotoMedium";
+          font-weight: 500;
+          color: #272727;
+          margin: 6px 0 0;
+          text-align: center;
+        }
+      }
+
       .text-reservation {
         width: 100%;
         display: flex;
@@ -409,7 +444,6 @@ table {
   justify-content: space-between;
   position: relative;
   bottom: 0px;
-  background-color: #2874ad;
 
   &.temporal {
     height: 50px;

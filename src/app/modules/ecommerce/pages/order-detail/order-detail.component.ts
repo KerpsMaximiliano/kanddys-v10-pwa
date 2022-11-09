@@ -25,6 +25,7 @@ import * as moment from 'moment';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 
 interface Image {
   src: string;
@@ -54,6 +55,8 @@ export class OrderDetailComponent implements OnInit {
   post: Post;
   payment: number;
   merchant: boolean;
+  merchantOwner: boolean;
+  changeColor: string;
   orderStatus: OrderStatusNameType;
   orderDate: string;
   date: {
@@ -94,10 +97,7 @@ export class OrderDetailComponent implements OnInit {
       src: '/upload.svg',
       filter: 'brightness(2)',
       callback: async () => {
-        await this.ngNavigatorShareService.share({
-          title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
-        });
+        this.settingsDialog();
       },
     },
   ];
@@ -615,6 +615,43 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
+  settingsDialog() {
+    this.dialogService.open(SettingsComponent, {
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      props: {
+        title: 'Compartir esta Orden',
+        optionsList: [
+          {
+            text: 'Compartir',
+            callback: async () => {
+              await this.ngNavigatorShareService.share({
+                title: `Mi orden`,
+                url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+              });
+            },
+          },
+          this.merchantOwner
+            ? {
+                text: this.merchant
+                  ? 'Vista del Visitante'
+                  : 'Volver a la vista del merchant',
+                callback: () => {
+                  this.merchant
+                    ? (this.merchant = !this.merchant)
+                    : this.merchant = true;
+                  this.merchant
+                    ? (this.changeColor = '#2874AD')
+                    : (this.changeColor = '#272727');
+                },
+              }
+            : null,
+        ],
+      },
+    });
+  }
+
   async addTag(tagId?: string) {
     if (!this.selectedTags[tagId]) {
       const added = await this.tagsService.addTagsInOrder(
@@ -780,6 +817,7 @@ export class OrderDetailComponent implements OnInit {
     const ismerchant = await this.merchantsService.merchantDefault();
     this.merchant = merchant === ismerchant?._id;
     if (ismerchant) this.orderMerchant = ismerchant;
+    this.merchantOwner = true;
   }
 
   mouseDown: boolean;

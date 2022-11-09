@@ -2,7 +2,7 @@
   <app-helper-headerv2
     [mode]="'basic'"
     [returnAble]="false"
-    [bgColor]="headerService.colorTheme"
+    [bgColor]="changeColor ? changeColor : headerService.colorTheme"
     [icon]="{
       src: '/arrow-double-up.svg',
       width: 17,
@@ -44,13 +44,13 @@
       <span class="plus"> + </span> COMPRAR OTRA VEZ
     </button>
 
-    <div class="coins-info">
+    <!-- <div class="coins-info">
       <h2 class="info-headline">Gana Coins</h2>
 
       <p class="info-paragraph">
         Te faltan N facturas para ganar XYZ MerchantID Coins
       </p>
-    </div>
+    </div>-->
   </div>
 
   <div class="bill-area" *ngIf="notify">
@@ -251,10 +251,10 @@
         <p class="total">Subtotal:</p>
         <p class="amount">{{ payment | number: "1.2-2" }}</p>
       </div>
-      <div class="items-container space-between" style="margin-top: 4px">
+      <!--       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Coins:</p>
         <p class="amount">- {{ payment | number: "1.2-2" }}</p>
-      </div>
+      </div> -->
       <div class="items-container space-between" style="margin-top: 4px">
         <p class="total">Total Pagado:</p>
         <p class="amount">{{ payment | number: "1.2-2" }}</p>
@@ -325,8 +325,8 @@
     >
       <h2 class="section-title">Mensaje de regalo:</h2>
 
-      <div class="message-box">
-        <div class="buttons-share">
+      <div class="buttons-share" *ngIf="!notify">
+        <div class="buttons-area">
           <button class="btn">
             <img [src]="env + '/QR.svg'" width="34px" height="34px" />
           </button>
@@ -342,6 +342,10 @@
             />
           </button>
         </div>
+        <h3 class="virtual">Mensaje Virtual</h3>
+      </div>
+
+      <div class="message-box">
         <section *ngIf="post.message">
           <h3 class="sub">Mensaje a escribir:</h3>
           <p class="message-text inner">
@@ -376,7 +380,25 @@
     </section>
   </main>
 
-  <footer class="footer-display" *ngIf="merchant">
+  <qrcode
+    style="display: none"
+    *ngIf="order"
+    #qrcode
+    [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+    [elementType]="'img'"
+    [width]="40"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000"
+  ></qrcode>
+
+  <footer
+    class="footer-display"
+    *ngIf="merchant"
+    [style.backgroundColor]="
+      changeColor ? changeColor : headerService.colorTheme
+    "
+  >
     <div
       class="left-arrow"
       *ngIf="this.orderInDayIndex > 0 || orderBeforeOrderDay"
@@ -387,6 +409,7 @@
         alt=""
       />
     </div>
+
     <div class="pages-tabs">
       <div class="images-container">
         <img
