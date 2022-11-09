@@ -207,40 +207,67 @@
       </div>
 
       <ng-container *ngIf="post">
-        <div *ngIf="post.slides?.length && postSlideImage">
-          <img [src]="postSlideImage" width="100%" />
-        </div>
-        <ng-container *ngIf="!post.slides?.length">
+        <div
+          class="items-container"
+          *ngIf="post.slides?.length && postSlideImages?.length"
+          style="margin-bottom: 8px"
+        >
           <div
-            class="message-box"
-            *ngIf="
-              post?.message || post?.from || post?.targets[0].name;
-              else noMessage
-            "
+            class="image-container"
+            #elemt
+            (mousedown)="startDragging($event, elemt)"
+            (mouseup)="stopDragging()"
+            (mouseleave)="stopDragging()"
+            (mousemove)="moveEvent($event, elemt)"
           >
-            <section *ngIf="post.message">
-              <h3 class="sub">Mensaje a escribir:</h3>
-              <p class="message-text inner">
-                {{ post.message }}
-              </p>
-            </section>
-
-            <section *ngIf="post.targets?.length && post.targets[0]?.name">
-              <h3 class="sub">Para:</h3>
-              <p class="message-text inner">{{ post.targets[0]?.name }}</p>
-            </section>
-
-            <section *ngIf="post.from">
-              <h3 class="sub">De:</h3>
-              <p class="message-text inner">{{ post.from }}</p>
-            </section>
+            <button
+              *ngFor="let image of postSlideImages"
+              (click)="openImageModal(image)"
+            >
+              <div class="image">
+                <img
+                  [src]="image || '/assets/images/noimage.png'"
+                  alt="item image"
+                  class="item-image"
+                />
+              </div>
+            </button>
           </div>
-          <ng-template #noMessage>
-            <div class="items-container">
-              <span class="address-name"> Sin mensaje de regalo </span>
-            </div>
-          </ng-template>
-        </ng-container>
+        </div>
+        <div
+          class="message-box"
+          *ngIf="
+            post?.message ||
+              post?.from ||
+              (post?.targets?.length && post.targets[0].name);
+            else noMessage
+          "
+        >
+          <section *ngIf="post.message">
+            <h3 class="sub">Mensaje a escribir:</h3>
+            <p class="message-text inner">
+              {{ post.message }}
+            </p>
+          </section>
+
+          <section *ngIf="post.targets?.length && post.targets[0]?.name">
+            <h3 class="sub">Para:</h3>
+            <p class="message-text inner">{{ post.targets[0]?.name }}</p>
+          </section>
+
+          <section *ngIf="post.from">
+            <h3 class="sub">De:</h3>
+            <p class="message-text inner">{{ post.from }}</p>
+          </section>
+        </div>
+        <ng-template #noMessage>
+          <div
+            class="items-container"
+            *ngIf="!post.slides?.length || !postSlideImages?.length"
+          >
+            <span class="address-name"> Sin mensaje de regalo </span>
+          </div>
+        </ng-template>
       </ng-container>
       <ng-container *ngIf="!post">
         <app-answer-selector

@@ -319,7 +319,7 @@
       *ngIf="
         (order?.items[0].post && post?.message) ||
         post?.from ||
-        post?.targets[0].name
+        (post?.targets?.length && post?.targets[0].name)
       "
       style="margin-top: 32px"
     >

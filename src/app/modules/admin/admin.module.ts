@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CreateItemComponent } from './pages/create-item/create-item.component';
-import { EntityDetailMetricsComponent } from './pages/entity-detail-metrics/entity-detail-metrics.component';
 import { MerchantItemsComponent } from './pages/merchant-items/merchant-items.component';
 import { ItemDisplayComponent } from './pages/item-display/item-display.component';
 import { ActionsMenuComponent } from './pages/actions-menu/actions-menu.component';
@@ -13,26 +12,47 @@ import { ReservationListComponent } from 'src/app/shared/components/reservation-
 import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
 import { CalendarCreatorComponent } from './pages/calendar-creator/calendar-creator.component';
 import { TimeBlockComponent } from './pages/time-block/time-block.component';
+import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
+import { ArticleParamsComponent } from './pages/article-params/article-params.component';
+import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
 
 const routes: Routes = [
+  { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
   {
-    path: 'create-item',
-    component: CreateItemComponent,
+    path: 'create-article',
+    component: ArticleCreatorComponent,
+  },
+  {
+    path: 'article-params',
+    component: ArticleParamsComponent,
   },
   {
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'entity-detail-metrics', pathMatch: 'full' },
       {
-        path: 'create-item/:itemId',
-        component: CreateItemComponent,
+        path: '',
+        redirectTo: 'admin/entity-detail-metrics',
+        pathMatch: 'full',
       },
       {
+        path: 'create-item/:itemId',
+        redirectTo: 'create-article/:itemId',
+        pathMatch: 'full',
+      },
+      {
+        path: 'create-article/:itemId',
+        component: ArticleCreatorComponent,
+      },
+      {
+        path: 'article-params/:itemId',
+        component: ArticleParamsComponent,
+      },
+      /*{
         path: 'entity-detail-metrics',
         component: EntityDetailMetricsComponent,
         data: { animation: 'EntityDetailMetrics' },
-      },
+      },*/
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
@@ -75,6 +95,10 @@ const routes: Routes = [
         path: 'time-block/:calendarId',
         component: TimeBlockComponent,
       },
+      {
+        path: 'entity-detail-metrics',
+        component: ItemsDashboardComponent,
+      },
     ],
   },
 ];
@@ -82,15 +106,18 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     CreateItemComponent,
-    EntityDetailMetricsComponent,
     MerchantItemsComponent,
     ItemDisplayComponent,
     ActionsMenuComponent,
     AdminComponent,
     OrdersAndPreOrdersList,
     CalendarCreatorComponent,
-    TimeBlockComponent
+    TimeBlockComponent,
+    ArticleCreatorComponent,
+    ArticleParamsComponent,
+    ItemsDashboardComponent,
   ],
+  exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],
 })
 export class AdminModule {}

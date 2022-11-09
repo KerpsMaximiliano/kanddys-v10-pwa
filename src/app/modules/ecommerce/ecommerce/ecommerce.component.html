@@ -6,8 +6,7 @@
     activePath !== 'checkout'
   "
   position="right"
-  color="blue"
-  [bgColor]="headerService.colorTheme"
+  [color]="headerService.colorTheme == '#2874AD' ? 'blue' : 'black'"
   [solo]="false"
   [cart]="true"
   [cartAmount]="headerService.order?.products?.length"

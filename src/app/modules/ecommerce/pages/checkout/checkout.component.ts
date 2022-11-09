@@ -126,7 +126,7 @@ export class CheckoutComponent implements OnInit {
   options: OptionAnswerSelector[] = options;
   selectedPostOption: number;
   missingOrderData: boolean;
-  postSlideImage: string | ArrayBuffer;
+  postSlideImages: (string | ArrayBuffer)[] = [];
 
   constructor(
     private dialogService: DialogService,
@@ -236,11 +236,15 @@ export class CheckoutComponent implements OnInit {
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.postSlideImage = reader.result;
-      };
-      reader.readAsDataURL(this.post.slides[0].media);
+      this.post.slides.forEach((slide) => {
+        if (slide.media) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.postSlideImages.push(reader.result);
+          };
+          reader.readAsDataURL(slide.media);
+        }
+      });
     }
     this.deliveryLocation = this.headerService.getLocation();
     this.reservation = this.headerService.getReservation().reservation;
@@ -332,7 +336,7 @@ export class CheckoutComponent implements OnInit {
     this.location.back();
   };
 
-  openImageModal(imageSourceURL: string) {
+  openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
       type: 'fullscreen-translucent',
       props: {
@@ -469,7 +473,7 @@ export class CheckoutComponent implements OnInit {
           this.router.navigate([`/auth/login`], {
             queryParams: {
               orderId: createdOrder,
-              auth: anonymous && 'anonymous',
+              auth: 'anonymous',
             },
           });
           return;
@@ -526,13 +530,21 @@ export class CheckoutComponent implements OnInit {
         break;
       }
       case 1: {
+        this.router.navigate([`../create-giftcard`], {
+          queryParams: {
+            symbols: 'virtual',
+          },
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 2: {
-        // this.router.navigate([`../create-article`], {
-        //   relativeTo: this.route,
-        //   replaceUrl: true,
-        // });
+        this.headerService.checkoutRoute = `ecommerce/${this.headerService.saleflow._id}/checkout`;
+        this.router.navigate([`../create-article`], {
+          relativeTo: this.route,
+          replaceUrl: true,
+        });
         break;
       }
       case 3: {

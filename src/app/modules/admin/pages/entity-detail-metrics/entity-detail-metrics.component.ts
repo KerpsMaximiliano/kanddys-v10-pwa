@@ -229,7 +229,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         text: 'Crea un nuevo artículo',
         callback: () => {
           this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`admin/create-item`]);
+          this.router.navigate([`admin/create-article`]);
         },
       },
       {
@@ -331,7 +331,7 @@ export class EntityDetailMetricsComponent implements OnInit {
         text: 'Crea un nuevo artículo',
         callback: () => {
           this.headerService.flowRoute = this.router.url;
-          this.router.navigate([`admin/create-item`]);
+          this.router.navigate([`admin/create-article`]);
         },
       },
       {
@@ -369,13 +369,13 @@ export class EntityDetailMetricsComponent implements OnInit {
 
   onPencilClick = () => {
     this.headerService.flowRoute = this.router.url;
-    this.router.navigate(['admin/create-item']);
+    this.router.navigate(['admin/create-article']);
   };
 
   redirectToCreateItem = () => {
     this.headerService.flowRoute = this.router.url;
     this.itemsService.temporalItem = null;
-    this.router.navigate(['admin/create-item']);
+    this.router.navigate(['admin/create-article']);
   };
 
   redirectMerchantItems = (url: string) => {

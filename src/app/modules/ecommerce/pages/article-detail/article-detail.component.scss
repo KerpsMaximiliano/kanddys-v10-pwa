@@ -1,0 +1,483 @@
+.header {
+  background: #000000;
+  height: 46px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+}
+
+.slide {
+  background: #e9e371;
+  width: 100%;
+  height: 100vh;
+  display: block;
+  cursor: pointer;
+}
+.bottom {
+  width: 100%;
+  height: 31px;
+  background: #2e2e2e;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  span {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: #a1a1a1;
+    font-family: "SfProBold";
+    &:nth-child(1) {
+      color: #fff;
+    }
+  }
+}
+.button {
+  width: 100%;
+  background: #82f18d;
+  height: 36px;
+  cursor: pointer;
+  text-align: left;
+  padding-left: 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.button-icon {
+  position: absolute;
+  left: 10px;
+}
+
+.up-box-arrow {
+  position: absolute;
+  right: 5px;
+}
+
+.btn-text {
+  padding-top: 5px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 10px 16px;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+}
+
+.grid-btn {
+  background: #ffffff;
+  color: #272727;
+  border-radius: 3px;
+}
+.col:nth-child(2) {
+  text-align: right;
+}
+.grid-btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 43px;
+  font-family: "SfProDisplayBold";
+  color: #272727;
+  font-size: 15px;
+  cursor: pointer;
+}
+.icon {
+  color: #272727;
+  font-size: 25px;
+}
+.copy {
+  position: relative;
+  top: -2px;
+  padding-left: 7px;
+}
+.fixed {
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  max-width: 100%;
+  z-index: 1;
+}
+.hidden {
+  display: none;
+}
+
+.container {
+  margin-top: 46px;
+  position: relative;
+  height: calc(100vh - (179px));
+
+  .entity-image {
+    height: calc(100vh - (179px));
+    width: 100%;
+    background-image: url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/noimage.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff;
+}
+
+audio {
+  width: 100%;
+  position: absolute;
+  bottom: 70px;
+  left: 0px;
+}
+
+.audio {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.audio-container {
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.audio-file {
+  position: absolute;
+  top: 160px;
+}
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.fa-chevron-up {
+  margin-bottom: -7px;
+  font-size: 17px;
+  position: relative;
+  top: -3px;
+}
+
+.text {
+  color: #fff;
+  font-size: 15px;
+  font-family: "SfProBold";
+  text-align: center;
+  cursor: pointer;
+}
+.notification {
+  margin: auto;
+  cursor: pointer;
+}
+
+.lines {
+  display: grid;
+  grid-template-columns: 2fr 4fr 1fr 5fr 3fr;
+  gap: 2px;
+  width: 100%;
+  height: 8px;
+  background: #000;
+  align-items: center;
+  .line {
+    background: #ffffff;
+    height: 3px;
+    &:nth-child(2) {
+      background: #82f18d;
+    }
+  }
+}
+
+.media-placeholder {
+  height: 100vh !important;
+}
+.upper-text {
+  font-family: "SfProDisplayBold";
+  color: #a1a1a1;
+  font-size: 15px;
+  background: #000;
+  height: 37px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.link-id {
+  width: 100%;
+  height: 121px;
+  display: grid;
+  grid-template-columns: 1fr 11fr;
+  align-items: center;
+  background: #000;
+  padding: 14px 0px;
+  padding-top: 20px;
+}
+
+.bottom-arrows {
+  position: relative;
+  top: -12px;
+  left: 16px;
+}
+
+.yellow-square {
+  background: #e9e371;
+  width: 90%;
+  height: 81px;
+  border-radius: 4px;
+}
+
+.heart-icon {
+  padding-left: 10px;
+}
+
+/* ACTIONS*/
+.bottom-user-actions-panel {
+  background: #000000;
+  position: fixed;
+  z-index: 1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: auto;
+  transition: 0.3s transform linear;
+  transform: translateY(133px);
+
+  &.opened {
+    transform: translateY(0px);
+  }
+
+  .inner-wrapper-top {
+    min-height: 133px;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    .current-media-shown-indicators {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      max-width: 500px;
+      background-color: white;
+      display: grid;
+    }
+
+    .indicator {
+      flex: 1;
+      border-left: 1px solid black;
+      border-right: 1px solid black;
+
+      &.active {
+        background-color: #82f18d;
+      }
+    }
+  }
+
+  .inner-wrapper-bottom {
+    min-height: 133px;
+
+    .content-wrapper {
+      width: 100%;
+      height: 133px;
+      padding-left: 45px;
+      display: flex;
+      align-items: center;
+
+      .tags-area {
+        min-width: 92px;
+        max-width: 89px !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0px;
+
+        .tag-item {
+          width: 81px;
+          height: 81px;
+          border: solid 3px #e9e371;
+          border-radius: 50%;
+          cursor: pointer;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          transition: 0.7s border ease-in-out;
+
+          &:hover {
+            cursor: pointer;
+            border: 3px solid darken($color: #e9e371, $amount: 30);
+          }
+        }
+
+        .tag-name {
+          font-family: "SfProMedium";
+          font-size: 0.938rem;
+          color: #7b7b7b;
+          cursor: pointer;
+        }
+      }
+
+      .description {
+        width: calc(100% - 49.13px);
+        text-align: center;
+        color: white;
+        font-family: SfProRegular;
+        font-weight: normal;
+
+        p {
+          word-break: break-word;
+          max-height: 81px;
+          overflow-y: scroll;
+        }
+      }
+    }
+  }
+
+  .arrows-icon {
+    flex-basis: 11.48%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    img {
+      width: 17px;
+      height: 21px;
+      margin-bottom: 42px;
+      transition: 0.3s transform linear;
+
+      &.opened {
+        transform: translateY(133px) rotate(-180deg);
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .add-to-cart-and-item-price-columnn {
+    flex-basis: 67.28%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    font-family: 'SfProBold';
+
+    .item-price {
+      font-size: 17px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    button {
+      font-size: 15px;
+      padding: 12px 0px;
+      background-color: white;
+      border: none;
+      border-radius: 25px;
+      text-align: center;
+      transition: 0.3s background-color linear;
+
+      &.inCart {
+        background-color: #82f18d;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: darken($color: #ffffff, $amount: 30);
+
+        &.inCart {
+          background-color: darken($color: #82f18d, $amount: 30);
+        }
+      }
+    }
+
+    .add-to-favorites-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    p {
+      color: #808080;
+      font-size: 15px;
+      font-family: SfProBold;
+      text-align: center;
+
+      span {
+        color: #c81ebb;
+      }
+    }
+
+    img {
+      margin-left: 8px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  .empty-space {
+    flex-basis: 11.48%;
+  }
+
+  .cart-button {
+    position: absolute;
+    top: 11px;
+    right: 19px;
+    width: 56px;
+    height: 56px;
+    background-color: #272727;
+    border-radius: 50%;
+    background-size: 33px;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    .cart-button-inner-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+
+      .items-amount {
+        position: absolute;
+        top: 10px;
+        right: 4px;
+        border-radius: 50%;
+        line-height: 18px;
+        width: 18px;
+        height: 18px;
+        text-align: center;
+        background-color: red;
+        color: white;
+      }
+    }
+  }
+}
+
+:host ::ng-deep .swiper-button-next,
+:host ::ng-deep .swiper-button-prev {
+  display: none;
+}

@@ -347,6 +347,16 @@ export class LoginComponent implements OnInit {
             );
           }
 
+          if (this.action === 'precreateitem') {
+            await this.authService.generateMagicLink(
+              this.merchantNumber,
+              `admin/options/`,
+              this.itemId,
+              'NewItem',
+              {}
+            );
+          }
+
           if (this.auth === 'merchant') {
             await this.authService.generateMagicLink(
               this.merchantNumber,
@@ -749,7 +759,7 @@ export class LoginComponent implements OnInit {
 
         // await this.authService.generateMagicLink(
         //   this.merchantNumber,
-        //   `admin/entity-detail-metrics`,
+        //   `admin/items-dashboards`,
         //   newUser._id,
         //   'MerchantAccess',
         //   null

@@ -1,18 +1,23 @@
-<div class="header-grid">
-  <div class="arrows" (click)="handleClick()">
-    <i
-      class="fas fa-chevron-up"
-      aria-hidden="true"
-      style="color: rgb(255, 255, 255); display: block"
-    ></i>
-    <i
-      class="fas fa-chevron-up"
-      aria-hidden="true"
-      style="color: rgb(255, 255, 255); display: block"
-    ></i>
+<div
+  class="header-grid"
+  [ngClass]="{
+    search: showSearch
+  }"
+>
+  <div class="arrows" (click)="handleClick('arrows')">
+    <img
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-double-up.svg"
+      alt="button"
+    />
   </div>
-  <div class="header-text">{{text}}</div>
-  <div class="dots">
+  <div class="header-text">{{ text }}</div>
+  <div class="search" (click)="handleSearch()" *ngIf="showSearch">
+    <img
+      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/search-white.svg"
+      alt="button"
+    />
+  </div>
+  <div class="dots" (click)="handleClick2()">
     <div class="dot-trio">
       <div class="dot" *ngFor="let dot of ['', '', '']"></div>
     </div>

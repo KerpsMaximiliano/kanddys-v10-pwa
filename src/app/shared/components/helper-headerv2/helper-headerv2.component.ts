@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { error } from 'console';
 import { environment } from 'src/environments/environment';
 
-interface Text {
+export interface Text {
   text: string;
   fontFamily?: string;
   fontSize?: string;
@@ -39,6 +39,20 @@ interface Icon {
     filter?: string;
   };
   callback: () => void;
+}
+
+export interface HelperHeaderInput {
+  mode: 'basic' | 'double' | 'options' | 'center' | '2raise' | 'edit' | 'test';
+  fixed?: boolean;
+  mainText: Text;
+  bgColor?: string;
+  returnable?: boolean;
+  returnEvent?(...params): any;
+  dots?: {
+    active: boolean;
+    color?: string;
+    func?: () => void;
+  };
 }
 
 @Component({

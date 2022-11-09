@@ -378,7 +378,7 @@ export class UserContactLandingComponent implements OnInit {
         src: item.images.length ? item.images[0] : this.defaultImage,
         callback: () =>
           this.router.navigate([
-            `/ecommerce/${this.saleflow._id}/item-detail/${item._id}`,
+            `/ecommerce/${this.saleflow._id}/article-detail/item/${item._id}`,
           ]),
       }));
     } catch (error) {
@@ -452,7 +452,7 @@ export class UserContactLandingComponent implements OnInit {
               this.headerService.flowRoute = this.router.url;
 
               this.itemsService.temporalItem = null;
-              this.router.navigate([`/admin/create-item`]);
+              this.router.navigate([`/admin/create-article`]);
             },
             plus: true,
           },

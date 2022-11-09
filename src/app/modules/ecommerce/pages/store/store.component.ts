@@ -1,7 +1,15 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
   Item,
@@ -9,18 +17,33 @@ import {
   ItemCategoryHeadline,
 } from 'src/app/core/models/item';
 import { ItemSubOrderParamsInput } from 'src/app/core/models/order';
+import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { Tag } from 'src/app/core/models/tags';
+import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import {
   StoreShareComponent,
   StoreShareList,
 } from 'src/app/shared/dialogs/store-share/store-share.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
+import SwiperCore, { Virtual } from 'swiper/core';
+import { Merchant } from 'src/app/core/models/merchant';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+
+SwiperCore.use([Virtual]);
+
+interface ExtendedTag extends Tag {
+  selected?: boolean;
+}
 
 @Component({
   selector: 'app-store',
@@ -32,6 +55,9 @@ export class StoreComponent implements OnInit {
   env: string = environment.assetsUrl;
   hasCustomizer: boolean;
   items: Item[] = [];
+  tags: ExtendedTag[] = [];
+  tagsHashTable: Record<string, Tag> = {};
+  tagsByNameHashTable: Record<string, Tag> = {};
   itemsByCategory: {
     label: string;
     items: Item[];
@@ -46,6 +72,7 @@ export class StoreComponent implements OnInit {
     callback: () => void;
   }[] = [];
   categorylessItems: Item[] = [];
+  filteredCategoryLessItems: Item[] = [];
   categories: ItemCategory[] = [];
   contactLandingRoute: string;
   highlightedItems: Item[] = [];
@@ -54,6 +81,30 @@ export class StoreComponent implements OnInit {
   deleteEvent: Subscription;
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
   admin: boolean;
+  searchBar: FormControl = new FormControl('');
+  selectedTagsCounter: number = 0;
+  selectedTags: Array<Tag> = [];
+  selectedTagsPermanent: Array<Tag> = [];
+  unselectedTags: Array<Tag> = [];
+  user: User = null;
+  userDefaultMerchant: Merchant = null;
+  showSearchbar: boolean = true;
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+    page: 1,
+    pageSize: 60,
+    status: 'loading',
+  };
+
+  public swiperConfigTag: SwiperOptions = {
+    slidesPerView: 'auto',
+    freeMode: true,
+    spaceBetween: 0,
+  };
+
   public swiperConfig: SwiperOptions = {
     slidesPerView: 'auto',
     freeMode: true,
@@ -66,14 +117,26 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
+  @HostListener('window:scroll', [])
+  async infinitePagination() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      await this.getItems();
+    }
+  }
+
+  @ViewChild('tagsSwiper') tagsSwiper: SwiperComponent;
+
   constructor(
     private dialog: DialogService,
     private router: Router,
+    private merchantService: MerchantsService,
     public header: HeaderService,
     private saleflow: SaleFlowService,
     private item: ItemsService,
     private authService: AuthService,
+    private appService: AppService,
     private orderService: OrderService,
+    private tagsService: TagsService,
     private location: Location
   ) {}
 
@@ -94,75 +157,32 @@ export class StoreComponent implements OnInit {
   }
 
   async organizeItems() {
-    this.categorylessItems = this.items.filter((item) => !item.category.length);
     // .sort((a, b) => a.pricing - b.pricing);
     const highlightedItemsObject = {};
     this.highlightedItems = [];
 
-    for (const item of this.categorylessItems) {
+    //Sets highlightedItems array
+    for (const item of this.items) {
       if (item.status === 'featured') {
         this.highlightedItems.push(item);
         highlightedItemsObject[item._id] = true;
       }
     }
 
-    if (!this.categories || !this.categories.length) return;
-    this.categories.forEach(async (saleflowCategory) => {
-      if (
-        this.items.some((item) =>
-          item.category.some(
-            (category) => category.name === saleflowCategory.name
-          )
-        )
-      ) {
-        lockUI();
-        let ordersTotal: { total: number; length: number };
-        if (this.admin)
-          ordersTotal = await this.orderService.ordersTotal(
-            ['completed', 'to confirm', 'verifying'],
-            this.header.saleflow.merchant._id,
-            [],
-            saleflowCategory._id
-          );
-        const url = `/ecommerce/${this.header.saleflow._id}/category-items/${saleflowCategory._id}`;
-        this.itemsByCategory.push({
-          label: saleflowCategory.name,
-          items: this.items.filter((item) =>
-            item.category.some(
-              (category) => category.name === saleflowCategory.name
-            )
-          ),
-          images: this.items
-            .filter((item) =>
-              item.category.some(
-                (category) => category.name === saleflowCategory.name
-              )
-            )
-            .map((item) => ({
-              src: item.images?.length ? item.images[0] : '',
-              callback: () => this.onItemClick(item._id),
-            })),
-          earnings: ordersTotal?.total.toLocaleString('es-MX'),
-          sales: ordersTotal?.length,
-          callback: () => this.router.navigate([url]),
-          shareCallback: () => this.onShareCallback(url),
-        });
+    //************************* GROUPS ITEMS BY TAG***************//
+    const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
 
-        for (const itemCategory of this.itemsByCategory) {
-          for (const item of itemCategory.items) {
-            if (!highlightedItemsObject[item._id]) {
-              this.highlightedItems.push(item);
-              highlightedItemsObject[item._id] = true;
-            }
-          }
+    for (const item of this.items) {
+      if (item.tags.length > 0) {
+        for (const tagId of item.tags) {
+          if (!tagsAndItemsHashtable[tagId]) tagsAndItemsHashtable[tagId] = [];
+          tagsAndItemsHashtable[tagId].push(item);
         }
-
-        unlockUI();
       }
-    });
-  }
+    }
 
-  // =====================================================
+    //*************************                        END                   *****************************//
+  }
 
   async ngOnInit(): Promise<void> {
     this.status = 'loading';
@@ -171,6 +191,7 @@ export class StoreComponent implements OnInit {
     // Resetear status de la ultima orden creada
     this.header.orderId = null;
 
+    this.getTags();
     // Obteniendo las categorias, el merchant de la tienda y el usuario actual
     const [itemCategories, headlines] = await Promise.all([
       this.item.itemCategories(this.header.saleflow.merchant._id, {
@@ -182,6 +203,9 @@ export class StoreComponent implements OnInit {
         this.header.saleflow.merchant._id
       ),
     ]);
+    if (this.header.user) {
+      this.userDefaultMerchant = await this.merchantService.merchantDefault();
+    }
     // Determina si el usuario actual es el dueño de la tienda
     if (this.header.user?._id === this.header.saleflow.merchant?.owner?._id) {
       this.admin = true;
@@ -209,7 +233,7 @@ export class StoreComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: 60,
+        limit: this.paginationState.pageSize,
       },
     });
     // Obteniendo la lista de los items seleccionados
@@ -258,8 +282,48 @@ export class StoreComponent implements OnInit {
     await this.organizeItems();
     if (this.header.customizerData) this.header.customizerData = null;
     // Marcar carga de la tienda como completada
+
+    this.searchBar.valueChanges.subscribe(async (change) => {
+      await this.getItems(true);
+      /*
+      if (this.selectedTags.length === 0) await this.getItems(true);
+      else {
+        this.filterItemsBySearch(change);
+      }
+      */
+    });
+
     this.status = 'complete';
+    this.paginationState.status = 'complete';
     unlockUI();
+  }
+
+  filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
+    let shouldIncludeItemInSearchResults = false;
+
+    if (
+      item.name &&
+      typeof item.name === 'string' &&
+      item.params.length === 0
+    ) {
+      if (item.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        shouldIncludeItemInSearchResults = true;
+      }
+    }
+
+    if (item.params.length > 0) {
+      item.params[0].values.forEach((typeOfItem) => {
+        if (typeOfItem.name && typeof typeOfItem.name === 'string') {
+          if (
+            typeOfItem.name.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            shouldIncludeItemInSearchResults = true;
+          }
+        }
+      });
+    }
+
+    return shouldIncludeItemInSearchResults;
   }
 
   seeCategories(index: number | string) {
@@ -303,7 +367,6 @@ export class StoreComponent implements OnInit {
         amount: undefined,
         saleflow: this.header.saleflow._id,
       };
-      this.header.items = [itemData];
       this.header.order = {
         products: [product],
       };
@@ -314,7 +377,9 @@ export class StoreComponent implements OnInit {
       ]);
     } else {
       this.router.navigate(
-        [`/ecommerce/${this.header.saleflow._id}/item-detail/${itemData._id}`],
+        [
+          `/ecommerce/${this.header.saleflow._id}/article-detail/item/${itemData._id}`,
+        ],
         {
           replaceUrl: this.header.checkoutRoute ? true : false,
         }
@@ -350,14 +415,47 @@ export class StoreComponent implements OnInit {
     });
   };
 
-  openLogoutDialog() {
-    this.dialog.open(StoreShareComponent, {
+  //Same dialog as openUserManagementDialog() but with SettingsComponent
+  openDialog() {
+    const list = [
+      {
+        text: 'Cerrar Sesión',
+        callback: async () => {
+          await this.authService.signout();
+        },
+      },
+    ];
+
+    if (!this.user) {
+      list.pop();
+      list.push({
+        text: 'Iniciar sesión',
+        callback: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.header.saleflow._id,
+            },
+          });
+        },
+      });
+    }
+
+    if (this.userDefaultMerchant) {
+      list.unshift({
+        text: 'Ir a mi Dashboard',
+        callback: async () => {
+          this.router.navigate(['admin/entity-detail-metrics']);
+        },
+      });
+    }
+
+    this.dialog.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        alternate: true,
-        buttonText: 'Cerrar Sesión',
-        buttonCallback: () => {
-          this.authService.signoutThree();
+        optionsList: list,
+        title: 'Sobre las facturas',
+        cancelButton: {
+          text: 'Cerrar',
         },
       },
       customClass: 'app-dialog',
@@ -365,7 +463,253 @@ export class StoreComponent implements OnInit {
     });
   }
 
+  //Same dialog as openDialog() but with StoreShare
+  openUserManagementDialog = () => {
+    const list: StoreShareList[] = [
+      {
+        title: 'Menu de opciones',
+        options: [
+          {
+            text: 'Cerrar sesión',
+            mode: 'func',
+            func: async () => {
+              await this.authService.signout();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (!this.user) {
+      list[0].options.pop();
+      list[0].options.push({
+        text: 'Iniciar sesión',
+        mode: 'func',
+        func: async () => {
+          this.router.navigate(['auth/login'], {
+            queryParams: {
+              redirect: 'ecommerce/store/' + this.header.saleflow._id,
+            },
+          });
+        },
+      });
+    }
+
+    this.dialog.open(StoreShareComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        list,
+        alternate: true,
+        hideCancelButtton: true,
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+  };
+
   back() {
     this.location.back();
+  }
+
+  async getTags() {
+    const userTag = await this.tagsService.tags({
+      findBy: {
+        user: this.header.saleflow.merchant.owner._id,
+        status: 'active',
+      },
+      options: {
+        limit: 60,
+      },
+    });
+    this.tags = userTag.tags;
+    this.unselectedTags = [...this.tags];
+
+    for (const tag of this.tags) {
+      this.tagsHashTable[tag._id] = tag;
+      this.tagsByNameHashTable[tag.name] = tag;
+      tag.selected = false;
+    }
+
+    setTimeout(() => {
+      this.tagsSwiper.directiveRef.update();
+    }, 300);
+  }
+
+  async selectTag(tag: ExtendedTag, tagIndex: number) {
+    if (this.tags[tagIndex].selected) {
+      this.tags[tagIndex].selected = false;
+      this.selectedTagsCounter--;
+
+      this.selectedTags = this.selectedTags.filter(
+        (selectedTag) => selectedTag._id !== tag._id
+      );
+
+      if (this.selectedTags.length === 0) {
+        this.unselectedTags = [...this.tags];
+        this.selectedTagsPermanent = [];
+        this.showSearchbar = true;
+      }
+    } else {
+      const selectedTagObject = { ...tag };
+
+      this.tags[tagIndex].selected = true;
+
+      delete selectedTagObject.selected;
+
+      this.selectedTags.push(selectedTagObject);
+
+      if (
+        !this.selectedTagsPermanent.find(
+          (tag) => tag._id === selectedTagObject._id
+        )
+      ) {
+        this.selectedTagsPermanent.push(tag);
+      }
+
+      this.selectedTagsCounter++;
+
+      const unselectedTagIndexToDelete = this.unselectedTags.findIndex(
+        (unselectedTag) => unselectedTag._id === tag._id
+      );
+
+      if (unselectedTagIndexToDelete > 0) {
+        this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
+      }
+    }
+
+    if (this.selectedTags.length === 1) {
+      this.showSearchbar = false;
+    }
+
+    await this.getItems(true);
+  }
+
+  async selectTagFromHeader(eventData: {
+    selected: boolean;
+    tag: ExtendedTag;
+  }) {
+    const tagIndex = this.tags.findIndex((tag) => {
+      return tag._id === eventData.tag._id;
+    });
+
+    this.selectTag(eventData.tag, tagIndex);
+  }
+
+  async getItems(restartPagination = false) {
+    this.paginationState.status = 'loading';
+    this.header.getOrder();
+
+    const saleflowItems = this.header.saleflow.items.map((saleflowItem) => ({
+      item: saleflowItem.item._id,
+      customizer: saleflowItem.customizer?._id,
+      index: saleflowItem.index,
+    }));
+
+    if (restartPagination) {
+      this.paginationState.page = 1;
+    } else {
+      this.paginationState.page++;
+    }
+
+    const pagination: PaginationInput = {
+      findBy: {
+        _id: {
+          __in: ([] = saleflowItems.map((items) => items.item)),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    const selectedTagIds = this.selectedTags.map((tag) => tag._id);
+
+    //Search tagids that match the searchbar value
+    if (this.selectedTags.length === 0) {
+      Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+        if (
+          tagName
+            .toLowerCase()
+            .includes((this.searchBar.value as string).toLowerCase()) &&
+          (this.searchBar.value as string) !== ''
+        ) {
+          const tagId = this.tagsByNameHashTable[tagName]._id;
+
+          if (!selectedTagIds.includes(tagId)) {
+            selectedTagIds.push(tagId);
+          }
+        }
+      });
+    }
+
+    if (this.selectedTags.length > 0) {
+      pagination.findBy.tags = selectedTagIds;
+    }
+
+    if (this.searchBar.value !== '') {
+      pagination.findBy = {
+        ...pagination.findBy,
+        $or: [
+          {
+            name: {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
+          {
+            'params.values.name': {
+              __regex: {
+                pattern: this.searchBar.value,
+                options: 'gi',
+              },
+            },
+          },
+        ],
+      };
+
+      //Happens when the searchbar value matches a tag name
+      if (this.selectedTags.length === 0 && selectedTagIds.length > 0) {
+        pagination.findBy['$or'][2] = {
+          tags: {
+            $in: selectedTagIds,
+          },
+        };
+      }
+    }
+
+    const items = await this.saleflow.listItems(pagination);
+    const itemsQueryResult = items.listItems.filter((item) => {
+      return item.status === 'active' || item.status === 'featured';
+    });
+
+    if (this.paginationState.page === 1) {
+      this.items = itemsQueryResult;
+    } else {
+      this.items = this.items.concat(itemsQueryResult);
+    }
+
+    this.organizeItems();
+
+    this.paginationState.status = 'complete';
+  }
+
+  getSelectedTagsNames(selectedTags: Array<Tag>) {
+    return this.selectedTags.map((tag) => tag.name);
+  }
+
+  async resetSelectedTags() {
+    this.selectedTags = [];
+    this.selectedTagsCounter = 0;
+    this.selectedTagsPermanent = [];
+    this.unselectedTags = this.tags;
+    this.tags.forEach((tag) => (tag.selected = false));
+    this.unselectedTags = this.tags;
+    this.showSearchbar = true;
+
+    await this.getItems(true);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { environment } from 'src/environments/environment'; 
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-tags-selector',
@@ -8,7 +8,8 @@ import { environment } from 'src/environments/environment';
 })
 export class TagsSelectorComponent implements OnInit {
   @Input('tags') tags: any[] = [];
-  tag: string[] = [];
+  @Input('fillSelectedTagsOnStart') fillSelectedTagsOnStart: boolean;
+  @Input() tag: string[] = [];
   @Input() activeTags: any[];
   @Input() useIdToRemoveOrAddTags: boolean = false;
   @Input('multipleTags') multipleTags: boolean = false;
@@ -18,9 +19,11 @@ export class TagsSelectorComponent implements OnInit {
   @Input('selectedFilter') selectedFilter: string = 'brightness(2)';
   @Input('color') color: string = '#fff';
   @Input('selectedColor') selectedColor: string = '#2874ad';
+  @Input('useAlternativeOutput') useAlternativeOutput: boolean;
   env: string = environment.assetsUrl;
 
   @Output() tagSelect: EventEmitter<any> = new EventEmitter();
+  @Output() tagSelect2: EventEmitter<any> = new EventEmitter();
 
   setTag(tag): void {
     if (this.useIdToRemoveOrAddTags) {
@@ -38,16 +41,23 @@ export class TagsSelectorComponent implements OnInit {
         this.tag = value;
       }
     }
-    this.tagSelected(tag);
+
+    this.tagSelected(tag, this.tag.includes(tag));
   }
 
-  tagSelected(args?: any) {
-    this.tagSelect.emit(args);
+  tagSelected(args: any, selected: boolean) {
+    if (!this.useAlternativeOutput) this.tagSelect.emit(args);
+    else
+      this.tagSelect2.emit({
+        tag: args,
+        selected,
+      });
   }
 
   constructor() {}
 
   ngOnInit(): void {
+    console.log(this.tags);
     if (
       this.multipleTags &&
       ((this.activeTags && this.activeTags !== undefined) ||

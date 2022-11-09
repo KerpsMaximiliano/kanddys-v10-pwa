@@ -1,0 +1,163 @@
+<!--HEADER MENU-->
+<div class="header">
+  <div class="notification" (click)="back()">
+    <div>
+      <i
+        class="fas fa-chevron-up"
+        aria-hidden="true"
+        style="color: rgb(255, 255, 255); display: block"
+      ></i>
+      <i
+        class="fas fa-chevron-up"
+        aria-hidden="true"
+        style="color: rgb(255, 255, 255); display: block"
+      ></i>
+    </div>
+  </div>
+  <div></div>
+  <div></div>
+  <!-- <img
+    (click)="openMenu('DESCRIPTION')"
+    src="{{ env }}/d.png"
+    class="notification"
+  /> -->
+  <img
+    (click)="share()"
+    src="{{ env }}/share-outline.png"
+    class="notification"
+  />
+  <div></div>
+  <span class="text"></span>
+  <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
+</div>
+
+<div class="container">
+  <div class="media-swiper-wrapper">
+    <swiper
+      [config]="swiperConfig"
+      #mediaSwiper
+      (slideChange)="updateCurrentSlideData($event)"
+    >
+      <ng-container *ngIf="itemData?.images.length > 0">
+        <div
+          class="entity-image"
+          *ngFor="let image of itemData.images"
+          [ngStyle]="{
+            backgroundImage: 'url(' + image + ')',
+            height: 'calc(100vh - (179px))'
+          }"
+        ></div>
+      </ng-container>
+    </swiper>
+  </div>
+
+  <div
+    class="bottom-user-actions-panel"
+    [ngClass]="{
+      opened: menuOpened
+    }"
+  >
+    <div class="inner-wrapper-top">
+      <div
+      class="current-media-shown-indicators"
+      [style]="{
+        'grid-template-columns': '' + fractions + ''
+      }">
+        <ng-container *ngIf="itemData?.images.length > 0">
+          <div
+            class="indicator"
+            [ngClass]="{
+              active: imageIndex === currentMediaSlide
+            }"
+            *ngFor="let image of itemData.images; let imageIndex = index"
+          ></div>
+        </ng-container>
+      </div>
+
+      <div class="arrows-icon" (click)="openMenu('TAGS')">
+        <img
+          [ngClass]="{
+            opened: menuOpened
+          }"
+          [src]="env + '/arrow-double-up.svg'"
+          alt="open menu"
+        />
+      </div>
+
+      <div class="add-to-cart-and-item-price-columnn">
+        <h3 class="item-price">
+          RD $ {{ itemData?.pricing | number: "1.2-2" }}
+        </h3>
+        <button
+          (click)="saveProduct()"
+          [ngClass]="{
+            inCart: isItemInCart
+          }"
+        >
+          {{ isItemInCart ? "EN LA PRE-FACTURA" : "ADICIONALO A LA FACTURA" }}
+        </button>
+
+<!--         <div class="add-to-favorites-flex" *ngIf="menuOpened">
+          <p>Para guardar <span>+ recaudar fondo$ en la V2</span></p>
+          <img [src]="env + '/heart-outline.png'" alt="add to favorites" />
+        </div> -->
+      </div>
+
+      <div class="empty-space"></div>
+    </div>
+
+    <div class="inner-wrapper-bottom">
+      <!-- ******************************************* TAG SWIPER ***************************************-->
+      <div class="content-wrapper">
+        <swiper [config]="swiperConfigTag" *ngIf="typeOfMenuToShow === 'TAGS'" style="max-width: 98%;">
+          <div
+            class="tags-area"
+            *ngFor="let tag of itemTags; let tagIndex = index"
+            (click)="onTagClick(tag)"
+          >
+            <div
+              class="tag-item"
+              [ngStyle]="{
+                'background-image':
+                  tag.images && tag.images.length > 0
+                    ? 'url(' + tag.images[0] + ')'
+                    : 'url(' + env + '/assets/images/noimage.png' + ')',
+                border: tag.selected ? '3px solid #45944d' : 'solid 3px #82f18d'
+              }"
+            ></div>
+            <span class="tag-name">{{ tag.name }}</span>
+          </div>
+        </swiper>
+
+        <div class="description" *ngIf="typeOfMenuToShow === 'DESCRIPTION'">
+          <p>
+            {{
+              !itemData?.description ? "Sin descripción" : itemData?.description
+            }}
+          </p>
+        </div>
+      </div>
+      <!-- **************************************** END TAG SWIPER ***************************************-->
+    </div>
+
+    <!--
+      <div
+        class="cart-button"
+        *ngIf="
+          headerService.saleflow?.canBuyMultipleItems &&
+          headerService.order?.products?.length
+        "
+        [ngStyle]="{
+          backgroundColor: '#272727',
+          backgroundImage: 'url(' + env + '/carrito_blanco.svg' + ')'
+        }"
+      >
+        <div class="cart-button-inner-wrapper">
+          <div class="items-amount">
+            {{ headerService.order?.products?.length }}
+          </div>
+        </div>
+      </div>
+    -->
+  </div>
+</div>

@@ -17,14 +17,17 @@ export class Tag extends Model<Tag> {
   name: string;
   user?: string;
   status: string;
+  images?: [string];
   notifications: string[];
   merchant: string;
+  entity?: string;
+  containers?: TagContainers[];
 }
 
 export class TagInput {
   name?: string;
-  notifyUserOrder?: boolean;
-  notifyMerchantOrder?: boolean;
+  images?: File[];
+  notify?: boolean;
   status?: string;
   merchant?: string;
 }

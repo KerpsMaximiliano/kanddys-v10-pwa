@@ -1,11 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { FormStep } from 'src/app/core/types/multistep-form';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
 
 const lightLabelStyles = {
   fontFamily: 'RobotoRegular',
@@ -23,8 +21,10 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   constructor(
     private header: HeaderService,
     private router: Router,
-    private dialog: DialogService
+    private route: ActivatedRoute
   ) {}
+
+  virtual: boolean = false;
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
     const emptyPost = {
@@ -53,6 +53,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     this.header.orderProgress.message = true;
     this.header.storeOrderProgress();
+    if (this.virtual) {
+      this.header.checkoutRoute = `ecommerce/${this.header.saleflow._id}/checkout`;
+      this.router.navigate([`../create-article`], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+      return { ok: true };
+    }
     if (this.header.checkoutRoute) {
       this.router.navigate([this.header.checkoutRoute], {
         replaceUrl: true,
@@ -94,30 +102,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
 
     return { ok: true };
   };
-
-  public continueOrder = () => {
-    this.router.navigate([
-      `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-    ]);
-  };
-
-  showShoppingCartDialog() {
-    this.dialog.open(ShowItemsComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        headerButton: 'Ver mas productos',
-        orderFinished: true,
-        footerCallback: () =>
-          this.router.navigate([
-            `/ecommerce/${this.header.saleflow._id}/create-giftcard`,
-          ]),
-        headerCallback: () =>
-          this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]),
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
-    });
-  }
 
   addedScrollBlockerBefore = false;
   scrollBlockerBefore: any;
@@ -217,10 +201,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         }
 
         this.router.navigate([`ecommerce/${this.header.saleflow._id}/store`]);
-      },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
       },
       headerText: 'INFORMACIÓN DE LA ORDEN',
       stepButtonInvalidText: 'TOCA EN LA OPCION QUE PREFIERAS',
@@ -363,7 +343,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         },
       ],
       customHelperHeaderConfig: {
-        bgcolor: '#272727' /* this.header.colorTheme */,
+        bgcolor: this.header.colorTheme,
         justifyContent: 'center',
         icon: {
           src: '/arrow-double-up.svg',
@@ -421,6 +401,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
           try {
             this.header.orderProgress.message = true;
             this.header.storeOrderProgress();
+            if (this.virtual) {
+              this.header.checkoutRoute = `ecommerce/${this.header.saleflow._id}/checkout`;
+              this.router.navigate([`../create-article`], {
+                relativeTo: this.route,
+                replaceUrl: true,
+              });
+              return { ok: true };
+            }
             if (this.header.checkoutRoute) {
               this.router.navigate([this.header.checkoutRoute], {
                 replaceUrl: true,
@@ -447,12 +435,8 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
       customScrollToStep: (params) => {
         params.scrollToStep(1);
       },
-      showShoppingCartOnCurrentStep: true,
-      shoppingCartCallback: () => {
-        this.showShoppingCartDialog();
-      },
       hideMainStepCTA: true,
-/*       headerText: 'Comprar más',
+      /*       headerText: 'Comprar más',
       headerTextSide: 'LEFT',
       stepButtonInvalidText: 'ADICIONA EL MENSAJE',
       stepButtonValidText: 'CONTINUAR', */
@@ -464,12 +448,16 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
         fontSize: '17px',
       },
       footerConfig: {
-        bgColor: '#272727'/* this.header.colorTheme */,
+        bgColor: this.header.colorTheme,
       },
     },
   ];
 
   async ngOnInit(): Promise<void> {
+    const symbols = this.route.snapshot.queryParamMap.get('symbols');
+    if (symbols === 'virtual') {
+      this.virtual = true;
+    }
     this.header.flowRoute = `create-giftcard`;
     localStorage.setItem(
       'flowRoute',
