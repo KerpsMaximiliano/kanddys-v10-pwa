@@ -32,13 +32,14 @@
     <app-tags-selector
       *ngIf="selectedTags.length > 0"
       [tags]="selectedTagsPermanent"
+      [selectedTagsIds]="getActiveTagsFromSelectedTagsPermantent()"
       [multipleTags]="true"
-      [selectedBackground]="'#2874ad'"
-      [background]="'#ffffff'"
-      [selectedColor]="'#fff'"
+      [selectedBackground]="'#ffffff'"
+      [background]="'rgb(40, 116, 173)'"
+      [selectedColor]="'#2874ad'"
+      [color]="'#fff'"
       [fillSelectedTagsOnStart]="true"
       [useIdToRemoveOrAddTags]="true"
-      [color]="'#2874ad'"
       [useAlternativeOutput]="true"
       (tagSelect2)="selectTagFromHeader($event)"
     ></app-tags-selector>

@@ -858,4 +858,8 @@ export class StoreComponent implements OnInit {
       paginationState: this.paginationState,
     };
   }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
 }

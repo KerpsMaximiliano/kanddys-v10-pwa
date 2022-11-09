@@ -473,10 +473,6 @@ export class ItemDisplayComponent implements OnInit {
 
             if (response) {
               this.item.tags = this.selectedTags;
-
-              this.toastr.info('Tags asignados al item', null, {
-                timeOut: 1000,
-              });
             }
           } catch (error) {
             this.toastr.error('Error al asignar tags', null, {

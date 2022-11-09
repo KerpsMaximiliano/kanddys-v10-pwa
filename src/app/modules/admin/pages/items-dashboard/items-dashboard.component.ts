@@ -1276,4 +1276,8 @@ export class ItemsDashboardComponent implements OnInit {
   makeSearchBarVisible() {
     this.showSearchbar = true;
   }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.tagsList.filter((tag) => tag.selected).map((tag) => tag._id);
+  }
 }

@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -9,7 +15,7 @@ import { environment } from 'src/environments/environment';
 export class TagsSelectorComponent implements OnInit {
   @Input('tags') tags: any[] = [];
   @Input('fillSelectedTagsOnStart') fillSelectedTagsOnStart: boolean;
-  @Input() tag: string[] = [];
+  @Input('selectedTagsIds') tag: string[] = [];
   @Input() activeTags: any[];
   @Input() useIdToRemoveOrAddTags: boolean = false;
   @Input('multipleTags') multipleTags: boolean = false;
@@ -60,6 +66,8 @@ export class TagsSelectorComponent implements OnInit {
         tag: args,
         selected,
       });
+
+    console.log(args);
   }
 
   constructor() {}
