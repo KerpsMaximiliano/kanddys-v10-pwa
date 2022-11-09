@@ -181,13 +181,18 @@ export class ItemsDashboardComponent implements OnInit {
     this.headerService.flowRoute = null;
 
     await this.verifyIfUserIsLogged();
-    await this.inicializeTags();
-    await this.inicializeItems(true, false, true);
-    await this.inicializeHighlightedItems();
-    await this.inicializeArchivedItems();
-    await this.getOrdersTotal();
-    await this.getMerchantBuyers();
-    await this.inicializeSaleflowCalendar();
+
+    if (!this.headerService.dashboardTemporalData) {
+      await this.inicializeTags();
+      await this.inicializeItems(true, false, true);
+      await this.inicializeHighlightedItems();
+      await this.inicializeArchivedItems();
+      await this.getOrdersTotal();
+      await this.getMerchantBuyers();
+      await this.inicializeSaleflowCalendar();
+    } else {
+      this.getPageSnapshot();
+    }
 
     this.itemSearchbar.valueChanges.subscribe((change) =>
       this.inicializeItems(true, false)
@@ -600,47 +605,64 @@ export class ItemsDashboardComponent implements OnInit {
   }
 
   goToDetail(id: string) {
+    this.savePageSnapshot();
+
     this.headerService.flowRoute = this.router.url;
     localStorage.setItem('flowRoute', this.headerService.flowRoute);
     this.router.navigate([`admin/item-display/${id}`]);
   }
 
-  filterItemsBySearch(searchTerm: string) {
-    if (searchTerm !== '' && searchTerm) {
-      this.filteredHighlightedItems = this.highlightedItems.filter((item) =>
-        this.filterItemsPerSearchTerm(item, searchTerm)
-      );
-    } else {
-      this.filteredHighlightedItems = this.highlightedItems;
-    }
+  savePageSnapshot() {
+    this.headerService.dashboardTemporalData = {
+      allItems: this.allItems,
+      itemsTotalCounter: this.itemsTotalCounter,
+      activeItems: this.activeItems,
+      inactiveItems: this.inactiveItems,
+      inactiveItemsCounter: this.inactiveItemsCounter,
+      totalItemsCounter: this.totalItemsCounter,
+      activeItemsCounter: this.activeItemsCounter,
+      featuredItemsCounter: this.featuredItemsCounter,
+      archivedItemsCounter: this.archivedItemsCounter,
+      highlightedItems: this.highlightedItems,
+      filteredHighlightedItems: this.filteredHighlightedItems,
+      activeMenuOptionIndex: this.activeMenuOptionIndex,
+      tagsList: this.tagsList,
+      tagsLoaded: this.tagsLoaded,
+      tagsHashTable: this.tagsHashTable,
+      tagsByNameHashTable: this.tagsByNameHashTable,
+      selectedTags: this.selectedTags,
+      selectedTagsPermanent: this.selectedTagsPermanent,
+      selectedTagsCounter: this.selectedTagsCounter,
+      unselectedTags: this.unselectedTags,
+      user: this.user,
+      merchantDefault: this.merchantDefault,
+      menuNavigationSwiperConfig: this.menuNavigationSwiperConfig,
+      tagsSwiperConfig: this.tagsSwiperConfig,
+      highlightedConfigSwiper: this.highlightedConfigSwiper,
+      ordersTotal: this.ordersTotal,
+      saleflowCalendar: this.saleflowCalendar,
+      env: this.env,
+      hasCustomizer: this.hasCustomizer,
+      itemSearchbar: this.itemSearchbar.value,
+      showSearchbar: this.showSearchbar,
+      paginationState: this.paginationState,
+    };
   }
 
-  filterItemsPerSearchTerm(item: Item, searchTerm: string): boolean {
-    let shouldIncludeItemInSearchResults = false;
-
-    if (
-      item.name &&
-      typeof item.name === 'string' &&
-      item.params.length === 0
-    ) {
-      if (item.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-        shouldIncludeItemInSearchResults = true;
+  getPageSnapshot() {
+    for (const property of Object.keys(
+      this.headerService.dashboardTemporalData
+    )) {
+      if (property !== 'itemSearchbar') {
+        this[property] = this.headerService.dashboardTemporalData[property];
+      } else {
+        this.itemSearchbar.setValue(
+          this.headerService.dashboardTemporalData[property]
+        );
       }
     }
 
-    if (item.params.length > 0) {
-      item.params[0].values.forEach((typeOfItem) => {
-        if (typeOfItem.name && typeof typeOfItem.name === 'string') {
-          if (
-            typeOfItem.name.toLowerCase().includes(searchTerm.toLowerCase())
-          ) {
-            shouldIncludeItemInSearchResults = true;
-          }
-        }
-      });
-    }
-
-    return shouldIncludeItemInSearchResults;
+    this.headerService.dashboardTemporalData = null;
   }
 
   goToCreateTag(tagId: string) {
@@ -1169,6 +1191,10 @@ export class ItemsDashboardComponent implements OnInit {
   };
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
+    if (!this.selectedTagsCounter) {
+      this.showSearchbar = false;
+    }
+
     this.menuOpened = false;
     if (this.tagsList[tagIndex].selected) {
       this.tagsList[tagIndex].selected = false;
@@ -1207,15 +1233,9 @@ export class ItemsDashboardComponent implements OnInit {
         (unselectedTag) => unselectedTag._id === tag._id
       );
 
-      if (unselectedTagIndexToDelete > 0) {
+      if (unselectedTagIndexToDelete >= 0) {
         this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
       }
-    }
-
-    if (this.selectedTagsCounter) {
-      this.showSearchbar = false;
-    } else {
-      this.showSearchbar = true;
     }
 
     this.inicializeItems(true);
@@ -1240,11 +1260,14 @@ export class ItemsDashboardComponent implements OnInit {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
     this.selectedTagsPermanent = [];
-    this.unselectedTags = [...this.tagsList];
     this.tagsList.forEach((tag) => (tag.selected = false));
-    this.unselectedTags = this.tagsList;
+    this.unselectedTags = [...this.tagsList];
     this.showSearchbar = true;
     this.itemSearchbar.setValue('');
+
+    setTimeout(() => {
+      this.tagSwiper.directiveRef.update();
+    }, 300);
 
     await this.inicializeItems(true);
   }

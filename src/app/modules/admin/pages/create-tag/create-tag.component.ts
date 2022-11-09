@@ -425,6 +425,8 @@ export class CreateTagComponent implements OnInit, OnDestroy {
               this.entityId
             );
 
+            this.headerService.flowRoute = null;
+            localStorage.removeItem('flowRoute');
             this.router.navigate(['admin/item-display/' + this.entityId], {
               queryParams: {
                 tagsAsignationOnStart: true,
@@ -476,6 +478,8 @@ export class CreateTagComponent implements OnInit, OnDestroy {
           this.router.navigate(['ecommerce/order-info/' + this.orderID]);
         } else {
           if (this.entity === 'item') {
+            this.headerService.flowRoute = null;
+            localStorage.removeItem('flowRoute');
             this.router.navigate(['admin/item-display/' + this.entityId]);
           }
           if (!this.entity) this.router.navigate(['admin/items-dashboard']);
@@ -793,9 +797,11 @@ export class CreateTagComponent implements OnInit, OnDestroy {
   }
 
   goBack2 = () => {
-    if (this.entity === 'item')
+    if (this.entity === 'item') {
+      this.headerService.flowRoute = null;
+      localStorage.removeItem('flowRoute');
       this.router.navigate(['admin/item-display/' + this.entityId]);
-    else if (this.entity === 'order') {
+    } else if (this.entity === 'order') {
       this.router.navigate(['ecommerce/order-detail/' + this.entityId]);
     } else {
       this.router.navigate(['admin/entity-detail-metrics']);

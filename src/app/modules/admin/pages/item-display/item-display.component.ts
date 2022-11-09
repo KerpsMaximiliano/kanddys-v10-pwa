@@ -458,8 +458,7 @@ export class ItemDisplayComponent implements OnInit {
             : null,
         tagAction: async ({ selectedTags }) => {
           this.selectedTags = selectedTags;
-        },
-        ctaAction: async (params) => {
+
           try {
             const response = await this.itemsService.updateItem(
               {
