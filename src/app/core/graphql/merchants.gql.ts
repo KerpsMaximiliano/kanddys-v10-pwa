@@ -221,6 +221,7 @@ export const ordersByMerchant = gql`
           name
           images
           pricing
+          tags
           params {
             _id
             name

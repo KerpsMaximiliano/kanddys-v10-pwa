@@ -97,6 +97,7 @@ export class OrdersAndPreOrdersList implements OnInit {
   ordersAmount: number = 0;
   justShowHighlightedOrders: boolean;
   justShowUntaggedOrders: boolean;
+  tagsByNameHashTable: Record<string, Tag> = {};
   paginationState: {
     pageSize: number;
     page: number;
@@ -351,6 +352,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       });
 
       this.tagsHashTable[tag._id] = tag;
+      this.tagsByNameHashTable[tag.name] = tag;
     }
   }
 
@@ -444,6 +446,24 @@ export class OrdersAndPreOrdersList implements OnInit {
 
     const selectedTagIds = this.selectedTags.map((tag) => tag._id);
 
+    //Search tagids that match the searchbar value
+    if (this.searchBar.value) {
+      Object.keys(this.tagsByNameHashTable).forEach((tagName) => {
+        if (
+          tagName
+            .toLowerCase()
+            .includes((this.searchBar.value as string).toLowerCase()) &&
+          (this.searchBar.value as string) !== ''
+        ) {
+          const tagId = this.tagsByNameHashTable[tagName]._id;
+
+          if (!selectedTagIds.includes(tagId)) {
+            selectedTagIds.push(tagId);
+          }
+        }
+      });
+    }
+
     if (this.searchBar.value && this.searchBar.value !== '') {
       ordersByMerchantPagination.findBy = {
         ...ordersByMerchantPagination.findBy,
@@ -490,6 +510,12 @@ export class OrdersAndPreOrdersList implements OnInit {
         tags: {
           $in: selectedTagIds,
         },
+      };
+    }
+
+    if (this.selectedTags.length > 0 && selectedTagIds.length > 0) {
+      ordersByMerchantPagination.findBy.tags = {
+        $in: selectedTagIds,
       };
     }
 
@@ -1006,6 +1032,7 @@ export class OrdersAndPreOrdersList implements OnInit {
       justShowHighlightedOrders: this.justShowHighlightedOrders,
       justShowUntaggedOrders: this.justShowUntaggedOrders,
       paginationState: this.paginationState,
+      tagsByNameHashTable: this.tagsByNameHashTable,
     };
   }
 
