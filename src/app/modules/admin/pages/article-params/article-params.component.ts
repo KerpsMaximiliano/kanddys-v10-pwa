@@ -129,7 +129,7 @@ export class ArticleParamsComponent implements OnInit {
         subOption: `$${item.pricing.toLocaleString('es-MX')}`,
         callback: () => {
           this.name.setValue(item.name);
-          this.price.setValue(item.pricing);
+          this.handleCurrencyInput(item.pricing);
         },
       });
     }

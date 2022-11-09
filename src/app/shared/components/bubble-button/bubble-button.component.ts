@@ -39,7 +39,9 @@ export class BubbleButtonComponent implements OnInit {
         break;
 
       case 'black':
-         this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)'
+         this.filterColor = 'invert(95%) sepia(95%) saturate(2%) hue-rotate(321deg) brightness(9005%) contrast(100%)';
+
+         break;
     }
   }
 }
