@@ -350,11 +350,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
   handleImageInput(value: any, operation: 'ADD' | 'DELETE') {
     if (operation === 'ADD' && value instanceof FileList) {
-      const myNewFile = new File([value[0]], 'new_name.png', {
-        type: value[0].type,
-      });
-
-      this.createTagForm.controls.images.setValue(myNewFile, {
+      this.createTagForm.controls.images.setValue(value[0], {
         emitEvent: false,
       });
     } else {
