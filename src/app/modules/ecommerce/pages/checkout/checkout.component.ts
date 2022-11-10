@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
@@ -19,6 +19,8 @@ import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ImageViewComponent } from 'src/app/shared/dialogs/image-view/image-view.component';
 import { environment } from 'src/environments/environment';
+
+const videoContainer = document.getElementById('videoContainer');
 
 const options = [
   {
@@ -127,6 +129,7 @@ export class CheckoutComponent implements OnInit {
   selectedPostOption: number;
   missingOrderData: boolean;
   postSlideImages: (string | ArrayBuffer)[] = [];
+  @ViewChild('video') video: ElementRef;
 
   constructor(
     private dialogService: DialogService,
@@ -557,6 +560,17 @@ export class CheckoutComponent implements OnInit {
       }
     }
   }
+
+  handleFullscreen() {
+   let elem = this.video.nativeElement as HTMLVideoElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } /* else if (elem.mozRequestFullScreen) {
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } */
+ }
 
   mouseDown: boolean;
   startX: number;

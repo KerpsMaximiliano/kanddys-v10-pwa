@@ -66,7 +66,7 @@
                 openImageModal(item.image || item.images[0])
             "
           >
-            <div class="image">
+            <div class="image" > <!--*ngIf="type === 'image'" -->
               <img
                 [src]="
                   item.image || item.images?.length
@@ -232,6 +232,21 @@
                 />
               </div>
             </button>
+            <button class="video" (click)=" handleFullscreen()">
+               <video width="86px" height="74px" class="item-video" autoplay [muted]="'muted'">
+                  <!-- <source [src]="item.video.src" [type]="item.video.type"> -->
+                  <source src="https://i.imgur.com/y7Zfdn0.mp4" type="video/mp4"> <!--PLACEHOLDER-->
+                  Lo sentimos, no se puede mostrar el video
+               </video>
+            </button>
+
+            <div class="audio">
+               <audio class="item-audio" controls>
+                  <!-- <source [src]="item.audio.src" [type]="item.audio.type"> -->
+                  <source src="horse.ogg" type="audio/ogg"> <!--PLACEHOLDER-->
+                  Lo sentimos, no se puede reproducir el audio
+               </audio>
+            </div>
           </div>
         </div>
         <div
