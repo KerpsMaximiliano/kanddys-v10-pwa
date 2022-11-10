@@ -49,7 +49,7 @@ interface ExtendedCalendar extends Calendar {
   noLimitsMode?: boolean;
 }
 
-interface ExtendedTag extends Tag {
+export interface ExtendedTag extends Tag {
   selected?: boolean;
 }
 

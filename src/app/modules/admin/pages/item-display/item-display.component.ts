@@ -27,6 +27,7 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { Tag } from 'src/app/core/models/tags';
+import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -47,6 +48,7 @@ export class ItemDisplayComponent implements OnInit {
   notifications: ExtraNotification[];
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
+  userTags: Array<Tag>;
 
   constructor(
     private route: ActivatedRoute,
@@ -78,6 +80,9 @@ export class ItemDisplayComponent implements OnInit {
 
         lockUI();
         this.item = await this.itemsService.item(params.itemId);
+        const userTags = await this.tagsService.tagsByUser();
+        this.userTags = userTags;
+
         if (!this.item) return this.redirect();
         if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
           return this.redirect();
@@ -304,10 +309,52 @@ export class ItemDisplayComponent implements OnInit {
       if (this.headerService.flowRoute) {
         this.router.navigate([this.headerService.flowRoute]);
       } else {
+        if (this.headerService.dashboardTemporalData) {
+          const { tagsList, tagsByNameHashTable, tagsHashTable } =
+            this.headerService.dashboardTemporalData;
+
+          const newTags = this.userTags.filter(
+            (tag) =>
+              !(
+                this.headerService.dashboardTemporalData[
+                  'tagsList'
+                ] as Array<ExtendedTag>
+              )
+                .map((tag) => tag._id)
+                .includes(tag._id)
+          );
+
+          (this.headerService.dashboardTemporalData[
+            'tagsList'
+          ] as Array<ExtendedTag>) = (
+            this.headerService.dashboardTemporalData[
+              'tagsList'
+            ] as Array<ExtendedTag>
+          ).concat(newTags);
+
+          (
+            this.headerService.dashboardTemporalData[
+              'unselectedTags'
+            ] as Array<ExtendedTag>
+          ) = (
+            this.headerService.dashboardTemporalData[
+              'unselectedTags'
+            ] as Array<ExtendedTag>
+          ).concat(newTags);
+
+          for (const tag of newTags) {
+            this.headerService.dashboardTemporalData['tagsHashTable'][tag._id] =
+              tag as Tag;
+            this.headerService.dashboardTemporalData['tagsHashTable'][
+              tag.name
+            ] = tag as Tag;
+          }
+        }
+
         this.router.navigate(['admin/entity-detail-metrics'], {
           queryParams: {
-            startOnSnapshot: true
-          }
+            startOnSnapshot: true,
+          },
         });
       }
     }
@@ -432,7 +479,6 @@ export class ItemDisplayComponent implements OnInit {
 
   openTagsDialog = async () => {
     this.selectedTags = [];
-    const userTags = await this.tagsService.tagsByUser();
     const itemTags = (
       await this.tagsService.tags({
         options: {
@@ -452,7 +498,7 @@ export class ItemDisplayComponent implements OnInit {
         text: 'SALVAR LOS TAGS EN EL ITEM',
         loadingText: 'ESPERE...',
         untouchedActionText: 'SELECCIONE LOS TAGS QUE DESEE ASIGNAR AL ITEM',
-        tags: userTags,
+        tags: this.userTags,
         //orderId: this.order._id,
         entity: 'item',
         entityId: this.item._id,
