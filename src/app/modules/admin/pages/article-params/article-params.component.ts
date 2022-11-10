@@ -66,7 +66,7 @@ export class ArticleParamsComponent implements OnInit {
       }
       this.price.setValue(this.item.pricing);
       this.name.setValue(this.item.name);
-      if (this.item.name.trim()) this.models[0] = this.item.name;
+      if (this.item.name?.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
       if (this.item.images.length && !this._ItemsService.itemImages.length) {
         const multimedia: File[] = [];
@@ -108,6 +108,11 @@ export class ArticleParamsComponent implements OnInit {
   dotsCallback = () => {
     // console.log('Dots');
   };
+
+  countDecimals(value: number) {
+    if (Math.floor(value) === value) return 0;
+    return value.toString().split('.')[1].length || 0;
+  }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
     this.mouseDown = true;
