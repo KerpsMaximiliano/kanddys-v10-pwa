@@ -1,4 +1,10 @@
-<div class="nav">
+<div
+  class="nav"
+  [ngStyle]="{
+    gridTemplateColumns:
+      mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'
+  }"
+>
   <div class="icon-container">
     <button (click)="goBack()">
       <i
@@ -15,7 +21,12 @@
   </div>
   <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
   <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
-  <img src="{{ env }}/save-blue.png" class="notification" alt="" (click)="openTagsDialog()"/>
+  <img
+    src="{{ env }}/save-blue.png"
+    class="notification"
+    alt=""
+    (click)="openTagsDialog()"
+  />
   <!-- <img src="{{ env }}/padlock.png" class="notification" alt="" /> -->
   <!-- <img src="{{ env }}/message.png" class="notification" alt="" /> -->
   <!-- <span class="text">VISTA</span> -->

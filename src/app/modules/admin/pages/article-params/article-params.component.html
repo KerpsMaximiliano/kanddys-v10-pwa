@@ -77,7 +77,9 @@
           [fieldStyles]="{
             boxShadow: 'lightgrey 0px 3px 8px inset'
           }"
-          [initialValue]="price.value"
+          [initialValue]="
+            price.value % 1 === 0 ? price.value * 100 : price.value
+          "
           (onInputEvent)="handleCurrencyInput($event)"
         ></app-currency-input>
       </div>
