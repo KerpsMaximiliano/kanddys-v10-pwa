@@ -230,6 +230,11 @@ export const listItems = gql`
       hasExtraPrice
       showImages
       tags
+      visitorCounter {
+        entity
+        counter
+        reference
+      }
       category {
         _id
         name
@@ -252,6 +257,15 @@ export const listItems = gql`
         active
         createdAt
       }
+    }
+  }
+`;
+
+export const hotListItems = gql`
+  query listItems($params: PaginationInput) {
+    listItems(params: $params) {
+      _id
+      status
     }
   }
 `;

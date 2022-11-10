@@ -24,6 +24,8 @@ import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.comp
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 
+type InitialStatusEnum = 'active' | 'disabled' | 'featured';
+
 @Component({
   selector: 'app-create-item',
   templateUrl: './create-item.component.html',
@@ -63,6 +65,8 @@ export class CreateItemComponent implements OnInit {
   hasParams: boolean;
   justDynamicMode: boolean = false;
   parseFloat = parseFloat;
+  previousRoute: string = null;
+  initialStatus: InitialStatusEnum = null;
 
   constructor(
     protected _DomSanitizer: DomSanitizer,
@@ -76,6 +80,15 @@ export class CreateItemComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.previousRoute = this.route.snapshot.queryParamMap.get('from');
+    const initialStatus = this.route.snapshot.queryParamMap.get(
+      'initialStatus'
+    ) as InitialStatusEnum;
+
+    if (initialStatus) {
+      this.initialStatus = initialStatus;
+    }
+
     this.headerService.flowRoute = this.router.url;
     const itemId = this.route.snapshot.paramMap.get('itemId');
     const justdynamicmode =
@@ -180,13 +193,22 @@ export class CreateItemComponent implements OnInit {
   }
 
   goBack() {
-    if (this.hasParams) {
-      this.hasParams = false;
-      this.router.navigate(['/admin/merchant-items']);
-      return;
+    if (!this.previousRoute) {
+      if (this.hasParams) {
+        this.hasParams = false;
+        this.router.navigate(['/admin/merchant-items']);
+        return;
+      } else {
+        this.itemService.removeTemporalItem();
+        this.router.navigate(['/admin/merchant-items']);
+      }
     } else {
-      this.itemService.removeTemporalItem();
-      this.router.navigate(['/admin/merchant-items']);
+      let route = 'admin/entity-detail-metrics';
+
+      if (this.previousRoute === 'dashboard')
+        route = 'admin/entity-detail-metrics';
+
+      this.router.navigate([route]);
     }
   }
 
@@ -284,7 +306,9 @@ export class CreateItemComponent implements OnInit {
               updatedItem._id
             );
             await this.itemService.addImageItem(
-              images.length ? images : this.itemService.temporalImages.new,
+              images.length
+                ? (images as File[])
+                : this.itemService.temporalImages.new,
               updatedItem._id
             );
           }
@@ -294,7 +318,7 @@ export class CreateItemComponent implements OnInit {
           this.router.navigate([`/admin/merchant-items`]);
         }
       } else {
-        const itemInput = {
+        const itemInput: ItemInput = {
           name: name || null,
           description: description || null,
           pricing,
@@ -308,6 +332,10 @@ export class CreateItemComponent implements OnInit {
             images.length > 0 ||
             this.itemService.temporalImages?.new?.length > 0,
         };
+
+        if(this.initialStatus) {
+          itemInput.status = this.initialStatus;
+        }
 
         if (this.merchant) {
           const { createItem } = await this.itemService.createItem(itemInput);
@@ -465,42 +493,42 @@ export class CreateItemComponent implements OnInit {
 
   onOpenDialog = () => {
     const list: Array<any> = [
-          {
-            text: 'Simple',
-            callback: () => {
-              //this.router.navigate(['/ecommerce/item-detail']);
-            },
-          },
-          {
-            text: 'WhatsApp Form',
-            callback: () => {
-              this.headerService.flowRoute = this.router.url;
-              this.router.navigate(['/webforms/webform-questions']);
-            },
-          },
-          {
-            text: !this.hasParams ? 'Dinámico' : 'Estático',
-            callback: () => {
-              if (!this.hasParams) {
-                this.itemForm.get('pricing').reset(0);
-                this.itemForm.get('name').reset();
-                this.itemForm.get('description').reset();
-                this.formattedPricing.item = '$0.00';
-                if (!this.getArrayLength(this.itemParamsForm, 'params')) {
-                  this.generateFields();
-                  this.generateFields();
-                }
-              } else {
-                this.itemParamsForm.reset();
+      {
+        text: 'Simple',
+        callback: () => {
+          //this.router.navigate(['/ecommerce/item-detail']);
+        },
+      },
+      {
+        text: 'WhatsApp Form',
+        callback: () => {
+          this.headerService.flowRoute = this.router.url;
+          this.router.navigate(['/webforms/webform-questions']);
+        },
+      },
+      {
+        text: !this.hasParams ? 'Dinámico' : 'Estático',
+        callback: () => {
+          if (!this.hasParams) {
+            this.itemForm.get('pricing').reset(0);
+            this.itemForm.get('name').reset();
+            this.itemForm.get('description').reset();
+            this.formattedPricing.item = '$0.00';
+            if (!this.getArrayLength(this.itemParamsForm, 'params')) {
+              this.generateFields();
+              this.generateFields();
+            }
+          } else {
+            this.itemParamsForm.reset();
 
-                while (this.itemParamsForm.get('params').value.length !== 0) {
-                  (<FormArray>this.itemParamsForm.get('params')).removeAt(0);
-                }
-                this.formattedPricing.values = [];
-              }
-              this.hasParams = !this.hasParams;
-            },
-          },
+            while (this.itemParamsForm.get('params').value.length !== 0) {
+              (<FormArray>this.itemParamsForm.get('params')).removeAt(0);
+            }
+            this.formattedPricing.values = [];
+          }
+          this.hasParams = !this.hasParams;
+        },
+      },
     ];
 
     if (
@@ -529,7 +557,7 @@ export class CreateItemComponent implements OnInit {
           });
           this.itemService.temporalImages = {
             old: this.item?.images,
-            new: images,
+            new: images as File[],
           };
           this.router.navigate(['/ecommerce/item-detail']);
         },
