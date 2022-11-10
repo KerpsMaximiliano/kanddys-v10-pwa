@@ -15,6 +15,7 @@ import {
   SettingsComponent,
   SettingsDialogButton,
 } from 'src/app/shared/dialogs/settings/settings.component';
+import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import {
   StoreShareComponent,
   StoreShareList,
@@ -111,7 +112,7 @@ export class ArticleCreatorComponent implements OnInit {
         return;
       }
       if (this.item.images.length) {
-        const multimedia = [];
+        const multimedia: File[] = [];
         this.item.images.forEach(async (image, index) => {
           this.multimedia[0][index] = this._DomSanitizer
             .bypassSecurityTrustStyle(`url(
@@ -602,20 +603,35 @@ export class ArticleCreatorComponent implements OnInit {
         },
       },
       {
-        text: 'Eliminar',
+        text: 'Eliminar (eliminas la data)',
         callback: async () => {
           try {
-            const removeItemFromSaleFlow =
-              await this._SaleflowService.removeItemFromSaleFlow(
-                item._id,
-                this._SaleflowService.saleflowData._id
-              );
-            if (!removeItemFromSaleFlow) return;
-            const deleteItem = await this._ItemsService.deleteItem(item._id);
-            if (!deleteItem) return;
+            this._DialogService.open(SingleActionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                title: 'Borrar este artículo?',
+                buttonText: 'Sí, borrar',
+                mainText:
+                  'Al borrar este artículo se borrarán la data de ventas realizadas. Tienes la opción de poner invisible o archivarlo para no perder la data.',
+                mainButton: async () => {
+                  const removeItemFromSaleFlow =
+                    await this._SaleflowService.removeItemFromSaleFlow(
+                      item._id,
+                      this._SaleflowService.saleflowData._id
+                    );
+                  if (!removeItemFromSaleFlow) return;
+                  const deleteItem = await this._ItemsService.deleteItem(
+                    item._id
+                  );
+                  if (!deleteItem) return;
 
-            this._ToastrService.info('¡Item borrado exitosamente!');
-            this.goBack();
+                  this._ToastrService.info('¡Item borrado exitosamente!');
+                  this.goBack();
+                },
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
           } catch (error) {
             console.log(error);
             this._ToastrService.error(
@@ -641,6 +657,7 @@ export class ArticleCreatorComponent implements OnInit {
         cancelButton: {
           text: 'Cerrar',
         },
+        link: `${this.URI}/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],

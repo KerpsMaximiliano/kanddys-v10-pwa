@@ -36,6 +36,7 @@ export class SettingsComponent implements OnInit {
     callbackParams?: Array<any>;
   }> = [];
   @Input() indexValue: number;
+  @Input() link: string;
   currentStatusIndex: number = 0;
   env: string = environment.assetsUrl;
 
@@ -49,7 +50,7 @@ export class SettingsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if(this.indexValue <= this.statuses.length -1){
+    if (this.indexValue <= this.statuses.length - 1) {
       this.currentStatusIndex = this.indexValue;
     }
   }
@@ -64,9 +65,9 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  async buttonCallback(callback?: () => void){
-   callback? callback() : null;
-   this.close();
+  async buttonCallback(callback?: () => void) {
+    callback ? callback() : null;
+    this.close();
   }
 
   async executeStatusButtonCallback() {
@@ -91,7 +92,8 @@ export class SettingsComponent implements OnInit {
   }
 
   copyLink() {
-    this.clipboard.copy(window.location.href);
+    if (this.link) this.clipboard.copy(this.link);
+    else this.clipboard.copy(window.location.href);
     this.toastr.info('Enlace copiado en el clipboard');
     this.close();
   }

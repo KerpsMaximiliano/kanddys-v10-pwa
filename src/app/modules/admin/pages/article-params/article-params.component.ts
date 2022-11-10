@@ -68,6 +68,18 @@ export class ArticleParamsComponent implements OnInit {
       this.name.setValue(this.item.name);
       if (this.item.name.trim()) this.models[0] = this.item.name;
       else this.models[0] = 'Modelo sin nombre';
+      if (this.item.images.length && !this._ItemsService.itemImages.length) {
+        const multimedia: File[] = [];
+        this.item.images.forEach(async (image, index) => {
+          const response = await fetch(image);
+          const blob = await response.blob();
+          const file = new File([blob], `item_image_${index}.jpeg`, {
+            type: 'image/jpeg',
+          });
+          multimedia.push(file);
+        });
+        this._ItemsService.itemImages = multimedia;
+      }
     }
     this._MerchantsService.merchantData =
       await this._MerchantsService.merchantDefault();
