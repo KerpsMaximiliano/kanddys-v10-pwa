@@ -4,6 +4,10 @@
     [dots]="{
       active: true
     }"
+    [tags]="{
+      active: true
+    }"
+    (tagIconClicked)="openTagsDialog()"
     [returnAble]="true"
     bgColor="#2874AD"
     color="#FFFFFF"
@@ -48,7 +52,12 @@
     </div>
     <div
       *ngIf="!item.images?.length"
-      style="display: flex; justify-content: flex-end; padding: 0 16px; margin-top: 16px;"
+      style="
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 16px;
+        margin-top: 16px;
+      "
     >
       <button class="nonswiper-button" (click)="openShareDialog()">
         <img [src]="env + '/upload.svg'" width="15" height="19" />

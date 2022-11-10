@@ -15,8 +15,9 @@ export class HelperHeaderv3Component implements OnInit {
 
   ngOnInit(): void {}
 
-  handleClick(): void {
-    this.arrowsClick.emit();
+  handleClick(type: 'arrows' | 'search'): void {
+    if (type === 'arrows') this.arrowsClick.emit();
+    else if (type === 'search') this.searchClick.emit();
   }
 
   handleSearch() {

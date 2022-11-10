@@ -24,6 +24,7 @@ export class Tag extends Model<Tag> {
 
 export class TagInput {
   name?: string;
+  images?: File[];
   notifyUserOrder?: boolean;
   notifyMerchantOrder?: boolean;
   status?: string;
