@@ -17,14 +17,14 @@
         class="circle"
         [style.border]="
           selectedTagsIds.includes(tag[_id])
-              ? borderWidth +
-                ' solid ' +
-                selectedBorder
-              : 'none'
+            ? borderWidth + ' solid ' + selectedBorder
+            : 'none'
         "
         [style.backgroundColor]="circleBackground"
         [style.backgroundImage]="
-          tag.images.length > 0 ? 'url(' + tag.images[0] + ')' : null
+          tag.images && tag.images.length > 0
+            ? 'url(' + tag.images[0] + ')'
+            : null
         "
       ></div>
       <p
@@ -32,7 +32,9 @@
         [style.color]="tagTitleColor"
         [style.fontSize]="fontSize"
         [style.fontFamily]="fontFamily"
-        [style.color]="selectedTagsIds.includes(tag[_id]) ? selectedFontColor : fontColor"
+        [style.color]="
+          selectedTagsIds.includes(tag[_id]) ? selectedFontColor : fontColor
+        "
         (click)="handleTag(tag)"
       >
         {{ tag[property] }}
