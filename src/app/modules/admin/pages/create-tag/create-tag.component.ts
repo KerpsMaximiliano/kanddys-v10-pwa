@@ -446,6 +446,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
         this.toastr.info('Ocurrió un error al crear el tag', null, {
           timeOut: 1500,
         });
+        this.finishedMutation = true;
       }
     } else {
       data.merchant = this.merchantDefault._id;
