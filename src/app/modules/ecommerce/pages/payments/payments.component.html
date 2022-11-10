@@ -1,7 +1,9 @@
 <div class="container">
   <header class="header">
     <div style="display: flex; align-items: center">
-      <button (click)="onBackClick()" class="back-btn"><i class="fas fa-chevron-left"></i></button>
+      <button (click)="onBackClick()" class="back-btn">
+        <i class="fas fa-chevron-left"></i>
+      </button>
       <h1 class="method">Métodos de Pagos</h1>
     </div>
 
@@ -45,6 +47,15 @@
         }"
       ></app-answer-selector>
     </ng-container>
+    <app-answer-selector
+      [options]="onlinePaymentsoptions"
+      [indicator]="true"
+      (onSelector)="selectOnlinePayment($event)"
+      [containerStyles]="{
+        margin: '-20px 0px 0px 0px'
+      }"
+    >
+    </app-answer-selector>
     <ng-container *ngIf="selectedBank">
       <div class="option-content">
         <p class="option-title">Transferencia Bancaria</p>

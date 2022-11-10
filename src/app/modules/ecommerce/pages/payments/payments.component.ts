@@ -12,6 +12,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
+import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
@@ -37,6 +38,10 @@ export class PaymentsComponent implements OnInit {
   depositAmount: number;
   post: Post;
   currentUser: User;
+  onlinePaymentsoptions: OptionAnswerSelector[] = [
+    { value: 'Stripe', status: true, click: false, description: [] },
+  ]
+
 
   constructor(
     private walletService: WalletService,
@@ -189,6 +194,10 @@ export class PaymentsComponent implements OnInit {
         this.headerService.user._id
       )
     ).authOrder;
+  }
+
+  selectOnlinePayment(eventData: any) {
+    console.log(eventData)
   }
 
   onBackClick() {
