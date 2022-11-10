@@ -1,44 +1,231 @@
 <div class="container">
-  <app-helper-headerv3
-    background="#ffffff"
-    text="Acceso"
-    padding="0px 10px"
-    height="42px"
-    textColor="#272727"
-    iconColor="#000"
-    fontFamily="SfProBold"
-    [align]="'center'"
-    iconsize="24px"
-    iconWeight="700"
-    iconHeight="11px"
-    iconTop="-4px"
-  ></app-helper-headerv3>
-  <div class="options">
+  <div class="header">
+    <div class="icons-container">
+      <i
+        *ngFor="let icon of icons"
+        (click)="goBack()"
+        class="fas fa-chevron-{{ icon }}"
+      ></i>
+    </div>
+    <span [style.textAlign]="textAlign" [style.paddingRight]="paddingRight">{{
+      text
+    }}</span>
+  </div>
+  <div
+    *ngIf="
+      options.includes(selected[0]) || selected[0] === 'Solo yo' || !selected[0]
+    "
+    class="options"
+  >
     <p
       *ngFor="let option of options"
-      [style.color]="selected === option ? '#272727' : '#7b7b7b'"
+      [style.color]="selected.includes(option) ? '#272727' : '#7b7b7b'"
       class="option"
       (click)="handleOption(option)"
     >
       {{ option }}
     </p>
   </div>
-  <div class="selection">
+  <div
+    *ngIf="['invites', 'Yo y mis invitados'].includes(selected[0])"
+    class="swiper-container"
+  >
+    <swiper [config]="swiperConfig">
+      <div
+        class="listado"
+        *ngFor="let item of listado"
+        [style.color]="listadoSelection === item ? '#272727' : '#7b7b7b'"
+        (click)="listadoSelection = item"
+      >
+        {{ item }}
+      </div>
+    </swiper>
+  </div>
+  <ng-container [ngSwitch]="selected">
+    <div class="invites-choice" *ngSwitchCase="'Yo y mis invitados'">
+      <div class="images-grid">
+        <div
+          *ngFor="let media of medias.length ? medias : ['']; let j = index"
+          id="0{{ j }}"
+          attr.aria-label="{{ j + 1 }} / {{ medias.length }}"
+          role="group"
+          class="mutimedia-container"
+        >
+          <div
+            [style.background]="media"
+            [style.filter]="toDelete.includes(j) ? filter : ''"
+            class="square"
+            (click)="accessContact(j)"
+          ></div>
+          <button
+            (click)="handleController(j)"
+            class="plus"
+            [style.top]="'10px'"
+          >
+            <ng-container *ngIf="j === 0; else ex"> + </ng-container>
+            <ng-template #ex>
+              <ng-container *ngIf="!toDelete.includes(j); else trash"
+                >x</ng-container
+              >
+              <ng-template #trash
+                ><img [src]="env + '/delete.png'" width="14" height="14"
+              /></ng-template>
+            </ng-template>
+          </button>
+          <p *ngIf="j !== 0" class="name-id">Name ID</p>
+        </div>
+      </div>
+      <p *ngIf="!toDelete.length" class="paragraph">
+        Invitados reciben un link que le permite el acceso por un tiempo
+        limitado. La clave no aplica para ellos.
+      </p>
+      <button *ngIf="toDelete.length" class="submit" (click)="deleteSelected()">
+        Eliminar LOS MARCADOS CON
+      </button>
+      <p
+        *ngIf="toDelete.length"
+        class="paragraph text-center cursor-pointer mt-5"
+        (click)="toDelete = []"
+      >
+        No eliminar a ningún invitado
+      </p>
+    </div>
+    <div class="invites" *ngSwitchCase="'invites'">
+      <form [formGroup]="getFormGroupAt(controlIndex)" class="w-90 mt">
+        <div class="input-grid">
+          <div>
+            <label>Name</label>
+            <input
+              formControlName="name"
+              class="input-base"
+              type="text"
+              placeholder="Escribe.."
+            />
+          </div>
+          <div>
+            <label>Last Name</label>
+            <input
+              formControlName="lastName"
+              class="input-base"
+              type="text"
+              placeholder="Escribe.."
+            />
+          </div>
+        </div>
+        <p class="paragraph">Contact that will receive the access</p>
+        <input
+          formControlName="email"
+          class="input"
+          placeholder="Correo Electrónico"
+          type="email"
+        />
+        <input
+          formControlName="whatsapp"
+          class="input"
+          placeholder="WhatsApp.."
+          type="tel"
+        />
+        <p class="paragraph">Photo</p>
+        <swiper [config]="swiperConfig">
+          <div
+            *ngFor="
+              let file of controllers.at(controlIndex).get('multimedia')
+                ? controllers.at(controlIndex).get('multimedia').value
+                : [];
+              let j = index
+            "
+            id="0{{ j }}"
+            attr.aria-label="{{ j + 1 }} / {{ multimedia[0].length }}"
+            role="group"
+            class="mutimedia-container"
+          >
+            <input
+              class="hidden"
+              type="text"
+              type="file"
+              [id]="j"
+              (change)="loadFile($event, controlIndex, j)"
+            />
+            <div
+              [style.background]="
+                imageFiles.includes(types[controlIndex][j])
+                  ? multimedia[controlIndex][j]
+                  : ''
+              "
+              class="square"
+            >
+              <label for="{{ j }}" class="plus bg-green" [style.top]="'0'"
+                >+</label
+              >
+            </div>
+          </div>
+        </swiper>
+        <p class="paragraph">Oración identificadora</p>
+        <input
+          formControlName="oracion"
+          class="input"
+          placeholder="Escribe.."
+          type="text"
+        />
+        <button class="submit" (click)="submit()">SALVAR COMO INVITADO</button>
+      </form>
+    </div>
     <div
-      *ngFor="let item of list"
-      class="select-option"
-      [style.backgroundPosition]="
-        choice.includes(item.text) ? 'left bottom' : 'right bottom'
+      class="password-container"
+      *ngSwitchCase="
+        'Todos con el link. Tienes la opción de adicionar una clave.. Adicionar'
       "
-      (click)="handleSelection(item.text)"
     >
-      <div class="square"></div>
-      <div class="grid-content">
-        <img [src]="env + '/' + item.img" width="22" height="22" />
-        <span class="text">
-          {{ item.text }}
-        </span>
+      <p class="title">
+        Escribe la clave que permitirá a los visitantes acceder al contenido:
+      </p>
+      <input
+        [formControl]="password"
+        class="input"
+        placeholder="Escribe.."
+        type="password"
+      />
+      <p class="paragraph">
+        Invitados reciben un link que le permite el acceso por un tiempo
+        limitado. La clave no aplica para ellos.
+      </p>
+    </div>
+    <div *ngSwitchDefault class="selection">
+      <div
+        *ngFor="let item of list; let i = index"
+        class="select-option"
+        [style.backgroundPosition]="
+          selected.includes(item.text) ? 'left bottom' : 'right bottom'
+        "
+        (click)="item.callback(item.text)"
+      >
+        <div class="square-item"></div>
+        <div>
+          <div class="grid-content">
+            <img [src]="env + '/' + item.img" width="22" height="22" />
+            <span class="text">
+              {{
+                i === 2
+                  ? password.valid
+                    ? "Con la clave “" + password.value + "”."
+                    : item.text
+                  : item.text
+              }}
+            </span>
+          </div>
+          <div class="invite-container" *ngIf="item.invites">
+            <span *ngIf="invites.length" class="invites-text">Invitados</span>
+            <ng-container *ngFor="let invite of invites; let i = index">
+              <div
+                *ngIf="i !== 0 && medias[i]"
+                class="invite"
+                [style.left]="'-' + (i + 1) * 4 + 'px'"
+                [style.background]="medias[i]"
+              ></div>
+            </ng-container>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
 </div>
