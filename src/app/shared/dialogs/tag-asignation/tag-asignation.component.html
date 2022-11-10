@@ -1,0 +1,38 @@
+<div class="body-container">
+  <div class="text-grid">
+    <h4 class="title">Tags previamente usados</h4>
+    <div class="icon-container">
+      <img
+        class="icon-blue"
+        src="{{ env }}/bookmark-plus.svg"
+        alt=""
+        (click)="goToCreateTag()"
+      />
+    </div>
+  </div>
+  <app-tags-selector
+    *ngIf="tags.length"
+    [tags]="tags"
+    [activeTags]="
+      activeTags && (activeTags !== null || undefined) && activeTags.length > 0
+        ? activeTags
+        : null
+    "
+    [multipleTags]="true"
+    [selectedBackground]="'#2874ad'"
+    [background]="'#ffffff'"
+    [selectedColor]="'#fff'"
+    [fillSelectedTagsOnStart]="true"
+    [useIdToRemoveOrAddTags]="true"
+    [color]="'#2874ad'"
+    containerBackground="#f6f6f6"
+    selectedBackground="#2874ad"
+    selectedFilter="brightness(2)"
+    [outputAllSelectedTags]="true"
+    (tagSelect3)="tagAction($event)"
+  ></app-tags-selector>
+  <button class="save" (click)="submit()" *ngIf="text.length > 3">
+    <img class="icon" src="{{ env }}/save.png" alt="" />
+    <span *ngIf="text" class="save-text">{{ text }}</span>
+  </button>
+</div>
