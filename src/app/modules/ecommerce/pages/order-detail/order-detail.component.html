@@ -280,9 +280,22 @@
     </section>
   </main>
 
+  <qrcode
+    style="display: none"
+    *ngIf="order"
+    #qrcode
+    [qrdata]="URI + '/ecommerce/order-detail/' + order._id"
+    [elementType]="'img'"
+    [width]="40"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000"
+  ></qrcode>
+
   <footer class="footer-display" *ngIf="merchant">
-    <i class="fas fa-chevron-left"></i>
+    <!-- TABS INICIO -->
     <div class="pages-tabs">
+      <!-- IMAGENES INICIO-->
       <div class="images-container">
         <img
           [src]="env + image.src"
@@ -294,12 +307,13 @@
           }"
         />
       </div>
-
-      <div class="tab-pages">
-        <div class="tab" *ngFor="let tab of tabs"></div>
-      </div>
+      <!-- FIN IMAGENES -->
     </div>
-
-    <i class="fas fa-chevron-right"></i>
+    <!-- FIN TABS -->
+    <div class="tab-pages"> <!-- TABS INFERIORES -->
+      <div class="tab" *ngFor="let tab of tabs"></div>
+    </div>
+    <!-- FIN TABS INFERIORES -->
   </footer>
+
 </div>

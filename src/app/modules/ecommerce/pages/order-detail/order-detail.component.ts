@@ -1,5 +1,5 @@
 import { LocationStrategy } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatID } from 'src/app/core/helpers/strings.helpers';
 import { CustomizerValue } from 'src/app/core/models/customizer-value';
@@ -53,25 +53,41 @@ export class OrderDetailComponent implements OnInit {
   previousTags: any;
   merchant: boolean;
   imageList: Image[] = [
-    {
-      src: '/bookmark-checked.svg',
-      filter: 'brightness(2)',
-      callback: async () => {
-        this.tagDialog();
-      },
-    },
-    {
-      src: '/upload.svg',
-      filter: 'brightness(2)',
-      callback: async () => {
-        await this.ngNavigatorShareService.share({
-          title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-info/${this.order.items[0].saleflow.headline}`,
-        });
-      },
-    },
-  ];
+   {
+     src: '/bookmark-checked.svg',
+     filter: 'brightness(2)',
+     callback: async () => {
+       const tags = (await this.tagsService.tagsByUser()) || [];
+       for (const tag of tags) {
+         this.selectedTags[tag._id] = false;
+         if (this.order.tags.includes(tag._id)) {
+           this.selectedTags[tag._id] = true;
+         }
+       }
+       this.tags = tags;
+       this.tagDialog();
+     },
+   },
+   {
+     src: '/QR.svg',
+     filter: 'brightness(7)',
+     callback: () => {
+       this.downloadQr();
+     },
+   },
+   {
+     src: '/upload.svg',
+     filter: 'brightness(2)',
+     callback: async () => {
+       await this.ngNavigatorShareService.share({
+         title: `Mi orden`,
+         url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+       });
+     },
+   },
+ ];
   tabs: any[] = ['', '', '', '', ''];
+  @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -477,6 +493,42 @@ export class OrderDetailComponent implements OnInit {
    for await (const tag of selectedTags) { 
    } */
   }
+
+  downloadQr() {
+   const parentElement = this.qr.nativeElement.querySelector('img').src;
+   let blobData = this.convertBase64ToBlob(parentElement);
+   if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+     //IE
+     (window.navigator as any).msSaveOrOpenBlob(blobData, 'Qrcode');
+   } else {
+     // chrome
+     const blob = new Blob([blobData], { type: 'image/png' });
+     const url = window.URL.createObjectURL(blob);
+     // window.open(url);
+     const link = document.createElement('a');
+     link.href = url;
+     link.download = 'Qrcode';
+     link.click();
+   }
+ }
+
+ private convertBase64ToBlob(Base64Image: string) {
+   // SPLIT INTO TWO PARTS
+   const parts = Base64Image.split(';base64,');
+   // HOLD THE CONTENT TYPE
+   const imageType = parts[0].split(':')[1];
+   // DECODE BASE64 STRING
+   const decodedData = window.atob(parts[1]);
+   // CREATE UNIT8ARRAY OF SIZE SAME AS ROW DATA LENGTH
+   const uInt8Array = new Uint8Array(decodedData.length);
+   // INSERT ALL CHARACTER CODE INTO UINT8ARRAY
+   for (let i = 0; i < decodedData.length; ++i) {
+     uInt8Array[i] = decodedData.charCodeAt(i);
+   }
+   // RETURN BLOB IMAGE AFTER CONVERSION
+   return new Blob([uInt8Array], { type: imageType });
+ }
+
 
   mouseDown: boolean;
   startX: number;
