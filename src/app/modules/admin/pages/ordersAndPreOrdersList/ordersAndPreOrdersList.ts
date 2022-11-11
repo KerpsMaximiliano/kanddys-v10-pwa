@@ -544,16 +544,21 @@ export class OrdersAndPreOrdersList implements OnInit {
       };
       delete paginationOptions.page;
 
+      const pagination: PaginationInput = {
+        ...ordersByMerchantPagination,
+        options: paginationOptions,
+        findBy: {
+          ...ordersByMerchantPagination.findBy,
+          merchant: this.merchantsService.merchantData._id,
+        },
+      };
+
+      if (selectedTagIds.length > 0) {
+        pagination.findBy.tags = selectedTagIds;
+      }
+
       const ordersIncomeForMatchingOrders =
-        await this.merchantsService.incomeMerchant({
-          ...ordersByMerchantPagination,
-          options: paginationOptions,
-          findBy: {
-            ...ordersByMerchantPagination.findBy,
-            merchant: this.merchantsService.merchantData._id,
-            tags: selectedTagIds,
-          },
-        });
+        await this.merchantsService.incomeMerchant(pagination);
 
       if (typeof ordersIncomeForMatchingOrders === 'number')
         this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
