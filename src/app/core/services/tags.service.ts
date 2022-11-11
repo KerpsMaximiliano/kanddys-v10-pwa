@@ -10,20 +10,31 @@ import {
   addTagsInUserOrder,
   removeTagsInUserOrder,
   tag,
+  tags,
   addTagContainersPublic,
 } from '../graphql/tags.gql';
+import { PaginationInput } from '../models/saleflow';
 import { Tag, TagContainersInput, TagInput } from '../models/tags';
+
+interface TagContainer extends TagInput {
+  orderId?: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class TagsService {
+  temporalTag: TagContainer = null;
+
   constructor(private graphql: GraphQLWrapper) {}
 
   async updateTag(input: TagInput, tagId: string) {
     const result = await this.graphql.mutate({
       mutation: updateTag,
       variables: { input, tagId },
+      context: {
+        useMultipart: true,
+      },
     });
     console.log('Intentando updateTags');
 
@@ -37,6 +48,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
+      context: {
+        useMultipart: true,
+      },
     });
 
     if (!result || result?.errors) return undefined;
@@ -45,10 +59,13 @@ export class TagsService {
     return result;
   }
 
-  async tagsByUser(): Promise<Tag[]> {
+  async tagsByUser(
+    pagination: any = { paginate: { options: { limit: -1 } } }
+  ): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
+        variables: pagination,
         fetchPolicy: 'no-cache',
       });
       if (!result) return undefined;
@@ -138,14 +155,28 @@ export class TagsService {
     }
   }
 
-  async tag(tagId: string): Promise<{ tag: Tag }>  {
+  async tag(tagId: string): Promise<{ tag: Tag }> {
     try {
       const result = await this.graphql.query({
         query: tag,
         variables: { tagId },
+        fetchPolicy: 'no-cache',
       });
 
       console.log(result);
+      return result;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async tags(paginate: PaginationInput) {
+    try {
+      const result = await this.graphql.query({
+        query: tags,
+        variables: { paginate },
+        fetchPolicy: 'no-cache'
+      });
       return result;
     } catch (e) {
       console.log(e);

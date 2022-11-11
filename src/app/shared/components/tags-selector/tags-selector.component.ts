@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -19,11 +25,13 @@ export class TagsSelectorComponent implements OnInit {
   @Input('selectedFilter') selectedFilter: string = 'brightness(2)';
   @Input('color') color: string = '#fff';
   @Input('selectedColor') selectedColor: string = '#2874ad';
+  @Input('outputAllSelectedTags') outputAllSelectedTags: boolean = false;
   @Input('useAlternativeOutput') useAlternativeOutput: boolean;
   env: string = environment.assetsUrl;
 
   @Output() tagSelect: EventEmitter<any> = new EventEmitter();
   @Output() tagSelect2: EventEmitter<any> = new EventEmitter();
+  @Output() tagSelect3: EventEmitter<any> = new EventEmitter();
 
   setTag(tag): void {
     if (this.useIdToRemoveOrAddTags) {
@@ -42,6 +50,14 @@ export class TagsSelectorComponent implements OnInit {
       }
     }
 
+    if (!this.outputAllSelectedTags)
+      this.tagSelected(tag, this.tag.includes(tag));
+    else {
+      this.tagSelect3.emit({
+        selectedTags: this.tag,
+      });
+    }
+
     this.tagSelected(tag, this.tag.includes(tag));
   }
 
@@ -52,6 +68,8 @@ export class TagsSelectorComponent implements OnInit {
         tag: args,
         selected,
       });
+
+    console.log(args);
   }
 
   constructor() {}

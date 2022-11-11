@@ -71,6 +71,18 @@
             </app-cart-button>
           </ng-container>
 
+          <span
+            class="text-icons"
+            *ngIf="rightText"
+            [ngStyle]="{
+              'font-size': rightText.fontSize ? rightText.fontSize : '',
+              'font-family': rightText.fontFamily ? rightText.fontFamily : '',
+              color: rightText.color ? rightText.color : color ? color : '',
+              cursor: rightText.pointer ? 'pointer' : 'unset'
+            }"
+            >{{ rightText.text }}</span
+          >
+
           <ng-container *ngFor="let icon of icons; index as i">
             <div
               *ngIf="!icon.isAsBackgroundImage"
@@ -127,6 +139,17 @@
               (click)="icon?.callback ? icon.callback() : null"
             ></div>
           </ng-container>
+
+          <div
+            class="tag-icon"
+            *ngIf="tags.active"
+            (click)="tagIconClicked.emit()"
+          >
+            <img
+              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/bookmark-checked.svg"
+              alt="add tags"
+            />
+          </div>
 
           <div
             class="dot-trio"

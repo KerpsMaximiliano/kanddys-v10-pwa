@@ -96,6 +96,8 @@ export class HeaderService {
   checkoutRoute: string;
   loadedMerchants = new EventEmitter();
   ordersPageTemporalData: Record<string, any> = null;
+  dashboardTemporalData: Record<string, any> = null;
+  storeTemporalData: Record<string, any> = null;
 
   public session: Session;
   constructor(

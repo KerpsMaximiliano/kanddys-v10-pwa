@@ -17,8 +17,8 @@ export const createTag = gql`
 `;
 
 export const tagsByUser = gql`
-  query {
-		tagsByUser {
+  query tagsByUser($paginate: PaginationInput) {
+    tagsByUser(paginate: $paginate) {
       _id
 			name
       images
@@ -96,6 +96,20 @@ export const tag = gql`
     tag(tagId: $tagId) {
       _id
       name
+      images
+      status
+    }
+  }
+`;
+
+export const tags = gql`
+  query tags($paginate: PaginationInput) {
+    tags(paginate: $paginate) {
+      _id
+      name
+      user
+      status
+      images
     }
   }
 `;

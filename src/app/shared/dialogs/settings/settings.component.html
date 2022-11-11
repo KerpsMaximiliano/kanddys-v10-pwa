@@ -38,20 +38,36 @@
         *ngIf="statuses.length > 0"
         (click)="executeStatusButtonCallback()"
         [ngStyle]="{
-          backgroundColor: statuses[currentStatusIndex].backgroundColor,
-          color: statuses[currentStatusIndex].color
+          backgroundColor: statuses[currentStatusIndex].backgroundColor
         }"
       >
         <div class="icon">
-          <img [src]="env + '/switch-line.png'" alt="toggle" />
+          <img
+            [src]="env + '/switch-line.png'"
+            alt="toggle"
+            [ngStyle]="{
+              filter:
+                statuses[currentStatusIndex].color === 'white'
+                  ? 'brightness(0) invert(1)'
+                  : null
+            }"
+          />
         </div>
-        <span>{{ statuses[currentStatusIndex].text }}</span>
+        <span
+          [ngStyle]="{
+            color: statuses[currentStatusIndex].color
+          }"
+          >{{ statuses[currentStatusIndex].text }}</span
+        >
       </div>
 
       <ul class="option-list">
         <li
-          *ngFor="let option of optionsList; index as i;"
-          (click)="buttonCallback && buttonCallback(option?.callback || option?.asyncCallback)"
+          *ngFor="let option of optionsList; index as i"
+          (click)="
+            buttonCallback &&
+              buttonCallback(option?.callback || option?.asyncCallback)
+          "
           [ngStyle]="option.styles"
         >
           {{ option.text }}
@@ -75,7 +91,6 @@
           <span class="text">Artículos</span>
         </li>
 
-        
         <li>
           <div class="icon" (click)="redirect('/admin/orders')">
             <img [src]="env + '/account.svg'" alt="bills" />

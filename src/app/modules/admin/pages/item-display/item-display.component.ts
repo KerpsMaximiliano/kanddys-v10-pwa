@@ -23,6 +23,11 @@ import {
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
+import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/tag-management.component';
+import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
+import { TagsService } from 'src/app/core/services/tags.service';
+import { Tag } from 'src/app/core/models/tags';
+import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -41,6 +46,9 @@ export class ItemDisplayComponent implements OnInit {
   totalByItem: any;
   env: string = environment.assetsUrl;
   notifications: ExtraNotification[];
+  selectedTags: Array<string>;
+  tagsAsignationOnStart: boolean = false;
+  userTags: Array<Tag>;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,7 +61,8 @@ export class ItemDisplayComponent implements OnInit {
     private headerService: HeaderService,
     private notificationsService: NotificationsService,
     private clipboard: Clipboard,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private tagsService: TagsService
   ) {}
 
   swiperConfig: SwiperOptions = {
@@ -64,25 +73,36 @@ export class ItemDisplayComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (params) => {
-      lockUI();
-      this.item = await this.itemsService.item(params.itemId);
-      if (!this.item) return this.redirect();
-      if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
-        return this.redirect();
-      if (this.item.images.length > 1)
-        this.swiperConfig.pagination = {
-          el: '.swiper-pagination',
-          type: 'bullets',
-          clickable: true,
-        };
+      this.route.queryParams.subscribe(async (queryParams) => {
+        const { tagsAsignationOnStart } = queryParams;
 
-      this.shouldRedirectToPreviousPage = true;
-      await Promise.all([
-        this.getTotalByItem(this.item._id),
-        this.getBuyersByItem(this.item._id),
-        this.getNotifications(),
-      ]);
-      unlockUI();
+        if (tagsAsignationOnStart) this.tagsAsignationOnStart = true;
+
+        lockUI();
+        this.item = await this.itemsService.item(params.itemId);
+        const userTags = await this.tagsService.tagsByUser();
+        this.userTags = userTags;
+
+        if (!this.item) return this.redirect();
+        if (this.merchantsService.merchantData._id !== this.item.merchant?._id)
+          return this.redirect();
+        if (this.item.images.length > 1)
+          this.swiperConfig.pagination = {
+            el: '.swiper-pagination',
+            type: 'bullets',
+            clickable: true,
+          };
+
+        this.shouldRedirectToPreviousPage = true;
+        await Promise.all([
+          this.getTotalByItem(this.item._id),
+          this.getBuyersByItem(this.item._id),
+          this.getNotifications(),
+        ]);
+        unlockUI();
+
+        if (this.tagsAsignationOnStart) await this.openTagsDialog();
+      });
     });
   }
 
@@ -286,7 +306,57 @@ export class ItemDisplayComponent implements OnInit {
         queryParams: { type: 'item' },
       });
     } else {
-      this.router.navigate([`/admin/merchant-items`]);
+      if (this.headerService.flowRoute) {
+        this.router.navigate([this.headerService.flowRoute]);
+      } else {
+        if (this.headerService.dashboardTemporalData) {
+          const { tagsList, tagsByNameHashTable, tagsHashTable } =
+            this.headerService.dashboardTemporalData;
+
+          const newTags = this.userTags.filter(
+            (tag) =>
+              !(
+                this.headerService.dashboardTemporalData[
+                  'tagsList'
+                ] as Array<ExtendedTag>
+              )
+                .map((tag) => tag._id)
+                .includes(tag._id)
+          );
+
+          (this.headerService.dashboardTemporalData[
+            'tagsList'
+          ] as Array<ExtendedTag>) = (
+            this.headerService.dashboardTemporalData[
+              'tagsList'
+            ] as Array<ExtendedTag>
+          ).concat(newTags);
+
+          (
+            this.headerService.dashboardTemporalData[
+              'unselectedTags'
+            ] as Array<ExtendedTag>
+          ) = (
+            this.headerService.dashboardTemporalData[
+              'unselectedTags'
+            ] as Array<ExtendedTag>
+          ).concat(newTags);
+
+          for (const tag of newTags) {
+            this.headerService.dashboardTemporalData['tagsHashTable'][tag._id] =
+              tag as Tag;
+            this.headerService.dashboardTemporalData['tagsHashTable'][
+              tag.name
+            ] = tag as Tag;
+          }
+        }
+
+        this.router.navigate(['admin/entity-detail-metrics'], {
+          queryParams: {
+            startOnSnapshot: true,
+          },
+        });
+      }
     }
   }
 
@@ -347,7 +417,7 @@ export class ItemDisplayComponent implements OnInit {
       {
         text: 'INVISIBLE',
         backgroundColor: '#B17608',
-        color: '#FFFFFF',
+        color: 'white',
         asyncCallback: () => {
           return new Promise((resolve, reject) => {
             this.toggleActivateItem();
@@ -390,7 +460,7 @@ export class ItemDisplayComponent implements OnInit {
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
-        title: this.item.name,
+        title: this.item.name ? this.item.name : 'Producto sin nombre',
         optionsList: list,
         statuses: statuses,
         indexValue: number,
@@ -405,6 +475,61 @@ export class ItemDisplayComponent implements OnInit {
 
     this.itemsService.temporalItem = null;
     this.router.navigate(['/admin/create-item/' + this.item._id]);
+  };
+
+  openTagsDialog = async () => {
+    this.selectedTags = [];
+    const itemTags = (
+      await this.tagsService.tags({
+        options: {
+          limit: -1,
+        },
+        findBy: {
+          id: {
+            __in: this.item.tags,
+          },
+        },
+      })
+    ).tags;
+
+    this.dialogService.open(TagAsignationComponent, {
+      type: 'fullscreen-translucent',
+      props: {
+        text: 'SALVAR LOS TAGS EN EL ITEM',
+        loadingText: 'ESPERE...',
+        untouchedActionText: 'SELECCIONE LOS TAGS QUE DESEE ASIGNAR AL ITEM',
+        tags: this.userTags,
+        //orderId: this.order._id,
+        entity: 'item',
+        entityId: this.item._id,
+        activeTags:
+          itemTags && Array.isArray(itemTags)
+            ? itemTags.map((tag) => tag._id)
+            : null,
+        tagAction: async ({ selectedTags }) => {
+          this.selectedTags = selectedTags;
+
+          try {
+            const response = await this.itemsService.updateItem(
+              {
+                tags: this.selectedTags,
+              },
+              this.item._id
+            );
+
+            if (response) {
+              this.item.tags = this.selectedTags;
+            }
+          } catch (error) {
+            this.toastr.error('Error al asignar tags', null, {
+              timeOut: 1000,
+            });
+          }
+        },
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   };
 
   copyLink() {

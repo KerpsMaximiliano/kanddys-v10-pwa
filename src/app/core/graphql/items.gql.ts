@@ -141,6 +141,12 @@ export const item = gql`
       status
       showImages
       notifications
+      tags
+      visitorCounter {
+        entity
+        counter
+        reference
+      }
       calendar {
         _id
       }
@@ -227,6 +233,7 @@ export const listItems = gql`
         _id
         name
       }
+      tags
     }
   }
 `;
@@ -559,6 +566,14 @@ export const itemCategoryHeadlineByMerchant = gql`
       _id
       headline
       itemsCategories
+    }
+  }
+`;
+
+export const itemsArchived = gql`
+  query itemsArchived($params: PaginationInput) {
+    itemsArchived(params: $params) {
+      _id
     }
   }
 `;

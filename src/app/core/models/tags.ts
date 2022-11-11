@@ -17,6 +17,7 @@ export class Tag extends Model<Tag> {
   name: string;
   user?: string;
   status: string;
+  images?: [string];
   notifications: string[];
   merchant: string;
   images?: string[];
@@ -24,6 +25,7 @@ export class Tag extends Model<Tag> {
 
 export class TagInput {
   name?: string;
+  images?: File[];
   notifyUserOrder?: boolean;
   notifyMerchantOrder?: boolean;
   status?: string;
