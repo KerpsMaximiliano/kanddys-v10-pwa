@@ -547,7 +547,11 @@ export class ItemsDashboardComponent implements OnInit {
       );
 
       const incomeMerchantResponse = await this.merchantsService.incomeMerchant(
-        this.merchantsService.merchantData._id
+        {
+          findBy: {
+            merchant: this.merchantsService.merchantData._id
+          }
+        }
       );
 
       this.ordersTotal = { length: null, total: null };
