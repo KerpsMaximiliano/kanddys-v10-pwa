@@ -38,10 +38,9 @@ export class PaymentsComponent implements OnInit {
   depositAmount: number;
   post: Post;
   currentUser: User;
-  onlinePaymentsoptions: OptionAnswerSelector[] = [
+  onlinePaymentsOptions: OptionAnswerSelector[] = [
     { value: 'Stripe', status: true, click: false, description: [] },
-  ]
-
+  ];
 
   constructor(
     private walletService: WalletService,
@@ -196,29 +195,39 @@ export class PaymentsComponent implements OnInit {
     ).authOrder;
   }
 
-  selectOnlinePayment(eventData: any) {
-    console.log(eventData)
+  async selectOnlinePayment(orderIndex: number) {
+    const paymentOptionName = this.onlinePaymentsOptions[orderIndex].value;
+
+    if (paymentOptionName === 'Stripe') {
+      const result = await this.walletService.payOrderWithStripe(
+        this.order._id
+      );
+
+      if (result) {
+        localStorage.setItem("stripe_checkout_session_id", result.id);
+        window.location.href = result.url;
+      }
+    }
   }
 
   onBackClick() {
     this.dialogService.open(ConfirmActionDialogComponent, {
       type: 'fullscreen-translucent',
       props: {
-        topText:
-          'Si tocas en cta[0] empezarás una nueva factura.',
+        topText: 'Si tocas en cta[0] empezarás una nueva factura.',
         topButtonText: 'Seguir en el pago de mi factura actual',
         cta: [
           {
-            text: "\"Cancelar mi factura\"",
+            text: '"Cancelar mi factura"',
             styles: {
-              color: '#FFF'
+              color: '#FFF',
             },
             callback: () => {
               this.router.navigate([
                 `/ecommerce/store/${this.headerService.saleflow._id}`,
               ]);
-            }
-          }
+            },
+          },
         ],
         topBtnCallback: () => {},
         bottomButtonText: 'Cancelar mi factura',

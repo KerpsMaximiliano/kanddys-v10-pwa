@@ -296,3 +296,12 @@ export const paymentreceiver = gql`
     }
   }
 `
+
+export const payOrderWithStripe = gql`
+  mutation payOrderWithStripe($orderId: ObjectID!) {
+    payOrderWithStripe(orderId: $orderId) {
+      id
+      url
+    }
+  }
+`;
