@@ -20,6 +20,7 @@ import { FormStep, FormField } from 'src/app/core/types/multistep-form';
 import { FormControl } from '@angular/forms';
 import { SingleActionDialogComponent } from 'src/app/shared/dialogs/single-action-dialog/single-action-dialog.component';
 import { SettingsComponent } from 'src/app/shared/dialogs/settings/settings.component';
+import { InputTransparentComponent } from 'src/app/shared/dialogs/input-transparent/input-transparent.component';
 
 @Component({
   selector: 'app-test',
@@ -295,6 +296,19 @@ export class TestComponent implements OnInit {
       flags: ['no-header'],
       notCancellable: true,
     });
+  }
+
+  testDialog(){
+   this.dialog.open(InputTransparentComponent,{
+      props: {
+        inputLabel: 'Muy poco CHOOH2',
+        title: 'BabyDoll',
+      },
+      type: 'fullscreen-translucent',
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+      notCancellable: true,
+   })
   }
 
   reloadDialog() {

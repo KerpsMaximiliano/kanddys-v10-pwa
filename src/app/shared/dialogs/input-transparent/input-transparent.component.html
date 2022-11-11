@@ -1,0 +1,13 @@
+<div class="main-container">
+   <header class="header-display">
+      <h1 class="title">{{title}}</h1>
+      <button class="close" (click)="close()">
+         <i class="fas fa-times"></i>
+      </button>
+   </header>
+   
+   <div class="input-area">
+      <label for="input" name="Titulo" class="input-label">{{inputLabel}}</label>
+      <input type="text" class="input" [formControl]="input" placeholder="Escribe..." (keydown)="fieldEvent($event.target)">
+   </div>
+</div>
