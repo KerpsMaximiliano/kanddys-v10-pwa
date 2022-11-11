@@ -199,13 +199,23 @@ export class PaymentsComponent implements OnInit {
     const paymentOptionName = this.onlinePaymentsOptions[orderIndex].value;
 
     if (paymentOptionName === 'Stripe') {
-      const result = await this.walletService.payOrderWithStripe(
-        this.order._id
-      );
+      if (this.currentUser) {
+        const result = await this.walletService.payOrderWithStripe(
+          this.order._id
+        );
 
-      if (result) {
-        localStorage.setItem("stripe_checkout_session_id", result.id);
-        window.location.href = result.url;
+        if (result) {
+          localStorage.setItem('stripe_checkout_session_id', result.id);
+          localStorage.setItem('stripe-payed-orderId', this.order._id);
+          window.location.href = result.url;
+        }
+      } else {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            onlinePayment: 'payment-with-stripe',
+          },
+        });
       }
     }
   }

@@ -20,6 +20,7 @@ import { PaymentsComponent } from './pages/payments/payments.component';
 import { StoreComponent } from './pages/store/store.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { AppointmentsModule } from '../appointments/appointments.module';
+import { PaymentsRedirectionComponent } from './pages/payments-redirection/payments-redirection.component';
 
 const routes: Routes = [
   {
@@ -68,6 +69,10 @@ const routes: Routes = [
       {
         path: 'order-info/:id',
         component: OrderDetailComponent,
+      },
+      {
+        path: 'payments-redirection',
+        component: PaymentsRedirectionComponent,
       },
       {
         path: ':saleflowId/new-address',
@@ -129,6 +134,7 @@ const routes: Routes = [
     CheckoutComponent,
     PaymentsComponent,
     ReservationsComponent,
+    PaymentsRedirectionComponent,
   ],
   imports: [
     CommonModule,
