@@ -44,6 +44,8 @@
           <swiper
             *ngIf="controller.get(field.name).value.length"
             [config]="swiperConfig"
+            #mediaSwiper
+            (slideChange)="updateCurrentSlideData($event)"
           >
             <div
               *ngFor="

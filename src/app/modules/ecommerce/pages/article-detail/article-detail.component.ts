@@ -37,6 +37,11 @@ export class ArticleDetailComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
+    autoplay: {
+      delay: 10000,
+      stopOnLastSlide: true,
+      disableOnInteraction: false,
+    },
   };
   currentMediaSlide: number = 0;
   entity: ValidEntities;
@@ -57,6 +62,7 @@ export class ArticleDetailComponent implements OnInit {
     spaceBetween: 0,
   };
   fractions: string = '';
+  timer: NodeJS.Timeout;
 
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
 
@@ -73,22 +79,20 @@ export class ArticleDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(async (routeParams) => {
-      this.route.queryParams.subscribe(async (queryParams) => {
-        const validEntities = ['item', 'post'];
-        const { saleflowId, entity, entityId } = routeParams;
-        if (!this.headerService.saleflow)
-          this.headerService.fetchSaleflow(saleflowId);
+      const validEntities = ['item', 'post'];
+      const { saleflowId, entity, entityId } = routeParams;
+      if (!this.headerService.saleflow)
+        this.headerService.fetchSaleflow(saleflowId);
 
-        if (validEntities.includes(entity)) {
-          this.entityId = entityId;
-          this.entity = entity;
+      if (validEntities.includes(entity)) {
+        this.entityId = entityId;
+        this.entity = entity;
 
-          await this.getItemData();
-          this.itemInCart();
-        } else {
-          this.router.navigate([`others/error-screen/`]);
-        }
-      });
+        await this.getItemData();
+        this.itemInCart();
+      } else {
+        this.router.navigate([`others/error-screen/`]);
+      }
     });
   }
 
@@ -102,6 +106,7 @@ export class ArticleDetailComponent implements OnInit {
       });
 
       this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+      if (this.itemData.images?.length < 2) this.startTimeout();
     } catch (error) {
       console.error(error);
       this.router.navigate([`others/error-screen/`]);
@@ -130,8 +135,42 @@ export class ArticleDetailComponent implements OnInit {
     }
   }
 
+  startTimeout() {
+    this.timer = setTimeout(() => {
+      if (this.route.snapshot.queryParamMap.get('mode') === 'saleflow') {
+        const index = this.headerService.saleflow.items.findIndex(
+          (saleflowItem) => saleflowItem.item._id === this.itemData._id
+        );
+        for (let i = 1; i < this.headerService.saleflow.items.length; i++) {
+          if (
+            this.headerService.saleflow.items[index - i].item.status ===
+              'active' ||
+            this.headerService.saleflow.items[index - i].item.status ===
+              'featured'
+          ) {
+            this.itemData = null;
+            this.router.navigate(
+              [`../${this.headerService.saleflow.items[index - i].item._id}`],
+              {
+                relativeTo: this.route,
+                queryParamsHandling: 'preserve',
+              }
+            );
+            break;
+          }
+        }
+      }
+    }, 10000);
+  }
+
   updateCurrentSlideData(event: any) {
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+    if (this.itemData.images.length === this.currentMediaSlide + 1) {
+      this.startTimeout();
+    } else if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   saveProduct() {

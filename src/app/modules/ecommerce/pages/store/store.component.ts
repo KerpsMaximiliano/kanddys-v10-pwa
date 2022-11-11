@@ -276,6 +276,10 @@ export class StoreComponent implements OnInit {
           const saleflowItem = saleflowItems.find(
             (item) => item.item === this.items[i]._id
           );
+          const item = this.header.saleflow.items.find(
+            (saleflowItem) => saleflowItem.item._id === this.items[i]._id
+          );
+          item.item.status = this.items[i].status;
           this.items[i].customizerId = saleflowItem.customizer;
           this.items[i].index = saleflowItem.index;
           if (!this.items[i].customizerId)
@@ -470,6 +474,10 @@ export class StoreComponent implements OnInit {
         ],
         {
           replaceUrl: this.header.checkoutRoute ? true : false,
+          queryParams: {
+            mode: 'saleflow',
+            id: this.saleflowData._id,
+          },
         }
       );
       // this.router.navigate([

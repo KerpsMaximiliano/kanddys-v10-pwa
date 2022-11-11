@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +24,7 @@ import {
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
+import { SwiperComponent } from 'ngx-swiper-wrapper';
 
 type Mode = 'symbols' | 'item';
 
@@ -83,6 +84,7 @@ export class ArticleCreatorComponent implements OnInit {
   blockSubmitButton: boolean = false;
   selectedTags: Array<string>;
   tagsAsignationOnStart: boolean = false;
+  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _ActivatedRoute: ActivatedRoute,
@@ -154,6 +156,10 @@ export class ArticleCreatorComponent implements OnInit {
           }fr`
       )
       .join(' ');
+  }
+
+  updateCurrentSlideData(event: any) {
+    this.activeSlide = this.mediaSwiper.directiveRef.getIndex();
   }
 
   getRandomArbitrary(min, max) {
