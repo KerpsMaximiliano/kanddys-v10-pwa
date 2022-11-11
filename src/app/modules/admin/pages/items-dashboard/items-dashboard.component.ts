@@ -265,7 +265,7 @@ export class ItemsDashboardComponent implements OnInit {
 
         if (item.tags.length > 0) {
           for (const tagId of item.tags) {
-            if (this.tagsHashTable[tagId]) {
+            if (tagId && this.tagsHashTable[tagId]) {
               item.tagsFilled.push(this.tagsHashTable[tagId]);
             }
           }
@@ -453,7 +453,9 @@ export class ItemsDashboardComponent implements OnInit {
 
         if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
           for (const tagId of item.tags) {
-            item.tagsFilled.push(this.tagsHashTable[tagId]);
+            if (tagId && this.tagsHashTable[tagId]) {
+              item.tagsFilled.push(this.tagsHashTable[tagId]);
+            }
           }
         }
       }
@@ -842,7 +844,7 @@ export class ItemsDashboardComponent implements OnInit {
 
     if (item.tags.length > 0) {
       for (const tagId of item.tags) {
-        if (this.tagsHashTable[tagId]) {
+        if (tagId && this.tagsHashTable[tagId]) {
           item.tagsFilled.push(this.tagsHashTable[tagId]);
         }
       }
