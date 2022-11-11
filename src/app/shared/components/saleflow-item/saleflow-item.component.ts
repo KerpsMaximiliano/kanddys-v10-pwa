@@ -138,9 +138,9 @@ export class SaleflowItemComponent implements OnInit {
   }
 
   showTags(tags: Array<Tag>) {
+    console.log(tags);
     return tags
       .map((tag) => {
-
         return tag.name;
       })
       .join(', ');
