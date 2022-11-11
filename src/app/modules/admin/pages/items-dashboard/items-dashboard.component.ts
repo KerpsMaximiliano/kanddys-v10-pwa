@@ -53,7 +53,7 @@ export interface ExtendedTag extends Tag {
   selected?: boolean;
 }
 
-interface ExtendedItem extends Item {
+export interface ExtendedItem extends Item {
   tagsFilled?: Array<Tag>;
 }
 
