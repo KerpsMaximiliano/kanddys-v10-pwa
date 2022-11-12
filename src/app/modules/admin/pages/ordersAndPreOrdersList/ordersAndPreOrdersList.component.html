@@ -166,7 +166,7 @@
                       <div
                         class="dot-trio"
                         (click)="
-                          highlightOrder(order, highlightedOrders, orderIndex)
+                          highlightOrder(order, highlightedOrders, orderIndex, 'highlightedOrders')
                         "
                       ></div>
                       <div
@@ -258,7 +258,7 @@
                 <div
                   class="group-of-items-header-flex"
                   [ngStyle]="{
-                    marginTop: tagGroupIndex !== 0 ? '60px' : '16px'
+                    marginTop: '60px'
                   }"
                 >
                   <div class="group-title">
@@ -303,7 +303,7 @@
                         <div
                           class="dot-trio"
                           (click)="
-                            highlightOrder(order, tagGroup.orders, orderIndex)
+                            highlightOrder(order, tagGroup.orders, orderIndex, 'tagGroup')
                           "
                         ></div>
                         <div
@@ -430,7 +430,7 @@
                     <div
                       class="dot-trio"
                       (click)="
-                        highlightOrder(order, ordersWithoutTags, orderIndex)
+                        highlightOrder(order, ordersWithoutTags, orderIndex, 'untagged')
                       "
                     ></div>
                     <div

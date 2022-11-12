@@ -867,7 +867,8 @@ export class OrdersAndPreOrdersList implements OnInit {
   async highlightOrder(
     order: ItemOrder,
     ordersArray: Array<ItemOrder>,
-    orderIndex: number
+    orderIndex: number,
+    typeOfOrder: string
   ) {
     const list = [];
 
@@ -933,6 +934,36 @@ export class OrdersAndPreOrdersList implements OnInit {
               const indexToDelete = this.highlightedOrders.findIndex(
                 (highlightedOrder) => highlightedOrder._id === order._id
               );
+
+              if (typeOfOrder === 'highlightedOrders') {
+                this.ordersWithoutTags.forEach((untaggedOrder) => {
+                  if (order._id === untaggedOrder._id) {
+                    untaggedOrder.status.forEach((userObject) => {
+                      if (
+                        userObject.access ===
+                        this.merchantsService.merchantData.owner._id
+                      ) {
+                        userObject.status = 'active';
+                      }
+                    });
+                  }
+                });
+
+                this.tagGroups.forEach((tagGroup) => {
+                  tagGroup.orders.forEach((groupOrder) => {
+                    if (order._id === groupOrder._id) {
+                      groupOrder.status.forEach((userObject) => {
+                        if (
+                          userObject.access ===
+                          this.merchantsService.merchantData.owner._id
+                        ) {
+                          userObject.status = 'active';
+                        }
+                      });
+                    }
+                  });
+                });
+              }
 
               await this.getHighlightedOrdersIncome();
               this.highlightedOrders.splice(indexToDelete, 1);
