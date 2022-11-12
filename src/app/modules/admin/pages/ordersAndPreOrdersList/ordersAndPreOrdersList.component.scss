@@ -1,5 +1,10 @@
 @import "forms";
 
+.orders-page {
+  overflow-y: scroll;
+  height: 100vh;
+}
+
 .title {
   font-size: 16px;
   color: #000;

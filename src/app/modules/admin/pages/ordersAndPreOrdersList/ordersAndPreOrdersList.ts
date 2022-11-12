@@ -105,7 +105,7 @@ export class OrdersAndPreOrdersList implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 5,
+    pageSize: 30,
     status: 'complete',
   };
   renderItemsPromise: Promise<{ ordersByMerchant: Array<ItemOrder> }> = null;
@@ -113,9 +113,12 @@ export class OrdersAndPreOrdersList implements OnInit {
   @ViewChild('highlightedOrdersSwiper')
   highlightedOrdersSwiper: SwiperComponent;
 
-  @HostListener('window:scroll', [])
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.orders-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       if (
         this.paginationState.status === 'complete' &&
         (this.selectedTags.length > 0 || this.searchBar.value !== '') &&
