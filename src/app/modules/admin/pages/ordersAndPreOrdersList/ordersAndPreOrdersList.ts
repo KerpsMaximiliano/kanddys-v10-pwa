@@ -40,6 +40,7 @@ interface TagGroup {
   styleUrls: ['./ordersAndPreOrdersList.component.scss'],
 })
 export class OrdersAndPreOrdersList implements OnInit {
+  URI: string = environment.uri;
   loadingStatus = 'loading';
   searchBar: FormControl = new FormControl();
   headerText: any = {
@@ -107,6 +108,7 @@ export class OrdersAndPreOrdersList implements OnInit {
     pageSize: 5,
     status: 'complete',
   };
+  renderItemsPromise: Promise<{ ordersByMerchant: Array<ItemOrder> }> = null;
 
   @ViewChild('highlightedOrdersSwiper')
   highlightedOrdersSwiper: SwiperComponent;
@@ -532,76 +534,82 @@ export class OrdersAndPreOrdersList implements OnInit {
       });
     }
 
-    const { ordersByMerchant } = await this.merchantsService.ordersByMerchant(
+    this.renderItemsPromise = this.merchantsService.ordersByMerchant(
       this.defaultMerchant._id,
-      ordersByMerchantPagination
+      ordersByMerchantPagination,
+      true
     );
 
-    if (this.selectedTagsPermanent.length > 0 || this.searchBar.value !== '') {
-      const paginationOptions = {
-        ...ordersByMerchantPagination.options,
-        limit: -1,
-      };
-      delete paginationOptions.page;
+    this.renderItemsPromise.then(async ({ ordersByMerchant }) => {
+      if (
+        this.selectedTagsPermanent.length > 0 ||
+        this.searchBar.value !== ''
+      ) {
+        const paginationOptions = {
+          ...ordersByMerchantPagination.options,
+          limit: -1,
+        };
+        delete paginationOptions.page;
 
-      const pagination: PaginationInput = {
-        ...ordersByMerchantPagination,
-        options: paginationOptions,
-        findBy: {
-          ...ordersByMerchantPagination.findBy,
-          merchant: this.merchantsService.merchantData._id,
-        },
-      };
+        const pagination: PaginationInput = {
+          ...ordersByMerchantPagination,
+          options: paginationOptions,
+          findBy: {
+            ...ordersByMerchantPagination.findBy,
+            merchant: this.merchantsService.merchantData._id,
+          },
+        };
 
-      if (selectedTagIds.length > 0) {
-        pagination.findBy.tags = selectedTagIds;
+        if (selectedTagIds.length > 0) {
+          pagination.findBy.tags = selectedTagIds;
+        }
+
+        const ordersIncomeForMatchingOrders =
+          await this.merchantsService.incomeMerchant(pagination);
+
+        if (typeof ordersIncomeForMatchingOrders === 'number')
+          this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
       }
 
-      const ordersIncomeForMatchingOrders =
-        await this.merchantsService.incomeMerchant(pagination);
+      if (
+        this.selectedTagsPermanent.length > 0 ||
+        (this.searchBar.value !== '' && this.searchBar.value !== null)
+      ) {
+        ordersByMerchantPagination.options.limit = -1;
+        const { ordersByMerchant } =
+          await this.merchantsService.hotOrdersByMerchant(
+            this.defaultMerchant._id,
+            ordersByMerchantPagination
+          );
 
-      if (typeof ordersIncomeForMatchingOrders === 'number')
-        this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
-    }
-
-    if (
-      this.selectedTagsPermanent.length > 0 ||
-      (this.searchBar.value !== '' && this.searchBar.value !== null)
-    ) {
-      ordersByMerchantPagination.options.limit = -1;
-      const { ordersByMerchant } =
-        await this.merchantsService.hotOrdersByMerchant(
-          this.defaultMerchant._id,
-          ordersByMerchantPagination
-        );
-
-      if (ordersByMerchant)
-        this.matchingOrdersTotalCounter = ordersByMerchant.length;
-      else this.matchingOrdersTotalCounter = null;
-    } else {
-      this.matchingOrdersTotalCounter = null;
-    }
-
-    if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
-      this.paginationState.page--;
-
-    if (ordersByMerchant && ordersByMerchant.length > 0) {
-      if (this.paginationState.page === 1) {
-        this.ordersList = ordersByMerchant;
+        if (ordersByMerchant)
+          this.matchingOrdersTotalCounter = ordersByMerchant.length;
+        else this.matchingOrdersTotalCounter = null;
       } else {
-        this.ordersList = this.ordersList.concat(ordersByMerchant);
+        this.matchingOrdersTotalCounter = null;
       }
-    }
 
-    if (
-      ordersByMerchant.length === 0 &&
-      this.searchBar.value !== '' &&
-      !triggeredFromScroll
-    ) {
-      this.ordersList = [];
-    }
+      if (ordersByMerchant.length === 0 && this.paginationState.page !== 1)
+        this.paginationState.page--;
 
-    this.paginationState.status = 'complete';
+      if (ordersByMerchant && ordersByMerchant.length > 0) {
+        if (this.paginationState.page === 1) {
+          this.ordersList = ordersByMerchant;
+        } else {
+          this.ordersList = this.ordersList.concat(ordersByMerchant);
+        }
+      }
+
+      if (
+        ordersByMerchant.length === 0 &&
+        this.searchBar.value !== '' &&
+        !triggeredFromScroll
+      ) {
+        this.ordersList = [];
+      }
+
+      this.paginationState.status = 'complete';
+    });
   }
 
   async loadHighlightedOrders(
@@ -704,50 +712,52 @@ export class OrdersAndPreOrdersList implements OnInit {
   }
 
   async handleOption(option: string) {
-    this.unselectedTags = [...this.tags];
-    this.showSearchbar = true;
-    this.selectedTags = [];
-    this.selectedTagsPermanent = [];
-    this.highlightedOrders = [];
-    this.highlightedOrdersIncome = 0;
-    this.tagsHashTable = {};
-    this.ordersList = [];
-    this.ordersWithoutTags = [];
-    this.typeOfList = option;
-    this.tagGroups = this.tagGroups.map((tagGroup) => ({
-      orders: [],
-      tag: tagGroup.tag,
-      income: 0,
-    }));
-    this.ordersWithoutTags = [];
-    this.selectedTags = [];
-    this.ordersList = [];
-    this.matchingOrdersTotalCounter = null;
-    this.ordersIncomeForMatchingOrders = null;
-    this.searchBar.setValue('');
-    await this.getHighlightedOrdersIncome();
+    if (this.loadingStatus === 'complete') {
+      this.unselectedTags = [...this.tags];
+      this.showSearchbar = true;
+      this.selectedTags = [];
+      this.selectedTagsPermanent = [];
+      this.highlightedOrders = [];
+      this.highlightedOrdersIncome = 0;
+      this.tagsHashTable = {};
+      this.ordersList = [];
+      this.ordersWithoutTags = [];
+      this.typeOfList = option;
+      this.tagGroups = this.tagGroups.map((tagGroup) => ({
+        orders: [],
+        tag: tagGroup.tag,
+        income: 0,
+      }));
+      this.ordersWithoutTags = [];
+      this.selectedTags = [];
+      this.ordersList = [];
+      this.matchingOrdersTotalCounter = null;
+      this.ordersIncomeForMatchingOrders = null;
+      this.searchBar.setValue('');
+      await this.getHighlightedOrdersIncome();
 
-    if (option === 'facturas') {
-      this.tagGroups = [...this.permanentOrdersTagGroups];
-      this.highlightedOrders = [...this.highlightedOrdersPermanent];
-      this.ordersWithoutTags = [...this.ordersWithoutTagsPermanent];
-      this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
-      this.ordersWithoutTagsIncome = this.ordersWithoutTagsIncomePermanent;
-    } else {
-      this.tagGroups = [...this.permanentPreOrdersTagGroups];
-      this.highlightedOrders = [...this.highlightedPreOrdersPermanent];
-      this.ordersWithoutTags = [...this.preordersWithoutTagsPermanent];
-      this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
-      this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
+      if (option === 'facturas') {
+        this.tagGroups = [...this.permanentOrdersTagGroups];
+        this.highlightedOrders = [...this.highlightedOrdersPermanent];
+        this.ordersWithoutTags = [...this.ordersWithoutTagsPermanent];
+        this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+        this.ordersWithoutTagsIncome = this.ordersWithoutTagsIncomePermanent;
+      } else {
+        this.tagGroups = [...this.permanentPreOrdersTagGroups];
+        this.highlightedOrders = [...this.highlightedPreOrdersPermanent];
+        this.ordersWithoutTags = [...this.preordersWithoutTagsPermanent];
+        this.tagGroups = await this.getPermanentTagGroupsIncome(this.tagGroups);
+        this.ordersWithoutTagsIncome = this.preordersWithoutTagsIncomePermanent;
+      }
     }
   }
 
   handleTag(selectedTag: Tag): void {
     this.scrollToTheTopOfThePage();
 
-    if (this.selectedTags.includes(selectedTag)) {
+    if (this.selectedTags.map((tag) => tag._id).includes(selectedTag._id)) {
       this.selectedTags = this.selectedTags.filter(
-        (tag) => tag !== selectedTag
+        (tag) => tag._id !== selectedTag._id
       );
 
       if (this.selectedTags.length === 0) {
@@ -858,11 +868,13 @@ export class OrdersAndPreOrdersList implements OnInit {
   ) {
     const list = [];
 
+    let foundMerchantObject = false;
     order.status.forEach((userObject, statusIndex) => {
       if (
         userObject.access === this.merchantsService.merchantData.owner._id &&
         userObject.status !== 'featured'
       ) {
+        foundMerchantObject = true;
         list.push({
           text: 'Destacar orden',
           callback: async () => {
@@ -896,6 +908,7 @@ export class OrdersAndPreOrdersList implements OnInit {
         userObject.access === this.merchantsService.merchantData.owner._id &&
         userObject.status === 'featured'
       ) {
+        foundMerchantObject = true;
         list.push({
           text: 'Dejar de destacar orden',
           callback: async () => {
@@ -930,10 +943,41 @@ export class OrdersAndPreOrdersList implements OnInit {
       }
     });
 
+    if (!foundMerchantObject) {
+      list.push({
+        text: 'Destacar orden',
+        callback: async () => {
+          const response = await this.ordersService.orderSetStatus(
+            'featured',
+            order._id
+          );
+
+          if (response) {
+            ordersArray[orderIndex].status.forEach((userObject) => {
+              if (
+                userObject.access ===
+                this.merchantsService.merchantData.owner._id
+              ) {
+                userObject.status = 'featured';
+              }
+            });
+
+            await this.getHighlightedOrdersIncome();
+            this.highlightedOrders.push(order);
+          }
+
+          setTimeout(() => {
+            this.highlightedOrdersSwiper.directiveRef.update();
+          }, 300);
+        },
+      });
+    }
+
     this.dialogService.open(SettingsComponent, {
       type: 'fullscreen-translucent',
       props: {
         title: 'Orden ' + formatID(order.dateId),
+        linkToCopy: this.URI + '/ecommerce/order-info/' + order._id,
         optionsList: list,
       },
       customClass: 'app-dialog',

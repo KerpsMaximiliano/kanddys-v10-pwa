@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Output,
-  EventEmitter,
-} from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -57,8 +51,6 @@ export class TagsSelectorComponent implements OnInit {
         selectedTags: this.tag,
       });
     }
-
-    this.tagSelected(tag, this.tag.includes(tag));
   }
 
   tagSelected(args: any, selected: boolean) {

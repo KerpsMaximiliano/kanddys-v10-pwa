@@ -208,6 +208,8 @@
                                 class="name"
                                 *ngIf="
                                   itemOption.name &&
+                                  product.params &&
+                                  product.params.length > 0 &&
                                   itemOption._id ===
                                     product.params[0].paramValue
                                 "
@@ -343,6 +345,8 @@
                                   class="name"
                                   *ngIf="
                                     itemOption.name &&
+                                    product.params &&
+                                    product.params.length > 0 &&
                                     itemOption._id ===
                                       product.params[0].paramValue
                                   "
@@ -456,6 +460,8 @@
                               class="name"
                               *ngIf="
                                 itemOption.name &&
+                                product.params &&
+                                product.params.length > 0 &&
                                 itemOption._id === product.params[0].paramValue
                               "
                             >
@@ -530,6 +536,8 @@
                         class="name"
                         *ngIf="
                           itemOption.name &&
+                          product.params &&
+                          product.params.length > 0 &&
                           itemOption._id === product.params[0].paramValue
                         "
                       >
