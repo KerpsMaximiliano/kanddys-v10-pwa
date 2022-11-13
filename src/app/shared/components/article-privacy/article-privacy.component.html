@@ -45,16 +45,21 @@
     <div class="invites-choice" *ngSwitchCase="'Yo y mis invitados'">
       <div class="images-grid">
         <div
-          *ngFor="let media of medias.length ? medias : ['']; let j = index"
+          *ngFor="
+            let media of controllers.controls.length
+              ? controllers.controls
+              : [_AbstractControl];
+            let j = index
+          "
           id="0{{ j }}"
-          attr.aria-label="{{ j + 1 }} / {{ medias.length }}"
+          attr.aria-label="{{ j + 1 }} / {{ controllers.controls.length }}"
           role="group"
           class="mutimedia-container"
         >
           <div
-            [style.background]="media"
+            [style.background]="multimedia[j][0]"
             [style.filter]="toDelete.includes(j) ? filter : ''"
-            class="square"
+            class="square {{ j }}"
             (click)="accessContact(j)"
           ></div>
           <button
@@ -120,7 +125,7 @@
           type="email"
         />
         <input
-          formControlName="whatsapp"
+          formControlName="phone"
           class="input"
           placeholder="WhatsApp.."
           type="tel"
@@ -162,12 +167,14 @@
         </swiper>
         <p class="paragraph">Oración identificadora</p>
         <input
-          formControlName="oracion"
+          formControlName="nickname"
           class="input"
           placeholder="Escribe.."
           type="text"
         />
-        <button class="submit" (click)="submit()">SALVAR COMO INVITADO</button>
+        <button class="submit" type="button" (click)="submit()">
+          SALVAR COMO INVITADO
+        </button>
       </form>
     </div>
     <div
@@ -214,14 +221,17 @@
             </span>
           </div>
           <div class="invite-container" *ngIf="item.invites">
-            <span *ngIf="invites.length" class="invites-text">Invitados</span>
-            <ng-container *ngFor="let invite of invites; let i = index">
-              <div
-                *ngIf="i !== 0 && medias[i]"
-                class="invite"
-                [style.left]="'-' + (i + 1) * 4 + 'px'"
-                [style.background]="medias[i]"
-              ></div>
+            <ng-container
+              *ngFor="let control of controllers.controls; let i = index"
+            >
+              <ng-container *ngIf="control.valid && i > 0">
+                <span *ngIf="i === 1" class="invites-text">Invitados</span>
+                <div
+                  class="invite"
+                  [style.left]="'-' + (i + 1) * 4 + 'px'"
+                  [style.background]="multimedia[i][0]"
+                ></div>
+              </ng-container>
             </ng-container>
           </div>
         </div>

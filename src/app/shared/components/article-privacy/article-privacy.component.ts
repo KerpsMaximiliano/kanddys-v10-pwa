@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { Recipient } from 'src/app/core/models/recipients';
+import { RecipientsService } from 'src/app/core/services/recipients.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -57,7 +65,6 @@ export class ArticlePrivacyComponent implements OnInit {
   listado: string[] = ['Nueva', 'Listado #4', 'ListadoID'];
   listadoSelection: string = 'Nueva';
   env: string = environment.assetsUrl;
-  medias = [];
   controlIndex: number;
   controllers: FormArray = new FormArray([]);
   swiperConfig: SwiperOptions = {
@@ -70,30 +77,9 @@ export class ArticlePrivacyComponent implements OnInit {
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = [];
   audioFiles: string[] = [];
-  invites: any = [];
   fields: any[] = [
     {
-      name: 'name',
-      label: '',
-      style: {
-        marginLeft: '36px',
-      },
-      value: '',
-      validators: [Validators.required, Validators.pattern(/^[a-zA-Z\s]*$/)],
-      type: 'text',
-    },
-    {
-      name: 'lastName',
-      label: '',
-      style: {
-        marginLeft: '36px',
-      },
-      value: '',
-      validators: [Validators.required, Validators.pattern(/^[a-zA-Z\s]*$/)],
-      type: 'text',
-    },
-    {
-      name: 'oracion',
+      name: '_id',
       label: '',
       style: {
         marginLeft: '36px',
@@ -103,7 +89,37 @@ export class ArticlePrivacyComponent implements OnInit {
       type: 'text',
     },
     {
-      name: 'whatsapp',
+      name: 'name',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: '',
+      validators: [],
+      type: 'text',
+    },
+    {
+      name: 'lastName',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: '',
+      validators: [],
+      type: 'text',
+    },
+    {
+      name: 'nickname',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: '',
+      validators: [],
+      type: 'text',
+    },
+    {
+      name: 'phone',
       label: '',
       style: {
         marginLeft: '36px',
@@ -134,32 +150,44 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: this.fillList(1),
-      validators: [Validators.required, this.multimediaValid],
+      validators: [],
       type: 'file',
     },
   ];
   password: FormControl = new FormControl('', [Validators.required]);
   toDelete: number[] = [];
   filter: SafeStyle;
+  _Recipients: Recipient[];
+  _AbstractControl: AbstractControl = new FormControl();
   constructor(
     private _DomSanitizer: DomSanitizer,
-    private _DialogService: DialogService
+    private _DialogService: DialogService,
+    private _RecipientsService: RecipientsService
   ) {}
 
   ngOnInit(): void {
     this.filter = this._DomSanitizer.bypassSecurityTrustStyle('opacity(0.5)');
-    this.initControllers();
+    const recipients = async () => {
+      const { recipients }: any = await this._RecipientsService.recipients();
+      this._Recipients = recipients;
+      console.log('this._Recipients: ', this._Recipients);
+      this.initControllers(this._Recipients);
+      this.initControllers();
+    };
+    recipients();
   }
 
-  initControllers(): void {
-    const list = this.fillList(1);
-    list.forEach((item, i) => {
+  initControllers(_Recipients: Recipient[] = [{} as Recipient]): void {
+    _Recipients.forEach((item, i) => {
       this.multimedia.unshift([]);
       this.types.unshift([]);
       const controller: FormGroup = new FormGroup({});
       this.fields.forEach(
         ({ name, value, validators, type }: any, j: number) => {
-          controller.addControl(name, new FormControl(value, validators));
+          controller.addControl(
+            name,
+            new FormControl(item[name] || value, validators)
+          );
         }
       );
       this.controllers = new FormArray([
@@ -167,7 +195,6 @@ export class ArticlePrivacyComponent implements OnInit {
         ...this.controllers.controls,
       ]);
     });
-    this.updateInvites();
   }
 
   fillList(n: number): any[] {
@@ -177,15 +204,6 @@ export class ArticlePrivacyComponent implements OnInit {
 
   multimediaValid(g: FormControl) {
     return g.value.some((image) => !image) ? { invalid: true } : null;
-  }
-
-  updateInvites(): void {
-    this.invites = this.controllers.controls.filter(
-      (controller: FormControl) => {
-        console.log('controller.valid: ', controller.valid);
-        return controller.valid;
-      }
-    );
   }
 
   handleOption(option: string): void {
@@ -274,16 +292,24 @@ export class ArticlePrivacyComponent implements OnInit {
   }
 
   submit(): void {
-    if (this.controllers.at(this.controlIndex).invalid) return;
-    this.initControllers();
-    this.medias = [];
-    this.multimedia
-      .filter((list) => list.length)
-      .forEach(
-        (media) => (this.medias = [...this.medias, ...media.map((src) => src)])
+    const controller: AbstractControl = this.controllers.at(this.controlIndex);
+    if (controller.invalid) return;
+    const { _id, phone, email, nickname } = controller.value;
+    const createRecipient = async () => {
+      const { createRecipient } = await this._RecipientsService.createRecipient(
+        {
+          phone,
+          email,
+          nickname,
+        }
       );
-    this.medias.unshift('');
-    this.invites = this.controllers.controls.map(() => '');
+      const { _id } = createRecipient;
+      controller.get('_id').setValue(_id);
+      this._Recipients = this.controllers.value;
+      this.initControllers();
+    };
+    if (!_id) createRecipient();
+    console.log('this.controllers.value: ', this.controllers.value);
     this.selected = ['Yo y mis invitados'];
   }
 
@@ -318,24 +344,32 @@ export class ArticlePrivacyComponent implements OnInit {
               },
             },
             func: () => {
-              this.controllers = new FormArray(
-                this.controllers.controls.filter(
-                  (control: FormGroup, index) => !this.toDelete.includes(index)
-                )
-              );
-              this.medias = this.medias.filter(
-                (item, j: number) => !this.toDelete.includes(j)
-              );
-              this.multimedia = this.multimedia.filter(
-                (item, j: number) => !this.toDelete.includes(j)
-              );
-              this.types = this.types.filter(
-                (item, j: number) => !this.toDelete.includes(j)
-              );
-              this.invites = this.invites.filter(
-                (item, j: number) => !this.toDelete.includes(j)
-              );
-              this.toDelete = [];
+              const deleteRecipient = async () => {
+                for (const index of this.toDelete) {
+                  console.log(
+                    'this.controllers.at(index): ',
+                    this.controllers.at(index).value
+                  );
+                  const result = await this._RecipientsService.deleteRecipient(
+                    this.controllers.at(index).get('_id').value
+                  );
+                  console.log('result: ', result);
+                }
+                this.controllers = new FormArray(
+                  this.controllers.controls.filter(
+                    (control: FormGroup, index) =>
+                      !this.toDelete.includes(index)
+                  )
+                );
+                this.multimedia = this.multimedia.filter(
+                  (item, j: number) => !this.toDelete.includes(j)
+                );
+                this.types = this.types.filter(
+                  (item, j: number) => !this.toDelete.includes(j)
+                );
+                this.toDelete = [];
+              };
+              deleteRecipient();
             },
           },
         ],
