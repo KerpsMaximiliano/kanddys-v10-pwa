@@ -27,15 +27,10 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { Tag } from 'src/app/core/models/tags';
-<<<<<<< HEAD
-import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
-import { OrderService } from 'src/app/core/services/order.service';
-=======
 import {
   ExtendedItem,
   ExtendedTag,
 } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
->>>>>>> b3dd549413c5e860b45c1f6658eaf506c46468d0
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -70,7 +65,6 @@ export class ItemDisplayComponent implements OnInit {
     private notificationsService: NotificationsService,
     private clipboard: Clipboard,
     private toastr: ToastrService,
-    private orderService: OrderService,
     private tagsService: TagsService
   ) {}
 
