@@ -76,6 +76,7 @@ export class PaymentsComponent implements OnInit {
           text: 'ID',
           styles: {
             paddingTop: '8px',
+            fontFamily: 'SfProBold'
           },
         },
       },
@@ -111,6 +112,7 @@ export class PaymentsComponent implements OnInit {
           text: 'ID',
           styles: {
             paddingTop: '8px',
+            fontFamily: 'SfProBold'
           },
         },
       },
