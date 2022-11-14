@@ -12,7 +12,11 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
-import { OptionAnswerSelector } from 'src/app/core/types/answer-selector';
+import {
+  OptionAnswerSelector,
+  WebformAnswerLayoutOption,
+  webformAnswerLayoutOptionDefaultStyles,
+} from 'src/app/core/types/answer-selector';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ConfirmActionDialogComponent } from 'src/app/shared/dialogs/confirm-action-dialog/confirm-action-dialog.component';
 import { environment } from 'src/environments/environment';
@@ -38,8 +42,112 @@ export class PaymentsComponent implements OnInit {
   depositAmount: number;
   post: Post;
   currentUser: User;
-  onlinePaymentsOptions: OptionAnswerSelector[] = [
-    { value: 'Stripe', status: true, click: false, description: [] },
+  onlinePaymentsOptions: WebformAnswerLayoutOption[] = [
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'stripe',
+      callback: () => this.selectOnlinePayment(0),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+            display: 'none',
+          },
+        },
+        topLeft: {
+          text: 'Stripe',
+          styles: {
+            paddingBottom: '8px',
+            width: '100%',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '10px',
+          },
+        },
+      },
+    },
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'paypal',
+      callback: () => this.selectOnlinePayment(1),
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Paypal',
+          styles: {
+            paddingBottom: '8px',
+          },
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '10px',
+          },
+        },
+      },
+    },
+    /*
+    {
+      type: 'WEBFORM-ANSWER',
+      optionStyles: webformAnswerLayoutOptionDefaultStyles,
+      selected: false,
+      optionIcon: 'apple-pay',
+      texts: {
+        topRight: {
+          text: '',
+          styles: {
+            color: '#7B7B7B',
+          },
+        },
+        topLeft: {
+          text: 'Apple pay',
+          styles: {
+            paddingBottom: '8px',
+          },
+          callback: () => this.selectOnlinePayment(0),
+        },
+        middleTexts: [
+          {
+            text: 'ID',
+          },
+        ],
+        bottomLeft: {
+          text: 'ID',
+          styles: {
+            paddingTop: '10px',
+          },
+        },
+      },
+    },*/
   ];
 
   constructor(
@@ -102,11 +210,12 @@ export class PaymentsComponent implements OnInit {
         ).post;
       }
     }
-    this.banks = (
-      await this.walletService.exchangeData(
-        this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
-      )
-    )?.ExchangeData?.bank;
+    const exchangeData = await this.walletService.exchangeData(
+      this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
+    );
+
+    this.banks = exchangeData?.ExchangeData?.bank;
+
     const registeredUser = JSON.parse(
       localStorage.getItem('registered-user')
     ) as User;
@@ -195,8 +304,9 @@ export class PaymentsComponent implements OnInit {
     ).authOrder;
   }
 
-  async selectOnlinePayment(orderIndex: number) {
-    const paymentOptionName = this.onlinePaymentsOptions[orderIndex].value;
+  async selectOnlinePayment(paymentIndex: number) {
+    const paymentOptionName =
+      this.onlinePaymentsOptions[paymentIndex].texts.topLeft.text;
 
     if (paymentOptionName === 'Stripe') {
       if (this.currentUser) {
@@ -208,6 +318,24 @@ export class PaymentsComponent implements OnInit {
           localStorage.setItem('stripe_checkout_session_id', result.id);
           localStorage.setItem('stripe-payed-orderId', this.order._id);
           window.location.href = result.url;
+        }
+      } else {
+        this.router.navigate([`/auth/login`], {
+          queryParams: {
+            orderId: this.order._id,
+            onlinePayment: 'payment-with-stripe',
+          },
+        });
+      }
+    } else if (paymentOptionName === 'Paypal') {
+      if (this.currentUser) {
+        const result = await this.walletService.payOrderWithElectronicPayments(
+          'paypal',
+          this.order._id
+        );
+
+        if (result) {
+          window.location.href = result;
         }
       } else {
         this.router.navigate([`/auth/login`], {

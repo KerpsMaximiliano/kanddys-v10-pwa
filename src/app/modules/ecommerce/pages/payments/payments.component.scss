@@ -1,165 +1,205 @@
 button {
-	all: unset;
+  all: unset;
 }
 .payment-selection {
-	font-family: "RobotoMedium";
-	font-size: 17px;
-	color: #7b7b7b;
-	margin-bottom: 24px;
-	display: inline-block;
+  font-family: SfProBold;
+  font-size: 17px;
+  color: #272727;
+  margin: 0px;
+  display: inline-block;
 }
 .amount-input {
-	margin-top: 24px;
-	margin-bottom: 32px;
+  margin-top: 24px;
+  margin-bottom: 32px;
 }
 .container {
-	width: 100%;
-	min-height: 100vh;
-	padding-bottom: 80px;
+  width: 100%;
+  min-height: 100vh;
+  padding-bottom: 80px;
 
-	.header {
-		width: 100%;
-		height: 36px;
-		background-color: #2874ad;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0 23px;
+  .header {
+    width: 100%;
+    height: 36px;
+    background-color: #2874ad;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-		.back-btn {
-			color: #ffffff;
-			padding: 10px;
-			cursor: pointer;
-			margin-right: 8px;
+    .back-btn {
+      position: absolute;
+      color: #ffffff;
+      left: 16px;
+      cursor: pointer;
 
-			&:hover {
-				opacity: 0.75;
-			}
-		}
+      &:hover {
+        opacity: 0.75;
+      }
+    }
 
-		.method {
-			font-family: "SfProBold";
-			font-size: 1.313rem;
-			font-weight: 500;
-			color: #ffffff;
-		}
+    .method {
+      font-family: "SfProBold";
+      font-size: 1.313rem;
+      font-weight: 500;
+      color: #ffffff;
+      margin: 0px;
+    }
 
-		.right-area {
-			display: flex;
-			align-items: flex-end;
+    .right-area {
+      display: flex;
+      align-items: flex-end;
 
-			.header-text {
-				font-family: "RobotoRegular";
-				font-size: 0.875rem;
-				color: #ffffff;
-				margin-right: 6px;
-			}
+      .header-text {
+        font-family: "RobotoRegular";
+        font-size: 0.875rem;
+        color: #ffffff;
+        margin-right: 6px;
+      }
 
-			img {
-				width: 14px;
-				filter: brightness(2);
-			}
-		}
-	}
+      img {
+        width: 14px;
+        filter: brightness(2);
+      }
+    }
+  }
 
-	.total-paid {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		margin: 29px 0 58px;
-		text-align: center;
+  .total-paid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 29px 0 58px;
+    text-align: center;
 
-		.paid {
-			font-family: "RobotoMedium";
-			font-size: 2.75rem;
-			color: #7b7b7b;
-			margin: 0;
-		}
+    .paid {
+      font-family: "RobotoMedium";
+      font-size: 2.75rem;
+      color: #7b7b7b;
+      margin: 0;
+    }
 
-		.total {
-			font-family: "RobotoLight";
-			font-size: 0.875rem;
-			color: #000000;
-			margin: 2px 0;
-		}
-	}
+    .total {
+      font-family: "RobotoLight";
+      font-size: 0.875rem;
+      color: #000000;
+      margin: 2px 0;
+    }
+  }
 
-	.payment-method {
-		margin-left: 8%;
-		margin-right: 8%;
-		margin-bottom: 32px;
-	}
+  .payment-method {
+    margin-left: 7.71%;
+    margin-right: 10.04%;
+    margin-bottom: 32px;
+  }
 
-	.image-area {
-		display: flex;
-		flex-direction: column;
-		margin-left: 7%;
+  .order-amount {
+    margin-top: 27px;
+    margin-bottom: 39px;
+    width: 100%;
 
-		.image-label {
-			font-family: "RobotoMedium";
-			font-size: 1rem;
-			color: #7b7b7b;
-			margin-bottom: 15px;
-		}
-	}
+    .amount-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .title {
+        font-family: RobotoLight;
+        font-size: 24px;
+        color: #7b7b7b;
+        margin: 0px;
+        padding: 0px;
+        font-weight: normal;
+      }
+
+      .price {
+        font-family: RobotoMedium;
+        font-size: 40px;
+        color: #7b7b7b;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      &:nth-of-type(1) {
+        margin-bottom: 14px;
+      }
+    }
+  }
+
+  .image-area {
+    display: flex;
+    flex-direction: column;
+    margin-left: 7%;
+	margin-left: 7.71%;
+    margin-right: 10.04%;
+
+    .image-label {
+      font-family: SfProBold;
+      font-size: 17px;
+      color: #272727;
+      margin: 0px;
+      display: inline-block;
+      margin-bottom: 18px;
+    }
+  }
 }
 .option-content {
-	background-color: #82f18d;
-	padding: 8px 32px;
-	border-radius: 5px;
-	position: relative;
+  background-color: #82f18d;
+  padding: 8px 32px;
+  margin-top: 29px;
+  border-radius: 5px;
+  position: relative;
 
-	p {
-		margin: 0;
-	}
+  p {
+    margin: 0;
+  }
 
-	.option-title {
-		font-size: 0.75rem;
-		padding-bottom: 0.5rem;
-		font-family: SfProBold;
-		color: #000000;
-	}
-	ul {
-		padding: 0;
-		margin: 0;
+  .option-title {
+    font-size: 0.75rem;
+    padding-bottom: 0.5rem;
+    font-family: SfProBold;
+    color: #000000;
+  }
+  ul {
+    padding: 0;
+    margin: 0;
 
-		li {
-			list-style: none;
-			font-size: 1rem;
-			font-family: SfProRegular;
-			color: #7b7b7b;
-		}
-	}
-	.option-footer {
-		padding-top: 0.5rem;
-		font-size: 1rem;
-		font-family: SfProBold;
-		color: #174b72;
-	}
+    li {
+      list-style: none;
+      font-size: 1rem;
+      font-family: SfProRegular;
+      color: #7b7b7b;
+    }
+  }
+  .option-footer {
+    padding-top: 0.5rem;
+    font-size: 1rem;
+    font-family: SfProBold;
+    color: #174b72;
+  }
 
-	.option-remove {
-		all: unset;
-		position: absolute;
-		top: 50%;
-		right: 0;
-		transform: translate(50%, -50%);
-		cursor: pointer;
-		background-color: #ffffff;
-		border: solid 1px #82f18d;
-		color: #2874ad;
-		padding: 4px 8px;
-		border-radius: 50%;
-		font-size: 13px;
+  .option-remove {
+    all: unset;
+    position: absolute;
+    top: 50%;
+    right: -19px;
+    transform: translate(50%, -50%);
+    cursor: pointer;
+    background-color: #ffffff;
+    border: solid 1px #232323;
+    color: #2874ad;
+    padding: 4px 8px;
+    border-radius: 50%;
+    font-size: 13px;
 
-		&:hover,
-		&:active {
-			background-color: #f8f8f8;
-		}
-	}
+    &:hover,
+    &:active {
+      background-color: #f8f8f8;
+    }
+  }
 }
 a.disabled {
-	pointer-events: none;
-	cursor: default;
+  pointer-events: none;
+  cursor: default;
 }

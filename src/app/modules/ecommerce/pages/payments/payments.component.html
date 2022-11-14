@@ -1,29 +1,23 @@
 <div class="container">
   <header class="header">
-    <div style="display: flex; align-items: center">
-      <button (click)="onBackClick()" class="back-btn">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <h1 class="method">Métodos de Pagos</h1>
-    </div>
-
-    <div class="right-area">
-      <span class="header-text" *ngIf="order">{{
-        currentUser?.name || currentUser?.phone || currentUser?.email
-      }}</span>
-      <img
-        [src]="env + '/person.svg'"
-        alt="Icono de una persona"
-        *ngIf="order?.user"
-      />
-    </div>
+    <button (click)="onBackClick()" class="back-btn">
+      <img [src]="env + '/double-arrow-up.png'" alt="open info" />
+    </button>
+    <h1 class="method">Métodos de Pagos</h1>
   </header>
 
   <div class="payment-method" *ngIf="status === 'complete'">
-    <div class="total-paid" *ngIf="order">
-      <h1 class="paid">${{ paymentAmount | number: "1.2-2" }}</h1>
-      <p class="total">Total Facturado en DOP</p>
+    <div class="order-amount" *ngIf="order">
+      <div class="amount-wrapper">
+        <h4 class="title">Subtotal</h4>
+        <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+      </div>
+      <div class="amount-wrapper">
+        <h4 class="title">A saldar</h4>
+        <h3 class="price">${{ paymentAmount | number: "1.2-2" }}</h3>
+      </div>
     </div>
+
     <div class="amount-input" *ngIf="!order">
       <span class="payment-selection"> Monto del depósito </span>
       <div style="height: 64px">
@@ -32,7 +26,7 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection"> Selecciona el que te convenga: </span>
+    <span class="payment-selection"> Como prefieres pagar?</span>
     <ng-container *ngIf="!selectedBank">
       <app-answer-selector
         [values]="{
@@ -43,12 +37,15 @@
         [indicator]="true"
         (onSelector)="selectBank($event)"
         [containerStyles]="{
-          margin: '0px'
+          margin: '0px',
+          marginTop: '19px'
         }"
       ></app-answer-selector>
     </ng-container>
     <app-answer-selector
-      [options]="onlinePaymentsOptions"
+      *ngIf="!selectedBank"
+      [complexOptions]="onlinePaymentsOptions"
+      [hasComplexOptionsLayout]="true"
       [indicator]="true"
       (onSelector)="selectOnlinePayment($event)"
       [containerStyles]="{
@@ -79,6 +76,15 @@
       [allowedTypes]="['png', 'jpg', 'jpeg']"
       [expandImage]="true"
       (onFileInput)="onFileInput($event)"
+      [containerStyles]="{
+        width: '100%'
+      }"
+      [fileStyles]="{
+        width: '100%',
+        backgroundColor: 'white !important',
+        boxShadow: 'rgb(0 0 0 / 18%) 1px 6px 8px 0px inset',
+        border: 'none'
+      }"
     ></app-image-input>
   </div>
   <app-sticky-button

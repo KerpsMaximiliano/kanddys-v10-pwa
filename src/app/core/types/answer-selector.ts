@@ -45,6 +45,7 @@ export interface WebformAnswerLayoutOption {
   optionStyles?: Record<WebformAnswerLayoutParts, any>;
   selected?: boolean;
   callback?(...params): any;
+  optionIcon?: string;
   texts: {
     topLeft: OptionText;
     topRight: OptionText;

@@ -11,14 +11,23 @@ export class PaymentsRedirectionComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((queryParams) => {
-      const { typeOfPayment } = queryParams;
+      let { typeOfPayment, success } = queryParams;
+      success = Boolean(success);
 
       if (!typeOfPayment) return this.router.navigate(['others/error-screen']);
 
-      if (typeOfPayment === 'stripe') {
+      if (typeOfPayment === 'stripe' && success) {
         const orderId = localStorage.getItem('stripe-payed-orderId');
 
         this.router.navigate(['ecommerce/order-info/' + orderId]);
+      } else if (typeOfPayment === 'stripe' && !success) {
+        const orderId = localStorage.getItem('stripe-payed-orderId');
+
+        this.router.navigate(['payments/637289ea18c8811f24ae983f/' + orderId], {
+          queryParams: {
+            paymentFailed: true,
+          },
+        });
       }
     });
   }
