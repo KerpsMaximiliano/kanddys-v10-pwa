@@ -400,9 +400,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
     let result = null;
     if (!this.tagID || this.tagID.length < 1) {
       try {
-        const { createTag: createdTag } = await this.tagsService.createTag(
-          data
-        );
+        const createdTag = await this.tagsService.createTag(data);
 
         this.finishedMutation = true;
 
