@@ -27,6 +27,7 @@ export class TagAsignationComponent implements OnInit {
   @Input() entityId: string = null;
   @Input('loadingText') loadingText: string = 'ESPERE...';
   @Input('untouchedActionText') untouchedActionText: string = null;
+  @Input() outputAllSelectedTags: boolean = false;
   @Input() public ctaAction: (args?: any) => any;
   blockCta: boolean = false;
 
@@ -50,6 +51,8 @@ export class TagAsignationComponent implements OnInit {
       this.router.navigate(['admin/create-tag'], {
         queryParams: {
           orderId: this.orderId,
+          entity: this.entity,
+          entityId: this.entityId,
         },
       });
     } else {

@@ -546,7 +546,9 @@ export class OrdersAndPreOrdersList implements OnInit {
     this.renderItemsPromise.then(async ({ ordersByMerchant }) => {
       if (
         this.selectedTagsPermanent.length > 0 ||
-        this.searchBar.value !== ''
+        (this.searchBar.value !== '' && this.searchBar.value !== null) ||
+        this.justShowHighlightedOrders ||
+        this.justShowUntaggedOrders
       ) {
         const paginationOptions = {
           ...ordersByMerchantPagination.options,
@@ -572,13 +574,9 @@ export class OrdersAndPreOrdersList implements OnInit {
 
         if (typeof ordersIncomeForMatchingOrders === 'number')
           this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
-      }
 
-      if (
-        this.selectedTagsPermanent.length > 0 ||
-        (this.searchBar.value !== '' && this.searchBar.value !== null)
-      ) {
         ordersByMerchantPagination.options.limit = -1;
+
         const { ordersByMerchant } =
           await this.merchantsService.hotOrdersByMerchant(
             this.defaultMerchant._id,
@@ -664,7 +662,29 @@ export class OrdersAndPreOrdersList implements OnInit {
         this.ordersList = this.ordersList.concat(ordersByMerchant);
       }
 
-      const tagsAndOrdersHashtable: Record<string, Array<ItemOrder>> = {};
+      ordersByMerchantPagination.options.limit = -1;
+
+      const ordersIncomeForMatchingOrders =
+        await this.merchantsService.incomeMerchant({
+          ...ordersByMerchantPagination,
+          findBy: {
+            ...ordersByMerchantPagination.findBy,
+            merchant: this.defaultMerchant._id
+          },
+        });
+
+      if (typeof ordersIncomeForMatchingOrders === 'number')
+        this.ordersIncomeForMatchingOrders = ordersIncomeForMatchingOrders;
+
+      const { ordersByMerchant: hotOrdersByMerchant } =
+        await this.merchantsService.hotOrdersByMerchant(
+          this.defaultMerchant._id,
+          ordersByMerchantPagination
+        );
+
+      if (hotOrdersByMerchant)
+        this.matchingOrdersTotalCounter = hotOrdersByMerchant.length;
+      else this.matchingOrdersTotalCounter = null;
     }
 
     if (

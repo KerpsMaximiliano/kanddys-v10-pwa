@@ -31,13 +31,16 @@
     (tagSelect)="tagAction($event)"
     selectedBackground="#2874ad"
     selectedFilter="brightness(2)"
-    [outputAllSelectedTags]="true"
+    [outputAllSelectedTags]="outputAllSelectedTags"
     (tagSelect3)="selectTagHandler($event)"
   ></app-tags-selector>
-  <button class="save">
-    <img class="icon" src="{{ env }}/save.png" alt="" />
-    <span *ngIf="text" class="save-text">{{ text }}</span>
-  </button>
+
+  <!--
+    <button class="save">
+      <img class="icon" src="{{ env }}/save.png" alt="" />
+      <span *ngIf="text" class="save-text">{{ text }}</span>
+    </button>
+  -->
 
   <!--
     <button class="save" *ngIf="blockCta" (click)="submit()">

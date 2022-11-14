@@ -46,6 +46,30 @@ export const addTagsInOrder = gql`
   }
 `;
 
+export const itemAddTag = gql`
+  mutation itemAddTag(
+    $tagId: ObjectID!
+    $id: ObjectID!
+  ) {
+    itemAddTag(tagId: $tagId, id: $id) {
+      _id
+      tags
+    }
+  }
+`;
+
+export const itemRemoveTag = gql`
+  mutation itemRemoveTag(
+    $tagId: ObjectID!
+    $id: ObjectID!
+  ) {
+    itemRemoveTag(tagId: $tagId, id: $id) {
+      _id
+      tags
+    }
+  }
+`;
+
 export const removeTagsInOrder = gql`
   mutation removeTagsInOrder(
     $merchantId: ObjectID!

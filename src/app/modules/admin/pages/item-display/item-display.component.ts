@@ -28,6 +28,7 @@ import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/ta
 import { TagsService } from 'src/app/core/services/tags.service';
 import { Tag } from 'src/app/core/models/tags';
 import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
+import { OrderService } from 'src/app/core/services/order.service';
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -62,6 +63,7 @@ export class ItemDisplayComponent implements OnInit {
     private notificationsService: NotificationsService,
     private clipboard: Clipboard,
     private toastr: ToastrService,
+    private orderService: OrderService,
     private tagsService: TagsService
   ) {}
 
@@ -332,11 +334,9 @@ export class ItemDisplayComponent implements OnInit {
             ] as Array<ExtendedTag>
           ).concat(newTags);
 
-          (
-            this.headerService.dashboardTemporalData[
-              'unselectedTags'
-            ] as Array<ExtendedTag>
-          ) = (
+          (this.headerService.dashboardTemporalData[
+            'unselectedTags'
+          ] as Array<ExtendedTag>) = (
             this.headerService.dashboardTemporalData[
               'unselectedTags'
             ] as Array<ExtendedTag>
@@ -506,19 +506,31 @@ export class ItemDisplayComponent implements OnInit {
           itemTags && Array.isArray(itemTags)
             ? itemTags.map((tag) => tag._id)
             : null,
-        tagAction: async ({ selectedTags }) => {
-          this.selectedTags = selectedTags;
+        tagAction: async (params) => {
+          this.selectedTags = params;
+
+          const clickedTagId = params._id;
 
           try {
-            const response = await this.itemsService.updateItem(
-              {
-                tags: this.selectedTags,
-              },
-              this.item._id
-            );
+            if (!this.item.tags.includes(clickedTagId)) {
+              const { itemAddTag: result } = await this.tagsService.itemAddTag(
+                clickedTagId,
+                this.item._id
+              );
 
-            if (response) {
-              this.item.tags = this.selectedTags;
+              if (result) {
+                this.item.tags = result.tags;
+              }
+            } else {
+              const { itemRemoveTag: result } =
+                await this.tagsService.itemRemoveTag(
+                  clickedTagId,
+                  this.item._id
+                );
+
+              if (result) {
+                this.item.tags = result.tags;
+              }
             }
           } catch (error) {
             this.toastr.error('Error al asignar tags', null, {
