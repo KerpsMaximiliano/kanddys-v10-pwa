@@ -27,8 +27,15 @@ import { TagManagementComponent } from 'src/app/shared/dialogs/tag-management/ta
 import { TagAsignationComponent } from 'src/app/shared/dialogs/tag-asignation/tag-asignation.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { Tag } from 'src/app/core/models/tags';
+<<<<<<< HEAD
 import { ExtendedTag } from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
 import { OrderService } from 'src/app/core/services/order.service';
+=======
+import {
+  ExtendedItem,
+  ExtendedTag,
+} from 'src/app/modules/admin/pages/items-dashboard/items-dashboard.component';
+>>>>>>> b3dd549413c5e860b45c1f6658eaf506c46468d0
 
 interface ExtraNotification extends Notification {
   date?: string;
@@ -312,8 +319,13 @@ export class ItemDisplayComponent implements OnInit {
         this.router.navigate([this.headerService.flowRoute]);
       } else {
         if (this.headerService.dashboardTemporalData) {
-          const { tagsList, tagsByNameHashTable, tagsHashTable } =
-            this.headerService.dashboardTemporalData;
+          const {
+            tagsList,
+            tagsByNameHashTable,
+            tagsHashTable,
+            allItems,
+            highlightedItems,
+          } = this.headerService.dashboardTemporalData;
 
           const newTags = this.userTags.filter(
             (tag) =>
@@ -345,9 +357,33 @@ export class ItemDisplayComponent implements OnInit {
           for (const tag of newTags) {
             this.headerService.dashboardTemporalData['tagsHashTable'][tag._id] =
               tag as Tag;
-            this.headerService.dashboardTemporalData['tagsHashTable'][
+            this.headerService.dashboardTemporalData['tagsByNameHashTable'][
               tag.name
             ] = tag as Tag;
+          }
+
+          for (const item of allItems as Array<ExtendedItem>) {
+            if (item._id === this.item._id) {
+              for (const tag of newTags) {
+                item.tagsFilled.push(
+                  this.headerService.dashboardTemporalData['tagsHashTable'][
+                    tag._id
+                  ]
+                );
+              }
+            }
+          }
+
+          for (const item of highlightedItems as Array<ExtendedItem>) {
+            if (item._id === this.item._id) {
+              for (const tag of newTags) {
+                item.tagsFilled.push(
+                  this.headerService.dashboardTemporalData['tagsHashTable'][
+                    tag._id
+                  ]
+                );
+              }
+            }
           }
         }
 

@@ -53,7 +53,7 @@ export interface ExtendedTag extends Tag {
   selected?: boolean;
 }
 
-interface ExtendedItem extends Item {
+export interface ExtendedItem extends Item {
   tagsFilled?: Array<Tag>;
 }
 
@@ -137,6 +137,7 @@ export class ItemsDashboardComponent implements OnInit {
   hasCustomizer: boolean;
   itemSearchbar: FormControl = new FormControl('');
   showSearchbar: boolean = true;
+  renderItemsPromise: Promise<any>;
   paginationState: {
     pageSize: number;
     page: number;
@@ -150,9 +151,12 @@ export class ItemsDashboardComponent implements OnInit {
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
 
-  @HostListener('window:scroll', [])
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.dashboard-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       if (this.paginationState.status === 'complete' && this.tagsLoaded) {
         await this.inicializeItems(false, true);
       }
@@ -265,7 +269,7 @@ export class ItemsDashboardComponent implements OnInit {
 
         if (item.tags.length > 0) {
           for (const tagId of item.tags) {
-            if (this.tagsHashTable[tagId]) {
+            if (tagId && this.tagsHashTable[tagId]) {
               item.tagsFilled.push(this.tagsHashTable[tagId]);
             }
           }
@@ -401,73 +405,78 @@ export class ItemsDashboardComponent implements OnInit {
       }
     }
 
-    const items = await this.saleflowService.listItems(pagination);
-    const itemsQueryResult = items?.listItems;
+    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
+    this.renderItemsPromise.then(async (response) => {
+      const items = response;
+      const itemsQueryResult = items?.listItems;
 
-    if (getTotalNumberOfItems) {
-      pagination.options.limit = -1;
-      const { listItems: allItems } = await this.saleflowService.hotListItems(
-        pagination
-      );
+      if (getTotalNumberOfItems) {
+        pagination.options.limit = -1;
+        const { listItems: allItems } = await this.saleflowService.hotListItems(
+          pagination
+        );
 
-      allItems.forEach((item) => {
-        if (item.status === 'featured') {
-          this.featuredItemsCounter++;
-          this.activeItemsCounter++;
-        } else if (item.status === 'active') {
-          this.activeItemsCounter++;
-        } else if (item.status === 'disabled') {
-          this.inactiveItemsCounter++;
-        }
-      });
+        allItems.forEach((item) => {
+          if (item.status === 'featured') {
+            this.featuredItemsCounter++;
+            this.activeItemsCounter++;
+          } else if (item.status === 'active') {
+            this.activeItemsCounter++;
+          } else if (item.status === 'disabled') {
+            this.inactiveItemsCounter++;
+          }
+        });
 
-      this.totalItemsCounter = allItems.length;
-    }
-
-    if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
-      this.allItems = [];
-    }
-
-    if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
-      this.paginationState.page--;
-
-    if (itemsQueryResult && itemsQueryResult.length > 0) {
-      if (this.paginationState.page === 1) {
-        this.allItems = itemsQueryResult;
-      } else {
-        this.allItems = this.allItems.concat(itemsQueryResult);
+        this.totalItemsCounter = allItems.length;
       }
 
-      this.activeItems = this.allItems.filter(
-        (item) => item.status === 'active' || item.status === 'featured'
-      );
-      this.inactiveItems = this.allItems.filter(
-        (item) => item.status === 'disabled'
-      );
+      if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
+        this.allItems = [];
+      }
 
-      const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
+      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1)
+        this.paginationState.page--;
 
-      //*************************FILLS EACH TAG SECTION WITH ITEMS THAT ARE BINDED TO THAT TAG***************//
-      for (const item of this.allItems) {
-        item.tagsFilled = [];
+      if (itemsQueryResult && itemsQueryResult.length > 0) {
+        if (this.paginationState.page === 1) {
+          this.allItems = itemsQueryResult;
+        } else {
+          this.allItems = this.allItems.concat(itemsQueryResult);
+        }
 
-        if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
-          for (const tagId of item.tags) {
-            item.tagsFilled.push(this.tagsHashTable[tagId]);
+        this.activeItems = this.allItems.filter(
+          (item) => item.status === 'active' || item.status === 'featured'
+        );
+        this.inactiveItems = this.allItems.filter(
+          (item) => item.status === 'disabled'
+        );
+
+        const tagsAndItemsHashtable: Record<string, Array<Item>> = {};
+
+        //*************************FILLS EACH TAG SECTION WITH ITEMS THAT ARE BINDED TO THAT TAG***************//
+        for (const item of this.allItems) {
+          item.tagsFilled = [];
+
+          if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
+            for (const tagId of item.tags) {
+              if (tagId && this.tagsHashTable[tagId]) {
+                item.tagsFilled.push(this.tagsHashTable[tagId]);
+              }
+            }
           }
         }
+
+        this.paginationState.status = 'complete';
       }
 
-      this.paginationState.status = 'complete';
-    }
-
-    if (
-      itemsQueryResult.length === 0 &&
-      this.itemSearchbar.value !== '' &&
-      !triggeredFromScroll
-    ) {
-      this.allItems = [];
-    }
+      if (
+        itemsQueryResult.length === 0 &&
+        this.itemSearchbar.value !== '' &&
+        !triggeredFromScroll
+      ) {
+        this.allItems = [];
+      }
+    });
   }
 
   async inicializeSaleflowCalendar() {
@@ -846,7 +855,7 @@ export class ItemsDashboardComponent implements OnInit {
 
     if (item.tags.length > 0) {
       for (const tagId of item.tags) {
-        if (this.tagsHashTable[tagId]) {
+        if (tagId && this.tagsHashTable[tagId]) {
           item.tagsFilled.push(this.tagsHashTable[tagId]);
         }
       }

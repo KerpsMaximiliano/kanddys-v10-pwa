@@ -81,11 +81,12 @@ export class OrderDetailComponent implements OnInit {
       callback: async () => {
         await this.ngNavigatorShareService.share({
           title: `Mi orden`,
-          url: `${this.URI}/ecommerce/order-detail/${this.order.items[0].saleflow.headline}`,
+          url: `${this.URI}/ecommerce/order-detail/${this.order._id}`,
         });
       },
     },
   ];
+
   tabs: any[] = ['', '', '', '', ''];
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
