@@ -29,6 +29,17 @@
   cursor: pointer;
 }
 
+.blocked-cta {
+  background: rgb(123, 123, 123);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: none;
+  height: 67px;
+  cursor: not-allowed;
+}
+
 .icon-container {
   display: flex;
   justify-content: flex-end;

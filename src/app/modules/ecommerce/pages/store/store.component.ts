@@ -97,9 +97,10 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 60,
+    pageSize: 5,
     status: 'loading',
   };
+  renderItemsPromise: Promise<any>;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -119,9 +120,12 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
-  @HostListener('window:scroll', [])
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.store-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       await this.getItems();
     }
   }
@@ -145,7 +149,14 @@ export class StoreComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.header.resetIsComplete();
-    this.executeProcessesAfterLoading();
+    this.route.queryParams.subscribe(async (queryParams) => {
+      let { startOnSnapshot } = queryParams;
+      startOnSnapshot = Boolean(startOnSnapshot);
+
+      if (!this.header.storeTemporalData || !startOnSnapshot)
+        this.executeProcessesAfterLoading();
+      else this.getPageSnapshot();
+    });
   }
 
   setMerchant(merchant: Merchant) {
@@ -468,6 +479,7 @@ export class StoreComponent implements OnInit {
         });
         this.header.storeItem(this.saleflowData._id, itemData);
       }
+      this.savePageSnapshot();
       this.router.navigate(
         [
           `/ecommerce/${this.saleflowData._id}/article-detail/item/${itemData._id}`,
@@ -480,9 +492,6 @@ export class StoreComponent implements OnInit {
           },
         }
       );
-      // this.router.navigate([
-      //   `/ecommerce/item-detail/${this.saleflowData._id}/${itemData._id}`,
-      // ]);
     }
   }
 
@@ -651,6 +660,10 @@ export class StoreComponent implements OnInit {
   }
 
   async selectTag(tag: ExtendedTag, tagIndex: number) {
+    if (this.selectedTags.length === 0) {
+      this.showSearchbar = false;
+    }
+
     if (this.tags[tagIndex].selected) {
       this.tags[tagIndex].selected = false;
       this.selectedTagsCounter--;
@@ -687,13 +700,9 @@ export class StoreComponent implements OnInit {
         (unselectedTag) => unselectedTag._id === tag._id
       );
 
-      if (unselectedTagIndexToDelete > 0) {
+      if (unselectedTagIndexToDelete >= 0) {
         this.unselectedTags.splice(unselectedTagIndexToDelete, 1);
       }
-    }
-
-    if (this.selectedTags.length === 1) {
-      this.showSearchbar = false;
     }
 
     await this.getItems(true);
@@ -796,20 +805,27 @@ export class StoreComponent implements OnInit {
       }
     }
 
-    const items = await this.saleflow.listItems(pagination);
-    const itemsQueryResult = items.listItems.filter((item) => {
-      return item.status === 'active' || item.status === 'featured';
-    });
+    this.renderItemsPromise = this.saleflow.listItems(pagination, true);
+    this.renderItemsPromise
+      .then((response) => {
+        const items = response;
+        const itemsQueryResult = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
 
-    if (this.paginationState.page === 1) {
-      this.items = itemsQueryResult;
-    } else {
-      this.items = this.items.concat(itemsQueryResult);
-    }
+        if (this.paginationState.page === 1) {
+          this.items = itemsQueryResult;
+        } else {
+          this.items = this.items.concat(itemsQueryResult);
+        }
 
-    this.organizeItems(this.merchantService.merchantData);
+        this.organizeItems(this.merchantService.merchantData);
 
-    this.paginationState.status = 'complete';
+        this.paginationState.status = 'complete';
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   getSelectedTagsNames(selectedTags: Array<Tag>) {
@@ -820,11 +836,54 @@ export class StoreComponent implements OnInit {
     this.selectedTags = [];
     this.selectedTagsCounter = 0;
     this.selectedTagsPermanent = [];
-    this.unselectedTags = this.tags;
     this.tags.forEach((tag) => (tag.selected = false));
-    this.unselectedTags = this.tags;
+    this.unselectedTags = [...this.tags];
     this.showSearchbar = true;
 
+    setTimeout(() => {
+      this.tagsSwiper.directiveRef.update();
+    }, 300);
+
     await this.getItems(true);
+  }
+
+  getPageSnapshot() {
+    for (const property of Object.keys(this.header.storeTemporalData)) {
+      if (property !== 'searchBar') {
+        this[property] = this.header.storeTemporalData[property];
+      } else {
+        this.searchBar.setValue(this.header.storeTemporalData[property]);
+      }
+    }
+
+    this.searchBar.valueChanges.subscribe(async (change) => {
+      await this.getItems(true);
+    });
+
+    this.header.storeTemporalData = null;
+  }
+
+  savePageSnapshot() {
+    this.header.storeTemporalData = {
+      saleflowData: this.saleflowData,
+      items: this.items,
+      tags: this.tags,
+      tagsHashTable: this.tagsHashTable,
+      tagsByNameHashTable: this.tagsByNameHashTable,
+      highlightedItems: this.highlightedItems,
+      searchBar: this.searchBar.value,
+      selectedTagsCounter: this.selectedTagsCounter,
+      selectedTags: this.selectedTags,
+      selectedTagsPermanent: this.selectedTagsPermanent,
+      unselectedTags: this.unselectedTags,
+      user: this.user,
+      userDefaultMerchant: this.userDefaultMerchant,
+      showSearchbar: this.showSearchbar,
+      paginationState: this.paginationState,
+    };
+  }
+
+  getActiveTagsFromSelectedTagsPermantent(): Array<string> {
+    return this.tags.filter((tag) => tag.selected).map((tag) => tag._id);
   }
 }

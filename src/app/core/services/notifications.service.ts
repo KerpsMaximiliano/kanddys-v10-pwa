@@ -6,8 +6,10 @@ import {
   updateNotification,
   itemAddNotification,
   notificationCheckers,
+  addNotificationInTag,
 } from '../graphql/notifications.gql';
 import { Item } from '../models/item';
+import { Tag } from '../models/tags';
 import {
   Notification,
   NotificationChecker,
@@ -20,6 +22,7 @@ import { GraphQLWrapper } from './../graphql/graphql-wrapper.service';
   providedIn: 'root',
 })
 export class NotificationsService {
+   temporalNotification: NotificationInput;
   constructor(private graphql: GraphQLWrapper) {}
 
   async notification(merchantId: string, id: string): Promise<Notification> {
@@ -145,6 +148,18 @@ export class NotificationsService {
       index,
     };
   }
+
+  async addNotificationInTag(
+   merchantId: string,
+   notificationId: string,
+   tagId: string
+ ): Promise<Tag> {
+   const result = await this.graphql.mutate({
+     mutation: addNotificationInTag,
+     variables: { merchantId, notificationId, tagId },
+   });
+   return result?.addNotificationInTag;
+ }
 
 
   // This is the correct one, stil in progress

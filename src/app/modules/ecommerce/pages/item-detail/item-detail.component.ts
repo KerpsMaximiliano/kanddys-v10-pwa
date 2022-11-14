@@ -329,6 +329,9 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
     this.itemsService.removeTemporalItem();
     this.router.navigate([`/ecommerce/store/${this.saleflowData._id}`], {
       replaceUrl: this.header.checkoutRoute ? true : false,
+      queryParams: {
+        startOnSnapshot: true,
+      },
     });
   }
 

@@ -205,6 +205,7 @@ const declarations = [
   MetricsReservationComponent,
   ReservationListComponent,
   TagManagementComponent,
+  TagAsignationComponent,
   TagsSelectorComponent,
   TagsCarousellComponent,
   HelperHeaderv3Component,

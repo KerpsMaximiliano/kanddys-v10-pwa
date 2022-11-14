@@ -28,6 +28,8 @@ export class TagInput {
   name?: string;
   images?: File[];
   notify?: boolean;
+  notifyUserOrder?: boolean;
+  notifyMerchantOrder?: boolean;
   status?: string;
   merchant?: string;
 }

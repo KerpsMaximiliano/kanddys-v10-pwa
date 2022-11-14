@@ -15,6 +15,7 @@ import { TimeBlockComponent } from './pages/time-block/time-block.component';
 import { ArticleCreatorComponent } from './pages/article-creator/article-creator.component';
 import { ArticleParamsComponent } from './pages/article-params/article-params.component';
 import { ItemsDashboardComponent } from './pages/items-dashboard/items-dashboard.component';
+import { CreateTagComponent } from './pages/create-tag/create-tag.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -99,6 +100,14 @@ const routes: Routes = [
         path: 'entity-detail-metrics',
         component: ItemsDashboardComponent,
       },
+      {
+        path: 'create-tag',
+        component: CreateTagComponent,
+      },
+      {
+        path: 'create-tag/:tagId',
+        component: CreateTagComponent,
+      },
     ],
   },
 ];
@@ -116,6 +125,7 @@ const routes: Routes = [
     ArticleCreatorComponent,
     ArticleParamsComponent,
     ItemsDashboardComponent,
+    CreateTagComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [CommonModule, SharedModule, RouterModule.forChild(routes)],

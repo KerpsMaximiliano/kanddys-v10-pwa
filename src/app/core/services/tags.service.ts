@@ -34,7 +34,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: updateTag,
       variables: { input, tagId },
-      context: { useMultipart: true },
+      context: {
+        useMultipart: true,
+      },
     });
     console.log('Intentando updateTags');
 
@@ -48,7 +50,9 @@ export class TagsService {
     const result = await this.graphql.mutate({
       mutation: createTag,
       variables: { input },
-      context: { useMultipart: true },
+      context: {
+        useMultipart: true,
+      },
     });
 
     if (!result || result?.errors) return undefined;
@@ -56,10 +60,13 @@ export class TagsService {
     return result?.createTag;
   }
 
-  async tagsByUser(): Promise<Tag[]> {
+  async tagsByUser(
+    pagination: any = { paginate: { options: { limit: -1 } } }
+  ): Promise<Tag[]> {
     try {
       const result = await this.graphql.query({
         query: tagsByUser,
+        variables: pagination,
         fetchPolicy: 'no-cache',
       });
       if (!result) return undefined;
@@ -190,16 +197,16 @@ export class TagsService {
     }
   }
 
-  async tags(paginate: PaginationInput){
-   try{
+  async tags(paginate: PaginationInput) {
+    try {
       const result = await this.graphql.query({
-         query: tags,
-         variables: { paginate },
-         fetchPolicy: 'no-cache'
+        query: tags,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
       });
       return result;
-   } catch (e) {
+    } catch (e) {
       console.log(e);
-   };
-  };
+    }
+  }
 }
