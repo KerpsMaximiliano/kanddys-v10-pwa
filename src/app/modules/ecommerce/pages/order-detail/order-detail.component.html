@@ -3,12 +3,12 @@
     [mode]="'basic'"
     [returnAble]="false"
     [bgColor]="changeColor ? changeColor : headerService.colorTheme"
-    [icon]="{
+    [icon]="!merchant && merchantOwner? {
       src: '/arrow-double-up.svg',
       width: 17,
       height: 21,
       callback: changeView
-    }"
+    } : null"
     [rightText]="
       loggedUser
         ? {
