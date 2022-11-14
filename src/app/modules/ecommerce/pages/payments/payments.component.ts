@@ -75,7 +75,7 @@ export class PaymentsComponent implements OnInit {
         bottomLeft: {
           text: 'ID',
           styles: {
-            paddingTop: '10px',
+            paddingTop: '8px',
           },
         },
       },
@@ -110,44 +110,11 @@ export class PaymentsComponent implements OnInit {
         bottomLeft: {
           text: 'ID',
           styles: {
-            paddingTop: '10px',
+            paddingTop: '8px',
           },
         },
       },
     },
-    /*
-    {
-      type: 'WEBFORM-ANSWER',
-      optionStyles: webformAnswerLayoutOptionDefaultStyles,
-      selected: false,
-      optionIcon: 'apple-pay',
-      texts: {
-        topRight: {
-          text: '',
-          styles: {
-            color: '#7B7B7B',
-          },
-        },
-        topLeft: {
-          text: 'Apple pay',
-          styles: {
-            paddingBottom: '8px',
-          },
-          callback: () => this.selectOnlinePayment(0),
-        },
-        middleTexts: [
-          {
-            text: 'ID',
-          },
-        ],
-        bottomLeft: {
-          text: 'ID',
-          styles: {
-            paddingTop: '10px',
-          },
-        },
-      },
-    },*/
   ];
 
   constructor(
