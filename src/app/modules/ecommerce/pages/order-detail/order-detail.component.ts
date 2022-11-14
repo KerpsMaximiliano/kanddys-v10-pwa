@@ -554,15 +554,30 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goBackToFlowRoute() {
-    if (this.flowRoute.includes('admin/orders')) {
+    if (
+      this.flowRoute.includes('admin/orders') &&
+      this.flowRoute &&
+      this.merchant
+    ) {
       this.router.navigate([this.flowRoute], {
         queryParams: {
           startOnSnapshot: true,
         },
       });
+      return;
     } else {
-      if (this.flowRoute) this.router.navigate([this.flowRoute]);
-      else this.location.back();
+      if (this.merchant && !this.flowRoute.includes('admin/orders')) {
+        this.router.navigate(['admin/orders']);
+        return;
+      }
+
+      if (this.flowRoute && !this.merchant) {
+        this.router.navigate([this.flowRoute]);
+        return;
+      } else {
+        this.location.back();
+        return;
+      }
     }
   }
 }
