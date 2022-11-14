@@ -356,29 +356,37 @@ export class ItemDisplayComponent implements OnInit {
             ] = tag as Tag;
           }
 
-          for (const item of allItems as Array<ExtendedItem>) {
+          (
+            this.headerService.dashboardTemporalData[
+              'allItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
             if (item._id === this.item._id) {
-              for (const tag of newTags) {
+              for (const tagId of this.item.tags) {
                 item.tagsFilled.push(
                   this.headerService.dashboardTemporalData['tagsHashTable'][
-                    tag._id
+                    tagId
                   ]
                 );
               }
             }
-          }
+          });
 
-          for (const item of highlightedItems as Array<ExtendedItem>) {
+          (
+            this.headerService.dashboardTemporalData[
+              'highlightedItems'
+            ] as Array<ExtendedItem>
+          ).forEach((item, index) => {
             if (item._id === this.item._id) {
-              for (const tag of newTags) {
+              for (const tagId of item.tags) {
                 item.tagsFilled.push(
                   this.headerService.dashboardTemporalData['tagsHashTable'][
-                    tag._id
+                    tagId
                   ]
                 );
               }
             }
-          }
+          });
         }
 
         this.router.navigate(['admin/entity-detail-metrics'], {
