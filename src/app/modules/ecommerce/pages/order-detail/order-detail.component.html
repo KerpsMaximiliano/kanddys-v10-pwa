@@ -316,4 +316,14 @@
     <!-- FIN TABS INFERIORES -->
   </footer>
 
+  <app-sticky-button
+  *ngIf="!merchant"
+  [mode]="'fixed'"
+  [bgColor]="'#2874AD'"
+  [size]="'small'"
+  [fontSize]="'1.25rem'"
+  [text]="'VOLVER A LA TIENDA'"
+  (click)="goToStore()"
+></app-sticky-button>
+
 </div>
