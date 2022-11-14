@@ -9,6 +9,7 @@ import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ShowItemsComponent } from 'src/app/shared/dialogs/show-items/show-items.component';
@@ -74,7 +75,8 @@ export class ArticleDetailComponent implements OnInit {
     private router: Router,
     private appService: AppService,
     private dialogService: DialogService,
-    private ngNavigatorShareService: NgNavigatorShareService
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private saleflowService: SaleFlowService
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +84,37 @@ export class ArticleDetailComponent implements OnInit {
       const validEntities = ['item', 'post'];
       const { saleflowId, entity, entityId } = routeParams;
       if (!this.headerService.saleflow)
-        this.headerService.fetchSaleflow(saleflowId);
+        await this.headerService.fetchSaleflow(saleflowId);
+
+      if (
+        !this.headerService.saleflow.items.some(
+          (saleflowItem) => saleflowItem.item.status
+        )
+      ) {
+        const listItems = await this.saleflowService.listItems({
+          findBy: {
+            _id: {
+              __in: ([] = this.headerService.saleflow.items.map(
+                (items) => items.item._id
+              )),
+            },
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 60,
+          },
+        });
+        const items = listItems.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
+
+        for (let i = 0; i < items.length; i++) {
+          const item = this.headerService.saleflow.items.find(
+            (saleflowItem) => saleflowItem.item._id === items[i]._id
+          );
+          item.item.status = items[i].status;
+        }
+      }
 
       if (validEntities.includes(entity)) {
         this.entityId = entityId;
@@ -138,10 +170,15 @@ export class ArticleDetailComponent implements OnInit {
   startTimeout() {
     this.timer = setTimeout(() => {
       if (this.route.snapshot.queryParamMap.get('mode') === 'saleflow') {
-        const index = this.headerService.saleflow.items.findIndex(
+        let index = this.headerService.saleflow.items.findIndex(
           (saleflowItem) => saleflowItem.item._id === this.itemData._id
         );
         for (let i = 1; i < this.headerService.saleflow.items.length; i++) {
+          if (index - i === -1) {
+            index = this.headerService.saleflow.items.length;
+            i = 0;
+            continue;
+          }
           if (
             this.headerService.saleflow.items[index - i].item.status ===
               'active' ||
