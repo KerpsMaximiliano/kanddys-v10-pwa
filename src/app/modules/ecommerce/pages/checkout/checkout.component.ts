@@ -129,6 +129,8 @@ export class CheckoutComponent implements OnInit {
   selectedPostOption: number;
   missingOrderData: boolean;
   postSlideImages: (string | ArrayBuffer)[] = [];
+  postSlideVideos: any[] = [];
+  postSlideAudio: any[] = [];
   @ViewChild('video') video: ElementRef;
 
   constructor(
@@ -239,8 +241,9 @@ export class CheckoutComponent implements OnInit {
     if (!this.items?.length) this.editOrder('item');
     this.post = this.headerService.getPost();
     if (this.post?.slides?.length) {
+      this.populatePost(this.post.slides);
       this.post.slides.forEach((slide) => {
-        if (slide.media) {
+        if (slide.media && slide.media.type == 'image/png' || 'image/jpeg') {
           const reader = new FileReader();
           reader.onload = (e) => {
             this.postSlideImages.push(reader.result);
@@ -570,6 +573,17 @@ export class CheckoutComponent implements OnInit {
   } else if (elem.webkitRequestFullscreen) {
     elem.webkitRequestFullscreen();
   } */
+ }
+
+ populatePost(medias){
+   const files = medias.map((media) => {
+      return media.media
+   });
+   this.postSlideAudio = files.filter((audio) => audio.type ==='audio/mpeg');
+   this.postSlideVideos = files.filter((video) => video.type === 'video/mp4');
+   console.log(files);
+   console.log(this.postSlideAudio);
+   console.log(this.postSlideVideos);
  }
 
   mouseDown: boolean;
