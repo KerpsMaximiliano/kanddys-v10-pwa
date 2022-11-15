@@ -119,7 +119,7 @@ export class ArticleCreatorComponent implements OnInit {
         });
         return;
       }
-      if (this.item.images.length) {
+      if (this.item.images.length && !this._ItemsService.itemImages.length) {
         const multimedia: File[] = [];
         this.item.images.forEach(async (image, index) => {
           this.multimedia[0][index] = this._DomSanitizer
@@ -140,6 +140,26 @@ export class ArticleCreatorComponent implements OnInit {
             this.activeSlide = 0;
           }
         });
+      } else if (this._ItemsService.itemImages.length) {
+        this._ItemsService.itemImages?.forEach((file, index) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (e) => {
+            this.multimedia[0][index] = this._DomSanitizer
+              .bypassSecurityTrustStyle(`url(
+        ${reader.result})
+        no-repeat center center / cover #e9e371`);
+            this.types[0][index] = 'image/jpeg';
+            if (index + 1 === this._ItemsService.itemImages.length) {
+              this.updateFrantions();
+              this.activeSlide = 0;
+            }
+          };
+        });
+        this.controllers
+          .at(0)
+          .get('multimedia')
+          .setValue(this._ItemsService.itemImages);
       }
     }
     if (this.tagsAsignationOnStart) await this.openTagsDialog();
@@ -150,9 +170,10 @@ export class ArticleCreatorComponent implements OnInit {
       .map(
         () =>
           `${
-            this.multimedia[0].length < 3
-              ? '1'
-              : this.getRandomArbitrary(0, this.multimedia[0].length)
+            // this.multimedia[0].length < 3
+            //   ?
+            '1'
+            // : this.getRandomArbitrary(0, this.multimedia[0].length)
           }fr`
       )
       .join(' ');
@@ -162,7 +183,7 @@ export class ArticleCreatorComponent implements OnInit {
     this.activeSlide = this.mediaSwiper.directiveRef.getIndex();
   }
 
-  getRandomArbitrary(min, max) {
+  getRandomArbitrary(min: number, max: number) {
     return Math.random() * (max - min) + min;
   }
 
