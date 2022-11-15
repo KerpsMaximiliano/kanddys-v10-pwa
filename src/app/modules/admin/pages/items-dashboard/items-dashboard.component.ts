@@ -147,6 +147,7 @@ export class ItemsDashboardComponent implements OnInit {
     pageSize: 5,
     status: 'complete',
   };
+  windowWidth: number = 0;
 
   @ViewChild('tagSwiper') tagSwiper: SwiperComponent;
   @ViewChild('highlightedItemsSwiper') highlightedItemsSwiper: SwiperComponent;
@@ -205,6 +206,12 @@ export class ItemsDashboardComponent implements OnInit {
     this.itemSearchbar.valueChanges.subscribe((change) =>
       this.inicializeItems(true, false)
     );
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+    });
   }
 
   async verifyIfUserIsLogged() {

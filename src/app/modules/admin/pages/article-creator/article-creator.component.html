@@ -1,4 +1,5 @@
-<div
+<div class="container">
+   <div
   class="nav"
   [ngStyle]="{
     gridTemplateColumns:
@@ -37,7 +38,6 @@
     (click)="openItemOptionsDialog()"
   ></div>
 </div>
-<div class="container">
   <ng-container *ngFor="let controller of controllers.controls; let i = index">
     <ng-container *ngFor="let field of fields; let j = index">
       <div id="{{ i }}-{{ j }}" [ngSwitch]="field.type">

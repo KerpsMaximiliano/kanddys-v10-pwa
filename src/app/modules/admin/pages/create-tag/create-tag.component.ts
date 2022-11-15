@@ -421,7 +421,7 @@ export class CreateTagComponent implements OnInit, OnDestroy {
 
             this.headerService.flowRoute = null;
             localStorage.removeItem('flowRoute');
-            this.router.navigate(['admin/item-display/' + this.entityId], {
+            this.router.navigate(['admin/create-article/' + this.entityId], {
               queryParams: {
                 tagsAsignationOnStart: true,
               },
