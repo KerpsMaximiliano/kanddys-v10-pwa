@@ -120,6 +120,8 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
+  windowWidth: number = 0;
+
   async infinitePagination() {
     const page = document.querySelector('.store-page');
     const pageScrollHeight = page.scrollHeight;
@@ -156,6 +158,12 @@ export class StoreComponent implements OnInit {
       if (!this.header.storeTemporalData || !startOnSnapshot)
         this.executeProcessesAfterLoading();
       else this.getPageSnapshot();
+    });
+
+    this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
+
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth >= 500 ? 500 : window.innerWidth;
     });
   }
 

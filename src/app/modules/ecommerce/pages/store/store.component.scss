@@ -56,8 +56,6 @@ main {
   }
 
   .tags-area {
-    min-width: 81px;
-    max-width: 81px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,8 +63,6 @@ main {
     margin-right: 8px;
 
     .tag-item {
-      width: 81px;
-      height: 81px;
       border-radius: 50%;
       cursor: pointer;
       background-size: cover;
