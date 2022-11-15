@@ -396,7 +396,7 @@ export class ArticleCreatorComponent implements OnInit {
               },
             },
           },
-          {
+         /*  {
             text: 'Ir a la vista del visitante',
             mode: 'func',
             func: () => {
@@ -404,7 +404,7 @@ export class ArticleCreatorComponent implements OnInit {
                 `/ecommerce/${this._SaleflowService.saleflowData._id}/article-detail/item/${this.item._id}`,
               ]);
             },
-          },
+          }, */
         ],
       },
     ];
