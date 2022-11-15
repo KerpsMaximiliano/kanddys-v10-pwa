@@ -96,8 +96,7 @@ export class ArticleCreatorComponent implements OnInit {
     private _SaleflowService: SaleFlowService,
     private _DialogService: DialogService,
     private _ToastrService: ToastrService,
-    private _TagsService: TagsService,
-    private toastr: ToastrService
+    private _TagsService: TagsService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -113,6 +112,27 @@ export class ArticleCreatorComponent implements OnInit {
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
+      if (
+        this._ActivatedRoute.snapshot.queryParamMap.get('mode') ===
+          'new-item' &&
+        this.item.status === 'draft'
+      ) {
+        const authItem = await this._ItemsService.authItem(
+          this._MerchantsService.merchantData._id,
+          itemId
+        );
+
+        if (this._SaleflowService.saleflowData) {
+          await this._SaleflowService.addItemToSaleFlow(
+            {
+              item: itemId,
+            },
+            this._SaleflowService.saleflowData._id
+          );
+        }
+        this.item.merchant = authItem.merchant;
+        this.item.status = 'active';
+      }
       if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
@@ -508,12 +528,12 @@ export class ArticleCreatorComponent implements OnInit {
             if (response) {
               this.item.tags = this.selectedTags;
 
-              this.toastr.info('Tags asignados al item', null, {
+              this._ToastrService.info('Tags asignados al item', null, {
                 timeOut: 1000,
               });
             }
           } catch (error) {
-            this.toastr.error('Error al asignar tags', null, {
+            this._ToastrService.error('Error al asignar tags', null, {
               timeOut: 1000,
             });
           }

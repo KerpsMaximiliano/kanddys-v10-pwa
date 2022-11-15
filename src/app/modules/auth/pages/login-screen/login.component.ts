@@ -347,7 +347,7 @@ export class LoginComponent implements OnInit {
           if (this.action === 'precreateitem') {
             await this.authService.generateMagicLink(
               this.merchantNumber,
-              `admin/options/`,
+              `admin/create-article/`,
               this.itemId,
               'NewItem',
               {}
@@ -989,8 +989,8 @@ export class LoginComponent implements OnInit {
             );
           }
         }
-
-        this.router.navigate(['admin/options/' + this.itemId]);
+        this.toastr.success('Producto creado satisfactoriamente!');
+        this.router.navigate(['admin/create-article/' + this.itemId]);
         return;
 
         break;
