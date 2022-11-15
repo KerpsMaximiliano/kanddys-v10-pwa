@@ -22,6 +22,7 @@ export class ArticleParamsComponent implements OnInit {
   selectedImages: (string | ArrayBuffer)[] = [];
   models: string[] = ['Modelo sin nombre'];
   options: string[] = ['Precio', 'Imagen o imágenes'];
+  default: boolean;
   searchValue: string;
   items: any;
   itemId: string;
@@ -110,6 +111,7 @@ export class ArticleParamsComponent implements OnInit {
   };
 
   countDecimals(value: number) {
+    if(!value) return;
     if (Math.floor(value) === value) return 0;
     return value.toString().split('.')[1].length || 0;
   }
@@ -138,6 +140,7 @@ export class ArticleParamsComponent implements OnInit {
     const items: {
       option: string;
       subOption: string;
+      index?: number;
       callback?: () => void;
     }[] = [];
     for (const item of this.items) {
@@ -145,7 +148,11 @@ export class ArticleParamsComponent implements OnInit {
         option: item.name,
         subOption: `$${item.pricing.toLocaleString('es-MX')}`,
         callback: () => {
+          this.models.pop();
+          this.models.push(item.name);
           this.name.setValue(item.name);
+          this.changeModel(0);
+          this.default ? this.default = false : this.default = true;
           this.handleCurrencyInput(item.pricing);
         },
       });

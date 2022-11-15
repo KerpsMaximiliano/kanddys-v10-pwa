@@ -74,6 +74,17 @@
     <div class="price-form" *ngSwitchCase="'price'">
       <div class="price-input">
         <app-currency-input
+          *ngIf="!default"
+          [fieldStyles]="{
+            boxShadow: 'lightgrey 0px 3px 8px inset'
+          }"
+          [initialValue]="
+            countDecimals(price.value) < 2 ? price.value * 100 : price.value
+          "
+          (onInputEvent)="handleCurrencyInput($event)"
+        ></app-currency-input>
+        <app-currency-input
+          *ngIf="default"
           [fieldStyles]="{
             boxShadow: 'lightgrey 0px 3px 8px inset'
           }"
