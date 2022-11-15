@@ -21,6 +21,7 @@ export const recipients = gql`
       email
       nickname
       user
+      tags
     }
   }
 `;

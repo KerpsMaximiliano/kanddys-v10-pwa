@@ -8,7 +8,9 @@ import {
 } from '@angular/forms';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Recipient } from 'src/app/core/models/recipients';
+import { Tag } from 'src/app/core/models/tags';
 import { RecipientsService } from 'src/app/core/services/recipients.service';
+import { TagsService } from 'src/app/core/services/tags.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { environment } from 'src/environments/environment';
 import Swiper, { SwiperOptions } from 'swiper';
@@ -62,8 +64,8 @@ export class ArticlePrivacyComponent implements OnInit {
       },
     },
   ];
-  listado: string[] = ['Nueva', 'Listado #4', 'ListadoID'];
-  listadoSelection: string = 'Nueva';
+  tags: Tag[] = [];
+  listadoSelection: string[] = [];
   env: string = environment.assetsUrl;
   controlIndex: number;
   controllers: FormArray = new FormArray([]);
@@ -153,16 +155,28 @@ export class ArticlePrivacyComponent implements OnInit {
       validators: [],
       type: 'file',
     },
+    {
+      name: 'tags',
+      label: '',
+      style: {
+        marginLeft: '36px',
+      },
+      value: [],
+      validators: [],
+      type: '',
+    },
   ];
   password: FormControl = new FormControl('', [Validators.required]);
   toDelete: number[] = [];
   filter: SafeStyle;
   _Recipients: Recipient[];
+  tempRecipients: Recipient[];
   _AbstractControl: AbstractControl = new FormControl();
   constructor(
     private _DomSanitizer: DomSanitizer,
     private _DialogService: DialogService,
-    private _RecipientsService: RecipientsService
+    private _RecipientsService: RecipientsService,
+    private _TagsService: TagsService
   ) {}
 
   ngOnInit(): void {
@@ -170,8 +184,20 @@ export class ArticlePrivacyComponent implements OnInit {
     const recipients = async () => {
       const { recipients }: any = await this._RecipientsService.recipients();
       this._Recipients = recipients;
-      console.log('this._Recipients: ', this._Recipients);
+      this.tempRecipients = this._Recipients;
       this.initControllers(this._Recipients);
+      const pagination = {
+        paginate: {
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 20,
+          },
+          findBy: {
+            entity: 'recipient',
+          },
+        },
+      };
+      this.tags = (await this._TagsService.tagsByUser(pagination)) || [];
       this.initControllers();
     };
     recipients();
@@ -309,7 +335,6 @@ export class ArticlePrivacyComponent implements OnInit {
       this.initControllers();
     };
     if (!_id) createRecipient();
-    console.log('this.controllers.value: ', this.controllers.value);
     this.selected = ['Yo y mis invitados'];
   }
 
@@ -346,14 +371,9 @@ export class ArticlePrivacyComponent implements OnInit {
             func: () => {
               const deleteRecipient = async () => {
                 for (const index of this.toDelete) {
-                  console.log(
-                    'this.controllers.at(index): ',
-                    this.controllers.at(index).value
-                  );
                   const result = await this._RecipientsService.deleteRecipient(
                     this.controllers.at(index).get('_id').value
                   );
-                  console.log('result: ', result);
                 }
                 this.controllers = new FormArray(
                   this.controllers.controls.filter(
@@ -411,5 +431,20 @@ export class ArticlePrivacyComponent implements OnInit {
         this.selected = ['A ver'];
         break;
     }
+  }
+
+  filterRecipients(_id: string): void {
+    this.listadoSelection = this.listadoSelection.includes(_id)
+      ? this.listadoSelection.filter((id) => id !== _id)
+      : [...this.listadoSelection, _id];
+    this.tempRecipients = this._Recipients.filter((recipient: Recipient) =>
+      recipient.tags.includes(_id)
+    );
+  }
+
+  checkList(control: AbstractControl): boolean {
+    return this.listadoSelection.length
+      ? control.get('tags').value.some((r) => this.listadoSelection.includes(r))
+      : true;
   }
 }
