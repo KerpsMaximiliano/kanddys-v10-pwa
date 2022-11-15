@@ -127,7 +127,7 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: '',
-      validators: [Validators.required],
+      validators: [],
       type: 'tel',
     },
     {
@@ -137,16 +137,11 @@ export class ArticlePrivacyComponent implements OnInit {
         marginLeft: '36px',
       },
       value: '',
-      validators: [
-        Validators.required,
-        Validators.pattern(
-          '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'
-        ),
-      ],
+      validators: [],
       type: 'email',
     },
     {
-      name: 'multimedia',
+      name: 'image',
       label: '',
       style: {
         marginLeft: '36px',
@@ -216,6 +211,7 @@ export class ArticlePrivacyComponent implements OnInit {
           );
         }
       );
+      controller.setValidators([this.whatsappOrEmailValid]);
       this.controllers = new FormArray([
         controller,
         ...this.controllers.controls,
@@ -230,6 +226,20 @@ export class ArticlePrivacyComponent implements OnInit {
 
   multimediaValid(g: FormControl) {
     return g.value.some((image) => !image) ? { invalid: true } : null;
+  }
+
+  whatsappOrEmailValid(g: FormGroup) {
+    const email = g.get('email');
+    const phone = g.get('phone');
+    if (email.value)
+      email.setValidators(
+        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')
+      );
+    else email.setValidators([]);
+
+    return g.get('phone').value || g.get('email').value
+      ? null
+      : { invalid: true };
   }
 
   handleOption(option: string): void {
@@ -302,15 +312,11 @@ export class ArticlePrivacyComponent implements OnInit {
       this.types[i][j] = type;
       const multimedia = this.controllers
         .at(i)
-        .get('multimedia')
+        .get('image')
         .value.map((image, index: number) => {
-          var formData = new FormData();
-          const { name } = file;
-          var blob = new Blob([JSON.stringify(file)], { type });
-          formData.append(name, blob);
           return index === j ? file : image;
         });
-      this.controllers.at(i).get('multimedia').setValue(multimedia);
+      this.controllers.at(i).get('image').setValue(multimedia);
     };
     reader.onerror = function (error) {
       console.log('Error: ', error);
@@ -320,14 +326,20 @@ export class ArticlePrivacyComponent implements OnInit {
   submit(): void {
     const controller: AbstractControl = this.controllers.at(this.controlIndex);
     if (controller.invalid) return;
-    const { _id, phone, email, nickname } = controller.value;
+    const { name, lastName, _id, phone, email, nickname, image } =
+      controller.value;
+    const [_image] = image;
     const createRecipient = async () => {
+      const body = {
+        name,
+        lastName,
+        phone,
+        email,
+        nickname,
+        image: _image,
+      };
       const { createRecipient } = await this._RecipientsService.createRecipient(
-        {
-          phone,
-          email,
-          nickname,
-        }
+        body
       );
       const { _id } = createRecipient;
       controller.get('_id').setValue(_id);

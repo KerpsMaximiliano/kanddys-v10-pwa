@@ -146,8 +146,8 @@
         <swiper [config]="swiperConfig">
           <div
             *ngFor="
-              let file of controllers.at(controlIndex).get('multimedia')
-                ? controllers.at(controlIndex).get('multimedia').value
+              let file of controllers.at(controlIndex).get('image')
+                ? controllers.at(controlIndex).get('image').value
                 : [];
               let j = index
             "
