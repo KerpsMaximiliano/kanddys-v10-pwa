@@ -25,7 +25,6 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
   ) {}
 
   virtual: boolean = false;
-  disableButton = true;
 
   storeEmptyMessageAndGoToShipmentDataForm(params) {
     const emptyPost = {
@@ -120,25 +119,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               Validators.pattern(/[\S]/),
             ]),
           },
-          // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-          changeCallbackFunction(...params) {
-            console.log(params);
-            console.log(params[0].trim());
-            console.log(params[1].dataModel.value['1']['receiver'].trim());
-            console.log(
-              params[0].trim() &&
-                params[1].dataModel.value['1']['receiver'].trim()
-            );
+          changeCallbackFunction: (...params) => {
             if (
               params[0].trim() &&
               params[1].dataModel.value['1']['receiver'].trim()
-            ) {
-              console.log('es true!!! 11111');
-              this.disableButton = false;
-              console.log(this.disableButton);
-            } else this.disableButton = true;
+            )
+              this.formSteps[0].fieldsList[2].disabled = false;
+            else this.formSteps[0].fieldsList[2].disabled = true;
           },
-          // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
           label: 'Mensaje de Regalo (impreso o escrito a mano):',
           inputType: 'textarea',
           placeholder: 'Type..',
@@ -173,25 +161,14 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
               Validators.required,
             ]),
           },
-          // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-          changeCallbackFunction(...params) {
-            console.log(params);
-            console.log(params[0].trim());
-            console.log(params[1].dataModel.value['1']['message'].trim());
-            console.log(
-              params[0].trim() &&
-                params[1].dataModel.value['1']['message'].trim()
-            );
+          changeCallbackFunction: (...params) => {
             if (
               params[0].trim() &&
               params[1].dataModel.value['1']['message'].trim()
-            ) {
-              console.log('es true!!! 22222');
-              this.disableButton = false;
-              console.log(this.disableButton);
-            } else this.disableButton = true;
+            )
+              this.formSteps[0].fieldsList[2].disabled = false;
+            else this.formSteps[0].fieldsList[2].disabled = true;
           },
-          // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
           label: 'Nombre del sobre:',
           placeholder: 'Type..',
           styles: {
@@ -206,7 +183,7 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             control: new FormControl(),
           },
           label: 'Adicione el contenido',
-          disabled: this.disableButton,
+          disabled: true,
           styles: {
             containerStyles: {
               width: '89%',
@@ -217,34 +194,35 @@ export class CreateGiftcardComponent implements OnInit, OnDestroy {
             },
             fieldStyles: {
               width: '90%',
+              maxWidth: '325px',
               height: '37px',
               borderRadius: '19px',
               backgroundColor: '#2874AD',
               fontFamily: 'SfProBold',
-              fontSize: '0.973rem',
+              fontSize: '1rem',
               color: '#fff',
               border: 'none',
               cursor: 'pointer',
             },
             hoverStyles: {
               width: '90%',
-              maxWidth: '325px',
               height: '37px',
               borderRadius: '19px',
               backgroundColor: '#2874AD',
               fontFamily: 'SfProBold',
-              fontSize: '0.973rem',
+              fontSize: '1rem',
               color: '#fff',
               border: 'none',
               cursor: 'pointer',
             },
             disabledStyles: {
               width: '90%',
+              maxWidth: '325px',
               height: '37px',
               borderRadius: '19px',
               backgroundColor: '#7B7B7B',
               fontFamily: 'SfProBold',
-              fontSize: '0.973rem',
+              fontSize: '1rem',
               color: '#fff',
               border: 'none',
               cursor: 'pointer',
