@@ -432,6 +432,15 @@ export class ArticleCreatorComponent implements OnInit {
   }
 
   goBack() {
+    if (
+      this._ActivatedRoute.snapshot.queryParamMap.get('symbols') === 'virtual'
+    ) {
+      this._Router.navigate([`../create-giftcard`], {
+        relativeTo: this._ActivatedRoute,
+        replaceUrl: true,
+      });
+      return;
+    }
     if (this._HeaderService.checkoutRoute) {
       this._Router.navigate([this._HeaderService.checkoutRoute]);
       return;
