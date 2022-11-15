@@ -111,7 +111,7 @@ export class ArticleParamsComponent implements OnInit {
 
   countDecimals(value: number) {
     if (Math.floor(value) === value) return 0;
-    return value.toString().split('.')[1].length || 0;
+    return value.toString().split('.')[1]?.length || 0;
   }
 
   startDragging(e: MouseEvent, el: HTMLDivElement) {
@@ -243,7 +243,7 @@ export class ArticleParamsComponent implements OnInit {
           },
           this._SaleflowService.saleflowData._id
         );
-        this._Router.navigate([`/admin/options/${createItem._id}`]);
+        this._Router.navigate([`/admin/create-article/${createItem._id}`]);
       } else {
         const { createPreItem } = await this._ItemsService.createPreItem(
           itemInput

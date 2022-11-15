@@ -2,7 +2,7 @@
   class="nav"
   [ngStyle]="{
     gridTemplateColumns:
-      mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)'
+      mode === 'item' && item ? 'repeat(3, 1fr)' : 'repeat(1, 1fr)'
   }"
 >
   <div class="icon-container">
@@ -22,6 +22,7 @@
   <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
   <!-- <img src="{{ env }}/d.png" class="notification" alt="" /> -->
   <img
+    *ngIf="mode === 'item' && item"
     src="{{ env }}/save-blue.png"
     class="notification"
     alt=""
