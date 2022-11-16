@@ -38,6 +38,10 @@ export class ArticleDetailComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
     autoplay: {
       delay: 10000,
       stopOnLastSlide: true,
@@ -401,10 +405,11 @@ export class ArticleDetailComponent implements OnInit {
       .map(
         () =>
           `${
-            // this.itemData.images.length < 3
-            //   ? 
+            // // this.itemData.images.length < 3
+            // //   ?
+            
               '1'
-            //   : this.getRandomArbitrary(0, this.itemData.images.length)
+            // // : this.getRandomArbitrary(0, this.itemData.images.length)
           }fr`
       )
       .join(' ');
