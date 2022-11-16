@@ -38,6 +38,7 @@ export class ArticleCreatorComponent implements OnInit {
   URI: string = environment.uri;
   controllers: FormArray = new FormArray([]);
   multimedia: any = [];
+  display: string;
   types: any = [];
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
   videoFiles: string[] = ['video/mp4', 'video/webm'];
@@ -197,6 +198,9 @@ export class ArticleCreatorComponent implements OnInit {
           }fr`
       )
       .join(' ');
+      setTimeout(()=>{
+         this.display = 'grid';
+      }, 900)
   }
 
   updateCurrentSlideData(event: any) {
