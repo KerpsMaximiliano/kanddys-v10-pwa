@@ -401,9 +401,10 @@ export class ArticleDetailComponent implements OnInit {
       .map(
         () =>
           `${
-            this.itemData.images.length < 3
-              ? '1'
-              : this.getRandomArbitrary(0, this.itemData.images.length)
+            // this.itemData.images.length < 3
+            //   ? 
+              '1'
+            //   : this.getRandomArbitrary(0, this.itemData.images.length)
           }fr`
       )
       .join(' ');

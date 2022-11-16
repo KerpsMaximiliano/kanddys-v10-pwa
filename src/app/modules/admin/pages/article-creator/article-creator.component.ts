@@ -63,10 +63,10 @@ export class ArticleCreatorComponent implements OnInit {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
-    navigation: {
+    /* navigation: {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
-    },
+    }, */
     autoplay: {
       delay: 10000,
       disableOnInteraction: false,
