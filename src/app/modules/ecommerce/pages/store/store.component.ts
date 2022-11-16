@@ -97,9 +97,10 @@ export class StoreComponent implements OnInit {
     status: 'loading' | 'complete';
   } = {
     page: 1,
-    pageSize: 60,
+    pageSize: 5,
     status: 'loading',
   };
+  renderItemsPromise: Promise<any>;
 
   public swiperConfigTag: SwiperOptions = {
     slidesPerView: 'auto',
@@ -119,9 +120,12 @@ export class StoreComponent implements OnInit {
     spaceBetween: 0,
   };
 
-  @HostListener('window:scroll', [])
   async infinitePagination() {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    const page = document.querySelector('.store-page');
+    const pageScrollHeight = page.scrollHeight;
+    const verticalScroll = window.innerHeight + page.scrollTop;
+
+    if (verticalScroll >= pageScrollHeight) {
       await this.getItems();
     }
   }
@@ -788,20 +792,27 @@ export class StoreComponent implements OnInit {
       }
     }
 
-    const items = await this.saleflow.listItems(pagination);
-    const itemsQueryResult = items.listItems.filter((item) => {
-      return item.status === 'active' || item.status === 'featured';
-    });
+    this.renderItemsPromise = this.saleflow.listItems(pagination, true);
+    this.renderItemsPromise
+      .then((response) => {
+        const items = response;
+        const itemsQueryResult = items.listItems.filter((item) => {
+          return item.status === 'active' || item.status === 'featured';
+        });
 
-    if (this.paginationState.page === 1) {
-      this.items = itemsQueryResult;
-    } else {
-      this.items = this.items.concat(itemsQueryResult);
-    }
+        if (this.paginationState.page === 1) {
+          this.items = itemsQueryResult;
+        } else {
+          this.items = this.items.concat(itemsQueryResult);
+        }
 
-    this.organizeItems(this.merchantService.merchantData);
+        this.organizeItems(this.merchantService.merchantData);
 
-    this.paginationState.status = 'complete';
+        this.paginationState.status = 'complete';
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   getSelectedTagsNames(selectedTags: Array<Tag>) {
