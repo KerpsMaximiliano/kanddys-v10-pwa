@@ -146,7 +146,22 @@ export class CreateItemComponent implements OnInit {
       this.router.navigate(['/admin/merchant-items']);
       return;
     }
-    this.imageField = images;
+    this.imageField = [...images];
+    if (this.item.images.length) {
+      const multimedia: File[] = [];
+      this.item.images.forEach(async (image, index) => {
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const file = new File([blob], `item_image_${index}.jpeg`, {
+          type: 'image/jpeg',
+        });
+        multimedia.push(file);
+
+        if (index + 1 === this.item.images.length) {
+          this.itemForm.get('images').setValue(Array.from(multimedia));
+        }
+      });
+    }
     if (this.itemService.temporalImages?.new?.length) {
       this.itemForm
         .get('images')
@@ -333,7 +348,7 @@ export class CreateItemComponent implements OnInit {
             this.itemService.temporalImages?.new?.length > 0,
         };
 
-        if(this.initialStatus) {
+        if (this.initialStatus) {
           itemInput.status = this.initialStatus;
         }
 
@@ -483,6 +498,41 @@ export class CreateItemComponent implements OnInit {
         };
       return;
     }
+  }
+
+  // Converts image to File
+  async urltoFile(dataUrl: string, fileName: string): Promise<File> {
+    const res: Response = await fetch(dataUrl);
+    const blob: Blob = await res.blob();
+    return new File([blob], fileName, { type: 'image/png' });
+  }
+
+  rotateImg(index: number) {
+    const img = this.imageField[index];
+    const imageElement = new Image();
+    imageElement.src = img as string;
+    imageElement.crossOrigin = 'anonymous';
+    imageElement.onload = async () => {
+      const angle = Math.PI / 2;
+      var newCanvas = document.createElement('canvas');
+      newCanvas.width = imageElement.height;
+      newCanvas.height = imageElement.width;
+      var newCtx = newCanvas.getContext('2d');
+      newCtx.save();
+      newCtx.translate(imageElement.height / 2, imageElement.width / 2);
+      newCtx.rotate(angle);
+      newCtx.drawImage(
+        imageElement,
+        -imageElement.width / 2,
+        -imageElement.height / 2
+      );
+      newCtx.restore();
+      this.changedImages = true;
+      const url = newCanvas.toDataURL('image/png');
+      const itemImages = this.itemForm.get('images').value;
+      this.imageField[index] = url;
+      itemImages[index] = await this.urltoFile(url, 'image.png');
+    };
   }
 
   sanitize(image: string | ArrayBuffer) {
