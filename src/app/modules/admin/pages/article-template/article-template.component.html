@@ -1,0 +1,65 @@
+<div class="container">
+  <div
+    class="head"
+    [style.height]="
+      selected[0] === 'Adjunta un Símbolo existente' ? '42px' : '116px'
+    "
+  >
+    <div class="head-grid">
+      <div class="icons-container">
+        <i
+          *ngFor="
+            let icon of selected[0] === 'Adjunta un Símbolo existente'
+              ? ['left']
+              : ['up', 'up']
+          "
+          class="fas fa-chevron-{{ icon }}"
+          style.fontSize="24px"
+          style.height="11px"
+          style.fontWeight="700"
+          style.color="#fff"
+          (click)="selected = ['']"
+        ></i>
+      </div>
+      <div
+        *ngIf="selected[0] === 'Adjunta un Símbolo existente'"
+        class="head-text"
+      >
+        Símbolo existente a qrCodeID
+      </div>
+    </div>
+    <p *ngIf="selected[0] !== 'Adjunta un Símbolo existente'">
+      El qrCode qrCodeID de Símbolos <br />está listo para servirte.
+    </p>
+  </div>
+  <div class="content" [ngSwitch]="selected">
+    <ng-container *ngSwitchCase="'Adjunta un Símbolo existente'">
+      <p class="title">
+        Pega o escribe el código de referencia del Símbolo existente:
+      </p>
+      <input class="base-input" type="text" placeholder="Escribe.." />
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      <p class="title">Selecciona entre estas opciones:</p>
+      <div
+        *ngFor="let item of list; let i = index"
+        class="select-option"
+        [style.backgroundPosition]="
+          selected.includes(item.text) ? 'left bottom' : 'right bottom'
+        "
+        (click)="item.callback ? item.callback() : handleOption(item.text)"
+      >
+        <div class="square-item"></div>
+        <div class="grid-content">
+          <img
+            [style.visibility]="item.img ? 'initial' : 'hidden'"
+            [src]="env + '/' + item.img"
+            width="22"
+            height="22"
+          />
+          <span class="text">{{ item.text }} </span>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
